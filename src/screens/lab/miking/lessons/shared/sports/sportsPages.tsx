@@ -406,7 +406,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
           )}
         </PlanStage>
       ),
-      badge: 'From above · blue = the straight path from the mark · grey dashed = straight ahead · calculated from the drawing',
+      badge: 'From above · blue = the straight path from the mark · gray dashed = straight ahead · calculated from the drawing',
       bezel: [
         { k: 'TARGET', v: t.short, flex: 0.8 },
         { k: 'RANGE', v: fmtM1(slant), flex: 1 },
@@ -987,7 +987,7 @@ export function useCoverageStep({ scene, tasks, mics, box, onInteractive, done }
           )}
         </PlanStage>
       ),
-      badge: 'Green solid = useful detail · blue dashed = ambience only · red crossed = unavailable · your judgement, after listening on a real day',
+      badge: 'Green solid = useful detail · blue dashed = ambience only · red crossed = unavailable · your judgment, after listening on a real day',
       bezel: [
         { k: 'ZONE', v: z.short, flex: 1 },
         { k: 'TAG', v: COVERAGE_WORDS[tag].short, tint: tag === 'detail' ? GREEN : tag === 'ambience' ? BLUE : RED, flex: 1.1 },

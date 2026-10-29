@@ -294,8 +294,8 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
               <SectionTitle>BY EAR, BY REFERENCE, BY DEVICE</SectionTitle>
               <Card>
                 <Point title="Tuning by ear">The method of Chapter 3: lug taps for evenness, the stroke from the seat for the sound. It is the skill everything else supports.</Point>
-                <Point title="Using a pitch reference">A keyboard, a tuner app, another drum: useful for repeating a setup or placing the toms in a key for a song. Optional — a drum's overtones are not in simple ratios, so the "note" is always a judgement.</Point>
-                <Point title="Using a drum-tuning device">Tension-reading and pitch-reading devices help CONSISTENCY: the same numbers at every lug, the same setup next week. They do not hear the head relationship, the room or the music. The final judgement still comes from listening.</Point>
+                <Point title="Using a pitch reference">A keyboard, a tuner app, another drum: useful for repeating a setup or placing the toms in a key for a song. Optional — a drum's overtones are not in simple ratios, so the "note" is always a judgment.</Point>
+                <Point title="Using a drum-tuning device">Tension-reading and pitch-reading devices help CONSISTENCY: the same numbers at every lug, the same setup next week. They do not hear the head relationship, the room or the music. The final judgment still comes from listening.</Point>
               </Card>
             </>
           ),

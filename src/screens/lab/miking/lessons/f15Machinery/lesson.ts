@@ -66,7 +66,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the cycle, the position, the airflow and the background before the device: a changed load, a gust on the capsule or a rattle missed by a short take.',
   },
   practice: {
@@ -481,13 +481,13 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Is the fan with its new blade quieter for the user? No calibrated chain today.',
     setups: [
-      { id: 'a', label: 'One mic at A, before and after, gain and cycle the same, labelled relative', ok: true, power: 'phantom', feedback: 'One position, everything else fixed: an honest relative comparison.' },
-      { id: 'abc', label: 'One mic at A, B and C, before and after, gain fixed, labelled relative', ok: true, power: 'phantom', feedback: 'More positions, still one change at a time: also sound.' },
+      { id: 'a', label: 'One mic at A, before and after, gain and cycle the same, labeled relative', ok: true, power: 'phantom', feedback: 'One position, everything else fixed: an honest relative comparison.' },
+      { id: 'abc', label: 'One mic at A, B and C, before and after, gain fixed, labeled relative', ok: true, power: 'phantom', feedback: 'More positions, still one change at a time: also sound.' },
       { id: 'phone', label: 'A phone with auto-gain, held where it sounds best', ok: false, power: 'none', feedback: 'Auto-gain and a moving position: nothing compares.' },
     ],
     reasons: [
       R('same', 'The same position, gain and cycle before and after', 'required', 'Only the blade may change.'),
-      R('label', 'The result is labelled relative', 'required', 'No calibrated chain: relative is the honest word.'),
+      R('label', 'The result is labeled relative', 'required', 'No calibrated chain: relative is the honest word.'),
       R('repeat', 'Each run repeated, with a return to A', 'optional', 'It shows the setup did not drift.'),
       R('power', 'The result is reported as the fan’s sound power', 'wrong', 'Sound power needs a set method, its surface or positions, and a room or field that passes its checks.'),
     ],
@@ -647,7 +647,7 @@ export const F15_LESSON: Lesson = {
     { text: 'The fan (about 30 cm across), the table and the room — drawing defaults; no source gives a size.', dims: [] },
     { text: 'The exclusion zone’s margin (0.3 m beyond the guard) and the airflow cone (30°, 2 m) — drawing defaults from the proposal; the device and the site set the real ones.', dims: [] },
     { text: 'The radius of A, B and C (1 m), the detail mic (about 0.6 m) and the far perspective (about 2 m) — drawing defaults; the seated ear height 1.2 m is sourced.', dims: [] },
-    { text: 'The cycle strip and its timings, the claim ladder’s example numbers — made-up examples, labelled as such.', dims: [] },
+    { text: 'The cycle strip and its timings, the claim ladder’s example numbers — made-up examples, labeled as such.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

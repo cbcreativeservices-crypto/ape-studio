@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'Starting setups',
     goal: 'See real setups drawn on the section — a close mic on each player, one mic for two, a section pair in front, both together; in the studio, one mic or a pair at the center of an arc. Then what to settle before any mic goes up.',
     credit: { scenarios: ['hs.set.1', 'hs.set.2', 'hs.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
-    takeaway: 'Hear the players first, at their loudest and softest. Minimal plans favour blend; expanded plans give control but act as one multi-mic system. Keep every stand clear of slides, bells, hands and feet.',
+    takeaway: 'Hear the players first, at their loudest and softest. Minimal plans favor blend; expanded plans give control but act as one multi-mic system. Keep every stand clear of slides, bells, hands and feet.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the section pair yourself — closer, farther, higher — and see what changes across the players.',
     credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Rehearse the balance before moving mics. Closer favours the nearest player; farther or higher evens the section out with more room. Move the pair as a unit, one change at a time.',
+    takeaway: 'Rehearse the balance before moving mics. Closer favors the nearest player; farther or higher evens the section out with more room. Move the pair as a unit, one change at a time.',
   },
   context: {
     title: 'Live sound and recording',
@@ -54,7 +54,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Placement first: distance, angle off the bell, the sax’s body-and-bell view, the clipping stage, the monitor’s place in the pattern — before EQ. Lower the gain at the first sign of ringing.',
   },
   practice: {
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close mic for the trombone is drawn on the stage. Where can it not go?',
     options: ['In the path of the moving slide', 'Above the slide, aimed across the bell', 'Beside the bell on the slide’s side'],
     correct: 'In the path of the moving slide',
-    explain: 'The slide moves in and out through more than half a metre. A stand in its path is a collision hazard and a noise source: keep the mic above or beside it, clear at full extension.',
+    explain: 'The slide moves in and out through more than half a meter. A stand in its path is a collision hazard and a noise source: keep the mic above or beside it, clear at full extension.',
     why: {
       'Above the slide, aimed across the bell': 'That is a suggested start: clear of the slide at every position.',
       'Beside the bell on the slide’s side': 'Also fair, as long as the slide’s full travel stays clear.',
@@ -132,11 +132,11 @@ const scenarios: MikingScenario[] = [
     id: 'hs.mic.1',
     page: 'microphone',
     prompt: 'On a loud stage, which mic choice tends to help the PA most?',
-    options: ['A cardioid or supercardioid, close', 'An omni a metre away from the bell', 'A spaced pair well behind the section'],
+    options: ['A cardioid or supercardioid, close', 'An omni a meter away from the bell', 'A spaced pair well behind the section'],
     correct: 'A cardioid or supercardioid, close',
     explain: 'Close directional mics improve gain before feedback and reject more of the stage. A distant mic can sound fuller but gives the PA more room and monitor sound to amplify.',
     why: {
-      'An omni a metre away from the bell': 'It hears the stage and the PA as much as the horn.',
+      'An omni a meter away from the bell': 'It hears the stage and the PA as much as the horn.',
       'A spaced pair well behind the section': 'Distant omnis are a recording view; on a loud stage they pick up the PA.',
     },
   },
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When is one section mic the better plan than a mic on each player?',
     options: ['When blend matters and the section balances', 'When the PA must be as loud as it can be', 'When each player needs separate editing later'],
     correct: 'When blend matters and the section balances',
-    explain: 'A minimal plan favours blend and reduces phase and feedback complexity. Close mics give control for the PA, cueing and later balance — at the cost of more leakage paths and stand clutter.',
+    explain: 'A minimal plan favors blend and reduces phase and feedback complexity. Close mics give control for the PA, cueing and later balance — at the cost of more leakage paths and stand clutter.',
     why: {
       'When the PA must be as loud as it can be': 'Loud reinforcement usually needs close, directional mics.',
       'When each player needs separate editing later': 'Separate editing needs separate close mics.',
@@ -395,7 +395,7 @@ const symptoms: Symptom[] = [
   {
     id: 'hs.s.noise',
     observation: 'Key, valve or stand noise is intrusive',
-    firstChecks: 'Too close to the mechanism, or coupled through the stand? Move a few centimetres or change the angle, add shock isolation, service the clip — keeping safe clearance.',
+    firstChecks: 'Too close to the mechanism, or coupled through the stand? Move a few centimeters or change the angle, add shock isolation, service the clip — keeping safe clearance.',
     options: ['Move or angle it; isolate the mount', 'Gate the mic so it opens on notes only', 'Ask the player to press the keys gently'],
     correct: 'Move or angle it; isolate the mount',
     explain: 'Mechanical noise is placement and coupling: a small move, a different angle or a shock mount fixes it at the source.',
@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One section mic at the arc’s center, the players balancing themselves', ok: true, power: 'phantom', feedback: 'Fair for blend — independent balance will be limited.' },
       { id: 'c', label: 'A clip in each bell and no section view', ok: false, power: 'phantom', feedback: 'A bell-only, close view of every player and no room.' },
       { id: 'd', label: 'A stand mic in the trombone’s slide path, on its axis', ok: false, power: 'phantom', feedback: 'A collision hazard and noise source in the slide’s travel.' },
-      { id: 'e', label: 'One omni a metre from the trumpet only', ok: false, power: 'phantom', feedback: 'The trumpet dominates; the others are off in the distance.' },
+      { id: 'e', label: 'One omni a meter from the trumpet only', ok: false, power: 'phantom', feedback: 'The trumpet dominates; the others are off in the distance.' },
     ],
     reasons: [
       { id: 'r.bal', label: 'The players set the balance first', role: 'required', feedback: 'Say why: the mics capture the section’s balance; they do not create it.' },
@@ -488,7 +488,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['About the same distance from it', 'As close to it as each one can get', 'In a straight row behind it'],
     correct: 'About the same distance from it',
     explain: 'Arrange the players at about an equal distance from the section mic, stronger ones a little farther back if needed.',
-    why: { 'As close to it as each one can get': 'Crowding it favours whoever is nearest.', 'In a straight row behind it': 'Behind a cardioid is where it hears least.' },
+    why: { 'As close to it as each one can get': 'Crowding it favors whoever is nearest.', 'In a straight row behind it': 'Behind a cardioid is where it hears least.' },
   },
   {
     id: 'hs.q.5',
@@ -496,7 +496,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Close mics on all four players: how do you treat them?',
     options: ['As one system, checked in mono', 'As four separate recordings', 'As spares, faded up as needed'],
     correct: 'As one system, checked in mono',
-    explain: 'Each mic hears its neighbours too: solo and mute each in mono, and confirm the section pair adds something.',
+    explain: 'Each mic hears its neighbors too: solo and mute each in mono, and confirm the section pair adds something.',
     why: { 'As four separate recordings': 'Each one also hears the others.', 'As spares, faded up as needed': 'Open mics change the sum even when you are not using them.' },
   },
   {
@@ -557,13 +557,13 @@ export const E10_LESSON: EnsembleLesson = {
       { title: 'Low brass, big and low', text: 'A tuba’s bell usually points up and its low notes are powerful: distance and headroom, and a shared mic can give a more coherent low-brass sound.' },
     ],
     attack: 'Tonguing and valve or key attacks reach a close mic first and clearest; a section mic hears them softened by distance and the room.',
-    body: 'The section’s sustained sound blended in the room. A section mic hears the blend; a close mic, one player — with its neighbours behind it. Tendencies, not guarantees.',
+    body: 'The section’s sustained sound blended in the room. A section mic hears the blend; a close mic, one player — with its neighbors behind it. Tendencies, not guarantees.',
     head: { diameterMm: 3000, rods: 0, label: 'a horn section', strikeSrc: 'LESSON-HORNS' },
   },
   setting: {
     items: [
       { id: 'players', label: 'the slides, bells, hands and feet', short: 'PLAYERS', note: 'Full slide clearance at every position; the bell’s travel; stands and cables clear of hands, chairs and feet. Keep ears off the bells’ axes.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'Keep ears away from bell axes … preserve full slide and player clearance (L100)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'neigh', label: 'the next player’s bell', short: 'NEIGHBOUR', note: 'Every close mic hears the players beside it too: a trumpet next to a sax mic arrives off its axis, and in the sum.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'It also increases leakage differences (L31)' }, tag: 'SPILL', scene: 'all' },
+      { id: 'neigh', label: 'the next player’s bell', short: 'NEIGHBOR', note: 'Every close mic hears the players beside it too: a trumpet next to a sax mic arrives off its axis, and in the sum.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'It also increases leakage differences (L31)' }, tag: 'SPILL', scene: 'all' },
       { id: 'mutes', label: 'mutes and doubles', short: 'MUTES', note: 'A mute changes the tone and the direction; a double (flugelhorn, flute) may need its own position. Mark them in the plan.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'Flugelhorn generally has a darker, broader character than trumpet (L18)' }, tag: 'CHANGES', scene: 'all' },
       { id: 'mon', label: 'the wedges', short: 'MONITORS', note: 'Each wedge in its mic’s real rejection — a supercardioid’s is off its rear, not straight behind. Only the level the players need.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'Put wedges in the appropriate rejection region of the chosen microphone (L39)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'split', label: 'the split', short: 'SPLIT', note: 'A digital stagebox may share gain and pads across every feed: agree who sets them, and take an unprocessed feed for the recording.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'a digital stagebox may share headamp gain and pads (L41)' }, tag: 'ROLES', scene: 'stage' },
@@ -602,7 +602,7 @@ export const E10_LESSON: EnsembleLesson = {
       { title: 'HEAR THE SECTION', text: 'The loudest passage, the softest, the highest and the lowest — from where the audience or the recording will hear it.' },
       { title: 'MARK THE MOVEMENT', text: 'Each player’s bell direction and movement, every slide at full extension, mutes and doubles.' },
       { title: 'LET THE PLAYERS BALANCE', text: 'Stronger instruments a little farther from a section mic, weaker or darker ones closer, bells aimed consistently — before moving any mic.' },
-      { title: 'CHOOSE MINIMAL OR EXPANDED', text: 'One section mic or pair favours blend; a close mic on each player gives control but acts as one multi-mic system.' },
+      { title: 'CHOOSE MINIMAL OR EXPANDED', text: 'One section mic or pair favors blend; a close mic on each player gives control but acts as one multi-mic system.' },
     ],
     safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a protective mains earth to cure hum; avoid uncontrolled feedback.',
     workedWords: {
@@ -610,7 +610,7 @@ export const E10_LESSON: EnsembleLesson = {
       clearance: 'The stand in front of the line, clear of the slides at full extension and of the players’ way in and out; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the section pair — on stage about 1.2–1.8 m in front and a little above; in the studio at the arc’s centre, about 1.5 m from every player. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the section pair — on stage about 1.2–1.8 m in front and a little above; in the studio at the arc’s center, about 1.5 m from every player. Places to start and compare, not a best place.',
       'Change one variable at a time — distance, height, then the angle — and compare at matched level on the same passage.',
       'The players set the section’s balance; the pair captures it. Move the whole pair; a different spacing or angle is a different method.',
     ],

@@ -20,7 +20,7 @@ export const STAGE5_BUILD: StageDef = {
   notices: [
     {
       kind: "legal",
-      text: "Music, effects and library material carry licence terms that depend on how the finished production is used and where. Sampled, AI-generated and library content each have their own conditions. Record what you have been granted; whether a particular use is permitted is a question for the rights holder and your client."
+      text: "Music, effects and library material carry license terms that depend on how the finished production is used and where. Sampled, AI-generated and library content each have their own conditions. Record what you have been granted; whether a particular use is permitted is a question for the rights holder and your client."
     },
     {
       kind: "legal",
@@ -303,7 +303,7 @@ export const STAGE5_BUILD: StageDef = {
             { value: "duration", label: "Note or syllable duration" },
             { value: "ensemble", label: "Ensemble alignment" },
             { value: "dialogue_timing", label: "Dialogue timing" },
-            { value: "sync", label: "Synchronisation to picture" }
+            { value: "sync", label: "Synchronization to picture" }
           ]
         },
         {
@@ -324,7 +324,7 @@ export const STAGE5_BUILD: StageDef = {
             { value: "targeted", label: "Individual notes or moments only" },
             { value: "light", label: "Light, across the part" },
             { value: "heavy", label: "Heavy, across the part" },
-            { value: "quantised", label: "Fully quantised or snapped" }
+            { value: "quantised", label: "Fully quantized or snapped" }
           ]
         },
         {
@@ -420,7 +420,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "info",
       kind: "unrealistic",
       title: "A loop that will become audible",
-      detail: "Repeated material with no variation is recognised as a loop after a few passes, and once a listener has heard it they cannot stop hearing it.",
+      detail: "Repeated material with no variation is recognized as a loop after a few passes, and once a listener has heard it they cannot stop hearing it.",
       fixHint: "Vary the length, level or layering between repeats, or find a longer source. Two layers at different lengths hide the repeat almost completely.",
       needsLogic: true,
       logicIntent: "Fire when loop_variation is looped."
@@ -520,10 +520,10 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "Heavy correction with nothing protected",
-      detail: "Correction is set heavy or fully quantised and nothing is listed as being preserved. At these settings the tools often flatten vibrato, shift formants, pull breaths and consonants towards notes they were never on, and remove the timing variation that made the part feel played.",
+      detail: "Correction is set heavy or fully quantized and nothing is listed as being preserved. At these settings the tools often flatten vibrato, shift formants, pull breaths and consonants towards notes they were never on, and remove the timing variation that made the part feel played.",
       fixHint: "Exclude unpitched sounds, preserve formants, leave vibrato and deliberate expression alone, and correct individual moments rather than whole parts.",
       needsLogic: true,
-      logicIntent: "Fire when correction_amount is heavy or quantised AND correction_guards is empty."
+      logicIntent: "Fire when correction_amount is heavy or quantized AND correction_guards is empty."
     },
     {
       ruleId: "build-correction-no-scale",

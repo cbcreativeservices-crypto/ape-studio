@@ -39,7 +39,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where the hats sit on the kit — beside the snare, under a crash, at the player’s left foot — the space the stick and the foot need, what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['hh.set.1', 'hh.set.2', 'hh.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'The snare is the hats’ loudest neighbour, the crash hangs above, the stick crosses over from the player’s side and the air bursts from the edges. Ask the player first, and protect your hearing.',
+    takeaway: 'The snare is the hats’ loudest neighbor, the crash hangs above, the stick crosses over from the player’s side and the air bursts from the edges. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, the air at the edges, aim, the pattern, gain and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -126,13 +126,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hh.set.1',
     page: 'setting',
-    prompt: 'On a typical right-handed kit, which loud neighbour sits closest to the hi-hat?',
+    prompt: 'On a typical right-handed kit, which loud neighbor sits closest to the hi-hat?',
     options: ['The snare, just to its right and a little lower', 'The floor tom, beside the player’s right leg', 'The ride, hanging high on the far side of the whole kit'],
     correct: 'The snare, just to its right and a little lower',
-    explain: 'The hats stand on the player’s left, right beside the snare. The snare is the neighbour a hat mic hears most — and the one to keep off its front.',
+    explain: 'The hats stand on the player’s left, right beside the snare. The snare is the neighbor a hat mic hears most — and the one to keep off its front.',
     why: {
       'The floor tom, beside the player’s right leg': 'That is across the kit, on the player’s right. The snare is beside the hats.',
-      'The ride, hanging high on the far side of the whole kit': 'The ride is on the right, over the floor tom. The snare is the hats’ neighbour.',
+      'The ride, hanging high on the far side of the whole kit': 'The ride is on the right, over the floor tom. The snare is the hats’ neighbor.',
     },
   },
   {
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A distance is read from the thing it names: here the top cymbal, square to its plate, to the front of the mic.',
     why: {
       'From the floor straight up to the mic’s front, like a stand height': 'The floor is not the reference. Measure from the top cymbal.',
-      'From the snare’s head across to the mic’s front': 'The snare is a neighbour, not the reference. Measure from the cymbal.',
+      'From the snare’s head across to the mic’s front': 'The snare is a neighbor, not the reference. Measure from the cymbal.',
     },
   },
   {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The top cymbal, directly above its far edge',
     explain: 'Each starting point is measured from the cymbal it names — here straight down to the edge on the far side from the snare.',
     why: {
-      'The snare, measured across to the mic': 'The snare is the neighbour to keep away from, not the reference.',
+      'The snare, measured across to the mic': 'The snare is the neighbor to keep away from, not the reference.',
       'The floor, straight up to the mic': 'The floor is not the reference. Measure from the cymbal.',
     },
   },
@@ -342,7 +342,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A loud rock stage. The snare is loud, the drummer’s fill sits beside the throne. One spare channel; phantom power is available.',
     setups: [
       { id: 'a', label: 'A small condenser 5–10 cm above the bow on the far side, the pair hiding the snare', ok: true, power: 'phantom', feedback: 'A suggested starting point, with the snare shaded by the pair — and the power it needs.' },
-      { id: 'b', label: 'A small dynamic a few centimetres over the outer edge on the far side, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point that suits a loud stage — listen for the air as the pair closes.' },
+      { id: 'b', label: 'A small dynamic a few centimeters over the outer edge on the far side, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point that suits a loud stage — listen for the air as the pair closes.' },
       { id: 'c', label: 'A clip-on condenser under the bottom cymbal, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stick’s way, its rejection toward the monitors.' },
       { id: 'd', label: 'A mic just past the edge, level with the gap between the cymbals', ok: false, power: 'none', feedback: 'That is where the air rushes out as the pair closes — a thump or wind noise. Start above the edge instead.' },
       { id: 'e', label: 'A mic over the bow on the player’s side, where the stick lands', ok: false, power: 'none', feedback: 'That is the stick’s path. Start on the far side, away from it.' },
@@ -427,10 +427,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'Which neighbour does a hat mic usually hear most?',
+    prompt: 'Which neighbor does a hat mic usually hear most?',
     options: ['The snare, right beside the hats', 'The floor tom, across the kit', 'The kick’s front head, facing out'],
     correct: 'The snare, right beside the hats',
-    explain: 'The snare is the hats’ closest loud neighbour: keep it off the mic’s front, or let the pair hide it.',
+    explain: 'The snare is the hats’ closest loud neighbor: keep it off the mic’s front, or let the pair hide it.',
     why: {
       'The floor tom, across the kit': 'That is on the far side, by the player’s right leg.',
       'The kick’s front head, facing out': 'The kick is in the middle and low. The snare is right beside the hats.',
@@ -467,7 +467,7 @@ const wedges: Wedge[] = [
     p: { x: KIT_DRUMS.snare.c.x, y: KIT_DRUMS.snare.c.y, z: KIT_DRUMS.snare.c.z },
     lift: 0,
     faces: { x: 0, y: -1, z: 0 },
-    note: 'The hats’ loudest neighbour: from under the pair it sits off to the side — a pattern helps a little; the distance helps more.',
+    note: 'The hats’ loudest neighbor: from under the pair it sits off to the side — a pattern helps a little; the distance helps more.',
     prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2)' },
     glyph: 'none',
   },
@@ -506,7 +506,7 @@ export const I01A_LESSON: CymbalLesson = {
   setting: {
     items: [
       { id: 'hats', label: 'the hi-hats', short: 'HI-HATS', note: 'Ringed in amber: the pair on the player’s left, about 85 cm up, worked by the left foot. The cymbals this lesson mics.', prov: { kind: 'sourced', src: 'ZIL-K', quote: '14" HiHats' }, tag: 'THE CYMBALS', scene: 'all', planIds: ['hihat'] },
-      { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Right beside the hats and a little lower: the loudest neighbour a hat mic hears. Keep it off the mic’s front — or let the pair hide it.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['snare'] },
+      { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Right beside the hats and a little lower: the loudest neighbor a hat mic hears. Keep it off the mic’s front — or let the pair hide it.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['snare'] },
       { id: 'crash', label: 'crash cymbal (16 in)', short: 'CRASH', note: 'Hangs above the hats’ audience side and swings when struck: a stand mic over that side of the pair runs into it.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['crash1'] },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The player sits behind the kit: the left foot on the hat pedal, the stick crossing over to the hats from this side.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kick', label: 'kick drum', short: 'KICK', note: 'Low in the middle of the kit: farther from the hats than the snare, but loud.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['kick', 'pedal'] },
@@ -536,7 +536,7 @@ export const I01A_LESSON: CymbalLesson = {
     { text: 'The cymbals’ swing and the hats’ opening travel (12.7 mm, a trial reading of a leakage tip), drawn as keep-outs — values for the owner to approve.', dims: ['cym'] },
     { text: 'The cymbal profile (8 % rise, 20 % bell), the clutch, rod, seat, stand tubes and tripod — the shared cymbal family’s drawing defaults.', dims: [] },
     { text: 'The stick’s side of the pair (± 80° about the throne, a stick’s 406.4 mm up), the air-burst ring (60 mm wide, 30 mm above) and the clamp on the stand — drawn illustratively.', dims: [] },
-    { text: 'The bands with no published number: “a few centimetres” over the outer edge (4.5–6.5 cm) and the underside (5–8.5 cm under the bottom cymbal, 10–15 cm out) are the lab’s drawings.', dims: [] },
+    { text: 'The bands with no published number: “a few centimeters” over the outer edge (4.5–6.5 cm) and the underside (5–8.5 cm under the bottom cymbal, 10–15 cm out) are the lab’s drawings.', dims: [] },
     { text: 'The family draws the open pair with the bottom cymbal lowered; on a real stand the top cymbal rises. The gap between them is what the lesson uses.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front, square to the top cymbal’s edge plane, rounded to ≈ 5 mm.', dims: [] },
   ],

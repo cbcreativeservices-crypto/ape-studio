@@ -253,7 +253,7 @@ export const FAULTS: readonly FaultCase[] = [
       { signal: 'ok', note: 'A buzz and a rattle on low notes.', flags: ['distortion'] },
       {
         consoleOut: { signal: 'ok', note: 'Main meters healthy, nowhere near clip.' },
-        processor: { signal: 'ok', note: 'No limiter activity. Outputs clean on the analyser.' },
+        processor: { signal: 'ok', note: 'No limiter activity. Outputs clean on the analyzer.' },
         amp: { signal: 'ok', note: 'No clip light at any level. Both channels show identical drive.' },
         speaker: { signal: 'ok', note: 'The left cabinet buzzes and rattles on low notes at ANY level; the right cabinet on the same drive is clean. Swap the cabinets: the buzz moves with the box.', flags: ['distortion'] },
         listener: { signal: 'ok', note: 'A rattle rides every bass note from the left.', flags: ['distortion'] },
@@ -570,7 +570,7 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['The delay loudspeakers are not delayed — set ≈ distance ÷ speed of sound', 'The mains are reversed in polarity', 'The delay amplifier is clipping', 'The crossover is wrong'],
     correct: 0,
-    explain: 'A delay loudspeaker exists to arrive WITH the mains. Sound needs roughly 2.9 ms per metre, so 30 m is about 87 ms; with 0 ms set, the delay towers lead by that much and the ear hears two events. Many engineers then add a few milliseconds more so the mains stay the perceived source.',
+    explain: 'A delay loudspeaker exists to arrive WITH the mains. Sound needs roughly 2.9 ms per meter, so 30 m is about 87 ms; with 0 ms set, the delay towers lead by that much and the ear hears two events. Many engineers then add a few milliseconds more so the mains stay the perceived source.',
     fix: 'Set the delay outputs to the distance-derived time (the app’s Delay from Distance calculator gives the exact figure for the day’s temperature), then verify by measurement and by ear.',
     forward: 'Level was fine everywhere; TIME was wrong at one station. The processor is where time is set, and its display gave the answer.',
   },
@@ -646,8 +646,8 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['Acoustic feedback: the wedge is aimed into the microphone and the send is too hot — reposition, reduce, then notch', 'A faulty cable', 'A digital clock error', 'A ground loop'],
     correct: 0,
-    explain: 'Feedback is a loop, not a component: microphone → console → wedge → microphone. Gain-before-feedback is spent first by geometry — a wedge in the pattern’s live angle — then by level. Position and placement come before any equaliser.',
-    fix: 'Move the wedge into the microphone’s null — directly behind a cardioid; about 110–125° off-axis for a super- or hypercardioid, which has a small rear lobe — lower the send, then find the ringing frequency on the analyser and apply a narrow cut.',
+    explain: 'Feedback is a loop, not a component: microphone → console → wedge → microphone. Gain-before-feedback is spent first by geometry — a wedge in the pattern’s live angle — then by level. Position and placement come before any equalizer.',
+    fix: 'Move the wedge into the microphone’s null — directly behind a cardioid; about 110–125° off-axis for a super- or hypercardioid, which has a small rear lobe — lower the send, then find the ringing frequency on the analyzer and apply a narrow cut.',
     forward: 'Electrical stations were all clean; the fault was ACOUSTIC, at the last station, where the loudspeaker meets the microphone again.',
   },
 ];

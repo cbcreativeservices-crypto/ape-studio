@@ -97,7 +97,7 @@ function useTools() {
       prompt: 'Move the mic: raised toward the mouth, low over the desk, level — and nearer or farther. Watch the bounce and where the first dip falls.',
       surface: 'the desk',
       subject: 'an anchor at a desk with a desk mic',
-      done: 'A raised mic hears the desk’s copy later and weaker than one low over it. A boundary mic is the other answer: lying on the desk, its element is so close to the surface that the bounce arrives with the direct sound — it hears the desk’s papers and the room instead. Move the mic, the papers or the person; EQ cannot pull a cancelled frequency back.',
+      done: 'A raised mic hears the desk’s copy later and weaker than one low over it. A boundary mic is the other answer: lying on the desk, its element is so close to the surface that the bounce arrives with the direct sound — it hears the desk’s papers and the room instead. Move the mic, the papers or the person; EQ cannot pull a canceled frequency back.',
     },
   });
   const mics = useOpenMicStep({
@@ -177,7 +177,7 @@ const B02Setting = makeBroadcastSetting({
       words: {
         looking: 'A signal-flow drawing · the mics, the mixer, where each one goes',
         prompt: 'TRACE each source. Then put the anchor’s lav AND the boom on air, and the producer’s cues on air — read what goes wrong.',
-        done: 'Each speaker on their own labelled channel; one mic on air for the anchor, the boom on its own track as a tested fallback; the producer in the earpiece and on talkback only.',
+        done: 'Each speaker on their own labeled channel; one mic on air for the anchor, the boom on its own track as a tested fallback; the producer in the earpiece and on talkback only.',
       },
       points: [
         { title: 'A CHANNEL FOR EACH SPEAKER', text: 'Label each mic and channel; rehearse each speaker alone, then a natural overlap, looking across the desk and into the camera. Mute unused channels as the format permits.' },

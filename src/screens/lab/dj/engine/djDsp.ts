@@ -16,7 +16,7 @@
  *                                   stage is skipped (no colour at
  *                                   "12 o'clock"), and a band at "kill" is
  *                                   removed.
- *   CHANNEL FILTER (one knob)       left of centre: 2-pole (12 dB/oct)
+ *   CHANNEL FILTER (one knob)       left of center: 2-pole (12 dB/oct)
  *                                   low-pass swept 20 kHz → 200 Hz; right of
  *                                   centre: 2-pole high-pass swept 30 Hz →
  *                                   6 kHz; a small dead zone at centre is a

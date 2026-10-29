@@ -45,7 +45,7 @@ export const STAGE1_DEFINE: StageDef = {
         },
         {
           fieldId: "client",
-          label: "Client or organisation",
+          label: "Client or organization",
           kind: "text",
           help: "Who the work is for. Write 'self' if it is your own project, and mean it.",
           required: false
@@ -440,7 +440,7 @@ export const STAGE1_DEFINE: StageDef = {
     {
       sectionId: "creative",
       title: "Creative Direction",
-      intro: "The sound you are aiming for, described precisely enough that a stranger could recognise it when they heard it. Vague direction here becomes a revision round later.",
+      intro: "The sound you are aiming for, described precisely enough that a stranger could recognize it when they heard it. Vague direction here becomes a revision round later.",
       fields: [
         {
           fieldId: "style",
@@ -456,7 +456,7 @@ export const STAGE1_DEFINE: StageDef = {
           helpBy: {
             music: "Genre and sub-genre, and where it sits between raw and polished. 'Indie folk, sparse, mostly live takes' is enough to start.",
             podcast: "Interview, panel, narrative, solo, or a mix. Scripted or conversational. Each changes how it is recorded and edited.",
-            live: "Concert, theatre, worship, corporate, festival stage, comedy. The show type sets the priorities for the mix and the schedule."
+            live: "Concert, theater, worship, corporate, festival stage, comedy. The show type sets the priorities for the mix and the schedule."
           }
         },
         {
@@ -762,7 +762,7 @@ export const STAGE1_DEFINE: StageDef = {
       detail: "The item count, the services included and the number of sources add up to a quantity of work. When that quantity does not fit the production days, the budget, the crew or the channel count, something is cut on the day, and it is chosen under pressure rather than on purpose.",
       fixHint: "Reduce the count, drop a service or an alternate version, add production days or people, or mark the surplus as a stretch goal that the client has agreed is optional.",
       needsLogic: true,
-      logicIntent: "Estimate the work implied by the stage 1 scope: item count multiplied by the services selected, weighted by performer and source counts, location count and alternate versions. Compare it against the resources recorded in stage 4: production days and hours per day, total budget, crew count and available recording channels. Also compare the calendar distance between today and the target date against the services selected, since mixing and mastering need review time after tracking. Warn when the work exceeds the resources with no allowance for setup, changeovers, breaks and review. Do not fire until the stage 4 fields exist; when only the target date is known, use the calendar comparison alone. ccode chooses every threshold. Every comparison here is a judgement warning at this severity; the hard comparison of source count against available channels is a separate blocker in stage 4."
+      logicIntent: "Estimate the work implied by the stage 1 scope: item count multiplied by the services selected, weighted by performer and source counts, location count and alternate versions. Compare it against the resources recorded in stage 4: production days and hours per day, total budget, crew count and available recording channels. Also compare the calendar distance between today and the target date against the services selected, since mixing and mastering need review time after tracking. Warn when the work exceeds the resources with no allowance for setup, changeovers, breaks and review. Do not fire until the stage 4 fields exist; when only the target date is known, use the calendar comparison alone. ccode chooses every threshold. Every comparison here is a judgment warning at this severity; the hard comparison of source count against available channels is a separate blocker in stage 4."
     },
     {
       ruleId: "define-reference-no-reason",
@@ -836,7 +836,7 @@ export const STAGE1_DEFINE: StageDef = {
       severity: "info",
       kind: "missing",
       title: "Nobody has agreed who keeps the files afterwards",
-      detail: "Multitracks and project files are asked for months or years later, for a remix, a licence or a re-release. If nobody agreed to keep them, they are on a drive that has since been reused.",
+      detail: "Multitracks and project files are asked for months or years later, for a remix, a license or a re-release. If nobody agreed to keep them, they are on a drive that has since been reused.",
       fixHint: "Agree who holds the session files and for how long, and write it into the scope.",
       needsLogic: true,
       logicIntent: "Fire when archive_plan is empty or set to not_agreed."

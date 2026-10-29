@@ -1,5 +1,5 @@
 /**
- * Post-Production · Stage 3 — Build and Synchronise the Session.
+ * Post-Production · Stage 3 — Build and Synchronize the Session.
  *
  * Owner's spec, Post-Production Chapter 1, Stages 3 (Session Creation and
  * Organization) and 4 (Synchronization), consolidated. They belong together:
@@ -11,13 +11,13 @@ import type { StageDef } from '../schema';
 export const STAGE3_SESSION: StageDef = {
   stageId: "session",
   num: 3,
-  title: "Build and Synchronise the Session",
-  intro: "Configure the session to match both the material and the delivery, organise it so somebody else could open it, and get every recording lined up against the same clock.",
-  whyItMatters: "A session is a set of assumptions made once and then trusted for weeks. If the frame rate is wrong, or the start time is off by an hour, or two recorders were running on their own clocks, nothing announces it — the work simply drifts, and the further in you get the more expensive the correction becomes. Organisation matters for the same reason: the person most inconvenienced by a session nobody can read is usually you, three weeks from now.",
+  title: "Build and Synchronize the Session",
+  intro: "Configure the session to match both the material and the delivery, organize it so somebody else could open it, and get every recording lined up against the same clock.",
+  whyItMatters: "A session is a set of assumptions made once and then trusted for weeks. If the frame rate is wrong, or the start time is off by an hour, or two recorders were running on their own clocks, nothing announces it — the work simply drifts, and the further in you get the more expensive the correction becomes. Organization matters for the same reason: the person most inconvenienced by a session nobody can read is usually you, three weeks from now.",
   notices: [
     {
       kind: "legal",
-      text: "Where this session carries material from more than one source — library music, a contributor's own recording, archive footage — the right to use it is recorded in stage 8, not assumed here. Organising a file into a folder does not grant permission to publish it."
+      text: "Where this session carries material from more than one source — library music, a contributor's own recording, archive footage — the right to use it is recorded in stage 8, not assumed here. Organizing a file into a folder does not grant permission to publish it."
     }
   ],
   sections: [
@@ -141,7 +141,7 @@ export const STAGE3_SESSION: StageDef = {
     {
       sectionId: "structure",
       title: "Folders and Tracks",
-      intro: "How the project is laid out on disk and in the session. Organise it for the person who opens it next.",
+      intro: "How the project is laid out on disk and in the session. Organize it for the person who opens it next.",
       fields: [
         {
           fieldId: "folder_structure",
@@ -155,7 +155,7 @@ export const STAGE3_SESSION: StageDef = {
           fieldId: "track_layout",
           label: "Track layout",
           kind: "table",
-          help: "The groups your session is organised into, in the order they appear. Not every track — the structure.",
+          help: "The groups your session is organized into, in the order they appear. Not every track — the structure.",
           required: true,
           columns: [
             { columnId: "tl_group", label: "Group", kind: "text" },
@@ -245,12 +245,12 @@ export const STAGE3_SESSION: StageDef = {
     },
     {
       sectionId: "sync",
-      title: "Synchronisation",
+      title: "Synchronization",
       intro: "How every recording is lined up against the same clock, and what you do when one of them will not stay there.",
       fields: [
         {
           fieldId: "sync_sources",
-          label: "What you are synchronising from",
+          label: "What you are synchronizing from",
           kind: "multiChoice",
           help: "Tick everything available. Timecode is the strongest; a clap is more reliable than people expect; waveform matching is excellent until the recordings diverge.",
           required: true,
@@ -281,7 +281,7 @@ export const STAGE3_SESSION: StageDef = {
         },
         {
           fieldId: "sync_table",
-          label: "Synchronisation status by source",
+          label: "Synchronization status by source",
           kind: "table",
           help: "One row per recording or group of recordings. The offset column is where a pattern becomes visible.",
           columns: [
@@ -454,8 +454,8 @@ export const STAGE3_SESSION: StageDef = {
       watches: ["session.sync_sources", "session.sync_table"],
       severity: "attention",
       kind: "missing",
-      title: "Nothing to synchronise from",
-      detail: "No synchronisation source is recorded, so alignment is by eye and by ear with nothing to check it against.",
+      title: "Nothing to synchronize from",
+      detail: "No synchronization source is recorded, so alignment is by eye and by ear with nothing to check it against.",
       fixHint: "Look for embedded timecode first, then a slate, then camera scratch audio, then waveform matching. Production reports often hold the answer nobody thought to look for.",
       needsLogic: true,
       logicIntent: "Fire when sync_sources is empty, or contains only manual while the sync_table has rows."
@@ -510,7 +510,7 @@ export const STAGE3_SESSION: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "No track structure",
-      detail: "The session has no recorded organisation, which is survivable alone and not survivable the moment anybody else opens it — including you after a gap.",
+      detail: "The session has no recorded organization, which is survivable alone and not survivable the moment anybody else opens it — including you after a gap.",
       fixHint: "Group the tracks by what they contain and say where each group routes. The stem structure in the mix stage is built directly on this.",
       needsLogic: true,
       logicIntent: "Fire when track_layout is empty."
@@ -522,7 +522,7 @@ export const STAGE3_SESSION: StageDef = {
       kind: "unrealistic",
       title: "Detailed work against a cut that can still change",
       detail: "The picture in the session is not locked. Anything cut to frame — Foley, effects placement, ADR timing, music hits — is at risk of having to be done again.",
-      fixHint: "Get a lock date. Until then, work at the level that survives a re-cut: dialogue editing, cleanup and organisation, rather than frame-accurate detail.",
+      fixHint: "Get a lock date. Until then, work at the level that survives a re-cut: dialogue editing, cleanup and organization, rather than frame-accurate detail.",
       needsLogic: true,
       logicIntent: "Fire when video_reference is unlocked.",
       onlyFor: ["podcast", "live"]
@@ -530,7 +530,7 @@ export const STAGE3_SESSION: StageDef = {
   ],
   activity: {
     activityId: "restore-synchronisation",
-    title: "Restore synchronisation",
+    title: "Restore synchronization",
     prompt: "Three recordings of the same hour: a main multitrack, a backup recorder in the corner, and a guest's own file sent from another city. They were all lined up at the start of the session and everything sounded fine. Somebody has now noticed that the backup recorder is a frame or two late by the end. Work out what is actually wrong with each source, and choose corrections that match the causes.",
     onlyFor: ["podcast", "live"],
     seed: {
@@ -555,7 +555,7 @@ export const STAGE3_SESSION: StageDef = {
         { sy_source: "Remote guest local file", sy_method: "manual", sy_offset: "+2 s", sy_holds: "unchecked", sy_notes: "Sent by the guest, 44.1 kHz" }
       ]
     },
-    passWhen: "Sync is checked at the end of the longest file; the drift is diagnosed as something other than unknown; the correction matches the cause, which means the steadily drifting backup is stretched, resampled or reconformed rather than moved or accepted; every row in the synchronisation table has a method that is no longer manual-only and a hold state that is no longer unchecked; and a real synchronisation source is recorded alongside the manual one.",
+    passWhen: "Sync is checked at the end of the longest file; the drift is diagnosed as something other than unknown; the correction matches the cause, which means the steadily drifting backup is stretched, resampled or reconformed rather than moved or accepted; every row in the synchronization table has a method that is no longer manual-only and a hold state that is no longer unchecked; and a real synchronization source is recorded alongside the manual one.",
     debrief: "Three sources, three different problems, and only one of them was the one anybody noticed. The backup recorder was free-running, so it drifts — and moving it, which is what had already been done, lines up the moment you are looking at and leaves every other moment wrong. That is why the diagnosis has to come before the cure. The remote guest's file was never checked at the tail at all. It is at a different sample rate: left unconverted, it plays at the wrong speed and pitch, so it is converted once to the session rate. It was also made on the guest's own clock, so even converted it can drift like the backup, and only a check at the end shows that. A slow, steady slide comes from free-running clocks, like the backup recorder's. And the main multitrack, the one with timecode, needed nothing. Notice that the fix for all of this was available in stage 2, where somebody could have decided the conversion policy once. Post-production problems are very rarely where you find them."
   }
 };

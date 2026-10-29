@@ -105,7 +105,7 @@ function SceneSvg({ inches, w, h }: { inches: number; w: number; h: number }) {
         <SvgText key={i} x={micX(i)} y={H - 4} fontSize={9} fill={i === inches ? colors.cyanBright : colors.textMuted} textAnchor="middle" fontFamily={F}>{i === 0 ? 'lips' : `${i}"`}</SvgText>
       ))}
       <ALine animatedProps={marker} x1={micX(inches)} y1={H - 22} x2={micX(inches)} y2={H - 12} stroke={colors.cyanBright} strokeWidth={1.6} />
-      <SvgText x={W - 8} y={18} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>to scale · grey = the room's reflections</SvgText>
+      <SvgText x={W - 8} y={18} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>to scale · gray = the room's reflections</SvgText>
     </Svg>
   );
 }

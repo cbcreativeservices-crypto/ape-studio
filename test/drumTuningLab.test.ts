@@ -149,7 +149,7 @@ describe('wording rules', () => {
   });
   it('devices help consistency; the ear decides; the accuracy note says so', () => {
     assert.match(all, /CONSISTENCY/);
-    assert.match(all, /final judgement still comes from listening/i);
+    assert.match(all, /final judgment still comes from listening/i);
     assert.match(read(`${DIR}/DrumTuningLabScreen.tsx`), /Learn the method here; trust your ears and a real drum/);
     assert.match(strip(read(`${DIR}/DrumTuningLabScreen.tsx`)), /<AccuracyNote compact detail=\{ACCURACY_DETAIL\} \/>/);
   });

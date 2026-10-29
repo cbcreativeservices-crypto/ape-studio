@@ -103,7 +103,7 @@ function F13Sound({ lesson, answers, onAnswered }: PageProps) {
 const F13Before = makeBeforePage({
   points: [
     { title: 'THE QUESTION AND THE STATE', text: 'Write down the purpose — the room’s own reverberation, the installed system at a listener seat, a treatment change, one recording position — and the room’s state: doors, curtains, movable panels, furniture, people, the air handling. Empty and occupied can differ.' },
-    { title: 'THE SOURCE', text: 'For the room itself, a broadly radiating, well-known test source where the method calls for one. A sweep through the installed PA measures the system plus the room — useful, and labelled as such.' },
+    { title: 'THE SOURCE', text: 'For the room itself, a broadly radiating, well-known test source where the method calls for one. A sweep through the installed PA measures the system plus the room — useful, and labeled as such.' },
     { title: 'THE NOISE FIRST', text: 'Before the test, log the room’s noise, band by band, with the air handling and the people as they will be. Close an optional noise source only if the intended state allows it — or come back at a quieter time.' },
     { title: 'IN A LIVE SPACE', text: 'Coordinate the test with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, and never run an unannounced sweep near performers or an audience. Loudspeakers go on rated supports; flown systems are for qualified riggers.' },
   ],
@@ -197,7 +197,7 @@ function F13TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
   const decay = useDecayStep({
     words: {
       title: 'The decay reader',
-      badge: 'A made-up decay per band · solid = the fitted range, dashed = extended to 60 dB · grey = the noise floor',
+      badge: 'A made-up decay per band · solid = the fitted range, dashed = extended to 60 dB · gray = the noise floor',
       looking: 'The decay',
       prompt: 'Step through each BAND, then raise the NOISE as if the air handling were on — and watch which fits are refused.',
     },

@@ -183,7 +183,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
               <TrayButton key={k} label={`${layers[k] ? '● ' : '○ '}${label}`} tint={layers[k] ? 'amber' : 'dim'} onPress={() => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
             ))}
           </View>
-          <Caption>Mode pressure is the one selected mode, at ear height, on the amplitude colour standard: red = a pressure maximum, blue = a null. The map shows the mode's SHAPE, not how strongly the speakers excite it. In multichannel the plan draws the L and R paths; tap a surround to see its own.</Caption>
+          <Caption>Mode pressure is the one selected mode, at ear height, on the amplitude color standard: red = a pressure maximum, blue = a null. The map shows the mode's SHAPE, not how strongly the speakers excite it. In multichannel the plan draws the L and R paths; tap a surround to see its own.</Caption>
         </View>
       ),
     },

@@ -21,7 +21,7 @@ const SPEC = ensembleHandSpec({
   firstZone: 'cc.area',
   firstMic: 'arrCard',
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the choir, directional condensers on stable stands, or one pair; for a featured child, a stand mic an adult sets before a handheld; a headset only fitted and checked by an authorised adult. Each condenser needs power, usually phantom.',
+    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the choir, directional condensers on stable stands, or one pair; for a featured child, a stand mic an adult sets before a handheld; a headset only fitted and checked by an authorized adult. Each condenser needs power, usually phantom.',
     mountLine: () => 'Mount: a stable stand with a wide base and a sandbag, set and moved only by a responsible adult with the group stopped; cables taped flat or under ramps; nothing hung over the children’s heads',
     extra: ARRAY_CARDS,
   },

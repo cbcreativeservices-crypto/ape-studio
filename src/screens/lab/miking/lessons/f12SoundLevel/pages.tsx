@@ -115,7 +115,7 @@ function F12Sound({ lesson, answers, onAnswered }: PageProps) {
 
 const F12Before = makeBeforePage({
   points: [
-    { title: 'THE QUESTION, THE RECEIVER, THE TIME', text: 'Name the source, the receiver or area, the operating condition and the decision the result must support. A neighbourhood baseline, a traffic study, a venue’s boundary and a worker’s exposure are four different questions. Get the method — the local permit, the project’s specification — before a formal claim.' },
+    { title: 'THE QUESTION, THE RECEIVER, THE TIME', text: 'Name the source, the receiver or area, the operating condition and the decision the result must support. A neighborhood baseline, a traffic study, a venue’s boundary and a worker’s exposure are four different questions. Get the method — the local permit, the project’s specification — before a formal claim.' },
     { title: 'THE DESCRIPTOR FIRST', text: 'Write the descriptor and the window before measuring: an average over the window (LAeq), the loudest fast level (LAFmax), the levels exceeded part of the time (L10, L50, L90), or a peak. Each answers a different question.' },
     { title: 'SAFE, AUTHORIZED POSITIONS', text: 'Choose positions you are allowed to use and can reach safely, away from roads, tracks, water edges, moving equipment and electrical hazards. If a receiver is unsafe to reach, use remote placement or qualified site coordination. Keep the tripod and cable from becoming a hazard to the public.' },
     { title: 'ORDINARY OPERATION', text: 'Measure the source as it normally runs. Never raise a level to make a meter respond, and use hearing protection where the staff need it.' },
@@ -203,7 +203,7 @@ function F12TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
       prompt: 'Compare RECEIVER A and B, then shorten the WINDOW and watch which descriptors move.',
       receivers: {
         A: 'In the open, at the method’s height.',
-        B: 'Two metres from the facade: the same traffic plus its reflection — a little higher in this example; how much depends on the site.',
+        B: 'Two meters from the facade: the same traffic plus its reflection — a little higher in this example; how much depends on the site.',
       },
     },
     onDone: done,

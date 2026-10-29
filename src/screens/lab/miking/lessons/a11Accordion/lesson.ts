@@ -65,8 +65,8 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Placement and movement first: the side the mic favours, the bellows’ travel, the mechanism noise, the filter, the geometry near monitors — before EQ. A cable that catches the bellows is a stop.',
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
+    takeaway: 'Placement and movement first: the side the mic favors, the bellows’ travel, the mechanism noise, the filter, the geometry near monitors — before EQ. A cable that catches the bellows is a stop.',
   },
   practice: {
     title: 'Practice',
@@ -194,10 +194,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why can a close mic on one side miss part of the music?',
     options: ['The other side plays the other part', 'The bellows block the sound behind them', 'Close mics hear only the lowest notes'],
     correct: 'The other side plays the other part',
-    explain: 'The treble side plays the melody and the bass side the bass notes and chords. A close mic favours the nearest side; check the part the music needs.',
+    explain: 'The treble side plays the melody and the bass side the bass notes and chords. A close mic favors the nearest side; check the part the music needs.',
     why: {
-      'The bellows block the sound behind them': 'Both sides radiate outward; it is distance and angle that favour one.',
-      'Close mics hear only the lowest notes': 'Closeness favours the nearer side, not a register.',
+      'The bellows block the sound behind them': 'Both sides radiate outward; it is distance and angle that favor one.',
+      'Close mics hear only the lowest notes': 'Closeness favors the nearer side, not a register.',
     },
   },
   {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The middle between the two sides',
     explain: 'In front and centered between treble and bass, so the two combine; then move toward the side the music needs.',
     why: {
-      'The treble grille, where the melody is': 'That favours the melody; centered combines both sides.',
+      'The treble grille, where the melody is': 'That favors the melody; centered combines both sides.',
       'The bellows’ folds, the air source': 'Pointing into the bellows is not a default way to hear the instrument.',
     },
   },
@@ -347,7 +347,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic close to the right-hand grille? Move back, or add or rebalance bass pickup if the part needs it.',
     options: ['Back off, or add or rebalance bass pickup', 'Cut the treble on the desk until it evens out', 'Ask the player to press the keys more softly'],
     correct: 'Back off, or add or rebalance bass pickup',
-    explain: 'A close mic favours the nearest surface. Move back to combine the sides, or rebalance with a bass-side mic if the music needs the bass.',
+    explain: 'A close mic favors the nearest surface. Move back to combine the sides, or rebalance with a bass-side mic if the music needs the bass.',
     why: {
       'Cut the treble on the desk until it evens out': 'EQ cannot bring back a bass side the mic is not hearing.',
       'Ask the player to press the keys more softly': 'The playing is the music; move the mic first.',
@@ -429,7 +429,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A condenser about 30 cm from the keyboard side, plus one just beyond the fully open bass side', ok: true, power: 'phantom', feedback: 'Fair for separate control — check the pair in mono over full bellows strokes.' },
       { id: 'c', label: 'A mic pointed into the bellows’ gap', ok: false, power: 'phantom', feedback: 'The bellows are the air source, and the mic would sit in their travel.' },
       { id: 'd', label: 'A mic taped to the treble grille', ok: false, power: 'phantom', feedback: 'Never tape a grille: it can damage the instrument and smother its sound.' },
-      { id: 'e', label: 'One close mic on the treble grille only', ok: false, power: 'phantom', feedback: 'It favours the melody and may lose the bass the brief asks for.' },
+      { id: 'e', label: 'One close mic on the treble grille only', ok: false, power: 'phantom', feedback: 'It favors the melody and may lose the bass the brief asks for.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, SIDES_REASON, BRAND_REASON, PLAYER_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point outside the bellows’ travel that hears the sides the music needs, with the power the mic needs.',
@@ -553,7 +553,7 @@ export const A11_LESSON: Lesson = {
       { title: 'Two sides sounding', text: 'Each reed keeps swinging at its own frequency, chopping the air into puffs: the notes. The treble reeds sound out through the grille, the bass reeds through the bass side — both sides radiate, and the bass side moves.' },
     ],
     attack: 'The note’s start: the reed swinging up to full size as the bellows’ pressure builds — plus the keys’ and buttons’ clicks and the bellows’ own noises. Close mics hear more of that mechanism.',
-    body: 'The sustained sound from two places at once — the treble grille and the bass outlets, each with its own timbre — and one of them moves with every push and pull. A farther mic combines them; a close mic favours the nearer side. Tendencies — instruments, registers and players vary.',
+    body: 'The sustained sound from two places at once — the treble grille and the bass outlets, each with its own timbre — and one of them moves with every push and pull. A farther mic combines them; a close mic favors the nearer side. Tendencies — instruments, registers and players vary.',
     head: { diameterMm: 480, rods: 0, label: 'a full-size piano accordion', strikeSrc: 'S-ACC' },
   },
   setting: {
@@ -561,7 +561,7 @@ export const A11_LESSON: Lesson = {
       { id: 'player', label: 'the player and the accordion', short: 'PLAYER', note: 'Standing (or seated), the accordion on the chest, the bass side moving with the bellows. The hands, the straps, the elbows and the bellows’ whole travel come before any stand.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor in front, facing back at the player — behind a mic that faces the accordion, where a pattern’s null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side-fill monitor on the bass side', short: 'SIDE FILL', note: 'Off to the bass side: the bass side — and any mic on it — moves toward it on every pull. Evaluate that position separately.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MOVES CLOSER', scene: 'stage' },
-      { id: 'band', label: 'the band', short: 'BAND', note: 'Loud neighbours: a closer directional mic or a mount helps more than gain; fewer open channels help most.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'the band', short: 'BAND', note: 'Loud neighbors: a closer directional mic or a mount helps more than gain; fewer open channels help most.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'Listen first from the audience side, unamplified, for where the two sides combine.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'LISTEN FIRST', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet room that sounds good, one mic farther out can combine the two sides and the room.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
@@ -575,7 +575,7 @@ export const A11_LESSON: Lesson = {
       { id: 'inst', label: 'Accordion type (piano, chromatic or diatonic button), registers', kind: 'text' },
       { id: 'setup', label: 'Setup', kind: 'choice', choices: ['one mic in front', 'a mic per side', 'mounted or built-in mics'] },
       { id: 'mic', label: 'Mic(s) and pattern(s)', kind: 'text' },
-      { id: 'zone', label: 'Distances and the side each favours', kind: 'text' },
+      { id: 'zone', label: 'Distances and the side each favors', kind: 'text' },
       { id: 'clear', label: 'Clearance from the bellows’ full travel; cable slack', kind: 'text' },
       { id: 'notes', label: 'What you heard: balance, mechanism, mono (in words)', kind: 'text' },
     ],

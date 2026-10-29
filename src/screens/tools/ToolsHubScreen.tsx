@@ -283,8 +283,8 @@ const TOOL_STRIP: Record<ToolKey, FC<SvgProps>> = {
 
 /** Screen-reader description per strip (strips carry zero glyphs — Booth §6). */
 const STRIP_LABEL: Record<ToolKey, string> = {
-  spl: 'SPL reference meter: analogue VU meter with needle beside a segmented LED level ladder',
-  rta: 'Spectrum analyser: thirty-one frequency bands as vertical bars with peak-hold markers',
+  spl: 'SPL reference meter: analog VU meter with needle beside a segmented LED level ladder',
+  rta: 'Spectrum analyzer: thirty-one frequency bands as vertical bars with peak-hold markers',
   waveform: 'Waveform viewer: oscilloscope waveform around a center zero line',
   spectrogram: 'Spectrogram: frequency content over time as a color heat map',
   rt60: 'RT60 reverb decay: decay curve falling to a noise floor with a fitted decay line',
@@ -1287,7 +1287,7 @@ const styles = StyleSheet.create({
   },
   // The hub column centres once the screen is wider than it needs to be
   //  (owner 2026-09-13). alignSelf on the CONTENT container - the hero, the
-  //  rack panel and the member rows share one centred column.
+  //  rack panel and the member rows share one centered column.
   // paddingBottom is the BASE only; the safe-area inset is added at the call
   //  site (nothing sits below this ScrollView any more to absorb it).
   scroll: { padding: 14, paddingBottom: 24, gap: 10, width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },

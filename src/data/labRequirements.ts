@@ -75,7 +75,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_I01a: 'The hi-hat leaks into the snare microphone, so its own microphone is placed with that in mind.',
   mk_I01b: 'The ride carries the time on many songs and can vanish or swamp the overheads depending on placement.',
   mk_I01c: 'Crashes are caught first by the overheads; knowing when one needs its own microphone keeps a kit from getting crowded.',
-  mk_I01d: 'A splash is a short accent among loud neighbours, and it is easy either to lose or to over-mic.',
+  mk_I01d: 'A splash is a short accent among loud neighbors, and it is easy either to lose or to over-mic.',
   mk_I01e: 'A china is harsh and loud, and where its microphone sits decides whether it cuts through or hurts.',
   // Guitars, bass, keys, strings
   mk_C01: 'Acoustic guitar is one of the most-recorded sources there is, and small moves along the body change it completely.',
@@ -122,7 +122,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_F16: 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.',
   // Broadcast and speech
   mk_B01: 'Hosts on a desk microphone, each on their own channel, are the heart of most radio and podcast studios.',
-  mk_B05: 'Lavaliers and headsets are fitted, hidden and positioned on the wearer, and a few centimetres change the voice completely.',
+  mk_B05: 'Lavaliers and headsets are fitted, hidden and positioned on the wearer, and a few centimeters change the voice completely.',
   mk_B06: 'Panels, lecterns and press conferences need every voice heard with the fewest open microphones.',
   mk_B07: 'Voiceover and narration are recorded close and controlled, and a guest’s return feed must never contain their own voice.',
 };
@@ -147,7 +147,7 @@ const BEGINNING_MIXING_ALL: LabRequirement[] = [
   { key: 'mxb_gain', why: 'Gain staging inside the mix keeps every processor working where it was designed to.' },
   { key: 'mxb_static', why: 'A static balance with faders and pan alone is the foundation every later move is judged against.' },
   { key: 'mxb_subtract', why: 'Most mixes improve by taking away, and knowing what to cut is a skill of its own.' },
-  { key: 'mxb_pan', why: 'Panning is where each part lives left to right, and it decides how crowded the centre gets.' },
+  { key: 'mxb_pan', why: 'Panning is where each part lives left to right, and it decides how crowded the center gets.' },
   { key: 'mxb_eq', why: 'EQ in context — on the track while the band plays — is how parts are fitted together.' },
   { key: 'mxb_comp', why: 'Compression holds a part steady in the mix without draining its life.' },
   { key: 'mxb_space', why: 'Reverb and delay give the mix its depth, and too much drowns it.' },
@@ -163,7 +163,7 @@ const BEGINNING_MIXING_ALL: LabRequirement[] = [
 const ADVANCED_MIXING_ALL: LabRequirement[] = [
   { key: 'mxa_gate', why: 'The advanced lab starts by checking the beginning process is solid.' },
   { key: 'mxa_plan', why: 'A complex mix is planned before it is touched — what matters, what is broken, what is delivered.' },
-  { key: 'mxa_session', why: 'Large sessions stay workable only with deliberate organisation.' },
+  { key: 'mxa_session', why: 'Large sessions stay workable only with deliberate organization.' },
   { key: 'mxa_groups', why: 'Groups, subgroups and VCAs are how a large mix is controlled with a few faders.' },
   { key: 'mxa_aux', why: 'Advanced auxiliary routing feeds effects and parallel paths without tangling the session.' },
   { key: 'mxa_parallel', why: 'Parallel and multibus processing adds weight and control without crushing the original.' },
@@ -266,7 +266,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_frequency', why: 'Naming a frequency by ear is the bedrock of every tonal descriptor.' },
     { key: 'ear_eq', why: 'Hearing one EQ move — where, which way and how much — is what tonal description is for.' },
     { key: 'ear_band', why: 'The named bands are the vocabulary this certificate is tested in.' },
-    { key: 'ear_noise', why: 'Noise colours and basic waveforms are the reference timbres everything else is described against.' },
+    { key: 'ear_noise', why: 'Noise colors and basic waveforms are the reference timbres everything else is described against.' },
     { key: 'ear_defect', why: 'Artifact identification is one of this certificate’s named topics.' },
     { key: 'ear_clipping', why: 'Clipping is the artifact most often missed until it is too late.' },
     { key: 'ear_comb', why: 'Comb filtering is the hollow, phasey artifact you will be asked to name and explain.' },

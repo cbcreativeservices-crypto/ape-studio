@@ -1076,7 +1076,7 @@ const INTERFERENCE_CHECK: CheckSpec = {
   options: [
     'Still dead — a null kills that frequency everywhere in the room',
     'The null moves — cancellation depends on THIS position and THIS frequency',
-    'All frequencies are now cancelled',
+    'All frequencies are now canceled',
     'Both speakers get louder',
   ],
   correctIdx: 1,

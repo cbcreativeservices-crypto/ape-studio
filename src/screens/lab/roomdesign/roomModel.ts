@@ -132,7 +132,7 @@ export const SURFACES: Record<SurfaceKey, { label: string; short: string; alpha:
   glass: { label: 'Glass', short: 'GLASS', alpha: MATERIALS.glass.alpha, blurb: 'Hard for mids and highs; the pane flexes at low frequencies and eats a little bass. A window is also a weak point for isolation.' },
   curtain: { label: 'Curtains', short: 'CURTAIN', alpha: MATERIALS.curtain.alpha, blurb: 'Soft and porous: eats mids and highs, but the lows sail straight through the fabric.' },
   wood: { label: 'Wood panel', short: 'PANEL', alpha: MATERIALS.wood.alpha, blurb: 'Mostly reflective with a little low-end flex.' },
-  acoustictile: { label: 'Acoustic ceiling tile', short: 'AC TILE', alpha: EXTRA_ALPHA.acoustictile, blurb: 'A drop ceiling of mineral-fibre tile: moderate broadband absorption, more than drywall, less than a thick cloud.' },
+  acoustictile: { label: 'Acoustic ceiling tile', short: 'AC TILE', alpha: EXTRA_ALPHA.acoustictile, blurb: 'A drop ceiling of mineral-fiber tile: moderate broadband absorption, more than drywall, less than a thick cloud.' },
   open: { label: 'Opening', short: 'OPEN', alpha: MATERIALS.open.alpha, blurb: 'No surface at all: everything leaves and nothing returns.' },
 };
 
@@ -1029,7 +1029,7 @@ export function directivityDb(thetaDeg: number): number {
 /** The speaker's aim as a unit vector in the plan: straight ahead is +y
  *  (toward the listener) for L / R / C, −y for the surrounds; toe-in turns
  *  the left-hand speakers toward +x and the right-hand ones toward −x, i.e.
- *  toward the centre line. */
+ *  toward the center line. */
 export function speakerAim(spk: Pick<Speaker, 'role' | 'toeDeg'>): Pt {
   const rad = (spk.toeDeg * Math.PI) / 180;
   const left = spk.role === 'L' || spk.role === 'LS';
@@ -1356,7 +1356,7 @@ export function channelGeometry(lay: Layout): ChannelGeometry[] {
       const distance = Math.hypot(dx, dy, s.z - lis.earZ);
       const flags: string[] = [];
       if ((s.role === 'LS' || s.role === 'RS') && (angleDeg < 100 || angleDeg > 120)) flags.push('outside 100–120°');
-      if (s.role === 'C' && angleDeg > 5) flags.push('off the centre');
+      if (s.role === 'C' && angleDeg > 5) flags.push('off the center');
       if ((s.role === 'L' || s.role === 'R') && (angleDeg < 25 || angleDeg > 35)) flags.push('outside 25–35°');
       if (Number.isFinite(refDist) && s.role !== 'L' && Math.abs(distance - refDist) > SYM_TOL) flags.push(`${fmtLen(Math.abs(distance - refDist), 'metric', { small: true })} ${distance > refDist ? 'further' : 'nearer'} than L`);
       return { role: s.role, angleDeg, side, distance, flags };
@@ -1873,10 +1873,10 @@ export function basstrapAt(room: Room, vertex: number): Treatment {
 }
 
 export const TREATMENT_INFO: Record<TreatmentKind, { label: string; short: string; blurb: string; safety: string }> = {
-  absorber: { label: 'Absorber panel', short: 'PANEL', blurb: 'A porous panel (mineral wool or fiberglass) at a first-reflection point. Thickness decides how low it works: 5 cm covers the upper mids and highs, 10 cm reaches lower into the mids, and only much thicker panels reach the bass. As a rough guide it works fully down to about c ÷ (4 × thickness), and still helps below that. Open-cell foam is a serious fire load unless it carries a building fire rating (Class A under ASTM E84, or your local code’s equal) — mineral wool or fiberglass is the safer core.', safety: 'Use a fire-rated core and fabric. Hang on wall anchors rated for the weight; keep it clear of heaters, sockets, lights and the exit. Cut mineral wool or fibreglass with gloves, an FFP2/N95 mask and eye protection, outdoors or with ventilation, and wrap it fully in fabric so no fibre is exposed in the room.' },
-  basstrap: { label: 'Bass trap', short: 'TRAP', blurb: 'A thick absorber across a corner, where every mode has a pressure maximum. Depth is what counts: a thin corner panel is not a bass trap.', safety: 'A full-height trap is heavy — fix it into studs or masonry with rated hardware, not into drywall alone, and placed so it cannot fall on a seat. Cut mineral wool or fibreglass with gloves, an FFP2/N95 mask and eye protection, outdoors or with ventilation, and wrap it fully in fabric so no fibre is exposed in the room.' },
+  absorber: { label: 'Absorber panel', short: 'PANEL', blurb: 'A porous panel (mineral wool or fiberglass) at a first-reflection point. Thickness decides how low it works: 5 cm covers the upper mids and highs, 10 cm reaches lower into the mids, and only much thicker panels reach the bass. As a rough guide it works fully down to about c ÷ (4 × thickness), and still helps below that. Open-cell foam is a serious fire load unless it carries a building fire rating (Class A under ASTM E84, or your local code’s equal) — mineral wool or fiberglass is the safer core.', safety: 'Use a fire-rated core and fabric. Hang on wall anchors rated for the weight; keep it clear of heaters, sockets, lights and the exit. Cut mineral wool or fibreglass with gloves, an FFP2/N95 mask and eye protection, outdoors or with ventilation, and wrap it fully in fabric so no fiber is exposed in the room.' },
+  basstrap: { label: 'Bass trap', short: 'TRAP', blurb: 'A thick absorber across a corner, where every mode has a pressure maximum. Depth is what counts: a thin corner panel is not a bass trap.', safety: 'A full-height trap is heavy — fix it into studs or masonry with rated hardware, not into drywall alone, and placed so it cannot fall on a seat. Cut mineral wool or fibreglass with gloves, an FFP2/N95 mask and eye protection, outdoors or with ventilation, and wrap it fully in fabric so no fiber is exposed in the room.' },
   cloud: { label: 'Ceiling cloud', short: 'CLOUD', blurb: 'An absorber hung below the ceiling over the listening position, treating the ceiling reflection; the air gap helps it absorb lower.', safety: 'Overhead loads must go into the structure (joists) with rated hangers and a safety cable. Not into drywall or a drop-ceiling grid alone — and never under or over a smoke detector, sprinkler head or light fitting.' },
-  diffuser: { label: 'Diffuser', short: 'DIFF', blurb: 'Scatters a reflection instead of absorbing it, so it keeps the room alive while breaking up a strong rear-wall bounce. Diffuses down to about c ÷ (4 × well depth); needs a few metres of distance to work.', safety: 'Wood diffusers are heavy; mount into structure with rated hardware.' },
+  diffuser: { label: 'Diffuser', short: 'DIFF', blurb: 'Scatters a reflection instead of absorbing it, so it keeps the room alive while breaking up a strong rear-wall bounce. Diffuses down to about c ÷ (4 × well depth); needs a few meters of distance to work.', safety: 'Wood diffusers are heavy; mount into structure with rated hardware.' },
   rug: { label: 'Rug / floor', short: 'RUG', blurb: 'A thick rug with underlay between the speakers and the chair treats the floor reflection for the mids and highs; it does nothing for bass.', safety: 'Use a non-slip underlay so it is not a trip hazard, and keep it clear of cables and the door swing.' },
   gobo: { label: 'Freestanding panel', short: 'GOBO', blurb: 'A movable absorber on a stand — the flexible way to test a reflection point before drilling anything.', safety: 'A tall panel must have a wide, stable base; never block the exit or a ventilation grille. If it ends up fixed to a wall, check for pipes and wiring before drilling.' },
 };
@@ -1900,7 +1900,7 @@ export function compareMeasured(d: RoomDesign, a: Analysis): MeasuredCompare {
   } else if (m.modeHz != null && Number.isFinite(m.modeHz) && a.modes.length > 0) {
     const nearest = a.modes.reduce((best, mode) => (Math.abs(mode.f - m.modeHz!) < Math.abs(best.f - m.modeHz!) ? mode : best), a.modes[0]);
     const diff = m.modeHz - nearest.f;
-    out.push({ tier: 'MEASURED', text: `Measured resonance ${fmtHz(m.modeHz)}: the nearest modelled mode is ${nearest.kind} (${nearest.nx},${nearest.ny},${nearest.nz}) at ${fmtHz(nearest.f)}, ${Math.abs(diff).toFixed(1)} Hz ${diff > 0 ? 'below' : 'above'} what you measured. ${Math.abs(diff) < 3 ? 'That is a close match for a simple model.' : 'A larger gap often means the real boundaries are not where the plan says (a soft wall, an alcove, furniture) or the room is not rectangular.'}` });
+    out.push({ tier: 'MEASURED', text: `Measured resonance ${fmtHz(m.modeHz)}: the nearest modeled mode is ${nearest.kind} (${nearest.nx},${nearest.ny},${nearest.nz}) at ${fmtHz(nearest.f)}, ${Math.abs(diff).toFixed(1)} Hz ${diff > 0 ? 'below' : 'above'} what you measured. ${Math.abs(diff) < 3 ? 'That is a close match for a simple model.' : 'A larger gap often means the real boundaries are not where the plan says (a soft wall, an alcove, furniture) or the room is not rectangular.'}` });
   }
   return out;
 }

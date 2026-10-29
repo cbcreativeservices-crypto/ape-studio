@@ -1257,7 +1257,7 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
     const rOut = (292 / 2) * k;
     const rIn = (120.6 / 2) * k;
     const rCut = rIn + (rOut - rIn) * 0.42; // where the stylus is now
-    const sx = cx + rCut; // stylus x (on the centre line, right of the spindle)
+    const sx = cx + rCut; // stylus x (on the center line, right of the spindle)
     const grooves: number[] = [];
     for (let r = rOut; r > rCut; r -= 0.85) grooves.push(r);
     body = (

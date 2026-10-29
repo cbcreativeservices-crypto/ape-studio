@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Funk is dance music first. It grew out of soul and R&B when James Brown and his arrangers stripped songs down to interlocking riffs and moved the weight to the first beat of the bar, “the one.” It carries Black pride, party and communal release; P-Funk added humor, sci-fi theatre and audience chants. Crowds expect to move, sing the hooks and answer the band’s call-and-response. “Wrong” means a groove that does not lock: a blurry kick, a bass that booms instead of popping, ghost notes and hi-hat lost under guitars, horn stabs arriving as a mushy wall, or so much reverb that the space between the notes disappears. In funk the rests are part of the rhythm."
+      "text": "Funk is dance music first. It grew out of soul and R&B when James Brown and his arrangers stripped songs down to interlocking riffs and moved the weight to the first beat of the bar, “the one.” It carries Black pride, party and communal release; P-Funk added humor, sci-fi theater and audience chants. Crowds expect to move, sing the hooks and answer the band’s call-and-response. “Wrong” means a groove that does not lock: a blurry kick, a bass that booms instead of popping, ghost notes and hi-hat lost under guitars, horn stabs arriving as a mushy wall, or so much reverb that the space between the notes disappears. In funk the rests are part of the rhythm."
     }
   ],
   "instruments": [
@@ -279,7 +279,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Clubs and theatres run 95–100 dBA LAeq-15 at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs."
+      "text": "Clubs and theaters run 95–100 dBA LAeq-15 at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs."
     },
     {
       "label": "Studio / streaming:",

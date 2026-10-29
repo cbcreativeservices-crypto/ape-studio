@@ -9,7 +9,7 @@
  * Every instrument is a TUBE measured along its own centre line by `s` (mm)
  * from the player's end (the embouchure hole of a flute; the reed's tip of a
  * reed instrument) to the far open end (the foot or the bell). Its pieces,
- * radii and tone holes are given in `s`; windPosture.ts lays the centre line
+ * radii and tone holes are given in `s`; windPosture.ts lays the center line
  * into the lesson frame for a posture, so the drawing, the collisions, the
  * zones and the physics all read the same numbers.
  *

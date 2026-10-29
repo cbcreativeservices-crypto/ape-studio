@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for maracas by its properties — pattern, power, size and how it handles brief peaks — not by its brand.',
     credit: { scenarios: ['mar.mic.1', 'mar.mic.peak', 'mar.mic.power', 'mar.mic.aim', 'mar.rec.1'], note: 'Answer the five checks (one reaches back to how the maracas sound).' },
-    takeaway: 'Condensers and dynamics can all work; the pattern and the placement decide how much of the room, the neighbours and the speakers reach the channel. Aim at the heads, not the handles.',
+    takeaway: 'Condensers and dynamics can all work; the pattern and the placement decide how much of the room, the neighbors and the speakers reach the channel. Aim at the heads, not the handles.',
   },
   placement: {
     title: 'Placement Studio',
@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — a head coming close, the pair itself, spill, the vocal mic, the monitors — before gain or EQ.',
   },
   practice: {
@@ -190,9 +190,9 @@ const scenarios: MikingScenario[] = [
     id: 'mar.place.2',
     page: 'placement',
     prompt: 'One hand overwhelms the other in a single centered mic. What do you try first?',
-    options: ['Recentre or step back, then check the pair itself', 'A second mic on the quieter hand, straight away', 'Ask the player to play the louder hand more softly'],
-    correct: 'Recentre or step back, then check the pair itself',
-    explain: 'Is that head closer, louder, or moving through the mic’s axis? Recentre or step back, check the instruments — then consider two spots.',
+    options: ['Recenter or step back, then check the pair itself', 'A second mic on the quieter hand, straight away', 'Ask the player to play the louder hand more softly'],
+    correct: 'Recenter or step back, then check the pair itself',
+    explain: 'Is that head closer, louder, or moving through the mic’s axis? Recenter or step back, check the instruments — then consider two spots.',
     why: {
       'A second mic on the quieter hand, straight away': 'A second channel adds spill and delay; try the one mic’s position first.',
       'Ask the player to play the louder hand more softly': 'The player’s accents are the music; move the mic.',
@@ -321,7 +321,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is its head closer, louder, or moving through the mic’s axis?',
     options: ['Its head’s distance, its level and the mic’s axis', 'Turn the louder side down with EQ on that band', 'Ask the player to swap hands for the take'],
     correct: 'Its head’s distance, its level and the mic’s axis',
-    explain: 'Recentre or step back, check the pair’s balance, then consider two spots.',
+    explain: 'Recenter or step back, check the pair’s balance, then consider two spots.',
     why: {
       'Turn the louder side down with EQ on that band': 'EQ cannot separate two heads in one channel.',
       'Ask the player to swap hands for the take': 'The player’s hands are theirs; move the mic.',
@@ -522,7 +522,7 @@ export const I03C_LESSON: SpLesson = {
     items: [
       { id: 'maracas', label: 'the maraca player at the station', short: 'MARACAS', note: 'Standing at a percussion station with a pair — or singing at a vocal mic. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: louder than a pair of maracas, and close.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals a few metres away: an open overhead may hear them as strongly as the maracas.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals a few meters away: an open overhead may hear them as strongly as the maracas.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the maraca mic’s rejection, not its front, toward it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'vocal', label: 'a vocal microphone', short: 'VOCAL MIC', note: 'A singer — perhaps the maraca player — at a vocal mic: it hears the maracas, more when a head passes near it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       ...stageItems('the maracas', 'Room, ensemble or percussion mics may already carry the maracas; a spot is added only if they need their own level.'),
@@ -535,7 +535,7 @@ export const I03C_LESSON: SpLesson = {
     task: 'Name the heads as the sources, cover both arcs safely, justify one mic or two, and tell instrument, room, spill and gain problems apart — then make one live change without putting hardware in either arm’s path. With a real pair and the player’s agreement, you can record what you tried below.',
     fields: [
       { id: 'pair', label: 'Pair (heads, material)', kind: 'text' },
-      { id: 'mics', label: 'Mics', kind: 'choice', choices: ['one centred', 'a spot per head', 'none — other mics carry them'] },
+      { id: 'mics', label: 'Mics', kind: 'choice', choices: ['one centered', 'a spot per head', 'none — other mics carry them'] },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['small condenser', 'large condenser', 'dynamic', 'other'] },
       { id: 'zone', label: 'Distances you tried (about 40 and 80 cm)', kind: 'text' },
       { id: 'balance', label: 'Hand-to-hand balance', kind: 'text' },

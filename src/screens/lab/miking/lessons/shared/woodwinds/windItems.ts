@@ -58,7 +58,7 @@ export const bellOnlyCheck = (id: string, w: WindWords, page: SourcePageId = 'so
     prompt: `Why can one mic aimed only at ${w.end} make some notes boom and others thin out?`,
     options: [a, key, b],
     correct: key,
-    explain: `The lowest notes leave mainly from ${w.end}; most others leave from open holes up the body, and their sound changes with the fingering. A mic that sees only ${w.end} favours a few notes. Aim at the hole field, or back off so the parts blend.`,
+    explain: `The lowest notes leave mainly from ${w.end}; most others leave from open holes up the body, and their sound changes with the fingering. A mic that sees only ${w.end} favors a few notes. Aim at the hole field, or back off so the parts blend.`,
     why: {
       [a]: `${w.end.replace(/^the /, 'The ')} filters nothing out: most notes simply leave earlier, from the open holes.`,
       [b]: 'Distance changes the level and the blend, not which notes come from where.',
@@ -101,7 +101,7 @@ export const bellBoomSymptom = (id: string, w: WindWords): Symptom => {
     firstChecks: `Is the mic pointed mainly into ${w.end}? Aim toward the hole field, or add a little distance, and play the whole range.`,
     options: [a, key, b],
     correct: key,
-    explain: `The lowest notes leave mainly from ${w.end}; the rest from the open holes. A mic that sees only ${w.end} favours the low notes. Re-aim or back off, then replay the full phrase.`,
+    explain: `The lowest notes leave mainly from ${w.end}; the rest from the open holes. A mic that sees only ${w.end} favors the low notes. Re-aim or back off, then replay the full phrase.`,
     why: {
       [a]: 'EQ thins every note to fix a placement problem. Re-aim first.',
       [b]: 'The player’s dynamics are the music. The mic’s view is yours to change.',

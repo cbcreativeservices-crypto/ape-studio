@@ -174,7 +174,7 @@ describe('suspended metal: the physics the pictures draw', () => {
   it('chimes of one diameter: a bar half as long rings four times higher (two octaves)', () => {
     assert.ok(near(mm.chimePitchRatio(150, 300), 4) && near(mm.octaves(4), 2));
   });
-  it('the free disc: (2,0) lowest, (0,1) next; a stroke at the exact centre drives only ring-shaped shapes', () => {
+  it('the free disc: (2,0) lowest, (0,1) next; a stroke at the exact center drives only ring-shaped shapes', () => {
     assert.equal(mm.DISC_SHAPES[0].label, '(2,0)');
     assert.equal(mm.DISC_SHAPES[1].label, '(0,1)');
     for (const d of mm.DISC_SHAPES) {

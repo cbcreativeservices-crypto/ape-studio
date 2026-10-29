@@ -73,7 +73,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the place on the body, the fabric, the cable, the breath, the open mics, the radio path — before reaching for EQ or noise reduction.',
   },
   practice: {
@@ -627,7 +627,7 @@ export const B05_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A microphone the presenter wears: a lavalier clipped to the clothes on the chest, one hidden under them, or a headset with its capsule beside the mouth.', src: 'LESSON' },
-    { title: 'WHERE YOU MEET IT', text: 'Studio interviews and news, location shoots, talks and presentations on a stage, theatre — wherever a person moves, turns or needs both hands.', src: 'LESSON' },
+    { title: 'WHERE YOU MEET IT', text: 'Studio interviews and news, location shoots, talks and presentations on a stage, theater — wherever a person moves, turns or needs both hands.', src: 'LESSON' },
     { title: 'WHAT IT DOES', text: 'It keeps the voice usable while the person turns, reads, walks and changes posture — and fits the picture or the stage.', src: 'LESSON' },
     { title: 'NO SINGLE RIGHT PLACE', text: 'Different mics, clothes, voices and rooms call for different places. Begin with a centered, visible lav or a headset where its maker says, rehearse the real moves, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
   ],

@@ -220,7 +220,7 @@ function ZonesArt({ scene }: { scene: VenueScene }) {
 /*
  * Field numerals as glyph shapes (a few pixels tall on a phone: never text).
  * Each digit in its own 4 × 6 ft box (x right, y up from the bottom), drawn as
- * a 1 ft stroke on the centre line of the block numeral, square-ended.
+ * a 1 ft stroke on the center line of the block numeral, square-ended.
  */
 const DIGIT: Record<string, readonly (readonly [number, number])[][]> = {
   '0': [[[0.5, 0.5], [3.5, 0.5], [3.5, 5.5], [0.5, 5.5], [0.5, 0.5]]],

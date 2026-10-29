@@ -58,14 +58,14 @@ const FOOT_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 30, prov: ill('aimed at the holes: within 30°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.holes, N, 45, 250, 350),
-  tendency: 'A little more blend than the close spot — holes, bell and reed together — with more of the room and the neighbours.',
-  checks: ['The room and the neighbours at this distance', 'Quiet passages against the noise floor', 'The stand’s base clear of the feet'],
+  tendency: 'A little more blend than the close spot — holes, bell and reed together — with more of the room and the neighbors.',
+  checks: ['The room and the neighbors at this distance', 'Quiet passages against the noise floor', 'The stand’s base clear of the feet'],
 };
 
 const BELL_Z: Omit<DocumentedZone, 'start'> = {
   id: 'ob.bell',
   label: 'A few inches from the bell',
-  band: 'For a bright, isolated live sound: try a few centimetres from the bell (about 5–11 cm), a little off its axis — and play the whole range.',
+  band: 'For a bright, isolated live sound: try a few centimeters from the bell (about 5–11 cm), a little off its axis — and play the whole range.',
   kind: 'sourced',
   src: 'S-REC',
   quote: 'A few inches from bell — Bright — Minimizes feedback and leakage.',
@@ -96,8 +96,8 @@ const FRONT_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 25, prov: ill('aimed at the middle of the oboe: within 25°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.mid, FORWARD, 35, 600, 1200),
-  tendency: 'The whole oboe blended with the room — reed, holes and bell together, the keys falling back. More of the room and the neighbours come with it.',
-  checks: ['How much room and how many neighbours it hears', 'Quiet passages against the noise floor', 'The stand clear of the player’s sightline'],
+  tendency: 'The whole oboe blended with the room — reed, holes and bell together, the keys falling back. More of the room and the neighbors come with it.',
+  checks: ['How much room and how many neighbors it hears', 'Quiet passages against the noise floor', 'The stand clear of the player’s sightline'],
 };
 
 const CLIP_Z: Omit<DocumentedZone, 'start'> = {

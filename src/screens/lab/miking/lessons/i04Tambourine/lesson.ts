@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the arc toward the mic, the peaks, the instrument’s own rattles, spill and monitors — before EQ or filters.',
   },
   practice: {

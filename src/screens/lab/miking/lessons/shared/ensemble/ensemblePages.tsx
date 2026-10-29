@@ -111,7 +111,7 @@ const dbWords = (x: number) => `${Math.round(x)} dB`;
 /** One close mic's spill, in words (equal source levels, straight paths, no room). */
 export function spillWords(m: PlotReadout['mics'][number]): string {
   const w = m.worst;
-  if (!w) return `${m.label}: no neighbour on this stage.`;
+  if (!w) return `${m.label}: no neighbor on this stage.`;
   const pat = w.s.patternDb == null ? 'and it sits in the pattern’s null' : w.s.patternDb < 1 ? 'and it is in front of the mic — the pattern takes almost nothing off' : `and the pattern takes about ${dbWords(w.s.patternDb)} more`;
   return `${m.label}: its own source ${fmtDist(w.s.rOwn)} away; the ${w.label}, ${fmtDist(w.s.rOther)} — about ${dbWords(w.s.distanceDb)} lower by distance alone, ${pat}.`;
 }
@@ -451,7 +451,7 @@ export function EnsembleSetups(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eqRings} dims detail={!!sel.rig && ARRAYS[sel.rig.id].family !== 'single'} lobes={view !== 'plan'} focus={sel.focus} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
-        badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbour reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
+        badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbor reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
         bezel,
         params: [
           ...faderUnlessFew(list.length, {
@@ -690,7 +690,7 @@ export function EnsemblePlacement(p: PageProps) {
       },
       format: (v) => {
         const x = Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50;
-        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of ${front}` : `${fmtStage(-x)} behind it`) : x === 0 ? 'on the centre line' : `${fmtStage(Math.abs(x))} to the ${who}’s ${x < 0 ? 'left' : 'right'}`;
+        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of ${front}` : `${fmtStage(-x)} behind it`) : x === 0 ? 'on the center line' : `${fmtStage(Math.abs(x))} to the ${who}’s ${x < 0 ? 'left' : 'right'}`;
       },
       formatShort: () => (axis === 'h' ? fmtM(-c.y) : axis === 'z' ? fmtM(c.z) : fmtM(c.x)),
       chooser: { title: 'MOVE THE ARRAY', selectedId: axis, onSelect: (id) => setAxis(id as Axis), options: (['h', 'z', 'x'] as const).map((k) => ({ id: k, label: AX[k].label, blurb: AX[k].blurb })) },

@@ -86,7 +86,7 @@ export const HORN_ZONES: DocumentedZone[] = [
     draw: coneDraw(CENTRE, X, UP, 400, 800, 25, 65),
     start: poseAt(CENTRE, FRONT_UP, 600),
     tendency: 'The horn as the audience side hears it — softer, rounder and more blended, the room’s reflection part of the sound. In a dry or noisy room it can sound dull or distant.',
-    checks: ['The room is worth hearing', 'The player’s sight line to the music and the conductor', 'Where a figure-8’s side null points (a piano, a neighbour)'],
+    checks: ['The room is worth hearing', 'The player’s sight line to the music and the conductor', 'Where a figure-8’s side null points (a piano, a neighbor)'],
   },
   {
     id: 'hn.below',

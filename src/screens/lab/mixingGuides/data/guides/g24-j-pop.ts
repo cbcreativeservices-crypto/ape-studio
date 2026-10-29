@@ -24,7 +24,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "J-pop is music for identification and devotion: fans follow a singer, group or anime franchise for years, buy physical singles, learn every lyric, and treat concerts as communal celebrations. The words matter enormously—songs are tied to drama themes, anime storylines and commercials—so the audience expects to hear every syllable. The Japanese market demands a “big vocal” even over a huge backing track. Idol audiences participate actively: penlights coloured for each member, shouted “calls,” and rhythmic “mix” chants in intros and instrumental breaks, all traditionally avoided in slow, emotional songs. Anison crowds sing along to choruses and expect the record-exact sound of the TV opening. The fastest way to hear “that sounded wrong” is a vocal buried under guitars and synths, harsh sibilance, a dull or muffled top end, or a live show that sounds nothing like the bright, polished CD."
+      "text": "J-pop is music for identification and devotion: fans follow a singer, group or anime franchise for years, buy physical singles, learn every lyric, and treat concerts as communal celebrations. The words matter enormously—songs are tied to drama themes, anime storylines and commercials—so the audience expects to hear every syllable. The Japanese market demands a “big vocal” even over a huge backing track. Idol audiences participate actively: penlights colored for each member, shouted “calls,” and rhythmic “mix” chants in intros and instrumental breaks, all traditionally avoided in slow, emotional songs. Anison crowds sing along to choruses and expect the record-exact sound of the TV opening. The fastest way to hear “that sounded wrong” is a vocal buried under guitars and synths, harsh sibilance, a dull or muffled top end, or a live show that sounds nothing like the bright, polished CD."
     }
   ],
   "instruments": [
@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Hall shows typically run 92–98 dBA LAeq-15 at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighbourhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Hall shows typically run 92–98 dBA LAeq-15 at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighborhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",

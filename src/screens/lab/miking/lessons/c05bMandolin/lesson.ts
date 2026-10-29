@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the opening, the player’s movement, gain and polarity — before reaching for EQ.',
   },
   practice: {
@@ -136,7 +136,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic pointed straight into the opening from close up tends to hear what?',
     options: ['The whole instrument in a perfect, even balance', 'One local resonance, sometimes boomy or uneven', 'Only the pick, and none of the body'],
     correct: 'One local resonance, sometimes boomy or uneven',
-    explain: 'The body’s air breathes through the opening; close and straight in, a mic can favour one resonance. Treat it as an audition, not a start.',
+    explain: 'The body’s air breathes through the opening; close and straight in, a mic can favor one resonance. Treat it as an audition, not a start.',
     why: {
       'The whole instrument in a perfect, even balance': 'Close to one opening hears a small, uneven part, not the whole.',
       'Only the pick, and none of the body': 'Near the opening the body dominates, not the pick.',
@@ -146,8 +146,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'When does an omni near the neck junction make sense on a mandolin?',
-    options: ['Very close, for the most bass from proximity', 'On a loud stage, to keep all of the wedges out of it', 'In a quiet, favourable room where its sound is welcome'],
-    correct: 'In a quiet, favourable room where its sound is welcome',
+    options: ['Very close, for the most bass from proximity', 'On a loud stage, to keep all of the wedges out of it', 'In a quiet, favorable room where its sound is welcome'],
+    correct: 'In a quiet, favorable room where its sound is welcome',
     explain: 'An omni hears all round: a natural view of the mandolin and the room. Choose it because the room is good, not to fight spill.',
     why: {
       'On a loud stage, to keep all of the wedges out of it': 'An omni rejects nothing: on a loud stage it hears the wedges too.',
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why record the exact capsule position on a mandolin?',
     options: ['It is required before a mic is allowed to be switched on', 'The mandolin will not sound right a second time', 'Small moves change a small instrument’s balance a lot'],
     correct: 'Small moves change a small instrument’s balance a lot',
-    explain: 'A few centimetres on a small body is a large change of view. Record the distance, aim, pattern and posture so a good position can be found again.',
+    explain: 'A few centimeters on a small body is a large change of view. Record the distance, aim, pattern and posture so a good position can be found again.',
     why: {
       'It is required before a mic is allowed to be switched on': 'It is not a rule for switching on; it is how you repeat a good result.',
       'The mandolin will not sound right a second time': 'It will — if you can find the same position again. That is the point.',
@@ -210,7 +210,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A quiet studio, a solo mandolin, a lot of room sound. When is a cardioid the better choice than an omni?',
     options: ['Whenever the mandolin is an F-style instrument', 'When reflections or other players intrude', 'When the room is quiet and sounds good'],
     correct: 'When reflections or other players intrude',
-    explain: 'A cardioid gives more isolation when the room or neighbours intrude; an omni suits a quiet, favourable room.',
+    explain: 'A cardioid gives more isolation when the room or neighbors intrude; an omni suits a quiet, favorable room.',
     why: {
       'Whenever the mandolin is an F-style instrument': 'The style does not decide it; the room and the spill do.',
       'When the room is quiet and sounds good': 'That is where an omni shines. A cardioid helps when the room intrudes.',
@@ -257,7 +257,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the capsule aimed straight into an opening? Move off it or back slightly; compare in context.',
     options: ['Boost the treble until the boom is masked by it', 'Move closer to the opening to hear it clearly', 'Move off the opening, or back a little, and compare'],
     correct: 'Move off the opening, or back a little, and compare',
-    explain: 'Straight into an opening favours one resonance. Move off it, then judge in context.',
+    explain: 'Straight into an opening favors one resonance. Move off it, then judge in context.',
     why: {
       'Boost the treble until the boom is masked by it': 'EQ hides it without fixing it. Move first.',
       'Move closer to the opening to hear it clearly': 'Closer makes that one resonance stronger still.',
@@ -302,7 +302,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument dynamic about 20 cm from the oval hole, a little off it', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for boom.' },
       { id: 'c', label: 'Small omni condenser at the neck junction', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
       { id: 'd', label: 'Clip-on mini between the joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
-      { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Do not push a mic into an opening: it favours one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
+      { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Do not push a mic into an opening: it favors one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking arc, the fretting hand and the player’s turn'), POWER_REASON, { id: 'r.record', label: 'I will note the exact position so I can find it again', role: 'optional', feedback: 'A fair reason on a small instrument.' }, brandReason(MANDO), LOUD_REASON],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point, clear of the player, powered by what this input can supply.',
@@ -417,10 +417,10 @@ export const C05B_LESSON: Lesson = {
       { id: 'vocal', label: 'the vocal mic (a singing player)', short: 'VOCAL MIC', note: 'Above the mandolin, in front of the mouth. The voice reaches the mandolin mic and the mandolin the vocal mic: plan both.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'shared', label: 'a shared band mic', short: 'SHARED MIC', note: 'A bluegrass band may share a front mic, stepping in for solos — choreography, restrained monitors and a kind room.', prov: { kind: 'illustrative', reason: 'a typical bluegrass stage' }, tag: 'ENSEMBLE', scene: 'stage' },
       { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Wedges and overlapping mics can color the sound and cut isolation.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'the band: bass and drums', short: 'BAND', note: 'Upstage; in a bluegrass band the banjo and guitar are close neighbours too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
+      { id: 'band', label: 'the band: bass and drums', short: 'BAND', note: 'Upstage; in a bluegrass band the banjo and guitar are close neighbors too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
-      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet, favourable studio room an omni can present the mandolin naturally; in a busy one, a cardioid isolates it.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
+      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet, favorable studio room an omni can present the mandolin naturally; in a busy one, a cardioid isolates it.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a wedge in front, the band round the player, the PA facing out — or a shared mic. A close directional mic, a clip or a pickup gives control.',
     studio: 'STUDIO: no wedges, repeated trials when the player stops, and a room that can be part of the sound.',

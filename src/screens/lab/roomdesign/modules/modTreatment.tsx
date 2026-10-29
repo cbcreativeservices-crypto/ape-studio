@@ -308,7 +308,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
               <Text style={styles.line}>
                 {sel.kind === 'diffuser'
                   ? `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}. ${fmtLen(sel.thickness, units, { small: true })} deep: diffuses down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))} — scattered, not absorbed, so the RT60 barely moves (mid ≈ ${fmtS(mid(withSel.rt60))}).`
-                  : `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${fmtS(mid(withSel.rt60))}; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${fmtS(mid(withoutSel.rt60))}. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}${sel.kind === 'rug' ? '. A rug is modelled at one thickness (pile with underlay), so it has SIZE but no THICK' : ` · works down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))}`}.`}
+                  : `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${fmtS(mid(withSel.rt60))}; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${fmtS(mid(withoutSel.rt60))}. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}${sel.kind === 'rug' ? '. A rug is modeled at one thickness (pile with underlay), so it has SIZE but no THICK' : ` · works down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))}`}.`}
               </Text>
             ) : null}
             <Text style={styles.safety}>{`Safety: ${TREATMENT_INFO[sel.kind].safety}`}</Text>
@@ -319,7 +319,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       }
     >
       <Body>
-        Treatment is bought in square metres that actually absorb, at the frequencies that need it. A thin panel absorbs the highs anywhere; only thickness — or a corner, where every mode has its pressure maximum — reaches the bass. The first-reflection points are where the mids and highs need help; the corners are where the bass does; the ceiling over the desk is both.
+        Treatment is bought in square meters that actually absorb, at the frequencies that need it. A thin panel absorbs the highs anywhere; only thickness — or a corner, where every mode has its pressure maximum — reaches the bass. The first-reflection points are where the mids and highs need help; the corners are where the bass does; the ceiling over the desk is both.
       </Body>
       <Body>
         Compare, don't cover: a room with every wall absorbed is fatiguing and makes mixes sound dry everywhere else. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed, if there is room for one.

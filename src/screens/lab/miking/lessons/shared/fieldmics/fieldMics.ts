@@ -142,7 +142,7 @@ export const FIELD_MIC_TYPES: Record<string, MicType> = {
     mount: 'surface',
     examples: [{ model: 'a contact transducer on a dry container wall', fact: 'F04 L28: structure-borne vibration, a distinct path. Shown as a card only.', src: 'ASE-ELEM' }],
     art: 'boundary',
-    blurb: 'A sensor that touches a dry surface and hears the vibration IN that surface — the container wall, a board — not the air. A third path, kept on its own labelled track.',
+    blurb: 'A sensor that touches a dry surface and hears the vibration IN that surface — the container wall, a board — not the air. A third path, kept on its own labeled track.',
   },
 };
 

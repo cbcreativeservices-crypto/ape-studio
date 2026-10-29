@@ -1389,13 +1389,13 @@ export function RtaScreen({ navigation }: Props) {
       valueLabel: `${colorsOn ? 'MIDI' : rtaColor ? 'CUST' : 'LED'}${pianoOn ? '·♪' : ''}`,
       render: () => (
         <View style={styles.trayCol}>
-          <Text style={styles.trayHead}>BAR COLOURS</Text>
+          <Text style={styles.trayHead}>BAR COLORS</Text>
           <View style={styles.trayRow}>
             <Chip
               label="COLORS"
               active={colorsOn}
               onPress={() => setColorsOn(!colorsOn)}
-              a11yLabel="Toggle MIDI level colours on the display"
+              a11yLabel="Toggle MIDI level colors on the display"
             />
             {/* Custom bar colour — discreet wheel, member-gated (owner rule
                 2026-08-20). Gating lives inside ColorWheelButton, unchanged. */}
@@ -1409,9 +1409,9 @@ export function RtaScreen({ navigation }: Props) {
                 // ramp otherwise overrides the flat colour.
                 if (c) setColorsOn(false);
               }}
-              accessibilityLabel="RTA bar colour"
-              feature="the RTA bar colour"
-              pickerTitle="RTA BAR COLOUR"
+              accessibilityLabel="RTA bar color"
+              feature="the RTA bar color"
+              pickerTitle="RTA BAR COLOR"
               subtitle="The spectrum bars, when COLORS is off"
               renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
               defaultSwatchColor={WAVE_COLOR_SWATCHES[0]}
@@ -1473,9 +1473,9 @@ export function RtaScreen({ navigation }: Props) {
               setRtaColor(c);
               if (c) setColorsOn(false); // a custom colour must show (owner 2026-08-21)
             }}
-            accessibilityLabel="RTA bar colour"
-            feature="the RTA bar colour"
-            pickerTitle="RTA BAR COLOUR"
+            accessibilityLabel="RTA bar color"
+            feature="the RTA bar color"
+            pickerTitle="RTA BAR COLOR"
             subtitle="The spectrum bars, when COLORS is off"
             renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
             defaultSwatchColor={WAVE_COLOR_SWATCHES[0]}
@@ -1542,7 +1542,7 @@ export function RtaScreen({ navigation }: Props) {
         )}
         {estimatedBelowHz != null && (
           <Text style={styles.grayNote}>
-            {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse (HI-RES sharpens it)`}
+            {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbors share a reading — the rumble is real, the exact pitch is coarse (HI-RES sharpens it)`}
           </Text>
         )}
 

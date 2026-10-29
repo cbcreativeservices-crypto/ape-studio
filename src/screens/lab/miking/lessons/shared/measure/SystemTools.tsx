@@ -249,7 +249,7 @@ export function useWindowStep({ words, onDone }: { words: WindowWords; onDone: (
     { k: 'INSIDE', v: `${inside.length} of ${arr.length}`, sub: inside.length === 1 ? 'direct only' : 'with reflections', flex: 1 },
   ];
   const maxMs = T + direct.ms > 30 ? 60 : 30;
-  const a11y = `The arrivals at a mic 2 metres out on the loudspeaker’s axis: the direct sound at ${direct.ms.toFixed(2)} milliseconds, then the floor, the ceiling and a side wall. A ${T} millisecond window from the direct sound lets in ${inside.length} of ${arr.length} arrivals and resolves frequency steps of about ${fmtHz(res)}.`;
+  const a11y = `The arrivals at a mic 2 meters out on the loudspeaker’s axis: the direct sound at ${direct.ms.toFixed(2)} milliseconds, then the floor, the ceiling and a side wall. A ${T} millisecond window from the direct sound lets in ${inside.length} of ${arr.length} arrivals and resolves frequency steps of about ${fmtHz(res)}.`;
   const colorOf = (a: Arrival) => (a.direct ? AMBER : inside.includes(a) ? BLUE : '#7b7f8a');
   return {
     key: 'window',

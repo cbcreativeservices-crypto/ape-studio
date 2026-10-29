@@ -262,7 +262,7 @@ const delayConfig: FxLabConfig = {
     'spacing = delay time, shrinking height = feedback, sides = ping-pong.',
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
-    'Display: each click (grey) crosses the stage and its repeats follow it out — the gap is the delay TIME, each ' +
+    'Display: each click (gray) crosses the stage and its repeats follow it out — the gap is the delay TIME, each ' +
     'repeat smaller by the FEEDBACK. The ruler under OUT counts seconds since the stage. Use the CLICK source: a ' +
     'steady tone or noise hides its repeats.',
   sources: [srcClick(90), SRC_PINK, srcSine(220)],
@@ -380,7 +380,7 @@ const reverbConfig: FxLabConfig = {
     'decay: RT60 is WHERE the slope crosses −60 dB — a time, not an amount.',
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
-    'Display: level in decibels (dashed guides 30 dB apart), so a decay is a straight slope. Each click (grey) crosses the stage; after the ' +
+    'Display: level in decibels (dashed guides 30 dB apart), so a decay is a straight slope. Each click (gray) crosses the stage; after the ' +
     'pre-delay gap the reverb (amber) arrives and falls 60 dB in RT60 — a longer RT60 is a gentler slope, and the ' +
     'tails pile up into a wash. OUT redraws from the left each time a click reaches the stage; its ruler counts seconds since then.',
   // The burst names its pitch: the generator keeps the LAST frequency any lab
@@ -509,7 +509,7 @@ const chorusConfig: FxLabConfig = {
   // the comb graph, not the display above it, and named a CENTER control this
   // lab does not have (its delay key is DELAY).
   exploreCaption:
-    'Display: grey = your voice, blue = the delayed copy, the bold glowing line = what you hear (the two mixed; ' +
+    'Display: gray = your voice, blue = the delayed copy, the bold glowing line = what you hear (the two mixed; ' +
     'its color shows its level). As the slow wobble (the LFO) drifts the delay, the copy slides and the sum swells ' +
     'and thins — that movement is the chorus.',
   sources: [srcSine(440), SRC_PINK],
@@ -591,7 +591,7 @@ const chorusConfig: FxLabConfig = {
       ? '100% wet removes the dry voice — nothing left to beat against: that is vibrato, not chorus.'
       : `~${v[P.centerMs]} ms voice → notches every ${Math.round(1000 / v[P.centerMs])} Hz — too fine to hear as a comb; you hear the BEATING instead. ` +
         'Amber = the comb now, dashed = where the LFO sweeps it; higher up the notches are closer than the screen can draw, so they fill a band. ' +
-        'With the SINE source the grey line marks its 440 Hz, which swells and dips as the notches pass it.',
+        'With the SINE source the gray line marks its 440 Hz, which swells and dips as the notches pass it.',
   checks: [
     {
       question: 'At 100% WET the chorus stops sounding like a chorus. Why?',
@@ -632,7 +632,7 @@ const flangerConfig: FxLabConfig = {
     'spacing is 1/delay. The LFO moves the delay, so every notch sweeps together — the jet.',
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
-    'Display: two spectrum analysers — the noise going in, and coming out with the flanger’s evenly spaced notches ' +
+    'Display: two spectrum analyzers — the noise going in, and coming out with the flanger’s evenly spaced notches ' +
     'sweeping as the LFO moves the delay (that sweep is the jet). Dotted line = the input, for comparison.',
   sources: [SRC_PINK, SRC_WHITE],
   fixed: [{ paramId: P.modMode, value: 1 }],

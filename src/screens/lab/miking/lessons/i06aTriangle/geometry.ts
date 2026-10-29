@@ -131,7 +131,7 @@ export const TRI_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: BOTH },
     start: approachPose(P0, N, SIDE_DIR, 370, 28),
     dA: [10, 45],
-    tendency: 'More of the direct attack and less of the room or the neighbours. Listen for an exaggerated metallic tick on strong strokes — and check the soft strokes and the cutoff too.',
+    tendency: 'More of the direct attack and less of the room or the neighbors. Listen for an exaggerated metallic tick on strong strokes — and check the soft strokes and the cutoff too.',
     checks: ['The beater’s whole path and the damping hand', 'Light stroke, strong stroke, roll and cutoff', 'No clipping on the strongest stroke'],
   }),
   z({
@@ -145,8 +145,8 @@ export const TRI_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: BOTH },
     start: approachPose(P0, N, SIDE_DIR, 525, 28),
     dA: [10, 45],
-    tendency: 'The attack and the ring more blended, with more of the room — and less isolation from the neighbours. Compare it with the closer spot at matched level.',
-    checks: ['Matched level when you compare', 'The ring and the room together', 'Spill from louder neighbours'],
+    tendency: 'The attack and the ring more blended, with more of the room — and less isolation from the neighbors. Compare it with the closer spot at matched level.',
+    checks: ['Matched level when you compare', 'The ring and the room together', 'Spill from louder neighbors'],
   }),
   z({
     id: 'tri.C',

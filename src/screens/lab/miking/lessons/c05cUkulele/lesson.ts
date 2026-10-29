@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the strumming hand, the voice, gain and polarity — before reaching for EQ.',
   },
   practice: {
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Soprano, concert, tenor and baritone ukuleles — do they behave alike for a mic?',
     options: ['Alike: a ukulele is a ukulele, whatever its size', 'Alike, as long as they all use nylon strings', 'Not necessarily: sizes and tunings differ'],
     correct: 'Not necessarily: sizes and tunings differ',
-    explain: 'Body sizes, scale lengths, tunings and where the neck joins all differ. Use the player’s instrument, not a memorised position.',
+    explain: 'Body sizes, scale lengths, tunings and where the neck joins all differ. Use the player’s instrument, not a memorized position.',
     why: {
       'Alike: a ukulele is a ukulele, whatever its size': 'The sizes differ in body, scale and tuning — enough to change what a mic hears.',
       'Alike, as long as they all use nylon strings': 'Strings are one factor; body and scale differ too.',
@@ -136,7 +136,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic very close to the sound hole tends to hear what?',
     options: ['The whole ukulele in a perfect, even balance', 'One local low-mid resonance, and less of the strings', 'Mostly the fingers on the fretboard, up near the nut'],
     correct: 'One local low-mid resonance, and less of the strings',
-    explain: 'Very close to the hole favours one local resonance and underrepresents the strings and the top.',
+    explain: 'Very close to the hole favors one local resonance and underrepresents the strings and the top.',
     why: {
       'The whole ukulele in a perfect, even balance': 'Close to one spot hears a small part, not the whole.',
       'Mostly the fingers on the fretboard, up near the nut': 'That would be a mic near the neck. Over the hole, the body’s air dominates.',
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A condenser is one property among several. Pattern, response, placement and the room decide what you hear.',
     why: {
       'It does: condensers are more detailed than the other mic types': 'Mics differ model by model. Choose by properties and listening.',
-      'It does, as long as it is placed right at the sound hole': 'Right at the hole favours one resonance. Placement is the bigger question.',
+      'It does, as long as it is placed right at the sound hole': 'Right at the hole favors one resonance. Placement is the bigger question.',
     },
   },
   ...micChecks(P, UKE),
@@ -245,7 +245,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic close and aimed straight into the hole? Move toward the upper body or back; compare the lowest notes.',
     options: ['Boost the treble until the boom is masked by it', 'Move toward the upper body or back; compare low notes', 'Move even closer in to the sound hole to find it'],
     correct: 'Move toward the upper body or back; compare low notes',
-    explain: 'Close and straight into the hole favours one resonance. Change the view first.',
+    explain: 'Close and straight into the hole favors one resonance. Change the view first.',
     why: {
       'Boost the treble until the boom is masked by it': 'EQ hides it without fixing it.',
       'Move even closer in to the sound hole to find it': 'Closer makes that one resonance stronger.',
@@ -287,7 +287,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small condenser, cardioid, 20–40 cm from the neck joint, off the strumming arc, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the hands, its rejection toward the wedge.' },
       { id: 'b', label: 'Instrument dynamic at the upper body, close end of the band, clear of the vocal mic', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
       { id: 'c', label: 'Clip-on mini on a clip whose range fits the measured body', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the player — with the owner’s OK.' },
-      { id: 'd', label: 'Small condenser pushed into the sound hole for the most level', ok: false, power: 'phantom', feedback: 'Do not push a mic into the hole: it favours one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
+      { id: 'd', label: 'Small condenser pushed into the sound hole for the most level', ok: false, power: 'phantom', feedback: 'Do not push a mic into the hole: it favors one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
       { id: 'e', label: 'Rely on the vocal mic’s bleed as the ukulele’s only mic', ok: false, power: 'phantom', feedback: 'A vocal mic’s bleed is not a reliable dedicated ukulele mic.' },
     ],
     reasons: [DOC_REASON, clearReason('the strumming arc, the fretting hand and the vocal mic'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(UKE), LOUD_REASON],

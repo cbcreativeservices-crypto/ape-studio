@@ -25,7 +25,7 @@ export const A05A_ART: LessonArt = makeSaxLessonArt(SOPRANO_SAX, {
     nearA11y: 'A soprano player from above, the straight horn pointing forward, the horn’s swing hatched round the bell; a music stand in front, an alto player on one side and a tenor on the other, the drum kit behind.',
     wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
     nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a soprano mic. There is nothing to answer yet.',
-    nearIdle: 'The soprano points forward and down from the player’s mouth; the whole horn swings as they move, and the hands never leave the keys. Everything else is a neighbour a soprano mic will hear.',
+    nearIdle: 'The soprano points forward and down from the player’s mouth; the whole horn swings as they move, and the hands never leave the keys. Everything else is a neighbor a soprano mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and a loud band all reach a soprano mic.',
     studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the soprano plays in a group — are part of the picture now.',
     before: saxBefore('soprano'),

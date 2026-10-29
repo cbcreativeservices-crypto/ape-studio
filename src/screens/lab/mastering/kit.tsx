@@ -272,7 +272,7 @@ export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro 
       {intro ? <Body>{intro}</Body> : null}
       <View style={styles.deckBar}>
         <Text style={styles.deckCount}>{`CARD ${i + 1} OF ${n}`}</Text>
-        <Text style={styles.deckRule}>Your FIRST answer on each card is the one recorded. A retry is explained, never penalised.</Text>
+        <Text style={styles.deckRule}>Your FIRST answer on each card is the one recorded. A retry is explained, never penalized.</Text>
       </View>
       {scenarios.map((s, k) => (
         <View key={s.id} style={k === i ? null : styles.hidden} accessibilityElementsHidden={k !== i} importantForAccessibility={k === i ? 'auto' : 'no-hide-descendants'}>

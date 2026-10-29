@@ -55,10 +55,10 @@ export const CRASH_MODEL: InstrumentModel = cymbalModel({
   ],
   regions: [
     { id: 'r.edge1', partId: 'crash.edge', label: 'the stick on the edge', anchor: STRIKE1, prov: areas, variants: ['crash1'], note: 'A glancing blow on the edge: the crash’s attack starts here.' },
-    { id: 'r.bell1', partId: 'crash.bell', label: 'the bell', anchor: at(C1, 0, TH1, C1.spec.rise.mm), prov: ill('the bell'), variants: ['crash1'], note: 'The raised centre, held by the felts.' },
+    { id: 'r.bell1', partId: 'crash.bell', label: 'the bell', anchor: at(C1, 0, TH1, C1.spec.rise.mm), prov: ill('the bell'), variants: ['crash1'], note: 'The raised center, held by the felts.' },
     { id: 'r.tom1', partId: 'kit.tom1', label: 'the 10 in tom below', anchor: TOM1.c, prov: ill('the shared 5-piece kit'), variants: ['crash1'], note: 'The tom under the crash: the drum a crash mic aimed down hears most.' },
     { id: 'r.edge2', partId: 'crash.edge', label: 'the stick on the edge', anchor: STRIKE2, prov: areas, variants: ['crash2'], note: 'A glancing blow on the edge: the crash’s attack starts here.' },
-    { id: 'r.bell2', partId: 'crash.bell', label: 'the bell', anchor: at(C2, 0, TH2, C2.spec.rise.mm), prov: ill('the bell'), variants: ['crash2'], note: 'The raised centre, held by the felts.' },
+    { id: 'r.bell2', partId: 'crash.bell', label: 'the bell', anchor: at(C2, 0, TH2, C2.spec.rise.mm), prov: ill('the bell'), variants: ['crash2'], note: 'The raised center, held by the felts.' },
     { id: 'r.tom2', partId: 'kit.tom2', label: 'the 12 in tom below', anchor: TOM2.c, prov: ill('the shared 5-piece kit'), variants: ['crash2'], note: 'The tom under the crash: the drum a crash mic aimed down hears most.' },
   ],
   boomOut: { x: 1, y: 0, z: 0 },

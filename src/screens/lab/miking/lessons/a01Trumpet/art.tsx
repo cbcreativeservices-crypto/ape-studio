@@ -68,7 +68,7 @@ export const A01_ART: LessonArt = {
       },
       mutes: {
         trumpet: {
-          straight: 'A cone held in the bell by cork strips: a thinner, more nasal color, quieter, and it reaches a few centimetres past the rim.',
+          straight: 'A cone held in the bell by cork strips: a thinner, more nasal color, quieter, and it reaches a few centimeters past the rim.',
           cup: 'A straight mute with a cup facing back at the bell: darker and softer — and the cup reaches farther past the rim than the open bell.',
           harmon: 'A bulb sealed in the bell with a stem through it: a buzzy, focused tone that comes out of the stem and its cup — close to the sound’s new source.',
           plunger: 'A rubber cup the left hand moves in front of the bell, opening and closing for the “wah”. The hand and the cup move all the time: nothing goes in their way.',
@@ -91,7 +91,7 @@ export const A01_ART: LessonArt = {
       nearA11y: 'A trumpet player from above, the bell pointing right toward the audience: a music stand to the left, a second trumpet and a trombone beside, a singer at a mic in front and to the left, the drum kit behind.',
       wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge for the singer, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trumpet mic. There is nothing to answer yet.',
-      nearIdle: 'The bell points out toward the audience — and wherever the player turns. The valve hands work all the time. Everything else is a neighbour a trumpet mic will hear — or a person the bell can blast.',
+      nearIdle: 'The bell points out toward the audience — and wherever the player turns. The valve hands work all the time. Everything else is a neighbor a trumpet mic will hear — or a person the bell can blast.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front, and the singer’s. Monitors, the PA and a loud band all reach a trumpet mic.',
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the trumpet plays in a section — are part of the picture now.',
       before: [

@@ -66,11 +66,11 @@ export const B13_ZONES: DocumentedZone[] = [
     [0.9, 1.6],
     'Aimed detail from a closer permitted place. Off its axis the tone changes and higher frequencies fade first; it does not zoom.',
     ['The mark approved, nothing in a route', 'The axis on the target, the PA and crowd off it', 'The suspension and wind cover working'],
-    'Start the fixed shotgun at approximately 1.2 metres capsule height only if that mount is approved (L136); A (15, 4) 10.0 m 0° (L125–L127)',
+    'Start the fixed shotgun at approximately 1.2 meters capsule height only if that mount is approved (L136); A (15, 4) 10.0 m 0° (L125–L127)',
   ),
   shotgunZone('fd.sg.B', 'At mark M, the shotgun on B', 'The same mark, re-aimed 32° to the left at B, about 18.9 m away. Keep the gain fixed within the distance sequence.', 'B', [18300, 19600], PF.hHigh, [0.9, 1.6], 'Farther and turned: quieter, more of the place, the tone changing with the angle. Moving the aim is not moving closer.', ['The new aim logged', 'The same gain as at A', 'What else now sits on the axis'], 'B (5, 10) 18.9 m 32 degrees left (L128–L131); repeat at B and C (L142)'),
   shotgunZone('fd.sg.C', 'At mark M, the shotgun on C', 'The same mark on C, about 24 m straight ahead.', 'C', [23400, 24700], PF.hHigh, [0.9, 1.6], 'The farthest target: much more background against the target. Raising the gain raises both.', ['The same gain as at A', 'Target against background at similar loudness', 'Repeat A to check'], 'C (15, 18) 24.0 m 0 degrees (L132–L135)'),
-  shotgunZone('fd.sg.low', 'Lower at M, on A', 'An idea to try: the capsule about 0.6 m up, re-aimed at A — the support kept out of the source path.', 'A', [9500, 10700], PF.hLow, [0.4, 0.8], 'Low may favour shoe or ball detail and grass noise; it is also easier to strike. Height is a trial, not a rule.', ['Re-aimed at the same source', 'The support out of the path', 'Splash and grass noise'], 'compare the shotgun near 1.2 metres and approximately 0.6 metres capsule height, with the axis re-aimed at the same source (L143)'),
+  shotgunZone('fd.sg.low', 'Lower at M, on A', 'An idea to try: the capsule about 0.6 m up, re-aimed at A — the support kept out of the source path.', 'A', [9500, 10700], PF.hLow, [0.4, 0.8], 'Low may favor shoe or ball detail and grass noise; it is also easier to strike. Height is a trial, not a rule.', ['Re-aimed at the same source', 'The support out of the path', 'Splash and grass noise'], 'compare the shotgun near 1.2 meters and approximately 0.6 meters capsule height, with the axis re-aimed at the same source (L143)'),
   {
     id: 'fd.dish.A',
     label: 'The dish at M, on A',
@@ -181,7 +181,7 @@ export const B13_SETUPS: SportSetup[] = [
     title: 'The shotgun lower, at about 0.6 m',
     type: 'the same short shotgun, re-aimed at A',
     start: 'At M, the capsule about 0.6 m up, re-aimed at the same source; the support out of the source path.',
-    line: 'Low may favour shoe or ball detail — and grass noise, splash and strikes. Height is a trial.',
+    line: 'Low may favor shoe or ball detail — and grass noise, splash and strikes. Height is a trial.',
     mics: [m('sgl', 'shotgun', 'shotgun, lower', PF.M, PF.hLow, PF.A, SPEECH_H, 'shotgun')],
   },
   {

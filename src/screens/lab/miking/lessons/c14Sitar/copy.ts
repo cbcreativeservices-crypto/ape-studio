@@ -33,7 +33,7 @@ const base = stringsCopy({
   coupledNote: 'The board bows in and out round the bridge over the gourd’s air — a simplified picture of the lowest motion. A close mic hears the part of the board, the bridge or the neck it faces most.',
   setting: {
     kitA11y: 'The sitar player from above, seated on a rug: the gourd on the left foot, the neck rising to the left past the shoulder; the tabla player beside, a tanpura player behind.',
-    kitIdle: 'The space round a seated sitar player is theirs: the mizrab hand over the board, the left hand travelling a long neck and pulling strings sideways for bends, the gourd on the foot, the crossed legs, and their view.',
+    kitIdle: 'The space round a seated sitar player is theirs: the mizrab hand over the board, the left hand traveling a long neck and pulling strings sideways for bends, the gourd on the foot, the crossed legs, and their view.',
     leftHanded: 'A left-handed player holds the sitar mirrored: the neck rises the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A concert stage from above: the sitar player on a rug with a floor wedge in front, the tabla beside, a tanpura behind, the PA at the front corners and the audience edge.',
     studioA11y: 'A studio room from above: the sitar player on a rug, no monitors on the floor, the walls round them.',
@@ -66,7 +66,7 @@ const base = stringsCopy({
       { title: 'ONE MIC FIRST', text: 'Live, begin with one directional mic toward the bridge and the board, at the safest useful distance. Close helps the sitar stand out from the stage — but the monitors and the sitar’s own body still limit the level before feedback.' },
       { title: 'THE TABLA', text: 'The tabla beside the sitar reaches its mic from the side. Turning the mic changes the sitar’s tone too: distance, balance and the tabla’s own mics do more than a null.' },
       { title: 'STUDIO', text: 'Build the sound with one mic, then compare a farther view or a pair if the room supports the music. Judge the quiet opening and the decay, not only the strong strokes.' },
-      { title: 'A PICKUP', text: 'If one air mic cannot give the level the stage needs, a pickup can be a separately labelled path or blend — checked for its own fitting and input.' },
+      { title: 'A PICKUP', text: 'If one air mic cannot give the level the stage needs, a pickup can be a separately labeled path or blend — checked for its own fitting and input.' },
     ],
     body: 'With a wedge in front, a pattern’s rejection is a tool to aim — and patterns often reject least at low frequencies.',
     studioId: 'st.ctx.studio',

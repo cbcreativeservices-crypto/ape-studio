@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'The target and its surroundings',
-    goal: 'See how a few metres toward the target — never past its setback — and away from a brook change the call against its background, and why no mic makes distance disappear.',
+    goal: 'See how a few meters toward the target — never past its setback — and away from a brook change the call against its background, and why no mic makes distance disappear.',
     credit: { scenarios: ['wl.snd.1', 'wl.snd.2', 'wl.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Position chooses the balance: the quietest permitted spot helps more than any gain. A directional mic changes the balance; it never removes the distance.',
   },
@@ -60,12 +60,12 @@ const pages: LessonPages = {
     title: 'A moving flock',
     goal: 'Move a flock across a field and compare a shotgun held still, a shotgun re-aimed smoothly and a wide omni — and keep a focused channel and a habitat channel apart.',
     credit: { scenarios: ['wl.two.1', 'wl.two.2', 'wl.two.3', 'wl.two.4'], interactive: 'flockScrubbed', note: 'Move the flock across the field, and answer the four checks.' },
-    takeaway: 'A fixed narrow mic loses a moving flock off its axis; a smooth re-aim keeps it; a wide mic gives steadier coverage with less isolation. A focused channel and a habitat channel are two labelled paths.',
+    takeaway: 'A fixed narrow mic loses a moving flock off its axis; a smooth re-aim keeps it; a wide mic gives steadier coverage with less isolation. A focused channel and a habitat channel are two labeled paths.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the aim, the position, the wind protection and the handling first. Never cross the setback ring, and never chase a lost target with gain.',
   },
   practice: {
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The bowl gathers sound to the focus: acoustic concentration, not preamp gain — and only where the wavelength is shorter than the dish.',
     why: {
       'Electrical gain in the capsule': 'The capsule is an ordinary mic: the bowl does the concentrating.',
-      'A filter that boosts the highs': 'No filter: the bowl’s size against the wavelength favours the highs.',
+      'A filter that boosts the highs': 'No filter: the bowl’s size against the wavelength favors the highs.',
     },
   },
   {
@@ -263,11 +263,11 @@ const scenarios: MikingScenario[] = [
     id: 'wl.ctx.2',
     page: 'context',
     prompt: 'For a nature film, after cleaning up a call, you keep…',
-    options: ['The raw take, and a labelled cleaned copy', 'Only the cleaned copy, kept as the original', 'Only the loudest part of the call'],
-    correct: 'The raw take, and a labelled cleaned copy',
+    options: ['The raw take, and a labeled cleaned copy', 'Only the cleaned copy, kept as the original', 'Only the loudest part of the call'],
+    correct: 'The raw take, and a labeled cleaned copy',
     explain: 'Keep the unaltered original; label any processed version, with the species or its uncertainty and the place.',
     why: {
-      'Only the cleaned copy, kept as the original': 'A processed copy is not the original: keep both, labelled.',
+      'Only the cleaned copy, kept as the original': 'A processed copy is not the original: keep both, labeled.',
       'Only the loudest part of the call': 'The whole raw take keeps the context and the evidence.',
     },
   },
@@ -323,12 +323,12 @@ const scenarios: MikingScenario[] = [
     id: 'wl.two.3',
     page: 'twoMic',
     prompt: 'A shotgun on the bird and an omni for the habitat. How are they kept?',
-    options: ['As two labelled channels', 'Summed at once into one', 'The omni deleted later on'],
-    correct: 'As two labelled channels',
+    options: ['As two labeled channels', 'Summed at once into one', 'The omni deleted later on'],
+    correct: 'As two labeled channels',
     explain: 'They are two paths with two jobs: label each, blend later if the scene needs it, and keep the raw focused take.',
     why: {
       'Summed at once into one': 'Summing at once removes the choice later — and the two hear different things.',
-      'The omni deleted later on': 'The habitat channel may be what the scene needs: keep it labelled.',
+      'The omni deleted later on': 'The habitat channel may be what the scene needs: keep it labeled.',
     },
   },
   {
@@ -361,7 +361,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify adding a wide habitat channel?',
     options: ['The surroundings matter to the scene', 'More channels will sound better', 'The focused take is too quiet'],
     correct: 'The surroundings matter to the scene',
-    explain: 'A habitat channel earns its place when the place matters to the deliverable — labelled as such.',
+    explain: 'A habitat channel earns its place when the place matters to the deliverable — labeled as such.',
     why: {
       'More channels will sound better': 'More channels are more to manage: add one for a reason.',
       'The focused take is too quiet': 'Level is fixed by position and gain, not by another channel.',
@@ -455,10 +455,10 @@ const symptoms: Symptom[] = [
     id: 'wl.sym.reacts',
     observation: 'The animal keeps looking toward you',
     firstChecks: 'Your distance — back away; it is reacting to you.',
-    options: ['Your distance: back away', 'The dish’s colour', 'The recorder’s settings'],
+    options: ['Your distance: back away', 'The dish’s color', 'The recorder’s settings'],
     correct: 'Your distance: back away',
     explain: 'If an animal reacts to you, you are too close. Increase the distance and let it behave naturally.',
-    why: { 'The dish’s colour': 'Distance first — the animal is reacting to you being there.', 'The recorder’s settings': 'Settings do not disturb animals; your presence does.' },
+    why: { 'The dish’s color': 'Distance first — the animal is reacting to you being there.', 'The recorder’s settings': 'Settings do not disturb animals; your presence does.' },
   },
 ];
 
@@ -513,7 +513,7 @@ const setupTasks: SetupTask[] = [
     reasons: [
       { id: 'r.move', label: 'The pickup copes with fast, wide movement', role: 'required', feedback: 'Say how the tool handles a moving group.' },
       { id: 'r.wind', label: 'The protection suits open ground', role: 'required', feedback: 'Open grassland needs more than foam.' },
-      { id: 'r.habitat', label: 'A habitat channel, labelled, if the place matters', role: 'optional', feedback: 'A fair reason.' },
+      { id: 'r.habitat', label: 'A habitat channel, labeled, if the place matters', role: 'optional', feedback: 'A fair reason.' },
       { id: 'r.zoom', label: 'The mic zooms in on the flock', role: 'wrong', feedback: 'No mic is a zoom lens for sound.' },
     ],
     explain: 'Two setups pass. What passes is the reasoning: a pickup that copes with movement, protection for open ground, and feet planted.',
@@ -521,7 +521,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you move it: will a few metres toward the bird make it sound close?', options: ['No — still far', 'Yes — very close', 'Only with more gain'], after: 'Now move LISTEN AT toward the bird and back, and watch SINCE THE START.' },
+  sound: { prompt: 'Before you move it: will a few meters toward the bird make it sound close?', options: ['No — still far', 'Yes — very close', 'Only with more gain'], after: 'Now move LISTEN AT toward the bird and back, and watch SINCE THE START.' },
   microphone: { prompt: 'Before you move anything: which pitch does a 57 cm dish help most?', options: ['A high call', 'A low rumble', 'All the same'], after: 'Now move PITCH and watch the rays reach the focus — or not.' },
   placement: { prompt: 'Predict: you swing a dish 10° off the bird. What goes first?', options: ['The high pitches', 'The low pitches', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Open grassland, a breeze: is foam enough?', options: ['Usually not', 'Yes, it is enough', 'Only at dawn'], after: 'Now add the layers with COVER and change SITE.' },
@@ -630,7 +630,7 @@ export const F07_LESSON: Lesson = {
   diagnostic,
   practice: {
     task: 'Choose setups for a single bird and a flock, and say what one take can and cannot prove. With permission at a real site and the animals’ distances respected, you can keep a field log below.',
-    fields: fieldLog([logText('target', 'Target, its ID and how sure you are (confirmed, provisional, unknown)'), logText('setback', 'Distance kept, the local rule, and the animal’s behaviour'), logChoice('tool', 'Pickup', ['Shotgun', 'Parabolic dish', 'Omni or cardioid', 'Stereo pair', 'Fixed recorder'])]),
+    fields: fieldLog([logText('target', 'Target, its ID and how sure you are (confirmed, provisional, unknown)'), logText('setback', 'Distance kept, the local rule, and the animal’s behavior'), logChoice('tool', 'Pickup', ['Shotgun', 'Parabolic dish', 'Omni or cardioid', 'Stereo pair', 'Fixed recorder'])]),
   },
   unknowns: [
     { text: 'The sites — the woodland edge, the brook, the meadow and its hedgerow, the far animal — and their ranges (26 m, about 30 m, 70 m) are drawings; the 25-yard rings are the sourced example.', dims: [] },

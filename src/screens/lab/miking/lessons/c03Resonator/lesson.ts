@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the coverplate and upper body, a little off the picking hand — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, read from the coverplate — there is no flat-top sound hole here. Move a few centimetres at a time, then change distance; the bar’s and the hand’s clearance comes first.',
+    takeaway: 'A suggested zone is a place to begin, read from the coverplate — there is no flat-top sound hole here. Move a few centimeters at a time, then change distance; the bar’s and the hand’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the player’s movement, the paths, gain and polarity — and never the cone: a rattle goes to the owner or a repairer.',
   },
   practice: {
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The sound is piercing and metallic. What is a good first move?',
     options: ['Cut the treble hard on the channel until the sound softens', 'Move off that coverplate spot, change angle, or step back', 'Move even closer, right onto the middle of the cone'],
     correct: 'Move off that coverplate spot, change angle, or step back',
-    explain: 'Very close to one spot of the coverplate hears a narrow, sharp view. Move off it a few centimetres, change the angle, or take a broader view.',
+    explain: 'Very close to one spot of the coverplate hears a narrow, sharp view. Move off it a few centimeters, change the angle, or take a broader view.',
     why: {
       'Cut the treble hard on the channel until the sound softens': 'EQ hides the symptom; the position is the cause. Move first.',
       'Move even closer, right onto the middle of the cone': 'Closer to one spot makes it narrower still.',
@@ -255,12 +255,12 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.metal`,
     observation: 'A piercing, metallic tone',
     firstChecks: 'Is the mic extremely close to one coverplate region? Move off that spot, change angle, or take a broader view.',
-    options: ['Cut the high frequencies hard until it is quite dull', 'Move the mic right onto the cone’s centre', 'Move off that spot, change the angle, or step back'],
+    options: ['Cut the high frequencies hard until it is quite dull', 'Move the mic right onto the cone’s center', 'Move off that spot, change the angle, or step back'],
     correct: 'Move off that spot, change the angle, or step back',
     explain: 'One close spot gives a narrow, sharp view. Move, then judge.',
     why: {
       'Cut the high frequencies hard until it is quite dull': 'EQ dulls the whole instrument; the position is the cause.',
-      'Move the mic right onto the cone’s centre': 'Closer to one spot is narrower still — and never touch the coverplate.',
+      'Move the mic right onto the cone’s center': 'Closer to one spot is narrower still — and never touch the coverplate.',
     },
   },
   {
@@ -417,13 +417,13 @@ export const C03_LESSON: Lesson = {
       { id: 'chair', label: 'the chair', short: 'CHAIR', note: 'Behind the player. A side boom’s stand shares the floor with the chair and the player’s feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'FLOOR SPACE', scene: 'kit' },
       { id: 'di', label: 'DI box and pickup cable', short: 'DI', note: 'A cone or bridge pickup is an electrical path, not a microphone. Route its cable clear of the feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGNAL PATH', scene: 'kit' },
       { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Lap style, a mic over the coverplate has it out in front and below.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'the band: bass amp and drums', short: 'BAND', note: 'Upstage. In a bluegrass band the banjo, the bass and the voices are the neighbours.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
+      { id: 'band', label: 'the band: bass amp and drums', short: 'BAND', note: 'Upstage. In a bluegrass band the banjo, the bass and the voices are the neighbors.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. A bright resonator mic can feed back if the PA reaches it.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio, the room and a reflective floor change both the direct sound and its reflections as the mic or the instrument moves.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a wedge in front, the band and its voices round the player, the PA facing out. Close positions give more gain before feedback; a pickup may carry the level.',
-    studio: 'STUDIO: no wedges, repeated trials when the player stops; check the room, the floor and the neighbours before committing.',
+    studio: 'STUDIO: no wedges, repeated trials when the player stops; check the room, the floor and the neighbors before committing.',
   },
   diagnostic,
   practice: {

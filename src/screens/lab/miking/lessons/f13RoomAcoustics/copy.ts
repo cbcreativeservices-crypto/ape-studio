@@ -45,7 +45,7 @@ export const F13_COPY: Partial<LessonCopy> = {
     gain: 'ra.prac.gain',
     second: 'ra.prac.3',
     mixed: ['ra.mix.1', 'ra.mix.2', 'ra.mix.3'],
-    mixedIntro: 'Three cards from earlier pages, mixed: a centre-only reading, a range too short, and a PA labelled as the room.',
+    mixedIntro: 'Three cards from earlier pages, mixed: a center-only reading, a range too short, and a PA labeled as the room.',
   },
   words: {
     instrument: 'room',

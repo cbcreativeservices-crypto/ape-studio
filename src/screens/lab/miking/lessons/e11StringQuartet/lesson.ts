@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — height and distance separately — and see how the cello, the first violin and the inner voices change.',
     credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Closer tends to more direct sound but favours the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
+    takeaway: 'Closer tends to more direct sound but favors the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
   },
   context: {
     title: 'Quiet hall or loud stage',
@@ -52,7 +52,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each observation to the first checks and the adjustment to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven observations (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven observations (a retry is explained, never penalized).' },
     takeaway: 'Placement and the players first: the pair’s distance, angle and spacing, the spots’ level, the room, the monitors — before EQ. Stop and refit any mount that touches a bow.',
   },
   practice: {
@@ -80,7 +80,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sq.meet.2',
     page: 'meet',
-    prompt: 'Why can a close mic favour attack over the blended sound?',
+    prompt: 'Why can a close mic favor attack over the blended sound?',
     options: ['It is near the bow and one part of the body', 'Close mics are tuned for the higher pitches', 'The players play harder for the close mics'],
     correct: 'It is near the bow and one part of the body',
     explain: 'Close in, the bow’s contact and the nearest part of the body dominate: attack and separation, at the expense of the blended perspective.',
@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why might a mic close to a cello sound boomy?',
     options: ['Proximity and the f-hole’s local resonance', 'The cello plays louder near a microphone', 'Close mics hear only the higher strings well'],
     correct: 'Proximity and the f-hole’s local resonance',
-    explain: 'Close in, a directional mic adds proximity effect and favours local body resonances — an f-hole especially. Broaden the pickup before any low cut.',
+    explain: 'Close in, a directional mic adds proximity effect and favors local body resonances — an f-hole especially. Broaden the pickup before any low cut.',
     why: {
       'The cello plays louder near a microphone': 'The cello does not change; the mic’s view does.',
       'Close mics hear only the higher strings well': 'A close mic hears plenty of low end — often too much.',
@@ -180,8 +180,8 @@ const scenarios: MikingScenario[] = [
     id: 'sq.place.2',
     page: 'placement',
     prompt: 'You move the pair closer to the quartet. What tends to change?',
-    options: ['More direct sound; the front players favoured', 'More room and a softer, blended attack', 'Nothing at all until the pair turns to face them'],
-    correct: 'More direct sound; the front players favoured',
+    options: ['More direct sound; the front players favored', 'More room and a softer, blended attack', 'Nothing at all until the pair turns to face them'],
+    correct: 'More direct sound; the front players favored',
     explain: 'Closer generally increases direct sound but may privilege the front players; farther back exposes more room and can reduce clarity.',
     why: {
       'More room and a softer, blended attack': 'That is what moving back tends to do.',
@@ -317,10 +317,10 @@ const symptoms: Symptom[] = [
     id: 'sq.s.inner',
     observation: 'The viola or cello vanishes',
     firstChecks: 'The main coverage and the arrangement. Reposition first; add a low-level support if needed.',
-    options: ['Reposition first; then a low support', 'Raise the whole mix until it appears', 'Pan that player to the centre'],
+    options: ['Reposition first; then a low support', 'Raise the whole mix until it appears', 'Pan that player to the center'],
     correct: 'Reposition first; then a low support',
     explain: 'Coverage first: move the pair so all four are in view; then, if a line still needs it, a low-level support.',
-    why: { 'Raise the whole mix until it appears': 'Raising everything keeps the others on top.', 'Pan that player to the centre': 'Panning moves it; it does not uncover it.' },
+    why: { 'Raise the whole mix until it appears': 'Raising everything keeps the others on top.', 'Pan that player to the center': 'Panning moves it; it does not uncover it.' },
   },
   {
     id: 'sq.s.scratch',
@@ -563,7 +563,7 @@ export const E11_LESSON: EnsembleLesson = {
       clearance: 'The stand in front of the quartet, clear of the bows’ sweep, the cello’s endpin and the players’ sightlines; its cable dressed flat and out of the way.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s centre — for a quartet, 1–2 m in front and 1.8–2.5 m up; for larger sections, over or just behind the podium, 3–4 m up.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s center — for a quartet, 1–2 m in front and 1.8–2.5 m up; for larger sections, over or just behind the podium, 3–4 m up.',
       'Change height and distance separately, checking the cello’s definition, the first violin’s dominance, the inner voices and the room’s decay at each step.',
       'Keep the pair’s own geometry as you move it: changing the 17 cm pair’s spacing makes a different near-coincident pair.',
     ],

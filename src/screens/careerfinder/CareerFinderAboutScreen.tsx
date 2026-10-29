@@ -61,7 +61,7 @@ export function CareerFinderAboutScreen() {
       </Card>
 
       <Card>
-        <SectionLabel>PROVISIONAL, AND LABELLED SO</SectionLabel>
+        <SectionLabel>PROVISIONAL, AND LABELED SO</SectionLabel>
         <Body>The family-to-activity mappings and the weights above are an expert starting hypothesis, not a validated instrument. They have not been calibrated against real response data and will change as people use the Finder and professionals correct it. Nothing here should be used to screen anyone for a job.</Body>
         <Text style={styles.version}>Questionnaire {ASSESSMENT_VERSION} · Index {CAREER_INDEX_VERSION}</Text>
       </Card>

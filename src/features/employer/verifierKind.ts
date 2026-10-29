@@ -68,7 +68,7 @@ export const VERIFIER_COPY: Record<
   employer: {
     accountHead: 'EMPLOYER ACCOUNT',
     badge: 'VERIFIED EMPLOYER',
-    badgeA11y: 'Verified employer. We checked this organisation.',
+    badgeA11y: 'Verified employer. We checked this organization.',
     adminTag: 'EMPLOYER',
     activeBody:
       'Your employer account is active. Choose what you are looking for — members can see this, and it is how the right people find you.',

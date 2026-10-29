@@ -45,7 +45,7 @@ export const KIT_MIC_TYPES: Record<string, MicType> = {
     mount: 'boom',
     examples: PENCIL_EX,
     art: 'sdc',
-    blurb: 'A pencil-shaped condenser with a small capsule — a common overhead choice, light on a boom. Needs phantom power. A cardioid favours what it faces; an omni hears all round, room included.',
+    blurb: 'A pencil-shaped condenser with a small capsule — a common overhead choice, light on a boom. Needs phantom power. A cardioid favors what it faces; an omni hears all round, room included.',
   },
   ohLdc: {
     id: 'ohLdc',
@@ -76,7 +76,7 @@ export const KIT_MIC_TYPES: Record<string, MicType> = {
     mount: 'stand',
     examples: PENCIL_EX,
     art: 'sdc',
-    blurb: 'A small condenser on a floor stand, out in the room. As an omni it hears the room from every side; as a cardioid it favours the kit in front of it. Needs phantom power.',
+    blurb: 'A small condenser on a floor stand, out in the room. As an omni it hears the room from every side; as a cardioid it favors the kit in front of it. Needs phantom power.',
   },
   roomLdc: {
     id: 'roomLdc',

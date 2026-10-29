@@ -26,7 +26,7 @@ export const HIGHLIGHT = '#ffc64d';
 const OAK = ['#8a5a32', '#6a4223', '#4a2c16', '#2c190b'];
 const TIN = ['#f4f6f9', '#cfd5de', '#9aa3b1', '#6b7380', '#c3cad4'];
 /** Burnished tin across a round pipe, lit from the upper left: a dark limb,
- *  the bright streak left of centre, the body falling off to the right with
+ *  the bright streak left of center, the body falling off to the right with
  *  a little bounce light at the far edge. */
 const TIN_BODY = ['#59606b', '#c9cfd8', '#f7f9fc', '#b7bfca', '#7a828f', '#454b55', '#6b7380'];
 const TIN_FOOT = ['#4a505a', '#a9b1bc', '#dfe4ea', '#98a1ad', '#646c78', '#383d45', '#565d68'];
@@ -84,7 +84,7 @@ function pipePaths(u: number, w: number, top: number, mouth: number, toe: number
   lower.cubicTo(u - mw / 2, mouth + 0.22 * w, u - 0.12 * w, mouth + 0.38 * w, u, mouth + 0.46 * w);
   lower.cubicTo(u + 0.12 * w, mouth + 0.38 * w, u + mw / 2, mouth + 0.22 * w, u + mw / 2, mouth);
   lower.close();
-  // The burnished tin's specular streak, left of centre (light upper left).
+  // The burnished tin's specular streak, left of center (light upper left).
   const sheen = make();
   sheen.addRRect(Skia.RRectXY(Skia.XYWHRect(u - w * 0.3, top + w * 0.25, w * 0.09, m0 - 0.95 * w - top - w * 0.3), w * 0.04, w * 0.04));
   const topRim = make();
@@ -564,7 +564,7 @@ function ConsoleTop(): ReactElement {
  *  base and impost, the back and roof, the Great's middle pipe on its
  *  chest with a smaller one behind it, the Positive in front, the Swell box
  *  with its shutters facing the nave, the cornices. (The Pedal towers stand
- *  off the centre line, so the cut does not show them.) */
+ *  off the center line, so the cut does not show them.) */
 function CaseSection(): ReactElement {
   const { x0, x1, top } = CASE;
   const shell = make();
@@ -676,7 +676,7 @@ function NaveWall(): ReactElement {
 
 /**
  * The FAR PEDAL TOWER in side elevation, behind the cut (art fix 2026-10-16):
- * the Pedal towers stand off the centre line at the case's sides, so the cut
+ * the Pedal towers stand off the center line at the case's sides, so the cut
  * passes between them and the far one is seen whole beyond it — its oak side
  * with raised panels, its crown cornice above the main case, the base, and
  * at its front its biggest pipe in profile (Ø 230, a 16-ft class principal),

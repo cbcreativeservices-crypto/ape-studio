@@ -18,7 +18,7 @@ const PERC_CARDS = (
     <Card>
       <Point title="ONE MAIN MIC">Mono documentation, or a compact group that already balances: every essential instrument must stay audible.</Point>
       <Point title="A COMPACT DYNAMIC OVER THE DRUMS">One mic between two hand drums, just above the heads, aimed down: both drums on one channel, every stroke, a robust choice for a loud stage.</Point>
-      <Point title="SMALL CONDENSERS OVER THE BARS">One about 10–15 cm over the bars favours the notes nearest it; a pair higher up, spaced or angled, evens the range.</Point>
+      <Point title="SMALL CONDENSERS OVER THE BARS">One about 10–15 cm over the bars favors the notes nearest it; a pair higher up, spaced or angled, evens the range.</Point>
       <Point title="AREA MICS">Shared by the stations a player moves between: check the coverage through every change and the overlap between areas.</Point>
     </Card>
     <Body>Check each device’s overload on the strongest accent: the mic, any adapter or transmitter, the preamp and the converter. Sensitivity is output, not rejection — the pattern, distance and aim decide the spill.</Body>
@@ -74,7 +74,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real group, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ paths, sticks and mallets, pedals and instrument changes; nothing on a bar or over a resonator opening.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A mic aimed down at the heads turns its back up and away — a floor wedge sits below that line, so angle the mic in from the wedge side, or try a tighter pattern.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',

@@ -145,7 +145,7 @@ export type DiPathGeom = {
 };
 
 /** The 1 × 12 combo's own drawing (chainIcons ComboIcon), mm: front 622 × 445,
- *  the strap handle 24 above the top, the speaker 60 right of centre and 255
+ *  the strap handle 24 above the top, the speaker 60 right of center and 255
  *  below the top, frame Ø ≈ 304. The icon is centred 13 mm below the box centre. */
 export const COMBO_ART = { W: 622, H: 445, handle: 24, spk: { dx: 60, dy: 255, r: 152 } } as const;
 export const comboScale = (SC: number) => Math.min(SC / COMBO_ART.W, (SC * 0.92) / (COMBO_ART.H + 26));

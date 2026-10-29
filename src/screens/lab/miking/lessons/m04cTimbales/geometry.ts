@@ -55,8 +55,8 @@ export const TIMB_MODEL: InstrumentModel = {
     ...DRUMS.map((d) => ({ id: `${d.id}.low`, partId: `${d.id}.shell`, label: `the ${d.name}’s lower edge`, point: { x: d.c.x, y: d.bottomY, z: d.c.z }, normal: LOW_NORMAL, minus: { words: 'above', key: 'ABOVE' } })),
   ],
   lines: [
-    { id: 'between', label: 'the centre line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
-    { id: 'centre', label: 'the pair’s centre', point: { x: 0, y: HEAD_Y, z: 0 }, dir: { x: 0, y: 1, z: 0 } },
+    { id: 'between', label: 'the center line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
+    { id: 'centre', label: 'the pair’s center', point: { x: 0, y: HEAD_Y, z: 0 }, dir: { x: 0, y: 1, z: 0 } },
     axisLine(LARGE),
     axisLine(SMALL),
   ],

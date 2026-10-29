@@ -37,7 +37,7 @@ const D = Math.PI / 180;
 const v = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 
 export type TubeTone = 'brass' | 'nickel' | 'dark';
-/** A length of tube: its centre line (lesson frame) and its outside radius. */
+/** A length of tube: its center line (lesson frame) and its outside radius. */
 export type Tube = { id: string; part: string; pts: Vec3[]; r: number; tone?: TubeTone };
 
 export type HornPose = {

@@ -218,7 +218,7 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{`You are looking at ${A.playing && B.playing ? 'both decks’ stems side by side' : `deck ${sel}’s four stems`}, each part as its own waveform — drums, bass, chords and melody — under one playhead, with each part’s pad lit while it plays and a muted part hatched.`}</Look>
-        <P>A stem player mutes or turns down one part of a track while the rest plays. ORIGINAL stems are the real parts; SEPARATED stems are software’s guess from the finished mix (here, a labelled simulation).</P>
+        <P>A stem player mutes or turns down one part of a track while the rest plays. ORIGINAL stems are the real parts; SEPARATED stems are software’s guess from the finished mix (here, a labeled simulation).</P>
         <P>While both decks play, both decks’ stems show, each with its channel’s level going to the mix.</P>
         <Terms items={TERMS} />
       </Step>

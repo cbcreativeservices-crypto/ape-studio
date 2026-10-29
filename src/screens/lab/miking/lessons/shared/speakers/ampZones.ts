@@ -54,7 +54,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', min: CONE_SPOTS.boundary - TOL, max: CONE_SPOTS.boundary + TOL, prov: ill('"on the line between the dust cover and the speaker cone": the dust-cap radius (a drawing default, 50 mm) ± 15 mm') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 30, y: -CONE_SPOTS.boundary, z: 0 }, az: 0, el: 0 },
-    tendency: 'A focused sound that suits clean and driven tones alike — a good first place to listen. From here, slide toward the centre for brighter or toward the edge for smoother, keeping the distance.',
+    tendency: 'A focused sound that suits clean and driven tones alike — a good first place to listen. From here, slide toward the center for brighter or toward the edge for smoother, keeping the distance.',
     checks: ['The grille is not touched', 'The speaker that is really sounding', 'Pick attack and fizz on the loudest passage'],
   },
   {
@@ -136,7 +136,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
     aim: AIM_TIGHT,
     start: { p: { x: G + 225, y: 0, z: 0 }, az: 0, el: 0 },
     tendency: 'A softer attack and a fuller, more balanced sound, with a little of the cabinet and the room. More spill from a loud stage.',
-    checks: ['Room and neighbouring instruments', 'Monitor and PA spill on a stage', 'Matched level when you compare'],
+    checks: ['Room and neighboring instruments', 'Monitor and PA spill on a stage', 'Matched level when you compare'],
   },
   {
     id: 'eg.far',
@@ -202,7 +202,7 @@ export const BASS_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', min: B.rDust - TOL, max: B.rDust + TOL, prov: ill('the 10 in woofer’s dust-cap radius (the 12 in drawing default × 10/12) ± 15 mm') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 60, y: -B.rDust, z: 0 }, az: 0, el: 0 },
-    tendency: 'A focused first listen: the fundamental, low-mid punch and note definition. From here, move toward the centre for more bite or toward the edge for warmth, keeping the distance.',
+    tendency: 'A focused first listen: the fundamental, low-mid punch and note definition. From here, move toward the center for more bite or toward the edge for warmth, keeping the distance.',
     checks: ['The grille is not touched', 'One woofer, not the gap between two', 'Input headroom on the hardest notes'],
   },
   {
@@ -259,7 +259,7 @@ export const BASS_ZONES: readonly DocumentedZone[] = [
     band: 'In a good, quiet room, try about 60–100 cm (2–3.3 ft) back — usually as a second mic under the close one.',
     kind: 'trial',
     src: 'S-BASSREC',
-    quote: 'a specialised kick/bass dynamic mic up close alongside a condenser mic placed further away … check the phase relationships (no distance given)',
+    quote: 'a specialized kick/bass dynamic mic up close alongside a condenser mic placed further away … check the phase relationships (no distance given)',
     refSurface: 'grille',
     side: 'outside',
     distance: { min: 600, max: 1000 },

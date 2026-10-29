@@ -556,7 +556,7 @@ export function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; 
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered, each on its own mains lead from its own quad-box outlet: a downstage quad box at the stage-left edge feeds wedge 3 and a second quad box beside the stair, which feeds wedges 2 and 1; the power leads keep upstage of the audio feeds, cross them square, and have their own cover at the stair. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 meter deck, audience at the bottom. Drum riser upstage center with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered, each on its own mains lead from its own quad-box outlet: a downstage quad box at the stage-left edge feeds wedge 3 and a second quad box beside the stair, which feeds wedges 2 and 1; the power leads keep upstage of the audio feeds, cross them square, and have their own cover at the stair. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -1555,7 +1555,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
     setSigns(nextSigns);
     const t = Math.abs(nextSigns.reduce((a, b) => a + b, 0));
     AccessibilityInfo.announceForAccessibility(
-      `Loop ${i + 1} of 6: ${sign > 0 ? 'over' : 'under'}. Twist ${t === 0 ? 'cancelled' : t >= 3 ? 'high' : t === 2 ? 'building' : 'low'}.`,
+      `Loop ${i + 1} of 6: ${sign > 0 ? 'over' : 'under'}. Twist ${t === 0 ? 'canceled' : t >= 3 ? 'high' : t === 2 ? 'building' : 'low'}.`,
     );
   };
   const restartCoil = () => {
@@ -1721,8 +1721,8 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         />
         <Text style={s.caption}>
           Training visualization — stage plot to scale (faint grid = 1 m; cables drawn wider for tracing), in the lab’s teaching colors (field cable
-          colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
-          MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · gray = multicores (trunk to FOH, split to
+          MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · gray strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>

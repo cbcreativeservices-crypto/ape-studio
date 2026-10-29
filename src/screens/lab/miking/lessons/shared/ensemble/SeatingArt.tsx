@@ -3,9 +3,9 @@
  *
  *   <SeatingPlan/>     from above, the conductor's view (u = x, v = z)
  *   <SeatingFront/>    from the hall (u = x, v = y)
- *   <SeatingSection/>  cut along the centre line, from the conductor's right
+ *   <SeatingSection/>  cut along the center line, from the conductor's right
  *                      (u = −z, v = y): the players within SECTION_SLICE of
- *                      the centre line
+ *                      the center line
  *
  * Each player is an illustrated person at true size (the house figure: the
  * head is a skin-tone mass of the figure — FigureHead — never a separate
@@ -49,7 +49,7 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const AMBER = '#ffc64d';
 const IN = 25.4;
-/** The section view shows the players within this distance of the centre line (mm). */
+/** The section view shows the players within this distance of the center line (mm). */
 export const SECTION_SLICE = 1700;
 /** The timpani set round its player (seating.ts TIMPANI_SET; pure, so the labels share it). */
 const TIMP = TIMPANI_SET;
@@ -2645,7 +2645,7 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
   if (hit) return hit;
   const seats = [...s.seats, ...(s.conductor ? [s.conductor] : [])].filter((q) => view !== 'section' || Math.abs(q.p.x) <= SECTION_SLICE || q.kind === 'conductor');
   // Group 4: the stage gear is painted with the players, by depth (in the
-  // section only what is near the centre line, like the players).
+  // section only what is near the center line, like the players).
   const gear = (s.gear ?? []).filter((g) => view !== 'section' || Math.abs(g.p.x) <= SECTION_SLICE);
   type Item = { seat: Seat; gear?: undefined } | { gear: Gear; seat?: undefined };
   const items: Item[] = [...seats.map((q) => ({ seat: q })), ...gear.map((g) => ({ gear: g }))];

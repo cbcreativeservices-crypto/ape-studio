@@ -28,7 +28,7 @@ import { E06_31, E06_MODEL, E06_PLACE, E06_SETUPS, E06_WEDGES, E06_ZONES, PAIR_F
 /** The exposure line (research childrens_choir/SOURCES.md §b, proposed L7/L106 wording, no names). */
 export const EXPOSURE = 'Lower the level at the source first. Measure at the children’s own positions with a sound level meter — an A-weighted 15-minute average and a C-weighted peak. Some rules for shows aimed at children under six set about 94 dB, A-weighted, over 15 minutes, and a common guide keeps children’s peaks under 120 dB: keep well below both. Keep soundchecks short and quiet; a child’s discomfort, ringing ears or not hearing instructions is never a normal part of a soundcheck.';
 /** The safeguarding line (childrens_choir/SOURCES.md §a, no names). */
-export const SAFEGUARDING = 'Children are supervised at all times. A responsible adult or qualified crew member controls the setup, the access and every change to a mic; a headset or a transmitter is fitted only by an authorised adult, with the child’s agreement and comfort first, and with a quick way to mute or remove it. Follow the venue’s child-safeguarding policy and the local law.';
+export const SAFEGUARDING = 'Children are supervised at all times. A responsible adult or qualified crew member controls the setup, the access and every change to a mic; a headset or a transmitter is fitted only by an authorized adult, with the child’s agreement and comfort first, and with a quick way to mute or remove it. Follow the venue’s child-safeguarding policy and the local law.';
 
 const pages: LessonPages = {
   meet: {
@@ -47,13 +47,13 @@ const pages: LessonPages = {
     title: 'Choose the microphones',
     goal: 'Choose by what the children and the production need — a pair or area condensers for the choir, a stand mic before a handheld for a young soloist, a headset only with supervision — and keep each method’s geometry.',
     credit: { scenarios: ['cc.mic.1', 'cc.ortf', 'cc.ms', 'cc.mic.2', 'cc.rec.1'], note: 'Answer the five checks (one reaches back to where the sound leaves).' },
-    takeaway: 'Directional condensers on stable stands for the choir; a stand mic an adult sets for a soloist — a handheld only when the child can hold and aim it safely; a headset only fitted and checked by authorised adults.',
+    takeaway: 'Directional condensers on stable stands for the choir; a stand mic an adult sets for a soloist — a handheld only when the child can hold and aim it safely; a headset only fitted and checked by authorized adults.',
   },
   placement: {
     title: 'Placement Studio',
     goal: 'Start from the pair and move it yourself — nearer, farther, higher — and see what changes for the front and back rows. From above: the height is in the readout and the words.',
     credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the children, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Begin with one pair and move it in small steps. Nearer favours the front row and the words; farther, the blend. Aim at the mouths, not the tops of heads: children stand lower than adults.',
+    takeaway: 'Begin with one pair and move it in small steps. Nearer favors the front row and the words; farther, the blend. Aim at the mouths, not the tops of heads: children stand lower than adults.',
   },
   context: {
     title: 'Live and recording',
@@ -70,7 +70,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Stop the group for anything unsafe; then layout and placement first — the mic’s height and aim at the mouths, the spacing, the spots’ level, the monitors — before EQ. Lower the level at the first sign of ringing or discomfort.',
   },
   practice: {
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Lower it at the source; measure where they are',
     explain: EXPOSURE,
     why: {
-      'Hand out earplugs to the children and keep the level up': 'Reduce the sound at the source first; protectors are a fitted extra, not a licence for level.',
+      'Hand out earplugs to the children and keep the level up': 'Reduce the sound at the source first; protectors are a fitted extra, not a license for level.',
       'Check the level at the mixing desk only': 'The desk is not where the children stand: measure at their positions.',
     },
   },
@@ -150,10 +150,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A young soloist needs her own mic. What is a fair first choice?',
     options: ['A stand mic an adult sets at her height', 'A handheld she must hold and aim herself', 'A headset she fits on her own backstage'],
     correct: 'A stand mic an adult sets at her height',
-    explain: 'For a young performer a stable stand an adult sets is often safer and more consistent than a handheld. A handheld only when the child can hold and aim it safely; a headset only fitted by an authorised adult.',
+    explain: 'For a young performer a stable stand an adult sets is often safer and more consistent than a handheld. A handheld only when the child can hold and aim it safely; a headset only fitted by an authorized adult.',
     why: {
       'A handheld she must hold and aim herself': 'Fine only when she can do it safely — no covered grille, no cable swinging, not aimed at a monitor.',
-      'A headset she fits on her own backstage': 'A headset is fitted and checked by an authorised adult, never by the child alone.',
+      'A headset she fits on her own backstage': 'A headset is fitted and checked by an authorized adult, never by the child alone.',
     },
   },
   ortfFixed('cc', 'microphone'),
@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A headset keeps a moving child’s distance steady. What does it NOT do?',
     options: ['Remove feedback and breath noise', 'Hold one distance as she turns', 'Keep up with her as she moves'],
     correct: 'Remove feedback and breath noise',
-    explain: 'A headset can steady the mouth-to-mic distance and help the words — but it still needs a monitor plan, and it can pick up clothing and breath noise. Fitted and checked by authorised adults.',
+    explain: 'A headset can steady the mouth-to-mic distance and help the words — but it still needs a monitor plan, and it can pick up clothing and breath noise. Fitted and checked by authorized adults.',
     why: {
       'Hold one distance as she turns': 'That it does: the capsule moves with her head.',
       'Keep up with her as she moves': 'That it does too — the reason to choose one.',
@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The front row dominates the pair. First change?',
     options: ['Raise it or angle it toward the middle', 'Add a spot for each child at the back', 'Ask the front row to sing more quietly'],
     correct: 'Raise it or angle it toward the middle',
-    explain: 'Too low or too close, the pair favours the front row. Raise or angle it toward the acoustic centre, or move it back — and recheck the words.',
+    explain: 'Too low or too close, the pair favors the front row. Raise or angle it toward the acoustic center, or move it back — and recheck the words.',
     why: {
       'Add a spot for each child at the back': 'Close mics first hide a placement problem — and add stands near children.',
       'Ask the front row to sing more quietly': 'Their singing is the performance; move the pair.',
@@ -198,11 +198,11 @@ const scenarios: MikingScenario[] = [
     id: 'cc.place.2',
     page: 'placement',
     prompt: 'The back row is dull and weak. What do you check?',
-    options: ['The aim at the mouths and the height', 'The colour of the back row’s clothes', 'The phantom power on the front mics'],
+    options: ['The aim at the mouths and the height', 'The color of the back row’s clothes', 'The phantom power on the front mics'],
     correct: 'The aim at the mouths and the height',
     explain: 'Too high, too close to the front, or aimed at heads: the back row loses its words. Aim at the mouths and the back row; adjust the height and the children’s spacing.',
     why: {
-      'The colour of the back row’s clothes': 'Clothing does not change how the voices reach the mic.',
+      'The color of the back row’s clothes': 'Clothing does not change how the voices reach the mic.',
       'The phantom power on the front mics': 'Then nothing would be heard; the balance is a matter of aim and height.',
     },
   },
@@ -325,7 +325,7 @@ const symptoms: Symptom[] = [
   {
     id: 'cc.s.front',
     observation: 'The front row dominates',
-    firstChecks: 'Is the array aimed too low or too close to the front row? Raise or angle it toward the acoustic centre and recheck the words.',
+    firstChecks: 'Is the array aimed too low or too close to the front row? Raise or angle it toward the acoustic center and recheck the words.',
     options: ['Raise or angle it to the center', 'Cut the front row with EQ on the bus', 'Spot the back row up loud'],
     correct: 'Raise or angle it to the center',
     explain: 'Too low or close, the front row is much nearer. Raise or angle the array toward the middle of the choir, then check the words.',
@@ -366,7 +366,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Poor fit, clothing contact, or the cable or pack badly placed? Stop and refit under an adult’s supervision.',
     options: ['Stop and refit it, with an adult', 'Turn the headset’s channel down', 'Tell the child to hold still'],
     correct: 'Stop and refit it, with an adult',
-    explain: 'Discomfort is never normal: stop, and an authorised adult refits the headset, the cable and the pack clear of the neck and the costume.',
+    explain: 'Discomfort is never normal: stop, and an authorized adult refits the headset, the cable and the pack clear of the neck and the costume.',
     why: { 'Turn the headset’s channel down': 'That hides the noise and leaves the child uncomfortable.', 'Tell the child to hold still': 'Comfort and safety come first; refit it.' },
   },
 ];
@@ -437,10 +437,10 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setups',
     critical: true,
     prompt: 'Who fits a headset on a child?',
-    options: ['An authorised adult, comfort first', 'The child, once shown how it goes on', 'A crew member who happens to be near'],
-    correct: 'An authorised adult, comfort first',
+    options: ['An authorized adult, comfort first', 'The child, once shown how it goes on', 'A crew member who happens to be near'],
+    correct: 'An authorized adult, comfort first',
     explain: SAFEGUARDING,
-    why: { 'The child, once shown how it goes on': 'Fitting is supervised by an authorised adult — the child is never left to do it.', 'A crew member who happens to be near': 'Only an authorised adult, under the venue’s child-safeguarding policy.' },
+    why: { 'The child, once shown how it goes on': 'Fitting is supervised by an authorized adult — the child is never left to do it.', 'A crew member who happens to be near': 'Only an authorized adult, under the venue’s child-safeguarding policy.' },
   },
   {
     id: 'cc.q.4',
@@ -450,7 +450,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Lower it at the source, then measure there', 'Give them all earplugs and keep the level as it is', 'Finish the song, then turn it down'],
     correct: 'Lower it at the source, then measure there',
     explain: EXPOSURE,
-    why: { 'Give them all earplugs and keep the level as it is': 'Reduce the sound at the source first; protectors are fitted extras, not a licence for level.', 'Finish the song, then turn it down': 'A child’s discomfort is answered at once.' },
+    why: { 'Give them all earplugs and keep the level as it is': 'Reduce the sound at the source first; protectors are fitted extras, not a license for level.', 'Finish the song, then turn it down': 'A child’s discomfort is answered at once.' },
   },
   {
     id: 'cc.q.5',
@@ -569,10 +569,10 @@ export const E06_LESSON: EnsembleLesson = {
       begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centered, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
       clearance: 'The stand’s wide base in front of the first row, clear of the children’s feet and the way out; a sandbag on its base, its cable taped flat or under a ramp, away from the children’s path.',
       height: 'A little above the children’s heads — lower than for adults — so it aims at their mouths and the back row. Too high and they turn dull and distant; too low and it hears the riser and the front row. (From above, the height is in the readout.)',
-      forward: 'A few feet in front of the first row. Nearer favours the front row and the words; farther, the blend and the room.',
+      forward: 'A few feet in front of the first row. Nearer favors the front row and the words; farther, the blend and the room.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front, 0.3–0.9 m (1–3 ft) above the children’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the pair’s center — near, about 0.6–1.2 m (2–4 ft) in front, 0.3–0.9 m (1–3 ft) above the children’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
       'From above you see how far forward and how wide; the height is in the readout. Aim at the mouths: children stand lower than adults.',
       'Change one thing at a time and compare at a consistent level — and stop the group before any stand is moved.',
     ],

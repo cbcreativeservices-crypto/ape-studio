@@ -2,7 +2,7 @@
  * B03 FIELD REPORTERS AND HANDHELD INTERVIEWS — the scene (charter §2 layer
  * 3): the guest and the reporter standing face to face (shared/broadcast/
  * SportSpeechArt), the camera on its tripod beside the reporter
- * (shared/field/LocationArt), the kerb and the traffic lane behind the guest
+ * (shared/field/LocationArt), the curb and the traffic lane behind the guest
  * (ReporterArt.Roadway), the wind from the road; at a live event, the local
  * loudspeaker on its pole beyond the reporter. The reporter's right arm that
  * holds the mic is folded away: the engine draws it from the shoulder.

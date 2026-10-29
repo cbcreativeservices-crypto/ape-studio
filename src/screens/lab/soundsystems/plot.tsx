@@ -27,7 +27,7 @@ export const BEAM_COLOR = {
 export const THROW = { top: 120, delay: 80, sideFill: 80, fill: 40, wedge: 30, sub: 90 } as const;
 
 /** Toe-in for a main at a house-left/right corner: each main's inner −6 dB
- *  edge meets the centre line about a third of the way back (mainL at
+ *  edge meets the center line about a third of the way back (mainL at
  *  44,122 aimed +18° with 90°: the 63° edge crosses x = 180 at y ≈ 191, the
  *  audience spanning y 140–314). */
 export function mainAim(slot: SlotId): number {

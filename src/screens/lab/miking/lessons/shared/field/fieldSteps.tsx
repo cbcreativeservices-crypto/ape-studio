@@ -801,7 +801,7 @@ export function useDishStep(spec: { key?: string; words: { title: string; badge:
     kind: 'TRY',
     layout: 'rack',
     rack: {
-      render: (w, h) => <DishCanvas w={w} h={h} box={BOX} dishId={dishId} fHz={f} labels={labels} label={`A ${Math.round(dish.D / 10)} centimetre dish cut through its axis, the capsule at the focus facing the dish. Sound at ${f} hertz, its wavefronts ${Math.round(lam)} millimetres apart: ${helps ? 'shorter than the dish, so the bowl sends it to the focus' : 'longer than the dish, so it gets little help from the bowl'}.`} />,
+      render: (w, h) => <DishCanvas w={w} h={h} box={BOX} dishId={dishId} fHz={f} labels={labels} label={`A ${Math.round(dish.D / 10)} centimeter dish cut through its axis, the capsule at the focus facing the dish. Sound at ${f} hertz, its wavefronts ${Math.round(lam)} millimeters apart: ${helps ? 'shorter than the dish, so the bowl sends it to the focus' : 'longer than the dish, so it gets little help from the bowl'}.`} />,
       badge: spec.words.badge,
       bezel: [
         { k: 'DISH', v: `${Math.round(dish.D / 10)} cm`, sub: `focus ${Math.round(dish.f / 10)} cm`, flex: 1 },

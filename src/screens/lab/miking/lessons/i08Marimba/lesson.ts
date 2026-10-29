@@ -67,7 +67,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the source and the coverage first — the mallets, the passage, the pipes and frame — then gain staging, before EQ or a gate.',
   },
   practice: {
@@ -180,8 +180,8 @@ const scenarios: MikingScenario[] = [
     id: 'mr.mic.4',
     page: 'microphone',
     prompt: 'On a loud stage, why a directional pattern over the marimba?',
-    options: ['It rejects part of the louder neighbours off its axis', 'It makes the marimba louder for the audience on its own', 'It stops the low notes from reaching the mic at all'],
-    correct: 'It rejects part of the louder neighbours off its axis',
+    options: ['It rejects part of the louder neighbors off its axis', 'It makes the marimba louder for the audience on its own', 'It stops the low notes from reaching the mic at all'],
+    correct: 'It rejects part of the louder neighbors off its axis',
     explain: 'A directional pattern can reduce some spill; never all of it, and often least in the lows. Placing the instrument well helps as much.',
     why: {
       'It makes the marimba louder for the audience on its own': 'A mic does not change the instrument’s level; it changes what the channel hears.',
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The part uses only the top two octaves. Where does a one-mic starting point center?',
     options: ['Over the middle of the notes the part plays', 'Over the middle of the whole instrument', 'Over the lowest bar, to keep the bass end full and warm'],
     correct: 'Over the middle of the notes the part plays',
-    explain: 'Start over the center of the PLAYED span: a part on neighbouring notes needs less coverage than a solo that runs end to end.',
+    explain: 'Start over the center of the PLAYED span: a part on neighboring notes needs less coverage than a solo that runs end to end.',
     why: {
       'Over the middle of the whole instrument': 'The instrument’s middle may be far from where this part is played.',
       'Over the lowest bar, to keep the bass end full and warm': 'This part does not use the bass; the mic covers the played notes.',
@@ -230,7 +230,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic under the pipes, aimed up. How should you treat it?',
     options: ['As an optional effect, auditioned against a view from above', 'As the natural marimba sound, so it comes first', 'As a safe default, because nothing can possibly strike it down there'],
     correct: 'As an optional effect, auditioned against a view from above',
-    explain: 'Under the pipes gives a more localised, colored sound and more mechanical noise — not the universally natural marimba sound.',
+    explain: 'Under the pipes gives a more localized, colored sound and more mechanical noise — not the universally natural marimba sound.',
     why: {
       'As the natural marimba sound, so it comes first': 'From above, the mic hears bars and pipes together in the room; underneath is a narrower color.',
       'As a safe default, because nothing can possibly strike it down there': 'Feet, the frame and the pipes are close by — and the sound is a colored one.',
@@ -395,12 +395,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage: the marimba plays a two-octave part in the middle of the keyboard. One channel, NO phantom power; a mono PA.',
     setups: [
       { id: 'a', label: 'One compact dynamic about 60–100 cm above the middle of the played span, aimed down', ok: true, power: 'none', feedback: 'One directional mic over the played notes; it needs no phantom.' },
-      { id: 'b', label: 'The marimba moved away from the loudest neighbour, then one compact dynamic over the played span', ok: true, power: 'none', feedback: 'Layout first, then the mic.' },
+      { id: 'b', label: 'The marimba moved away from the loudest neighbor, then one compact dynamic over the played span', ok: true, power: 'none', feedback: 'Layout first, then the mic.' },
       { id: 'c', label: 'One condenser over the middle of the played span', ok: false, power: 'phantom', feedback: 'No phantom power on this input.' },
       { id: 'd', label: 'A spaced pair panned hard left and right', ok: false, power: 'none', feedback: 'One channel and a mono PA.' },
       { id: 'e', label: 'A dynamic 15 cm over the bars for more level', ok: false, power: 'none', feedback: 'Inside the mallets’ travel.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic and a better layout help against loud neighbours', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, COUNT_REASON],
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic and a better layout help against loud neighbors', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, COUNT_REASON],
     explain: 'Two setups pass: one safe directional mic over the played notes, the layout improved where possible, and power this input can supply.',
   },
 ];
@@ -548,7 +548,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim down at the bars — the starting point counts while the mic looks within 30° of straight down. Height and angle are separate things to try.',
     workedClear: 'Clear of both hands’ whole reach along the keyboard, the raised mallets, the score and the sightline. Clearance comes first, and the player stops before a real stand moves.',
     blocked: { oct5: ' Raise it above the mallets’ travel, or move it out to the side.', oct43: ' Raise it above the mallets’ travel, or move it out to the side.' },
-    reveal: 'Over the low half the mic favours the low notes; over the middle it hears the keyboard more evenly — and every passage differs, so “it depends” is fair too.',
+    reveal: 'Over the low half the mic favors the low notes; over the middle it hears the keyboard more evenly — and every passage differs, so “it depends” is fair too.',
     typeNotes: { mlDynCard: 'A dynamic can work too, especially live: choose by response, pattern, power and mount, and compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real stand. The heights are starting points, not safety clearances — the mallets’ highest stroke decides.',
     availableLead: 'Starting points for this mic',
@@ -556,7 +556,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 60–100 cm above the middle of the PLAYED span, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an optional effect, a mic under the pipes. Starting points, not rules.',
       separate: 'Height, the place along the keyboard and the angle are separate variables: change one at a time, with low, middle and high notes, rolls and chords.',
       clearance: 'Clearance comes first. The player’s whole reach along the keyboard sets it, not a still pose. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
-      tendencies: 'Closer to one end favours it; higher blends the keyboard and adds room and spill. Under the pipes: a colored, local sound. All tendencies to check by ear.',
+      tendencies: 'Closer to one end favors it; higher blends the keyboard and adds room and spill. Under the pipes: a colored, local sound. All tendencies to check by ear.',
     },
   },
   context: {
@@ -663,7 +663,7 @@ export const I08_LESSON: MalletLesson = {
     items: [
       { id: 'marimba', label: 'the marimba (and its player)', short: 'MARIMBA', note: 'The player stands behind it, facing the audience, and moves along its whole length. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Drums and small instruments behind: loud, close, and in every marimba mic.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout' }, tag: 'SPILL', scene: 'all' },
-      { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'The loudest neighbour. Keep it out of the wanted pickup where you can, while keeping the sightlines.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout' }, tag: 'SPILL', scene: 'all' },
+      { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'The loudest neighbor. Keep it out of the wanted pickup where you can, while keeping the sightlines.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the marimba', short: 'WEDGE', note: 'On the floor in front, facing the player, below a mic’s front: no pattern null reaches it. Keep its level only as high as the player needs.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side fill at stage left', short: 'SIDE FILL', note: 'On a stand at about head height beyond the low end, firing across the stage — almost level with a mic above the bars, off its side: a null can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'If the PA is mono, listen to the marimba in mono at several audience positions before a wide pan.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },

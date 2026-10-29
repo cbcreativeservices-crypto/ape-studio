@@ -55,7 +55,7 @@ function F07Sound({ lesson, answers, onAnswered }: PageProps) {
       otherKey: 'BROOK',
       mainWord: 'bird',
       otherWord: 'brook',
-      note: 'The bird is 26 m away and its ring keeps you more than 23 m off. A few metres toward it — and away from the brook behind you — help the call against the water. No mic, dish or gain makes that distance disappear.',
+      note: 'The bird is 26 m away and its ring keeps you more than 23 m off. A few meters toward it — and away from the brook behind you — help the call against the water. No mic, dish or gain makes that distance disappear.',
       after: 'Up to the ring the call gains a little and the brook falls away; back toward the brook the balance tips the other way. The quietest permitted position helps more than any gain — and the ring is never crossed for a cleaner take.',
     },
     box: { x0: -10000, x1: 30000, z0: -15000, z1: 15000 },
@@ -64,7 +64,7 @@ function F07Sound({ lesson, answers, onAnswered }: PageProps) {
     main: () => BIRD_P,
     others: [BROOK],
     Background: EdgeBg,
-    a11y: (x) => `Plan of the woodland edge. The observation point ${Math.abs(x / 1000).toFixed(1)} metres ${x >= 0 ? 'toward' : 'back from'} the bird from where it started, outside the setback ring.`,
+    a11y: (x) => `Plan of the woodland edge. The observation point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the bird from where it started, outside the setback ring.`,
     prediction: lesson.predictions.sound,
   });
   const steps: MikingStep[] = [
@@ -88,7 +88,7 @@ const F07Before = makeFieldBefore({
     { title: 'THE TARGET AND WHAT ELSE IS THERE', text: 'The target, its direction and movement, the competing sounds — water, a road, your own clothes — the wind, and the safe, permitted places you can work from.' },
     { title: 'TIME AND PLACE BEFORE GAIN', text: 'Choose the time and the position before adding any gain: a quieter spot away from water or a road helps the call more than the recorder can.' },
     { title: 'LET ANIMALS BEHAVE NATURALLY', text: 'Aim from a permitted point, away from nests and sensitive habitat. No recorded calls, no lures, no attractants — and never a step backward onto a trail while aiming.' },
-    { title: 'THE PURPOSE', text: 'An isolated sound for a library, a record of natural behaviour, a wider habitat recording, a live feed or a structured survey: each asks for something different.' },
+    { title: 'THE PURPOSE', text: 'An isolated sound for a library, a record of natural behavior, a wider habitat recording, a live feed or a structured survey: each asks for something different.' },
   ],
   safety: ['wildlife', 'lightning', 'water', 'traffic', 'hearing'],
 });
@@ -197,7 +197,7 @@ function F07TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
     flock,
     readStep('channels', 'Two channels, two jobs', [
       { title: 'FOCUSED AND HABITAT', text: 'A shotgun or a dish on the target and a separate wide mic for the habitat are two signal paths: label each, and keep the raw focused take.' },
-      { title: 'A STEREO DISH IS STILL TWO PATHS', text: 'Some dish systems add a wider stereo pickup; the focused part and the stereo ambience are different paths whose format and mono behaviour need writing down.' },
+      { title: 'A STEREO DISH IS STILL TWO PATHS', text: 'Some dish systems add a wider stereo pickup; the focused part and the stereo ambience are different paths whose format and mono behavior need writing down.' },
       { title: 'WHEN THE TARGET LEAVES THE BEAM', text: 'Do not chase it with gain without checking what is now on the axis. Pause, or move to another permitted point.' },
     ]),
     fieldCheckStep(lesson, 'twoMic', answers, onAnswered),

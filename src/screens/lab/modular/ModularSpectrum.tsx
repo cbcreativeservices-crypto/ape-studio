@@ -107,7 +107,7 @@ export function ModularSpectrum({
         ) : null}
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2 }}>
-        <Text style={{ fontFamily: fonts.barlowMedium, fontSize: 12, color: '#9a9ca8' }}>▮ grey = removed by the filter</Text>
+        <Text style={{ fontFamily: fonts.barlowMedium, fontSize: 12, color: '#9a9ca8' }}>▮ gray = removed by the filter</Text>
         <Text style={{ fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.amber }}>▮ amber = what passes the filter</Text>
         <Text style={{ fontFamily: fonts.barlowMedium, fontSize: 12, color: '#d8dae2' }}>- - - the filter’s curve</Text>
       </View>

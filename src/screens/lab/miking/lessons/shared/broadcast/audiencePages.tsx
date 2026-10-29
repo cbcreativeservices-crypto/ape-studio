@@ -268,7 +268,7 @@ export function useImmersiveStep(spec: { words: { looking: string; prompt: strin
     kind: 'COMPARE',
     layout: 'rack',
     rack: {
-      render: (w, h) => <ImmersiveScene w={w} h={h} kind={kind} accessibilityLabel={S ? 'A five-capsule surround mic from above: three capsules across the front labelled L, C and R, two toward the rear labelled Ls and Rs, and an arrow marking its front.' : 'A four-capsule Ambisonic mic from above: four capsules on a small tetrahedron labelled FLU, FRD, BLD and BRU, and its front mark with an arrow.'} />,
+      render: (w, h) => <ImmersiveScene w={w} h={h} kind={kind} accessibilityLabel={S ? 'A five-capsule surround mic from above: three capsules across the front labeled L, C and R, two toward the rear labeled Ls and Rs, and an arrow marking its front.' : 'A four-capsule Ambisonic mic from above: four capsules on a small tetrahedron labeled FLU, FRD, BLD and BRU, and its front mark with an arrow.'} />,
       badge: 'From above · each mic drawn with its front · channel labels only: no decode is drawn · silent',
       bezel: [
         { k: 'MIC', v: S ? '5 CAPSULES' : '4 CAPSULES', flex: 1.2 },
@@ -328,7 +328,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
   const [pattern, setPattern] = useState<'cardioid' | 'supercardioid'>('cardioid');
   const [predicted, setPredicted] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
-  // The event: a crowd mic on the centre section's rail, or at the stage's corner under the left PA cluster.
+  // The event: a crowd mic on the center section's rail, or at the stage's corner under the left PA cluster.
   const at: P2 = spot === 'rail' ? { x: -3.5, y: 2.1 } : { x: -7.8, y: 0.6 };
   const hMic = spot === 'rail' ? EVENT.hRail : 3.0;
   const base = degOf({ x: EVENT.CC.x - at.x, y: EVENT.CC.y - at.y });
@@ -377,7 +377,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
             setTurn(Math.round(v * 180 - 90));
             setTouched(true);
           },
-          // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
+          // "left/right of center" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
           format: () => (turn === 0 ? 'center: aimed at the middle of the section' : aimWords(turn)),
           formatShort: () => aimShort(turn),
         },
@@ -454,7 +454,7 @@ const PAIRS: Readonly<Record<PairId, { label: string; short: string; a: P2; b: P
   xy: { label: 'A coincident XY pair', short: 'XY', a: STUDIO.M, b: STUDIO.M, h: STUDIO.hBar, words: 'Two capsules at one point, angled apart: every source reaches both at the same moment. Width from level differences only — a predictable mono sum.' },
   ortf: { label: 'A near-coincident pair', short: 'NEAR PAIR', a: { x: STUDIO.M.x - 0.085, y: STUDIO.M.y }, b: { x: STUDIO.M.x + 0.085, y: STUDIO.M.y }, h: STUDIO.hBar, words: 'Two capsules about 17 cm apart, angled out: small time differences add width, with some mono compatibility — audition the mono sum.' },
   ab: { label: 'A spaced omni pair', short: 'SPACED', a: { x: -0.3, y: 4 }, b: { x: 0.3, y: 4 }, h: 3.8, words: 'Two omnis spaced apart over the hall: a sense of the room and its low end — and time differences that comb in mono.' },
-  zones: { label: 'Two zone mics', short: 'TWO ZONES', a: STUDIO.ZL, b: STUDIO.ZR, h: STUDIO.hCorner, words: 'One mic at each front corner, each its own zone: metres apart, each nearest its own people. Not a stereo pair — the image can wander and the mono sum colors.' },
+  zones: { label: 'Two zone mics', short: 'TWO ZONES', a: STUDIO.ZL, b: STUDIO.ZR, h: STUDIO.hCorner, words: 'One mic at each front corner, each its own zone: meters apart, each nearest its own people. Not a stereo pair — the image can wander and the mono sum colors.' },
 };
 
 export function usePairZonesStep(spec: { onDone: () => void; prediction?: Prediction; words: { looking: string; prompt: string; done: string } }): MikingStep {

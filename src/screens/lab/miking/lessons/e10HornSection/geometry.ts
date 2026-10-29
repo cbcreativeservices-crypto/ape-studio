@@ -110,7 +110,7 @@ export const E10_ZONES: DocumentedZone[] = [
     start: toward(LN_C, v3(0, -1300, -300)),
     variants: ['line'],
     micTypeIds: PAIR_TYPES,
-    tendency: 'The line as one sound, with some room. Closer favours the nearest player; higher evens the four out.',
+    tendency: 'The line as one sound, with some room. Closer favors the nearest player; higher evens the four out.',
     checks: ['Each player’s loudest passage', 'The balance between the four', 'The mono sum'],
   }),
   tptZone('ln.tpt', 'line', 't.tpt', LN_TPT.pose),
@@ -154,7 +154,7 @@ export const E10_ZONES: DocumentedZone[] = [
   }),
   mainZone({
     id: 'arc.main',
-    label: 'At the centre of the arc',
+    label: 'At the center of the arc',
     band: 'For a studio section: one mic or a pair at the center, about 1.5 m (5 ft) from every player, at the bells’ height or a little above.',
     kind: 'sourced',
     src: 'S-SM4-UG',
@@ -198,7 +198,7 @@ const arRig = (id: 'xy' | 'ab' | 'ms', c: Vec3, params = {}, tilt = 10) => ({ id
 export const AR_BACK = v3(0, -1750, HORN_ARC.c.z + 150);
 
 export const E10_SETUPS: EnsembleSetup[] = [
-  { id: 'lnClose', role: 'ONE MIC PER PLAYER · CLOSE', title: 'A close mic on each player', variants: ['line'], singles: LINE_CLOSE, mics: 'Cardioid dynamics on the trumpet and both trombones, a supercardioid dynamic beside the sax — each on its own short boom stand.', start: 'Trumpet 30–50 cm (12–20 in) from the bell, a little off its axis; sax 30–60 cm out on the player’s right, aimed a third of the way up; trombones 30–60 cm from the bell, above and beside the slide.', line: 'Control for the PA and later balance; each mic also hears its neighbours. The mics are about 2:1, not 3:1 — check them together, in mono.', core: true, view: 'plan' },
+  { id: 'lnClose', role: 'ONE MIC PER PLAYER · CLOSE', title: 'A close mic on each player', variants: ['line'], singles: LINE_CLOSE, mics: 'Cardioid dynamics on the trumpet and both trombones, a supercardioid dynamic beside the sax — each on its own short boom stand.', start: 'Trumpet 30–50 cm (12–20 in) from the bell, a little off its axis; sax 30–60 cm out on the player’s right, aimed a third of the way up; trombones 30–60 cm from the bell, above and beside the slide.', line: 'Control for the PA and later balance; each mic also hears its neighbors. The mics are about 2:1, not 3:1 — check them together, in mono.', core: true, view: 'plan' },
   { id: 'lnPairs', role: 'ONE MIC FOR TWO PLAYERS', title: 'A shared mic on each pair of players', variants: ['line'], singles: [sgl('p1', LN_PAIR1, 'TRUMPET + SAX', { art: 'sdc' }), sgl('p2', LN_PAIR2, 'TROMBONES', { art: 'sdc' })], mics: 'Two cardioid small condensers on tall stands, each aimed at the middle of two players.', start: 'About 0.8–1.2 m (2.5–4 ft) from the two players’ shared middle, a little above the bells.', line: 'Fewer open mics and a natural blend for each pair; one player can dominate — the players set the balance.', core: true, view: 'plan' },
   { id: 'lnPair', role: 'SECTION PAIR · COINCIDENT', title: 'An X/Y pair in front of the line', variants: ['line'], rig: lnRig('xy', { angle: 110 }), mics: 'Two matched cardioid small condensers, capsules together, on one tall stand.', start: 'About 1.2–1.8 m (4–6 ft) in front of the line and about 2 m up, aimed at its middle; 110° to take in all four.', line: 'The section as one sound with some room — useful for a recording or a stream; on a loud stage it hears the PA too.', core: true, view: 'section' },
   { id: 'lnExpanded', role: 'CLOSE MICS + SECTION PAIR', title: 'Close mics and the pair', variants: ['line'], rig: lnRig('xy', { angle: 110 }), singles: LINE_CLOSE, mics: 'The four close mics plus the X/Y pair.', start: 'Each mic at its own start; then the pair faded up from silence under them.', line: 'The most control; treat it as one system — solo and mute each mic, listen in mono, and check the pair adds something.', core: true, view: 'front' },

@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes for the front and back players and across the width.',
     credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Change one variable at a time and compare at a consistent level. Closer favours the front players; farther back, more blend and room. The array moves as a unit.',
+    takeaway: 'Change one variable at a time and compare at a consistent level. Closer favors the front players; farther back, more blend and room. The array moves as a unit.',
   },
   context: {
     title: 'Reinforcement and recording',
@@ -52,7 +52,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Placement and balance first: the array’s height and distance, the spacing and center, the supports’ level, the clipping stage, the PA’s geometry — before EQ. Lower the gain at the first sign of ringing.',
   },
   practice: {
@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why does a support mic hear only part of an instrument?',
     options: ['It is close to one part of a large body', 'Supports are a different kind of microphone', 'It is aimed away from that player'],
     correct: 'It is close to one part of a large body',
-    explain: 'Close in, a mic favours the part of the instrument nearest it. The pair hears the whole instrument with the room; a support adds one local view.',
+    explain: 'Close in, a mic favors the part of the instrument nearest it. The pair hears the whole instrument with the room; a support adds one local view.',
     why: {
       'Supports are a different kind of microphone': 'They can be the same kind; closeness is what changes the view.',
       'It is aimed away from that player': 'A support aims at its players; distance sets how local its view is.',
@@ -296,7 +296,7 @@ const symptoms: Symptom[] = [
   {
     id: 'mix.s.front',
     observation: 'The front row dominates',
-    firstChecks: 'Does the main placement favour the nearby players? Adjust the array’s height or distance and rehearse the balance.',
+    firstChecks: 'Does the main placement favor the nearby players? Adjust the array’s height or distance and rehearse the balance.',
     options: ['Adjust height or distance; rehearse', 'Add a spot on each of the back-row players', 'Cut the front players with EQ'],
     correct: 'Adjust height or distance; rehearse',
     explain: 'Even the distances with height or distance, one change at a time, and rehearse the balance with the players.',
@@ -553,7 +553,7 @@ export const E13_LESSON: EnsembleLesson = {
       clearance: 'The stand in front of the group, clear of the players’ sightlines, bows and slides, and of the audience’s way; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main array’s centre — for a chamber group, 1.5–3 m in front and 2–2.5 m up; for an orchestra, over or just behind the podium, 3–4 m up. Places to start and compare, not measurements of a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main array’s center — for a chamber group, 1.5–3 m in front and 2–2.5 m up; for an orchestra, over or just behind the podium, 3–4 m up. Places to start and compare, not measurements of a best place.',
       'Change one variable at a time — distance, height, then the spacing or angle — and compare at a consistent monitoring level on the same passage.',
       'Keep the array’s own geometry as you move it; a different spacing is a different method, chosen on purpose.',
     ],

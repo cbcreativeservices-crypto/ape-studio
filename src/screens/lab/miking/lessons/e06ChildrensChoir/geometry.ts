@@ -114,7 +114,7 @@ export const E06_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'cc.pair',
     label: 'A main pair a few feet in front, a little above the heads',
-    band: 'Begin with one pair, centred, a few feet in front and a little above the children’s heads — about 0.6–2 m (2–6.5 ft) out — then move it toward or away and listen to the front-to-back balance and the words.',
+    band: 'Begin with one pair, centered, a few feet in front and a little above the children’s heads — about 0.6–2 m (2–6.5 ft) out — then move it toward or away and listen to the front-to-back balance and the words.',
     kind: 'trial',
     src: 'S-REC',
     quote: 'a few feet in front of, and a few feet above, the heads of the first row (S-REC p.6); "Record a rehearsal pass with one stereo pair … Move the main array in small increments" (the lesson L27–L29)',

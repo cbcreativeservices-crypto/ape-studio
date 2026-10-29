@@ -55,7 +55,7 @@ function B16Meet(p: PageProps) {
         title="THE PRACTICE ROOM"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice room from above: a walking line through A, B and C two metres apart, equipment area M1 two metres to one side of B and M2 two metres to the other." labels={venueLabels(PRACTICE_SMALL, { layers: true })}>
+          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice room from above: a walking line through A, B and C two meters apart, equipment area M1 two meters to one side of B and M2 two meters to the other." labels={venueLabels(PRACTICE_SMALL, { layers: true })}>
             {(px) => <VenuePlan scene={PRACTICE_SMALL} px={px} />}
           </FieldStage>
         )}

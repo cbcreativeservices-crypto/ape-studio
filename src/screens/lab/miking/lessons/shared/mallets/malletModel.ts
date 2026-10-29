@@ -73,7 +73,7 @@ export function malletGeom(fam: MalletFamily): MalletGeom {
     const e: MalletGeom['extras'][string] = {};
     const tNat = Math.max(...L.naturals.map((b) => b.t));
     if (r.extras.damper === 'pedal') {
-      // The felt damper bar under the bars along the centre line, touching
+      // The felt damper bar under the bars along the center line, touching
       // them while the pedal is up (YMH-HUB-VIBE; position DRAWING DEFAULT).
       e.damper = box({ x: L.span.lo + 20, y: L.yNat + tNat, z: -14 }, { x: L.span.hi - 20, y: L.yNat + tNat + 24, z: 14 });
       // The pedal: the centre of the player side, on the floor (A5: 300 × 120 × 100).

@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — where the mic looks, its distance, the pattern, the player’s movement, the mount, the filter — before reaching for tone controls.',
   },
   practice: {
@@ -134,12 +134,12 @@ const scenarios: MikingScenario[] = [
     id: 'ob.mic.1',
     page: 'microphone',
     prompt: 'In a quiet, good room, is an omni a fair first try on a solo oboe?',
-    options: ['No — an omni hears only the bell, not the open holes', 'No — an omni works only more than a metre away', 'Yes — a broad, even pickup that lets the oboe blend'],
+    options: ['No — an omni hears only the bell, not the open holes', 'No — an omni works only more than a meter away', 'Yes — a broad, even pickup that lets the oboe blend'],
     correct: 'Yes — a broad, even pickup that lets the oboe blend',
     explain: 'An omni hears all round with no directional proximity effect — welcome when the room adds to the sound. As separation matters more, a wide cardioid or a cardioid; a very narrow pickup can make a woodwind less natural.',
     why: {
       'No — an omni hears only the bell, not the open holes': 'An omni hears the holes, the bell and the room together.',
-      'No — an omni works only more than a metre away': 'An omni works at any distance; up close it also has no directional proximity bass.',
+      'No — an omni works only more than a meter away': 'An omni works at any distance; up close it also has no directional proximity bass.',
     },
   },
   {
@@ -150,7 +150,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Back up the oboe toward the keys',
     explain: 'Aimed back toward the keys, the capsule hears the open holes and some bell; into the bell it hears mostly the lowest notes. With a longer gooseneck, looking toward the upper joint tends to even out the range.',
     why: {
-      'Straight down into the bell’s opening': 'Into the bell, the mic favours the lowest notes and misses the open holes.',
+      'Straight down into the bell’s opening': 'Into the bell, the mic favors the lowest notes and misses the open holes.',
       'At the reed, to hear the double reed close up': 'Never near the reed: it is at the player’s lips, and the sound leaves lower down.',
     },
   },
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ob.place.2',
     page: 'placement',
-    prompt: 'You move from 15–20 cm to about a metre in front. What tends to change?',
+    prompt: 'You move from 15–20 cm to about a meter in front. What tends to change?',
     options: ['Only the level drops; the tone stays exactly the same', 'The reed gets louder, because the mic is now above it', 'More of the room and the blend; less key detail'],
     correct: 'More of the room and the blend; less key detail',
     explain: 'Farther away, the reed, holes and bell blend, the key clicks fall back and more room arrives. Closer, a directional mic adds low end (proximity effect).',
@@ -193,7 +193,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ob.place.3',
     page: 'placement',
-    prompt: 'Is a mic a few centimetres from the oboe’s reed a good first choice?',
+    prompt: 'Is a mic a few centimeters from the oboe’s reed a good first choice?',
     options: ['Not usually: it is in the way and hears mostly reed', 'Yes — that is where all of the oboe’s sound is made', 'Yes, as long as it is a small condenser on a stand'],
     correct: 'Not usually: it is in the way and hears mostly reed',
     explain: 'The reed starts the sound, but it leaves from the holes and the bell. A mic at the mouth sits in the player’s way and hears the reed’s edge and breath; the starting points look at the body.',
@@ -245,7 +245,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why can a bell-near mic tilt an oboe’s balance?',
     options: ['The bell blocks the oboe’s high notes', 'The lowest notes leave mainly there', 'The bell is louder than the reed'],
     correct: 'The lowest notes leave mainly there',
-    explain: 'With every hole closed the sound leaves the bell; most other notes leave from the open holes. So a bell-near mic can favour the lowest notes — compare a hole-facing view.',
+    explain: 'With every hole closed the sound leaves the bell; most other notes leave from the open holes. So a bell-near mic can favor the lowest notes — compare a hole-facing view.',
     why: {
       'The bell blocks the oboe’s high notes': 'Nothing is blocked; most notes simply leave earlier, from the holes.',
       'The bell is louder than the reed': 'Loudness is not the point: the place each note leaves from is.',
@@ -335,8 +335,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a natural spot sound — then small changes by ear.' },
       { id: 'b', label: 'Small condenser about a foot from the sound holes, facing them', ok: true, power: 'phantom', feedback: 'A suggested starting point for a balanced oboe.' },
-      { id: 'c', label: 'A mic a few centimetres from the reed, where the sound is made', ok: false, power: 'phantom', feedback: 'At the reed it hears breath and edge and sits in the player’s way.' },
-      { id: 'd', label: 'A mic pointed straight into the bell from close up', ok: false, power: 'phantom', feedback: 'A bell-only view favours the lowest notes and misses the holes.' },
+      { id: 'c', label: 'A mic a few centimeters from the reed, where the sound is made', ok: false, power: 'phantom', feedback: 'At the reed it hears breath and edge and sits in the player’s way.' },
+      { id: 'd', label: 'A mic pointed straight into the bell from close up', ok: false, power: 'phantom', feedback: 'A bell-only view favors the lowest notes and misses the holes.' },
       { id: 'e', label: 'Two close mics, at the bell and the upper joint, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not needed for one oboe; two close views move as the player moves.' },
     ],
     reasons: [docReason('the holes'), clearReason('the reed and face, the hands and the oboe’s pivot'), POWER_REASON, { id: 'r.blend', label: 'It hears the open holes and the bell together', role: 'optional', feedback: 'A fair reason: most notes leave from the holes, the lowest from the bell.' }, BRAND_REASON('oboe'), LOUD_REASON],
@@ -347,9 +347,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: an oboist in a band with drums and amps, a wedge in front. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A small condenser a few centimetres from the bell, a little off its axis', ok: true, power: 'phantom', feedback: 'A suggested starting point for a bright, isolated live sound — check the low notes against the rest.' },
+      { id: 'a', label: 'A small condenser a few centimeters from the bell, a little off its axis', ok: true, power: 'phantom', feedback: 'A suggested starting point for a bright, isolated live sound — check the low notes against the rest.' },
       { id: 'b', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the oboe — check the clip’s fit and the cable.' },
-      { id: 'c', label: 'A small condenser a metre in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the wedge more than the oboe.' },
+      { id: 'c', label: 'A small condenser a meter in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a meter away hears the band and the wedge more than the oboe.' },
       { id: 'd', label: 'A clip on the reed’s staple, as close as the sound gets', ok: false, power: 'phantom', feedback: 'Nothing goes on the reed: it is at the player’s lips and is fragile.' },
       { id: 'e', label: 'An omni by the holes, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'An omni rejects nothing; turned up, it brings the stage and feedback with it.' },
     ],
@@ -361,7 +361,7 @@ const setupTasks: SetupTask[] = [
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the oboe?', options: ['The bell', 'An open hole on the body', 'The reed'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the mic from 15–20 cm to a few centimetres from the bell. What changes?', options: ['Brighter, more isolated', 'Darker, more room', 'It depends on the notes'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you move the mic from 15–20 cm to a few centimeters from the bell. What changes?', options: ['Brighter, more isolated', 'Darker, more room', 'It depends on the notes'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the oboe reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -507,7 +507,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a solo may want the room and a blend of reed, holes and bell. Live: an oboe among drums and amps needs a closer or bell-near sound.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — nothing alone prevents feedback.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — nothing alone prevents feedback.' },
         { title: 'MOVEMENT', text: 'An oboe pivots as the player breathes and reads. A stand mic has a working zone; a miniature on a clip keeps one distance as the player moves.' },
         { title: 'IN A SECTION', text: 'With a main pair up, an oboe mic is a spot: bring it up only for a stated balance, and check it in mono. A section spot can sit between two oboes at about head height.' },
       ],
@@ -613,7 +613,7 @@ export const A09A_LESSON: WindLesson = {
     { text: 'The 545 mm body and Ø 57 bell are a museum oboe of about 1900 used as a modern size; the reed (45 mm out), the joint split and the key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
     { text: 'The hands, arms, head and the oboe’s pivot — illustrative keep-outs (a 20 mm margin round the oboe).', dims: [] },
     { text: '“A few inches from the bell” drawn 5–11 cm; the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
@@ -622,7 +622,7 @@ export const A09A_LESSON: WindLesson = {
   wind: windExtra(SPEC, {
     soundSubject: 'An oboe on its side, keys toward you, its air column drawn open',
     breath: 'Breath and reed edge are heard close to the reed; the oboe sends little air out of its holes, so wind noise at a body-facing mic is rarely a problem.',
-    keys: 'The oboe’s dense keywork — rings, plates, pads closing — is easy to hear within a few centimetres of the body: back off, or change the angle.',
+    keys: 'The oboe’s dense keywork — rings, plates, pads closing — is easy to hear within a few centimeters of the body: back off, or change the angle.',
     directivity: 'Measured round a player in an anechoic (echoless) room: below about 400 Hz the oboe spreads its sound fairly evenly through the lower half of the space round it; above about 1 kHz the sound narrows into a beam toward the bell, and it is more than 12 dB quieter behind the player than in front.',
     noteDefault: 9,
   }),

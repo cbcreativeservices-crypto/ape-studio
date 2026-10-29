@@ -22,20 +22,20 @@ const F = BARITONE_SAX;
 
 export const BARITONE_ZONES: DocumentedZone[] = [
   saxZone(F, 'above', 'bs.above', {
-    label: 'A few centimetres above the bell, aimed at the sound holes',
+    label: 'A few centimeters above the bell, aimed at the sound holes',
     band: 'Try about 5–10 cm (2–4 in) above the bell rim, aimed down across the body at the sound holes — a natural place to begin, though on a big horn it hears only the lower holes well.',
     tendency: 'A blend of the bell and the lower body, with weight. The upper holes are far away on a baritone: compare a farther spot that takes in more of the horn.',
     checks: ['The bell’s swing as the player turns', 'The lowest notes the part uses — and the highest', 'Proximity lift on the low notes'],
   }),
   saxZone(F, 'into', 'bs.into', {
-    label: 'A few centimetres from the bell, aimed into it',
+    label: 'A few centimeters from the bell, aimed into it',
     band: 'Try about 5–10 cm (2–4 in) from the bell rim, on its axis, aimed into the bell — focused, with the least spill.',
-    tendency: 'Focused presence beside a loud rhythm section, with the least spill; it can sound nasal or favour one register, and a directional mic this close lifts the lows.',
+    tendency: 'Focused presence beside a loud rhythm section, with the least spill; it can sound nasal or favor one register, and a directional mic this close lifts the lows.',
     checks: ['Low notes for boom (proximity)', 'Middle notes for a nasal edge', 'The bell’s swing as the player turns'],
   }),
   saxZone(F, 'holes', 'bs.holes', {
-    label: 'A few centimetres from the sound holes',
-    band: 'Try about 5–10 cm (2–4 in) from the middle of the key stack, aimed at the holes — warmer and fuller; on a baritone, aiming at one small key area can favour a few notes.',
+    label: 'A few centimeters from the sound holes',
+    band: 'Try about 5–10 cm (2–4 in) from the middle of the key stack, aimed at the holes — warmer and fuller; on a baritone, aiming at one small key area can favor a few notes.',
     tendency: 'Warm and full, with more key and pad noise; some notes jump out, others fade. Back off or aim across the body if one area takes over.',
     checks: ['Key and pad noise', 'Note-to-note evenness up and down the part', 'The hands — nothing within their reach'],
   }),
@@ -53,7 +53,7 @@ export const BARITONE_ZONES: DocumentedZone[] = [
   }),
   saxZone(F, 'triangle', 'bs.triangle', {
     label: 'The triangle: as far away as the horn is long',
-    band: 'In a good room, try a mic in front about as far from the top of the horn as from the bottom — each roughly the horn’s own length, about a metre — aimed at the middle of the horn.',
+    band: 'In a good room, try a mic in front about as far from the top of the horn as from the bottom — each roughly the horn’s own length, about a meter — aimed at the middle of the horn.',
     tendency: 'The whole baritone, top to bottom, with the room: the most even across the range, and the most spill. Often paired with a close mic, judged in mono.',
     checks: ['The room and the band it brings in', 'Low-note weight against the close mic', 'Mono with any second mic'],
   }),

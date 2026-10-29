@@ -63,12 +63,12 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two commentators’ open mics can make a voice sound hollow, how the arrival-time difference places comb notches, and why each voice stays on its own channel.',
     credit: { scenarios: ['b9.two.1', 'b9.two.2', 'b9.two.3', 'b9.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches the partner’s mic later and much lower: the sum cancels some frequencies. Close booms, each on its own labelled channel, checked alone and in mono; polarity flips the sign and never removes a delay.',
+    takeaway: 'Each voice reaches the partner’s mic later and much lower: the sum cancels some frequencies. Close booms, each on its own labeled channel, checked alone and in mono; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the capsule’s place, the boom, the head’s movement, the partner, the PA, the route — before reaching for a gate, EQ or more gain.',
   },
   practice: {
@@ -296,7 +296,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two commentators in a closed booth, headsets on. What is a fair first setup?',
     options: ['A headset boom each, on its own channel', 'One mic on the desk between the two of them', 'A loudspeaker in the booth so both can hear'],
     correct: 'A headset boom each, on its own channel',
-    explain: 'A boom each at the mouth corner, each on its own labelled channel, hearing the program on headphones: a place to begin.',
+    explain: 'A boom each at the mouth corner, each on its own labeled channel, hearing the program on headphones: a place to begin.',
     why: {
       'One mic on the desk between the two of them': 'Far from both mouths: more crowd and no way to balance the two voices.',
       'A loudspeaker in the booth so both can hear': 'A loudspeaker near open mics sends the program back into them.',
@@ -342,10 +342,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b9.two.4',
     page: 'twoMic',
-    prompt: 'Why keep each commentator on their own labelled channel?',
+    prompt: 'Why keep each commentator on their own labeled channel?',
     options: ['Each can be checked and balanced alone', 'Two channels make both of the voices louder', 'So the two mics form a stereo pair'],
     correct: 'Each can be checked and balanced alone',
-    explain: 'On separate channels each voice can be soloed, levelled, pulled down when silent and checked in mono with the other. A sum made at the source cannot be undone.',
+    explain: 'On separate channels each voice can be soloed, leveled, pulled down when silent and checked in mono with the other. A sum made at the source cannot be undone.',
     why: {
       'Two channels make both of the voices louder': 'Level comes from gain, not from channels.',
       'So the two mics form a stereo pair': 'They are two close voice mics, not a stereo pair.',
@@ -496,7 +496,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Desk-arm mics for both, set 30 cm out of the way', ok: false, power: 'none', feedback: 'Far and fixed: a turning commentator leaves it, and the partner comes up.' },
       { id: 'e', label: 'The booth loudspeaker on so both can hear the program', ok: false, power: 'none', feedback: 'A loudspeaker near open mics sends the program back in. Use the headsets.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the face, glasses and the notes'), { id: 'r.channel', label: 'Each voice on its own labelled channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.silent', label: 'The pattern guarantees the partner is not in the mic', role: 'wrong', feedback: 'No pattern guarantees isolation when two people sit close together.' }, BRAND_REASON('commentator'), LOUD_VOICE],
+    reasons: [docReason('the lips'), clearReason('the face, glasses and the notes'), { id: 'r.channel', label: 'Each voice on its own labeled channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.silent', label: 'The pattern guarantees the partner is not in the mic', role: 'wrong', feedback: 'No pattern guarantees isolation when two people sit close together.' }, BRAND_REASON('commentator'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a close start measured from the lips, clear of the face and the notes, each voice on its own channel, checked in mono — and no promise of zero bleed.',
   },
   {

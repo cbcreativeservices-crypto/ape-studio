@@ -270,7 +270,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <P>Listen to the kicks in your two ears. A steady “flam” (a doubled kick) is offset — nudge. A flam that grows, then turns into chaos, is drift — tempo. Use the fine TEMPO steps (±0.05 %) under the fader to stop the last of the drift.</P>
         <Note>On this lab’s players the tempo fader changes speed AND pitch (no key lock): deck B pulled down to 122 BPM also sounds about half a semitone lower — enough to sound sour against deck A’s bass and chords. Blend over drum-only intros, or use key lock (later in the course).</Note>
-        <Note>In a big room the PA reaches you late — about 3 ms for every metre. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
+        <Note>In a big room the PA reaches you late — about 3 ms for every meter. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
         <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>

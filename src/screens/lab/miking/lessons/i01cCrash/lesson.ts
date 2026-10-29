@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, the swing, aim, the pattern, gain and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each starting point is measured from the cymbal it names, square to its plate — on a tilted crash, not straight up.',
     why: {
       'From the floor, straight up to the mic, like a stand': 'The floor is not the reference. Measure from the crash.',
-      'From the tom below, up through the cymbal to the mic': 'The tom is a neighbour, not the reference.',
+      'From the tom below, up through the cymbal to the mic': 'The tom is a neighbor, not the reference.',
     },
   },
   {
@@ -333,7 +333,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small condenser 20–35 cm above the crash on the far side, aimed at the plate', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stroke — with the power it needs.' },
       { id: 'c', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
       { id: 'd', label: 'A mic just past the edge on the player’s side, where the stick follows through', ok: false, power: 'none', feedback: 'That is the stick’s follow-through — it would be struck. Start on the far side.' },
-      { id: 'e', label: 'A mic a few centimetres under the plate', ok: false, power: 'none', feedback: 'Inside the downward swing: a big hit brings the plate down onto it. Start lower.' },
+      { id: 'e', label: 'A mic a few centimeters under the plate', ok: false, power: 'none', feedback: 'Inside the downward swing: a big hit brings the plate down onto it. Start lower.' },
     ],
     reasons: [docReason(W), CLEAR_REASON, POWER_REASON, { id: 'r.iso', label: 'From below, the mic’s rejection faces the floor wedges', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'More than one plan passes this brief. What passes is the reasoning: a sensible starting point measured from the crash, clearance from the stroke, the swing and the player, and power that matches the mic.',
@@ -460,7 +460,7 @@ export const I01C_LESSON: CymbalLesson = {
     items: [
       { id: 'crash', label: 'the crash', short: 'CRASH', note: 'Ringed in amber: the crash this lesson mics, high over a rack tom. Switch CRASH for the other one.', prov: { kind: 'sourced', src: 'ZIL-K', quote: '16" Dark Crash Thin; 18" Dark Crash Thin' }, tag: 'THE CYMBAL', scene: 'all', planIds: ['crash1', 'crash2'] },
       { id: 'toms', label: 'the rack toms', short: 'TOMS', note: 'Under the crashes: a crash mic aimed down hears the tom below, and the tom mic hears the crash.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['tom1', 'tom2'] },
-      { id: 'hats', label: 'hi-hats and snare', short: 'HATS · SNARE', note: 'Under the 16 in crash’s player side: loud neighbours, and the hats’ stick is right there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['hihat', 'snare'] },
+      { id: 'hats', label: 'hi-hats and snare', short: 'HATS · SNARE', note: 'Under the 16 in crash’s player side: loud neighbors, and the hats’ stick is right there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['hihat', 'snare'] },
       { id: 'ride', label: 'the ride', short: 'RIDE', note: 'Beside the 18 in crash on the right: another loud cymbal a crash mic hears.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['ride'] },
       THRONE_ITEM('The player sits behind the kit and reaches up to the crashes; the glancing stroke follows through past the edge on this side.'),
       ...stageItems('crashes'),

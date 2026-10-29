@@ -1012,7 +1012,7 @@ export const STAGE2_DELIVER: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "There is no archival master anywhere in the plan",
-      detail: "Every deliverable here is a version made for a destination. When the destination changes, or a remix, licence or re-release is asked for, the version is not enough. The thing that survives is the archival package, and it only exists if someone planned it.",
+      detail: "Every deliverable here is a version made for a destination. When the destination changes, or a remix, license or re-release is asked for, the version is not enough. The thing that survives is the archival package, and it only exists if someone planned it.",
       fixHint: "Add an archival package, and decide what it contains: the full-resolution master, the multitrack or session files, and the documentation someone would need to open them.",
       needsLogic: true,
       logicIntent: "Fire when no deliverable of type archival_package, multitrack or project_files exists and the stage 1 archive_plan is not producer_keeps or both. When the producer is keeping the files, the archive exists without being a formal deliverable, so do not fire."

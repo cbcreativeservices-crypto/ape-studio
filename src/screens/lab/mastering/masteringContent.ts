@@ -33,7 +33,7 @@ export const MASTERING_MODULES: readonly MasteringModule[] = [
   {
     id: 'room', num: 3, title: 'Room and monitoring', short: 'ROOM',
     objective: 'Start with the room, not the gear list: acoustic control, main and second monitors, a listening level you can repeat, and the whole playback path.',
-    takeaway: 'Judgement is only as good as the room and the level it was made at. Build the monitoring path in order, keep the level sensible and consistent, and treat headphones and small speakers as checks, not the reference.',
+    takeaway: 'Judgment is only as good as the room and the level it was made at. Build the monitoring path in order, keep the level sensible and consistent, and treat headphones and small speakers as checks, not the reference.',
   },
   {
     id: 'tools', num: 4, title: 'Mastering equipment and tools', short: 'TOOLS',
@@ -84,7 +84,7 @@ export const TRIAGE_SCENARIOS: readonly Scenario[] = [
   { id: 't1', moduleId: 'what', prompt: 'The whole mix sounds slightly dull next to the reference the client sent, on every system in the room.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'A broad, program-wide tonal shift is exactly what a mastering EQ addresses — gently, on the whole stereo file.' },
   { id: 't2', moduleId: 'what', prompt: 'The lead vocal sits 3 dB too low in the chorus only; everything else is right.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'A stereo master has no independent handle on the vocal. Anything that lifts it lifts what shares its range. Ask for a revised mix or a vocal-up version.' },
   { id: 't3', moduleId: 'what', prompt: 'Track 3 arrives 2 dB quieter than the rest of the set, but internally it is well balanced.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Consistency ACROSS tracks is a mastering job: level and tone between songs are balanced at this stage.' },
-  { id: 't4', moduleId: 'what', prompt: 'The file is labelled "final" but the version number is lower than the one in the email thread.', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Mastering the wrong version wastes everyone\'s time. Confirm the approved version before listening critically.' },
+  { id: 't4', moduleId: 'what', prompt: 'The file is labeled "final" but the version number is lower than the one in the email thread.', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Mastering the wrong version wastes everyone\'s time. Confirm the approved version before listening critically.' },
   { id: 't5', moduleId: 'what', prompt: 'A snare hit in bar 12 is distorted — the clipping is on the snare only, not the bus.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'Distortion baked into one element cannot be cleanly removed from a stereo file. The mixer can fix it at the source: lower the gain that clips, or repair or replace the hit.' },
   { id: 't6', moduleId: 'what', prompt: 'The ending fades too slowly for the client\'s taste; the recording itself is clean.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Fades, tops and tails are routine mastering edits on the stereo program.' },
   { id: 't7', moduleId: 'what', prompt: 'The mix peaks at −0.1 dBFS with a limiter already on the mix bus, and the client says "make it competitive".', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Both questions, and the first one is information: ask for the mix WITHOUT the bus limiter and ask what "competitive" means to them (a reference, a destination). Stacking limiting on limiting is how dynamics die.' },
@@ -121,10 +121,10 @@ export const ROLE_SCENARIOS: readonly Scenario[] = [
 /** Module 3 — room and monitoring */
 export const ROOM_SCENARIOS: readonly Scenario[] = [
   { id: 'm1', moduleId: 'room', prompt: 'Two versions sound different, but you listened to the second one 6 dB louder. What do you know?', options: ['The second is better — you heard the difference clearly', 'Nothing yet — match the levels and listen again', 'The first has less bass and a little less air'], correct: 'Nothing yet — match the levels and listen again', explain: 'Louder reads fuller and brighter. A comparison at different levels tells you about the level, not the decision.' },
-  { id: 'm2', moduleId: 'room', prompt: 'Which monitoring level is a sensible working level for a long session?', options: ['As loud as the client likes it, so they hear what they paid for', 'A consistent, moderate level you can repeat day to day', 'As quiet as possible, so nothing fatigues over the day'], correct: 'A consistent, moderate level you can repeat day to day', explain: 'Repeatable and moderate: comparisons mean something, fatigue is managed, and hearing is protected. Very quiet listening biases tonal judgement thin.' },
-  { id: 'm3', moduleId: 'room', prompt: 'Headphones in a mastering room are…', options: ['The reference, because they take the room and its modes out of the picture', 'A supplementary check, not a replacement for monitors in a treated room', 'Never used — a mastering room has monitors for a reason'], correct: 'A supplementary check, not a replacement for monitors in a treated room', explain: 'Headphones reveal detail and are a translation check. Stereo image, low-frequency judgement and level are still referenced to the main room.' },
+  { id: 'm2', moduleId: 'room', prompt: 'Which monitoring level is a sensible working level for a long session?', options: ['As loud as the client likes it, so they hear what they paid for', 'A consistent, moderate level you can repeat day to day', 'As quiet as possible, so nothing fatigues over the day'], correct: 'A consistent, moderate level you can repeat day to day', explain: 'Repeatable and moderate: comparisons mean something, fatigue is managed, and hearing is protected. Very quiet listening biases tonal judgment thin.' },
+  { id: 'm3', moduleId: 'room', prompt: 'Headphones in a mastering room are…', options: ['The reference, because they take the room and its modes out of the picture', 'A supplementary check, not a replacement for monitors in a treated room', 'Never used — a mastering room has monitors for a reason'], correct: 'A supplementary check, not a replacement for monitors in a treated room', explain: 'Headphones reveal detail and are a translation check. Stereo image, low-frequency judgment and level are still referenced to the main room.' },
   { id: 'm4', moduleId: 'room', prompt: 'Where does the DAW sit in the monitoring path?', options: ['After the monitor controller, where the level is already set', 'At the start: playback → conversion → level → amplification → air', 'Between the power amplifier and the speakers, before the air'], correct: 'At the start: playback → conversion → level → amplification → air', explain: 'The file is read in software first; it is converted, level-controlled, amplified and finally turned into air. Real systems vary in the middle.' },
-  { id: 'm5', moduleId: 'room', prompt: 'Low-frequency problems in a listening room most often come from…', options: ['The converter, or the clocking between the converter and the DAW', 'Room modes and boundary reflections', 'The DAW\'s sample rate and buffer size'], correct: 'Room modes and boundary reflections', explain: 'Bass behaviour is set by the room dimensions and where the speakers and listener sit. Treatment and placement are the real fix; room-correction EQ can only tame a peak at one seat.' },
+  { id: 'm5', moduleId: 'room', prompt: 'Low-frequency problems in a listening room most often come from…', options: ['The converter, or the clocking between the converter and the DAW', 'Room modes and boundary reflections', 'The DAW\'s sample rate and buffer size'], correct: 'Room modes and boundary reflections', explain: 'Bass behavior is set by the room dimensions and where the speakers and listener sit. Treatment and placement are the real fix; room-correction EQ can only tame a peak at one seat.' },
 ];
 
 /** Module 4 — "Choose a tool for the job" */
@@ -132,7 +132,7 @@ export const TOOL_OPTIONS = ['Broad EQ (shelf or tilt)', 'Narrow corrective EQ',
 
 export const TOOL_SCENARIOS: readonly Scenario[] = [
   { id: 'k1', moduleId: 'tools', prompt: 'Goal: the whole song reads slightly warm and dull against the reference.', options: TOOL_OPTIONS, correct: 'Broad EQ (shelf or tilt)', explain: 'A program-wide tonal lean calls for a broad move — then listen again at matched level before deciding it helped.' },
-  { id: 'k2', moduleId: 'tools', prompt: 'Goal: track 4 is 2.5 dB quieter than its neighbours and otherwise fine.', options: TOOL_OPTIONS, correct: 'Level trim + loudness meter', explain: 'Consistency between tracks is a level decision, set by ear and checked with a loudness meter, not a compressor.' },
+  { id: 'k2', moduleId: 'tools', prompt: 'Goal: track 4 is 2.5 dB quieter than its neighbors and otherwise fine.', options: TOOL_OPTIONS, correct: 'Level trim + loudness meter', explain: 'Consistency between tracks is a level decision, set by ear and checked with a loudness meter, not a compressor.' },
   { id: 'k3', moduleId: 'tools', prompt: 'Goal: one unexpected peak in the bridge is 2 dB above every other peak in the song.', options: TOOL_OPTIONS, correct: 'Peak limiter', explain: 'A single stray peak is what a limiter is for — a dB or two of control on the one event, not density on the whole song — or, more transparently, a manual clip-gain edit on the one event.' },
   { id: 'k4', moduleId: 'tools', prompt: 'Goal: a resonant ring at one frequency, every time the toms play (the mixer is not available).', options: TOOL_OPTIONS, correct: 'Narrow corrective EQ', explain: 'A narrow problem gets a narrow tool — and, when the mixer IS available, a question back to them, since the tom channel is the real place to fix it.' },
   { id: 'k5', moduleId: 'tools', prompt: 'Goal: the mix feels wide and exciting in the room; the client\'s video will play on phones.', options: TOOL_OPTIONS, correct: 'Phase correlation / mono check', explain: 'Before widening anything, check what the mono fold does to it. A wide mix that collapses on a phone speaker has a problem the room hid.' },
@@ -146,7 +146,7 @@ export const TOOL_GROUPS: readonly { id: string; title: string; decision: string
   { id: 'eq', title: 'EQ', decision: 'Tonal balance and correction', items: ['Broad shelves and tilt', 'Narrow correction', 'Dynamic / linear-phase variants'] },
   { id: 'dyn', title: 'Dynamics', decision: 'Density, control, peaks', items: ['Compression (gentle, program)', 'Limiting (peak / true-peak ceiling)', 'Multiband and other dynamics tools'] },
   { id: 'stereo', title: 'Stereo / spatial', decision: 'Width and balance, checked in mono', items: ['Mid/side width', 'Channel balance', 'Mono-compatibility check'] },
-  { id: 'meters', title: 'Meters and analysis', decision: 'Verify, never guess', items: ['Sample-peak and true-peak meters', 'Loudness meter (BS.1770 family)', 'Phase correlation', 'Spectrum analyser'] },
+  { id: 'meters', title: 'Meters and analysis', decision: 'Verify, never guess', items: ['Sample-peak and true-peak meters', 'Loudness meter (BS.1770 family)', 'Phase correlation', 'Spectrum analyzer'] },
   { id: 'analog', title: 'Analog equipment (optional)', decision: 'Color and a different hand on the same decisions', items: ['Analog EQ and compressors', 'Converters and routing', 'Neither analog nor digital is "better" — they are different'] },
 ];
 
@@ -263,7 +263,7 @@ export const PROJECT_TRACKS: readonly ProjectTrack[] = [
   },
   {
     id: 'p4', title: 'Harbour Lights', seconds: 258, lufsEstimate: -15.1, truePeakDb: -2.0, note: 'Slightly dull and narrow next to the other three; otherwise balanced.',
-    issue: { id: 'e4', moduleId: 'project', prompt: '"Harbour Lights" reads dull and a little narrow against its neighbours. Which path?', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Program-wide tone and width between tracks of a set is what mastering unifies — gently, with a mono check and a matched-level bypass.' },
+    issue: { id: 'e4', moduleId: 'project', prompt: '"Harbor Lights" reads dull and a little narrow against its neighbors. Which path?', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Program-wide tone and width between tracks of a set is what mastering unifies — gently, with a mono check and a matched-level bypass.' },
   },
 ];
 
@@ -271,7 +271,7 @@ export const PROJECT_TRACKS: readonly ProjectTrack[] = [
 export const PROJECT_CHECKS: readonly { id: string; label: string; needed: boolean; why: string }[] = [
   { id: 'c1', label: 'Listen to all four in the delivered order before touching anything', needed: true, why: 'Listening first is the workflow. Notes before processing.' },
   { id: 'c2', label: 'Match playback level before every A/B', needed: true, why: 'Every tonal and dynamic decision is judged at matched level.' },
-  { id: 'c3', label: 'Mono fold check on "Harbour Lights" before and after widening', needed: true, why: 'Widening without a mono check is how a phone speaker finds the hole.' },
+  { id: 'c3', label: 'Mono fold check on "Harbor Lights" before and after widening', needed: true, why: 'Widening without a mono check is how a phone speaker finds the hole.' },
   { id: 'c4', label: 'Set every track, including "Tide Table", to the same integrated loudness number', needed: false, why: 'The client asked for "Tide Table" to stay quiet. Consistency is a decision, not a number applied blindly.' },
   { id: 'c5', label: 'Headphone and small-speaker translation pass on the sequence', needed: true, why: 'Translation checks after decisions in the room.' },
   { id: 'c6', label: 'Add a limiter to "Tide Table" so it competes with the other three', needed: false, why: 'That erases the one thing the client protected.' },
@@ -315,7 +315,7 @@ export const KEY_TERMS: Record<MasteringModuleId, readonly { term: string; def: 
   room: [
     { term: 'Room modes', def: 'Resonances set by room dimensions; they color the bass at the listening position.' },
     { term: 'Monitor controller', def: 'The level and source switch between converter and amplifiers.' },
-    { term: 'Listening fatigue', def: 'Judgement drifting with time and level — managed by moderate, consistent monitoring and breaks.' },
+    { term: 'Listening fatigue', def: 'Judgment drifting with time and level — managed by moderate, consistent monitoring and breaks.' },
   ],
   tools: [
     { term: 'Tilt EQ', def: 'One control that leans the whole spectrum brighter or warmer.' },

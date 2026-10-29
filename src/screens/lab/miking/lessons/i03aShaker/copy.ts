@@ -82,7 +82,7 @@ export const SHK_COPY: LessonCopy = {
   setting: {
     kitA11y: 'A percussion station from above: the shaker player in the middle, other percussion beside them, a drum kit and an amp upstage, a singer’s microphone downstage.',
     kitLanding: 'Tap anything around the shaker player — or step through ITEM — to see what it means for a shaker mic. There is nothing to answer yet.',
-    kitIdle: 'The shaker player often stands at a percussion station, moving between small instruments. Around them: loud neighbours — cymbals, drums, amps and voices.',
+    kitIdle: 'The shaker player often stands at a percussion station, moving between small instruments. Around them: loud neighbors — cymbals, drums, amps and voices.',
     leftHanded: 'Players shake with either hand, or both, and turn between instruments — check the real part, and where the player stands for it.',
     stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage of it facing back, the player’s own wedge in front of them, angled up at them, the audience and the PA at the front.',
     studioA11y: 'The band in a studio room, from above: the percussion station, a percussion area mic above it, the room’s walls, no monitors.',
@@ -95,7 +95,7 @@ export const SHK_COPY: LessonCopy = {
     ],
     plan: {
       title: 'At the percussion station',
-      badge: 'The station from above · a typical layout · grey = the player’s space',
+      badge: 'The station from above · a typical layout · gray = the player’s space',
       looking: 'Plan · the station, the audience to the right',
       stageBadge: 'From above · a stage · two monitors where a stage often puts them',
       studioBadge: 'From above · a studio room',
@@ -110,7 +110,7 @@ export const SHK_COPY: LessonCopy = {
     workedAim: 'Face the middle of the playing area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of the whole motion — the shaker’s arc, the hand and arm, the face. Clearance comes first: the distance is a starting point, not a safety clearance, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward and away, each forward stroke tends to jump out; side to side, the level tends to stay steadier. Higher up, the balance of rattle, hand noise and neighbours changes — and shakers and players vary, so “it depends” is fair too.',
+    reveal: 'Toward and away, each forward stroke tends to jump out; side to side, the level tends to stay steadier. Higher up, the balance of rattle, hand noise and neighbors changes — and shakers and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A robust dynamic can make sense in a crowded live setup; a small condenser tends to show more fine detail. Neither is a rule — compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic. Watch PEAK meters — a shaker’s brief peaks can overload an input that a slow meter says is fine.',
     availableLead: 'Starting points for this mic and way of shaking',

@@ -68,7 +68,7 @@ export function PageAnatomy({ ctx }: { ctx: PageCtx }) {
             <Body>{part.role}</Body>
           </>
         ) : (
-          <Body>Numbered in the order the air meets them, lungs (1) to lips (10); the jaw (11) frames the mouth. Dark blue-grey is air space; red is muscle; cream is bone; pale blue is cartilage; pink is the lining. Head and neck in side view, the chest below from the front — not to scale.</Body> // NEW COPY (was "numbered from the lips back and down to the lungs" — the reverse of the actual order)
+          <Body>Numbered in the order the air meets them, lungs (1) to lips (10); the jaw (11) frames the mouth. Dark blue-gray is air space; red is muscle; cream is bone; pale blue is cartilage; pink is the lining. Head and neck in side view, the chest below from the front — not to scale.</Body> // NEW COPY (was "numbered from the lips back and down to the lungs" — the reverse of the actual order)
         )}
       </Card>
       {picker}

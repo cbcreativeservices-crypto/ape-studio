@@ -2,7 +2,7 @@
  * F16 SCIENTIFIC ARRAYS AND SPECIALIZED SENSORS — the look (charter §2 layer
  * 3): the controlled room in section and plan — the floor with its taped
  * array axes and the marked origin (ticks every 25 cm along the baseline),
- * the test source on its stand at the centre point, the side point taped on
+ * the test source on its stand at the center point, the side point taped on
  * the floor, the walls, and you standing back — then the lesson's own pages.
  * FULLY SILENT; nothing moves by itself.
  */

@@ -182,7 +182,7 @@ export const ARRAY_CHAIN: ChainSpec = {
       short: 'ELEMENTS',
       parts: [
         { id: 'matched', label: 'Two omni measurement mics, checked as a pair', short: 'MATCHED', blurb: 'Their sensitivity and phase checked against each other.' },
-        { id: 'mixed', label: 'One omni and one directional mic', short: 'MIXED', blurb: 'Two different responses, two different phase behaviours.' },
+        { id: 'mixed', label: 'One omni and one directional mic', short: 'MIXED', blurb: 'Two different responses, two different phase behaviors.' },
       ],
     },
     {

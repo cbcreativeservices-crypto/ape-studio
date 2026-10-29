@@ -13,7 +13,7 @@ export const CBD_COPY: LessonCopy = {
   viewTag: { side: 'SIDE · CUTAWAY', top: 'TOP · CUTAWAY' },
   axes: {
     x: { plus: 'toward the player', minus: 'toward the far head', label: 'ALONG the drum', blurb: 'Toward the player or toward the far head (x). Distance is read from the head the zone names.' },
-    y: { plus: 'below centre', minus: 'above centre', label: 'HEIGHT', blurb: 'Up or down (y), from the drum’s center line.' },
+    y: { plus: 'below center', minus: 'above center', label: 'HEIGHT', blurb: 'Up or down (y), from the drum’s center line.' },
     z: { plus: 'toward the conductor', minus: 'away from the conductor', label: 'ACROSS', blurb: 'Toward or away from the conductor (z): the heads face sideways, so the conductor is off to one side.' },
   },
   instrument: {
@@ -26,7 +26,7 @@ export const CBD_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
       { id: 'mid', label: 'MIDDLE REGION', mm: R * 0.5, blurb: 'Between the center and the edge — a usual starting area for players.' },
       { id: 'edge', label: 'NEAR THE EDGE', mm: R * 0.85, blurb: 'Close to the hoop — explore what it drives.' },
     ],
@@ -66,7 +66,7 @@ export const CBD_COPY: LessonCopy = {
     ],
     plan: {
       title: 'In the orchestra',
-      badge: 'The percussion from above · a typical concert layout · grey hatch = the players’ space',
+      badge: 'The percussion from above · a typical concert layout · gray hatch = the players’ space',
       looking: 'Plan · the percussion row, the audience toward the bottom',
       stageBadge: 'From above · an amplified orchestra · two monitors where a stage often puts them',
       studioBadge: 'From above · an orchestra recorded in a hall',
@@ -89,7 +89,7 @@ export const CBD_COPY: LessonCopy = {
       intro: 'What you just did, in words. After our research, here is where we suggest you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time with the same passage. A mic on the far head, a side position or a room mic are experiments for a quiet room — compare them alone and together in mono, and leave them out if they add little.',
       clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage.',
-      tendencies: 'A spot near the playing head favours the mallet’s transient; the main pickup and farther mics carry more of the low bloom and the hall. A kick-drum mic’s shaped response may not suit an orchestral bass drum — compare it with a more neutral mic by ear. All tendencies.',
+      tendencies: 'A spot near the playing head favors the mallet’s transient; the main pickup and farther mics carry more of the low bloom and the hall. A kick-drum mic’s shaped response may not suit an orchestral bass drum — compare it with a more neutral mic by ear. All tendencies.',
     },
   },
   context: {

@@ -127,6 +127,6 @@ const ortfC = around(v3(0, 0, 0), 2000, 0, 10);
 /** The pairs, drawn whole (facing the action: bearing 180 in frame F). */
 export const F05_PAIRS: SetupPairData[] = [
   arraySetup({ label: 'X/Y pair facing the path (90°)', id: 'xy', zone: 'f05.xy', c: xyC, bearing: 180, typeA: 'arrCard', variants: ['keys'], more: true, line: 'The keys travel across the image by level — a strong mono sum. A coincident pair at one place: not two distances.' }),
-  arraySetup({ label: 'M/S pair facing the path', id: 'ms', zone: 'f05.xy', c: xyC, bearing: 180, typeA: 'arrCard', typeB: 'arrFig8', variants: ['keys'], more: true, line: 'Width set later in the matrix; summed to mono the Side cancels. Keep the raw Mid and Side labelled — and never call close + room M/S.' }),
+  arraySetup({ label: 'M/S pair facing the path', id: 'ms', zone: 'f05.xy', c: xyC, bearing: 180, typeA: 'arrCard', typeB: 'arrFig8', variants: ['keys'], more: true, line: 'Width set later in the matrix; summed to mono the Side cancels. Keep the raw Mid and Side labeled — and never call close + room M/S.' }),
   arraySetup({ label: 'ORTF pair a little farther back (17 cm, 110°)', id: 'ortf', zone: 'f05.ortf', c: ortfC, bearing: 180, typeA: 'arrCard', variants: ['keys'], more: true, line: 'A wider image with time differences that change as the keys move — check mono over the whole crossing.' }),
 ];

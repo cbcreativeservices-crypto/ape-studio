@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the viola sits — under the chin, the bow’s sweep and the bow arm, the neighbours in a quartet — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the viola sits — under the chin, the bow’s sweep and the bow arm, the neighbors in a quartet — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['va.set.1', 'va.set.2', 'va.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bow sweeps out to the player’s right and the bow arm with it; the head is at the chin rest. In a group, the violas often sit between the violins and the cellos. Ask the player first, and protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Reposition before you EQ: the angle, the distance, the filter, the room and the mount come first.',
   },
   practice: {
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before placing a mic, what do you ask the violist to play?',
     options: ['One loud open string, held long, to set the gain', 'Nothing: a starting point does not depend on the music or the player', 'The low C and high A, quiet and strong bows, and any pizzicato'],
     correct: 'The low C and high A, quiet and strong bows, and any pizzicato',
-    explain: 'The extremes show what a position does: the C string’s body, the A string’s detail, a quiet bow’s noise and the loudest passage’s level. Note the player’s sway, the chin and shoulder rests, and the neighbours.',
+    explain: 'The extremes show what a position does: the C string’s body, the A string’s detail, a quiet bow’s noise and the loudest passage’s level. Note the player’s sway, the chin and shoulder rests, and the neighbors.',
     why: {
       'One loud open string, held long, to set the gain': 'One note shows neither the C string’s body nor a quiet bow’s noise.',
       'Nothing: a starting point does not depend on the music or the player': 'A starting point is where to begin; the music decides where you end up.',
@@ -159,9 +159,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A compact cardioid aimed close at one area of the viola can…',
     options: ['Capture the whole viola evenly, from all of its parts at once, like a room mic', 'Bring out timbre, bow or finger sounds — and some low-end body', 'Remove the room completely from the recording'],
     correct: 'Bring out timbre, bow or finger sounds — and some low-end body',
-    explain: 'Aimed at a chosen area, it emphasises that area’s sound; up close, proximity effect adds low-frequency weight. A deliberate color, not a neutral view.',
+    explain: 'Aimed at a chosen area, it emphasizes that area’s sound; up close, proximity effect adds low-frequency weight. A deliberate color, not a neutral view.',
     why: {
-      'Capture the whole viola evenly, from all of its parts at once, like a room mic': 'Close and aimed, it favours one area — that is the point of it.',
+      'Capture the whole viola evenly, from all of its parts at once, like a room mic': 'Close and aimed, it favors one area — that is the point of it.',
       'Remove the room completely from the recording': 'A cardioid reduces the room; it does not remove it.',
     },
   },
@@ -181,11 +181,11 @@ const scenarios: MikingScenario[] = [
     id: 'va.mic.3',
     page: 'microphone',
     prompt: 'An omni close to the viola, compared with a close cardioid…',
-    options: ['Rejects the neighbours better, because it is so close', 'Has no directional proximity lift, but still hears the neighbours', 'Adds more low end, because omni mics boost the bass when they are close'],
-    correct: 'Has no directional proximity lift, but still hears the neighbours',
+    options: ['Rejects the neighbors better, because it is so close', 'Has no directional proximity lift, but still hears the neighbors', 'Adds more low end, because omni mics boost the bass when they are close'],
+    correct: 'Has no directional proximity lift, but still hears the neighbors',
     explain: 'An omni avoids the directional proximity effect and can integrate the room well — but a close omni still hears adjacent players and monitors.',
     why: {
-      'Rejects the neighbours better, because it is so close': 'An omni rejects nothing; closeness helps the level, not the rejection.',
+      'Rejects the neighbors better, because it is so close': 'An omni rejects nothing; closeness helps the level, not the rejection.',
       'Adds more low end, because omni mics boost the bass when they are close': 'The close-up bass lift is a directional mic’s proximity effect.',
     },
   },
@@ -342,7 +342,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “15–40 cm from the bridge”. You are 20 cm from the scroll. Are you in it?',
     options: ['Not necessarily — measure from the bridge, as it names', 'Yes: 20 cm falls inside the 15 to 40 cm band', 'Yes, as long as the mic is aimed at the viola and clear of the bow'],
     correct: 'Not necessarily — measure from the bridge, as it names',
-    explain: 'A distance means something only with the part it is measured from. The scroll is half a metre from the bridge.',
+    explain: 'A distance means something only with the part it is measured from. The scroll is half a meter from the bridge.',
     why: {
       'Yes: 20 cm falls inside the 15 to 40 cm band': 'Same number, different part. Measure from the bridge.',
       'Yes, as long as the mic is aimed at the viola and clear of the bow': 'Aim is a separate check; the distance is read from the bridge.',
@@ -356,7 +356,7 @@ const symptoms: Symptom[] = [
   {
     id: 'va.sym.bow',
     observation: 'Bow noise masks the note',
-    firstChecks: 'The capsule is localised near the bow or the bridge: change the angle, or move outward and up.',
+    firstChecks: 'The capsule is localized near the bow or the bridge: change the angle, or move outward and up.',
     options: ['Cut the high frequencies on the viola channel first', 'Ask the player to bow more lightly for the whole of the session', 'Change the angle, or move the mic outward and up'],
     correct: 'Change the angle, or move the mic outward and up',
     explain: 'Very close to the bow, the mic overstates it. A little more distance or a different angle blends the note and the bow.',
@@ -395,7 +395,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The capsule sees a narrow part of the top: broaden the view and replay both extremes.',
     options: ['Cut that string’s frequencies with a narrow EQ', 'Ask the player to avoid that string where possible', 'Broaden the view and replay both extreme strings'],
     correct: 'Broaden the view and replay both extreme strings',
-    explain: 'Close up, the capsule favours the region it faces. A little distance or a new angle evens the strings.',
+    explain: 'Close up, the capsule favors the region it faces. A little distance or a new angle evens the strings.',
     why: {
       'Cut that string’s frequencies with a narrow EQ': 'Notes move between strings; a fixed EQ cannot follow. Fix the view.',
       'Ask the player to avoid that string where possible': 'The music decides the strings; the mic should serve all four.',
@@ -412,7 +412,7 @@ const orderTasks: OrderTask[] = [
     prompt: 'Tap the steps of a one-mic viola setup in the order you would do them.',
     steps: [
       { text: 'Hear the viola unamplified: C and A strings, quiet and strong bows, pizzicato', early: 'Start by listening to the player in the room.' },
-      { text: 'Mark the bow’s full arc and the player’s sway; note neighbours and monitors', early: 'Know the space before choosing where a mic can go.' },
+      { text: 'Mark the bow’s full arc and the player’s sway; note neighbors and monitors', early: 'Know the space before choosing where a mic can go.' },
       { text: 'Choose the mic and a stand or an approved mount', early: 'Choose once you know the sound and the space.' },
       { text: 'With the player stopped, place it in front and a little above, clear of the bow', early: 'You need a chosen mic before you can place it.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom power on', early: 'Power comes after the mic is placed and connected — outputs muted first.' },
@@ -431,7 +431,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · Overdub in a dense pop arrangement: the viola needs more definition and separation. One channel, phantom available.',
     setups: [
       { id: 'a', label: 'Compact cardioid 20–30 cm from the bridge, aimed at the bridge and top', ok: true, power: 'phantom', feedback: 'A suggested starting point: closer and aimed, for definition — listen for bow noise and the C string.' },
-      { id: 'b', label: 'Compact cardioid aimed toward the body, a little farther back', ok: true, power: 'phantom', feedback: 'A suggested starting point that favours weight — useful if the arrangement is thin.' },
+      { id: 'b', label: 'Compact cardioid aimed toward the body, a little farther back', ok: true, power: 'phantom', feedback: 'A suggested starting point that favors weight — useful if the arrangement is thin.' },
       { id: 'c', label: 'Small condenser 1.2 m away, to catch the room', ok: false, power: 'phantom', feedback: 'Far away adds room, not the definition and separation the brief asks for.' },
       { id: 'd', label: 'A mic clamped to the bridge for the most definition', ok: false, power: 'phantom', feedback: 'No mic clamps the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A stand mic beside the bow hand, as close to the strings as possible', ok: false, power: 'phantom', feedback: 'That is the bow arm’s path: the mic would be struck.' },
@@ -446,7 +446,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Miniature on a body clip made for the viola, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the viola — check the fit and do a full motion test.' },
       { id: 'b', label: 'Miniature on a holder behind the bridge, over the strings, checked for color', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over.' },
-      { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage, a metre away hears the monitors more than the viola — and the player leaves its zone.' },
+      { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage, a meter away hears the monitors more than the viola — and the player leaves its zone.' },
       { id: 'd', label: 'A violin clip pushed onto the viola without checking it fits', ok: false, power: 'phantom', feedback: 'Mounts are not interchangeable: use one made to fit this viola.' },
       { id: 'e', label: 'A supercardioid with the wedge straight behind it, trusted to reject it', ok: false, power: 'phantom', feedback: 'A supercardioid has a rear lobe: straight behind is not its best rejection.' },
     ],
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you bring a cardioid from a metre to 25 cm from the viola. What changes?', options: ['More definition, and more low end', 'More of the room', 'It depends on this viola'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you bring a cardioid from a meter to 25 cm from the viola. What changes?', options: ['More definition, and more low end', 'More of the room', 'It depends on this viola'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will a supercardioid aimed at the viola reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -599,7 +599,7 @@ export const C09B_LESSON: Lesson = {
       { id: 'main', label: 'a main pair for the group', short: 'MAIN PAIR', note: 'In a recording of a group, a main pair hears the whole ensemble; a viola mic is a spot that supports it.', prov: { kind: 'illustrative', reason: 'a generic main pair' }, tag: 'MAIN PAIR', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'No wedges on the floor; hear the viola in the room before placing a mic.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors on the floor, the PA facing the audience, and louder neighbours. A closer mic can raise the viola against the stage — if it still sounds right; a mounted miniature follows the player.',
+    stage: 'LIVE: monitors on the floor, the PA facing the audience, and louder neighbors. A closer mic can raise the viola against the stage — if it still sounds right; a mounted miniature follows the player.',
     studio: 'STUDIO: no wedges, a room to hear first, and repeated trials when the player stops. One stand mic often carries the whole viola; in a group, the main pair may carry it already.',
   },
   diagnostic,
@@ -620,7 +620,7 @@ export const C09B_LESSON: Lesson = {
     { text: 'The bow’s sweep, the bow hand, the bow arm, the left hand and the player’s head — illustrative envelopes; the player’s body and the chair (seated) are drawn from the proposal’s head and tail positions.', dims: [] },
     { text: 'The 0.5–1.2 m front distance is the lesson’s own audition range; the aimed cardioid’s 15–40 cm, and the clip and holder distances, are drawing defaults.', dims: [] },
     { text: 'The miniature’s capsule and gooseneck reach, the small condenser’s diameter, and whether a body clip fits this viola’s depth (rib 35 mm plus the arching) — to check on the real instrument.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

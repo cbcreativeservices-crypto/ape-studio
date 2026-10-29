@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic before reaching for tone controls: across the cone, toward or away from the grille, one change at a time — and on a rotary cabinet, from outside.',
   },
   practice: {
@@ -261,7 +261,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a loud stage, why might you start with a close, directional mic on a guitar cabinet?',
     options: ['More of the amp, less of the stage, and more gain before feedback', 'A close mic makes the amp itself sound louder out in the audience', 'A mic farther back could not pick up a guitar speaker'],
     correct: 'More of the amp, less of the stage, and more gain before feedback',
-    explain: 'Close and directional favours the cabinet over the drums and the monitors — the usual live reasons. In a quiet studio a farther mic may add a useful room.',
+    explain: 'Close and directional favors the cabinet over the drums and the monitors — the usual live reasons. In a quiet studio a farther mic may add a useful room.',
     why: {
       'A close mic makes the amp itself sound louder out in the audience': 'The mic does not change the amp’s own level in the room; it changes what reaches the PA.',
       'A mic farther back could not pick up a guitar speaker': 'It can — in a studio that is a common choice. On stage it would also hear the stage.',
@@ -688,7 +688,7 @@ export const SPK_LESSON: Lesson = {
       { id: 'mic', label: 'the microphone and the desk', short: 'MIC → DESK', note: 'An airborne pickup: what the mic hears goes to the desk, where the gain is set.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'kit' },
       { id: 'di', label: 'a direct (DI) output', short: 'DIRECT OUT', note: 'A separate ELECTRICAL path from inside the amp or organ, taken at its LINE / DI OUT jack (here into the DI box behind the combo) — never at its speaker output. Label it as its own source; it may lack the speaker’s and the room’s sound — or carry a simulated cabinet.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'kit' },
       { id: 'wedge', label: 'the guitarist’s wedge', short: 'WEDGE', note: 'A floor monitor downstage, facing back toward the player — behind a cabinet mic aimed at the speaker.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbour. A close, directional cabinet mic hears more of the amp and less of the kit.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbor. A close, directional cabinet mic hears more of the amp and less of the kit.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'organ', label: 'the organ, its bench and pedals', short: 'ORGAN', note: 'The organist sits here; the pedals and the walkway stay clear of stands and cables. The rotary cabinet stands beside, stable on the floor.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'leslie', label: 'the rotary cabinet', short: 'ROTARY CAB', note: 'Closed, with its openings clear. Mics on stands outside; cables away from the vents and the turning parts.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'OUTSIDE ONLY', scene: 'all' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'The cabinets are already loud in the room: the PA adds only what the audience needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

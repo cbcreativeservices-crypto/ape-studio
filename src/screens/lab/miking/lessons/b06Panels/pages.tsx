@@ -46,10 +46,10 @@ function useTools() {
     boxSide: { u0: -420, u1: 760, v0: -380, v1: 760 },
     pitch: true,
     words: {
-      subject: 'a panelist at a table turning to a neighbour, a mic fixed in front',
+      subject: 'a panelist at a table turning to a neighbor, a mic fixed in front',
       looking: 'From above · the panel, a mic fixed on the table · the side in the corner',
       prompt: 'TURN the panelist to the next one, and back; LOOK down at the notes. Switch MIC: the gooseneck, or the shared boundary.',
-      done: 'Turning to a neighbour swings the mouth off a fixed mic’s axis. The gooseneck, close and below the mouth, stays fairly near; the shared boundary, farther away and low on the table, changes more with each turn — and hears the neighbour too.',
+      done: 'Turning to a neighbor swings the mouth off a fixed mic’s axis. The gooseneck, close and below the mouth, stays fairly near; the shared boundary, farther away and low on the table, changes more with each turn — and hears the neighbor too.',
     },
   });
   const talkers: PanelTalker[] = [
@@ -65,7 +65,7 @@ function useTools() {
     mics: [mic('m1', 'Left mic', 'p1', P1.lip.z), mic('m2', 'Second mic', 'focus', 0), mic('m3', 'Third mic', 'p3', P3.lip.z), mic('m4', 'Right mic', 'p4', P4.lip.z)],
     presets: [
       { id: 'one', label: 'Only the second panelist’s', blurb: 'Only the mic of the panelist who is speaking is open.', open: ['m2'] },
-      { id: 'two', label: 'Two neighbours open', blurb: 'The second and the third panelists’ mics are open.', open: ['m2', 'm3'] },
+      { id: 'two', label: 'Two neighbors open', blurb: 'The second and the third panelists’ mics are open.', open: ['m2', 'm3'] },
       { id: 'all', label: 'All four open', blurb: 'Every panel mic is left open.', open: ['m1', 'm2', 'm3', 'm4'] },
     ],
     top: () => <B06Scene view="top" variant="panel" />,
@@ -82,7 +82,7 @@ function useTools() {
 
 const B06Sound = makeBroadcastSound({
   useTools,
-  highs: 'The voice’s highest frequencies go out ahead of the mouth: a panelist who turns to a neighbour drifts off their own mic’s axis and toward the neighbour’s. In words only — the shape of that spread is not drawn.',
+  highs: 'The voice’s highest frequencies go out ahead of the mouth: a panelist who turns to a neighbor drifts off their own mic’s axis and toward the neighbor’s. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real panel sounds depends on the voices, the mics, the table, the room and the PA. The pictures show where the sound comes from and where it goes.',
 });
 

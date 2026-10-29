@@ -70,7 +70,7 @@ export const C05B_COPY = stringsCopy({
     body: 'With a wedge in front, a pattern’s rejection is a tool to aim — while the boom stays out of the picking arc and the fretting hand.',
     studioId: 'md.ctx.studio',
     studioPrompt: 'A quiet studio, a good room, a solo mandolin: when is an omni worth trying?',
-    studioNote: 'With a quiet, favourable room, one accurate omni near the neck junction can present the mandolin naturally; a cardioid gives more isolation when the room intrudes. Switch back to LIVE for the wedge exercise.',
+    studioNote: 'With a quiet, favorable room, one accurate omni near the neck junction can present the mandolin naturally; a cardioid gives more isolation when the room intrudes. Switch back to LIVE for the wedge exercise.',
   },
   twoMic: {
     variant: 'a',

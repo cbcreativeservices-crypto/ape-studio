@@ -36,7 +36,7 @@ export const F10_COPY: Partial<LessonCopy> = {
     blocked: {},
     reveal: '',
     typeNotes: {
-      spHead: 'Ideas to try with the binaural head: at the listener’s height, the face to the scene front, left and right labelled — then listen on headphones.',
+      spHead: 'Ideas to try with the binaural head: at the listener’s height, the face to the scene front, left and right labeled — then listen on headphones.',
       spFoa: 'Ideas to try with the Ambisonic mic: upright, its front mark to the scene front, four matched and linked channels — log the mounting and the capsule order.',
       spDms: 'Ideas to try with Double M/S: mark the figure-8’s positive side first, keep three tracks, and decode on purpose.',
     },

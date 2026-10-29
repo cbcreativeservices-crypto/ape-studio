@@ -45,13 +45,13 @@ const pages: LessonPages = {
     title: 'Meet the performer',
     goal: 'Get to know the singer and the instrument as one system — where each sound is made and where it leaves: the mouth, the guitar’s top and sound hole, the piano’s strings and soundboard — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The voice leaves the mouth; the guitar’s sound leaves its top and its sound hole; the piano’s leaves its strings and soundboard, up under the lid. They are a few tens of centimetres apart — every mic hears both.',
+    takeaway: 'The voice leaves the mouth; the guitar’s sound leaves its top and its sound hole; the piano’s leaves its strings and soundboard, up under the lid. They are a few tens of centimeters apart — every mic hears both.',
   },
   sound: {
     title: 'Where the sounds come from',
     goal: 'See where the voice leaves the singer and what comes with it, and where the instrument’s sound leaves — and why a mic on one always hears the other.',
     credit: { scenarios: ['sw.snd.1', 'sw.snd.2', 'sw.snd.3'], note: 'Answer the three checks.' },
-    takeaway: 'Two sources a few tens of centimetres apart: every mic hears both. Which way each mic’s rejection points decides how much of the other source it takes — and the pair, summed, needs a mono check.',
+    takeaway: 'Two sources a few tens of centimeters apart: every mic hears both. Which way each mic’s rejection points decides how much of the other source it takes — and the pair, summed, needs a mono check.',
   },
   setting: {
     title: 'Before any mic',
@@ -86,7 +86,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the geometry first — which way each mic points, how far apart they are, the performer’s posture, the monitor’s place — before EQ, a notch or compression.',
   },
   practice: {
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A singer plays guitar. What does a mic aimed at the guitar hear besides the guitar?',
     options: ['The voice too, a little later than the vocal mic', 'Nothing else, as long as it is aimed at the guitar', 'Only the room, not the voice itself directly'],
     correct: 'The voice too, a little later than the vocal mic',
-    explain: 'The mouth is a few tens of centimetres above the guitar: its sound reaches the guitar mic too — later and quieter than at the vocal mic. That bleed is part of the sound of two mics on one performer.',
+    explain: 'The mouth is a few tens of centimeters above the guitar: its sound reaches the guitar mic too — later and quieter than at the vocal mic. That bleed is part of the sound of two mics on one performer.',
     why: {
       'Nothing else, as long as it is aimed at the guitar': 'Aim reduces the voice; it does not remove it. A pattern is a shape, not a wall.',
       'Only the room, not the voice itself directly': 'The voice reaches the guitar mic directly, as well as through the room.',
@@ -157,11 +157,11 @@ const scenarios: MikingScenario[] = [
     id: 'sw.set.3',
     page: 'setting',
     prompt: 'Live, a singer plays an acoustic-electric guitar. A stable first path for the guitar?',
-    options: ['Its pickup or a DI, a mic added only if it helps', 'A condenser about a metre out in front of the guitar', 'The vocal mic alone, turned up to catch both'],
+    options: ['Its pickup or a DI, a mic added only if it helps', 'A condenser about a meter out in front of the guitar', 'The vocal mic alone, turned up to catch both'],
     correct: 'Its pickup or a DI, a mic added only if it helps',
     explain: 'A pickup or DI is usually more stable against feedback than a distant guitar mic. A mic can add air and detail; blend only after each path works alone, and check polarity and timing in mono.',
     why: {
-      'A condenser about a metre out in front of the guitar': 'A distant mic needs a lot of gain on a stage — feedback comes first.',
+      'A condenser about a meter out in front of the guitar': 'A distant mic needs a lot of gain on a stage — feedback comes first.',
       'The vocal mic alone, turned up to catch both': 'Turning the vocal mic up raises the stage and brings feedback closer.',
     },
   },
@@ -169,8 +169,8 @@ const scenarios: MikingScenario[] = [
     id: 'sw.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Why does a guitar mic hear the singer?',
-    options: ['The mouth is a few tens of centimetres above it', 'The guitar’s top passes the voice through itself', 'Only the room carries the voice to the guitar mic'],
-    correct: 'The mouth is a few tens of centimetres above it',
+    options: ['The mouth is a few tens of centimeters above it', 'The guitar’s top passes the voice through itself', 'Only the room carries the voice to the guitar mic'],
+    correct: 'The mouth is a few tens of centimeters above it',
     explain: 'Two sources close together: the voice reaches the guitar mic directly, a little later and quieter than at the vocal mic.',
     why: {
       'The guitar’s top passes the voice through itself': 'The voice reaches the mic through the air, directly.',
@@ -253,12 +253,12 @@ const scenarios: MikingScenario[] = [
     id: 'sw.place.3',
     page: 'placement',
     prompt: 'A seated singer-guitarist cannot give the mics 3:1 spacing. Is the two-mic setup then wrong?',
-    options: ['No — accept some bleed, aim the nulls, or use one mic', 'Yes — two mics need 3:1, or they cannot be used at all', 'Yes — move the guitar mic a metre away to get it'],
+    options: ['No — accept some bleed, aim the nulls, or use one mic', 'Yes — two mics need 3:1, or they cannot be used at all', 'Yes — move the guitar mic a meter away to get it'],
     correct: 'No — accept some bleed, aim the nulls, or use one mic',
     explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass mark. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
     why: {
       'Yes — two mics need 3:1, or they cannot be used at all': 'Many fine recordings break 3:1; it is a guideline, and the mono check decides.',
-      'Yes — move the guitar mic a metre away to get it': 'A metre out the guitar mic hears more room and more voice — the opposite of the aim.',
+      'Yes — move the guitar mic a meter away to get it': 'A meter out the guitar mic hears more room and more voice — the opposite of the aim.',
     },
   },
   {
@@ -519,7 +519,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A singer plays guitar. How many sound sources does each mic hear?',
     options: ['Two: the voice and the guitar, at different times', 'One: only the source that it is aimed at directly', 'None directly: only the room around the two of them'],
     correct: 'Two: the voice and the guitar, at different times',
-    explain: 'The mouth and the guitar are a few tens of centimetres apart: every mic hears both, the farther source a little later.',
+    explain: 'The mouth and the guitar are a few tens of centimeters apart: every mic hears both, the farther source a little later.',
     why: {
       'One: only the source that it is aimed at directly': 'Aim reduces the other source; it does not remove it.',
       'None directly: only the room around the two of them': 'Both sources reach every mic directly, before the room.',
@@ -585,7 +585,7 @@ const wedges: Wedge[] = [
     p: GUITAR_SOURCE,
     lift: 0,
     faces: { x: 0, y: 0, z: 1 },
-    note: 'The guitar’s sound hole, a few tens of centimetres below the vocal mic: a source the vocal mic should reject as much as it can while it still faces the singer.',
+    note: 'The guitar’s sound hole, a few tens of centimeters below the vocal mic: a source the vocal mic should reject as much as it can while it still faces the singer.',
     prov: { kind: 'illustrative', reason: 'the guitar family’s sound hole on the singer-guitarist (drawing default); "orient the vocal microphone toward the mouth with its least-sensitive direction toward the guitar" (lesson L13)' },
     glyph: 'none',
   },
@@ -621,14 +621,14 @@ export const E07_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'One performer, two sources: a voice — breath, the vocal folds, the throat and the mouth — and an instrument played at the same time, an acoustic guitar held in front of the body or a piano with the singer at its keys.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Singer-songwriters, solo sets, acoustic sessions, a singer at the piano in a bar, a church or a studio — live and recorded.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The voice and the instrument are one performance: the singer shapes both at once, leaning, turning and breathing with the song. The miking has to respect that interaction.', src: 'LESSON' },
-    { title: 'ONE SYSTEM', text: 'The performer, the instrument, the room, the movement, the bleed and the monitors form one miking system: the mouth sits a few tens of centimetres above a guitar, and right above a piano’s keys.', src: 'LESSON' },
+    { title: 'ONE SYSTEM', text: 'The performer, the instrument, the room, the movement, the bleed and the monitors form one miking system: the mouth sits a few tens of centimeters above a guitar, and right above a piano’s keys.', src: 'LESSON' },
   ],
   sound: {
     stages: [
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — while the hands play.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds buzz in the breath: the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue and the lips shape the buzz into the words of the song.' },
-      { title: 'It leaves the mouth', text: 'The voice leaves through the mouth — a few tens of centimetres above the guitar’s top, or right above the piano’s keys. Every mic on the performer hears it.' },
+      { title: 'It leaves the mouth', text: 'The voice leaves through the mouth — a few tens of centimeters above the guitar’s top, or right above the piano’s keys. Every mic on the performer hears it.' },
     ],
     attack: 'P, B and T push a puff of air straight out of the lips, S a narrow hiss — at the vocal mic, ahead of the mouth. The guitar’s pick and fingers, and the piano’s hammers, add their own attack from below.',
     body: 'The vowels carry the melody; the guitar’s top and sound hole, or the piano’s board under the lid, carry the instrument’s body. Each mic hears both — the nearer source louder, the other a little later.',

@@ -912,7 +912,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
         <View style={{ gap: 3 }}>
           <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
           <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
-          <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
+          <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · gray duct = return air kept in a duct</Text>
           <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there · solid outline = the matched system, not yet installed</Text>
           <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · green CMR = a cable already in the riser, riser-rated (riser-rated is not plenum-rated) · numbers = the three spaces</Text>
           <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>

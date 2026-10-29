@@ -136,7 +136,7 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
           <Point title="THE FOCUS">{focusWords(focus)}</Point>
           {wind ? <Point title="THE WIND COVER">A cover made for the dish and its element: it may change the high frequencies a little, and must never shift the focus or touch the element.</Point> : null}
         </Card>
-        {complete ? <Note tone="ok">{`A bigger dish helps lower down; every dish favours the high frequencies of whatever is on its axis — the crowd beyond the player included. Aim at the sound you want, not automatically at a head. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Try both sizes, all three aim errors and the focus slide.</Body>}
+        {complete ? <Note tone="ok">{`A bigger dish helps lower down; every dish favors the high frequencies of whatever is on its axis — the crowd beyond the player included. Aim at the sound you want, not automatically at a head. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Try both sizes, all three aim errors and the focus slide.</Body>}
       </>
     ),
   };

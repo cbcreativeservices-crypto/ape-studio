@@ -161,7 +161,7 @@ export const EVENT_SCENE: VenueScene = {
   cameras: [{ id: 'cam', label: 'the camera riser at the back', p: p2(0, 16.6), dirDeg: 180, halfDeg: 16, reach: 15 }],
   sectors: [
     { id: 'L', label: 'the left section', short: 'LEFT', kind: 'crowd', c: EVENT.CL, h: FACE_H, poly: rect(EVENT_SECTIONS.L.x0, EVENT_SECTIONS.L.y0, EVENT_SECTIONS.L.x1, EVENT_SECTIONS.L.y1), empty: true },
-    { id: 'C', label: 'the centre section', short: 'CENTER', kind: 'crowd', c: EVENT.CC, h: FACE_H, poly: rect(EVENT_SECTIONS.C.x0, EVENT_SECTIONS.C.y0, EVENT_SECTIONS.C.x1, EVENT_SECTIONS.C.y1), empty: true },
+    { id: 'C', label: 'the center section', short: 'CENTER', kind: 'crowd', c: EVENT.CC, h: FACE_H, poly: rect(EVENT_SECTIONS.C.x0, EVENT_SECTIONS.C.y0, EVENT_SECTIONS.C.x1, EVENT_SECTIONS.C.y1), empty: true },
     { id: 'R', label: 'the right section', short: 'RIGHT', kind: 'crowd', c: EVENT.CR, h: FACE_H, poly: rect(EVENT_SECTIONS.R.x0, EVENT_SECTIONS.R.y0, EVENT_SECTIONS.R.x1, EVENT_SECTIONS.R.y1), empty: true },
     paSector('paL', 'the PA cluster high on the left', 'PA', EVENT.paL, EVENT.paH),
     paSector('paR', 'the PA cluster high on the right', 'PA', EVENT.paR, EVENT.paH),
@@ -169,7 +169,7 @@ export const EVENT_SCENE: VenueScene = {
   ],
   targets: [
     { id: 'L', label: 'the left section', short: 'LEFT', p: EVENT.CL, h: FACE_H },
-    { id: 'C', label: 'the centre section', short: 'CENTER', p: EVENT.CC, h: FACE_H },
+    { id: 'C', label: 'the center section', short: 'CENTER', p: EVENT.CC, h: FACE_H },
     { id: 'R', label: 'the right section', short: 'RIGHT', p: EVENT.CR, h: FACE_H },
   ],
   marks: [],

@@ -24,19 +24,19 @@ const F = SOPRANO_SAX;
 
 export const SOPRANO_ZONES: DocumentedZone[] = [
   saxZone(F, 'above', 'ss.above', {
-    label: 'A few centimetres above the bell, aimed up toward the sound holes',
+    label: 'A few centimeters above the bell, aimed up toward the sound holes',
     band: 'Try about 5–10 cm (2–4 in) from the bell rim, on its upper side, aimed up the body toward the sound holes — a place to begin that hears some of the holes and the bell.',
     tendency: 'A blend of the bell and the lower holes; less of the upper holes than on a curved sax. Compare it with the bell and with a little more distance.',
     checks: ['The horn’s swing as the player moves', 'Upper notes, which leave high on the body', 'Reed and breath noise'],
   }),
   saxZone(F, 'into', 'ss.into', {
-    label: 'A few centimetres from the bell, aimed into it',
+    label: 'A few centimeters from the bell, aimed into it',
     band: 'Try about 5–10 cm (2–4 in) from the bell rim, on its axis — in front of and below the bell — aimed into it: bright, with the least spill.',
     tendency: 'Bright, direct and isolated, with a good margin before feedback; it can sound narrow, nasal or hard, and it misses much of the upper holes.',
     checks: ['Upper notes for harshness', 'Middle notes for thinness', 'The player’s knees and the swing of the straight horn'],
   }),
   saxZone(F, 'holes', 'ss.holes', {
-    label: 'A few centimetres from the sound holes',
+    label: 'A few centimeters from the sound holes',
     band: 'Try about 5–10 cm (2–4 in) from the middle of the key stack, aimed at the holes and away from the bell’s axis — warmer and fuller.',
     tendency: 'Warm and full, the body and the reed together, with more key and pad noise. Back off, or aim across the body, if the clicks take over.',
     checks: ['Key and pad noise', 'The hands — nothing within their reach', 'The lowest notes, which leave at the bell'],
@@ -49,7 +49,7 @@ export const SOPRANO_ZONES: DocumentedZone[] = [
   }),
   saxZone(F, 'sopFront', 'ss.bite', {
     label: 'Clip in front of the bell, for bite',
-    band: 'With the same clip, bring the capsule round in front of the bell, a few centimetres off the rim and aimed into it — a harder sound with more bite.',
+    band: 'With the same clip, bring the capsule round in front of the bell, a few centimeters off the rim and aimed into it — a harder sound with more bite.',
     tendency: 'Harder and brighter, with more edge and isolation — useful against a loud band; it can turn shrill on high notes.',
     checks: ['High notes for shrillness', 'The capsule clear of the rim and of the player’s knees', 'Wind from the bell'],
   }),

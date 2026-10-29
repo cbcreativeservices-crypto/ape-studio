@@ -312,7 +312,7 @@ export function CredentialDetailModal({
               <Text style={styles.careersNote}>
                 This certificate documents Academy study. On its own it is not a qualification for
                 any role — employers weigh experience and practical ability too, and some roles
-                listed need a degree, licence or certification beyond the Academy (shown on the
+                listed need a degree, license or certification beyond the Academy (shown on the
                 role).
               </Text>
             </View>

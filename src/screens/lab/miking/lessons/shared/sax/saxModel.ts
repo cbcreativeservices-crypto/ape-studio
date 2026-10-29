@@ -167,7 +167,7 @@ export function saxModel(P: SaxPosture, o: SaxModelOpts): InstrumentModel {
     name: o.name,
     parts,
     regions: [
-      { id: 'r.bell', partId: 'sx.bell', label: 'the bell', anchor: A.rimC, prov: ill('the rim’s centre'), note: 'The lowest notes leave here, and the high harmonics of most notes. A mic aimed into the bell hears the brightest, most direct part of the sound.' },
+      { id: 'r.bell', partId: 'sx.bell', label: 'the bell', anchor: A.rimC, prov: ill('the rim’s center'), note: 'The lowest notes leave here, and the high harmonics of most notes. A mic aimed into the bell hears the brightest, most direct part of the sound.' },
       { id: 'r.holes', partId: 'sx.holes', label: 'the open tone holes', anchor: A.holesC, prov: ill('the middle of the drawn hole field'), note: 'Most notes leave mainly through the first open tone hole and the open holes just past it — so the place the sound leaves moves along the body as the notes change.' },
       { id: 'r.reed', partId: 'sx.mouthpiece', label: 'the reed and the player’s breath', anchor: A.reed, prov: ill('the reed tip'), note: 'The reed starts each note; breath and reed noise come from here and the player’s mouth.' },
       { id: 'r.keys', partId: 'sx.keys', label: 'the keys and pads', anchor: A.lowerKeys, prov: ill('the lower stack'), note: 'Key clicks and pad thumps come from the keywork — loudest to a mic close to the stacks.' },

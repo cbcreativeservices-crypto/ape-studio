@@ -30,7 +30,7 @@ const FRONT = v3(1, 0, 0);
 const MEYER = { kind: 'sourced', src: 'MEYER-MAPP', quote: 'mic heights 1.2 m (~4 ft.) for seated audience, 1.7 m (~5.6 ft.) for standing audience' } as const;
 const facing = (p: Vec3): MicPose => ({ p, az: 180, el: 0 });
 /** The plan box round the listener's point a spatial mic counts in. */
-const AT_LISTENER = { min: v3(-500, -2100, -500), max: v3(700, -900, 500), prov: ill('within about half a metre of the listener’s point (the lab’s box)') };
+const AT_LISTENER = { min: v3(-500, -2100, -500), max: v3(700, -900, 500), prov: ill('within about half a meter of the listener’s point (the lab’s box)') };
 
 function atListener(o: { id: string; label: string; band: string; type: string; seated?: boolean; front: number; tendency: string; checks: string[]; quote: string; src: string }): DocumentedZone {
   const ear = o.seated ? EAR_SEATED : EAR_STANDING;
@@ -69,7 +69,7 @@ export const F10_ZONES: DocumentedZone[] = [
     src: 'LESSON-F10',
     quote: 'Position the two ear pickup points where a listener would be, at a safe and stable head height; orient the face toward the intended front (L12); heights MEYER-MAPP',
     tendency: 'A fixed listener’s point of view over headphones: sounds at the sides and behind as well as in front. On loudspeakers it depends on the head and the processing.',
-    checks: ['Left and right labelled, the face to the scene front', 'The headphones it is made for', 'Wind on the outer ears; the stand stable'],
+    checks: ['Left and right labeled, the face to the scene front', 'The headphones it is made for', 'Wind on the outer ears; the stand stable'],
   }),
   atListener({
     id: 'sp.seated',

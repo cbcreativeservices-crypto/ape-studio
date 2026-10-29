@@ -299,7 +299,7 @@ function outputsOf(e: Ok | Refusal): OutputVal[] {
     { label: 'MAX CONTINUOUS LOAD (80%)', value: e.continuous, quantity: 'current', chainable: false },
     { label: 'WHICH TERMINAL RATING', text: WHICH_TERMINATION },
     { label: 'NOT FOR FLEXIBLE CORD', text: CORD_REFUSAL },
-    { label: 'CODE AND LICENCE', text: AMPACITY_SCOPE },
+    { label: 'CODE AND LICENSE', text: AMPACITY_SCOPE },
   );
   return out;
 }
@@ -470,7 +470,7 @@ export const AMPACITY: Workspace = {
   whyItMatters:
     'Feeders and branch circuits on a show run hot: hot stages, full conduits, sun-baked truck roofs and long continuous loads. ' +
     'The number printed in the table is only the starting point — the conductor’s real limit is usually set by its terminals, ' +
-    'its neighbours or the heat around it.',
+    'its neighbors or the heat around it.',
   example:
     '12 AWG THHN (90 °C) at 40 °C ambient, 6 current-carrying conductors in one conduit, 60 °C terminals: 30 A × 0.91 × 0.80 = 21.84 A corrected; ' +
     'the 60 °C terminals limit it to 20 A; 240.4(D) allows at most a 20 A breaker; a continuous load may be at most 16 A.',
@@ -486,7 +486,7 @@ export const AMPACITY: Workspace = {
     'Table 310.15(B)(1)(1) ambient correction (30 °C basis; Table 310.15(B)(1) in the 2020 edition, same values); Table 310.15(C)(1) adjustment for more than three ' +
     'current-carrying conductors (also for cables bundled more than 600 mm / 24 in without spacing; not for raceway nipples of 600 mm or less); ' +
     '110.14(C)(1) terminal limits; 240.4(D) small-conductor protection; 210.19 and 210.20 continuous loads at 125% (the 80% figure — equipment listed for 100% operation is the exception). ' +
-    'Copper only — aluminium is not covered. Not modelled: rooftop raceways in sunlight (310.15(B)(2)), underground and Table 310.17–310.21 installations, ' +
+    'Copper only — aluminum is not covered. Not modeled: rooftop raceways in sunlight (310.15(B)(2)), underground and Table 310.17–310.21 installations, ' +
     'and voltage drop (use the Voltage Drop calculator; the larger conductor wins). ' +
     CORD_REFUSAL +
     ' ' +

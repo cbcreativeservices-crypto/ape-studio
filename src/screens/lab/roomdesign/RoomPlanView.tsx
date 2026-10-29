@@ -571,7 +571,7 @@ export function RoomPlanView({
         ) : null}
 
         {/* The angle and NEARFIELD / MIDFIELD words, over every line on a dark
-            halo (art fix 2026-10-16: the rear leader, the centre line and the
+            halo (art fix 2026-10-16: the rear leader, the center line and the
             reflection paths ran through them). */}
         {layers.triangle && Lsp && Rsp ? (
           <G>
@@ -1320,6 +1320,6 @@ export const PLAN_LEGEND = [
   { c: fieldLevelColor(0), t: 'BLUE — a null: that frequency nearly vanishes' },
   { c: levelColorForDb(-3, -24, 0), t: 'Reflection path, strong (close to the direct sound)' },
   { c: levelColorForDb(-18, -24, 0), t: 'Reflection path, weak (far, or absorbed)' },
-  { c: TREAT, t: 'Treatment · ✓ = a modelled path meets it' },
+  { c: TREAT, t: 'Treatment · ✓ = a modeled path meets it' },
   { c: '#9fd8ff', t: 'Window' },
 ] as const;

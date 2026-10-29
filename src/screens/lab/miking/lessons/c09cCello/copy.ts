@@ -29,7 +29,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the bridge and the top round it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep on both sides, the bow arm, the cellist, the endpin and the feet. Clearance comes first, before any number, and the cellist stops before a real mic moves.',
     blocked: {},
-    reveal: 'Moving away tends to bring in more of the whole cello — and of the room and the neighbours — and cellos vary, so “it depends on this cello” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving away tends to bring in more of the whole cello — and of the room and the neighbors — and cellos vary, so “it depends on this cello” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: start about a foot from the bridge, aimed at it; then move one thing at a time — the distance, the height, the angle across the top — and play both the low C and the high A each time.',
       strMini: 'Ideas to try with a miniature: keep the clip on the two outer strings below the bridge, then change only the capsule’s angle — toward the bridge for a natural sound, toward an f-hole for more level.',
@@ -38,7 +38,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bridge, or the bridge’s foot. They are starting points, not rules: move from there and listen — there is no single right answer, and every cello and room is different.',
-      separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play both the lowest and the highest string each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play both the lowest and the highest string each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the cellist before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm, and the endpin and feet on the floor. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels — leave more room on a real stage.',
       tendencies: 'Closer to the bridge tends to bring more bow and string detail; farther brings more of the whole body and the room. With a directional mic up close, proximity effect also lifts the low strings. These are tendencies, and cellos vary.',
     },
@@ -74,7 +74,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions: a farther mic can suit a solo in a good room, and a close miniature can suit a quiet stage too.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: hear the whole cello in the room first; a farther mic often integrates body and room. Live: think about what the acoustic cello already gives the audience, and what the PA must add.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: neighbours and the room are the spill. Live: monitors, the PA and loud neighbours. A closer mic, the right pattern and the right aim help — and the body’s reflections still reach the mic.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: neighbors and the room are the spill. Live: monitors, the PA and loud neighbors. A closer mic, the right pattern and the right aim help — and the body’s reflections still reach the mic.' },
         { title: 'MOVEMENT', text: 'A seated cellist sways. A stand mic has a working zone; a miniature on the strings keeps one distance as the player moves.' },
         { title: 'MOUNTING', text: 'Studio: paused sessions allow careful comparisons. Live: a clip made for this cello, a cable routed away from the endpin and the chair, and a full-motion check before the show.' },
       ],

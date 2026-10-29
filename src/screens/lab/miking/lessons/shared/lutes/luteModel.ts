@@ -464,7 +464,7 @@ export function buildLute(kind: LuteKind, words: Record<string, PartWords>, name
     surf('lower', 'tabli', 'the lower soundboard, below the bridge', 'the lower-board line');
     surf('bridge', 'jawari', 'the main bridge', 'the bridge line');
     surf('neck', 'neck', 'the neck, above the gourd', 'the neck line');
-    surf('board', 'tabli', 'the soundboard (tabli)', 'the board’s centre line');
+    surf('board', 'tabli', 'the soundboard (tabli)', 'the board’s center line');
   } else {
     surf('plate', 'plate', 'the top plate, round its middle on the far side of the bridge from the neck', 'the top-plate line');
     surf('bridge', 'bridge', 'the main bridge', 'the bridge line');

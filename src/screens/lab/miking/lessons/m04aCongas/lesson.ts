@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, clearance, gain, levels and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -124,11 +124,11 @@ const scenarios: MikingScenario[] = [
     id: 'cg.snd.2',
     page: 'sound',
     prompt: 'Open tones are struck near the rim. On the simplified head, what does a strike near the rim do that a center strike does not?',
-    options: ['It drives the shapes with a still line across the head', 'It drives only the lowest shape, like a centre strike', 'It drives nothing, because the rim holds the head still'],
+    options: ['It drives the shapes with a still line across the head', 'It drives only the lowest shape, like a center strike', 'It drives nothing, because the rim holds the head still'],
     correct: 'It drives the shapes with a still line across the head',
     explain: 'A strike drives a shape only as much as the head moves at that spot in that shape. At the center, every shape with a still line across the head stands still; off the center, those shapes join in.',
     why: {
-      'It drives only the lowest shape, like a centre strike': 'A center strike drives only the ring-shaped shapes. Near the rim, the shapes with still lines across the head move too, and the strike drives them.',
+      'It drives only the lowest shape, like a center strike': 'A center strike drives only the ring-shaped shapes. Near the rim, the shapes with still lines across the head move too, and the strike drives them.',
       'It drives nothing, because the rim holds the head still': 'Only the very edge is held still. A little inside it the head moves, so a strike there drives the shapes.',
     },
   },
@@ -232,12 +232,12 @@ const scenarios: MikingScenario[] = [
     id: 'cg.place.3',
     page: 'placement',
     prompt: 'In a close mic, slaps dominate and the open tones have almost vanished. A likely cause, and a first move?',
-    options: ['It favours one spot or stroke: raise it or change its aim', 'The mic is faulty: swap it for another one of the same type', 'The drum is out of tune: retune it before anything else'],
-    correct: 'It favours one spot or stroke: raise it or change its aim',
-    explain: 'A close mic can favour a small part of the head or one stroke. Raise it, back it off or change its aim, and ask for the whole phrase again before reaching for EQ.',
+    options: ['It favors one spot or stroke: raise it or change its aim', 'The mic is faulty: swap it for another one of the same type', 'The drum is out of tune: retune it before anything else'],
+    correct: 'It favors one spot or stroke: raise it or change its aim',
+    explain: 'A close mic can favor a small part of the head or one stroke. Raise it, back it off or change its aim, and ask for the whole phrase again before reaching for EQ.',
     why: {
-      'The mic is faulty: swap it for another one of the same type': 'The same mic in the same spot will favour the same stroke. Change the position or the aim first.',
-      'The drum is out of tune: retune it before anything else': 'Tuning is the player’s choice, and it sounded right in the room. The close mic is favouring one stroke — move it.',
+      'The mic is faulty: swap it for another one of the same type': 'The same mic in the same spot will favor the same stroke. Change the position or the aim first.',
+      'The drum is out of tune: retune it before anything else': 'Tuning is the player’s choice, and it sounded right in the room. The close mic is favoring one stroke — move it.',
     },
   },
   {
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.ctx.1',
     page: 'context',
-    prompt: 'Live, what can favour close, directional mics — often one per drum — on congas?',
+    prompt: 'Live, what can favor close, directional mics — often one per drum — on congas?',
     options: ['Stage spill, and the level you need before feedback', 'Directional mics make the congas sound louder on stage', 'The room sound is more useful on a stage than in a studio'],
     correct: 'Stage spill, and the level you need before feedback',
     explain: 'On a loud stage, close directional mics give more direct sound against spill and more independent control; a distant or extra open mic can raise feedback risk. In a studio, more distance may balance the strokes.',
@@ -415,9 +415,9 @@ const symptoms: Symptom[] = [
   {
     id: 's.slap',
     observation: 'Slaps dominate; the open tones disappear',
-    firstChecks: 'Does the close mic favour a small part of the head or only one stroke?',
-    options: ['Whether a close mic favours one spot or stroke — raise it or re-aim', 'Cut the high frequencies with EQ until the slaps sit back in the mix', 'Ask the player to leave the slaps out of the part'],
-    correct: 'Whether a close mic favours one spot or stroke — raise it or re-aim',
+    firstChecks: 'Does the close mic favor a small part of the head or only one stroke?',
+    options: ['Whether a close mic favors one spot or stroke — raise it or re-aim', 'Cut the high frequencies with EQ until the slaps sit back in the mix', 'Ask the player to leave the slaps out of the part'],
+    correct: 'Whether a close mic favors one spot or stroke — raise it or re-aim',
     explain: 'Raise it, back it off or change its aim, and ask for the whole musical phrase again.',
     why: {
       'Cut the high frequencies with EQ until the slaps sit back in the mix': 'Move the mic before reaching for EQ: a cut also dulls the open tones you lost.',
@@ -533,7 +533,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A compact dynamic over each drum, outside the hands, aimed at its head', ok: true, power: 'none', feedback: 'Close and directional, one per drum for control on a loud stage; a dynamic needs no phantom.' },
       { id: 'b', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair; a dynamic needs no phantom.' },
       { id: 'c', label: 'A clip-on condenser at each drum’s far rim', ok: false, power: 'phantom', feedback: 'A fair stage idea, but these inputs have no phantom power and the clip-on mic needs it.' },
-      { id: 'd', label: 'A slim condenser a metre above both drums', ok: false, power: 'phantom', feedback: 'Too distant for a loud stage — and it needs phantom power these inputs lack.' },
+      { id: 'd', label: 'A slim condenser a meter above both drums', ok: false, power: 'phantom', feedback: 'Too distant for a loud stage — and it needs phantom power these inputs lack.' },
       { id: 'e', label: 'A dynamic under each drum’s open end', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under them.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against spill and feedback on stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
@@ -544,7 +544,7 @@ const setupTasks: SetupTask[] = [
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside the shell stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a metre away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
+  placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a meter away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the tumba, best reject the floor wedge in front of the drums?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -653,7 +653,7 @@ export const M04A_LESSON: HandLesson = {
   ],
   sound: {
     stages: [
-      { title: 'The hand strikes', text: 'The player’s hand strikes the head — the fingers near the rim for an open tone, the palm a little off centre for a bass stroke. That brief contact is where the ATTACK begins.' },
+      { title: 'The hand strikes', text: 'The player’s hand strikes the head — the fingers near the rim for an open tone, the palm a little off center for a bass stroke. That brief contact is where the ATTACK begins.' },
       { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the tall shell down toward the open lower end. Here the drum stands on the floor, so that end meets the floor.', ported: 'The head pushes the air in the tall shell down and out of the open lower end — raised on a stand, that end is clear of the floor. As the head moves down, the air above it thins while air is pushed out below: a mic above and a mic at the open end hear opposite pushes.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — up and around, toward the player and any mic above — and around the base, where the open end meets the floor. Head and lower end are different perspectives.', ported: 'Sound leaves from the head — up and around — and from the open lower end, which adds a deeper, boomier part. Head and lower end are different perspectives.' },
@@ -666,7 +666,7 @@ export const M04A_LESSON: HandLesson = {
     items: [
       { id: 'drums', label: 'the congas (the same drawing as every other page)', short: 'CONGAS', note: 'The conga on the player’s left, the tumba on the right, both standing on the floor here — or raised on stands.', prov: { kind: 'sourced', src: 'LP-CLASSIC', quote: '11-3/4″ Conga, 12-1/2″ Tumba, 30″ tall' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'player', label: 'the player, standing behind the drums', short: 'PLAYER', note: 'Their hands work over the player’s side of both heads; their wrists, knees and footing move all the time. Nothing of yours goes through that space.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbour. Its spill reaches an open conga mic — closer, directional mics help, and a distant mic hears more of it.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor. Its spill reaches an open conga mic — closer, directional mics help, and a distant mic hears more of it.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into a conga mic — especially a bottom mic or a distant one.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'perc', label: 'other percussion (bongos, a bell)', short: 'PERCUSSION', note: 'The part may move between instruments: a fixed mic covers only the congas, and the player’s path between them stays clear.', prov: { kind: 'illustrative', reason: 'a typical percussion setup; no source gives positions' }, tag: 'MOVEMENT', scene: 'all' },
       { id: 'vox', label: 'a vocal mic', short: 'VOCAL MIC', note: 'Another open mic on stage that also hears the congas — part of the blend, and of the feedback picture.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'OPEN MIC', scene: 'all' },
@@ -675,7 +675,7 @@ export const M04A_LESSON: HandLesson = {
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the PA adds to what the audience hears from the drums themselves — check the real coverage, not a promised level.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges, and a good room can help: backing a mic off balances the strokes — with more of the room in the sound.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a floor wedge in front of the player, loud neighbours — the kit, the bass amp — and the PA facing the audience. Spill and the gain available before feedback push toward close, directional pickup, often one mic per drum.',
+    stage: 'LIVE: a floor wedge in front of the player, loud neighbors — the kit, the bass amp — and the PA facing the audience. Spill and the gain available before feedback push toward close, directional pickup, often one mic per drum.',
     studio: 'STUDIO: no wedges on the floor, repeated trials are practical when the player stops, and in a good room more distance can balance the strokes — with more of the room in the sound.',
   },
   diagnostic,
@@ -697,7 +697,7 @@ export const M04A_LESSON: HandLesson = {
     { text: 'The rim: its height above the head and how far it stands out; the number of tuning lugs — drawing defaults, never stated.', dims: ['rimRise', 'rimT', 'lugs'] },
     { text: 'How far a raised setup lifts the drums, and the stands themselves — drawing defaults.', dims: ['raise'] },
     { text: 'The player’s hands and body envelopes — ILLUSTRATIVE, for the owner to approve.', dims: ['handsUp'] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: {
     wedges: [
@@ -722,7 +722,7 @@ export const M04A_LESSON: HandLesson = {
     strikeWord: 'HAND',
     face: { kind: 'crown', lugs: D.lugs.mm },
     facePoints: [
-      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact centre of the head.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact center of the head.' },
       { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the rim.' },
       { id: 'e', label: 'NEAR THE RIM', frac: 0.85, blurb: 'Close to the rim — where open tones are played.' },
     ],
@@ -765,7 +765,7 @@ export const M04A_LESSON: HandLesson = {
       badge: 'The band from above · a typical layout · the player at the left, the audience to the right',
       looking: 'Plan · the band from above · the player behind the congas',
       prompt: 'Tap anything around the congas — or step through ITEM — to see what it means for a conga mic. There is nothing to answer yet.',
-      intro: 'The congas stand in front of the player, with louder neighbours around them. Everything near them is either the player’s space or a source of spill.',
+      intro: 'The congas stand in front of the player, with louder neighbors around them. Everything near them is either the player’s space or a source of spill.',
       label: 'The band from above: the congas in the middle with the player behind them, a drum kit and a bass amp behind the player, other percussion to the player’s right and a vocal mic in front.',
     },
     before: {
@@ -776,7 +776,7 @@ export const M04A_LESSON: HandLesson = {
     clearWords: 'Clear of every hand stroke, wrist and knee, of the rims and of the open lower ends. Clearance comes first, before any number — and the player stops before a real mic moves.',
     ideas: {
       hdDynCard: 'Ideas to try with this kind of mic: one mic between the two heads first. If one channel cannot balance them, a mic over each drum. Shift a little toward the quieter drum, or raise it for a blend.',
-      hdDynHyper: 'Ideas to try with this kind of mic: close over each drum, outside the hands, aimed across the head rather than straight into one strike point. Its narrow pattern helps against spill — and it can favour one stroke if it is too close.',
+      hdDynHyper: 'Ideas to try with this kind of mic: close over each drum, outside the hands, aimed across the head rather than straight into one strike point. Its narrow pattern helps against spill — and it can favor one stroke if it is too close.',
       hdSdc: 'Ideas to try with this kind of mic: in a quiet room, over each drum, starting closer and backing off until open tones, slaps and muted strokes balance — then listen to how much room comes with it.',
       hdClip: 'Ideas to try with this kind of mic: on each drum’s far rim, the capsule just above the head and aimed across it — little stage space, independent control. Check the clamp for rattles, and keep it out of every hand stroke.',
     },
@@ -784,7 +784,7 @@ export const M04A_LESSON: HandLesson = {
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
       'Height, distance and angle are separate variables: change one at a time and have the player play every stroke again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage, and check again during the loudest, most animated passage.',
-      'Closer and more direct tends to bring more hand detail and isolation — and can favour one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two metres in front, is another idea for a good studio. Move the mic before reaching for EQ.',
+      'Closer and more direct tends to bring more hand detail and isolation — and can favor one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two meters in front, is another idea for a good studio. Move the mic before reaching for EQ.',
     ],
     context: {
       pose: { p: { x: TUMBA.c.x + TUMBA.R + 60, y: HEAD_Y - 160, z: TUMBA.c.z }, az: 0, el: -35 },

@@ -312,7 +312,7 @@ function endPost(x: number) {
 }
 
 /**
- * A banjo pot in true cross-section through its centre line (round 2,
+ * A banjo pot in true cross-section through its center line (round 2,
  * 2026-10-10: was a plain U-box). The section frame is x along the strings
  * and z UP (the canvas flips y); the head's plane is z = 0. Drawing
  * defaults, sized to the spec's pot (Ø 285, 70 deep) and resonator (Ø 330,

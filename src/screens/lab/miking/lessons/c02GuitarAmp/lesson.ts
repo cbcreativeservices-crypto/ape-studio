@@ -66,7 +66,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic before reaching for EQ: across the cone, toward or away from the grille, one change at a time. For anything hot, smoking or electrical: stop, keep clear, call a technician.',
   },
   practice: {
@@ -124,11 +124,11 @@ const scenarios: MikingScenario[] = [
     id: 'eg.set.1',
     page: 'setting',
     prompt: 'A DI box sits between the guitar and the amp. What does its output to the desk carry?',
-    options: ['The amp’s full sound, with only the speaker’s colour taken out', 'A cleaner copy of what a mic on the speaker hears', 'The guitar’s signal before the amp — no amp, speaker or room'],
+    options: ['The amp’s full sound, with only the speaker’s color taken out', 'A cleaner copy of what a mic on the speaker hears', 'The guitar’s signal before the amp — no amp, speaker or room'],
     correct: 'The guitar’s signal before the amp — no amp, speaker or room',
     explain: 'A DI before the amp taps the guitar’s own signal (after any pedals in front of it). It never passes through the amp, the speaker or the room — a separate source with its own uses, not a copy of the mic.',
     why: {
-      'The amp’s full sound, with only the speaker’s colour taken out': 'A DI BEFORE the amp has not been through the amp at all. Some amps have their own direct output — that one is taken inside the amp.',
+      'The amp’s full sound, with only the speaker’s color taken out': 'A DI BEFORE the amp has not been through the amp at all. Some amps have their own direct output — that one is taken inside the amp.',
       'A cleaner copy of what a mic on the speaker hears': 'It never passes through the speaker, the cabinet or the room, so it is a different sound, not a copy.',
     },
   },
@@ -245,11 +245,11 @@ const scenarios: MikingScenario[] = [
     id: 'eg.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Which of these does NOT hear the air from the amp?',
-    options: ['A mic a few centimetres in front of the grille', 'A DI box between the guitar and the amp', 'A mic behind the open back'],
+    options: ['A mic a few centimeters in front of the grille', 'A DI box between the guitar and the amp', 'A mic behind the open back'],
     correct: 'A DI box between the guitar and the amp',
     explain: 'A DI is an electrical tap, taken before the amp. Both mics hear air from the speaker — the front and the back of the cone.',
     why: {
-      'A mic a few centimetres in front of the grille': 'That mic hears the air in front of the cone — the amp’s own sound.',
+      'A mic a few centimeters in front of the grille': 'That mic hears the air in front of the cone — the amp’s own sound.',
       'A mic behind the open back': 'That mic hears the air behind the cone — still the amp’s air, opposite in polarity.',
     },
   },
@@ -259,7 +259,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a loud stage, why might you start with a close, directional mic on the guitar amp?',
     options: ['A close mic makes the amp itself sound louder to the whole audience', 'A mic farther back could not pick up a guitar speaker', 'More of the amp, less of the stage, and more gain before feedback'],
     correct: 'More of the amp, less of the stage, and more gain before feedback',
-    explain: 'Close and directional favours the amp over the drums and the monitors — the usual live reasons — and the PA then adds only what the stage sound lacks. In a quiet studio a farther mic may add a useful room.',
+    explain: 'Close and directional favors the amp over the drums and the monitors — the usual live reasons — and the PA then adds only what the stage sound lacks. In a quiet studio a farther mic may add a useful room.',
     why: {
       'A close mic makes the amp itself sound louder to the whole audience': 'The mic does not change the amp’s own level in the room; it changes what reaches the PA.',
       'A mic farther back could not pick up a guitar speaker': 'It can — in a studio that is a common choice. On stage it would also hear the stage.',
@@ -346,7 +346,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The DI arrives first; the mic, after the sound crosses the air, and the amp shapes it on the way. Hear each alone, then the blend in mono; move the mic or rebalance, then try polarity both ways. No single setting fixes every frequency.',
     why: {
       'Turn the DI up until the lows fully come back': 'More of one path does not undo a cancellation between them — it can hide it until the balance changes.',
-      'Boost the lows on the mic channel, then leave the blend as it is': 'EQ cannot fill a notch made by two paths cancelling; find the cause first.',
+      'Boost the lows on the mic channel, then leave the blend as it is': 'EQ cannot fill a notch made by two paths canceling; find the cause first.',
     },
   },
   {
@@ -608,7 +608,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'Near the bridge, the note itself barely moves the string',
     explain: 'Each pickup senses its own spot. Close to the bridge the fundamental moves the string very little while the higher harmonics still move it: a brighter, thinner balance.',
     why: {
-      'It sits nearer the output jack, so less of its signal is lost': 'The wiring is a few centimetres either way; the pickup’s place on the string is what matters.',
+      'It sits nearer the output jack, so less of its signal is lost': 'The wiring is a few centimeters either way; the pickup’s place on the string is what matters.',
       'The bridge vibrates and adds its own high notes': 'The pickup senses the steel string above it, not the bridge.',
     },
   },
@@ -693,11 +693,11 @@ export const C02_LESSON: Lesson = {
       { id: 'amp', label: 'the combo amp', short: 'COMBO', note: 'The amplifier and its speaker in one box. Its settings and its level are the player’s sound. Keep its vents clear, and never change its speaker wiring.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the speaker in the combo', short: 'SPEAKER', note: 'Connected to the amp inside the box — on many combos the amp must never be on without it. The cone moves the air: this is what the mic hears.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
       { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of the speaker, the box and the room. Close in, it hears mostly the speaker; farther back, more of the room and the stage.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
-      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Where every source arrives and the input gain is set — the mic, the DI and any direct output each on its own, labelled channel.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
+      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Where every source arrives and the input gain is set — the mic, the DI and any direct output each on its own, labeled channel.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
       { id: 'ampdi', label: 'the amp’s own direct output', short: 'AMP OUT', note: 'Some amps have a line or simulated-speaker output. Where it is taken, and whether it imitates a speaker, is in that amp’s manual. Still electrical — not the air.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'wedge', label: 'the guitarist’s wedge', short: 'WEDGE', note: 'A floor monitor downstage, facing back toward the player — behind an amp mic aimed at the speaker.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbour. A close, directional amp mic hears more of the guitar and less of the kit.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
-      { id: 'otherAmp', label: 'the bass amp', short: 'BASS AMP', note: 'Another loud speaker on the backline. Aim the guitar mic so its rejection faces the loudest neighbour where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'all' },
+      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbor. A close, directional amp mic hears more of the guitar and less of the kit.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'otherAmp', label: 'the bass amp', short: 'BASS AMP', note: 'Another loud speaker on the backline. Aim the guitar mic so its rejection faces the loudest neighbor where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'On a loud stage the amp is already heard in the room: the PA adds only what the audience needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet studio a farther mic can add the room — when it sounds good.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],

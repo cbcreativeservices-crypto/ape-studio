@@ -283,8 +283,8 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 metres with a 3 metre ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${view === 'top' ? ' The drummer’s own headphone mixer stands at the drummer’s right, its cable running straight back to the control room box on the back wall, clear of the door’s walkway.' : ''}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
-        badge: 'The room and its size are drawing values · a typical studio live room · grey hatch = the walkway',
+        render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 meters with a 3 meter ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${view === 'top' ? ' The drummer’s own headphone mixer stands at the drummer’s right, its cable running straight back to the control room box on the back wall, clear of the door’s walkway.' : ''}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
+        badge: 'The room and its size are drawing values · a typical studio live room · gray hatch = the walkway',
         bezel: bezel(selItem, { k: 'LOOKED AT', v: `${seen.size} / ${roomItems.length}`, flex: 1 }),
         params: [fader(roomItems, sel, pick), viewToggle(view, setView)],
         initialParam: 'item',

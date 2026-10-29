@@ -51,7 +51,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a stand mic about 15–30 cm from the harmonica at mouth and hand height, or a mic about 2.5–5 cm from the harp amp’s grille at the dust cap’s edge — then compare.',
     credit: { scenarios: ['hm.place.1', 'hm.place.2', 'hm.place.3', 'hm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player and the amp, in two different suggested starting points on one path (switching PATH starts afresh), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Acoustic: about 15–30 cm from the harmonica, just beyond the hands, facing the playing zone — a little off the breath stream if bursts dominate. Amp: on the real speaker, about 2.5–5 cm from the grille at the dust cap’s edge; toward the centre for bite, outward for a softer top.',
+    takeaway: 'Acoustic: about 15–30 cm from the harmonica, just beyond the hands, facing the playing zone — a little off the breath stream if bursts dominate. Amp: on the real speaker, about 2.5–5 cm from the grille at the dust cap’s edge; toward the center for bite, outward for a softer top.',
   },
   context: {
     title: 'Studio or live',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Placement, the hands and the path first: angle and distance, the grip and the hand opening, the mic’s knob and the amp, the real speaker, the cable and the input — before EQ. Feedback: lower the level first.',
   },
   practice: {
@@ -231,11 +231,11 @@ const scenarios: MikingScenario[] = [
     id: 'hm.place.3',
     page: 'placement',
     prompt: 'On the harp amp, the speaker mic sounds harsh. Where do you move it?',
-    options: ['Toward the cone’s edge, keeping the distance', 'Right onto the grille, nearer the centre', 'Behind the amp, to hear the back of the cone'],
+    options: ['Toward the cone’s edge, keeping the distance', 'Right onto the grille, nearer the center', 'Behind the amp, to hear the back of the cone'],
     correct: 'Toward the cone’s edge, keeping the distance',
     explain: 'Toward the center tends to add bite; toward the edge, a softer top end. Slide outward one step at a time and check you are on the real speaker.',
     why: {
-      'Right onto the grille, nearer the centre': 'Nearer the center tends to add bite, and the mic stays off the grille.',
+      'Right onto the grille, nearer the center': 'Nearer the center tends to add bite, and the mic stays off the grille.',
       'Behind the amp, to hear the back of the cone': 'That is a different, opposite-polarity view — and the vents need clear air. Try the edge first.',
     },
   },
@@ -566,7 +566,7 @@ export const A10_LESSON: Lesson = {
       { id: 'player', label: 'the player, the harmonica and the hands', short: 'PLAYER', note: 'Standing, the harmonica at the lips, the hands round it. Their face, hands and any neck holder come before any mic; they may swap harmonicas and need somewhere to put a hand-held mic down.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'amp', label: 'the harp amp', short: 'HARP AMP', note: 'Behind and to the side of the player, so they hear it without it pointing at the cupped mic. A mic on its speaker hears the whole amplified system: the harp mic, the amp, its distortion and the speaker.', prov: { kind: 'illustrative', reason: 'the amp behind the player, off their axis: a drawing default' }, tag: 'A SOURCE · FEEDBACK', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor in front of the player, facing back at them — behind a stand mic that faces the harmonica, where a pattern’s null can help. The omni harp mic has no null.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'the band', short: 'BAND', note: 'Loud neighbours: a closer directional stand mic helps more than gain; the amp and its speaker mic carry the harp in a loud band.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'the band', short: 'BAND', note: 'Loud neighbors: a closer directional stand mic helps more than gain; the amp and its speaker mic carry the harp in a loud band.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'The PA faces the audience. Keep the cupped mic away from, and never pointed into, the PA or the amp.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet room that sounds good, a stand mic can step back for a more integrated sound.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],

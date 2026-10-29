@@ -22,19 +22,19 @@ const F = ALTO_SAX;
 
 export const ALTO_ZONES: DocumentedZone[] = [
   saxZone(F, 'above', 'as.above', {
-    label: 'A few centimetres above the bell, aimed at the sound holes',
+    label: 'A few centimeters above the bell, aimed at the sound holes',
     band: 'Try about 5–10 cm (2–4 in) above the bell rim, aimed down across the body at the sound holes — a natural place to begin, hearing the bell and the holes together.',
     tendency: 'A natural blend of the bell and the body; the most even across low and high notes of the close spots. Move it toward the bell for brightness, or across the body to soften it.',
     checks: ['The bell’s swing as the player moves', 'The lowest and the highest notes the part uses', 'Key noise as the fingers work'],
   }),
   saxZone(F, 'into', 'as.into', {
-    label: 'A few centimetres from the bell, aimed into it',
+    label: 'A few centimeters from the bell, aimed into it',
     band: 'Try about 5–10 cm (2–4 in) from the bell rim, on its axis, aimed into the bell — bright and focused, with the least spill.',
     tendency: 'Bright and direct, with the least spill and the most margin before feedback; it can sound narrow or honky, and it hears less of the notes that leave the open holes.',
     checks: ['High notes for harshness', 'Notes in the middle of the range for thinness', 'The bell’s swing as the player moves'],
   }),
   saxZone(F, 'holes', 'as.holes', {
-    label: 'A few centimetres from the sound holes',
+    label: 'A few centimeters from the sound holes',
     band: 'Try about 5–10 cm (2–4 in) from the middle of the key stack, aimed at the holes — warmer and fuller.',
     tendency: 'Warm and full, with more of the keys and pads: clicks and thumps come with it. Back off a little, or aim across the body, if the mechanism takes over.',
     checks: ['Key and pad noise', 'The hands — nothing within their reach', 'Notes that leave far from the mic (the lowest, at the bell)'],
@@ -49,7 +49,7 @@ export const ALTO_ZONES: DocumentedZone[] = [
     label: 'About 45–60 cm in front, aimed between the bell and the left-hand keys',
     band: 'Try about 45–60 cm (18–24 in) in front of the horn, aimed between the bell and the left-hand keys — more of the whole horn and some of the room.',
     tendency: 'The holes and the bell blend into one horn, with some of the room; more spill, and level changes if the player moves. A place to begin in a good studio room.',
-    checks: ['How much room and how many neighbours it hears', 'The player’s movement against the mic’s zone', 'The stand’s base clear of the bell’s swing'],
+    checks: ['How much room and how many neighbors it hears', 'The player’s movement against the mic’s zone', 'The stand’s base clear of the bell’s swing'],
   }),
   saxZone(F, 'shoulder', 'as.shoulder', {
     label: 'Over the player’s shoulder',

@@ -435,7 +435,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
         layout: 'rack',
         rack: {
           render: (w, h) => <Plan w={w} h={h} sc={sc} scene="kit" items={items} wedges={lesson.live.wedges} highlight={nearSel} onTap={pickNear} label={`${C.setting.kitA11y} ${nearItem ? `Highlighted: ${nearItem.label}.` : ''} A typical layout.`} />,
-          badge: 'From above · a typical layout · grey hatch = the player’s space',
+          badge: 'From above · a typical layout · gray hatch = the player’s space',
           bezel: bezel(nearItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',

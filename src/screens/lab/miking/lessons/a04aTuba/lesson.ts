@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the tuba’s surroundings — the player’s chair and support, the bell’s sway, the slides, the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the tuba’s surroundings — the player’s chair and support, the bell’s sway, the slides, the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['tu.set.1', 'tu.set.2', 'tu.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bell, the valve hand and the slides are the player’s space: no mic, boom or cable goes there, and no slide ever holds anything. Find the bell, hear the lowest written note, and protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — a filter, the room, the distance, the stand, the gain stages and the mount — before reaching for tone controls.',
   },
   practice: {
@@ -143,12 +143,12 @@ const scenarios: MikingScenario[] = [
     id: 'tu.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close over the center of an upward bell tends to hear…',
-    options: ['One local part of the bell, plus air and valve noise', 'The whole tuba and the room around it, evenly', 'The neighbouring players more than the tuba right beneath it'],
+    options: ['One local part of the bell, plus air and valve noise', 'The whole tuba and the room around it, evenly', 'The neighboring players more than the tuba right beneath it'],
     correct: 'One local part of the bell, plus air and valve noise',
     explain: 'Very close over the opening, one part of a large bell — and the air stream and mechanical noise — dominate. Aiming across the edge from farther away hears more of the whole tuba.',
     why: {
       'The whole tuba and the room around it, evenly': 'That is what a farther mic tends to hear. Up close, one region dominates.',
-      'The neighbouring players more than the tuba right beneath it': 'Close over the bell, the tuba is by far the loudest thing the mic hears.',
+      'The neighboring players more than the tuba right beneath it': 'Close over the bell, the tuba is by far the loudest thing the mic hears.',
     },
   },
   {
@@ -215,12 +215,12 @@ const scenarios: MikingScenario[] = [
     id: 'tu.place.2',
     page: 'placement',
     prompt: 'Your mic is about 60 cm above an upward bell, aimed at its edge, its boom outside the space above the bell. A sensible place to begin?',
-    options: ['Yes — then compare a closer spot, a little off axis', 'No — lower it into the bell for the fullest sound', 'No — aim it straight down at the bell’s centre'],
+    options: ['Yes — then compare a closer spot, a little off axis', 'No — lower it into the bell for the fullest sound', 'No — aim it straight down at the bell’s center'],
     correct: 'Yes — then compare a closer spot, a little off axis',
     explain: 'That is the above-the-bell starting point: open, rounded, with some room. From there, compare a closer view off the axis at matched level, and keep clear of the sway.',
     why: {
       'No — lower it into the bell for the fullest sound': 'A mic seldom goes into the bell: it hears one local part, the air stream and the valves — and risks the instrument.',
-      'No — aim it straight down at the bell’s centre': 'Aiming at the edge is the suggestion: straight down is the most direct, local view.',
+      'No — aim it straight down at the bell’s center': 'Aiming at the edge is the suggestion: straight down is the most direct, local view.',
     },
   },
   {
@@ -345,12 +345,12 @@ const symptoms: Symptom[] = [
     id: 'tu.sym.boom',
     observation: 'Boomy but indistinct',
     firstChecks: 'Close proximity lift, or the room or the stand vibrating: compare a farther, off-axis view, and listen to the mic with the player silent and the stage playing.',
-    options: ['Compare a farther, off-axis view; test with the player silent', 'Cut all of the low end until the boom goes away', 'Move the mic right over the bell’s centre for a more focused sound'],
+    options: ['Compare a farther, off-axis view; test with the player silent', 'Cut all of the low end until the boom goes away', 'Move the mic right over the bell’s center for a more focused sound'],
     correct: 'Compare a farther, off-axis view; test with the player silent',
     explain: 'A close directional mic lifts the lows, and stage or riser vibration can pass for tuba. Compare, and listen with the player silent — then reposition or isolate the stand before filtering.',
     why: {
       'Cut all of the low end until the boom goes away': 'A broad cut thins every note to fix a few. Find the cause.',
-      'Move the mic right over the bell’s centre for a more focused sound': 'Closer and on axis usually adds more proximity lift and local noise.',
+      'Move the mic right over the bell’s center for a more focused sound': 'Closer and on axis usually adds more proximity lift and local noise.',
     },
   },
   distortSymptom('tu.sym.distort'),
@@ -426,7 +426,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Delay the spot to the main pair and flip its polarity, as a matter of course', ok: false, power: 'phantom', feedback: 'Neither is automatic: move or rebalance first, then judge both in mono.' },
       { id: 'e', label: 'Turn the main pair up until the tuba is clear', ok: false, power: 'phantom', feedback: 'That raises everything else too. Definition needs a little direct tuba, not more of everything.' },
     ],
-    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the neighbours'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('tuba'), { id: 'r.boost', label: 'A tuba spot needs a big low-end boost to work', role: 'wrong', feedback: 'Close directional spots already lift the lows. Keep the line supportive.' }],
+    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the neighbors'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('tuba'), { id: 'r.boost', label: 'A tuba spot needs a big low-end boost to work', role: 'wrong', feedback: 'Close directional spots already lift the lows. Keep the line supportive.' }],
     explain: 'Two spots pass. What passes is the reasoning: a sensible starting point, clearance, the right power — and a spot that supports the main pair rather than pulling the tuba forward.',
   },
 ];

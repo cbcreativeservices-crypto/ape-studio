@@ -193,7 +193,7 @@ function hashW(n: number): number {
  *    the SAME 900 ms side by side.
  *  • No cartoon carrier. At 900 ms per half no carrier cycle is resolvable,
  *    so the waveform is drawn the way a DAW draws an overview: min/max per
- *    pixel column — a filled envelope symmetric about the centre line
+ *    pixel column — a filled envelope symmetric about the center line
  *    (feedback_never_stylized_audio).
  *  • LINEAR amplitude. The old meter-style dB→height map drew a −30 dB tail at
  *    half height. dB now lives only where it is labelled dB (the ladder, the
@@ -882,7 +882,7 @@ function EchoFlow({
     () => echoOutPath(2, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
     [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
   );
-  // Level colour pinned to TRUE full scale (loudness standard): a lane's edge
+  // Level color pinned to TRUE full scale (loudness standard): a lane's edge
   // is the source's −20 dBFS peak, so full scale sits 10× further out and the
   // repeats read in the quiet colours they really are.
   const laneL = pingpong ? lc : yc;

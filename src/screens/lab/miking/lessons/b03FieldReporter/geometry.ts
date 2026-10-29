@@ -9,7 +9,7 @@
  * "60–90°" is said in words). Three set-ups (the variants):
  *
  *   street   ON THE STREET: one handheld in the reporter's right hand, the
- *            camera beside the reporter on the guest's right, the kerb and
+ *            camera beside the reporter on the guest's right, the curb and
  *            the traffic lane behind the guest, the wind from the road.
  *   twoMics  TWO MICS: the same place, the reporter's own handheld at their
  *            mouth and a lav on the guest's chest (with their agreement) —
@@ -21,7 +21,7 @@
  * Sources: docs/labs/miking/field_reporter/SOURCES.md, GEOMETRY_PROPOSAL.md.
  * Every position is a DRAWING DEFAULT (owner list: talker spacing, chest
  * height, the flag, the background-source rotate): the spacing, the camera,
- * the kerb, the loudspeaker.
+ * the curb, the loudspeaker.
  */
 import type { InstrumentModel, Part, Provenance, Rim, Variant, Vec3, ViewBox } from '../../engine/model/types.ts';
 import { FRAME_V, VOICE_DIMS } from '../shared/voice/voiceSpec.ts';
@@ -79,7 +79,7 @@ export const PA_C = v3(2600, FLOOR - 1700, 1300);
 export const LAV = BODY_MOUNTS.sternum;
 
 export const B03_VARIANTS: Variant[] = [
-  { id: 'street', label: 'STREET', blurb: 'On the street: one handheld in the reporter’s hand, the camera beside the reporter, the kerb and the traffic behind the guest.', phrase: 'on the street' },
+  { id: 'street', label: 'STREET', blurb: 'On the street: one handheld in the reporter’s hand, the camera beside the reporter, the curb and the traffic behind the guest.', phrase: 'on the street' },
   { id: 'twoMics', label: 'TWO MICS', blurb: 'The same place with a mic each: the reporter keeps a handheld at their own mouth, the guest wears a lav — each on its own channel.', phrase: 'with a mic each' },
   { id: 'event', label: 'LIVE EVENT', blurb: 'At a live event: the same interview, and a local loudspeaker on a pole beyond the reporter, facing the crowd.', phrase: 'at a live event with a loudspeaker' },
 ];

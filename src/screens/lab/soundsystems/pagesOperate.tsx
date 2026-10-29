@@ -461,7 +461,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>ILLUSTRATIVE MODEL</Eyebrow>
-        <Body>Placement buys 12 dB and a narrow notch buys 4 in this model — teaching proportions, not measurements. Real gain-before-feedback depends on the microphone, the wedge, the stage and the room, and is found with an analyser and your ears.</Body>
+        <Body>Placement buys 12 dB and a narrow notch buys 4 in this model — teaching proportions, not measurements. Real gain-before-feedback depends on the microphone, the wedge, the stage and the room, and is found with an analyzer and your ears.</Body>
       </Card>
     </SoundSystemsRackLayout>
   );

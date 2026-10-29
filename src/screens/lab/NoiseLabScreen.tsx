@@ -112,7 +112,7 @@ function noiseGuardSentence(): string {
   if (nativeHpfActive()) {
     return (
       `the engine's built-in ${SPEAKER_HPF_HZ} Hz high-pass removes that sub-bass before it ` +
-      'reaches the driver, so no colour needs its level cut'
+      'reaches the driver, so no color needs its level cut'
     );
   }
   const cuts = Object.entries(NOISE_GUARD_DB)
@@ -371,22 +371,22 @@ export function NoiseLabScreen() {
 {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
       <CheckQuestion
         spec={{
-          question: 'A hiss that RISES +3 dB per octave toward the top. Which colour?',
+          question: 'A hiss that RISES +3 dB per octave toward the top. Which color?',
           options: ['Blue', 'Pink', 'Brown'],
           correctIdx: 0,
           reveal:
             'Rising toward the treble = BLUE (+3 dB/oct; violet is steeper at +6). Pink and brown tilt the other way — down toward the bass.',
-          wrongHint: 'Watch which end of the slope chart lifts as you tap the colours.',
+          wrongHint: 'Watch which end of the slope chart lifts as you tap the colors.',
         }}
       />
       <CheckQuestion
         spec={{
-          question: 'You want the reference noise that holds equal energy in every octave. Which colour?',
+          question: 'You want the reference noise that holds equal energy in every octave. Which color?',
           options: ['Pink', 'White', 'Violet'],
           correctIdx: 0,
           reveal:
             'PINK holds equal energy per OCTAVE — matching how hearing divides the spectrum — which is why it is the mixing and system-tuning reference. White is equal per Hz and reads bright.',
-          wrongHint: 'The per-colour line under the chips names each one\u2019s job.',
+          wrongHint: 'The per-color line under the chips names each one\u2019s job.',
         }}
       />
 

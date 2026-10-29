@@ -176,7 +176,7 @@ const shoulders = (standing: boolean) => {
 
 /* ═══════════════ a NECK: fretted or stopped ═══════════════ */
 
-/** A neck in the player's frame: `o` the board's face on its centre line at
+/** A neck in the player's frame: `o` the board's face on its center line at
  *  the hand's middle stop; `a` toward the headstock or scroll; `e` across the
  *  board toward the edge the fingers come over; `n` out of the board's face
  *  (the strings' side). Stops along `a` from `o` (index first, toward the

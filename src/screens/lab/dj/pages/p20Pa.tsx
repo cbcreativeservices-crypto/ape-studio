@@ -63,7 +63,7 @@ type View3 = 'ROOM' | 'HANDOFF' | 'SYSTEM';
 
 const LOOK: Record<View3, string> = {
   ROOM: 'You are looking down on the venue: the stage at the top, the floor colored by level, the tops with their −6 dB edges, the subs and the booth. PA L stands at house left — on your left here, the DJ’s right.',
-  HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs this venue has labelled DJ L and DJ R (13 and 14 here; every venue numbers its own — ask the engineer).',
+  HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs this venue has labeled DJ L and DJ R (13 and 14 here; every venue numbers its own — ask the engineer).',
   SYSTEM: 'You are looking at the venue’s system: the crossover’s response (TOPS, SUB and their SUM), and below, a top and a sub at true size.',
 };
 
@@ -493,7 +493,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           );
         },
         bezel: [
-          { k: 'FLOOR', v: fmtDba(floor), sub: floorHum ? 'dBA · HUM' : 'dBA (MODEL)', vA11y: floor == null ? 'no sound on the floor' : `${floor.toFixed(0)} dBA modelled at the floor center${floorHum ? ', with a hum' : ''}`, tint: floorHum ? PEAK_RED : colors.amber },
+          { k: 'FLOOR', v: fmtDba(floor), sub: floorHum ? 'dBA · HUM' : 'dBA (MODEL)', vA11y: floor == null ? 'no sound on the floor' : `${floor.toFixed(0)} dBA modeled at the floor center${floorHum ? ', with a hum' : ''}`, tint: floorHum ? PEAK_RED : colors.amber },
           { k: 'AT THE DECKS', v: fmtDba(dj), sub: 'dBA (MODEL)', tint: dj != null && dj > 88 ? PEAK_RED : colors.green },
           { k: '4-HOUR DOSE', v: dose == null ? '—' : `${dose} %`, sub: 'ROOM ONLY', vA11y: dose == null ? 'no dose yet' : `${dose} percent of the daily dose in four hours, from the room only — the headphones add to it`, tint: dose != null && dose > 100 ? PEAK_RED : colors.green },
           fourth,
@@ -520,7 +520,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK[view]}</Look>
-        <P>In a venue your MASTER is a line feed to someone else’s system: hand it over labelled and balanced, at its unity mark, and let the engineer set the room. The stage box inputs are mic preamps: the engineer pads them or sets the gain low for your line feed. What the crowd hears then depends on the processor, the speakers and where they stand.</P>
+        <P>In a venue your MASTER is a line feed to someone else’s system: hand it over labeled and balanced, at its unity mark, and let the engineer set the room. The stage box inputs are mic preamps: the engineer pads them or sets the gain low for your line feed. What the crowd hears then depends on the processor, the speakers and where they stand.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -532,10 +532,10 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <P>In SYSTEM, the crossover is OFF: the tops’ and the sub’s own roll-offs overlap and the SUM bulges round 100 Hz. Turn it ON and watch SUM go flat — the tops above, the sub below, in mono. It is flat here because this sub and these tops arrive together; in a real system the engineer also time-aligns them (a delay and the polarity at the processor), and a sub far from its tops can cancel round the crossover point.</P>
         <P>A venue with ONE input for the DJ gets a mono mix: the mixer’s MONO switch, or a summing box — never a Y-cable joining two outputs, which makes them fight each other.</P>
-        <P>In the ROOM, the tops aimed straight down leave a hole in front of the floor. Try each placement: the front corners, aimed in, cover the floor evenly and keep the decks out of their beam; behind the DJ, the decks become the loudest seat in the house. (The map is a simplified picture of the mid range: no height, no reflections. The SUBS map shows 60 Hz: two spaced subs add in step in some places and cancel in others — move a metre and the bass changes.)</P>
+        <P>In the ROOM, the tops aimed straight down leave a hole in front of the floor. Try each placement: the front corners, aimed in, cover the floor evenly and keep the decks out of their beam; behind the DJ, the decks become the loudest seat in the house. (The map is a simplified picture of the mid range: no height, no reflections. The SUBS map shows 60 Hz: two spaced subs add in step in some places and cancel in others — move a meter and the bass changes.)</P>
         <Note>The TT LOOP (turntable loop) reading on the ROOM’s strip is a different loop from mic feedback: the subs shake the table and the turntable’s stylus plays the shaking back — low and slow (Screen 17). Mic feedback rings at whatever pitch the loop peaks first, often the mids or highs. Distance and isolation cure the turntable loop; turning a mic down does not.</Note>
         <Note tone="safety">Real stands: on level ground, legs fully out, the top locked on the pole, the legs taped clear of feet, and kept within the stand’s rated height and load. With passive speakers, the amplifier is OFF (or its level down) while you connect or move a speaker cable — its terminals can carry a shock-level voltage on a big amplifier.</Note>
-        <Note tone="safety">At the decks you hear the PA’s spill AND the booth monitors, for hours. This dose counts the room at the decks only — your headphones add to it, often more than the room. A 4-hour set at more than about 88 dBA is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA with a 5 dB rule). Turn the BOOTH down before you turn the headphones up; take breaks; wear musicians’ earplugs. This is a modelled level — a phone’s volume is not your ears’ level.</Note>
+        <Note tone="safety">At the decks you hear the PA’s spill AND the booth monitors, for hours. This dose counts the room at the decks only — your headphones add to it, often more than the room. A 4-hour set at more than about 88 dBA is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA with a 5 dB rule). Turn the BOOTH down before you turn the headphones up; take breaks; wear musicians’ earplugs. This is a modeled level — a phone’s volume is not your ears’ level.</Note>
       </Step>
       <Step n={4}>
         <Do>Hand off DJ L and DJ R on XLR, get the room to about 95 dBA through the engineer, turn the crossover on, place the tops, and bring your 4-hour dose at the decks to 100 % or less.</Do>

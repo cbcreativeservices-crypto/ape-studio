@@ -36,7 +36,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the kick’s neighbours on the kit, the player’s space, and what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know the kick’s neighbors on the kit, the player’s space, and what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['k.inst.1', 'k.inst.2', 'k.set.1'], note: 'Answer the three checks.' },
     takeaway: 'The pedal side is the player’s space: no stand, boom or cable goes through it. Live, monitors and spill shape the choice; in a studio the room may help. Ask the player first, and protect your hearing.',
   },
@@ -67,7 +67,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — angle, clearance, gain staging, levels and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The pedal side is the player’s space, moving all the time. Route stands and cables away from the pedal’s action and the walking path, and stop the drummer before anything moves.',
     why: {
       'The front of the drum, so the audience can see the head': 'Outside the front head is a normal place for a kick mic. The space to protect is the player’s: pedal, feet and walking path.',
-      'The area under the floor tom, where its legs stand': 'Neighbours need room too, but the space that moves all the time is the pedal and the player’s feet.',
+      'The area under the floor tom, where its legs stand': 'Neighbors need room too, but the space that moves all the time is the pedal and the player’s feet.',
     },
   },
   {
@@ -128,13 +128,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'k.snd.2',
     page: 'sound',
-    prompt: 'The beater strikes the exact centre of the head. Which of the head’s vibration shapes can it set moving?',
-    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    prompt: 'The beater strikes the exact center of the head. Which of the head’s vibration shapes can it set moving?',
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center, so a center strike drives only the ring-shaped ones, the lowest shape among them.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The beater touches one small spot. A shape is driven only as much as the head moves at that spot in that shape — not at all on a still line.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape, so a centre strike cannot push it.',
+      'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there in that shape, so a center strike cannot push it.',
     },
   },
   {
@@ -249,11 +249,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.place.2',
     page: 'placement',
     prompt: 'You move the mic from near the batter head toward the front head. What should you expect?',
-    options: ['More of the drum’s resonance, as a tendency to check on this drum', 'A steady rise in low bass with each centimetre the mic moves inward', 'A fixed drop in attack, by an amount you can read off a chart'],
+    options: ['More of the drum’s resonance, as a tendency to check on this drum', 'A steady rise in low bass with each centimeter the mic moves inward', 'A fixed drop in attack, by an amount you can read off a chart'],
     correct: 'More of the drum’s resonance, as a tendency to check on this drum',
     explain: 'That is a common tendency, and drums vary. Proximity effect and the surface a directional mic faces also matter.',
     why: {
-      'A steady rise in low bass with each centimetre the mic moves inward': 'Proximity effect and the surface the mic faces change the lows too, so no move changes the bass one way every time.',
+      'A steady rise in low bass with each centimeter the mic moves inward': 'Proximity effect and the surface the mic faces change the lows too, so no move changes the bass one way every time.',
       'A fixed drop in attack, by an amount you can read off a chart': 'These are tendencies, not fixed amounts. Drums vary — check it on this drum.',
     },
   },
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'k.ctx.1',
     page: 'context',
-    prompt: 'Live, what can favour close, directional pickup on the kick?',
+    prompt: 'Live, what can favor close, directional pickup on the kick?',
     options: ['Stage spill and the gain available before feedback', 'Directional mics give a louder kick than other types', 'The room sound is usually more useful on a stage'],
     correct: 'Stage spill and the gain available before feedback',
     explain: 'Those are common live reasons. In the studio, an outside or more distant perspective may help when the room contributes usefully.',
@@ -590,13 +590,13 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.3',
     covers: 'sound',
-    prompt: 'A strike exactly at the centre of a drumhead drives which of its vibration shapes?',
-    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the centre'],
+    prompt: 'A strike exactly at the center of a drumhead drives which of its vibration shapes?',
+    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the center'],
     correct: 'Only the ring-shaped ones — the rest stand still there',
-    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the center does not move there.',
     why: {
       'All of the shapes, each one just as hard': 'The beater touches one spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
-      'Only the shapes split by a line through the centre': 'The reverse: those shapes are still at the centre, so a centre strike cannot drive them.',
+      'Only the shapes split by a line through the center': 'The reverse: those shapes are still at the center, so a center strike cannot drive them.',
     },
   },
   {
@@ -662,7 +662,7 @@ export const M01_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The beater strikes', text: 'The pedal swings the beater into the batter head, on the player’s side. That brief contact is where the ATTACK — the start of the sound — begins.' },
-      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the centre, not at all at the hoop: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the center, not at all at the hoop: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air pushes the front head', text: 'The batter head squeezes the air inside, and the air pushes the front head outward. The two heads are coupled through the air.', ported: 'The batter head squeezes the air inside; the air pushes the front head outward — and some of it rushes out through the port. That moving air is what can pop a mic placed at the port.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from both heads — the front head toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.', ported: 'Sound leaves from both heads and from the port — the front head and port toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.' },
     ],
@@ -675,10 +675,10 @@ export const M01_LESSON: Lesson = {
       { id: 'kick', label: 'the kick drum (cut open, as on every page)', short: 'KICK', note: 'Lying on its side, the front head toward the audience. The same drawing as every other page of this lesson.', prov: { kind: 'sourced', src: 'YMH-RC', quote: 'RBB-2218 22"×18"' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'pedal', label: 'bass drum pedal', short: 'PEDAL', note: 'Clamped to the batter hoop. Its footboard, beater and the player’s right foot move with every stroke: stands, booms and cables stay clear of its action.', prov: { kind: 'illustrative', reason: 'no source gives pedal dimensions' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The space between the throne, the pedals and the drum is the player’s. Nothing of yours goes through it, and the walking path to the throne stays clear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'hihat', label: 'hi-hat (left foot)', short: 'HI-HAT', note: 'Played with the left foot and the sticks, to the player’s left. A loud neighbour: a mic outside the drum hears more of the kit around it than one inside.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Between the player’s knees, just above the pedal side — a loud neighbour close to the batter side of the kick.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'hihat', label: 'hi-hat (left foot)', short: 'HI-HAT', note: 'Played with the left foot and the sticks, to the player’s left. A loud neighbor: a mic outside the drum hears more of the kit around it than one inside.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Between the player’s knees, just above the pedal side — a loud neighbor close to the batter side of the kick.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
       { id: 'tom', label: 'two rack toms (mounted above the kick)', short: 'RACK TOMS', note: 'A 10 in and a 12 in tom on a holder that stands on the kick’s shell. The holder and the toms take room over the drum: a boom’s path has to go around them.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2); no source gives positions' }, tag: 'BOOM PATH', scene: 'kit', planIds: ['tom2', 'tom1'] },
-      { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'On the player’s right. Another neighbour a kick mic can hear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'On the player’s right. Another neighbor a kick mic can hear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbals', label: 'crash and ride cymbals (above the kit)', short: 'CYMBALS', note: 'Two crashes and a ride on boom stands, well above the drums. Loud and bright; their stands take floor space a kick mic’s stand must share.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2); no source gives positions' }, tag: 'SPILL', scene: 'kit', planIds: ['crash2', 'crash1', 'ride'] },
       { id: 'fill', label: 'the drummer’s fill (monitor)', short: 'DRUM FILL', note: 'A floor monitor beside the throne so the drummer can hear the band. It sits on the drummer’s side of the kick — you will see later why no pattern rejects it there.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'downstage', label: 'a downstage wedge (another player’s monitor)', short: 'WEDGE', note: 'On the audience side of the kick, facing back toward the stage. A loud source an outside kick mic can face away from.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
@@ -709,10 +709,10 @@ export const M01_LESSON: Lesson = {
     { text: 'The real shell outside diameter of a “22 in” drum, the hoop height, the hoop-to-shell gap and how far the hoop stands past the head — drawn with placeholders.', dims: ['hHoop', 'cHoop', 'hoopInset'] },
     { text: 'The floor line: whether both hoops touch the floor and how much the spurs lift the drum — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The spurs’ position along the shell, their angle and length — drawn illustratively.', dims: ['spurX'] },
-    { text: 'Where an offset port sits (its distance from the centre and its clock angle) — drawn illustratively; never a readout reference.', dims: ['portY', 'portZ'] },
+    { text: 'Where an offset port sits (its distance from the center and its clock angle) — drawn illustratively; never a readout reference.', dims: ['portY', 'portZ'] },
     { text: 'The pedal: shaft length and axle, beater head size, swing and footboard — drawn as an ILLUSTRATIVE envelope.', dims: ['beaterLen', 'beaterHeadR', 'beaterSwingDeg'] },
-    { text: 'The tension-rod positions: is a rod at bottom centre? (The count — 10 per head — is confirmed.)', dims: ['rodPhaseDeg'] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'The tension-rod positions: is a rod at bottom center? (The count — 10 per head — is confirmed.)', dims: ['rodPhaseDeg'] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
     { text: 'Head excursion and every keep-out clearance — ILLUSTRATIVE values for the owner to approve.', dims: ['kick.batter', 'kick.reso', 'kick.resoPorted', 'kick.pillow'] },
   ],
   // Page 4's two monitors (review M2/M7): fixed where a stage puts them; the

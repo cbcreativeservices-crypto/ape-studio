@@ -50,7 +50,7 @@ const GOOSE: VoiceZoneSpec = {
   variant: 'panel',
   start: { d: [250, 240, 260, 230, 270], deg: 20, at: 'mouth' },
   tendency: 'Each panelist close and clear on their own channel — the best control for soft or overlapping talkers. A gooseneck can block a camera’s view, and a speaker who leans back leaves it behind.',
-  checks: ['The panelist facing forward and turning to a neighbour', 'Paper, hands and knocks through the base', 'The camera’s view past the neck'],
+  checks: ['The panelist facing forward and turning to a neighbor', 'Paper, hands and knocks through the base', 'The camera’s view past the neck'],
 };
 
 const LECTERN: VoiceZoneSpec = {
@@ -78,7 +78,7 @@ export const B06_ZONES: DocumentedZone[] = [
   {
     id: 'b6.boundary',
     label: 'Shared, on the table between two panelists',
-    band: 'For a quiet studio roundtable with no PA: one boundary mic lying on the table between two neighbours, its front toward them — check its actual pattern; this one is half-cardioid, not omni.',
+    band: 'For a quiet studio roundtable with no PA: one boundary mic lying on the table between two neighbors, its front toward them — check its actual pattern; this one is half-cardioid, not omni.',
     kind: 'trial',
     src: 'LESSON-B06',
     quote: 'A low-profile microphone on a clear, stable surface between adjacent talkers; use its actual pattern and orientation, not the assumption that every boundary is omnidirectional (L15; PRACTICE)',

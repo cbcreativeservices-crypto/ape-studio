@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Turkish pop is singing music first and dance music a close second. Its central theme is love: longing, jealousy and the bittersweet pain inherited from arabesk (melancholic Arab-influenced style), delivered by a star whose voice the audience knows intimately. Fans sing whole songs back, clap along, and get up to dance (shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines) the moment a darbuka (goblet drum) break or 9/8 section starts. Weddings, gazino (music-hall nightclub) nightclubs, summer open-air theatres like Istanbul’s Harbiye and arenas are all normal homes for it."
+      "text": "Turkish pop is singing music first and dance music a close second. Its central theme is love: longing, jealousy and the bittersweet pain inherited from arabesk (melancholic Arab-influenced style), delivered by a star whose voice the audience knows intimately. Fans sing whole songs back, clap along, and get up to dance (shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines) the moment a darbuka (goblet drum) break or 9/8 section starts. Weddings, gazino (music-hall nightclub) nightclubs, summer open-air theaters like Istanbul’s Harbiye and arenas are all normal homes for it."
     },
     {
       "text": "The audience will say “that sounded wrong” if the vocal is not clearly on top, if melismas smear into mush, if the darbuka is buried in the dance break, or if the strings sound thin when they should weep. A Western-pop mix that treats the Turkish instruments as background seasoning misses the point."
@@ -31,7 +31,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Lead vocal:",
-      "text": "the star instrument, singing in makam-flavoured melodies (Hicaz, Kürdi, Nihavend, Uşşak) with turns, slides and microtonal inflections.",
+      "text": "the star instrument, singing in makam-flavored melodies (Hicaz, Kürdi, Nihavend, Uşşak) with turns, slides and microtonal inflections.",
       "bullet": true
     },
     {
@@ -280,7 +280,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Open-air theatres and arenas run around 96–102 dBA LAeq-15 at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino (music-hall nightclub) and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA over 60 minutes or 102–103 dBA LAeq-15. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
+      "text": "Open-air theaters and arenas run around 96–102 dBA LAeq-15 at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino (music-hall nightclub) and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA over 60 minutes or 102–103 dBA LAeq-15. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
     },
     {
       "label": "Studio / streaming:",

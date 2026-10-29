@@ -23,11 +23,11 @@ export const F06_COPY: Partial<LessonCopy> = fieldCopy({
     },
   },
   worked: { woodland: 'amb.wood.one', plaza: 'amb.plaza.one' },
-  ref: 'the water’s edge or the kerb',
+  ref: 'the water’s edge or the curb',
   reveal: 'Nearer the main bed it takes over; farther back the events and the whole place come forward. A second position is a second take to compare — not a better one by rule.',
   tendencies: 'Nearer the bed: more of it, fewer events. Farther back: more of the whole place, and more of anything you did not want. An omni hears all round; a directional mic leans toward a region but never erases the rest. Tendencies to check by ear — your ears and the place decide.',
   practice: { gain: 'amb.prac.gain', second: 'amb.prac.3', mixed: ['amb.mix.1', 'amb.mix.2', 'amb.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: where you listen, the wind, and a pair in mono.' },
   startIntro: 'This lesson is about putting microphones in a place — a woodland stream, a city plaza — to capture its ambience. First the place itself: what it sounds like and where you listen from, then real starting setups drawn at the listening point, the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
-  otherRef: 'Every starting point here is measured from the water’s edge (or the kerb) back to the mic. A few steps change the balance between the steady bed and the events.',
+  otherRef: 'Every starting point here is measured from the water’s edge (or the curb) back to the mic. A few steps change the balance between the steady bed and the events.',
   blocked: 'The stand would be on a path, a lane, an access route or in the water — move it clear.',
 });

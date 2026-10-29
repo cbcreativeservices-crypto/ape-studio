@@ -62,7 +62,7 @@ export const CLARINET_ART: LessonArt = windLessonArt({
     ],
     hearing: 'Protect your hearing during rehearsals and soundcheck: a clarinet up close, and the brass and percussion behind a woodwind section, can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',
     sectionLanding: 'Tap anything in the section — or step through ITEM — to see what it means for a clarinet mic. There is nothing to answer yet.',
-    sectionIdle: 'The clarinets sit behind the flutes, beside the bassoons. Everything near the clarinet is either the player’s space or a neighbour its mic will hear.',
+    sectionIdle: 'The clarinets sit behind the flutes, beside the bassoons. Everything near the clarinet is either the player’s space or a neighbor its mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front and another player’s to the side. Monitors, the PA and a loud band all reach a clarinet mic.',
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the first clarinet ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },

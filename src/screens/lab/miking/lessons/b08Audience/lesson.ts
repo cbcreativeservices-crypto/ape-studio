@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the place, the aim, the PA’s angle, the routing and the mono sum first — then reach for EQ.',
   },
   practice: {
@@ -80,7 +80,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b8.meet.1',
     page: 'meet',
-    prompt: 'A crowd mic hangs low, just over the front row. What is it likely to favour?',
+    prompt: 'A crowd mic hangs low, just over the front row. What is it likely to favor?',
     options: ['The nearest few people in the front row', 'The middle of the section, evenly', 'The back rows, because there are more of them'],
     correct: 'The nearest few people in the front row',
     explain: 'Low, the front row is much nearer than everyone else: one clapper or talker can be several dB louder than the middle. Raised and a little in front, the section arrives together.',
@@ -516,7 +516,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'meet',
-    prompt: 'Low over the front row, what does a crowd mic favour?',
+    prompt: 'Low over the front row, what does a crowd mic favor?',
     options: ['The nearest few people', 'The whole section evenly', 'The back rows of seats'],
     correct: 'The nearest few people',
     explain: 'Low, the front row is much nearer than the rest: raise it above and a little in front.',
@@ -526,10 +526,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'meet',
     prompt: 'Two zone mics far apart, summed to mono. What can you expect?',
-    options: ['A comb that moves seat to seat', 'A stable centre, like an XY pair', 'Nothing, once they are level-matched'],
+    options: ['A comb that moves seat to seat', 'A stable center, like an XY pair', 'Nothing, once they are level-matched'],
     correct: 'A comb that moves seat to seat',
     explain: 'Different local events reach the two at different times: the image can wander and the mono sum colors — differently for each seat.',
-    why: { 'A stable centre, like an XY pair': 'XY capsules hear a source at the same moment; far-apart zones do not.', 'Nothing, once they are level-matched': 'Levels do not remove the timing differences.' },
+    why: { 'A stable center, like an XY pair': 'XY capsules hear a source at the same moment; far-apart zones do not.', 'Nothing, once they are level-matched': 'Levels do not remove the timing differences.' },
   },
   {
     id: 'q.3',

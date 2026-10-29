@@ -22,7 +22,7 @@ export const F08_COPY: Partial<LessonCopy> = fieldCopy({
     },
   },
   worked: { walk: 'pb.walk.fixed', vehicle: 'pb.veh.fixed' },
-  ref: 'the path’s centre line',
+  ref: 'the path’s center line',
   reveal: 'Nearer the path the level arc steepens and the closest moment jumps out; farther back the pass is gentler and longer. A fixed pair lets it cross the image; a tracked mic holds it. Different viewpoints, not one right answer.',
   tendencies: 'Closer: a steeper arc, a louder closest moment, more headroom needed. Farther: a gentler, longer pass and more of the place. A narrow mic can lose the ends of the pass. Tendencies to check by ear — your ears and the place decide.',
   practice: { gain: 'pb.prac.gain', second: 'pb.prac.3', mixed: ['pb.mix.1', 'pb.mix.2', 'pb.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: level, image and pitch kept apart, and a pair of separate mics.' },

@@ -33,7 +33,7 @@ import { pathHeight, pathOrder } from './pathLayout';
  *  `controls` are THE SAME elements the page shows — docked under the enlarged
  *  drawing so the learner can adjust and watch (owner 2026-09-25). */
 const ASPECT = { frame: VIZ_W / FRAME_H, eqvs: VIZ_W / EQVS_H, detector: VIZ_W / DETECTOR_H, spectrum: VIZ_W / SPECTRUM_H };
-const CONCEPTUAL = 'Relative levels from a modelled phrase — conceptual, not a calibrated meter.';
+const CONCEPTUAL = 'Relative levels from a modeled phrase — conceptual, not a calibrated meter.';
 const BAND_CAPTION = "Gold dashed line: the detector's band-pass — the part of this sound it can hear.";
 
 /** The page's controls as they dock in full screen (the page draws them in
@@ -428,7 +428,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   }
   const go = (i: number) => { setStep((i + PHRASE.length) % PHRASE.length); setAuto(false); touch(ctx); };
   const gr = p.grDb.toFixed(1);
-  const specCaption = s.mode === 'split' ? 'Grey: before · color: after · gold dashed: the band being turned down.' : 'Grey: before · color: after — the whole spectrum moves together.';
+  const specCaption = s.mode === 'split' ? 'Gray: before · color: after · gold dashed: the band being turned down.' : 'Gray: before · color: after — the whole spectrum moves together.';
   // Mode + frame controls: on the page, and docked under either figure in full screen.
   const modeRow = (
     <Row>

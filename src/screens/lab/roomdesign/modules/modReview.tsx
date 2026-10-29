@@ -1,6 +1,6 @@
 /**
  * Module 6 — REVIEW THE ROOM. Three sections, each tagged with its tier:
- * ROOM AND LAYOUT (calculated), LIKELY ACOUSTIC BEHAVIOUR (estimated),
+ * ROOM AND LAYOUT (calculated), LIKELY ACOUSTIC BEHAVIOR (estimated),
  * SUGGESTED NEXT STEPS. A measured-value entry compares a real RT60 or a
  * found resonance with the model (MEASURED). The saved-design library lives
  * here too: save, load, and compare a saved "before" with the current setup.
@@ -112,7 +112,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
       </Card>
 
       <Card>
-        <SectionTitle title="LIKELY ACOUSTIC BEHAVIOUR" tier="ESTIMATED" />
+        <SectionTitle title="LIKELY ACOUSTIC BEHAVIOR" tier="ESTIMATED" />
         <ExpandableFigure
           aspect={miniAspect}
           title="THE PLAN AS REVIEWED"
@@ -123,7 +123,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
             </View>
           )}
         />
-        <Caption>The plan as the behaviour below reads it: reflection paths colored by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
+        <Caption>The plan as the behavior below reads it: reflection paths colored by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
         <Caption>{a.rectangular ? 'The mode frequencies are CALCULATED (idealized, for this rectangular box); everything else on this card is ESTIMATED.' : 'Everything on this card is ESTIMATED — the mode frequencies included, because the room is not a rectangular box.'}</Caption>
         <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : planRect ? `ROOM MODES — MEAN-HEIGHT ESTIMATE (${room.ceiling.toUpperCase()} CEILING: LESS RELIABLE)` : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
         <Caption>{`c = ${a.c.toFixed(1)} m/s at ${room.tempC} °C · dimensions used ${fmtU(a.modalDims.L)} × ${fmtU(a.modalDims.W)} × ${fmtU(a.modalDims.H)}${a.rectangular ? '' : planRect ? ' (mean ceiling height)' : ' (bounding box, mean ceiling height)'}.`}</Caption>
@@ -298,9 +298,9 @@ export function compareDesigns(before: RoomDesign, after: RoomDesign): string[] 
  *  the centre-line width null and the seated-height null are inherent. */
 function bassJudgement(a: ReturnType<typeof analyze>): string {
   const L = a.listenerZones.find((z) => z.mode.axis === 'L');
-  if (L?.zone === 'peak') return `Bass judgement: the seat sits on the pressure peak of the first length mode (${fmtHz(L.mode.f)}) — bass there is likely to sound heavier than the mix really is, so low-end decisions may come out thin elsewhere. Moving fore/aft changes it.`;
-  if (L?.zone === 'null') return `Bass judgement: the seat sits in the null of the first length mode (${fmtHz(L.mode.f)}) — that frequency nearly vanishes there, and the temptation is to boost what the room is hiding. Moving fore/aft changes it; the width and height nulls at a centered, seated position are normal.`;
-  return 'Bass judgement: the seat avoids the peak and null of the first length mode; the remaining unevenness is the higher modes and the speakers’ boundary cancellations. The width and height nulls at a centered, seated position are normal.';
+  if (L?.zone === 'peak') return `Bass judgment: the seat sits on the pressure peak of the first length mode (${fmtHz(L.mode.f)}) — bass there is likely to sound heavier than the mix really is, so low-end decisions may come out thin elsewhere. Moving fore/aft changes it.`;
+  if (L?.zone === 'null') return `Bass judgment: the seat sits in the null of the first length mode (${fmtHz(L.mode.f)}) — that frequency nearly vanishes there, and the temptation is to boost what the room is hiding. Moving fore/aft changes it; the width and height nulls at a centered, seated position are normal.`;
+  return 'Bass judgment: the seat avoids the peak and null of the first length mode; the remaining unevenness is the higher modes and the speakers’ boundary cancellations. The width and height nulls at a centered, seated position are normal.';
 }
 
 function imagingJudgement(a: ReturnType<typeof analyze>): string {

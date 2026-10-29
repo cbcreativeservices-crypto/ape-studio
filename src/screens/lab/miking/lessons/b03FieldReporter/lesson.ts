@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Where the voices come from',
     goal: 'See where speech leaves each person, what one mic hears shared between them or moved to whoever speaks, why a directional mic needs to point at the speaking mouth, and what wind does at the capsule.',
     credit: { scenarios: ['b3.snd.1', 'b3.snd.2', 'b3.snd.3'], note: 'Answer the three checks.' },
-    takeaway: 'Every distance is read from the lips. A shared omni favours neither voice and hears the street all round; moved to the speaker, the voice comes up. A directional mic pointed between two people serves neither. Check wind at the capsule.',
+    takeaway: 'Every distance is read from the lips. A shared omni favors neither voice and hears the street all round; moved to the speaker, the voice comes up. A directional mic pointed between two people serves neither. Check wind at the capsule.',
   },
   setting: {
     title: 'Before any mic',
@@ -50,7 +50,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose an interview mic by how it will be used — one rugged handheld moved between two people, or a mic each — and its pattern by the noise around it, without expecting an omni, or any mic held far off, to pick out a voice.',
     credit: { scenarios: ['b3.mic.1', 'b3.mic.2', 'b3.mic.3', 'b3.mic.4', 'b3.rec.1'], note: 'Answer the five checks (one reaches back to the two voices).' },
-    takeaway: 'An omni forgives aim and hears every side; a directional handheld favours the voice only when its front is on the mouth, close. A mic each avoids the handoff and adds channels to route. No pattern makes up for distance.',
+    takeaway: 'An omni forgives aim and hears every side; a directional handheld favors the voice only when its front is on the mouth, close. A mic each avoids the handoff and adds channels to route. No pattern makes up for distance.',
   },
   placement: {
     title: 'Placement Studio',
@@ -73,7 +73,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the distance to the speaking mouth, the aim, the wind cover, the grip and the route first — then reach for gain or processing.',
   },
   practice: {
@@ -95,10 +95,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b3.snd.1',
     page: 'sound',
-    prompt: 'One omni sits at chest height midway between the reporter and the guest. Whose voice does it favour?',
+    prompt: 'One omni sits at chest height midway between the reporter and the guest. Whose voice does it favor?',
     options: ['Neither: both are about as far away', 'The guest, because they answer for longer', 'The reporter, because they hold the mic'],
     correct: 'Neither: both are about as far away',
-    explain: 'Midway, the two mouths are about the same distance away, so by distance neither voice is favoured — and an omni adds no preference of its own.',
+    explain: 'Midway, the two mouths are about the same distance away, so by distance neither voice is favored — and an omni adds no preference of its own.',
     why: {
       'The guest, because they answer for longer': 'Talking longer does not move the mic; distance and pattern decide the balance.',
       'The reporter, because they hold the mic': 'Holding it does not bring it nearer their own mouth: midway is midway.',
@@ -125,7 +125,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Closer to the speaking mouth, the voice rises by distance while the distant street barely changes: more voice against the background. The omni still hears all round.',
     why: {
       'The omni starts to hear only one side': 'Its pattern does not change: an omni hears every side wherever it is.',
-      'The street gets farther from the mic': 'A short move hardly changes the distance to the street, which is metres away; the mouth is what comes closer.',
+      'The street gets farther from the mic': 'A short move hardly changes the distance to the street, which is meters away; the mouth is what comes closer.',
     },
   },
   voiceRatingCheck('b3.set.1', 'the guest'),
@@ -180,10 +180,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b3.mic.1',
     page: 'microphone',
-    prompt: 'The reporter’s mic is an omni dynamic. What helps it favour one voice in a crowd?',
+    prompt: 'The reporter’s mic is an omni dynamic. What helps it favor one voice in a crowd?',
     options: ['Being close to the speaking mouth', 'Its dynamic capsule, which rejects distant sound', 'Being held up high, above the crowd'],
     correct: 'Being close to the speaking mouth',
-    explain: 'Dynamic is how it turns sound into a signal; omni is how it hears. An omni dynamic hears the crowd, the traffic and the PA from every side — closeness is what favours the voice.',
+    explain: 'Dynamic is how it turns sound into a signal; omni is how it hears. An omni dynamic hears the crowd, the traffic and the PA from every side — closeness is what favors the voice.',
     why: {
       'Its dynamic capsule, which rejects distant sound': 'A dynamic capsule is not a pattern: an omni dynamic hears all round.',
       'Being held up high, above the crowd': 'Height changes the distances a little, not the pattern — and it takes the mic away from the mouth.',
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where can one omni start, as an idea, in a quiet place?',
     options: ['At chest height, midway between them', 'Right at the guest’s lips the whole time', 'Low by the belt, out of the camera’s shot'],
     correct: 'At chest height, midway between them',
-    explain: 'After our research, about chest height between the two is a place to begin in a quiet or moderate place: it favours neither voice and needs no rushed aiming. Listen, and move toward the speaker when it is loud.',
+    explain: 'After our research, about chest height between the two is a place to begin in a quiet or moderate place: it favors neither voice and needs no rushed aiming. Listen, and move toward the speaker when it is loud.',
     why: {
       'Right at the guest’s lips the whole time': 'Then the reporter’s questions are far away; and close to a face, ask first.',
       'Low by the belt, out of the camera’s shot': 'Far from both mouths: more street, less voice.',
@@ -408,7 +408,7 @@ const symptoms: Symptom[] = [
     explain: 'In a loud place, bring the mic to whoever is speaking just before they start, turn the pair so the traffic is less intrusive, or move along the pavement.',
     why: {
       'Turn the channel up until the voices lead': 'Gain raises the traffic with the voices.',
-      'Point the mic at the traffic to measure it': 'That favours the traffic, not the voices.',
+      'Point the mic at the traffic to measure it': 'That favors the traffic, not the voices.',
     },
   },
   {
@@ -511,7 +511,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favour?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now STEP through (or PLAY ONCE), then slide the mic between them.' },
+  sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favor?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now STEP through (or PLAY ONCE), then slide the mic between them.' },
   microphone: { prompt: 'Before you move anything: does a dynamic mic, by itself, pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the omni moves from the shared place to 20 cm from the guest. What changes?', options: ['More of the guest, less of the street', 'More of the street', 'It depends on this street'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The loudspeaker is beyond the reporter. Where will a cardioid held at the guest’s mouth reject it best?', options: ['Straight behind the mic', 'In front of the mic', 'At the mic’s sides'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -537,7 +537,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'An omni dynamic in a crowd. How does it hear the people around it?',
     options: ['From every side alike', 'Less from far away, as a dynamic', 'Mostly from above, once it is held high'],
     correct: 'From every side alike',
-    explain: 'Omni is how it hears; dynamic is how it makes a signal. Closeness to the speaking mouth favours the voice, not the capsule type.',
+    explain: 'Omni is how it hears; dynamic is how it makes a signal. Closeness to the speaking mouth favors the voice, not the capsule type.',
     why: {
       'Less from far away, as a dynamic': 'Dynamic is the transducer, not the pattern.',
       'Mostly from above, once it is held high': 'Height does not change the pattern.',
@@ -657,7 +657,7 @@ export const B03_LESSON: Lesson = {
   unknowns: [
     { text: 'The standing guest and reporter: the lips 1550 mm above the ground, 75 cm apart mouth to mouth, face to face (the research’s 60–90° in plan is said in words) — drawing defaults; the heads are the voice family’s.', dims: ['yFloor'] },
     { text: 'The shared place: chest height 28 cm below the mouths, midway — a drawing default (“around chest height between”, no number). The handoff band 15–30 cm and the close end 10 cm below the breath are the lab’s drawing.', dims: [] },
-    { text: 'The reporter’s handheld (23 cm, a flag) and the arm holding it (upper arm 30 cm, forearm 29 cm) are drawing defaults; the camera beside the reporter, the kerb, the loudspeaker and the loud source’s 2 m are drawing defaults.', dims: [] },
+    { text: 'The reporter’s handheld (23 cm, a flag) and the arm holding it (upper arm 30 cm, forearm 29 cm) are drawing defaults; the camera beside the reporter, the curb, the loudspeaker and the loud source’s 2 m are drawing defaults.', dims: [] },
     { text: 'The levels on the one-mic tool are by distance and an ideal first-order pattern only (a simplified picture); the wind marks are illustrative, never a level.', dims: [] },
   ],
   live: { wedges },

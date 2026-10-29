@@ -137,7 +137,7 @@ export function renderSignal(key: SignalKey, n = 1024, seed = 1): number[] {
  * worm, not audio. This renders ~1.5 s of audio at a real sample rate with real
  * pitches (a voice at ~130 Hz with vowel formants, a plucked guitar, a 220 Hz
  * tone…), so the per-column min/max drawing becomes what a DAW / editor
- * overview actually shows: a dense envelope, symmetric about the centre line,
+ * overview actually shows: a dense envelope, symmetric about the center line,
  * with syllables, attacks, decays and silent gaps.
  *
  * Each signal is scaled so its PEAK equals `renderSignal`'s for the same key,
@@ -668,7 +668,7 @@ export const EQ_FILTERS: {
     hz: 220,
     kind: 'bell',
     q: 6,
-    blurb: 'Surgical: about a quarter-octave wide. Narrow enough to cut one room mode and leave its neighbours alone — and narrow enough to miss if the mode is not exactly there.',
+    blurb: 'Surgical: about a quarter-octave wide. Narrow enough to cut one room mode and leave its neighbors alone — and narrow enough to miss if the mode is not exactly there.',
   },
   {
     key: 'bell440q1',

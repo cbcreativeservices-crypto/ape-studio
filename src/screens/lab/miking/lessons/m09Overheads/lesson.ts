@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the distances to the loud sources, clearance and gain — before reaching for tone controls or pan.',
   },
   practice: {
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A point above the kit is 1.0 m from the snare and 1.5 m from the kick, both struck together. Which arrives first?',
     options: ['The snare, about 1.5 ms before the kick', 'The kick, since low sound travels faster', 'Both at once, as the strokes were together'],
     correct: 'The snare, about 1.5 ms before the kick',
-    explain: 'Sound travels at about 343 m/s at 20 °C — about 34 cm per millisecond — whatever its pitch. Half a metre farther is about 1.5 ms later.',
+    explain: 'Sound travels at about 343 m/s at 20 °C — about 34 cm per millisecond — whatever its pitch. Half a meter farther is about 1.5 ms later.',
     why: {
       'The kick, since low sound travels faster': 'Low and high sounds travel at the same speed in air. Only the distance sets the arrival time.',
       'Both at once, as the strokes were together': 'Struck together, they still travel different distances: the farther source arrives later.',
@@ -171,9 +171,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The overheads should bring in the room as well as the kit. Which pattern is a natural first try?',
     options: ['Omni — it hears all round, room included', 'Cardioid — it reaches deeper into the room', 'Supercardioid — its rear lobe hears the room'],
     correct: 'Omni — it hears all round, room included',
-    explain: 'An omni picks up from every direction, so it hears more of the room; a cardioid favours what it faces. A pattern chooses directions — it does not reach farther.',
+    explain: 'An omni picks up from every direction, so it hears more of the room; a cardioid favors what it faces. A pattern chooses directions — it does not reach farther.',
     why: {
-      'Cardioid — it reaches deeper into the room': 'A pattern does not reach farther; a cardioid favours its front and rejects its back, so it hears less of the room than an omni.',
+      'Cardioid — it reaches deeper into the room': 'A pattern does not reach farther; a cardioid favors its front and rejects its back, so it hears less of the room than an omni.',
       'Supercardioid — its rear lobe hears the room': 'Its small rear lobe hears a little behind, but it is still more directional than a cardioid — the opposite of hearing the room.',
     },
   },
@@ -601,7 +601,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A mic is 0.5 m farther from the kick than from the snare. Struck together, when does the kick arrive?',
     options: ['About 1.5 ms after the snare', 'Before the snare: low sound is faster', 'At the same moment as the snare'],
     correct: 'About 1.5 ms after the snare',
-    explain: 'Sound travels about 34 cm per millisecond at 20 °C, whatever the pitch: half a metre is about 1.5 ms.',
+    explain: 'Sound travels about 34 cm per millisecond at 20 °C, whatever the pitch: half a meter is about 1.5 ms.',
     why: {
       'Before the snare: low sound is faster': 'All pitches travel at the same speed in air.',
       'At the same moment as the snare': 'Different distances mean different arrival times.',
@@ -711,7 +711,7 @@ export const M09_LESSON: Lesson = {
     { text: 'The floor line (M01’s floor).', dims: ['yFloor'] },
     { text: `The cymbal family’s drawing defaults: ${CYMBAL_DRAWING_DEFAULTS.join('; ')}.`, dims: [] },
     { text: `The drum family’s drawing defaults: ${DRUM_DRAWING_DEFAULTS.join('; ')}.`, dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges: M09_WEDGES },
   accuracyDetail:

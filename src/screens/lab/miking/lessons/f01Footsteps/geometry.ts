@@ -60,7 +60,7 @@ const VARIANTS: Variant[] = [
   { id: 'wood', label: 'HOLLOW WOOD', blurb: 'Wood boards over an air gap: the panel and the gap under it can ring with each step.', phrase: 'on a hollow wood panel' },
   { id: 'gravel', label: 'GRAVEL', blurb: 'Loose gravel on a sand bed: crunch, scatter and uneven steps — the walker needs room to work the material.', phrase: 'on loose gravel' },
   { id: 'carpet', label: 'CARPET', blurb: 'Carpet laid over a wood floor: a quiet step, the boards under it still heard — a carpet always lies on something.', phrase: 'on carpet over wood' },
-  { id: 'live', label: 'LIVE STAGE', blurb: 'A Foley booth at the side of a theatre stage: a concrete slab in the pit, the PA beside the stage and a wedge in front of the performer. The audience sees the artist.', phrase: 'in a live Foley booth' },
+  { id: 'live', label: 'LIVE STAGE', blurb: 'A Foley booth at the side of a theater stage: a concrete slab in the pit, the PA beside the stage and a wedge in front of the performer. The audience sees the artist.', phrase: 'in a live Foley booth' },
 ];
 
 const shellProv = src('FF-PIT', 'Dimensions of 1.2 x 1 meter are optimal; concrete framing at least 70 millimeters … I prefer 100 mm');
@@ -92,7 +92,7 @@ function parts(): Part[] {
     out.push({ id: `f01.surface.${v}`, label: `walking surface — ${s.label}`, short: s.short.toLowerCase(), role: layerRole[v], prov: src('NF-FOLEY', 'carpet, concrete, grass, tile, metal, creaky wood floor, laminate, wood plank, dirt, rock, sand, snow, and a low water pit'), variants: [v] });
     out.push({ id: `f01.under.${v}`, label: s.hollow ? 'under the surface — the hollow part' : 'under the surface', short: s.hollow ? 'hollow' : 'under', role: underRole[v], prov: src('FF-CUE', 'a carpet is always laid on another surface. There is always tile, concrete, hardwood, or hollow wood underneath.'), variants: [v] });
   }
-  out.push({ id: 'f01.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic on stage hears it too. That is the feedback path a live Foley mic has to live with.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: boothSolids(0).pa });
+  out.push({ id: 'f01.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic on stage hears it too. That is the feedback path a live Foley mic has to live with.', prov: ill('a typical theater layout (drawing default)'), variants: ['live'], solid: boothSolids(0).pa });
   out.push({ id: 'f01.booth', label: 'the Foley booth’s front rail', short: 'booth', role: 'The booth at the side of the stage, open so the audience can see the artist: a fixed station, its props and mics set before the show.', prov: src('ENO-FOLEY', 'A special booth is constructed stage left … so that the foley artist is visible to the audience'), variants: ['live'], solid: boothSolids(0).rail });
   return out;
 }

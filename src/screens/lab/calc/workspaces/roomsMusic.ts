@@ -983,7 +983,7 @@ const WS_SABINE: Workspace = {
       plainFormula:
         'The total absorption is the sum over surfaces of each area times its absorption coefficient; the reverberation time is then 0.161 times the volume over that total.',
       explain:
-        'Builds the total absorption from a list of surfaces: each area times its absorption coefficient, summed. Because absorption is area × coefficient, treatment is bought in square metres that actually absorb. The result feeds straight into Sabine for the room’s RT60.',
+        'Builds the total absorption from a list of surfaces: each area times its absorption coefficient, summed. Because absorption is area × coefficient, treatment is bought in square meters that actually absorb. The result feeds straight into Sabine for the room’s RT60.',
       keySymbols: ['Σ', 'α', '·', '/', 'x₁'],
       note: 'Areas and coefficients pair by position: first area with first α, and so on.',
       compute: (v) => {
@@ -1056,7 +1056,7 @@ const WS_SABINE: Workspace = {
       formula: 'A needed = 0.161 · V / RT target',
       plainFormula: 'The absorption needed equals 0.161 times the volume, divided by the target reverberation time.',
       explain:
-        'Rearranges Sabine to solve for absorption: how many square metres of equivalent absorption a target RT60 demands. Enter the current total absorption too and it gives the shortfall — the extra absorption to add to reach the target.',
+        'Rearranges Sabine to solve for absorption: how many square meters of equivalent absorption a target RT60 demands. Enter the current total absorption too and it gives the shortfall — the extra absorption to add to reach the target.',
       keySymbols: ['·', '/'],
       note: 'Reverse solve: enter the current total absorption to also get the shortfall to add.',
       compute: (v) => {

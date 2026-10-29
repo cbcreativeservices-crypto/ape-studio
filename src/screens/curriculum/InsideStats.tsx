@@ -324,7 +324,7 @@ export function InsideStats({
     const m = 0.6 * s1 + 0.4 * s2;
     return { opacity: 0.4 + 0.4 * m };
   });
-  const heroA11y = hero.a11yLabel ?? `${hero.value == null ? 'Count unavailable' : fmt(hero.value)} fully linked glossary terms, definitions and flashcards. The glossary is the centre of the academy; every figure shown links to it.`;
+  const heroA11y = hero.a11yLabel ?? `${hero.value == null ? 'Count unavailable' : fmt(hero.value)} fully linked glossary terms, definitions and flashcards. The glossary is the center of the academy; every figure shown links to it.`;
 
   return (
     <View style={styles.panelShadow}>

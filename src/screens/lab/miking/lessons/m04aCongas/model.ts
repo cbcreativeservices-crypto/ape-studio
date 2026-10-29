@@ -108,7 +108,7 @@ export const CONGA_ZONES: DocumentedZone[] = [
     aim: aim(45, '"aim to include head tone and hand detail": ±45° of straight down is the lab’s tolerance'),
     drawn: drawAbove(HEAD_Y, FERGUSON, { u0: d.c.x - d.R, u1: d.c.x + d.R }, { u0: d.c.x - d.R, u1: d.c.x + d.R, v0: d.c.z - d.R, v1: d.c.z + d.R, round: true }),
     start: { p: { x: d.c.x + d.R * 0.55, y: HEAD_Y - 260, z: d.c.z }, az: 0, el: -65 },
-    tendency: 'More of this drum on its own channel. Closer brings more direct sound and hand detail — and can favour one stroke; farther balances open tones, slaps and muted strokes, with more of the room.',
+    tendency: 'More of this drum on its own channel. Closer brings more direct sound and hand detail — and can favor one stroke; farther balances open tones, slaps and muted strokes, with more of the room.',
     checks: ['Outside the player’s hands and wrists, at full intensity', 'The balance of strokes, closer then farther', 'Room and spill as you back off'],
   })),
   ...([TUMBA, CONGA] as const).map<DocumentedZone>((d) => ({
@@ -127,7 +127,7 @@ export const CONGA_ZONES: DocumentedZone[] = [
     aim: aim(60, 'aimed across the head: ±60° of straight down is the lab’s tolerance'),
     drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: d.c.x + d.R * 0.5, u1: d.c.x + d.R + 40 }, { u0: d.c.x - d.R - 40, u1: d.c.x + d.R + 40, v0: d.c.z - d.R - 40, v1: d.c.z + d.R + 40, round: true }),
     start: { p: { x: d.c.x + d.R - 25, y: HEAD_Y - 70, z: d.c.z }, az: 0, el: -50 },
-    tendency: 'Independent control of each drum in little stage space — the mic moves with the drum. Closer can favour the stroke nearest the capsule; check the whole phrase.',
+    tendency: 'Independent control of each drum in little stage space — the mic moves with the drum. Closer can favor the stroke nearest the capsule; check the whole phrase.',
     checks: ['The player agrees to a clip on the rim', 'Clear of every hand stroke and the rim hits', 'Vibration or rattle from the clamp'],
   })),
   {

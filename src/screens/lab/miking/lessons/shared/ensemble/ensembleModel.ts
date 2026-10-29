@@ -11,7 +11,7 @@
  *              'front'  (the front of the front row, normal downstage:
  *                        "1.5 m in front of the front row")
  *              target surfaces a lesson adds for its spots (targetSurface)
- *   line       'across' (a plane: left or right of the centre line)
+ *   line       'across' (a plane: left or right of the center line)
  *   parts      `${variant}:${seatId}`  a cylinder round each player (floor to
  *                                      head) — never listed, never touched
  *              `${variant}:${section}` the section, named, for regions
@@ -178,7 +178,7 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
     parts,
     regions,
     surfaces,
-    lines: [{ id: 'across', label: 'the centre line', point: v3(0, 0, 0), dir: v3(1, 0, 0), plane: true, words: { plus: `to the ${who}’s right of`, minus: `to the ${who}’s left of`, keyPlus: 'RIGHT', keyMinus: 'LEFT' } }],
+    lines: [{ id: 'across', label: 'the center line', point: v3(0, 0, 0), dir: v3(1, 0, 0), plane: true, words: { plus: `to the ${who}’s right of`, minus: `to the ${who}’s left of`, keyPlus: 'RIGHT', keyMinus: 'LEFT' } }],
     envelopes,
     variants: o.variants.map((v) => ({ id: v.id, label: v.label.toUpperCase(), blurb: v.blurb, phrase: v.label.toLowerCase() })),
     defaultVariant: first.id,

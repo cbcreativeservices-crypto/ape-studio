@@ -86,7 +86,7 @@ export const CLV_COPY: LessonCopy = spCopy({
   placement: {
     workedZone: { solid: 'clv.front.solid', hollow: 'clv.front.hollow' },
     workedAim: 'Face the striking area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
-    reveal: 'Closer tends to favour the click and the direct sound over the room; farther lets the click and the body cohere — with more room and competing sound. Pairs and players vary, so “it depends” is fair too.',
+    reveal: 'Closer tends to favor the click and the direct sound over the room; farther lets the click and the body cohere — with more room and competing sound. Pairs and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A dynamic may also suit if its response and the available gain serve the part; a small condenser can show the short decay. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never between the two claves. Watch PEAK meters for the strongest accent.',
     learn: {
@@ -115,7 +115,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     A: 'clv.front.solid',
     B: 'clv.above.solid',
     learn: [
-      'A common situation: a clave spot and the main or percussion mic that hears it too. The same strike arrives at different times — unwanted colouring can result.',
+      'A common situation: a clave spot and the main or percussion mic that hears it too. The same strike arrives at different times — unwanted coloring can result.',
       'Listen to both channels together and in MONO; adjust the physical position, the balance or the need for the spot. Do not assume a polarity flip is the fix.',
     ],
   },

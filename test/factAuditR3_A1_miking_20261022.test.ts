@@ -71,7 +71,7 @@ describe('fact audit R3 · A1 miking: hedged wording stays hedged', () => {
 
   it('the comb wording now names frequencies', () => {
     assert.match(read('a01Trumpet/lesson.ts'), /some frequencies cancel in the sum/);
-    assert.match(read('b02NewsAnchor/lesson.ts'), /EQ cannot fill the cancelled frequencies/);
+    assert.match(read('b02NewsAnchor/lesson.ts'), /EQ cannot fill the canceled frequencies/);
     assert.match(read('c01Guitar/lesson.ts'), /some frequencies add, some cancel/);
   });
 });

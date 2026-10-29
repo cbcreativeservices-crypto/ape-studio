@@ -43,7 +43,7 @@ export const EUPH_ART: LessonArt = {
       nearA11y: 'A euphonium player from above: the player on a chair facing right, the euphonium on the lap with its bell beside the head, the player’s space hatched, a music stand in front and a tuba player to the right.',
       wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the players; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the euphonium player — or step through ITEM — to see what it means for a euphonium mic. There is nothing to answer yet.',
-      nearIdle: 'The euphonium rests on the lap; both hands work valves; the player may rise to stand. Everything else is a neighbour a euphonium mic will hear.',
+      nearIdle: 'The euphonium rests on the lap; both hands work valves; the player may rise to stand. Everything else is a neighbor a euphonium mic will hear.',
       stageIdle: 'Two floor monitors: the player’s own in front, another to the side. Monitors, the PA and the band all reach a euphonium mic.',
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the euphonium plays in a group — are part of the picture now.',
       before: [

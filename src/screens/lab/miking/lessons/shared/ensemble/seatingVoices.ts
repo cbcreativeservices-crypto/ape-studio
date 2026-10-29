@@ -319,7 +319,7 @@ function childrenOf(solo = false): Seating {
   row(CHILDREN.front, CHILDREN.frontZ, 0);
   row(CHILDREN.back, CHILDREN.riserFront - R.tread / 2, R.rise);
   // The featured child: stepped forward of the front row, a little to the
-  // conductor's left of centre, facing the hall.
+  // conductor's left of center, facing the hall.
   if (solo) seats.push(atLips('solo.1', 'child', 'solo', { x: -500, z: CHILDREN.soloZ }, 180));
   const half = (CHILDREN.front * P) / 2 + 200;
   const { podium, conductor } = director(solo ? 3100 : 2800);

@@ -60,7 +60,7 @@ const ANALYST_HS: VoiceZoneSpec = {
   ...HEADSET_ONE,
   id: 'b9.analyst',
   label: 'The analyst’s own headset, at their mouth corner',
-  band: 'Each commentator on their own mic, the two booms mirrored: each boom at the outside corner of the mouth on the side toward the partner, and each voice on its own labelled channel.',
+  band: 'Each commentator on their own mic, the two booms mirrored: each boom at the outside corner of the mouth on the side toward the partner, and each voice on its own labeled channel.',
   off: { ...HEADSET_ONE.off, toward: 'left', prov: ill('beside the mouth on the commentator’s side: 45–100° off the axis (the lab’s drawing, mirrored)') },
   variant: 'booth',
   tendency: 'Each voice strongest in its own mic; the other voice later and much lower. A boom on the side away from the partner hears them more.',
@@ -82,7 +82,7 @@ const LIP: VoiceZoneSpec = {
   mount: 'clip',
   variant: 'open',
   start: { d: [16, 14, 18, 20, 12, 24], spread: 4, at: 'mouth' },
-  tendency: 'A close, repeatable voice with much of the stadium held back — less at the sides, where its pattern is least sensitive. Its rear still hears the crowd and a neighbour’s voice: never claim total cancellation.',
+  tendency: 'A close, repeatable voice with much of the stadium held back — less at the sides, where its pattern is least sensitive. Its rear still hears the crowd and a neighbor’s voice: never claim total cancellation.',
   checks: ['The guard where the maker says, against the upper lip', 'The rear and the sides: the crowd and the PA with the venue live', 'Wind, hand noise, and a hygiene barrier if it is shared'],
 };
 

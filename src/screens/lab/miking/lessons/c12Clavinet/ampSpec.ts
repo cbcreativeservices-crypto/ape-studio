@@ -75,7 +75,7 @@ const D = (k: keyof typeof AMP_DIMS) => AMP_DIMS[k].mm;
 export function ampBox(kind: AmpKind): AmpBox {
   if (kind === 'combo') {
     // The family's open-backed 1×12 combo (the same TRIAL sizes, speaker 60 mm
-    // right of centre and 255 mm below the top).
+    // right of center and 255 mm below the top).
     const { c, chassis } = comboParts('open');
     const chassisY1 = chassis.y1;
     return { kind, ...c.box, open: true, openY0: chassisY1 + 10, openY1: chassisY1 + 10 + D('openBack'), chassis: { y0: c.box.y0, y1: chassisY1 } };

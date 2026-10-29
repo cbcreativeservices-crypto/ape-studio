@@ -472,7 +472,7 @@ export function bassoonLayout(posture: PostureKind, spec: WindSpec, wingSide: Ve
   return { spec, body, chair: chairOf(body), segs, keyHint, handL, handR, peg: null, strap, jet: null };
 }
 
-/** Sample the centre line every `step` mm (for the art and the solids). */
+/** Sample the center line every `step` mm (for the art and the solids). */
 export function samples(Lt: Layout, s0: number, s1: number, step: number): { s: number; f: Frame }[] {
   const out: { s: number; f: Frame }[] = [];
   const n = Math.max(1, Math.ceil((s1 - s0) / step));

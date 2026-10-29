@@ -211,7 +211,7 @@ describe('SS-10 · small inconsistencies', () => {
     assert.doesNotMatch(c.what, /One console output/);
     assert.match(c.what, /Many subs take L and R on two inputs and pass both on, high-passed, so the tops stay stereo; with one cable into the sub — a mono feed — the tops play mono\./);
   });
-  it('toe-in: the inner edge meets the centre line about a third of the way back (true to the plot)', () => {
+  it('toe-in: the inner edge meets the center line about a third of the way back (true to the plot)', () => {
     const s = sys.slotDef('mainL');
     const edge = ((18 + 45) * Math.PI) / 180;
     const y = s.y + ((180 - s.x) / Math.sin(edge)) * Math.cos(edge);

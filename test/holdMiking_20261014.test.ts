@@ -8,7 +8,7 @@
  *      lists that come from the lesson (sound stages, plan items, parts,
  *      setups…) go through engine/rack/fewStops.ts, which turns them into tap
  *      choices exactly when they hold 3–4 stops.
- *  #23 Audience TURN / sports AIM direction wording: "left/right of centre",
+ *  #23 Audience TURN / sports AIM direction wording: "left/right of center",
  *      "centre" at 0.
  */
 import './_mikingTsxLoader.ts';
@@ -194,12 +194,12 @@ describe('#5 · every stepped picker over a lesson list goes through the few-sto
   });
 });
 
-describe('#23 · direction lanes read "left/right of centre"', () => {
+describe('#23 · direction lanes read "left/right of center"', () => {
   it('aimWords / aimShort', () => {
     assert.equal(venue.aimWords(0), 'centre');
     assert.equal(venue.aimWords(0.4), 'centre');
-    assert.equal(venue.aimWords(20), '20° left of centre');
-    assert.equal(venue.aimWords(-35.2), '35° right of centre');
+    assert.equal(venue.aimWords(20), '20° left of center');
+    assert.equal(venue.aimWords(-35.2), '35° right of center');
     assert.equal(venue.aimShort(20), '20°L');
     assert.equal(venue.aimShort(-35), '35°R');
     assert.equal(venue.aimShort(0), '0°');
@@ -216,7 +216,7 @@ describe('#23 · direction lanes read "left/right of centre"', () => {
     assert.doesNotMatch(f10, /`turned \$\{Math\.abs\(face\)\}° to the/);
   });
 
-  it('the dish readouts read "at … of centre"', () => {
+  it('the dish readouts read "at … of center"', () => {
     const sports = read(join(ROOT, 'lessons/shared/sports/sportsPages.tsx'));
     assert.equal((sports.match(/from the dish, at \$\{aimWords\(want\)\}/g) ?? []).length, 2);
   });

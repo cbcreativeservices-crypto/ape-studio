@@ -67,7 +67,7 @@ export function spillCheck(w: CymWords, neighbour: string): MikingScenario {
     prompt: `A friend says condensers on ${w.the} pick up more of ${neighbour} than dynamics do. What is a better way to think about it?`,
     options: ['Spill depends on the mic’s pattern, its aim and its distance', 'They are right: a condenser hears everything going on around it', 'They are wrong: a condenser hears only what it points at'],
     correct: 'Spill depends on the mic’s pattern, its aim and its distance',
-    explain: 'How much of a neighbour a mic hears depends on where its pattern points, how far each source is, how loud they are and how the real pattern behaves off axis — not on the transducer type alone.',
+    explain: 'How much of a neighbor a mic hears depends on where its pattern points, how far each source is, how loud they are and how the real pattern behaves off axis — not on the transducer type alone.',
     why: {
       'They are right: a condenser hears everything going on around it': 'A cardioid condenser rejects the rear like a cardioid dynamic does. Pattern, aim and distance set the spill.',
       'They are wrong: a condenser hears only what it points at': 'Every mic hears some of what is around it; how much depends on its pattern, aim and distance.',

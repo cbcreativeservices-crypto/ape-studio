@@ -75,8 +75,8 @@ export const BC_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: BOTH },
     start: approachPose(P0, N, UP, 700, 8),
     draw: conePolys(P0, N, null, 600, 800, 0, 30),
-    tendency: 'The sweep and the overlapping decays blended, with more of the room — and a more even row. Less isolation from louder neighbours.',
-    checks: ['Matched level when you compare', 'The tail after the sweep', 'Spill from louder neighbours'],
+    tendency: 'The sweep and the overlapping decays blended, with more of the room — and a more even row. Less isolation from louder neighbors.',
+    checks: ['Matched level when you compare', 'The tail after the sweep', 'Spill from louder neighbors'],
   },
   {
     id: 'bc.endL',

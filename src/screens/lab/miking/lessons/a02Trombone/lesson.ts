@@ -39,7 +39,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the trombone sits — the player, the slide’s reach to 7th position, the hands, the mutes and the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the trombone sits — the player, the slide’s reach to 7th position, the hands, the mutes and the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.2', 'tb.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The slide reaches straight out past the bell — about 56 cm farther at 7th position — with the arm behind it. No mic, stand, boom or cable goes there. Ask the player first, and protect your hearing.',
   },
@@ -70,7 +70,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the slide’s clearance, the angle to the bell, overload in the mic itself, a filter on the lowest notes, a mute, the combination — before reaching for tone controls.',
   },
   practice: {
@@ -239,11 +239,11 @@ const scenarios: MikingScenario[] = [
     id: 'tb.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · How far does the slide reach past 1st position at 7th?',
-    options: ['About half a metre farther out', 'A few centimetres at most', 'It does not move past the bell'],
-    correct: 'About half a metre farther out',
-    explain: 'Seven positions, each about a semitone: the slide travels a little over half a metre from 1st to 7th, with the hand and arm. Watch the real player’s reach — positions are found by ear.',
+    options: ['About half a meter farther out', 'A few centimeters at most', 'It does not move past the bell'],
+    correct: 'About half a meter farther out',
+    explain: 'Seven positions, each about a semitone: the slide travels a little over half a meter from 1st to 7th, with the hand and arm. Watch the real player’s reach — positions are found by ear.',
     why: {
-      'A few centimetres at most': 'Each step is several centimetres; the six steps from 1st to 7th add up to over half a metre.',
+      'A few centimeters at most': 'Each step is several centimeters; the six steps from 1st to 7th add up to over half a meter.',
       'It does not move past the bell': 'Even closed, the slide reaches past the bell — and farther as it extends.',
     },
   },
@@ -306,7 +306,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Raise it for the low line’s balance; check mono',
     explain: 'Hear the section first; the spot helps the low line speak. Too much and the bass sounds detached. Check the blend in mono — arrival-time differences can thin the low register.',
     why: {
-      'Make it loud, as the bass carries the section': 'A loud spot detaches the bass from the section and raises its neighbours’ spill.',
+      'Make it loud, as the bass carries the section': 'A loud spot detaches the bass from the section and raises its neighbors’ spill.',
       'Mute the section mic whenever the bass trombone plays': 'The section mic is the picture of the group; the spot only supports it.',
     },
   },
@@ -423,7 +423,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A clip on the outer slide, near the crook', ok: false, power: 'phantom', feedback: 'Nothing is mounted on the slide: it moves, and it is precision tubing.' },
       { id: 'e', label: 'A mic tucked under the slide, aimed up at the bell', ok: false, power: 'none', feedback: 'Under the slide is its path at every position — and the sound leaves the bell above.' },
     ],
-    reasons: [docReason('the centre of the bell’s rim'), clearReason('the slide’s whole path, the hands and the mutes'), DYN_POWER_REASON, { id: 'r.room', label: 'In a good room, a little distance lets the room join the sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('trombone'), LOUD_REASON],
+    reasons: [docReason('the center of the bell’s rim'), clearReason('the slide’s whole path, the hands and the mutes'), DYN_POWER_REASON, { id: 'r.room', label: 'In a good room, a little distance lets the room join the sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('trombone'), LOUD_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the bell, the slide’s whole path kept clear, and the power the mic needs.',
   },
   {
@@ -433,11 +433,11 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature on a bell clip, aimed between center and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
       { id: 'b', label: 'Dynamic beside the bell, out of the slide’s path, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone.' },
-      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band more than the horn — and its stand meets the slide.' },
+      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a meter away hears the band more than the horn — and its stand meets the slide.' },
       { id: 'd', label: 'A clip on the valve linkage, close to the triggers', ok: false, power: 'phantom', feedback: 'The linkage must move freely, and the thumb works there. Only the bell rim.' },
       { id: 'e', label: 'A boom reaching in over the slide’s crook', ok: false, power: 'none', feedback: 'The crook travels out to 7th: a boom over it is in the slide’s path.' },
     ],
-    reasons: [docReason('the centre of the bell’s rim'), clearReason('the slide, the triggers and the plunger hand'), CLIP_POWER_REASON, { id: 'r.move', label: 'A clip that rides on the bell holds the sound as the player moves', role: 'optional', feedback: 'A fair live reason for a clip.' }, BRAND_REASON('bass trombone'), { id: 'r.loudest', label: 'Turn it up until the bass trombone is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
+    reasons: [docReason('the center of the bell’s rim'), clearReason('the slide, the triggers and the plunger hand'), CLIP_POWER_REASON, { id: 'r.move', label: 'A clip that rides on the bell holds the sound as the player moves', role: 'optional', feedback: 'A fair live reason for a clip.' }, BRAND_REASON('bass trombone'), { id: 'r.loudest', label: 'Turn it up until the bass trombone is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a mount and a place outside the slide’s path, clear of the triggers and the plunger hand, and the power each mic needs.',
   },
 ];
@@ -563,7 +563,7 @@ export const A02_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The lips buzz', text: 'The player’s breath pushes the lips apart; they spring shut; the breath opens them again — a buzz, puffing air into the mouthpiece’s cup each time.' },
-      { title: 'A wave runs down the tube', text: 'Each puff starts a pressure wave travelling down the slide and the bell section toward the bell — drawn here as if the tube were unwound.' },
+      { title: 'A wave runs down the tube', text: 'Each puff starts a pressure wave traveling down the slide and the bell section toward the bell — drawn here as if the tube were unwound.' },
       { title: 'The tube answers', text: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave, and its pressure locks the lips to the tube’s own rhythm: that sets the note. Moving the slide changes the tube’s length, and so the notes.', byVariant: { bass: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The slide and the valves’ extra loops change the tube’s length, and so the notes.' } },
       { title: 'Sound leaves the bell', text: 'Part of the wave escapes at every cycle — almost all of it at the bell. Low down a trombone spreads its sound nearly evenly all round; from about 1 kHz up, the bell beams it straight ahead.' },
     ],
@@ -607,7 +607,7 @@ export const A02_LESSON: Lesson = {
     { text: 'The slide positions are DERIVED by equal temperament on the 2.7 m tube (0 to 559 mm) — approximate: players find them by ear and feel.', dims: [] },
     { text: 'The off-axis bands of each starting point (15–50°, 10–40°), the side away from the slide, and the clip capsule’s 4–13 cm — drawing defaults; the clip’s fit on the bass bell is not known.', dims: [] },
     { text: 'The radiation shapes on HOW IT SOUNDS — a simplified picture of the measured trend (the bass trombone’s is expected, not measured).', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

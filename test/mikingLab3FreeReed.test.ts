@@ -270,7 +270,7 @@ describe('A11 accordion: two sides, one of them moving', () => {
     assert.ok(near(s.point.z, ac.BASS_FULL));
     assert.ok(z.start.p.z < ac.BASS_FULL - ac.HAND_MARGIN, 'beyond the hand on the fully open side');
   });
-  it('the dynamic’s starting point is about 18 in from the grille’s centre (AC-01), the one-mic view 1–2 ft in front', () => {
+  it('the dynamic’s starting point is about 18 in from the grille’s center (AC-01), the one-mic view 1–2 ft in front', () => {
     const g = A11_LESSON.zones.find((q) => q.id === 'ac.grille')!;
     assert.ok(g.distance.min < 18 * IN && g.distance.max > 18 * IN);
     assert.ok(Math.abs((g.distance.min + g.distance.max) / 2 - 18 * IN) < 5);

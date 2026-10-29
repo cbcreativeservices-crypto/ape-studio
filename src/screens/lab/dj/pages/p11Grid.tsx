@@ -33,7 +33,7 @@ import { halfBpmFaultFixed, loopRealBeats } from './gridFault';
 const TERMS = [
   { term: 'Beatgrid', def: 'The software’s map of the beats, made when it analyses a track ahead of time: a thin line on every beat and a bold bar line on the “one” — where a crash, a chord change or a new part lands, and straight after a drum fill. It is an interpretation, and you can edit it.' },
   { term: 'First beat', def: 'Where the grid thinks bar 1 beat 1 is. If it is off, every bar line, loop and sync is off by the same amount.' },
-  { term: 'Half / double BPM', def: 'An analyser can read a tempo at half or double: drum & bass at 174 read as 87, hip-hop at 85 read as 170, dubstep at 140 read as 70. The beat lines then fall on every other beat (or twice per beat), and “4-beat” loops come out the wrong length.' },
+  { term: 'Half / double BPM', def: 'An analyzer can read a tempo at half or double: drum & bass at 174 read as 87, hip-hop at 85 read as 170, dubstep at 140 read as 70. The beat lines then fall on every other beat (or twice per beat), and “4-beat” loops come out the wrong length.' },
   { term: 'SYNC', def: 'Matches one deck’s tempo and beat phase to the other, using their GRIDS. With a wrong grid, sync faithfully lines up the wrong thing.' },
 ] as const;
 

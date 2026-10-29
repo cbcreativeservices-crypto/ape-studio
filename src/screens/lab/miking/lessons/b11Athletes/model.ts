@@ -77,7 +77,7 @@ const HEADSET = (id: string, variant: string, label: string, band: string, tende
 const PERIMETER: VoiceZoneSpec = {
   id: 'b11.perimeter',
   label: 'The fallback: a boom from outside play',
-  band: 'When a mount is refused or unsafe, an alternative: a short shotgun on a pole from outside play, about 0.6–1.5 m from the mouth, aimed at it — a farther, different perspective, labelled as one.',
+  band: 'When a mount is refused or unsafe, an alternative: a short shotgun on a pole from outside play, about 0.6–1.5 m from the mouth, aimed at it — a farther, different perspective, labeled as one.',
   kind: 'trial',
   src: 'LESSON-B11',
   quote: 'Use approved perimeter pickup, camera/boom position outside play, or a post-event handheld interview … label it as an alternative perspective (L21–L22)',
@@ -90,7 +90,7 @@ const PERIMETER: VoiceZoneSpec = {
   variant: 'coach',
   start: { d: [1200, 1150, 1250, 1100, 1300, 1400], deg: 40, spread: 6, at: 'mouth' },
   tendency: 'The voice from farther away: more crowd and field, and the tone changes as the coach turns. Useful — but never presented as if it were a close mic.',
-  checks: ['The pole outside play and clear of people and sight lines', 'Re-aimed as the coach moves', 'Labelled as an alternative perspective'],
+  checks: ['The pole outside play and clear of people and sight lines', 'Re-aimed as the coach moves', 'Labeled as an alternative perspective'],
 };
 
 export const B11_ZONES: DocumentedZone[] = [

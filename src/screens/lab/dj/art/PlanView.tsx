@@ -6,7 +6,7 @@
  * left), is on the viewer's left).
  *
  * Second visual review 2026-10-18 (#16): each top's -6 dB edges stop where
- * they meet the centre line, so two edges never lie on one another; the
+ * they meet the center line, so two edges never lie on one another; the
  * speakers are held at least 18 pt across with their horn drawn (a symbol
  * size); the BASS map is the subs' COHERENT sum at 60 Hz
  * (djRoom.subsCoherentAt), so spaced subs show their loud and quiet
@@ -469,7 +469,7 @@ export function edgeSegments(place: Placement): [number, number, number, number]
       if (dx < -1e-6) len = Math.min(len, (-W - c.x) / dx);
       if (dy > 1e-6) len = Math.min(len, (D - c.y) / dy);
       if (dy < -1e-6) len = Math.min(len, (0 - c.y) / dy);
-      // toward the centre line: stop at it
+      // toward the center line: stop at it
       if (Math.abs(c.x) > 1 && Math.abs(dx) > 1e-6 && Math.sign(dx) === -Math.sign(c.x)) len = Math.min(len, -c.x / dx);
       out.push([c.x, c.y, c.x + dx * len, c.y + dy * len]);
     }

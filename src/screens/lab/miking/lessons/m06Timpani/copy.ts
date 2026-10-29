@@ -104,7 +104,7 @@ export const TIMP_COPY: LessonCopy = {
     ],
     plan: {
       title: 'In the orchestra',
-      badge: 'The percussion from above · a typical concert layout · grey hatch = the players’ space',
+      badge: 'The percussion from above · a typical concert layout · gray hatch = the players’ space',
       looking: 'Plan · the percussion row, the audience toward the bottom',
       stageBadge: 'From above · an amplified orchestra · two monitors where a stage often puts them',
       studioBadge: 'From above · an orchestra recorded in a hall',

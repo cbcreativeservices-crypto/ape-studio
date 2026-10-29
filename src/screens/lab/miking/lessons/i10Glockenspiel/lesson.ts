@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know what the studio and an ensemble change.',
     credit: { scenarios: ['gl.ctx.1', 'gl.ctx.2', 'gl.ctx.studio', 'gl.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the side fill sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Start with as few open mics as the part needs; the glockenspiel often projects brightly already. Aim the real pattern’s rejection at wedges and loud neighbours.',
+    takeaway: 'Start with as few open mics as the part needs; the glockenspiel often projects brightly already. Aim the real pattern’s rejection at wedges and loud neighbors.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the mallet, the damping and the instrument first, then the coverage and gain staging — before EQ, a gate or heavy compression.',
   },
   practice: {
@@ -95,7 +95,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gl.snd.2',
     page: 'sound',
-    prompt: 'The tubes under a glockenspiel’s highest bars are only a few centimetres long. Why?',
+    prompt: 'The tubes under a glockenspiel’s highest bars are only a few centimeters long. Why?',
     options: ['Each tube is about a quarter wavelength of a very high note', 'They are short so the mallets can reach the bars', 'Steel bars need far shorter tubes than wooden bars of the same note'],
     correct: 'Each tube is about a quarter wavelength of a very high note',
     explain: 'The higher the note, the shorter its quarter wavelength: under the top notes, about 2 cm.',
@@ -214,11 +214,11 @@ const scenarios: MikingScenario[] = [
     id: 'gl.place.2',
     page: 'placement',
     prompt: 'Closer to the bars, or higher? What tends to differ?',
-    options: ['Closer: more immediate, may favour one area', 'Closer: more even across the whole keyboard', 'Higher: less of the room and less of the spill'],
-    correct: 'Closer: more immediate, may favour one area',
+    options: ['Closer: more immediate, may favor one area', 'Closer: more even across the whole keyboard', 'Higher: less of the room and less of the spill'],
+    correct: 'Closer: more immediate, may favor one area',
     explain: 'Moving closer may improve direct-to-spill ratio but exaggerate one area of the keyboard; higher integrates more of it, with more room.',
     why: {
-      'Closer: more even across the whole keyboard': 'Closer favours the bars nearest it.',
+      'Closer: more even across the whole keyboard': 'Closer favors the bars nearest it.',
       'Higher: less of the room and less of the spill': 'Higher hears more of the room and the stage.',
     },
   },
@@ -261,7 +261,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Cardioid, supercardioid, hypercardioid: do they share the same rear and side rejection?',
     options: ['No — confirm the particular mic and the stage', 'Yes — all directional mics reject sound alike from behind', 'Yes, as long as they are aimed at the bars'],
     correct: 'No — confirm the particular mic and the stage',
-    explain: 'Their nulls sit in different places, and the tighter patterns pick up some sound from behind — a hypercardioid more than a supercardioid. Aim the real pattern’s rejection at wedges and loud neighbours.',
+    explain: 'Their nulls sit in different places, and the tighter patterns pick up some sound from behind — a hypercardioid more than a supercardioid. Aim the real pattern’s rejection at wedges and loud neighbors.',
     why: {
       'Yes — all directional mics reject sound alike from behind': 'The nulls differ between patterns.',
       'Yes, as long as they are aimed at the bars': 'The aim at the bars is the same; the rejection elsewhere is not.',
@@ -351,7 +351,7 @@ const symptoms: Symptom[] = [
   {
     id: 'gl.s.tails',
     observation: 'Note tails cut short',
-    firstChecks: 'Is the player damping, or is a gate acting? Hear the hand or pedal behaviour; bypass the gate and compare.',
+    firstChecks: 'Is the player damping, or is a gate acting? Hear the hand or pedal behavior; bypass the gate and compare.',
     options: ['The player’s damping, then bypass any gate', 'Add reverb until the tails sound long again', 'Raise the gain so the tails stay audible'],
     correct: 'The player’s damping, then bypass any gate',
     explain: 'A gate can cut a legitimate ring; the damping is the player’s.',
@@ -395,7 +395,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A dynamic low on the audience side, behind the open lid', ok: false, power: 'none', feedback: 'The lid stands between it and the bars.' },
       { id: 'e', label: 'A dynamic clamped to the case', ok: false, power: 'none', feedback: 'The case is not a mount.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic, its rejection toward the wedges and loud neighbours', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, CLOSE_REASON],
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic, its rejection toward the wedges and loud neighbors', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, CLOSE_REASON],
     explain: 'Two setups pass: one directional mic with a clear view of the bars, clear of the hands, powered by what this input supplies.',
   },
 ];
@@ -492,7 +492,7 @@ const words: MalletWords = {
     learn: [
       'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no agreed two-mic dimension for the glockenspiel: do not transfer the xylophone, marimba and vibraphone geometry automatically.',
       'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can color shared notes in mono. Mount both outside the mallet arc.',
-      'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change color in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritise a stable mono balance.',
+      'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change color in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritize a stable mono balance.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. The pairs’ sizes are drawing defaults, not published figures. Judge a real pair by ear — each mic alone, both together, and in mono.',
   },
@@ -515,7 +515,7 @@ const copy: Partial<LessonCopy> = {
   setting: {
     kitA11y: 'The percussion section from above: the glockenspiel with its player, other percussion behind, a drum kit to one side.',
     kitLanding: 'Tap anything around the glockenspiel — or step through ITEM — to see what it means for a glockenspiel mic. There is nothing to answer yet.',
-    kitIdle: 'The glockenspiel in the percussion section: small and bright, with louder neighbours all around.',
+    kitIdle: 'The glockenspiel in the percussion section: small and bright, with louder neighbors all around.',
     leftHanded: 'The low end is on the player’s left. The damping hand moves too — map it with the mallets.',
     stageA11y: 'The section on a stage, from above: a floor wedge in front of the glockenspiel, a side fill on stage left, the audience below.',
     studioA11y: 'The glockenspiel in a studio room, from above: the walls around it, no monitors.',
@@ -524,7 +524,7 @@ const copy: Partial<LessonCopy> = {
     before: [
       { title: 'IDENTIFY THE INSTRUMENT', text: 'Tubes or a box? A damper pedal or hand damping? Which mallets are approved? Ask for the passage: low and high notes, accents, rolls or repeated notes, and the intended damping.' },
       { title: 'MAP THE PATH', text: 'The lowest and highest played notes, both hands’ reach, the mallet swing, the damping hand, the score and any pedal. Stands and cables outside them all; a case or support is not a mic mount.' },
-      { title: 'STABLE AND UNTOUCHED', text: 'Stabilise the instrument by its own instructions; never adjust a gas spring, the damper or a resonator to fit a mic, never prop a lid without the owner — and lock it before any stand goes near.' },
+      { title: 'STABLE AND UNTOUCHED', text: 'Stabilize the instrument by its own instructions; never adjust a gas spring, the damper or a resonator to fit a mic, never prop a lid without the owner — and lock it before any stand goes near.' },
       BEFORE_STANDS,
     ],
     plan: {
@@ -552,7 +552,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic above the bars and a little toward the audience, about 30–60 cm from them — higher for a more integrated view, closer for a more immediate one — or a safe lateral angle to compare. Starting points, not rules.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the whole phrase and its decay.',
       clearance: 'Clearance comes first. A published close position — about 10–15 cm above the bars — puts the capsule or the boom inside a real player’s mallet arc: drawn red here. Use it only if the player proves full clearance for the whole passage and the strongest stroke.',
-      tendencies: 'Closer tends to be more immediate, with more attack, and can favour one area; higher integrates the keyboard and the room. All tendencies to check by ear.',
+      tendencies: 'Closer tends to be more immediate, with more attack, and can favor one area; higher integrates the keyboard and the room. All tendencies to check by ear.',
     },
   },
   context: {
@@ -585,12 +585,12 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'These are scenario-based comparisons, not rules: an ensemble’s mains may carry a bright glockenspiel already; a loud stage needs a directional spot with its rejection aimed.',
       points: [
-        { title: 'FEW OPEN MICS', text: 'Start with as few open mics as the part needs; a directional spot can improve isolation when its axis faces the bars and its rejection faces wedges or loud neighbours.' },
+        { title: 'FEW OPEN MICS', text: 'Start with as few open mics as the part needs; a directional spot can improve isolation when its axis faces the bars and its rejection faces wedges or loud neighbors.' },
         { title: 'THE CLOSE EXAMPLE', text: 'About 10–15 cm above the bars can help attack and separation — only if every stroke and the damping actions clear it. Otherwise a safe oblique angle, raised.' },
         { title: 'THE AUDIENCE', text: 'A mic aimed at one bar makes a run uneven; a high or distant mic adds spill. Check both ends of the range after every move, and in mono before panning.' },
         { title: 'THE ENSEMBLE', text: 'Hear the mains first; a spot may be needed only for a quiet passage or independent balance — checked in mono with the mains.' },
       ],
-      body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at wedges and loud neighbours, and keep cases closed or out of paths.',
+      body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at wedges and loud neighbors, and keep cases closed or out of paths.',
       warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Avoid uncontrolled feedback.',
     },
   },
@@ -657,14 +657,14 @@ export const I10_LESSON: MalletLesson = {
   setting: {
     items: [
       { id: 'glock', label: 'the glockenspiel (and its player)', short: 'GLOCKENSPIEL', note: 'The player stands behind it, facing the audience, mallets in hand and a hand or a foot ready to damp. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical section layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
-      { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Louder neighbours: a spot over the bells hears them too.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
+      { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Louder neighbors: a spot over the bells hears them too.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'Loud and close: aim the pattern’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the glockenspiel', short: 'WEDGE', note: 'On the floor in front, facing the player, below the mic’s front: no pattern null reaches it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side fill at stage left', short: 'SIDE FILL', note: 'On a stand at about head height beyond the low end — almost level with a mic above the bars: a null can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'If the PA is mono, or listeners sit outside a central stereo zone, keep a stable mono balance.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A controlled, musical room can carry a more distant or stereo view — never an exaggerated left-right image of a small instrument.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: test with the full band at its real level, with as few open mics as the part needs; aim the rejection at wedges and loud neighbours.',
+    stage: 'LIVE: test with the full band at its real level, with as few open mics as the part needs; aim the rejection at wedges and loud neighbors.',
     studio: 'RECORDING: hear it where a listener would stand; the full phrase and its decay; a modest stereo view if the room is good.',
   },
   diagnostic,

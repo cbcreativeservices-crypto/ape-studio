@@ -983,7 +983,7 @@ const CASES: DetectiveCase[] = [
         'All frequencies decaying at the same speed',
         'A ridge near 250 Hz that will not decay',
         'A peak-hold bar',
-        'Two channels cancelling',
+        'Two channels canceling',
       ],
       correctIdx: 1,
       reveal:

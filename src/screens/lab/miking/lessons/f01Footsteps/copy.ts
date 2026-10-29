@@ -19,7 +19,7 @@ export const F01_COPY: Partial<LessonCopy> = foleyCopy({
     wood: 'a Foley artist walking on a hollow wood panel',
     gravel: 'a Foley artist walking in a pit of loose gravel',
     carpet: 'a Foley artist walking on carpet laid over a wood floor',
-    live: 'a Foley artist walking in a live theatre booth, the PA beside the stage',
+    live: 'a Foley artist walking in a live theater booth, the PA beside the stage',
   },
   axesBlurb: 'Up or down (y). The walking surface is height 0: the mic looks down onto the steps from above it.',
   instrument: {
@@ -33,7 +33,7 @@ export const F01_COPY: Partial<LessonCopy> = foleyCopy({
       wood: 'HOLLOW WOOD: boards over an air gap. The panel and the gap can add a low boom to every step — a mic move cannot take it out.',
       gravel: 'GRAVEL: loose stones that scatter. The walker needs room to work the whole pit, so the movement area is bigger in practice.',
       carpet: 'CARPET over wood: a carpet always lies on something. The step is quiet; the boards under it are still part of the sound.',
-      live: 'LIVE: a Foley booth at the side of a theatre stage — the PA and a wedge share the room with the mic. Switch SURFACE to go back to the studio pit.',
+      live: 'LIVE: a Foley booth at the side of a theater stage — the PA and a wedge share the room with the mic. Switch SURFACE to go back to the studio pit.',
     },
   },
   sound: {

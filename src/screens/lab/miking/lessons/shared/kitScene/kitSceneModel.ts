@@ -194,7 +194,7 @@ export const KIT_SURFACES: ReferenceSurface[] = [
 /** Reference lines: the snare's centre line (vertical), the kick's axis and
  *  the kit's centre line (vertical through the midpoint of kick and snare). */
 export const KIT_LINES: RefLine[] = [
-  { id: 'snareLine', label: 'the snare’s centre line', point: S0, dir: { x: 0, y: 1, z: 0 } },
+  { id: 'snareLine', label: 'the snare’s center line', point: S0, dir: { x: 0, y: 1, z: 0 } },
   { id: 'kickAxis', label: 'the kick’s axis', point: O, dir: { x: 1, y: 0, z: 0 } },
   { id: 'kitLine', label: 'the kit’s center line', point: { x: KIT_CENTRE.x, y: 0, z: KIT_CENTRE.z }, dir: { x: 0, y: 1, z: 0 } },
 ];

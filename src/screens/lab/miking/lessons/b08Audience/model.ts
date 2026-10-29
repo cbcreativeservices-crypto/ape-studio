@@ -188,7 +188,7 @@ export const B08_SETUPS: SportSetup[] = [
     type: 'a small cardioid on the rail at the front of each section',
     start: 'On each section’s approved rail, aimed up the section at its faces — the fewest zones that cover the event, each named by where it is.',
     line: 'An arena often needs several zones: no single capsule represents every section. Monitor each on its own before blending.',
-    mics: [m('sl', 'compact', 'left section', railMid(EVENT.railL), EVENT.hRail, EVENT.CL, FACE_H, 'cardioid'), m('sc', 'compact', 'centre section', railMid(EVENT.railC), EVENT.hRail, EVENT.CC, FACE_H, 'cardioid'), m('sr', 'compact', 'right section', railMid(EVENT.railR), EVENT.hRail, EVENT.CR, FACE_H, 'cardioid')],
+    mics: [m('sl', 'compact', 'left section', railMid(EVENT.railL), EVENT.hRail, EVENT.CL, FACE_H, 'cardioid'), m('sc', 'compact', 'center section', railMid(EVENT.railC), EVENT.hRail, EVENT.CC, FACE_H, 'cardioid'), m('sr', 'compact', 'right section', railMid(EVENT.railR), EVENT.hRail, EVENT.CR, FACE_H, 'cardioid')],
     scene: EVENT_SCENE,
     box: EVENT_BOX,
   },

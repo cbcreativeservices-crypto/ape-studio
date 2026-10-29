@@ -2,7 +2,7 @@
  * WHERE IT SITS for the hand plans (M12 tonbak, M13 tabla, I06a/b/c, I12,
  * A10, A11): the player and the instrument — the lesson's own top-view
  * drawing, at its real scale — with what sits round them on a stage (the
- * wedge, the side fill, louder neighbours, the audience and the PA) or in a
+ * wedge, the side fill, louder neighbors, the audience and the PA) or in a
  * studio room. Plan coordinates are the lesson's top view (u = x toward the
  * audience, right on screen; v = z, the player's right, down on screen), so
  * the wedge stands where the Studio-or-live page puts it. The STAGE is drawn

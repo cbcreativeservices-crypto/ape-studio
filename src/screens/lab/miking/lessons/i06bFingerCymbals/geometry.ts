@@ -83,7 +83,7 @@ export const FC_ZONES: DocumentedZone[] = [
     c: P0,
     dA: [10, 45],
     tendency: 'Attack and ring more blended, with more of the room and steadier level if the hands move a little. Compare at matched level.',
-    checks: ['Matched level when you compare', 'The ring after each accent', 'Spill from louder neighbours'],
+    checks: ['Matched level when you compare', 'The ring after each accent', 'Spill from louder neighbors'],
   }),
   z({
     id: 'fc.high',

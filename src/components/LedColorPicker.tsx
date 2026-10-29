@@ -145,7 +145,7 @@ export function LedColorPicker({
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
                       aria-pressed={sel}
-                      accessibilityLabel={`Level colour ${c}`}
+                      accessibilityLabel={`Level color ${c}`}
                     />
                   );
                 })}

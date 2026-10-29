@@ -159,7 +159,7 @@ export const M09_ZONES: DocumentedZone[] = [
     band: 'Start about 15 cm (6 in) above the floor-tom rim, just beyond the drum and outside the player’s reach, aimed across the kit at the snare — the same distance from the snare’s center as the mic above it.',
     kind: 'sourced',
     src: 'MT-GJ',
-    quote: 'The second mic is placed adjacent to the floor tom tom, around 6 inches (15cm) above its rim, firing across the kit towards the hi-hat. These two mics should be equidistant from the centre of the snare drum (RM-GJ: "it should be the same distance from the target spot on the snare drum as the first overhead")',
+    quote: 'The second mic is placed adjacent to the floor tom tom, around 6 inches (15cm) above its rim, firing across the kit towards the hi-hat. These two mics should be equidistant from the center of the snare drum (RM-GJ: "it should be the same distance from the target spot on the snare drum as the first overhead")',
     refSurface: 'ftRim',
     side: 'either',
     distance: { min: OH.gjSideAboveRim - 75, max: OH.gjSideAboveRim + 75 },

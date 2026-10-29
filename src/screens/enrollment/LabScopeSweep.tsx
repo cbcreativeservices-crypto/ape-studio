@@ -33,7 +33,7 @@
  *
  * ── THE WAVEFORMS ───────────────────────────────────────────────────────────
  * Synthesised here rather than traced off the reference: an envelope per
- * letter plus seeded jitter, mirrored about the centre line, drawn as dense
+ * letter plus seeded jitter, mirrored about the center line, drawn as dense
  * vertical bars — the shape a recorded letter makes in an editor.
  *
  * Shaped against the owner's labelled A–Z sheet, which corrected two things
@@ -154,7 +154,7 @@ const SHAPES: Record<string, Shape> = {
 const BARS = 86;
 const MID = TRACE_H / 2;
 
-/** One letter as dense vertical bars, mirrored about the centre line. */
+/** One letter as dense vertical bars, mirrored about the center line. */
 function waveformPath(letter: string): string {
   const sh = SHAPES[letter];
   if (!sh) return '';

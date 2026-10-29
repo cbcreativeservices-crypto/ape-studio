@@ -91,7 +91,7 @@ export const ROWS = {
   winds: desks(3650, [-1700, 0, 1700]),
   strings: [desks(4850, [-2550, -850, 850, 2550]), desks(5900, [-2700, -1000, 1000, 2700])],
 } as const;
-/** Every shared stand: its row, its centre line and the two players at it
+/** Every shared stand: its row, its center line and the two players at it
  *  (their chair ids, `${row}${i}`). */
 export type OrchDesk = { id: string; row: string; u: number; v: number; players: readonly [string, string] };
 export function orchDesks(): OrchDesk[] {
@@ -390,7 +390,7 @@ export function orchestraCue(own: OwnInstrument, four: boolean): CueRig[] {
   const room = STUDIO_ROOM;
   const rigs: CueRig[] = [];
   const row = (name: string) => {
-    // one box per desk, serving its two players; the desks left of centre
+    // one box per desk, serving its two players; the desks left of center
     // (and a centre desk) feed to the left wall
     const all = orchDesks()
       .filter((d) => d.row === name)

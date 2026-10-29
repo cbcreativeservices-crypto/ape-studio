@@ -42,7 +42,7 @@ const BASE = standingVoiceCopy({
   },
   contextPoints: [
     { title: 'ONE MIC OR TWO', text: 'One rugged handheld is quick to set up and makes the speaking turns plain on camera. A mic each — a handheld and a lav — avoids the rushed handoff, but adds a channel, open-mic spill and routing work.' },
-    { title: 'THE PATTERN', text: 'An omni forgives aim and handoffs, and hears the street from every side. A directional handheld can favour the voice when its front is on the mouth — and loses it when the aim slips or the head turns.' },
+    { title: 'THE PATTERN', text: 'An omni forgives aim and handoffs, and hears the street from every side. A directional handheld can favor the voice when its front is on the mouth — and loses it when the aim slips or the head turns.' },
     { title: 'A LOCAL PA', text: 'At a live event, what goes to the loudspeaker and where a directional mic’s rejection points decide how close it gets to feedback. Bring it up only to its working level; at any ring, pull it down.' },
     { title: 'THE LOUDEST WORDS', text: 'A close guest can suddenly shout: set gain on the loudest likely speech and leave headroom at the transmitter, the receiver, the preamp and the recorder. A later compressor or an automatic level cannot repair an overloaded input.' },
   ],
@@ -67,7 +67,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     partsLooking: { side: 'Side view · from the guest’s right', top: 'Top view · from above' },
     partsIdle: 'The guest’s voice leaves through the mouth — every distance is read from the lips. Around them: the reporter, the camera, the road, the loudspeaker. Tap any of them.',
     variantNotes: {
-      street: 'STREET: one handheld in the reporter’s right hand, moved between the two; the camera beside the reporter; the kerb and the traffic behind the guest.',
+      street: 'STREET: one handheld in the reporter’s right hand, moved between the two; the camera beside the reporter; the curb and the traffic behind the guest.',
       twoMics: 'TWO MICS: the reporter keeps a handheld at their own mouth, the guest wears a lav — each on its own channel.',
       event: 'LIVE EVENT: the same interview with a local loudspeaker on a pole beyond the reporter, facing the crowd.',
     },
@@ -96,7 +96,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches a face, the flag stays out of the lens, the arm stays relaxed, and nobody stands in the road.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic in an interview, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, street and wind is different.',
-      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with real questions and answers each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m — no millimetre claim is made.',
+      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with real questions and answers each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m — no millimeter claim is made.',
       clearance: 'Clearance comes first: off the faces, out of the lens, the arm relaxed, the people out of the road.',
       tendencies: 'Closer tends to bring more voice against the street, and more breath, pops and wind; shared between them, an even balance with more of the place. These are tendencies, and places vary.',
     },

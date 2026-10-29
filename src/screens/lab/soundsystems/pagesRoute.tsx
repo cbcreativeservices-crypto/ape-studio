@@ -623,7 +623,7 @@ const DESTINATIONS: readonly { id: string; name: string; short: string; needs: B
   { id: 'wedge1', name: 'Wedge 1 amplifier', short: 'WEDGE 1', needs: 'Aux 1', why: 'A wedge takes its own aux — never a main output (the fault on the bench).' },
   { id: 'wedge2', name: 'Wedge 2 amplifier', short: 'WEDGE 2', needs: 'Aux 2', why: 'Its own aux, its own mix.' },
   { id: 'subs', name: 'Processor input 4 → subwoofers (aux-fed)', short: 'PROC 4 · SUB', needs: 'Aux 6', why: 'Aux-fed subs take the sub aux, not the main mix.' },
-  { id: 'fills', name: 'Processor input 3 → front fills', short: 'PROC 3 · FILL', needs: 'Matrix 2', why: 'Fills are matrix-fed so they can be delayed and equalised on their own.' },
+  { id: 'fills', name: 'Processor input 3 → front fills', short: 'PROC 3 · FILL', needs: 'Matrix 2', why: 'Fills are matrix-fed so they can be delayed and equalized on their own.' },
   { id: 'lobby', name: 'Lobby amplifier', short: 'LOBBY', needs: 'Matrix 3', why: 'The lobby is a matrix: main plus announce, at its own level.' },
 ];
 

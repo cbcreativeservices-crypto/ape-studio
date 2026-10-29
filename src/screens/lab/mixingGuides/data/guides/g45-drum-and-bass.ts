@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC LCeq; in D&B a C-minus-A gap of about 20–25 dB is normal, and a wider gap means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbours and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA unprotected."
+      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC LCeq; in D&B a C-minus-A gap of about 20–25 dB is normal, and a wider gap means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbors and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA unprotected."
     },
     {
       "label": "Studio / streaming:",

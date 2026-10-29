@@ -56,11 +56,11 @@ const SPEC = ensembleHandSpec({
     gainId: 'mix.prac.gain',
     secondId: 'mix.prac.3',
     mixIds: ['mix.hole', 'mix.tree', 'mix.need'],
-    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s centre, a tree’s centre mic, and what earns a support.',
+    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s center, a tree’s center mic, and what earns a support.',
     sheetNote: 'For a real ensemble, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ sightlines, breathing, bowing, slides, pedals and the way in and out. Anything suspended is the venue’s, by qualified personnel.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — a floor monitor below it sits off that axis, so turn or tilt the mic, or try a tighter pattern.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',

@@ -35,7 +35,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the bowed bass sits — the bassist behind it, the bow’s sweep, the endpin and the feet, the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the bowed bass sits — the bassist behind it, the bow’s sweep, the endpin and the feet, the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The bow travels its whole length both ways, out past the bassist’s right side. A mic, its stand and its cable stay outside that whole path — and nowhere a stand could tip onto the bass. Ask the bassist first, and protect your hearing.',
   },
@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the bowed bass by its properties — pattern, power, size and mount — not by its brand, and know what a pickup adds (and does not).',
     credit: { scenarios: [`${P}.mic.1`, `${P}.mic.2`, `${P}.mic.3`, `${P}.mic.4`, `${P}.rec.1`], note: 'Answer the five checks (one reaches back to how the bass sounds).' },
-    takeaway: 'An omni hears the whole bass and the room with no proximity lift; a cardioid rejects more room and neighbours; a miniature on the strings below the bridge stays put — clear of the bow. Check the lows, the pitch AND the bow noise.',
+    takeaway: 'An omni hears the whole bass and the room with no proximity lift; a cardioid rejects more room and neighbors; a miniature on the strings below the bridge stays put — clear of the bow. Check the lows, the pitch AND the bow noise.',
   },
   placement: {
     title: 'Placement Studio',
@@ -53,9 +53,9 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the mic so its pattern’s rejection faces the loudest neighbour — and know why the bass body reflects it anyway, and what a spot mic is for in a group.',
+    goal: 'Aim the mic so its pattern’s rejection faces the loudest neighbor — and know why the bass body reflects it anyway, and what a spot mic is for in a group.',
     credit: { scenarios: [`${P}.ctx.1`, `${P}.ctx.2`, `${P}.ctx.studio`, `${P}.rec.3`], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the kit sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Rejection is often weakest in the lows, and the bass body reflects its neighbours into the mic. In a group, a bass spot supports the main pickup — brought in gradually, checked in mono.',
+    takeaway: 'Rejection is often weakest in the lows, and the bass body reflects its neighbors into the mic. In a group, a bass spot supports the main pickup — brought in gradually, checked in mono.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -66,7 +66,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Diagnose the position, the room and the bow’s path before EQ: too much scrape is usually too close to the bow, and a bow touching anything means stop and clear the space.',
   },
   practice: {
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A good, quiet room and a solo bowed bass. Why might you try an omni?',
     options: ['An omni rejects the room better than a cardioid does', 'An omni ignores the bow noise and hears only the body', 'The whole bass and the room, with no proximity lift'],
     correct: 'The whole bass and the room, with no proximity lift',
-    explain: 'An omni can capture the whole instrument and the room without a directional mic’s close-up bass rise; a cardioid reduces unwanted room and neighbours. The room decides.',
+    explain: 'An omni can capture the whole instrument and the room without a directional mic’s close-up bass rise; a cardioid reduces unwanted room and neighbors. The room decides.',
     why: {
       'An omni rejects the room better than a cardioid does': 'An omni hears more of the room, not less.',
       'An omni ignores the bow noise and hears only the body': 'A pattern does not separate bow from body; position does.',
@@ -176,7 +176,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It moves with the bass, below the bridge where the bow does not play',
     explain: 'A clip made for the bass usually grips the strings below the bridge — on the tailpiece side, away from the bow — and carries the capsule with the instrument. Its view is more local.',
     why: {
-      'Its clip stops it from hearing the rest of the orchestra and the hall around it': 'A clip is a mount, not a pattern: the mic still hears its neighbours.',
+      'Its clip stops it from hearing the rest of the orchestra and the hall around it': 'A clip is a mount, not a pattern: the mic still hears its neighbors.',
       'It needs no phantom power, so a plain line input will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
@@ -374,7 +374,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the room or the ensemble masking the harmonics? Adjust the angle or height, or bring a directional spot closer.',
     options: ['Cut the low end on the channel until the pitch comes forward again', 'Swap to the largest mic you have, for clearer notes', 'Room or ensemble masking: adjust angle or height, or a closer spot'],
     correct: 'Room or ensemble masking: adjust angle or height, or a closer spot',
-    explain: 'The pitch lives in the harmonics; a reverberant room or loud neighbours mask them. A different angle or height, or a closer directional spot, brings them forward.',
+    explain: 'The pitch lives in the harmonics; a reverberant room or loud neighbors mask them. A different angle or height, or a closer directional spot, brings them forward.',
     why: {
       'Cut the low end on the channel until the pitch comes forward again': 'A cut thins the bass; the cause is masking, which position fixes.',
       'Swap to the largest mic you have, for clearer notes': 'A larger mic does not clear up a masked position.',
@@ -396,11 +396,11 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.section`,
     observation: 'The section spot isolates one player',
     firstChecks: 'Is the spot too close, or poorly aimed? Move it to hear the intended group; lower it in the main-pair mix.',
-    options: ['Add one more spot on that player’s neighbour, to balance the two players', 'Too close or poorly aimed: move it to hear the group; lower it', 'Flip the spot’s polarity until the player blends in'],
+    options: ['Add one more spot on that player’s neighbor, to balance the two players', 'Too close or poorly aimed: move it to hear the group; lower it', 'Flip the spot’s polarity until the player blends in'],
     correct: 'Too close or poorly aimed: move it to hear the group; lower it',
     explain: 'A section spot should hear the section. Back it off or re-aim it to cover the group, and keep it under the main pair.',
     why: {
-      'Add one more spot on that player’s neighbour, to balance the two players': 'More close spots isolate more players; move the one you have.',
+      'Add one more spot on that player’s neighbor, to balance the two players': 'More close spots isolate more players; move the one you have.',
       'Flip the spot’s polarity until the player blends in': 'Polarity does not change what the spot hears.',
     },
   },
@@ -446,7 +446,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser 15–30 cm in front, a little above the bridge, outside the bow’s sweep', ok: true, power: 'phantom', feedback: 'A suggested starting point: body, pitch and bow together — then compare lower and broader.' },
       { id: 'b', label: 'An omni in front at a moderate distance, for the whole bass and the room', ok: true, power: 'phantom', feedback: 'A fair choice in a good quiet room — no proximity lift, the bow blended in.' },
-      { id: 'c', label: 'A mic a few centimetres from the strings where the bow plays', ok: false, power: 'phantom', feedback: 'In the bow’s path: it will be hit, and it hears mostly scrape.' },
+      { id: 'c', label: 'A mic a few centimeters from the strings where the bow plays', ok: false, power: 'phantom', feedback: 'In the bow’s path: it will be hit, and it hears mostly scrape.' },
       { id: 'd', label: 'A clip pressed onto the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Not on the bridge unless the owner approves: a clamped clip can impede its vibration and risk the instrument.' },
       { id: 'e', label: 'A mic at the f-hole and another at the bridge, out of habit', ok: false, power: 'phantom', feedback: 'Two mics by rote add combing; start from one balanced mic as the reference.' },
     ],
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An orchestral concert with a main pair over the orchestra. The bass section needs a little more definition. One spare channel, phantom available.',
     setups: [
-      { id: 'a', label: 'One spot on a stand in front of the section, about a metre out, aimed at the basses', ok: true, power: 'phantom', feedback: 'A sound support: it hears the section, brought in gradually under the main pair.' },
+      { id: 'a', label: 'One spot on a stand in front of the section, about a meter out, aimed at the basses', ok: true, power: 'phantom', feedback: 'A sound support: it hears the section, brought in gradually under the main pair.' },
       { id: 'b', label: 'One spot slightly higher and farther, covering the whole section', ok: true, power: 'phantom', feedback: 'A fair alternative: a broader view of the section, checked in mono against the main pair.' },
       { id: 'c', label: 'A close clip on the front bass only, as the section’s sound', ok: false, power: 'phantom', feedback: 'A section spot should hear the section, not one player.' },
       { id: 'd', label: 'A spot inside the bows’ path, as close as possible to the strings', ok: false, power: 'phantom', feedback: 'Never in a bow’s path; and the spot is for the section, not one string.' },
@@ -496,7 +496,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Where does the bow cross the strings?',
     options: ['A little above the bridge, toward the fingerboard', 'Right on top of the bridge itself, where the strings cross it', 'Below the bridge, between the bridge and the tailpiece'],
     correct: 'A little above the bridge, toward the fingerboard',
-    explain: 'The bow plays a few centimetres up from the bridge — right where a front mic looks, so the mic must sit outside its sweep.',
+    explain: 'The bow plays a few centimeters up from the bridge — right where a front mic looks, so the mic must sit outside its sweep.',
     why: {
       'Right on top of the bridge itself, where the strings cross it': 'The bow plays on the strings, a little above the bridge.',
       'Below the bridge, between the bridge and the tailpiece': 'Below the bridge is where a clip can sit — away from the bow.',
@@ -590,7 +590,7 @@ export const C06B_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The bow grips the string', text: 'Rosined hair grips the string and drags it sideways as the bow moves — a few millimetres, drawn larger here than it really moves.' },
+      { title: 'The bow grips the string', text: 'Rosined hair grips the string and drags it sideways as the bow moves — a few millimeters, drawn larger here than it really moves.' },
       { title: 'It slips, then grips again', text: 'The string snaps back, slipping under the hair, then is caught again — once every vibration. As long as the bow moves, the note sustains; the grip adds its own scrape.' },
       { title: 'The string rocks the bridge', text: 'The vibrating string pulls the top of the tall bridge from side to side, and the bridge rocks on its two feet.' },
       { title: 'The bridge drives the top', text: 'Under one foot the top moves in and out; under the other, the soundpost holds the top nearly still and passes the motion to the back. The large top, the back and the air inside all vibrate.' },
@@ -602,7 +602,7 @@ export const C06B_LESSON: Lesson = {
   },
   setting: {
     items: bassSetting('bow'),
-    stage: 'LIVE: the bowed bass shares the stage with wedges, the PA and loud neighbours. A stand mic with comfortable bow clearance may be enough when quiet; on a loud stage, a clip below the bridge or a pickup gives more control — each on its own channel.',
+    stage: 'LIVE: the bowed bass shares the stage with wedges, the PA and loud neighbors. A stand mic with comfortable bow clearance may be enough when quiet; on a loud stage, a clip below the bridge or a pickup gives more control — each on its own channel.',
     studio: 'STUDIO: no wedges, a room to hear. Solo, one balanced mic is the reference; in a group or an orchestra, the main pickup carries the section and a spot only supports it.',
   },
   diagnostic,
@@ -623,7 +623,7 @@ export const C06B_LESSON: Lesson = {
     { text: 'The bow’s sweep: ±25° about the bowing point, the hair’s length plus 20 mm, at three positions of the stroke (tip, middle, frog); the bow arm, the bow hand and the left hand — illustrative.', dims: [] },
     { text: '“Just above the bridge” read as 6–15 cm up the strings, 15–30 cm out in front; the f-hole’s “a few inches” as 5–10 cm; the clip distances; the section spot’s 70–110 cm out and 1–1.5 m high — drawing defaults.', dims: [] },
     { text: 'The miniature’s capsule and gooseneck reach, and the small condenser’s diameter — drawing defaults.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

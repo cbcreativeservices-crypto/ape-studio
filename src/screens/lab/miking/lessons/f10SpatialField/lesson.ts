@@ -56,7 +56,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the channel map and the physical setup first — the track order, the gains, the front, the wind cover, the routing — before reaching for processing.',
   },
   practice: {
@@ -159,12 +159,12 @@ const scenarios: MikingScenario[] = [
     id: 'sp.mic.1',
     page: 'microphone',
     prompt: 'Which capture is made for headphones first?',
-    options: ['A binaural head', 'A five-channel spaced array', 'A pair of omnis two metres apart'],
+    options: ['A binaural head', 'A five-channel spaced array', 'A pair of omnis two meters apart'],
     correct: 'A binaural head',
     explain: 'Two ear mics in a model head keep the head’s and the outer ears’ cues for headphone listening. On speakers it depends on the head and the processing.',
     why: {
       'A five-channel spaced array': 'That is made for a five-speaker layout.',
-      'A pair of omnis two metres apart': 'A spaced pair is for loudspeakers; it has no head cues.',
+      'A pair of omnis two meters apart': 'A spaced pair is for loudspeakers; it has no head cues.',
     },
   },
   {
@@ -195,12 +195,12 @@ const scenarios: MikingScenario[] = [
     id: 'sp.mic.4',
     page: 'microphone',
     prompt: 'What does “.1” mean in a 5.1 delivery?',
-    options: ['A separate low-frequency effects channel', 'A sixth mic for the room’s lowest sounds', 'A centre mic set one metre higher'],
+    options: ['A separate low-frequency effects channel', 'A sixth mic for the room’s lowest sounds', 'A center mic set one meter higher'],
     correct: 'A separate low-frequency effects channel',
     explain: '“.1” is a delivery channel for low-frequency effects — not a sixth full-range ambience mic and not a requirement for a subwoofer mic. Never send a full-range field channel to it.',
     why: {
       'A sixth mic for the room’s lowest sounds': 'No mic is needed for it: the mixer sends chosen low effects to it.',
-      'A centre mic set one metre higher': '“.1” is a channel, not a mic position.',
+      'A center mic set one meter higher': '“.1” is a channel, not a mic position.',
     },
   },
   {
@@ -340,12 +340,12 @@ const scenarios: MikingScenario[] = [
     id: 'sp.prac.gain',
     page: 'practice',
     prompt: 'One of the four Ambisonic tracks peaks higher. What do you do?',
-    options: ['Keep the four gains matched and linked', 'Turn that one track down on its own', 'Normalise each track separately afterwards'],
+    options: ['Keep the four gains matched and linked', 'Turn that one track down on its own', 'Normalize each track separately afterwards'],
     correct: 'Keep the four gains matched and linked',
     explain: 'Identical preamps, the same gain on all four, changed together. One track turned down alone pulls the field away from it; set the linked gain for the loudest moment.',
     why: {
       'Turn that one track down on its own': 'Unmatched gain moves the image.',
-      'Normalise each track separately afterwards': 'Never process the four raw tracks one by one.',
+      'Normalize each track separately afterwards': 'Never process the four raw tracks one by one.',
     },
   },
   {
@@ -392,11 +392,11 @@ const symptoms: Symptom[] = [
     id: 'sp.sym.turned',
     observation: 'The front source plays back off to one side',
     firstChecks: 'Was the rig’s front to the scene front? Is the front logged? Are the tracks in order?',
-    options: ['Check the rig’s front and the track order', 'Pan the whole mix back round to the centre again', 'Turn the front source up in the mix instead'],
+    options: ['Check the rig’s front and the track order', 'Pan the whole mix back round to the center again', 'Turn the front source up in the mix instead'],
     correct: 'Check the rig’s front and the track order',
     explain: 'A rig facing away turns the picture; two swapped tracks mirror it. Check the log and the channel map: a logged turn can be undone in the decoder, and a swap by putting the tracks back in order.',
     why: {
-      'Pan the whole mix back round to the centre again': 'Panning hides the cause; check the front and the map first.',
+      'Pan the whole mix back round to the center again': 'Panning hides the cause; check the front and the map first.',
       'Turn the front source up in the mix instead': 'Level does not move a direction.',
     },
   },
@@ -613,7 +613,7 @@ export const F10_LESSON: Lesson = {
     items: [
       { id: 'traffic', label: 'traffic and wind', short: 'TRAFFIC · WIND', note: 'What reaches the place stays in the capture. Cover every exposed capsule against wind; a windscreen is not waterproofing.', prov: { kind: 'illustrative', reason: 'the lesson L6, L39' }, tag: 'SPILL', scene: 'all' },
       { id: 'walls', label: 'walls and hard surfaces', short: 'REFLECTIONS', note: 'They return the scene a little late — the extra path sets how late. Part of the place. Note them in the log.', prov: { kind: 'illustrative', reason: 'the lesson L6' }, tag: 'ROOM SOUND', scene: 'all' },
-      { id: 'speech', label: 'conversations nearby', short: 'PEOPLE', note: 'Speech that may be recognised needs the right permission for the place and the use.', prov: { kind: 'illustrative', reason: 'the lesson L6, L43' }, tag: 'PRIVACY', scene: 'all' },
+      { id: 'speech', label: 'conversations nearby', short: 'PEOPLE', note: 'Speech that may be recognized needs the right permission for the place and the use.', prov: { kind: 'illustrative', reason: 'the lesson L6, L43' }, tag: 'PRIVACY', scene: 'all' },
       { id: 'route', label: 'the public footpath', short: 'THE WAY', note: 'Never block it with a stand or a wide array; never leave stands unattended where people walk.', prov: { kind: 'illustrative', reason: 'the lesson L43' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the PA at an event', short: 'PA', note: 'An open array near a PA hears it; fed back into it, a feedback path. Keep the array on the stream path.', prov: { kind: 'illustrative', reason: 'the lesson L41' }, tag: 'FEEDBACK', scene: 'stage' },
     ],

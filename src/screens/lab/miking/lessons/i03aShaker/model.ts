@@ -80,7 +80,7 @@ function zonesFor(v: 'toward' | 'side'): DocumentedZone[] {
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 120 },
       tendency: v === 'toward' ? 'The pulse, with each forward stroke jumping out: the shaker comes closer on every accent. Listen for that level jump before you change anything else.' : 'A steadier level: the shaker stays about the same distance away through each stroke. Listen for the balance of the attack and the wash.',
-      checks: ['The whole pattern, loudest and quietest gestures', 'Level jumps between strokes', 'Hand and grip noise; spill from neighbours'],
+      checks: ['The whole pattern, loudest and quietest gestures', 'Level jumps between strokes', 'Hand and grip noise; spill from neighbors'],
     }),
     targetZone({
       id: `shk.above.${v}`,
@@ -101,8 +101,8 @@ function zonesFor(v: 'toward' | 'side'): DocumentedZone[] {
       variants: [v],
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 120 },
-      tendency: 'A different balance of direct rattle, hand noise and neighbours than the level position — compare the two by ear with the same pattern.',
-      checks: ['Hand and grip noise from above', 'Neighbours the mic now faces', 'The arm, face and head stay clear'],
+      tendency: 'A different balance of direct rattle, hand noise and neighbors than the level position — compare the two by ear with the same pattern.',
+      checks: ['Hand and grip noise from above', 'Neighbors the mic now faces', 'The arm, face and head stay clear'],
     }),
   ];
 }

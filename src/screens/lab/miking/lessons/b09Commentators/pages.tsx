@@ -67,7 +67,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
     words: {
       looking: 'From above · you and your partner at the desk · the field to the right',
       prompt: 'Choose a MIC, then turn the PARTNER toward you and move the SEATS. Read how much lower the partner’s voice arrives at your mic — by distance, and by the pattern.',
-      done: 'A close mic does most of the work: a few centimetres from your lips against most of a metre to your partner’s. Then the pattern: a boom on the partner’s side puts them behind the capsule; a figure-8 has them at its side. When the partner turns to you, they come closer and more in front — listen to each channel while the other talks.',
+      done: 'A close mic does most of the work: a few centimeters from your lips against most of a meter to your partner’s. Then the pattern: a boom on the partner’s side puts them behind the capsule; a figure-8 has them at its side. When the partner turns to you, they come closer and more in front — listen to each channel while the other talks.',
     },
   });
   return [turn, spill];

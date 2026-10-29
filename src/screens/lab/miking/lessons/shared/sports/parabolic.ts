@@ -119,7 +119,7 @@ export const AIM_TRIALS = [0, 10, 20] as const;
 export const AIM_WORDS: Readonly<Record<(typeof AIM_TRIALS)[number], string>> = {
   0: 'On the axis: the reflected sound meets at the element — the most high-frequency detail from the target.',
   10: 'A small aim error: the reflections no longer meet at one point. Listen for the target’s high-frequency definition fading first.',
-  20: 'Well off the axis: the bowl now favours whatever IS on its axis — perhaps the crowd beyond. The target is mostly heard directly, duller.',
+  20: 'Well off the axis: the bowl now favors whatever IS on its axis — perhaps the crowd beyond. The target is mostly heard directly, duller.',
 };
 
 /** The element slid along the axis (mm, + = out of the bowl), the trial range. */

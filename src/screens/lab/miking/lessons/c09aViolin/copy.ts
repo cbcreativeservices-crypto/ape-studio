@@ -40,7 +40,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bridge, where the bow meets the strings, the side, or the bridge’s foot. They are starting points, not rules — the stand distances especially are modest suggestions. Move from there and listen: there is no single right answer, and every violin and room is different.',
-      separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play all four strings, quiet bow starts and the loudest passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play all four strings, quiet bow starts and the loudest passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm at the tip of a stroke, and the player’s head. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels — leave more room on a real stage.',
       tendencies: 'Toward the bridge and the bow tends to bring more articulation and scratch; toward an f-hole, more body and level, sometimes a duller color; farther, more of the whole violin and the room. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and violins vary.',
     },
@@ -77,7 +77,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions: violin and fiddle are the same instrument — the difference is the music and the setting.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a classical solo may want the room and a balanced line. Live: a fiddle beside a banjo and drums may need a closer, more separated sound.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — and the violin’s top still reflects some stage sound into the mic.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — and the violin’s top still reflects some stage sound into the mic.' },
         { title: 'MOVEMENT', text: 'Violinists move with the music. A stand mic has a working zone — mark it, and the bow-safe way in; a miniature on the violin keeps one distance as the player turns.' },
         { title: 'IN A GROUP', text: 'With a main pair up, a violin mic is a spot: raise it only for a stated balance, and check it in mono so it does not pull the player forward.' },
       ],

@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the noise, the range, the processing and the room’s state before the number — and raise the source only within safe, clean limits.',
   },
   practice: {
@@ -142,23 +142,23 @@ const scenarios: MikingScenario[] = [
     id: 'ra.set.3',
     page: 'setting',
     prompt: 'What do you log before the first sweep?',
-    options: ['The room’s noise by band, and its state', 'The PA’s loudest possible level in the room', 'The colour of the walls and of the floor'],
+    options: ['The room’s noise by band, and its state', 'The PA’s loudest possible level in the room', 'The color of the walls and of the floor'],
     correct: 'The room’s noise by band, and its state',
     explain: 'The noise floor sets how much range a decay has; the doors, curtains, people and air handling are part of what you measure.',
     why: {
       'The PA’s loudest possible level in the room': 'Louder is not the aim: you need enough range above the noise, at a safe level.',
-      'The colour of the walls and of the floor': 'Materials matter; their color does not.',
+      'The color of the walls and of the floor': 'Materials matter; their color does not.',
     },
   },
   {
     id: 'ra.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Why does the receiver’s chain need its automatic gain off?',
-    options: ['It would change the decay as it happens', 'It would only change the colour of the room', 'It slows the sweep down, so the test runs long'],
+    options: ['It would change the decay as it happens', 'It would only change the color of the room', 'It slows the sweep down, so the test runs long'],
     correct: 'It would change the decay as it happens',
     explain: 'Automatic gain, noise reduction or gating lift and cut the tail as it falls — the very thing being measured. Turn them off, or note what cannot be.',
     why: {
-      'It would only change the colour of the room': 'It changes the level over time — the decay itself, not just the color.',
+      'It would only change the color of the room': 'It changes the level over time — the decay itself, not just the color.',
       'It slows the sweep down, so the test runs long': 'It does not touch the sweep; it changes the recorded tail.',
     },
   },
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     explain: 'An omni measurement mic is the common receiver. A directional mic can characterize a chosen perspective, but it cannot silently substitute for the usual receiver.',
     why: {
       'It can: a mic of whatever kind records one': 'It records one — of its own perspective, not of the room as the method means it.',
-      'It can, if it is aimed at the source': 'Aimed or not, it still favours one direction of a field that arrives from all of them.',
+      'It can, if it is aimed at the source': 'Aimed or not, it still favors one direction of a field that arrives from all of them.',
     },
   },
   {
@@ -250,11 +250,11 @@ const scenarios: MikingScenario[] = [
     id: 'ra.ctx.1',
     page: 'context',
     prompt: 'One reading in the middle of the room. What can it describe?',
-    options: ['That one point, not the room', 'The whole room, being its centre', 'All the seats, once it is averaged'],
+    options: ['That one point, not the room', 'The whole room, being its center', 'All the seats, once it is averaged'],
     correct: 'That one point, not the room',
     explain: 'A single center-of-room reading never replaces spatial sampling: choose positions that differ in distance, boundaries and coverage.',
     why: {
-      'The whole room, being its centre': 'The center is one source–receiver pair like any other.',
+      'The whole room, being its center': 'The center is one source–receiver pair like any other.',
       'All the seats, once it is averaged': 'One reading has nothing to average.',
     },
   },
@@ -369,13 +369,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ra.mix.3',
     page: 'practice',
-    prompt: 'The PA result is labelled “room reverberation”. What is wrong?',
-    options: ['It holds the system: say system + room', 'Nothing is wrong, if the PA is a good one', 'It should be labelled with the date only'],
+    prompt: 'The PA result is labeled “room reverberation”. What is wrong?',
+    options: ['It holds the system: say system + room', 'Nothing is wrong, if the PA is a good one', 'It should be labeled with the date only'],
     correct: 'It holds the system: say system + room',
     explain: 'The impulse response through the PA includes the system and the room; it cannot be attributed to the room alone.',
     why: {
       'Nothing is wrong, if the PA is a good one': 'A good PA is still in the result.',
-      'It should be labelled with the date only': 'The date helps; the label must say what was measured.',
+      'It should be labeled with the date only': 'The date helps; the label must say what was measured.',
     },
   },
 ];
@@ -496,17 +496,17 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · The venue asks what its audience hears from the installed PA.',
     setups: [
-      { id: 'pa', label: 'Sweeps through the PA at seats front to back, labelled system + room', ok: true, power: 'none', feedback: 'The actual system at listener seats, labelled for what it is.' },
+      { id: 'pa', label: 'Sweeps through the PA at seats front to back, labeled system + room', ok: true, power: 'none', feedback: 'The actual system at listener seats, labeled for what it is.' },
       { id: 'paStanding', label: 'The same at standing-audience height for a standing show', ok: true, power: 'none', feedback: 'A standing audience’s ears are higher: the height follows the listener.' },
       { id: 'omni', label: 'The omni source on stage, reported as the PA’s sound', ok: false, power: 'none', feedback: 'The omni source tests the room, not the installed system.' },
     ],
     reasons: [
-      R('label', 'The result labelled system + room, the preset named', 'required', 'It is not a room-only figure.'),
+      R('label', 'The result labeled system + room, the preset named', 'required', 'It is not a room-only figure.'),
       R('route', 'The measurement mic to the analyzer only', 'required', 'Never back to the PA.'),
       R('coord', 'The test coordinated with the operator and the venue', 'optional', 'No unannounced sweeps.'),
       R('roomonly', 'Report it as the room’s reverberation', 'wrong', 'The system is in the result.'),
     ],
-    explain: 'Either seat height passes when it follows the audience and the result is labelled system + room.',
+    explain: 'Either seat height passes when it follows the audience and the result is labeled system + room.',
   },
 ];
 
@@ -619,7 +619,7 @@ export const F13_LESSON: Lesson = {
       { id: 'pa', label: 'the installed PA', short: 'THE PA', note: 'Through it you measure the system and the room; your mic never goes back into it. Flown systems are for qualified riggers.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'The measured IR includes system and room (L41); leave flown-system work to qualified personnel (L43)' }, tag: 'SYSTEM + ROOM', scene: 'stage' },
       { id: 'booth', label: 'a studio booth', short: 'BOOTH', note: 'Compare representative source and mic positions; repeat after moving panels or curtains, the geometry and the state logged.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'Studio room or booth … repeat after moving panels or curtains (L33–L34)' }, tag: 'BEFORE / AFTER', scene: 'studio' },
     ],
-    stage: 'IN A VENUE: coordinate with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, no unannounced sweeps — and a result through the PA is labelled system + room.',
+    stage: 'IN A VENUE: coordinate with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, no unannounced sweeps — and a result through the PA is labeled system + room.',
     studio: 'IN A STUDIO OR BOOTH: the same marked positions before and after a change, the room’s state logged; a shorter decay alone does not mean better recordings.',
   },
   diagnostic,

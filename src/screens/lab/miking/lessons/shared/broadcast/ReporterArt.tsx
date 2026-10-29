@@ -3,7 +3,7 @@
  * the upper left, in the engine's two views (side: u = x, v = y; top: u = x,
  * v = z — frame V, mm). Static (D8).
  *
- *   Roadway          the street behind the guest: asphalt, the kerb, a
+ *   Roadway          the street behind the guest: asphalt, the curb, a
  *                    dashed lane line — a vehicle path nobody stands in.
  *   LoudSource       a loud public loudspeaker on its pole, turned to face
  *                    the interview from any bearing (the "background source"
@@ -30,7 +30,7 @@ const make = (): SkPath => Skia.Path.Make();
 
 /* ── the street ── */
 
-/** The roadway behind the guest: from `x1` (the kerb, nearer the talkers)
+/** The roadway behind the guest: from `x1` (the curb, nearer the talkers)
  *  back to `x0`, across z0..z1. From the side: the road surface a kerb's
  *  height below the pavement. */
 export function Roadway({ view, x0, x1, z0, z1, floor }: { view: ViewId; x0: number; x1: number; z0: number; z1: number; floor: number }) {

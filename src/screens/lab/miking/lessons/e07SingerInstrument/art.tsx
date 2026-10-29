@@ -89,7 +89,7 @@ export const E07_ART: LessonArt = {
       },
       highs: 'The voice’s highest frequencies go out ahead of the mouth, the lows spread round the head — so an instrument mic below and in front of the singer hears a duller voice than the vocal mic does. The shape of that spread is not drawn here, only its direction.',
       silentNote: 'This lab never plays a sound and draws no frequency curve: how a real performance sounds depends on the performer, the instrument, the mics and the room. The pictures show where the sounds come from.',
-      reveal: 'The folds make the raw buzz, the throat and the mouth shape it, and it leaves through the mouth — a few tens of centimetres from the instrument, so every mic hears both.',
+      reveal: 'The folds make the raw buzz, the throat and the mouth shape it, and it leaves through the mouth — a few tens of centimeters from the instrument, so every mic hears both.',
       useExtra: useInstrumentStep,
     }),
     setting: makeVoiceSetting({

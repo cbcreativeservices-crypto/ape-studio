@@ -186,7 +186,7 @@ export function CareerFamilyScreen() {
       {licensed ? (
         <Card tone="amber">
           <SectionLabel>LICENSED OR CREDENTIALED PROFESSIONS IN THIS FAMILY</SectionLabel>
-          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics build the audio and acoustics knowledge those fields draw on; they are not a route to any licence, clinical credential, bar admission or security clearance, and completing them does not qualify anyone to practice. Check the licensing body where you live.</Body>
+          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics build the audio and acoustics knowledge those fields draw on; they are not a route to any license, clinical credential, bar admission or security clearance, and completing them does not qualify anyone to practice. Check the licensing body where you live.</Body>
         </Card>
       ) : null}
 
@@ -254,7 +254,7 @@ export function CareerFamilyScreen() {
         {fam.examples.some(isRegulatedTitle) ? (
           <Text style={styles.exampleGatedNote}>
             ⚠ Licensed or credentialed occupation. Academy study supports it but does not lead to that
-            licence or credential — check what is required where you live.
+            license or credential — check what is required where you live.
           </Text>
         ) : null}
         {/* Degrees and the PE licence too (full-app run 1, 2026-10-01). */}
@@ -321,7 +321,7 @@ function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: 
   const edu = educationChip(c);
   return (
     <View style={styles.careerCard}>
-      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} aria-expanded={open} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}${edu === 'PE LICENSE' ? ', Professional Engineer licence commonly required' : edu ? ', degree required' : ''}`}>
+      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} aria-expanded={open} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}${edu === 'PE LICENSE' ? ', Professional Engineer license commonly required' : edu ? ', degree required' : ''}`}>
         <Text style={styles.careerChevron}>{open ? '▾' : '▸'}</Text>
         <Text style={styles.careerTitle} numberOfLines={2}>{c.title}</Text>
         <View style={styles.tags}>
@@ -337,8 +337,8 @@ function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: 
           <Text style={styles.detail}><Text style={styles.detailLabel}>HOW PEOPLE WORK  </Text>{c.workModel}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>TYPICAL PREPARATION  </Text>{c.preparation}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>AUDIO IN THIS ROLE  </Text>{CENTRALITY[c.centrality].explain}</Text>
-          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ Licensed, credentialed or restricted-entry occupation in many jurisdictions. Academy study does not lead to that licence or credential — verify requirements with the licensing body or employer where you live.</Text> : null}
-          {c.professionalEngineer ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ In many jurisdictions, offering engineering services to the public or sealing reports requires a Professional Engineer licence.</Text> : null}
+          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ Licensed, credentialed or restricted-entry occupation in many jurisdictions. Academy study does not lead to that license or credential — verify requirements with the licensing body or employer where you live.</Text> : null}
+          {c.professionalEngineer ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ In many jurisdictions, offering engineering services to the public or sealing reports requires a Professional Engineer license.</Text> : null}
           <Text style={[styles.detail, { color: colors.textMuted }]}>{c.status}. Common pathways are described, not mandatory requirements.</Text>
         </View>
       ) : null}

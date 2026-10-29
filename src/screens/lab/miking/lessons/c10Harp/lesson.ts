@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the harp by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['hp.mic.1', 'hp.mic.2', 'hp.mic.3', 'hp.mic.4', 'hp.rec.1'], note: 'Answer the five checks (one reaches back to how the harp sounds).' },
-    takeaway: 'An omni takes in the whole harp and the room; a cardioid separates it from its neighbours but can exaggerate the lows up close. A miniature can hide at a sound hole, with the owner’s agreement. Pattern alone does not set the tone.',
+    takeaway: 'An omni takes in the whole harp and the room; a cardioid separates it from its neighbors but can exaggerate the lows up close. A miniature can hide at a sound hole, with the owner’s agreement. Pattern alone does not set the tone.',
   },
   placement: {
     title: 'Placement Studio',
@@ -58,7 +58,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — distance from the board, the pattern, the pair’s geometry, the monitors, the mount — and talk to the harpist before calling a resonance a fault.',
   },
   practice: {
@@ -226,7 +226,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A spot slightly behind and above, on the side away from the harpist’s head, looking down at the board, is a gentler alternative — or bring the pillar spot down in the blend.',
     why: {
       'Closer to the pillar, so the harp sounds more natural and less bright': 'Closer tends to make it MORE forward. Try another perspective or less level.',
-      'Straight at the middle of the board, very close': 'That tends to boom and favour one region.',
+      'Straight at the middle of the board, very close': 'That tends to boom and favor one region.',
     },
   },
   {
@@ -427,13 +427,13 @@ const symptoms: Symptom[] = [
   {
     id: 'hp.sym.upper',
     observation: 'The upper notes disappear',
-    firstChecks: 'The mic favours the low board or is off axis: shift toward an upper view, or test a spot near the pillar.',
+    firstChecks: 'The mic favors the low board or is off axis: shift toward an upper view, or test a spot near the pillar.',
     options: ['Which part of the board the mic faces; try an upper view', 'Turn the whole harp channel up until the top strings come back', 'Move the mic closer to the middle of the board'],
     correct: 'Which part of the board the mic faces; try an upper view',
     explain: 'A mic facing the low board hears it most. Shift up, or try a spot near the pillar’s top looking down.',
     why: {
       'Turn the whole harp channel up until the top strings come back': 'Level lifts the boom with the top. Change the view.',
-      'Move the mic closer to the middle of the board': 'That tends to favour the low middle even more.',
+      'Move the mic closer to the middle of the board': 'That tends to favor the low middle even more.',
     },
   },
   {
@@ -508,7 +508,7 @@ const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives th
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the harpist’s hands, feet, view and head', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a harp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
-const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Closest to the soundboard always gives the fullest harp', role: 'wrong', feedback: 'Closest tends to favour one region and boom; the whole harp blends with distance.' };
+const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Closest to the soundboard always gives the fullest harp', role: 'wrong', feedback: 'Closest tends to favor one region and boom; the whole harp blends with distance.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -519,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A spaced pair of omnis about 2 m or more away, toward the room’s center, not too low', ok: true, power: 'phantom', feedback: 'A suggested solo starting point: the whole harp and the room — checked in mono.' },
       { id: 'b', label: 'One small condenser about 60 cm in front, aimed back at part of the board', ok: true, power: 'phantom', feedback: 'A suggested single-mic start: defined and practical.' },
       { id: 'c', label: 'A cardioid near the top of the pillar, looking down at the board', ok: true, power: 'phantom', feedback: 'A suggested spot — perhaps with a distant pair for the room.' },
-      { id: 'd', label: 'A cardioid 5 cm from the middle of the board, for the most detail', ok: false, power: 'phantom', feedback: 'That close, a cardioid favours one region and booms — and crowds the harpist.' },
+      { id: 'd', label: 'A cardioid 5 cm from the middle of the board, for the most detail', ok: false, power: 'phantom', feedback: 'That close, a cardioid favors one region and booms — and crowds the harpist.' },
       { id: 'e', label: 'A boom over the harpist’s head, pointing down into the strings', ok: false, power: 'phantom', feedback: 'Keep booms from hanging over the harpist’s head. Bring a spot in from the side.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'I will check the pair in mono', role: 'optional', feedback: 'A fair reason for any spaced pair.' }, BRAND_REASON, CLOSE_REASON],
@@ -602,12 +602,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a harp mic and its stand never do?',
-    options: ['Swing over the harp or the harpist’s head without a secure stand', 'Point toward the soundboard from in front of the harp, below the strings', 'Stand more than a metre or two away from the harp itself'],
+    options: ['Swing over the harp or the harpist’s head without a secure stand', 'Point toward the soundboard from in front of the harp, below the strings', 'Stand more than a meter or two away from the harp itself'],
     correct: 'Swing over the harp or the harpist’s head without a secure stand',
     explain: 'Nothing moves over the harp or the harpist’s head without a secure stand and a controlled path; stands and cables stay clear of the pedals, chair and hands.',
     why: {
       'Point toward the soundboard from in front of the harp, below the strings': 'That is a common starting point.',
-      'Stand more than a metre or two away from the harp itself': 'A distant pair is a common solo choice.',
+      'Stand more than a meter or two away from the harp itself': 'A distant pair is a common solo choice.',
     },
   },
   {
@@ -672,7 +672,7 @@ export const C10_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A plucked string instrument: a frame of soundbox, neck and pillar holding a row of strings, the longest near the pillar and the shortest at the top of the soundbox. A concert pedal harp changes its strings’ pitches with seven pedals; a lever harp with levers on the neck.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras and pits, solo recitals, weddings and churches, folk and Celtic music, studios. This lesson covers studio recording and live sound; a harp with other performers belongs to the ensembles lab.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Arpeggios, chords, melodies and glissandi across a wide range, quiet plucks to strong accents. Ask for the real passages — low bass notes, high strings, sweeps — before choosing a mic.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'A full-size pedal harp stands about 1.9 m tall, with strings from about 1.5 m long down to a few centimetres; lever harps are smaller. This lab draws a concert pedal harp and a smaller lever harp.', src: 'DPA-HARP' },
+    { title: 'ITS SIZE', text: 'A full-size pedal harp stands about 1.9 m tall, with strings from about 1.5 m long down to a few centimeters; lever harps are smaller. This lab draws a concert pedal harp and a smaller lever harp.', src: 'DPA-HARP' },
   ],
   sound: {
     stages: [
@@ -720,7 +720,7 @@ export const C10_LESSON: Lesson = {
     { text: 'The seven pedals and their layout; the lever harp drawn at 0.75 of the pedal harp (about 1.4 m).', dims: [] },
     { text: 'The sizes come from museum instruments (an 1895 Erard, a Lyon & Healy of 1891–95) and the 1.9 m height from the research; a modern harp may differ.', dims: [] },
     { text: 'The bands round the guides’ figures (60 cm ± 15 cm, 30 cm ± 5 cm), the pillar zone’s extent, the behind zone’s heights, the miniature at the opening — the lab’s drawing. The miniature’s size is a drawing default.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

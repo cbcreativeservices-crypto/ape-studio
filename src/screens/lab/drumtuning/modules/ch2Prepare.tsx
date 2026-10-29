@@ -280,7 +280,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
               <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
               <Card>
                 <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all round — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
-                <Point title="Why opposing">Tightening neighbours in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
+                <Point title="Why opposing">Tightening neighbors in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
               </Card>
               <Card tone="warn">
                 <Point title={CAUTION_TITLE}>{CAUTION_TEXT}</Point>

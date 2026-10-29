@@ -66,7 +66,7 @@ const spot = (c: P2, r = 0.2) => ({ pts: [], circle: { c, r } });
  *   ice hockey  60 × 30, corner r 8.5, goal lines 4 from the ends (red), blue
  *               lines, red centre line, blue centre circle r 4.5, end-zone
  *               face-off circles r 4.5 (spots 6 out from the goal line, 7
- *               either side of centre), goal crease r 1.8, goal 1.83 wide
+ *               either side of center), goal crease r 1.8, goal 1.83 wide
  */
 
 function band(id: string, r: PlanRect, w: number, label: string, basis: KeepClear['basis'], note: string): KeepClear[] {
@@ -503,7 +503,7 @@ function hockey(): VenueScene {
   return {
     id: 'hockey',
     label: 'Ice hockey',
-    blurb: 'Puck and stick, skate cuts and board impacts — the nearest boards sound close, centre ice does not.',
+    blurb: 'Puck and stick, skate cuts and board impacts — the nearest boards sound close, center ice does not.',
     play: pts,
     surface: 'ice',
     markings: [

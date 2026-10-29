@@ -338,7 +338,7 @@ export function BinauralLabScreen() {
                 <Text style={styles.caption}>
                   {sel.type === BIN_SRC.sine
                     ? sel.freq <= 440
-                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. Below ~1.5 kHz the head casts almost no shadow, so ITD does the work, and it does it well. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalising: the image sits inside your head rather than out in the room.'
+                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. Below ~1.5 kHz the head casts almost no shadow, so ITD does the work, and it does it well. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalizing: the image sits inside your head rather than out in the room.'
                       : 'A higher tone gives the head shadow something to work with — level difference starts carrying the location.'
                     : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
                 </Text>

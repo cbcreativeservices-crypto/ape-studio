@@ -60,7 +60,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the one-mic position, the opening, the player’s movement, the gain and the mono blend before reaching for tone controls.',
   },
   practice: {
@@ -116,11 +116,11 @@ const scenarios: MikingScenario[] = [
     id: 'dj.snd.2',
     page: 'sound',
     prompt: 'A tone and a slap are both struck close to the edge. What makes them different?',
-    options: ['How much of the fingers and palm meet the head', 'How far from the centre each one lands', 'How tight the ropes are pulled for each one'],
+    options: ['How much of the fingers and palm meet the head', 'How far from the center each one lands', 'How tight the ropes are pulled for each one'],
     correct: 'How much of the fingers and palm meet the head',
     explain: 'For a tone most of the fingers and the edge of the palm meet the skin; for a slap, only the edge of the palm and the fingertips. The simplified head shows WHERE a stroke lands, not how the hand meets it.',
     why: {
-      'How far from the centre each one lands': 'Both land close to the edge; the contact area is what differs.',
+      'How far from the center each one lands': 'Both land close to the edge; the contact area is what differs.',
       'How tight the ropes are pulled for each one': 'The tuning stays the same; the hand’s contact makes the difference.',
     },
   },
@@ -284,11 +284,11 @@ const scenarios: MikingScenario[] = [
     id: 'dj.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Where are the djembe’s tones and slaps struck?',
-    options: ['Closer to the edge of the head', 'Right at the centre of the head', 'On the shell below the rope ring'],
+    options: ['Closer to the edge of the head', 'Right at the center of the head', 'On the shell below the rope ring'],
     correct: 'Closer to the edge of the head',
     explain: 'Tone and slap are struck closer to the edge; the bass near the center.',
     why: {
-      'Right at the centre of the head': 'That is where the bass is played.',
+      'Right at the center of the head': 'That is where the bass is played.',
       'On the shell below the rope ring': 'The shell is not struck; tones and slaps are played on the head.',
     },
   },
@@ -448,7 +448,7 @@ const symptoms: Symptom[] = [
     correct: 'Whether the opening moves against the fixed mic',
     explain: 'Reposition for reliable coverage or choose a one-mic approach; discuss the stance with the player.',
     why: {
-      'Ask the player to keep the drum perfectly still': 'A freely played drum is not immobilised to suit a mic diagram.',
+      'Ask the player to keep the drum perfectly still': 'A freely played drum is not immobilized to suit a mic diagram.',
       'Tape the drum to its support so it cannot move': 'Don’t change how the player supports the drum to fit a mic. Ask first, and raise it only if they agree.',
     },
   },
@@ -644,7 +644,7 @@ export const M05_LESSON: HandLesson = {
   ],
   sound: {
     stages: [
-      { title: 'The hand strikes', text: 'The hand strikes the head — the palm and flat fingers near the centre for a bass, closer to the edge for a tone or a slap. That brief contact is where the ATTACK begins.' },
+      { title: 'The hand strikes', text: 'The hand strikes the head — the palm and flat fingers near the center for a bass, closer to the edge for a tone or a slap. That brief contact is where the ATTACK begins.' },
       { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the bowl down through the narrow waist toward the foot. Resting on the floor, the foot’s opening meets the floor.', ported: 'The head pushes the air in the bowl down through the narrow waist and out of the open foot — while the air above the head thins: a mic above and a mic at the foot hear opposite pushes. Raised, the opening is clear of the floor.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — the slaps and tones — and around the foot, where the opening meets the floor. The air in the bowl sets the deep bass note.', ported: 'Sound leaves from the head — the slaps and tones — and out of the open foot, where a lot of the bass resonates. The air in the bowl sets the deep bass note.' },
@@ -657,7 +657,7 @@ export const M05_LESSON: HandLesson = {
     items: [
       { id: 'drums', label: 'the djembe (the same drawing as every other page)', short: 'DJEMBE', note: 'Upright on the floor here — or raised on foam blocks so its opening is clear.', prov: { kind: 'sourced', src: 'MEINL-HDJ500', quote: 'Head Diameter: 12.5"' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'player', label: 'the player', short: 'PLAYER', note: 'Hands, wrists, knees, legs, feet — and the drum itself if they tilt it. Nothing of yours goes there, and nothing that could fall or pivot toward them.', prov: { kind: 'illustrative', reason: 'a player behind the drum; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbour that reaches a distant or low djembe mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor that reaches a distant or low djembe mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill — especially into a low mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'More distance or a lower mic brings in other percussion too.', prov: { kind: 'illustrative', reason: 'a typical percussion setup; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'vox', label: 'a vocal mic', short: 'VOCAL MIC', note: 'Another open mic that hears the djembe.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'OPEN MIC', scene: 'all' },
@@ -666,7 +666,7 @@ export const M05_LESSON: HandLesson = {
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'A live mono PA may need one reliable, focused feed rather than two mics.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good room a farther mic includes more of the whole drum — and of the room and the floor’s reflection.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a floor wedge, loud neighbours and the PA. A stable directional top mic first, with the actual monitors and PA routing; a low mic only if the bass cannot be captured otherwise and the feedback margin permits.',
+    stage: 'LIVE: a floor wedge, loud neighbors and the PA. A stable directional top mic first, with the actual monitors and PA routing; a low mic only if the bass cannot be captured otherwise and the feedback margin permits.',
     studio: 'STUDIO: one stable upper or front mic with the whole phrase; a low mic only for clearly useful bass control. The room and the floor’s reflection are part of the sound; two mics need a blend and a mono check.',
   },
   diagnostic,
@@ -756,7 +756,7 @@ export const M05_LESSON: HandLesson = {
       badge: 'The band from above · a typical layout · the player at the left, the audience to the right',
       looking: 'Plan · the band from above · the player behind the djembe',
       prompt: 'Tap anything around the djembe — or step through ITEM — to see what it means for a djembe mic. There is nothing to answer yet.',
-      intro: 'The djembe stands in front of the player, with louder neighbours around it. Everything near it is either the player’s space or a source of spill.',
+      intro: 'The djembe stands in front of the player, with louder neighbors around it. Everything near it is either the player’s space or a source of spill.',
       label: 'The band from above: the djembe in the middle with the player behind it, a drum kit and a bass amp behind the player, other percussion to the player’s right and a vocal mic in front.',
     },
     before: {
@@ -784,7 +784,7 @@ export const M05_LESSON: HandLesson = {
         { title: 'HOW MUCH ROOM', text: 'Studio: one stable upper or front mic with the whole phrase; the room and the floor’s reflection shape it. Live: a directional mic fairly close, outside all hand motion.' },
         { title: 'HOW MANY MICS', text: 'Studio: a low mic only for demonstrably useful bass control. Live: more open mics and low-frequency gain challenge usable level — add the low mic only if the margin permits.' },
         { title: 'WHAT THE PART NEEDS', text: 'An exposed solo djembe might welcome room perspective; a live mono PA might need one reliable, focused feed.' },
-        { title: 'MOUNTING', text: 'A freely played drum is not immobilised for a mic diagram. Ask whether a fixed stand stays aligned through the performance, and test the full movement.' },
+        { title: 'MOUNTING', text: 'A freely played drum is not immobilized for a mic diagram. Ask whether a fixed stand stays aligned through the performance, and test the full movement.' },
       ],
       closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. A cardioid rejects most straight behind, where supercardioids and hypercardioids have a small rear lobe; a bottom mic near a floor wedge hears the monitor too. Check at the intended level with the operator, and avoid uncontrolled feedback.',
     },

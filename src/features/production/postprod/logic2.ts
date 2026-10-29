@@ -621,7 +621,7 @@ registerActivityChecks({
     },
     {
       id: 'real-sync-source',
-      label: 'A synchronisation source beyond doing it by hand is recorded',
+      label: 'A synchronization source beyond doing it by hand is recorded',
       met: (c) => {
         const sources = many(c.get('session', 'sync_sources'));
         return ['embedded_tc', 'recorded_tc', 'slate', 'scratch', 'waveform', 'reports'].some((s) =>

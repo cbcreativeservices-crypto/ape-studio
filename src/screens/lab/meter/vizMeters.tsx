@@ -2569,14 +2569,14 @@ export function SplDialView(p: {
             // MIDPOINT, coloured by zone (item 9).
             // Redistributed around the circle (owner 2026-07-30, item 8): AMBIENT
             // stays lower-left; PROGRAM moves to the RIGHT and a little closer;
-            // REFERENCE moves ABOVE the dial, just right of centre; SHOW/HIGH/LIMIT
+            // REFERENCE moves ABOVE the dial, just right of center; SHOW/HIGH/LIMIT
             // and 100+ ring the RIGHT side top→bottom, lifted up and evenly spread.
             // LEFT column (right-aligned), top→bottom: PROGRAM (69), AMBIENT (50).
             { spl: 50, color: Z_GREEN, lines: [ { t: 'AMBIENT', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '40–59 dBA', size: 10, color: inkDim } ] },
             // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30). Falls naturally
             // into the LEFT column now (owner 2026-07-30 v3 — no forced/radial layout).
             { spl: 69, color: Z_GREEN, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
-            // TOP CENTRE — REFERENCE, just above the dial, a touch right of centre.
+            // TOP CENTRE — REFERENCE, just above the dial, a touch right of center.
             { spl: 81, color: Z_GREEN, forceCol: 'C', nearer: 16, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
             // RIGHT column (left-aligned), top→bottom EVENLY spaced: SHOW, HIGH, LIMIT, 100+.
             // Colour COHERENCE (owner final polish): SHOW's anchor (89) lands in the
@@ -2676,7 +2676,7 @@ export function SplDialView(p: {
     for (const i of items) {
       const near = i.def.nearer ?? 0;
       if (i.col === 'C') {
-        // Centre block, optionally nudged right of centre by `nearer`.
+        // Centre block, optionally nudged right of center by `nearer`.
         i.align = 'center'; i.bw = centerHalf * 2; i.bx = cx - centerHalf + near; i.innerX = cx + near;
       } else if (i.col === 'L') {
         const innerX = leftInner + near;

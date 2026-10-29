@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — aim, distance, the room, the signal paths, gain, levels and polarity — before reaching for EQ.',
   },
   practice: {
@@ -318,7 +318,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Small condenser 2 cm into the main rose, for the most low end', ok: false, power: 'phantom', feedback: 'That close, the rose booms unevenly, invites feedback — and the mic is in the risha’s way.' },
       { id: 'e', label: 'Small omni 1.5 m away, to hear the whole oud naturally', ok: false, power: 'phantom', feedback: 'On a stage beside a drum, an omni that far out hears the drum and the wedge as much as the oud.' },
     ],
-    reasons: [DOC_REASON, clearReason(CLEAR), POWER_REASON, { id: 'r.paths', label: 'Any pickup the oud has is labelled as a separate path and checked with the mic', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(OUD_N), { id: 'r.big', label: 'A large capsule will capture the oud’s body best', role: 'wrong', feedback: 'Capsule size alone does not decide the tone. Check the response and listen.' }],
+    reasons: [DOC_REASON, clearReason(CLEAR), POWER_REASON, { id: 'r.paths', label: 'Any pickup the oud has is labeled as a separate path and checked with the mic', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(OUD_N), { id: 'r.big', label: 'A large capsule will capture the oud’s body best', role: 'wrong', feedback: 'Capsule size alone does not decide the tone. Check the response and listen.' }],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic — and honest labels for any pickup.',
   },
   {

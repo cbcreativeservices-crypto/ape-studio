@@ -6,7 +6,7 @@
  * family rows, §3 the tone-hole field and the register selector); the
  * soprano, tenor and baritone folders hold their own rows.
  *
- * THE CENTRE LINE (proposal §1). Each saxophone is a centre-line PATH from
+ * THE CENTER LINE (proposal §1). Each saxophone is a centre-line PATH from
  * the reed tip (u = 0) to the bell rim (u = U), drawn in the instrument's
  * own plane: `a` forward, `b` down, `c` across (toward the camera side). The
  * path is a chain of straight runs and arcs — mouthpiece, neck, body (the
@@ -36,7 +36,7 @@
 
 export type SaxId = 'soprano' | 'alto' | 'tenor' | 'baritone';
 
-/** A run of the centre line: straight, or an arc that turns `turn` degrees
+/** A run of the center line: straight, or an arc that turns `turn` degrees
  *  (positive = clockwise on screen: forward → down) on radius `r`. `lat` =
  *  how far the line drifts across (c) over the run, mm. */
 export type PathSeg = { kind: 'line'; len: number; lat?: number; tag: SegTag } | { kind: 'arc'; turn: number; r: number; lat?: number; tag: SegTag };
@@ -216,7 +216,7 @@ export const BARITONE: SaxRow = {
 
 export const SAX_ROWS: Record<SaxId, SaxRow> = { soprano: SOPRANO, alto: ALTO, tenor: TENOR, baritone: BARITONE };
 
-/* ── the centre line ── */
+/* ── the center line ── */
 
 export type PathPt = { u: number; a: number; b: number; c: number; heading: number; tag: SegTag };
 export type SaxPath = {

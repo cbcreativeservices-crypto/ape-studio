@@ -27,7 +27,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     partsBadge: 'Switch CRASH for the 16 in or the 18 in · tap a part to name it',
     partsLooking: { side: 'Side view · the crash on its stand', top: 'Top view · the crash from above' },
     partsIdle: 'Most players strike a crash on its edge with a glancing blow. Tap a part — the edge, the bow, the bell, the felts that let it swing.',
-    variantNotes: { crash2: '18 in CRASH: larger, a little higher, over the 12 in tom on the player’s right. Same reasoning, different neighbours.' },
+    variantNotes: { crash2: '18 in CRASH: larger, a little higher, over the 12 in tom on the player’s right. Same reasoning, different neighbors.' },
   },
   setting: {
     kitA11y: 'The drum kit from above: a crash ringed in amber over a rack tom; the hi-hats, the snare, the ride and the throne around it.',
@@ -146,7 +146,7 @@ export const CRASH_CYM: CymbalExtra = {
       'A simplified picture: a flat disc of even thickness. A real crash is domed, lathed, thinner at the edge and builds its wash in ways this picture does not show — the pattern of the shapes is what it teaches.',
     ],
     areas: [
-      { id: 'bell', label: 'BELL', blurb: 'The raised centre, held by the felts.', r: 18 },
+      { id: 'bell', label: 'BELL', blurb: 'The raised center, held by the felts.', r: 18 },
       { id: 'bow', label: 'BOW', blurb: 'The wide middle of the plate.', r: 110 },
       { id: 'edge', label: 'EDGE', blurb: 'The crash area, struck with a glancing blow.', r: 187 },
     ],

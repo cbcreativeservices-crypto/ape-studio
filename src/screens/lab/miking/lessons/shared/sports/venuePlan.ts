@@ -107,14 +107,14 @@ export const wrap180 = (a: number): number => ((((a + 180) % 360) + 360) % 360) 
 export function aimRel(from: P2, to: P2, ahead: P2 = { x: 0, y: 1 }): number {
   return wrap180(degOf({ x: to.x - from.x, y: to.y - from.y }) - degOf(ahead));
 }
-/** "32° left of centre" / "centre" / "12° right of centre" (whole degrees;
+/** "32° left of center" / "centre" / "12° right of center" (whole degrees;
  *  "centre" within half a degree). One wording for every direction lane —
  *  the sports AIM, the audience TURN, the spatial rig's FRONT (owner
- *  2026-10-14, slider audit #23: "left/right of centre"). */
+ *  2026-10-14, slider audit #23: "left/right of center"). */
 export function aimWords(deg: number): string {
   const r = Math.round(deg);
   if (r === 0) return 'centre';
-  return `${Math.abs(r)}° ${r > 0 ? 'left' : 'right'} of centre`;
+  return `${Math.abs(r)}° ${r > 0 ? 'left' : 'right'} of center`;
 }
 /** The short form for a dock key: "32°L" / "0°" / "12°R". */
 export function aimShort(deg: number): string {

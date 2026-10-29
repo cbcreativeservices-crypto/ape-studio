@@ -199,8 +199,8 @@ function F08TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
   const steps: MikingStep[] = [
     pair,
     readStep('sync', 'Two recorders, one event', [
-      { title: 'PERSPECTIVES, NOT STEREO', text: 'A start mic and an end mic become a stereo pair only if their spacing, orientation, routing and blend are planned as one. Otherwise keep them as two labelled perspectives.' },
-      { title: 'ONE CLOCK', text: 'With separate recorders, synchronise and log their clocks or timecode, and a common event. Aligning for an editorial choice is fine — aligning every mic into one mono signal can change the passing perspective you recorded.' },
+      { title: 'PERSPECTIVES, NOT STEREO', text: 'A start mic and an end mic become a stereo pair only if their spacing, orientation, routing and blend are planned as one. Otherwise keep them as two labeled perspectives.' },
+      { title: 'ONE CLOCK', text: 'With separate recorders, synchronize and log their clocks or timecode, and a common event. Aligning for an editorial choice is fine — aligning every mic into one mono signal can change the passing perspective you recorded.' },
       { title: 'HEADROOM FOR THE CLOSEST MOMENT', text: 'Set the gain for the loudest plausible moment, not the quiet approach; change position, pattern or gain only between passes.' },
     ]),
     fieldCheckStep(lesson, 'twoMic', answers, onAnswered),

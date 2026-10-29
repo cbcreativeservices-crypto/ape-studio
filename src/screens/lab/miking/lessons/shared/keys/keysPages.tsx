@@ -672,7 +672,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               onSelect: (id) => setPatch(id as 'cab' | 'desk'),
               options: [
                 { id: 'cab', label: 'SPEAKER OUT → THE SPEAKER', blurb: rhodes ? 'By a speaker cable, as the amp’s manual says — the only place a speaker output goes.' : 'Inside the instrument, to its own speakers — the only place a speaker output goes.' },
-                { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognise it — never do it: a speaker output carries high power.' },
+                { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognize it — never do it: a speaker output carries high power.' },
               ],
             },
           ],
@@ -699,7 +699,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         layout: 'rack',
         rack: {
           render: (w, h) => <KeysPlan w={w} h={h} rig={spec.rig} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: ${rhodes ? 'the combo amp, the keyboard to its side with the player and their keep-clear space' : 'the instrument with its speakers facing the player, and the player’s keep-clear space'}, a DI box, another amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ', and the player’s headphone mixer, fed from the control room'}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
-          badge: scene === 'stage' ? 'From above · a typical layout · grey dashes = the player’s space, keep clear' : 'From above · a typical studio room',
+          badge: scene === 'stage' ? 'From above · a typical layout · gray dashes = the player’s space, keep clear' : 'From above · a typical studio room',
           bezel: [
             { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },
             { k: 'FOR A MIC', v: ps ? ps.tag : '—', flex: 1.4 },

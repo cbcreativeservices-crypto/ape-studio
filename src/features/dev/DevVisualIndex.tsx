@@ -139,7 +139,7 @@ const DIALOGS: { label: string; run: () => void }[] = [
         () => {},
       ),
   },
-  { label: 'Notice (one button)', run: () => notify('Code not applied', 'That code was not recognised.') },
+  { label: 'Notice (one button)', run: () => notify('Code not applied', 'That code was not recognized.') },
 ];
 
 type ScreenEntry = { label: string; go: (nav: any) => void };

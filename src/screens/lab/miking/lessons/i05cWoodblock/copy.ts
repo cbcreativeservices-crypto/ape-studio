@@ -89,7 +89,7 @@ export const WB_COPY: LessonCopy = spCopy({
   placement: {
     workedZone: { table: 'wb.opening.table', held: 'wb.opening.held' },
     workedAim: 'Face the block — the starting point counts while the mic faces its opening or its playing surface within {tol}°. Distance, height and angle are separate things to try.',
-    reveal: 'From above, more strike and playing surface; toward the opening, a different balance of attack, hollow body, room and neighbours — not a rule that the opening sounds fuller. Blocks vary, so “it depends” is fair too.',
+    reveal: 'From above, more strike and playing surface; toward the opening, a different balance of attack, hollow body, room and neighbors — not a rule that the opening sounds fuller. Blocks vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A cardioid dynamic or condenser can both work; a closer live spot only where clearance and isolation are confirmed.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never into the slot, never where a mallet can reach. Watch PEAK meters for the loudest real hit.',
     learn: {

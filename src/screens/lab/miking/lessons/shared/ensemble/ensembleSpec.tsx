@@ -14,7 +14,7 @@ import type { HandSpec } from '../hand/handPages';
 import { fmtM } from './frameS.ts';
 
 export const ENSEMBLE_AXES: HandSpec['axes'] = {
-  x: { label: 'ACROSS', short: 'ACROSS', blurb: 'To the conductor’s left or right (x).', fmt: (v) => (Math.abs(v) < 25 ? 'on the centre line' : `${fmtM(Math.abs(v))} to the conductor’s ${v < 0 ? 'left' : 'right'}`) },
+  x: { label: 'ACROSS', short: 'ACROSS', blurb: 'To the conductor’s left or right (x).', fmt: (v) => (Math.abs(v) < 25 ? 'on the center line' : `${fmtM(Math.abs(v))} to the conductor’s ${v < 0 ? 'left' : 'right'}`) },
   y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Higher or lower (y).', fmt: (v) => `${fmtM(Math.max(0, -v))} above the floor` },
   z: { label: 'TOWARD–AWAY', short: 'TOWARD', blurb: 'Toward the players, or back toward the conductor and the hall (z).', fmt: (v) => (v >= 0 ? `${fmtM(v)} in front of the front row` : `${fmtM(-v)} behind the front row`) },
 };
@@ -34,7 +34,7 @@ export const ARRAY_CARDS: ReactNode = (
 
 /** Group 4: a stage plot's axes, said as the audience sees the stage. */
 export const STAGE_PLOT_AXES: HandSpec['axes'] = {
-  x: { label: 'ACROSS', short: 'ACROSS', blurb: 'To the audience’s left or right (x).', fmt: (v) => (Math.abs(v) < 25 ? 'on the centre line' : `${fmtM(Math.abs(v))} to the audience’s ${v < 0 ? 'left' : 'right'}`) },
+  x: { label: 'ACROSS', short: 'ACROSS', blurb: 'To the audience’s left or right (x).', fmt: (v) => (Math.abs(v) < 25 ? 'on the center line' : `${fmtM(Math.abs(v))} to the audience’s ${v < 0 ? 'left' : 'right'}`) },
   y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Higher or lower (y).', fmt: (v) => `${fmtM(Math.max(0, -v))} above the floor` },
   z: { label: 'UPSTAGE–DOWNSTAGE', short: 'TOWARD', blurb: 'Upstage toward the back wall, or downstage toward the audience (z).', fmt: (v) => (v >= 0 ? `${fmtM(v)} in front of the band’s front line` : `${fmtM(-v)} upstage of the band’s front line`) },
 };

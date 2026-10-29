@@ -5,7 +5,7 @@
  *
  * A connected pair of small open-bottom drums: the 7¼ in MACHO (smaller,
  * higher) on the player's left and the 8⅝ in HEMBRA (larger, lower) on the
- * right (LP-GEN2, MEINL-BONGO). The centre block, the shell height, the
+ * right (LP-GEN2, MEINL-BONGO). The center block, the shell height, the
  * playing height and the side assignment are DRAWING DEFAULTS.
  *
  * No source gives a bongo mic distance (the lesson and the research agree):
@@ -119,6 +119,6 @@ export const BONGO_ZONES: DocumentedZone[] = [
     drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: d.c.x + d.R, u1: d.c.x + d.R + 50 }, { u0: d.c.x - d.R - 50, u1: d.c.x + d.R + 50, v0: d.c.z - d.R - 50, v1: d.c.z + d.R + 50, round: true }),
     start: { p: { x: d.c.x + d.R + 18, y: HEAD_Y - 62, z: d.c.z }, az: 0, el: -50 },
     tendency: 'Little stage space and independent control; the mic moves with the pair. Check the clamp for vibration and every finger motion.',
-    checks: ['The clamp fits this drum, and the player agrees', 'Vibration, cable strain and every finger motion', 'Movement to neighbouring percussion'],
+    checks: ['The clamp fits this drum, and the player agrees', 'Vibration, cable strain and every finger motion', 'Movement to neighboring percussion'],
   })),
 ];

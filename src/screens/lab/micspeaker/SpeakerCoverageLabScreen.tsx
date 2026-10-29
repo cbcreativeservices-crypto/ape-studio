@@ -109,7 +109,7 @@ const TOP_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, cancelling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
+    'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, canceling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
   wrongHint: 'Watch the ridge where the two wedges cross — then re-read WHAT’S HAPPENING.',
 };
 
@@ -659,7 +659,7 @@ export function SpeakerCoverageLabScreen() {
           ) : null}
           {sectionIdx === 1 && rearDelay ? (
             <Text style={styles.badge}>
-              DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two travelling
+              DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two traveling
               fronts (green lines) illustrate firing the rear speaker late so arrivals fuse. In the
               field it is set a few milliseconds LATER still, so the ear keeps locating the sound on
               the stage (the precedence effect). Timing here is illustrative only.

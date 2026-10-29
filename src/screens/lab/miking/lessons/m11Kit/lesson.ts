@@ -58,7 +58,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom in a multi-mic kit to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check one channel at a time against the picture, in mono, at a plausible level — position and balance before polarity, polarity before EQ.',
   },
   practice: {
@@ -91,7 +91,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does a close snare mic still hear the hi-hat clearly?',
     options: ['The hi-hat sits close by and sends sound from both faces', 'The snare mic is aimed at the hi-hat on purpose', 'The hi-hat is simply the loudest part of a drum kit, whatever the song'],
     correct: 'The hi-hat sits close by and sends sound from both faces',
-    explain: 'The hi-hat is a neighbour of the snare and its plates radiate up and down: some of it reaches the snare mic. Aim and position change how much — they cannot remove it.',
+    explain: 'The hi-hat is a neighbor of the snare and its plates radiate up and down: some of it reaches the snare mic. Aim and position change how much — they cannot remove it.',
     why: {
       'The snare mic is aimed at the hi-hat on purpose': 'Usually it is aimed away from the hi-hat — and still hears it, because it is so close.',
       'The hi-hat is simply the loudest part of a drum kit, whatever the song': 'It is not always the loudest; it is close to the snare mic, which is what matters here.',
@@ -428,11 +428,11 @@ const symptoms: Symptom[] = [
     id: 's.shift',
     observation: 'A drum shifts sideways in the stereo image when its mic comes up',
     firstChecks: 'Pan the close mic consistently with the overhead image; check the overheads’ center.',
-    options: ['Its pan against where the overheads put that drum', 'Pan all the close mics to the centre to keep things steady', 'Swap the overheads’ left and right channels around'],
+    options: ['Its pan against where the overheads put that drum', 'Pan all the close mics to the center to keep things steady', 'Swap the overheads’ left and right channels around'],
     correct: 'Its pan against where the overheads put that drum',
     explain: 'Pan close toms and the hi-hat to match the overheads’ picture — from the drummer’s or the audience’s side, consistently.',
     why: {
-      'Pan all the close mics to the centre to keep things steady': 'Centering a tom that the overheads put to one side makes it jump; match the picture.',
+      'Pan all the close mics to the center to keep things steady': 'Centering a tom that the overheads put to one side makes it jump; match the picture.',
       'Swap the overheads’ left and right channels around': 'That flips the whole kit; match each close mic to the picture you chose.',
     },
   },

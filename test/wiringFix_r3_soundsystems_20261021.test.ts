@@ -144,7 +144,7 @@ describe('R3-SS-02: fills and delays on their own feeds, their own side', () => 
 
 describe('R3-SS-03: the digital row names AES3’s own cable', () => {
   it('110 Ω AES cable on XLR, coax, category cable or fibre', () => {
-    assert.match(src('screens/lab/soundsystems/pagesLearnB.tsx'), /cable: '110 Ω AES cable on XLR \(AES3\), coax \(AES3id or MADI\), category cable \(Dante or AVB\) or fibre — clocked from one master'/);
+    assert.match(src('screens/lab/soundsystems/pagesLearnB.tsx'), /cable: '110 Ω AES cable on XLR \(AES3\), coax \(AES3id or MADI\), category cable \(Dante or AVB\) or fiber — clocked from one master'/);
   });
 });
 

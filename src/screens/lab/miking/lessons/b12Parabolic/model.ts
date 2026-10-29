@@ -116,7 +116,7 @@ export const B12_SETUPS: SportSetup[] = [
     scene: BB,
     noRange: true,
   },
-  { id: 'su.far', role: 'FARTHER BACK · STUDIO', core: true, title: 'A wider ambience pair at E', type: 'two small cardioids, crossed, on one stand', start: 'At the approved mark E, aimed into the field — the bed when tracking fails or atmosphere is the goal.', line: 'A clearer venue perspective, less isolated action — labelled as ambience.', mics: [AMB_E] },
+  { id: 'su.far', role: 'FARTHER BACK · STUDIO', core: true, title: 'A wider ambience pair at E', type: 'two small cardioids, crossed, on one stand', start: 'At the approved mark E, aimed into the field — the bed when tracking fails or atmosphere is the goal.', line: 'A clearer venue perspective, less isolated action — labeled as ambience.', mics: [AMB_E] },
   { id: 'su.feet', role: 'ANOTHER START', core: false, title: 'An idea to try: aim toward a distant player’s feet', type: 'the dish, its axis a little below the target', start: 'At M, the axis toward C’s feet, so the pickup takes in the player and less of the crowd beyond; raise it as the player comes nearer.', line: 'Less crowd beyond the target, perhaps — test it with your own dish and geometry; it is not a fixed angle.', mics: [m('dfeet', 'dish', 'dish, aimed low', PF.M, DISH_H, PF.C, 0.1)] },
   { id: 'su.second', role: 'ANOTHER START', core: false, title: 'A second dish at a second approved place', type: 'two dishes, two operators, two zones', start: 'A second operator at F covers the far zone; the two hand off with radio coordination.', line: 'Separate action zones — at the cost of coordination, and a doubled transient if both are open.', mics: [DISH_A, m('d2', 'dish', 'second dish', F, DISH_H, PF.B, SPEECH_H)] },
 ];

@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where the China sits here — on the right, over the 12 in tom, beside the ride — the space the stick and the swing need, what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['ch.set.1', 'ch.set.2', 'ch.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'A China hangs high among loud neighbours and swings when crashed. Its lowest point depends on how it is mounted. Ask the player first, and protect your hearing.',
+    takeaway: 'A China hangs high among loud neighbors and swings when crashed. Its lowest point depends on how it is mounted. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, the swing, aim, the pattern, gain and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -104,11 +104,11 @@ const scenarios: MikingScenario[] = [
     id: 'ch.snd.3',
     page: 'sound',
     prompt: 'Upright, where might a jazz player ride a large China?',
-    options: ['The side of the shoulder, about an inch above the valley', 'The very centre of the cup, with the stick’s shoulder', 'Underneath the lip, reaching up from below the plate'],
+    options: ['The side of the shoulder, about an inch above the valley', 'The very center of the cup, with the stick’s shoulder', 'Underneath the lip, reaching up from below the plate'],
     correct: 'The side of the shoulder, about an inch above the valley',
     explain: 'Some jazz players ride where the shoulder comes down into the valley, about an inch above it: the side of the shoulder gives a controlled ride sound.',
     why: {
-      'The very centre of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder, or lightly out at the edge.',
+      'The very center of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder, or lightly out at the edge.',
       'Underneath the lip, reaching up from below the plate': 'The stick plays the top face. The shoulder, above the valley, is the ride spot.',
     },
   },
@@ -167,11 +167,11 @@ const scenarios: MikingScenario[] = [
     id: 'ch.place.1',
     page: 'placement',
     prompt: 'No distance is published for a China. How do you use “about 20–30 cm above”?',
-    options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimetre', 'As a limit: closer than 20 cm is not allowed'],
+    options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimeter', 'As a limit: closer than 20 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
     explain: 'With no fixed number to go by, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',
     why: {
-      'As an exact rule, measured to the millimetre': 'Starting points are places to begin, not exact rules.',
+      'As an exact rule, measured to the millimeter': 'Starting points are places to begin, not exact rules.',
       'As a limit: closer than 20 cm is not allowed': 'It is not a limit. Clearance from the stick and the swing is.',
     },
   },
@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each starting point is measured from the cymbal it names, square to its plate.',
     why: {
       'From the floor, straight up to the mic, like a stand': 'The floor is not the reference.',
-      'From the tom below, up through the plate to the mic': 'The tom is a neighbour, not the reference.',
+      'From the tom below, up through the plate to the mic': 'The tom is a neighbor, not the reference.',
     },
   },
   {
@@ -404,12 +404,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Turned over, a China’s valley becomes…',
-    options: ['a raised ring above the rim', 'the lowest point of the plate', 'a flat cup at the centre'],
+    options: ['a raised ring above the rim', 'the lowest point of the plate', 'a flat cup at the center'],
     correct: 'a raised ring above the rim',
     explain: 'Turned over, everything flips: the valley is now a raised ring, the cup hangs lowest.',
     why: {
       'the lowest point of the plate': 'Turned over, the cup hangs lowest.',
-      'a flat cup at the centre': 'The cup stays the cup — now hanging down.',
+      'a flat cup at the center': 'The cup stays the cup — now hanging down.',
     },
   },
   {

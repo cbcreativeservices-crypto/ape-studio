@@ -60,7 +60,7 @@ export const VIOLA_ART: LessonArt = {
       ],
       pointDefault: 'mid',
       subject: 'The viola cut across at the bridge, seen along the strings: the arched top and back, the ribs, the bass bar, the soundpost, the bridge, four strings and the bow',
-      shapesNote: 'This is a simplified string. On a real viola the strings are stiff, the ends are not perfectly still, and the body favours some pitches — but the whole-number pattern, and the still points, hold closely.',
+      shapesNote: 'This is a simplified string. On a real viola the strings are stiff, the ends are not perfectly still, and the body favors some pitches — but the whole-number pattern, and the still points, hold closely.',
       motionNote: 'This is the ideal bowed string. Real bowing adds the bow’s bite, and the player’s pressure, speed and bow position change the tone.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the viola: how a real viola sounds depends on the instrument, the strings, the bow and the player. The pictures show where the sound comes from and where it leaves.',
       reveal: 'The bow never strikes: it grips the string, lets it slip, and grips it again — once every vibration, for as long as it moves.',
@@ -71,7 +71,7 @@ export const VIOLA_ART: LessonArt = {
       wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
       nearLanding: 'Tap anything around the violist — or step through ITEM — to see what it means for a viola mic. There is nothing to answer yet.',
       nearIdle: 'The viola sits under the chin; the bow sweeps out to the player’s right; the head is at the chin rest. In a quartet, a violin and a cello sit close on either side.',
-      stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and loud neighbours all reach a viola mic.',
+      stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and loud neighbors all reach a viola mic.',
       studioIdle: 'No monitors on the floor. Hear the viola in the room first — and a main pair, when it plays in a group.',
       before: [
         { title: 'ASK THE PLAYER FIRST', text: 'Which passage — the low C and the high A, quiet and forceful bows, string changes, pizzicato? Standing or seated, and how do they sway? Where are the chin and shoulder rests? Hear the viola in the room first, and change position before reaching for EQ.' },

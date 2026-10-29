@@ -69,7 +69,7 @@ export const TUBA_ART: LessonArt = {
       nearA11y: 'A tuba player from above: the player on a chair facing right, the tuba on the lap with its wide bell beside the head, the player’s space hatched, a music stand in front and a euphonium player to the left.',
       wideA11y: { stage: 'The same from above, on a stage: the tuba player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the players; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the tuba player — or step through ITEM — to see what it means for a tuba mic. There is nothing to answer yet.',
-      nearIdle: 'The tuba rests on the lap; the right hand works the valves; the bell sways a little as the player breathes. Everything else is a neighbour a tuba mic will hear.',
+      nearIdle: 'The tuba rests on the lap; the right hand works the valves; the bell sways a little as the player breathes. Everything else is a neighbor a tuba mic will hear.',
       stageIdle: 'Two floor monitors and a PA with subwoofers: their low end reaches an open tuba mic too — check it with the player silent.',
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the tuba plays in a group — are part of the picture now.',
       before: [

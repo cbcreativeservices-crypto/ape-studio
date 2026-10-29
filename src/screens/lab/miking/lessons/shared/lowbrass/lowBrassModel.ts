@@ -177,7 +177,7 @@ function envelopes(s: BrassScene, variants?: string[]): Envelope[] {
   if (s.spec.id !== 'horn') {
     // The body sways and the bell tilts as the player breathes and moves.
     const tilt = s.orient === 'up' ? v(-70, 30, 90) : v(-40, -60, 90);
-    out.push({ id: `env.sway.${s.orient}`, label: 'the bell as the player sways', shape: { kind: 'capsule', a: b.rim, b: add(b.rim, tilt), r: b.R + 30 }, prov: ill('a few centimetres of sway and tilt round the rim: a drawing default'), ...vs });
+    out.push({ id: `env.sway.${s.orient}`, label: 'the bell as the player sways', shape: { kind: 'capsule', a: b.rim, b: add(b.rim, tilt), r: b.R + 30 }, prov: ill('a few centimeters of sway and tilt round the rim: a drawing default'), ...vs });
   }
   return out;
 }

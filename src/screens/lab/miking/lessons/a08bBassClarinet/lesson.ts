@@ -46,9 +46,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — 0.6–1.2 m in front, aimed at the middle — then compare the body-and-bell blend and a bell-favouring view.',
+    goal: 'Start where we suggest you begin — 0.6–1.2 m in front, aimed at the middle — then compare the body-and-bell blend and a bell-favoring view.',
     credit: { scenarios: ['bcl.place.1', 'bcl.place.2', 'bcl.place.3', 'bcl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'Begin far enough away to hear the whole instrument, then move in. A body-and-bell blend, a bell-favouring view and a clip are comparisons for different goals — and the lowest note decides a lot.',
+    takeaway: 'Begin far enough away to hear the whole instrument, then move in. A body-and-bell blend, a bell-favoring view and a clip are comparisons for different goals — and the lowest note decides a lot.',
   },
   context: {
     title: 'Studio or live',
@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — where the mic looks, its distance, the filter, the peg and the stand, the mount — before reaching for tone controls.',
   },
   practice: {
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Moving toward the bell, the low notes jump forward and the high passages thin. What do you try?',
     options: ['Turn the high frequencies up to match the lows', 'Aim toward the keys, or back off a little', 'Ask the player to play the low notes softer'],
     correct: 'Aim toward the keys, or back off a little',
-    explain: 'A bell-favouring view is one tonal option. If it unbalances the range, aim toward the keywork or add distance so the holes join in again — then replay the whole part.',
+    explain: 'A bell-favoring view is one tonal option. If it unbalances the range, aim toward the keywork or add distance so the holes join in again — then replay the whole part.',
     why: {
       'Turn the high frequencies up to match the lows': 'EQ cannot put the holes back into a bell-only view. Move the mic.',
       'Ask the player to play the low notes softer': 'The dynamics are the music; the mic’s view is yours to change.',
@@ -350,7 +350,7 @@ const orderTasks: OrderTask[] = [
       { text: 'With the player stopped, place it 0.6–1.2 m in front, aimed at the middle, off the peg’s path', early: 'You need a chosen mic before you can place it.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom power on', early: 'Power comes after the mic is placed and connected — outputs muted first.' },
       { text: 'Set input gain on the quietest AND strongest notes, with headroom', early: 'Gain is set once the mic is connected and powered.' },
-      { text: 'Compare a blend view and a bell-favouring view, at matched levels', early: 'Compare only once the level is set safely.' },
+      { text: 'Compare a blend view and a bell-favoring view, at matched levels', early: 'Compare only once the level is set safely.' },
       { text: 'Secure the stand; play the lowest note through any filter', early: 'Secure it last, then check the lowest note again.' },
     ],
     explain: 'A sensible order. Phantom: mute the outputs and lower monitoring before switching it, and follow your own equipment’s manual. Gain: headroom for the strongest notes; the filter must keep the lowest one.',
@@ -379,7 +379,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A clip confirmed for this instrument on the bell’s rim, aimed between the bell and the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — re-test every register.' },
       { id: 'b', label: 'A cardioid on a weighted stand close in front, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — check the peg and the floor.' },
-      { id: 'c', label: 'An omni a metre away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a metre away hears the band and the wedge more than the instrument.' },
+      { id: 'c', label: 'An omni a meter away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a meter away hears the band and the wedge more than the instrument.' },
       { id: 'd', label: 'A mic on the floor beside the peg, aimed up at the bell', ok: false, power: 'phantom', feedback: 'By the peg it hears floor thumps, and the stand sits in the peg’s path.' },
       { id: 'e', label: 'A mic straight into the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'A bell-only view loses the holes; turned up, it brings the stage and feedback.' },
     ],
@@ -647,7 +647,7 @@ export const A08B_LESSON: WindLesson = {
     { text: 'Every bass clarinet dimension is a drawing default (1350 mm of tube incl. the neck, bell Ø 110, the peg); the low C model’s extra 250 mm is three semitones of tube (derived); the holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
     { text: 'The hands, arms, head, the peg’s foot and the bell’s movement — illustrative keep-outs (a 20 mm margin round the instrument).', dims: [] },
     { text: 'The blend view’s 25–55 cm, the bell view’s 15–35 cm and the clip’s 6–24 cm — drawing defaults: we found no published bass-clarinet number for them.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
@@ -656,7 +656,7 @@ export const A08B_LESSON: WindLesson = {
   wind: windExtra(SPEC, {
     soundSubject: 'A bass clarinet on its side, keys toward you, its air column drawn open',
     breath: 'Breath and the reed are heard close to the mouthpiece, high on the instrument; a body-facing mic hears little wind.',
-    keys: 'Long keys, thumb keys and pads closing: loud within a few centimetres of the keywork — back off, or change the angle.',
+    keys: 'Long keys, thumb keys and pads closing: loud within a few centimeters of the keywork — back off, or change the angle.',
     directivity: 'Unlike the other woodwinds in this lab, the bass clarinet’s pattern round the player is not drawn here from a measurement — it is expected to differ from the soprano clarinet’s, with its larger size and upturned bell. Test positions by ear.',
     noteDefault: 9,
   }),

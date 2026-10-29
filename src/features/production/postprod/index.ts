@@ -52,7 +52,7 @@ export const POSTPROD_OUTLINE: {
 }[] = [
   { stageId: 'brief', num: 1, title: 'Receive the Project', chapter: 1, covers: 'Spec 1' },
   { stageId: 'media', num: 2, title: 'Ingest and Verify the Media', chapter: 1, covers: 'Spec 2' },
-  { stageId: 'session', num: 3, title: 'Build and Synchronise the Session', chapter: 1, covers: 'Spec 3–4' },
+  { stageId: 'session', num: 3, title: 'Build and Synchronize the Session', chapter: 1, covers: 'Spec 3–4' },
   { stageId: 'edit', num: 4, title: 'Select, Assemble and Edit', chapter: 1, covers: 'Spec 5–8' },
   { stageId: 'build', num: 5, title: 'Build the Sound', chapter: 2, covers: 'Spec 9–13' },
   { stageId: 'mix', num: 6, title: 'Prepare, Mix and Print', chapter: 2, covers: 'Spec 14–18' },

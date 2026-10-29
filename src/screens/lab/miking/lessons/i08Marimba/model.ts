@@ -73,7 +73,7 @@ export const MARIMBA_ZONES: DocumentedZone[] = [
     words: {
       label: 'Under the pipes, aimed up — an optional effect',
       band: 'Only as an optional effect: under the high part of the keyboard, between the rows of pipes, aimed up — touching nothing, out of the player’s way.',
-      tendency: 'A more localised, colored sound, and more mechanical noise. Not the natural marimba sound — audition it against a mic above the bars.',
+      tendency: 'A more localized, colored sound, and more mechanical noise. Not the natural marimba sound — audition it against a mic above the bars.',
       checks: ['Nothing touches a pipe, and nothing can be kicked', 'Rattles and mechanical noise', 'Compare it with the view from above'],
     },
   }),

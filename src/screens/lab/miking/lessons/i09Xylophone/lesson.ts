@@ -37,7 +37,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the xylophone sits — the percussion section of an orchestra or band — its neighbours, the player’s space, and what to check before any mic.',
+    goal: 'Know where the xylophone sits — the percussion section of an orchestra or band — its neighbors, the player’s space, and what to check before any mic.',
     credit: { scenarios: ['xy.set.1', 'xy.set.hear', 'xy.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Hear the passage from the room first: low, middle and high notes, fast repeated notes and the loudest accent. Mallets are the owner’s and the maker’s call, never a mic fix.',
   },
@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know how an orchestra or a studio changes the decision.',
     credit: { scenarios: ['xy.ctx.1', 'xy.ctx.2', 'xy.ctx.studio', 'xy.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the side fill sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Aim the real pattern’s rejection at loud neighbours and speakers. In an orchestra the mains may already carry the xylophone’s bright articulation.',
+    takeaway: 'Aim the real pattern’s rejection at loud neighbors and speakers. In an orchestra the mains may already carry the xylophone’s bright articulation.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the mallet and the coverage first, then the instrument for rattles, then gain staging — before EQ or a gate.',
   },
   practice: {
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The xylophone sounds harsh in the full arrangement. What comes first?',
     options: ['Talk about safe mallets and touch, and the mic’s view', 'Heavy EQ on the xylophone channel', 'A darker microphone, so that the harder mallet can stay in use'],
     correct: 'Talk about safe mallets and touch, and the mic’s view',
-    explain: 'Discuss safe mallet and touch choices and the mic’s perspective with the player before heavy equalisation.',
+    explain: 'Discuss safe mallet and touch choices and the mic’s perspective with the player before heavy equalization.',
     why: {
       'Heavy EQ on the xylophone channel': 'EQ last: the source and the placement come first.',
       'A darker microphone, so that the harder mallet can stay in use': 'A darker mic does not make a harmful mallet safe.',
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'xy.mic.3',
     page: 'microphone',
-    prompt: 'Cardioid and supercardioid patterns aimed at a loud neighbour: do they reject it the same way?',
+    prompt: 'Cardioid and supercardioid patterns aimed at a loud neighbor: do they reject it the same way?',
     options: ['No — their nulls and rear pickup differ', 'Yes — all directional mics reject the rear the same way', 'Yes — the rejection depends only on the distance'],
     correct: 'No — their nulls and rear pickup differ',
     explain: 'A cardioid rejects most straight behind; a supercardioid has its nulls off the rear and a small rear lobe. Aim the actual pattern.',
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is a bright, close mic the way to more pitch from the xylophone?',
     options: ['Not by itself — closer can bring more click than pitch', 'Yes — the closer the mic, the more pitch it hears from the bars', 'Yes — brightness is the same thing as pitch'],
     correct: 'Not by itself — closer can bring more click than pitch',
-    explain: 'A close mic over a struck bar can emphasise mallet impact; a higher or less direct view can balance click and pitch. Judge in the full phrase.',
+    explain: 'A close mic over a struck bar can emphasize mallet impact; a higher or less direct view can balance click and pitch. Judge in the full phrase.',
     why: {
       'Yes — the closer the mic, the more pitch it hears from the bars': 'Closer often means more impact and one region — not more pitch.',
       'Yes — brightness is the same thing as pitch': 'Brightness is the upper detail; pitch is the note. A click can be bright and pitchless.',
@@ -216,12 +216,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'xy.place.2',
     page: 'placement',
-    prompt: 'A passage on a few neighbouring bars, then one that runs the whole keyboard. What changes for the mics?',
+    prompt: 'A passage on a few neighboring bars, then one that runs the whole keyboard. What changes for the mics?',
     options: ['One mic may suit the first; the second needs a wider view or a pair', 'Nothing: a single mic over the middle covers the whole keyboard alike', 'The first needs a pair; the second needs only one mic'],
     correct: 'One mic may suit the first; the second needs a wider view or a pair',
-    explain: 'The part decides: a few neighbouring bars suit one mic; a part that traverses the keyboard needs a wider view or a pair.',
+    explain: 'The part decides: a few neighboring bars suit one mic; a part that traverses the keyboard needs a wider view or a pair.',
     why: {
-      'Nothing: a single mic over the middle covers the whole keyboard alike': 'A close single mic favours the bars nearest it.',
+      'Nothing: a single mic over the middle covers the whole keyboard alike': 'A close single mic favors the bars nearest it.',
       'The first needs a pair; the second needs only one mic': 'The other way round: the wide part is the harder one to cover.',
     },
   },
@@ -267,9 +267,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Raising the xylophone mic gives a fuller keyboard. What else tends to happen on a loud stage?',
     options: ['More spill and less gain before feedback', 'Less spill, because the mic is farther from the stage', 'Nothing else changes when only the height does'],
     correct: 'More spill and less gain before feedback',
-    explain: 'Higher hears more of the keyboard — and more of the neighbours and the speakers. Move in small steps.',
+    explain: 'Higher hears more of the keyboard — and more of the neighbors and the speakers. Move in small steps.',
     why: {
-      'Less spill, because the mic is farther from the stage': 'Farther from the bars means the neighbours are relatively louder.',
+      'Less spill, because the mic is farther from the stage': 'Farther from the bars means the neighbors are relatively louder.',
       'Nothing else changes when only the height does': 'Height changes the balance of everything the mic hears.',
     },
   },
@@ -349,7 +349,7 @@ const symptoms: Symptom[] = [
   {
     id: 'xy.s.spill',
     observation: 'Feedback or heavy spill',
-    firstChecks: 'Where are the monitors and the neighbours relative to the mic’s pattern? Improve the stage layout and the aim; use fewer open mics.',
+    firstChecks: 'Where are the monitors and the neighbors relative to the mic’s pattern? Improve the stage layout and the aim; use fewer open mics.',
     options: ['The layout, the aim of the real pattern, the open mics', 'Turn the xylophone channel up until it wins over the spill', 'Add a second xylophone mic to drown out the rest'],
     correct: 'The layout, the aim of the real pattern, the open mics',
     explain: 'Fix the geometry and the channel count before gain or aggressive EQ.',
@@ -372,7 +372,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Two condensers grilles together, 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: a steady mono sum for a fast, wide part.' },
       { id: 'b', label: 'Two condensers spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'The spaced pair: check the middle and the mono sum.' },
-      { id: 'c', label: 'One mic 10 cm over the middle bars', ok: false, power: 'phantom', feedback: 'Inside the mallets’ travel, and it would favour a few bars.' },
+      { id: 'c', label: 'One mic 10 cm over the middle bars', ok: false, power: 'phantom', feedback: 'Inside the mallets’ travel, and it would favor a few bars.' },
       { id: 'd', label: 'One mic inside a tube', ok: false, power: 'phantom', feedback: 'Never into a tube or onto a bar.' },
       { id: 'e', label: 'A mic taped to a bar post', ok: false, power: 'none', feedback: 'Nothing is attached to the instrument.' },
     ],
@@ -385,12 +385,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A pit band on a loud stage, a short xylophone part on a few bars. One channel, NO phantom power; a mono PA.',
     setups: [
       { id: 'a', label: 'One compact dynamic about 45–75 cm above the played bars, clear of every stroke', ok: true, power: 'none', feedback: 'One safe directional mic over the played notes; no phantom needed.' },
-      { id: 'b', label: 'One compact dynamic at the safe off-axis position on the audience side', ok: true, power: 'none', feedback: 'A safe off-axis view; check the spill from neighbours.' },
+      { id: 'b', label: 'One compact dynamic at the safe off-axis position on the audience side', ok: true, power: 'none', feedback: 'A safe off-axis view; check the spill from neighbors.' },
       { id: 'c', label: 'One condenser over the played bars', ok: false, power: 'phantom', feedback: 'No phantom power on this input.' },
       { id: 'd', label: 'A spaced pair panned hard left and right', ok: false, power: 'none', feedback: 'One channel and a mono PA.' },
       { id: 'e', label: 'Metal mallets, so the part cuts through without a mic', ok: false, power: 'none', feedback: 'Metal can damage or break the bars.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic aimed with its rejection toward loud neighbours', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, MALLET_REASON],
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'A directional mic aimed with its rejection toward loud neighbors', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, MALLET_REASON],
     explain: 'Two setups pass: one safe directional mic for a focused part, power this input can supply, and the bars protected.',
   },
 ];
@@ -474,7 +474,7 @@ const words: MalletWords = {
       notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape: where the mallet lands is part of the tone.'],
     },
     tube: {
-      intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. The highest notes need tubes only a few centimetres long.',
+      intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. The highest notes need tubes only a few centimeters long.',
       visible: 'The air moves most at the open mouth and presses most at the closed end.',
       noTube: 'No tube under this bar: on this model every natural has a tube, but only some sharps and flats do.',
     },
@@ -509,7 +509,7 @@ const copy: Partial<LessonCopy> = {
   setting: {
     kitA11y: 'The percussion section from above: the xylophone with its player, other percussion behind, a drum kit to one side.',
     kitLanding: 'Tap anything around the xylophone — or step through ITEM — to see what it means for a xylophone mic. There is nothing to answer yet.',
-    kitIdle: 'The xylophone in the percussion section: loud neighbours on every side, and the brass often in front.',
+    kitIdle: 'The xylophone in the percussion section: loud neighbors on every side, and the brass often in front.',
     leftHanded: 'The low end is on the player’s left. Check the passage’s lowest and highest notes with the player.',
     stageA11y: 'The section on a stage, from above: a floor wedge in front of the xylophone, a side fill on stage left, the audience below.',
     studioA11y: 'The xylophone in a studio room, from above: the walls around it, no monitors.',
@@ -537,12 +537,12 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim down at the bars — the starting point counts while the mic looks within 30° of straight down.',
     workedClear: 'Only where it clears both hands and every stroke, the strongest included, and out of the player’s sightline. Clearance comes first, and the player stops before a real stand moves.',
     blocked: { yx: ' Move it higher, or to the off-axis position on the audience side.', concert: ' Move it higher, or to the off-axis position on the audience side.' },
-    reveal: 'Off-axis on the audience side tends to soften the click and blend the keyboard, with more room and neighbours; above the middle is more direct — and passages differ, so “it depends” is fair too.',
+    reveal: 'Off-axis on the audience side tends to soften the click and blend the keyboard, with more room and neighbors; above the middle is more direct — and passages differ, so “it depends” is fair too.',
     typeNotes: { mlDynCard: 'A dynamic can work too, especially live: choose by response, pattern, power and mount, and compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real stand. The bands are starting points, not safety clearances.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle of the played notes, aimed down; one of a spaced pair; a safe off-axis position on the audience side; and, only for a deliberate colour, a mic under the tubes. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle of the played notes, aimed down; one of a spaced pair; a safe off-axis position on the audience side; and, only for a deliberate color, a mic under the tubes. Starting points, not rules.',
       separate: 'Height, place and angle are separate variables: change one at a time, with low, middle and high notes, fast figures and the loudest accent.',
       clearance: 'Clearance comes first: walk the full phrase with the player before locking anything. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel.',
       tendencies: 'Closer tends to bring more mallet impact and one region; farther or off-axis blends more bars and more room. All tendencies to check by ear.',
@@ -583,7 +583,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE STUDIO', text: 'One overhead view for a restricted range; the pairs if the whole keyboard is active; a room mic as an artistic option once the main pickup works.' },
         { title: 'THE PA', text: 'In a mono PA, a hard left/right recording pan does not translate to the room. Keep monitor sends only as high as the player needs.' },
       ],
-      body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at loud neighbours and speakers — cardioid and supercardioid patterns put their nulls in different places.',
+      body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at loud neighbors and speakers — cardioid and supercardioid patterns put their nulls in different places.',
       warn: 'No mic position alone prevents feedback: solve it with mic, speaker and source geometry and the channel count before adding gain or aggressive EQ. Avoid uncontrolled feedback.',
     },
   },
@@ -658,7 +658,7 @@ export const I09_LESSON: MalletLesson = {
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'Listen to the xylophone’s sum in mono at audience positions: a mono PA does not reproduce a hard pan.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A room pair farther away can add natural space if the room sounds good — and room and outside noise.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: test at performance level with neighbours and monitors on; aim the real pattern’s rejection at loud neighbours; move in small steps.',
+    stage: 'LIVE: test at performance level with neighbors and monitors on; aim the real pattern’s rejection at loud neighbors; move in small steps.',
     studio: 'RECORDING: one overhead view for a restricted range, the pairs for the whole keyboard, a room mic as an option — checked in mono.',
   },
   diagnostic,

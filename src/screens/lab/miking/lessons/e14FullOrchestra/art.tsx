@@ -49,7 +49,7 @@ const SPEC = ensembleHandSpec({
     label: 'The orchestra with the main pair (A) and a woodwind support (B)',
     warn: 'This simplified graph shows one point source and straight paths, no hall. A real section is many players at different distances, so no single delay suits them all — judge by ear, in mono, against the plain version.',
     learn: [
-      'A support close to its players hears them first; the main pair hears them later, by about 2.9 ms for every metre of extra path. Summed, the early copy can change the depth and the color of that section.',
+      'A support close to its players hears them first; the main pair hears them later, by about 2.9 ms for every meter of extra path. Summed, the early copy can change the depth and the color of that section.',
       'Lower the support first; compare main alone, support alone and both. A delay is a trial for one need, judged by ear — and where the main pair and a support are more than about 4 m apart, it is worth trying, never set blindly from distance alone.',
     ],
   },
@@ -58,11 +58,11 @@ const SPEC = ensembleHandSpec({
     gainId: 'orc.prac.gain',
     secondId: 'orc.prac.3',
     mixIds: ['orc.hole', 'orc.tree', 'orc.need'],
-    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s centre, a tree’s centre mic, and what earns a support.',
+    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s center, a tree’s center mic, and what earns a support.',
     sheetNote: 'For a real orchestra, with the players’, the conductor’s and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the players and the conductor’s space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the players and the conductor’s space · pinch to zoom',
     clearance: 'Clearance comes first: the conductor’s sightlines, the bows, the slides, the music stands, the walkways and the exits. Anything flown or reached over players is the venue’s rigging, by a qualified rigger.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A support aimed down at its players turns its back up and toward the hall — a floor monitor below it sits off that axis, so turn or tilt the mic, or try a tighter pattern.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each section gives its own delay.',

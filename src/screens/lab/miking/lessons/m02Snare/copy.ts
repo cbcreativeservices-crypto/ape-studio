@@ -26,8 +26,8 @@ export const SNARE_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
+      { id: '2', label: 'OFF CENTER', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
       { id: '5', label: 'NEAR THE EDGE', mm: 5 * 25.4, blurb: '5 in (127 mm) from the center, about 2 in in from the edge.' },
     ],
     strikeDefault: '2',
@@ -53,7 +53,7 @@ export const SNARE_COPY: LessonCopy = {
   setting: {
     kitA11y: 'The drum kit from above: the snare between the player’s knees, toward the left, ringed in amber, the hi-hat beside it, two rack toms over the kick, the floor tom on the right, the cymbals above, and the throne.',
     kitLanding: 'Tap anything around the snare — or step through ITEM — to see what it means for a snare mic. There is nothing to answer yet.',
-    kitIdle: 'The snare sits between the player’s knees, its near half under the sticks. Everything around it is either the player’s space or a loud neighbour — the hi-hat most of all.',
+    kitIdle: 'The snare sits between the player’s knees, its near half under the sticks. Everything around it is either the player’s space or a loud neighbor — the hi-hat most of all.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hat on the right, the floor tom on the left.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
@@ -79,7 +79,7 @@ export const SNARE_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the rim or the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every snare is different.',
-      separate: 'Rim position, height and angle are separate variables: change one at a time. “Above the rim” and “above the head” are different numbers — the rim stands above the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Rim position, height and angle are separate variables: change one at a time. “Above the rim” and “above the head” are different numbers — the rim stands above the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand, clamp and cable out of the sticks’ path, rimshots, cross-stick and the hi-hat’s travel, and route the cable away from the pedals. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Starting near the rim and aiming toward the center is a common approach; a more centered aim can change the balance of strike and ring. These are tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances.',
     },

@@ -67,8 +67,8 @@ export function c03ZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       aimAtR: { r: 170, prov: ill('aimed at the coverplate and upper body: within 17 cm of the coverplate’s center') },
       micTypeIds: STAND,
       start: lap ? { d: 300, dy: off, dx: 40 } : { d: 320, dx: off },
-      tendency: 'A more combined view: the cone, the strings and the body together. Farther back brings the room and the neighbours in, too.',
-      checks: ['The bar hand’s and the picking hand’s full reach', 'Room reflections and neighbouring instruments', 'Feedback risk on a stage'],
+      tendency: 'A more combined view: the cone, the strings and the body together. Farther back brings the room and the neighbors in, too.',
+      checks: ['The bar hand’s and the picking hand’s full reach', 'Room reflections and neighboring instruments', 'Feedback risk on a stage'],
     },
     {
       id: 'clip',

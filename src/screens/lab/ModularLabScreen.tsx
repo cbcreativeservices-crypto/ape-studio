@@ -634,8 +634,8 @@ export function ModularLabScreen() {
             and what the VCF leaves of them, from the patch's own numbers. */}
         <ModularSpectrum shape={patch.shape} f0={BASE_FREQ} cutoff={patch.cutoff} res={patch.res} cutLabel={fmtCut(patch.cutoff)} />
         <Text style={styles.caption}>
-          Each bar is one harmonic of the {BASE_FREQ} Hz note — taller is louder. Grey shows
-          what the VCF removed; drag CUTOFF and watch the bars right of the line turn grey.
+          Each bar is one harmonic of the {BASE_FREQ} Hz note — taller is louder. Gray shows
+          what the VCF removed; drag CUTOFF and watch the bars right of the line turn gray.
           Calculated from your patch with the engine’s filter formula: the steady note at the
           CUTOFF setting, before the envelope or LFO move it and before the output stage’s soft
           saturation. Learn here; measure real gear with a calibrated analyzer.

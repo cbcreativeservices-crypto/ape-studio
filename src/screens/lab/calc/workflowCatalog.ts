@@ -128,7 +128,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   tpl('bass-boundaries', 'Bass & Boundaries', 'Axial modes, boundary cancellations, and the Schroeder transition.', [
     { workspaceId: 'roommodes', fnKey: 'axial', note: 'The room’s axial modes.' },
     { workspaceId: 'boundary', fnKey: 'sbir', note: 'Boundary cancellations & reinforcements (SBIR).' },
-    { workspaceId: 'schroeder', fnKey: 'fs', note: 'Where modal behaviour gives way to a diffuse field.' },
+    { workspaceId: 'schroeder', fnKey: 'fs', note: 'Where modal behavior gives way to a diffuse field.' },
   ]),
   tpl('wireless-link', 'Wireless Mic Link', 'Free-space path loss, then the received power and link margin.', [
     { workspaceId: 'rflink', fnKey: 'pathLoss', note: 'Path loss at this distance and frequency.' },

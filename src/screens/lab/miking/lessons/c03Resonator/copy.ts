@@ -35,11 +35,11 @@ export const C03_COPY = stringsCopy({
   coupledNote: 'In this simplified section the moving part round the bridge stands for the cone under the coverplate. The cone’s sound leaves through the coverplate’s holes and the body’s ports.',
   setting: {
     kitA11y: 'The player from above with the resonator: a chair behind, a DI box on the floor by the tail.',
-    kitIdle: 'The space round a resonator player is theirs: the bar hand travelling the neck, the picking hand over the coverplate, and — lap style — their whole upper body leaning over the instrument.',
+    kitIdle: 'The space round a resonator player is theirs: the bar hand traveling the neck, the picking hand over the coverplate, and — lap style — their whole upper body leaning over the instrument.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the player with a floor wedge in front, a bass amp and a drum kit upstage, the PA at the front corners and the audience edge.',
     studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls round them.',
-    stageIdle: 'A wedge in front, the band behind, the PA facing out: in a bluegrass band the banjo and the voices are loud neighbours too.',
+    stageIdle: 'A wedge in front, the band behind, the PA facing out: in a bluegrass band the banjo and the voices are loud neighbors too.',
     studioIdle: 'No monitors on the floor. The room and a reflective floor are part of the picture now.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Lap style or upright? Bar, slide or fingers, picks? What will they play, how loud, and how do they move or turn? Hear it unamplified from where the mic will go. Look at the resonator without opening it: one cone or three, the ports, the coverplate.' },
@@ -51,7 +51,7 @@ export const C03_COPY = stringsCopy({
   clearWhat: 'the bar hand, the picking hand, the player’s arms and their view of the neck',
   placementReveal: 'Closer to the cone region tends to give more of its distinct, metallic projection; farther back, a more combined sound. Resonators differ, so “it depends on this one” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {
-    sdcCard: 'Ideas to try: listen round the instrument first, then move a few centimetres at a time — toward the cone, toward the neck and strings, a little farther back.',
+    sdcCard: 'Ideas to try: listen round the instrument first, then move a few centimeters at a time — toward the cone, toward the neck and strings, a little farther back.',
     instDynCard: 'Ideas to try with a dynamic: a robust close option on a loud stage. Watch the proximity bass and keep it off the coverplate.',
     clipCond: 'Ideas to try with a clip-on: the capsule toward the coverplate’s edge, never on the cone; check it is not all strings.',
   },

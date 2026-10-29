@@ -19,7 +19,7 @@
  *   • Subwoofers radiate all round at low frequencies; a cardioid or
  *     end-fire sub array rejects to the rear by 12–24 dB.
  *   • Two boxes carrying the SAME signal are CORRELATED: where their
- *     arrivals line up in time (the centre line between a matched pair)
+ *     arrivals line up in time (the center line between a matched pair)
  *     they add in pressure, about +6 dB; away from that line the arrivals
  *     slip apart, the sum combs, and on average it reads as a power sum,
  *     about +3 dB. Unrelated boxes (fills, delays, tops against subs) sum as

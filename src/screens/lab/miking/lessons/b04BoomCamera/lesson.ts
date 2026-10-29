@@ -75,7 +75,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the distance the frame allows, the aim, the room behind the talker, the wind, the pole and its cable, the route — before reaching for EQ or noise reduction.',
   },
   practice: {
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The question well off its axis',
     explain: 'Aimed at one mouth, the boom hears the other well off its axis — duller and quieter. Cue the boom before each turn, or give each person their own mic.',
     why: {
-      'Both voices equally well, as before': 'A narrow pickup favours where it points; the other voice is off its axis.',
+      'Both voices equally well, as before': 'A narrow pickup favors where it points; the other voice is off its axis.',
       'The question louder than the talker': 'The talker is on the axis; the interviewer is not.',
     },
   },

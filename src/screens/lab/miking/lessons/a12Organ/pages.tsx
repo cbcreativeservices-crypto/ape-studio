@@ -94,7 +94,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
           {lesson.predictions.sound ? <PredictCard p={lesson.predictions.sound} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking="Two flue pipes, cut open · the mouth at the bottom" prompt="Choose COMPARE and tap through HARMONIC. Where is the pressure still, and which harmonics can each pipe sound?" />
           <Card>
-            <Point title="WHY 16′ AND 32′ NAME A PITCH">{`An open pipe sounds about c ÷ 2L; a stopped pipe — capped at the top — about c ÷ 4L, an octave lower for the same length, and only the odd harmonics. So a stop labelled 8′ made of stopped pipes is only about 4′ long. The low C of an 8′ open stop is about ${Math.round(f8)} Hz, about ${fmtLen(Lopen * 1000)} long here.`}</Point>
+            <Point title="WHY 16′ AND 32′ NAME A PITCH">{`An open pipe sounds about c ÷ 2L; a stopped pipe — capped at the top — about c ÷ 4L, an octave lower for the same length, and only the odd harmonics. So a stop labeled 8′ made of stopped pipes is only about 4′ long. The low C of an 8′ open stop is about ${Math.round(f8)} Hz, about ${fmtLen(Lopen * 1000)} long here.`}</Point>
           </Card>
           <Note>Read the label as the pitch, not the pipe: verify the real lowest notes by ear, through the real monitoring, rather than inferring them from a label.</Note>
         </>
@@ -135,7 +135,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
         <>
           <Landing looking="The nave from above · paths from each division" prompt="Choose LISTEN AT — try all three. How far apart do the divisions arrive?" />
           <Card>
-            <Point title="ONE ORGAN, MANY PLACES">{`A large organ sounds from many ranks in several places — towers, a box behind shutters, a division in front, sometimes one at the far end of the room. At ${at.short.toLowerCase()}, the first and last divisions arrive about ${spread.toFixed(1)} ms apart. A mic a few centimetres from one pipe hears that pipe, not the organ.`}</Point>
+            <Point title="ONE ORGAN, MANY PLACES">{`A large organ sounds from many ranks in several places — towers, a box behind shutters, a division in front, sometimes one at the far end of the room. At ${at.short.toLowerCase()}, the first and last divisions arrive about ${spread.toFixed(1)} ms apart. A mic a few centimeters from one pipe hears that pipe, not the organ.`}</Point>
           </Card>
           <Body>{`Activity: ${seen.size >= 3 ? 'done — you listened from all three positions' : `${seen.size} of 3 positions`}.`}</Body>
           {seen.size >= 3 && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. Close to one division, the others arrive much later and quieter; farther back, the paths even out — the room blends them.`}</Note> : null}
@@ -258,7 +258,7 @@ function OrganSetting(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, h) => <NavePlan w={w} h={h} variant={variant} sel={sel} onTap={setSel} label={`The whole nave from above: the organ case at the left, the console in the chancel, pews in three blocks with two aisles and side passages kept clear, the rear gallery with an antiphonal division at the right${service ? ', the PA on the chancel arch, the congregation in the pews' : ''}.${it ? ` Highlighted: ${it.label}.` : ''}`} />,
-        badge: 'From above · a stylised church, not a measurement · dashed amber = the item you picked',
+        badge: 'From above · a stylized church, not a measurement · dashed amber = the item you picked',
         bezel: [
           { k: 'ITEM', v: it ? it.short : 'TAP ONE', flex: 1.4 },
           { k: 'FOR A MIC', v: it ? it.tag : '—', flex: 1.4 },
@@ -348,7 +348,7 @@ const STEREO = (
       <Point title="A NEAR-COINCIDENT PAIR">Two cardioids about 17 cm apart, splayed about 110° (some guides round the spacing to 15 cm): time and level differences for width — check it in mono.</Point>
       <Point title="A SPACED OMNI PAIR">Wider room and low-frequency pickup — and the pair most in need of a mono check.</Point>
     </Card>
-    <Body>Omni includes the room with the organ; a wide cardioid helps when the room or the bass balance is less favourable. Choose the method for the room, the pipes’ spread and the delivery format.</Body>
+    <Body>Omni includes the room with the organ; a wide cardioid helps when the room or the bass balance is less favorable. Choose the method for the room, the pipes’ spread and the delivery format.</Body>
   </>
 );
 
@@ -422,7 +422,7 @@ const HAND: HandSpec = {
     sheetNote: 'For a real organ, with the organist’s and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = aisles, passages and exits kept clear · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = aisles, passages and exits kept clear · pinch to zoom',
     clearance: 'Clearance and access come first: the aisles, the passages, the exits and the wheelchair route stay clear; nothing touches or hangs from the organ; the console and the organist keep their space. Elevated or suspended mics are the venue’s installation, by a qualified rigger.',
     cardioidTried: 'What you just saw: a mic’s rejection sits behind it, or off to the sides of its rear. A spot facing up at the organ turns its back toward the nave — where a PA high on the arch can sit in a null.',
     sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each division gives its own delay, so no single setting suits every registration.',
@@ -433,8 +433,8 @@ const base = makeHandPages(HAND, OrganSound);
 const meet = MetalInstrument({
   intro: HAND.intro,
   front: ORGAN_FRONT,
-  figure: { title: 'PIPE ORGAN', badge: 'A stylised pipe organ seen from the nave · not a particular instrument', label: () => 'A stylised pipe organ seen from the nave: an oak case about 8 m wide and 10 m high, two Pedal towers of tall pipes at the sides, the Great’s flat of pipes in the middle, the Swell’s shuttered box above it, and a small Positive low in front.' },
-  partsBadge: 'Tap a division to name it · a stylised layout',
+  figure: { title: 'PIPE ORGAN', badge: 'A stylized pipe organ seen from the nave · not a particular instrument', label: () => 'A stylized pipe organ seen from the nave: an oak case about 8 m wide and 10 m high, two Pedal towers of tall pipes at the sides, the Great’s flat of pipes in the middle, the Swell’s shuttered box above it, and a small Positive low in front.' },
+  partsBadge: 'Tap a division to name it · a stylized layout',
   partsLooking: () => 'From the nave · the main case',
   partsNote: 'A pipe organ is many instruments in one case — and sometimes in several places in the room. Tap each division.',
   partsWarn: 'Never touch the pipes, the shutters, the panels, the wiring or the blower, and never hang anything from the organ. Access to the loft, the gallery and the chambers is the venue’s to give.',

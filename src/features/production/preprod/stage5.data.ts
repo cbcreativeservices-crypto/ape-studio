@@ -518,7 +518,7 @@ export const STAGE5_TECHNICAL: StageDef = {
                 },
                 {
                   value: "proximity",
-                  label: "Proximity and handling behaviour"
+                  label: "Proximity and handling behavior"
                 },
                 {
                   value: "level",
@@ -831,7 +831,7 @@ export const STAGE5_TECHNICAL: StageDef = {
     },
     {
       sectionId: "sync",
-      title: "Synchronisation",
+      title: "Synchronization",
       intro: "One clock, one sample rate, and a plan for anything that must line up with picture. Simple when it is decided; expensive when it is discovered.",
       fields: [
         {
@@ -918,13 +918,13 @@ export const STAGE5_TECHNICAL: StageDef = {
     {
       sectionId: "session",
       title: "Session, Files and Data",
-      intro: "How the recording is organised before the first take, so that it can be found, opened and trusted afterwards.",
+      intro: "How the recording is organized before the first take, so that it can be found, opened and trusted afterwards.",
       fields: [
         {
           fieldId: "session_template",
           label: "Session template",
           kind: "choice",
-          help: "A prepared session with the tracks named from the input list. Building it on the day is how track twelve ends up labelled Audio 12.",
+          help: "A prepared session with the tracks named from the input list. Building it on the day is how track twelve ends up labeled Audio 12.",
           required: false,
           options: [
             {

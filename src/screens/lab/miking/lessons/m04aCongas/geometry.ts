@@ -68,7 +68,7 @@ export const CONGA_MODEL: InstrumentModel = {
     { id: 'tumba.low', partId: 'tumba.shell', label: 'the tumba’s lower opening', point: { x: LOW.x, y: LOW.y, z: TUMBA.c.z }, normal: { x: 1, y: 0, z: 0 } },
   ],
   lines: [
-    { id: 'between', label: 'the centre line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
+    { id: 'between', label: 'the center line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
     axisLine(TUMBA),
     axisLine(CONGA),
     { id: 'tumba.low', label: 'the line through the tumba’s opening', point: { x: LOW.x, y: LOW.y, z: TUMBA.c.z }, dir: { x: 1, y: 0, z: 0 } },

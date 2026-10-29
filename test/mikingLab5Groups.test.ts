@@ -214,7 +214,7 @@ describe('E06: children drawn from above only; safeguarding and exposure in word
   });
   it('safeguarding: supervision, an authorised adult, the venue’s policy and local law — no named authority', () => {
     assert.match(SAFEGUARDING, /supervised at all times/);
-    assert.match(SAFEGUARDING, /authorised adult/);
+    assert.match(SAFEGUARDING, /authorized adult/);
     assert.match(SAFEGUARDING, /child-safeguarding policy and the local law/);
     assert.match(EXPOSURE, /about 94 dB, A-weighted, over 15 minutes, and a common guide keeps children’s peaks under 120 dB/);
     assert.match(EXPOSURE, /at the source first/);

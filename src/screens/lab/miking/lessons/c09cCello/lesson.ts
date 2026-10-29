@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the cello’s surroundings — the cellist’s chair, the bow’s full sweep, the endpin, the music stand and the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the cello’s surroundings — the cellist’s chair, the bow’s full sweep, the endpin, the music stand and the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['vc.set.1', 'vc.set.2', 'vc.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bow sweeps out to both sides, the bow arm swings, and the endpin and the feet share the floor: no mic, stand or cable goes there. Ask the cellist first, and protect your hearing.',
   },
@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — distance, angle, the pattern, the room, the mount and the combination — before reaching for tone controls.',
   },
   practice: {
@@ -219,7 +219,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In a good room you move the mic from about 30 cm to about 1 m in front. What tends to change?',
     options: ['Only the level drops; the tone stays exactly the same', 'More of the whole cello and the room; less bow detail', 'More low end, because the mic is now farther away'],
     correct: 'More of the whole cello and the room; less bow detail',
-    explain: 'A little more distance tends to blend the body, the strings and the room — and more of any neighbours. Compare at matched levels; cellos and rooms vary.',
+    explain: 'A little more distance tends to blend the body, the strings and the room — and more of any neighbors. Compare at matched levels; cellos and rooms vary.',
     why: {
       'Only the level drops; the tone stays exactly the same': 'Distance changes the balance too: more body and room, less close detail, less proximity effect.',
       'More low end, because the mic is now farther away': 'With a directional mic, moving away reduces proximity effect’s low-end lift.',
@@ -450,7 +450,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Two close mics on the cello, one per side, to make it stereo', ok: false, power: 'phantom', feedback: 'A second close mic is not a stereo requirement, and it pulls the cellist forward out of the quartet.' },
       { id: 'e', label: 'A mic inside the f-hole, as close as it gets', ok: false, power: 'phantom', feedback: 'Nothing goes into an f-hole, and one opening is not the whole cello.' },
     ],
-    reasons: [docReason('the bridge or the bridge’s foot'), clearReason('the bow, the bow arm, the endpin and the neighbours'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('cello'), { id: 'r.stereo', label: 'A solo instrument needs its own stereo pair', role: 'wrong', feedback: 'Stereo is not a requirement for one cello inside an ensemble.' }],
+    reasons: [docReason('the bridge or the bridge’s foot'), clearReason('the bow, the bow arm, the endpin and the neighbors'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('cello'), { id: 'r.stereo', label: 'A solo instrument needs its own stereo pair', role: 'wrong', feedback: 'Stereo is not a requirement for one cello inside an ensemble.' }],
     explain: 'Two spots pass. What passes is the reasoning: a sensible starting point, clearance, the right power — and a spot that supports the main pair rather than pulling one player forward.',
   },
 ];
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the mic from about a foot to a metre away, in a good room. What changes?', options: ['More bow detail', 'More of the whole cello and the room', 'It depends on this cello'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you move the mic from about a foot to a meter away, in a good room. What changes?', options: ['More bow detail', 'More of the whole cello and the room', 'It depends on this cello'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the cellist. Where will a supercardioid aimed at the cello reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -598,7 +598,7 @@ export const C09C_LESSON: Lesson = {
       { id: 'main', label: 'a main pair for the ensemble', short: 'MAIN PAIR', note: 'In a studio recording of a group, a main pair on a tall stand hears the whole ensemble; a cello mic is a spot that supports it.', prov: { kind: 'illustrative', reason: 'a generic main pair; seating is the ensemble lesson’s' }, tag: 'MAIN PAIR', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges on the floor; a good room is part of the cello’s sound.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and neighbours and the PA reach every open mic. Gain before feedback and the cellist’s movement push toward a closer, aimed pickup — or a miniature that moves with the cello.',
+    stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and neighbors and the PA reach every open mic. Gain before feedback and the cellist’s movement push toward a closer, aimed pickup — or a miniature that moves with the cello.',
     studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the cellist stops. A farther mic can carry the whole cello and the room; in a group, a main pair may carry it already.',
   },
   diagnostic,
@@ -620,7 +620,7 @@ export const C09C_LESSON: Lesson = {
     { text: 'The cellist’s body, the chair (seat 460 mm) and where the player sits — drawn from the instrument (knees at the lower bouts, chest at the upper back).', dims: [] },
     { text: 'The stand mic’s distance band round “one foot” (25–35 cm), the far band (0.6–1.2 m) and the clip zones’ distances — drawing defaults.', dims: [] },
     { text: 'The miniature’s capsule size and gooseneck reach, and the small condenser’s diameter — drawing defaults.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

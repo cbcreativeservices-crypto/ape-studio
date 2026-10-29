@@ -75,7 +75,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the clothes, the cable, the turn, the desk and its papers, the frame, the open mics, the route — before reaching for EQ or noise reduction.',
   },
   practice: {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A recorded news interview, no loudspeakers, a two-shot. A fair first setup?',
     options: ['A lav each, on separate channels', 'One boundary between them for both', 'The camera’s mic for both voices'],
     correct: 'A lav each, on separate channels',
-    explain: 'With no PA, a centered lav each on labelled channels gives level and routing control; a boom outside the frame can carry the program with the lavs as fallbacks.',
+    explain: 'With no PA, a centered lav each on labeled channels gives level and routing control; a boom outside the frame can carry the program with the lavs as fallbacks.',
     why: {
       'One boundary between them for both': 'Shared and far from both mouths: less control, more room and papers.',
       'The camera’s mic for both voices': 'As far as the camera: the room comes up with the voices.',
@@ -444,7 +444,7 @@ const symptoms: Symptom[] = [
     correct: 'Raise it toward the mouth, off the desk',
     explain: 'Low over a hard desk, the bounce arrives soon and strong. Raised toward the mouth, the copy is later and weaker; a purpose-built boundary mic on the desk is another answer.',
     why: {
-      'Boost the treble to bring back the clarity': 'EQ cannot fill the cancelled frequencies.',
+      'Boost the treble to bring back the clarity': 'EQ cannot fill the canceled frequencies.',
       'Lay a second mic flat on the desk beside it': 'Two mics on one voice comb in the sum.',
     },
   },
@@ -499,13 +499,13 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded seated interview in a quiet studio: an anchor and a guest, a two-shot, no loudspeakers.',
     setups: [
-      { id: 'a', label: 'A centered lav on each, on separate labelled channels', ok: true, power: 'pack', feedback: 'A suggested start — check turns, the clothes and an overlap in the program.' },
+      { id: 'a', label: 'A centered lav on each, on separate labeled channels', ok: true, power: 'pack', feedback: 'A suggested start — check turns, the clothes and an overlap in the program.' },
       { id: 'b', label: 'A boom just outside the frame for each voice, the lavs as fallbacks', ok: true, power: 'phantom', feedback: 'A suggested start — check the widest frame and keep each fallback on its own track.' },
       { id: 'c', label: 'One boundary on the desk between them for both', ok: false, power: 'phantom', feedback: 'Shared and far from both mouths: less control, more room and papers.' },
       { id: 'd', label: 'The camera’s mic only, its gain turned up', ok: false, power: 'phantom', feedback: 'As far as the camera: the room comes up with the voices.' },
       { id: 'e', label: 'Both lavs hidden before any visible test', ok: false, power: 'pack', feedback: 'Conceal only after the visible place works, and compare.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the papers and the frame'), { id: 'r.channels', label: 'Each speaker on their own labelled channel, checked alone and in overlap', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.hidden', label: 'A hidden lav sounds the same as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('news anchor'), LOUD_VOICE],
+    reasons: [docReason('the lips'), clearReason('the clothes, the papers and the frame'), { id: 'r.channels', label: 'Each speaker on their own labeled channel, checked alone and in overlap', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.hidden', label: 'A hidden lav sounds the same as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('news anchor'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, clear of the clothes and the frame, a channel for each speaker — and no claim that hidden sounds the same.',
   },
   {

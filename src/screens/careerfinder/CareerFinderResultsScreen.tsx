@@ -137,7 +137,7 @@ export function CareerFinderResultsScreen() {
         </Text>
         {f.examples.some(isRegulatedTitle) ? (
           <Text style={styles.gatedNote}>
-            ⚠ Licensed or credentialed occupation. Academy study does not lead to that licence or
+            ⚠ Licensed or credentialed occupation. Academy study does not lead to that license or
             credential — check what is required where you live.
           </Text>
         ) : null}

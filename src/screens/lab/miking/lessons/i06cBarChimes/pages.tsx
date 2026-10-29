@@ -81,7 +81,7 @@ const HAND: HandSpec = {
   learnZones: [
     'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the middle of the row (or, for the end mics, from an end). They are starting points, not rules: move from there and listen — every row, mount and player is different.',
     'Change one thing at a time, and replay the same direction, speed and force: a faster or stronger sweep changes the source, not the mic. Listen to the first and last bars, the shimmer, any harshness, clanks, the room and spill. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-    'An end mic on its own favours its end of the row; a mic at each end is an option for a deliberately wide or difficult setup. Start with one mic and add a second only after hearing the reason.',
+    'An end mic on its own favors its end of the row; a mic at each end is an option for a deliberately wide or difficult setup. Start with one mic and add a second only after hearing the reason.',
   ],
   ctx: {
     pose: { ...A0 },

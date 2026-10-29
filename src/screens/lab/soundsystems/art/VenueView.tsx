@@ -3,7 +3,7 @@
  * drawing reads it. The deck across the top with its drum riser, masking
  * legs and offstage wings (racks and stagebox in the stage-left wing, power
  * in the stage-right wing); the audience below in seating blocks with a
- * centre aisle and a cross-aisle; front of house on the centre line
+ * centre aisle and a cross-aisle; front of house on the center line
  * two-thirds back. Every loudspeaker is a plan glyph rotated to its aim,
  * its coverage drawn as the −6 dB sector lit from the cabinet and fading
  * with distance, subwoofers as a broad glow, the floor tinted by the
@@ -1045,7 +1045,7 @@ export function VenueView(p: VenueViewProps) {
         {/* the barrier: the sub line (and an end-fire's front box) stands in the pit before it */}
         <Line x1={AUD.left} y1={162} x2={AUD.right} y2={162} stroke="#2a2e38" strokeWidth={0.8} />
 
-        {/* seating blocks, aisles, the centre line and the mix riser */}
+        {/* seating blocks, aisles, the center line and the mix riser */}
         {Array.from({ length: 12 }, (_, i) => 170 + i * 12).map((y) =>
           y > CROSS.top - 4 && y < CROSS.bottom + 4 ? null : (
             <G key={y}>

@@ -58,7 +58,7 @@ export const F12_ART: LessonArt = {
   labels: labelsOf(LABELS),
   hitTest: hitTestOf(HITS),
   labelsYieldToMic: true,
-  figure: { aspect: METER_FIGURE_ASPECT, render: (w, h) => <MeterOnTripod w={w} h={h} label="A sound level meter on its tripod, its foam windscreen over the capsule, the capsule 1.5 metres above the ground — the height one highway method names." /> },
+  figure: { aspect: METER_FIGURE_ASPECT, render: (w, h) => <MeterOnTripod w={w} h={h} label="A sound level meter on its tripod, its foam windscreen over the capsule, the capsule 1.5 meters above the ground — the height one highway method names." /> },
   pages: F12_PAGES,
   stepCounts: F12_STEP_COUNTS,
 };

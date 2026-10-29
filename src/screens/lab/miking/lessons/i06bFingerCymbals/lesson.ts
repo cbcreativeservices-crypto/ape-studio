@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where they sit',
-    goal: 'Know where finger cymbals are played — a still player or a moving dancer, the neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where finger cymbals are played — a still player or a moving dancer, the neighbors, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['fc.set.1', 'fc.set.hear', 'fc.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for the whole passage — or the whole dance — before anything goes up. The hands, the body and the route set the clearance; check the straps. Protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Look at the source first — the release, the pair, the contact — then the hands’ path and the mic’s angle, other open mics and the monitors, before reaching for EQ or a gate.',
   },
   practice: {
@@ -252,7 +252,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A loud band; the cymbals are weak against the stage. First move?',
     options: ['Move the player and mic, cut competing levels, then gain', 'Turn the cymbal mic up until it cuts through the whole band', 'Ask the player to strike each accent much harder'],
     correct: 'Move the player and mic, cut competing levels, then gain',
-    explain: 'Moving the player and the mic, lowering neighbouring sources and closing unused mics help more than gain, which raises spill and feedback risk too.',
+    explain: 'Moving the player and the mic, lowering neighboring sources and closing unused mics help more than gain, which raises spill and feedback risk too.',
     why: {
       'Turn the cymbal mic up until it cuts through the whole band': 'More gain raises the band in that mic too, and brings feedback closer.',
       'Ask the player to strike each accent much harder': 'Harder strokes change the music; fix the balance instead.',
@@ -276,7 +276,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An ensemble recording. When do the finger cymbals earn their own spot?',
     options: ['When the main or overhead mics lose them', 'As a habit, so they can be turned up later', 'When they are the loudest instrument anywhere in the room'],
     correct: 'When the main or overhead mics lose them',
-    explain: 'Listen to the main pair and the overheads first; a spot gives independent control, but it may also hear more loud neighbours than cymbals. Check it with the main, in mono.',
+    explain: 'Listen to the main pair and the overheads first; a spot gives independent control, but it may also hear more loud neighbors than cymbals. Check it with the main, in mono.',
     why: {
       'As a habit, so they can be turned up later': 'A spot that is not needed adds spill and can color the sum.',
       'When they are the loudest instrument anywhere in the room': 'Loudness is not the test; what the main mics miss is.',
@@ -538,7 +538,7 @@ export const I06B_LESSON: Lesson = {
       { id: 'pair', label: 'the finger cymbals, in front of the chest', short: 'CYMBALS', note: 'Held still: one cymbal flat in front of the chest, the other dropped into it. Danced: a pair on each hand, moving with the dancer.', prov: { kind: 'illustrative', reason: 'a typical hold: the posture is a drawing default' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'player', label: 'the player — or the dancer — and both hands', short: 'PLAYER', note: 'Both hands, the drop, and — for a dancer — the whole route and every turn: the player’s space. No mic, stand or cable in it.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor on the audience side, facing back toward the player — behind a mic that faces the cymbals, where a pattern’s null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'the drums and louder players', short: 'DRUMS · BAND', note: 'Far louder than finger cymbals: move the player and mic, or lower the neighbours, before raising gain.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'the drums and louder players', short: 'DRUMS · BAND', note: 'Far louder than finger cymbals: move the player and mic, or lower the neighbors, before raising gain.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'Listen from here first, without amplification. The mic usually comes from this side.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'MIC SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good room, a more distant image can suit the music; record the silence after an accent too — ring, room and handling show up there.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],

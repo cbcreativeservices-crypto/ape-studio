@@ -36,7 +36,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
   setting: {
     kitA11y: 'The drum kit from above: the splash drawn in its place and ringed in amber — on its arm over the 10 in tom, or on top of the 18 in crash; the drums, cymbals and throne around it.',
     kitLanding: 'Tap anything around the splash — or step through ITEM — to see what it means for a splash mic. There is nothing to answer yet.',
-    kitIdle: 'A splash goes wherever the player can reach it quickly — here on an arm between the toms and the crash, or stacked on a crash. It sits among loud neighbours.',
+    kitIdle: 'A splash goes wherever the player can reach it quickly — here on an arm between the toms and the crash, or stacked on a crash. It sits among loud neighbors.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the splash moves with the rest.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
@@ -59,7 +59,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
       smallDynCard: 'Ideas to try: a dynamic above the splash on the far side, aimed at its bow.',
       standClip: 'Ideas to try: hold the clip on the arm’s rising piece, under the splash, and turn the capsule up toward the bow. Check the arm still holds the splash firmly.',
     },
-    note: 'Clearance comes first: stop the drummer before moving a real mic. A splash is small and swings a lot, and it sits between loud neighbours — check the whole motion.',
+    note: 'Clearance comes first: stop the drummer before moving a real mic. A splash is small and swings a lot, and it sits between loud neighbors — check the whole motion.',
     availableLead: 'Starting points for this mic on the splash',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the face of the splash it names. No distance is published for a splash: these bands are places to begin — move from there and listen.',
@@ -179,6 +179,6 @@ export const SPLASH_CYM: CymbalExtra = {
     maxMs: 4,
   },
   bodyTitle: 'WHERE IT GOES',
-  bodyNote: 'Up and down, quickly: a splash is a short accent among loud neighbours. The overheads usually carry it; a close mic earns its channel when one cue needs more focus.',
+  bodyNote: 'Up and down, quickly: a splash is a short accent among loud neighbors. The overheads usually carry it; a close mic earns its channel when one cue needs more focus.',
   links: [CYM_LINKS.overheads, CYM_LINKS.kit],
 };

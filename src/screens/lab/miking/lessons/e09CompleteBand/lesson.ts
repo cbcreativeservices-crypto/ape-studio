@@ -55,7 +55,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalized).' },
     takeaway: 'The arrangement and the stage first: amp direction, stage volume, monitor angles, open mics — then distance and polarity — and only then EQ. Lower the level at the first sign of ringing.',
   },
   practice: {
@@ -133,11 +133,11 @@ const scenarios: MikingScenario[] = [
     id: 'bd.mic.1',
     page: 'microphone',
     prompt: 'Which mic gives the voice the best ratio over the band on stage?',
-    options: ['A directional dynamic close to the lips', 'An omni condenser a metre from the singer', 'A pair of overheads above the whole stage'],
+    options: ['A directional dynamic close to the lips', 'An omni condenser a meter from the singer', 'A pair of overheads above the whole stage'],
     correct: 'A directional dynamic close to the lips',
     explain: 'Close, directional pickup gives the best direct-to-spill ratio and gain before feedback in a full-band room.',
     why: {
-      'An omni condenser a metre from the singer': 'At a metre an omni hears the drums and amps nearly as loud as the voice.',
+      'An omni condenser a meter from the singer': 'At a meter an omni hears the drums and amps nearly as loud as the voice.',
       'A pair of overheads above the whole stage': 'Overheads hear the kit and the room; the voice is buried.',
     },
   },
@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does a drum kit’s sound leave?',
     options: ['From every head and cymbal at once', 'Mostly from the kick drum’s front head and port', 'From the snare drum alone'],
     correct: 'From every head and cymbal at once',
-    explain: 'The kit is a large, spread source — about two metres of heads and cymbals — which is why a pair above it hears it as one picture.',
+    explain: 'The kit is a large, spread source — about two meters of heads and cymbals — which is why a pair above it hears it as one picture.',
     why: {
       'Mostly from the kick drum’s front head and port': 'The kick is one part; the snare, toms and cymbals radiate too.',
       'From the snare drum alone': 'The snare is the drawing’s reference point, not the only source.',
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The vocal mic hears it, and rings sooner',
     explain: 'Avoid sending loud backing into the vocal monitor: the wedge feeds the mic beside it, and gain before feedback drops.',
     why: {
-      'Only the singer hears it, so nothing changes': 'The wedge also reaches the vocal mic a metre away.',
+      'Only the singer hears it, so nothing changes': 'The wedge also reaches the vocal mic a meter away.',
       'The PA gets quieter to make up for it': 'Nothing compensates by itself; the margin simply shrinks.',
     },
   },
@@ -363,7 +363,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Polarity or timing between the drum, room, DI and cabinet mics? Mute-check, compare polarity, move mics, reassess the array.',
     options: ['Mute-check each path; compare polarity', 'Add more low end to the master bus to fill it', 'Widen the stereo image further'],
     correct: 'Mute-check each path; compare polarity',
-    explain: 'Something is cancelling when summed: find which pair, then fix placement or polarity.',
+    explain: 'Something is canceling when summed: find which pair, then fix placement or polarity.',
     why: { 'Add more low end to the master bus to fill it': 'A boost cannot fill a cancellation.', 'Widen the stereo image further': 'Wider usually makes the mono problem worse.' },
   },
   {

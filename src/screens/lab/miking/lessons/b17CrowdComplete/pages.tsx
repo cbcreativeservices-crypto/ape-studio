@@ -59,7 +59,7 @@ function B17Meet(p: PageProps) {
         title="THE MOCK VENUE"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The mock venue from above: the action point A, three audience places U1 to U3 two metres in front of the stereo center S, the action mic D two metres beside A, and a separate commentary station." labels={venueLabels(PRACTICE_CROWD, { layers: true })}>
+          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The mock venue from above: the action point A, three audience places U1 to U3 two meters in front of the stereo center S, the action mic D two meters beside A, and a separate commentary station." labels={venueLabels(PRACTICE_CROWD, { layers: true })}>
             {(px) => <VenuePlan scene={PRACTICE_CROWD} px={px} />}
           </FieldStage>
         )}

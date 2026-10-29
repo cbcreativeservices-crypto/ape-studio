@@ -49,7 +49,7 @@ export const ENSEMBLE_MIC_TYPES: Record<string, MicType> = {
     mount: 'stand',
     examples: [{ model: 'matched small cardioid condensers (X/Y, ORTF; section supports)', fact: 'cardioid pencils for a coincident or near-coincident pair, and for a section support aimed across three or four players.', src: 'DPA-MULTI' }],
     art: 'sdc',
-    blurb: 'A small condenser that favours what is in front of it: a coincident or near-coincident pair, or a support aimed across a few players. Needs phantom power.',
+    blurb: 'A small condenser that favors what is in front of it: a coincident or near-coincident pair, or a support aimed across a few players. Needs phantom power.',
   },
   arrFig8: {
     id: 'arrFig8',

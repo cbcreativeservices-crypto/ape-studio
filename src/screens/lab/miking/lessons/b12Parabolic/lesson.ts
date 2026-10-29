@@ -22,7 +22,7 @@ const pages: LessonPages = {
     title: 'Meet it — where the sound comes from',
     goal: 'Meet the parabolic dish: its parts, how the bowl gathers sound arriving along its axis onto the element at its focus — and why it helps the high frequencies most and the low ones hardly at all.',
     credit: { scenarios: ['pb.meet.1', 'pb.meet.2', 'pb.meet.3'], note: 'Answer the three checks on the bowl, the frequencies and the focus.' },
-    takeaway: 'A dish favours the high frequencies of whatever is on its axis. Low sound reaching the element directly is not dish gain — and nothing it does turns a distance into a reliable working range.',
+    takeaway: 'A dish favors the high frequencies of whatever is on its axis. Low sound reaching the element directly is not dish gain — and nothing it does turns a distance into a reliable working range.',
   },
   setups: {
     title: 'Starting setups',
@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the aim, the focus, the grip and cable, the cover and the chain first — then reach for processing.',
   },
   practice: {
@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The bowl gathers sound whose wavelength is shorter than its width — the higher frequencies — arriving along its axis.',
     why: {
       'The lowest frequencies of a distant target': 'The lows are the ones a practical dish helps least.',
-      'All frequencies equally, if it is aimed well': 'Aim matters, but the bowl still favours the highs.',
+      'All frequencies equally, if it is aimed well': 'Aim matters, but the bowl still favors the highs.',
     },
   },
   {
@@ -184,9 +184,9 @@ const scenarios: MikingScenario[] = [
     id: 'pb.mic.3',
     page: 'microphone',
     prompt: 'Tracking fails, or atmosphere is the goal. A fair fallback?',
-    options: ['A wider ambience pair, labelled so', 'More gain on the dish until it carries', 'A second dish aimed at the crowd'],
-    correct: 'A wider ambience pair, labelled so',
-    explain: 'A wider ambience pair gives a clearer venue perspective with less isolated action — labelled as ambience.',
+    options: ['A wider ambience pair, labeled so', 'More gain on the dish until it carries', 'A second dish aimed at the crowd'],
+    correct: 'A wider ambience pair, labeled so',
+    explain: 'A wider ambience pair gives a clearer venue perspective with less isolated action — labeled as ambience.',
     why: {
       'More gain on the dish until it carries': 'Gain raises the background with the target.',
       'A second dish aimed at the crowd': 'A dish narrows; atmosphere wants a wider view.',
@@ -282,7 +282,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · The dish hears the crowd behind the player. Why?',
     options: ['The crowd is on its axis too', 'The bowl is focused on the crowd', 'The dish hears behind itself best'],
     correct: 'The crowd is on its axis too',
-    explain: 'A dish favours what is along its axis — the crowd beyond the target included. Re-aim, or use another angle.',
+    explain: 'A dish favors what is along its axis — the crowd beyond the target included. Re-aim, or use another angle.',
     why: {
       'The bowl is focused on the crowd': 'It is focused along an axis, not at a distance.',
       'The dish hears behind itself best': 'Behind the bowl is where it hears least.',
@@ -380,7 +380,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'What else is on the axis? Is there a better approved angle?',
     options: ['Re-aim, or use another angle', 'Turn the dish gain up a long way', 'Aim the dish higher, over the play'],
     correct: 'Re-aim, or use another angle',
-    explain: 'The dish favours whatever is on its axis: re-aim (a little low may help with some dishes) or use another approved angle.',
+    explain: 'The dish favors whatever is on its axis: re-aim (a little low may help with some dishes) or use another approved angle.',
     why: { 'Turn the dish gain up a long way': 'Gain raises the crowd with the target.', 'Aim the dish higher, over the play': 'That puts more of the crowd on the axis.' },
   },
   {
@@ -496,7 +496,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['High frequencies on its axis', 'Low frequencies from far away', 'All frequencies the same'],
     correct: 'High frequencies on its axis',
     explain: 'The bowl gathers wavelengths shorter than its width — the highs — along its axis.',
-    why: { 'Low frequencies from far away': 'The lows are what a small dish helps least.', 'All frequencies the same': 'The bowl favours the highs.' },
+    why: { 'Low frequencies from far away': 'The lows are what a small dish helps least.', 'All frequencies the same': 'The bowl favors the highs.' },
   },
   {
     id: 'q.2',
@@ -580,7 +580,7 @@ export const B12_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'beyond', label: 'the crowd beyond the target', short: 'ON THE AXIS', note: 'Whatever is on the axis is favoured with the play — the crowd behind the player too. Re-aim, or use another angle.', prov: { kind: 'illustrative', reason: 'the lesson L9, L27' }, tag: 'SPILL', scene: 'all' },
+      { id: 'beyond', label: 'the crowd beyond the target', short: 'ON THE AXIS', note: 'Whatever is on the axis is favored with the play — the crowd behind the player too. Re-aim, or use another angle.', prov: { kind: 'illustrative', reason: 'the lesson L9, L27' }, tag: 'SPILL', scene: 'all' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'A PA in the target’s direction is gathered with it. Keep the dish and the effects mics out of the PA’s own feed.', prov: { kind: 'illustrative', reason: 'the lesson L9' }, tag: 'SPILL', scene: 'all' },
       { id: 'near', label: 'loud events near the operator', short: 'NEARBY PEAKS', note: 'Impacts, whistles, celebrations and shouting close by: headroom for the nearest, loudest event — and headphones that start low.', prov: { kind: 'illustrative', reason: 'the lesson L29' }, tag: 'HEADROOM', scene: 'all' },
       { id: 'people', label: 'crew, cameras and walkways', short: 'PEOPLE', note: 'Assigned zones, routes and exits: the dish, its support and its cable stay out of them; a short cable, never dragging in a walkway.', prov: { kind: 'illustrative', reason: 'the lesson L5, L21' }, tag: 'KEEP CLEAR', scene: 'all' },

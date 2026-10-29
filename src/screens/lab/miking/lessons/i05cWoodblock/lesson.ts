@@ -61,14 +61,14 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'The support and the block itself first — then mount noise, the stage that overloads, spill and the monitors.',
   },
   practice: {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.',
     credit: { scenarios: ['wb.prac.order', 'wb.prac.gain', 'wb.prac.setup1', 'wb.prac.setup2', 'wb.prac.3', 'wb.mix.1', 'wb.mix.2', 'wb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'A muffling support recognised, a secure unobstructed setup, shared mic or spot justified, and tone, mount noise, overload, spill and feedback told apart. More than one setup can pass.',
+    takeaway: 'A muffling support recognized, a secure unobstructed setup, shared mic or spot justified, and tone, mount noise, overload, spill and feedback told apart. More than one setup can pass.',
   },
 };
 
@@ -521,7 +521,7 @@ export const I05C_LESSON: SpLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Recognise a muffling support, set up a secure, unobstructed mic, justify a shared mic or a spot, and tell source tone, mount noise, electronic overload, spill and feedback apart. With a real block and the player’s agreement, you can record what you tried below.',
+    task: 'Recognize a muffling support, set up a secure, unobstructed mic, justify a shared mic or a spot, and tell source tone, mount noise, electronic overload, spill and feedback apart. With a real block and the player’s agreement, you can record what you tried below.',
     fields: [
       { id: 'block', label: 'Block, mallet and support', kind: 'text' },
       { id: 'support', label: 'Support', kind: 'choice', choices: ['foam on a table', 'held', 'mounted'] },

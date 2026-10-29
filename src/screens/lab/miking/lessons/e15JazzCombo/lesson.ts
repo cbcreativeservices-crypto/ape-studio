@@ -53,7 +53,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'The players and the room first: their positions, the piano lid, the amp’s direction — then the pair and the supports — and only then EQ. Lower the send at the first ring.',
   },
   practice: {
@@ -549,13 +549,13 @@ export const E15_LESSON: EnsembleLesson = {
       { id: 'players', label: 'the players’ eye contact and formation', short: 'PLAYERS', note: 'Ask whether they need eye contact, an open room, their normal formation or a screen; never make the layout get in the way of the performance.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'never make the room layout impede the performance (L5)' }, tag: 'ASK FIRST', scene: 'all' },
       { id: 'amp', label: 'the guitar amp’s direction', short: 'AMP', note: 'An amp aimed away from the drums, the piano or the bass mic puts less of it in their mics — agree it with the player.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'A guitar amp aimed away from a piano or bass microphone may reduce spill (L26)' }, tag: 'SPILL', scene: 'all' },
       { id: 'lid', label: 'the piano lid', short: 'LID', note: 'The lid changes where the piano projects and what nearby mics hear; keep stands clear of the pedals, the lid and the hands.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'a piano lid changes where it projects and what nearby microphones hear (L26)' }, tag: 'BALANCE', scene: 'all' },
-      { id: 'endpin', label: 'the bass endpin, pedals and cables', short: 'KEEP CLEAR', note: 'Stabilise stands and keep cable paths clear of the players, the audience, chairs, the piano pedals and the bass endpin. No improvised clip or adhesive on a valuable instrument.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Stabilize stands and isolate cable paths from players, audience, chair movement, piano pedals and bass endpin (L70)' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'endpin', label: 'the bass endpin, pedals and cables', short: 'KEEP CLEAR', note: 'Stabilize stands and keep cable paths clear of the players, the audience, chairs, the piano pedals and the bass endpin. No improvised clip or adhesive on a valuable instrument.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Stabilize stands and isolate cable paths from players, audience, chair movement, piano pedals and bass endpin (L70)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the club PA and the wedges', short: 'PA', note: 'Reinforce only what the audience lacks; aim directional mics with the loudspeakers and monitors in mind; keep the pair out of the wedges.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Reinforce only what the audience lacks (L52)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'stream', label: 'the stream or recording', short: 'STREAM', note: 'A separate balance for listeners who hear none of the room: the pair and the close mics in their own mix.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'a separate stream/recording balance for remote listeners (L53)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'screens', label: 'screens and headphones', short: 'SCREENS', note: 'Screens can improve separation but change how the group hears itself and the room’s tone — a conscious choice, with the players.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Screens can improve separation but may change how the group hears itself (L26)' }, tag: 'ISOLATION', scene: 'studio' },
     ],
     stage: 'LIVE: in a club the drums and horns may already fill the room. Reinforce only what the audience lacks; close pickup gives the gain before feedback a distant view cannot; a separate balance for the stream.',
-    studio: 'A RECORDING: ensemble-first if the players and the room set the balance — the main view, then one support for a specific line; or a more separated session with the neighbours audible enough to keep the cueing.',
+    studio: 'A RECORDING: ensemble-first if the players and the room set the balance — the main view, then one support for a specific line; or a more separated session with the neighbors audible enough to keep the cueing.',
   },
   diagnostic,
   practice: {

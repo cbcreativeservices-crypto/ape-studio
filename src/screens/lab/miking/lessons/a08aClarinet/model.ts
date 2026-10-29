@@ -63,8 +63,8 @@ const FRONT_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 25, prov: ill('aimed at the middle of the clarinet: within 25°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.mid, FORWARD, 35, 600, 1200),
-  tendency: 'The whole clarinet blended — holes, bell and some of the room. More of the room and the neighbours come with it; the player’s movement matters less.',
-  checks: ['How much room and how many neighbours it hears', 'Quiet passages against the noise floor', 'The stand’s base clear of the feet and the aisle'],
+  tendency: 'The whole clarinet blended — holes, bell and some of the room. More of the room and the neighbors come with it; the player’s movement matters less.',
+  checks: ['How much room and how many neighbors it hears', 'Quiet passages against the noise floor', 'The stand’s base clear of the feet and the aisle'],
 };
 
 const SECTION_Z: Omit<DocumentedZone, 'start'> = {

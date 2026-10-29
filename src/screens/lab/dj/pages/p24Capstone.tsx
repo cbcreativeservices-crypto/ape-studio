@@ -189,9 +189,9 @@ function MixerTray() {
           <LabChip label={b.ch[ch].cue ? `CUE ${ch} ●` : `CUE ${ch}`} selected={b.ch[ch].cue} onPress={() => setCh(ch, { cue: !b.ch[ch].cue })} compact />
         </Row>
       ))}
-      <Row head={`CROSSFADER ${b.mixer.xf < 0.02 ? 'FULL A' : b.mixer.xf > 0.98 ? 'FULL B' : 'CENTRE'}`}>
+      <Row head={`CROSSFADER ${b.mixer.xf < 0.02 ? 'FULL A' : b.mixer.xf > 0.98 ? 'FULL B' : 'CENTER'}`}>
         <LabChip label="FULL A" selected={b.mixer.xf < 0.02} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, xf: 0 } }))} compact />
-        <LabChip label="CENTRE" selected={Math.abs(b.mixer.xf - 0.5) < 0.02} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, xf: 0.5 } }))} compact />
+        <LabChip label="CENTER" selected={Math.abs(b.mixer.xf - 0.5) < 0.02} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, xf: 0.5 } }))} compact />
         <LabChip label="FULL B" selected={b.mixer.xf > 0.98} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, xf: 1 } }))} compact />
       </Row>
       <Row head={`HEADPHONES · BLEND ${b.mixer.cueMix < 0.1 ? 'CUE' : b.mixer.cueMix > 0.9 ? 'MASTER' : 'MID'} · LEVEL ${Math.round(b.mixer.phones * 100)}%`}>

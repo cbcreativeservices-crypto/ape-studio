@@ -14,7 +14,7 @@ export const ROOM_MODULES: { id: RoomModuleId; num: string; title: string; blurb
   { id: 'monitoring', num: '3', title: 'Monitoring setup', blurb: 'Stereo, stereo + sub or multichannel; speaker and listener positions, heights and toe-in; symmetry and distance checks.', rack: true },
   { id: 'explore', num: '4', title: 'Explore placement', blurb: 'Drag speakers and listener; reflections, modal pressure and boundary distances update live. Save and compare positions.', rack: true },
   { id: 'treatment', num: '5', title: 'Add treatment', blurb: 'Absorbers at the reflection points, bass traps, a ceiling cloud, diffusers, a rug, gobos — compare with and without each.', rack: true },
-  { id: 'review', num: '6', title: 'Review the room', blurb: 'Room and layout · likely acoustic behaviour · suggested next steps. Observations, not a score.', rack: false },
+  { id: 'review', num: '6', title: 'Review the room', blurb: 'Room and layout · likely acoustic behavior · suggested next steps. Observations, not a score.', rack: false },
 ];
 
 export const ROOM_UNITS: readonly string[] = ROOM_MODULES.map((m) => m.id);

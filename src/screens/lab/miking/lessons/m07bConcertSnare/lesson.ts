@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the concert snare sits in the orchestra — its neighbours, the player’s space, what an amplified stage and a recording add — and what to do before any mic.',
+    goal: 'Know where the concert snare sits in the orchestra — its neighbors, the player’s space, what an amplified stage and a recording add — and what to do before any mic.',
     credit: { scenarios: ['cs.set.1', 'cs.set.hear', 'cs.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Listen to what the main pickup already gives before adding a spot. The sticks’ whole motion, the throw-off and the path to the trap table are the player’s; protect your hearing.',
   },
@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for this drum by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['cs.mic.1', 'cs.mic.2', 'cs.mic.3', 'cs.mic.4', 'cs.rec.1'], note: 'Answer the five checks (one reaches back to how the snare sounds).' },
-    takeaway: 'Dynamic or condenser can both work: response, pattern, maximum level, power and mount decide. A real pattern rejects only part of a neighbour, and a mic’s maximum SPL is not a hearing limit.',
+    takeaway: 'Dynamic or condenser can both work: response, pattern, maximum level, power and mount decide. A real pattern rejects only part of a neighbor, and a mic’s maximum SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — distance, level against the main pickup, clearance, gain staging and polarity — before reaching for tone controls or asking the player to change.',
   },
   practice: {
@@ -94,12 +94,12 @@ const scenarios: MikingScenario[] = [
     id: 'cs.snd.2',
     page: 'sound',
     prompt: 'The stick strikes the exact center of the head. Which of the head’s vibration shapes can it set moving?',
-    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center, so a center strike drives only the ring-shaped ones, the lowest shape among them.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape, so a centre strike cannot push it.',
+      'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there in that shape, so a center strike cannot push it.',
     },
   },
   {
@@ -215,11 +215,11 @@ const scenarios: MikingScenario[] = [
     id: 'cs.place.2',
     page: 'placement',
     prompt: 'You move the mic from just outside the rim to a broader spot above and to one side. What should you expect?',
-    options: ['More of the whole drum and the room, as a tendency to check', 'A steady loss of the highs with each centimetre that you move it', 'A fixed drop in level that you can read off a chart'],
+    options: ['More of the whole drum and the room, as a tendency to check', 'A steady loss of the highs with each centimeter that you move it', 'A fixed drop in level that you can read off a chart'],
     correct: 'More of the whole drum and the room, as a tendency to check',
-    explain: 'Farther usually brings more of the whole drum, the room and the neighbours, and less isolation — a tendency to check with the real passage.',
+    explain: 'Farther usually brings more of the whole drum, the room and the neighbors, and less isolation — a tendency to check with the real passage.',
     why: {
-      'A steady loss of the highs with each centimetre that you move it': 'Distance does not cut the highs in steady steps; the balance of drum, room and neighbours shifts.',
+      'A steady loss of the highs with each centimeter that you move it': 'Distance does not cut the highs in steady steps; the balance of drum, room and neighbors shifts.',
       'A fixed drop in level that you can read off a chart': 'These are tendencies, not fixed amounts. Drums, rooms and players vary — check it.',
     },
   },
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cs.ctx.1',
     page: 'context',
-    prompt: 'On an amplified stage, what can favour a closer, directional concert-snare spot?',
+    prompt: 'On an amplified stage, what can favor a closer, directional concert-snare spot?',
     options: ['Monitor and PA spill, and the gain available before feedback', 'A closer mic makes the snare itself louder in the hall', 'The hall’s sound is usually more useful on a loud stage'],
     correct: 'Monitor and PA spill, and the gain available before feedback',
     explain: 'Those are the usual live reasons — worked out with the system operator. In a quiet hall, a broader spot or no spot may serve the music better.',
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · An amplified outdoor concert. Monitors on stage; the PA operator needs a usable snare channel. The spare input has NO phantom power.',
     setups: [
       { id: 'a', label: 'Small dynamic just outside the rim, 2.5–7.5 cm above it, aimed across the head', ok: true, power: 'none', feedback: 'Close and directional for a loud stage; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check its gain before feedback with the operator.' },
+      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the center', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check its gain before feedback with the operator.' },
       { id: 'c', label: 'Small condenser above and to one side, well back from the drum', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a broad spot hears much more of a loud stage.' },
       { id: 'd', label: 'A dynamic resting on the edge of the batter head', ok: false, power: 'none', feedback: 'Keep the mic off the head: it is a moving part, and the sticks can hit it.' },
       { id: 'e', label: 'No spot: the open-air stage will carry the snare by itself', ok: false, power: 'none', feedback: 'The operator needs a channel; outdoors, the hall does not help, and spill and wind work against a distant pickup.' },
@@ -452,12 +452,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'cs.q.3',
     covers: 'sound',
     prompt: 'A stroke exactly at the center of a drumhead drives which of its vibration shapes?',
-    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes that are split by a line through the centre'],
+    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes that are split by a line through the center'],
     correct: 'Only the ring-shaped ones — the rest stand still there',
-    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the center does not move there.',
     why: {
       'All of the shapes, each one just as hard': 'The stick touches one spot. A shape is driven only as much as the head moves there.',
-      'Only the shapes that are split by a line through the centre': 'The reverse: those shapes are still at the centre, so a centre strike cannot drive them.',
+      'Only the shapes that are split by a line through the center': 'The reverse: those shapes are still at the center, so a center strike cannot drive them.',
     },
   },
   {
@@ -532,8 +532,8 @@ export const M07B_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'snare', label: 'the concert snare (on its stand)', short: 'SNARE', note: 'In the percussion row at the back of the orchestra, on a stand, its player behind it facing the conductor. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
-      { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'A loud neighbour beside the snare. A snare spot hears it too — one reason to keep a spot close and aimed, or to blend it low.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Loud and low, a few metres along the row. A snare mic hears them — and the timpani spot hears the snare.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'A loud neighbor beside the snare. A snare spot hears it too — one reason to keep a spot close and aimed, or to blend it low.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Loud and low, a few meters along the row. A snare mic hears them — and the timpani spot hears the snare.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud, close to the snare. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Where the sticks, mallets and small instruments wait. The player turns to it between passages: keep stands and cables out of that path.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'KEEP CLEAR', scene: 'kit' },
       { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Trombones and tuba just downstage of the percussion, the trombones’ bells toward the conductor and the tuba’s pointing up. Loud, and heard by every percussion mic.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
@@ -566,7 +566,7 @@ export const M07B_LESSON: Lesson = {
     { text: 'The concert snare’s shell thickness, hoop height and skirt, lug size, rod phase, snare-set size and strainer side — drawing defaults in the shared concert spec.', dims: [] },
     { text: 'The stand’s legs and basket, the sticks’ reach (450 mm above the head on the player’s side) and the player’s position — ILLUSTRATIVE.', dims: [] },
     { text: 'No source gives a concert-snare mic distance: the close zones borrow the kit-snare figures; the broad zone has no number at all.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: {
     wedges: [

@@ -150,7 +150,7 @@ export const CABINETS: Record<CabKind, CabSpec> = {
     w: { mm: 24.5 * IN, prov: src('FEN-65DR-MAN', 'WIDTH: 24-1/2 in (62.2 cm)') },
     h: { mm: 17.5 * IN, prov: src('FEN-65DR-MAN', 'HEIGHT: 17-1/2 in (44.5 cm)') },
     d: { mm: 9.5 * IN, prov: src('FEN-65DR-MAN', 'DEPTH: 9-1/2 in (24.1 cm)') },
-    // The speaker 60 mm right of the centre line and 255 mm below the top.
+    // The speaker 60 mm right of the center line and 255 mm below the top.
     drivers: [{ y: 255 - (17.5 * IN) / 2, z: 60, nominal: 12 }],
     layoutProv: ill('speaker center 60 mm right of the center line, 255 mm below the top: drawing default (electric_guitar_amp GEOMETRY §2)'),
     backs: ['open'],
@@ -233,7 +233,7 @@ export const LESLIE_FACES = [
 ] as const;
 export type LeslieFace = (typeof LESLIE_FACES)[number]['id'];
 
-/** The plan point on a face's outside, `d` mm out from its centre line. */
+/** The plan point on a face's outside, `d` mm out from its center line. */
 export function outsideFace(face: LeslieFace, d: number): { x: number; z: number } {
   const f = LESLIE_FACES.find((q) => q.id === face)!;
   const half = f.n.x !== 0 ? LESLIE.d.mm / 2 : LESLIE.w.mm / 2;

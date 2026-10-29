@@ -20,7 +20,7 @@ export const VIBE_FAM: MalletFamily = {
     { row: NO_MOTOR, label: 'NO MOTOR', blurb: 'Some vibraphones come without a motor (or with one as an option): no fans, no pulsing — the bars and tubes alone.', phrase: 'no motor' },
   ],
   roles: {
-    naturals: 'The bars of the naturals, nearest the player: metal (an aluminium alloy), graduated — longest and widest at the low end. A mallet strikes; the bar rings.',
+    naturals: 'The bars of the naturals, nearest the player: metal (an aluminum alloy), graduated — longest and widest at the low end. A mallet strikes; the bar rings.',
     accidentals: 'The sharps and flats, in the far row, level with the naturals — the piano’s black keys, laid out the same way.',
     resonators: 'A tube under every bar, open at the top and closed at the bottom; the lower the note, the longer the tube. The air inside rings with the bar and makes the note fuller.',
     cords: 'A cord runs through each bar where it does not move as it rings, held by posts on the rails, so the bar rings freely. Nothing clamps to a bar, a cord or a tube, except hardware made for it, with the owner’s agreement.',
@@ -46,7 +46,7 @@ export const VIBE_ZONES: DocumentedZone[] = [
     words: {
       label: 'One mic above the middle of the keyboard',
       band: 'Start about 45–75 cm (18–30 in) above the bars, over the middle of the part, aimed down so it hears the whole range — and clear of the raised mallets.',
-      tendency: 'One view of the whole keyboard: attack, sustain and the room together. A single point can favour the bars nearest it — play the lowest, middle and highest notes, and move it in small steps.',
+      tendency: 'One view of the whole keyboard: attack, sustain and the room together. A single point can favor the bars nearest it — play the lowest, middle and highest notes, and move it in small steps.',
       checks: ['Clear of the highest mallet stroke through the whole passage', 'Lowest, middle and highest notes, both rows', 'The motor and the pedal, heard or not'],
     },
   }),

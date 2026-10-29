@@ -154,8 +154,8 @@ function zonesFor(s: WbState): DocumentedZone[] {
       variants: [v],
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 60 },
-      tendency: 'A different balance of attack, hollow body, room and neighbours than from above — not a rule that the opening sounds fuller; compare by ear.',
-      checks: ['Attack against the hollow resonance', 'Neighbours the mic now faces', 'The mount’s own noises'],
+      tendency: 'A different balance of attack, hollow body, room and neighbors than from above — not a rule that the opening sounds fuller; compare by ear.',
+      checks: ['Attack against the hollow resonance', 'Neighbors the mic now faces', 'The mount’s own noises'],
     }),
   ];
 }

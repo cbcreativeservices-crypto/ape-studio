@@ -32,7 +32,7 @@ describe('C1: career examples disclose degrees and the PE licence, not only lice
   it('the PE-licensed consulting titles on the family cards are disclosed', () => {
     for (const t of ['Acoustical Consultant', 'Noise-Control Engineer', 'Vibration Consultant']) {
       assert.ok(examples.includes(t), `${t} is a family example`);
-      assert.match(noteForExample(t) ?? '', /Professional Engineer licence/, t);
+      assert.match(noteForExample(t) ?? '', /Professional Engineer license/, t);
     }
   });
 

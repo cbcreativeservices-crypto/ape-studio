@@ -29,7 +29,7 @@ describe('the venue’s left and right', () => {
 });
 
 describe('the bass map adds the subs as waves', () => {
-  it('two spaced subs: in step on the centre line, deep nulls off it; one sub under the booth: no stripes', () => {
+  it('two spaced subs: in step on the center line, deep nulls off it; one sub under the booth: no stripes', () => {
     const y = ROOM.floorCentre.y;
     const row = Array.from({ length: 121 }, (_, i) => subsCoherentAt({ x: -6 + i * 0.1, y }, 'TOPS'));
     const centre = subsCoherentAt({ x: 0, y }, 'TOPS');

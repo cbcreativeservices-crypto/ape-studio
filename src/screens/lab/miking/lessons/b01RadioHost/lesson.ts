@@ -71,7 +71,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the distance, the angle to the mouth, the desk, the arm, the open mics, the route — before reaching for EQ, a gate or noise reduction.',
   },
   practice: {
@@ -306,7 +306,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The other voice is farther away and off the back of the pattern — lower, but later. That is bleed: it can color the mix, and no rule makes it zero.',
     why: {
       'Nothing else, because each is cardioid': 'A cardioid rejects most behind, but not all of it — and the room carries the other voice too.',
-      'Only the room, not the other host': 'The other host is a loud source a metre or so away: their voice reaches the mic.',
+      'Only the room, not the other host': 'The other host is a loud source a meter or so away: their voice reaches the mic.',
     },
   },
   {
@@ -340,7 +340,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why keep each host on their own channel?',
     options: ['Each can be checked and balanced alone', 'Two channels make both voices louder', 'So the two mics form a stereo pair'],
     correct: 'Each can be checked and balanced alone',
-    explain: 'On separate channels each voice can be soloed, levelled, muted when silent and checked in mono with the other. A sum made at the source cannot be undone.',
+    explain: 'On separate channels each voice can be soloed, leveled, muted when silent and checked in mono with the other. A sum made at the source cannot be undone.',
     why: {
       'Two channels make both voices louder': 'Level comes from gain, not from channels.',
       'So the two mics form a stereo pair': 'They are two separate close mics, not a stereo pair.',
@@ -376,7 +376,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic sits low over a hard desk, the voice sounds hollow. A first idea to try?',
     options: ['Raise the mic off the desk, nearer the mouth', 'Boost the treble to bring back the lost clarity', 'Turn the mic’s pattern to omni'],
     correct: 'Raise the mic off the desk, nearer the mouth',
-    explain: 'Nearer the mouth and farther from the desk, the desk’s copy arrives later and weaker. A soft cloth on the desk is another idea. EQ cannot put back a cancelled frequency.',
+    explain: 'Nearer the mouth and farther from the desk, the desk’s copy arrives later and weaker. A soft cloth on the desk is another idea. EQ cannot put back a canceled frequency.',
     why: {
       'Boost the treble to bring back the lost clarity': 'A comb is cancellation between two copies: EQ cannot fill its notches.',
       'Turn the mic’s pattern to omni': 'An omni hears the desk’s bounce at least as well.',

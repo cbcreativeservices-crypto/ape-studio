@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the chain before the system: the seat, the adapter, the battery, the field and the incidence — and never claim a calibration pass from a software trace alone.',
   },
   practice: {
@@ -83,11 +83,11 @@ const scenarios: MikingScenario[] = [
     id: 'mm.snd.1',
     page: 'sound',
     prompt: 'Where does the field a measurement mic is made for matter most?',
-    options: ['In the highs, where the capsule is near a wavelength in size', 'In the lows, where the wavelengths run to many metres in length', 'Only at 1 kHz, where the calibrator makes its tone'],
+    options: ['In the highs, where the capsule is near a wavelength in size', 'In the lows, where the wavelengths run to many meters in length', 'Only at 1 kHz, where the calibrator makes its tone'],
     correct: 'In the highs, where the capsule is near a wavelength in size',
     explain: 'At 10 kHz a wavelength is about 3.4 cm — not much larger than a 1/2 in capsule — so the capsule itself disturbs the field and the direction sound comes from changes the reading. In the lows the capsule is tiny against the wavelength.',
     why: {
-      'In the lows, where the wavelengths run to many metres in length': 'Long waves pass a small capsule as if it were not there: the three responses differ little in the lows.',
+      'In the lows, where the wavelengths run to many meters in length': 'Long waves pass a small capsule as if it were not there: the three responses differ little in the lows.',
       'Only at 1 kHz, where the calibrator makes its tone': 'The calibrator’s tone is a check of the chain, not where the fields differ most — that is the highs.',
     },
   },
@@ -346,7 +346,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mm.mix.1',
     page: 'practice',
-    prompt: 'Which of these is a relative result, honestly labelled?',
+    prompt: 'Which of these is a relative result, honestly labeled?',
     options: ['“3 dB more at spot A after the panel moved — relative”', '“Spot A measured 87 dB SPL” with no check and no chain', '“Spot A is calibrated” because the mic is new'],
     correct: '“3 dB more at spot A after the panel moved — relative”',
     explain: 'A stable mic and fixed settings can compare a change at one spot. Saying it is relative is what makes it honest.',
@@ -480,13 +480,13 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Compare a loudspeaker before and after its grille is replaced, at one spot on its axis. No calibrated chain is on hand today.',
     setups: [
-      { id: 'ff', label: 'Free-field mic on the axis at a logged distance, fixed settings, labelled relative', ok: true, power: 'none', feedback: 'A stable mic, fixed settings and one logged spot: an honest relative comparison.' },
-      { id: 'ri', label: 'Random-incidence mic at the same logged spot, fixed settings, labelled relative', ok: true, power: 'none', feedback: 'For a before-and-after at one spot the same mic, unchanged, is what counts — labelled relative.' },
+      { id: 'ff', label: 'Free-field mic on the axis at a logged distance, fixed settings, labeled relative', ok: true, power: 'none', feedback: 'A stable mic, fixed settings and one logged spot: an honest relative comparison.' },
+      { id: 'ri', label: 'Random-incidence mic at the same logged spot, fixed settings, labeled relative', ok: true, power: 'none', feedback: 'For a before-and-after at one spot the same mic, unchanged, is what counts — labeled relative.' },
       { id: 'spl', label: 'Any mic into the recorder, reported as dB SPL', ok: false, power: 'none', feedback: 'Without a calibrated chain the result cannot be reported as SPL.' },
     ],
     reasons: [
       R('same', 'The same mic, position and settings before and after', 'required', 'The comparison is only fair if nothing else changes.'),
-      R('label', 'The result is labelled relative', 'required', 'No calibrated chain: the honest label is relative.'),
+      R('label', 'The result is labeled relative', 'required', 'No calibrated chain: the honest label is relative.'),
       R('log', 'The distance, height and aim are written down', 'optional', 'It lets anyone repeat it.'),
       R('smooth', 'The trace looks smooth, so it can be called SPL', 'wrong', 'A smooth trace is not a calibration.'),
     ],
@@ -514,7 +514,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Partial<Record<SourcePageId, Prediction>> = {
   microphone: { prompt: 'A prepolarized measurement mic and an ordinary mixer input with 48 V phantom. Will it simply work?', options: ['Yes — phantom powers any condenser', 'Only through the approved unit', 'Only with a polarization supply'], after: 'Build the chain and see which joins are refused, and why.' },
   placement: { prompt: 'You move the mic from 1 m to 2 m on the axis. What changes most?', options: ['The level drops and the room arrives sooner after the direct sound', 'Nothing much — same axis', 'The highs rise'], after: 'Move it and read what the zone says.' },
-  context: { prompt: 'You stand half a metre behind the capsule. Does it change the reading?', options: ['Yes — a reflection off me', 'No — the mic faces away', 'Only at 1 kHz'], after: 'Move yourself and watch the extra path and its delay.' },
+  context: { prompt: 'You stand half a meter behind the capsule. Does it change the reading?', options: ['Yes — a reflection off me', 'No — the mic faces away', 'Only at 1 kHz'], after: 'Move yourself and watch the extra path and its delay.' },
   twoMic: { prompt: 'The after check reads 0.8 dB high and the method allows ±0.5 dB. What now?', options: ['Adjust and pass', 'Log it and investigate', 'Check again until it passes'], after: 'Run a check and read what the label says.' },
 };
 
@@ -648,7 +648,7 @@ export const F11_LESSON: Lesson = {
     { text: 'The logged distance (drawn 1 m and 2 m), the off-axis angle (30°) and the room position (about 2.5 m): drawing defaults — the method gives the real ones.', dims: [] },
     { text: 'The operator keep-away radius (drawn 1 m): the method gives it.', dims: [] },
     { text: 'The mic body lengths and the calibrator’s size: drawing defaults; only the capsule diameters come from their names.', dims: [] },
-    { text: 'The calibrator check’s readings and tolerances are made-up examples, labelled as such; the method gives the real tolerance.', dims: [] },
+    { text: 'The calibrator check’s readings and tolerances are made-up examples, labeled as such; the method gives the real tolerance.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

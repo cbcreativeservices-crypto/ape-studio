@@ -416,7 +416,7 @@ const VINYL_S = 0.62;
 const MOD_S = 0.5;
 const RCA_LEN = 22; // an RCA plug body, mm
 const VT = { tw: TT_W * VINYL_S, mx: TT_W * VINYL_S + 16, bx: TT_W * VINYL_S + 32 + MIXER_W * VINYL_S };
-/** Turntable outputs at the back, left of centre (local x 52); the mixer's
+/** Turntable outputs at the back, left of center (local x 52); the mixer's
  *  PHONO inputs at the back of each channel (local x 62 and 208). */
 const VINYL_RUNS: P2[][] = (() => {
   const top = (edge: number) => edge - RCA_LEN * VINYL_S;

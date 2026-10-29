@@ -42,7 +42,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the bell (or, farther back, from the euphonium). They are starting points, not rules — move from there and listen; every euphonium, player and room is different.',
       separate: 'Distance, height and the angle off the bell’s axis are separate variables: change one at a time, and play a lyrical phrase and a loud, tongued one each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, boom and cable out of the bell’s opening and tilt, both valve hands, the slides and the path to stand. The grey hatch appears as the mic comes near one of them.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, boom and cable out of the bell’s opening and tilt, both valve hands, the slides and the path to stand. The gray hatch appears as the mic comes near one of them.',
       tendencies: 'Toward the bell’s axis tends to bring more brightness and bite; off axis, softer; farther, more room and section. These are tendencies — there is no fixed “warm” axis or distance.',
     },
   },
@@ -78,7 +78,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions: a farther view can suit a quiet hall, and a close mic can suit a dense studio score.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: hear the line with the room first. Live: decide what the euphonium already gives the audience — the section mics may carry it — and what the PA must add.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Closer pickup gives a tighter sound and better isolation; farther, a fuller sound with more room and neighbours. Arrange the wedges round the mic’s rejection.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Closer pickup gives a tighter sound and better isolation; farther, a fuller sound with more room and neighbors. Arrange the wedges round the mic’s rejection.' },
         { title: 'MOVEMENT', text: 'The player tilts the bell, may rise to stand, and uses both hands on valves. A stand needs room for all of it; a confirmed clip moves with the bell.' },
         { title: 'MOUNTING', text: 'A clip advertised for trumpet or trombone may not fit a euphonium bell. Only one its maker confirms, with the player’s agreement — or a stand. Never tape on the finish.' },
       ],

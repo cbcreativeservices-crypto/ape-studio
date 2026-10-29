@@ -51,7 +51,7 @@ export const F16_ZONES: DocumentedZone[] = [
     aim: AIM,
     start: toward(S.L),
     tendency: 'One element of the pair: on its own a pressure at one logged point — a time difference needs its partner, on the same clock.',
-    checks: ['Its coordinate written from the origin', 'Labelled L, its channel mapped', 'On the same recorder as R'],
+    checks: ['Its coordinate written from the origin', 'Labeled L, its channel mapped', 'On the same recorder as R'],
   },
   {
     id: 'ar.R',
@@ -71,7 +71,7 @@ export const F16_ZONES: DocumentedZone[] = [
     aim: AIM,
     start: toward(S.R),
     tendency: 'With L, a baseline: which side heard a click first, and by how much — a time difference, not yet a direction.',
-    checks: ['Its coordinate written from the origin', 'Labelled R, its channel mapped', 'Matched and checked with L'],
+    checks: ['Its coordinate written from the origin', 'Labeled R, its channel mapped', 'Matched and checked with L'],
   },
   {
     id: 'ar.L2',

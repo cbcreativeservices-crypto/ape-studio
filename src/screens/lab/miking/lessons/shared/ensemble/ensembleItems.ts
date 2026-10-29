@@ -36,7 +36,7 @@ export const ortfFixed = (p: string, page: SourcePageId): MikingScenario => ({
   correct: 'Move or turn the whole pair',
   explain: 'That pair is defined by its 17 cm and 110°. Change its position and height as a unit; a different spacing or angle is a different near-coincident pair, chosen on purpose.',
   why: {
-    'Widen the spacing to 30 cm': 'Then it is no longer the 17 cm pair — a different method with its own behaviour.',
+    'Widen the spacing to 30 cm': 'Then it is no longer the 17 cm pair — a different method with its own behavior.',
     'Splay just one of the mics further out': 'One mic turned out unbalances the image; the pair moves as a unit.',
   },
 });
@@ -74,11 +74,11 @@ export const abHole = (p: string, page: SourcePageId): MikingScenario => ({
   id: `${p}.hole`,
   page,
   prompt: 'You spread the spaced pair to 2 m and the middle goes thin. Likely why?',
-  options: ['Too wide: a hole opens in the middle', 'Omnis cannot capture a centre image', 'The mics are now too far from the floor'],
+  options: ['Too wide: a hole opens in the middle', 'Omnis cannot capture a center image', 'The mics are now too far from the floor'],
   correct: 'Too wide: a hole opens in the middle',
   explain: 'Past about 1 m a spaced pair tends to lose its center. Bring the spacing back toward 40–60 cm, or try a third, center mic — and check the mono sum.',
   why: {
-    'Omnis cannot capture a centre image': 'A spaced omni pair at its usual 40–60 cm images a center well.',
+    'Omnis cannot capture a center image': 'A spaced omni pair at its usual 40–60 cm images a center well.',
     'The mics are now too far from the floor': 'The spacing changed, not the height.',
   },
 });
@@ -88,11 +88,11 @@ export const treeCentre = (p: string, page: SourcePageId): MikingScenario => ({
   id: `${p}.tree`,
   page,
   prompt: 'In a three-omni tree, where does the center mic go in the mix?',
-  options: ['Into both sides, a few dB down', 'Into the centre channel only, full level', 'Hard left, opposite the left mic'],
+  options: ['Into both sides, a few dB down', 'Into the center channel only, full level', 'Hard left, opposite the left mic'],
   correct: 'Into both sides, a few dB down',
   explain: 'Left goes left, right goes right, and the center is fed equally into both, a few dB down — one example uses 4–5 dB. Raise it from silence until the middle is filled, not past it.',
   why: {
-    'Into the centre channel only, full level': 'In stereo there is no center channel: it is split into both sides, and lower.',
+    'Into the center channel only, full level': 'In stereo there is no center channel: it is split into both sides, and lower.',
     'Hard left, opposite the left mic': 'That would pull the image sideways; it feeds both sides equally.',
   },
 });

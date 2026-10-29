@@ -85,7 +85,7 @@ export const DJ_COVERS: Readonly<Record<number, string>> = {
   17: 'Set up a turntable and its phono stage, keep the cartridge signal clean, and keep it out of feedback.',
   18: 'Run a digital vinyl system: calibrate, choose absolute, relative or internal, recover when tracking fails, and keep the control tone off the PA.',
   19: 'Connect a microphone with the right gain and power, talk over the music, keep it out of feedback, and know which feeds carry it.',
-  20: 'Hand a clean, labelled, balanced feed to the venue; set subs, crossover and placement by the numbers; protect the ears at the decks.',
+  20: 'Hand a clean, labeled, balanced feed to the venue; set subs, crossover and placement by the numbers; protect the ears at the decks.',
   21: 'Record from the right tap at the right level, with the mic in the take, and prove it on playback.',
   22: 'Add a drum machine: audio on one cable, clock on another, started on the one.',
   23: 'Change performers without stopping the music, match levels, kill a hum safely and recover from a frozen laptop.',

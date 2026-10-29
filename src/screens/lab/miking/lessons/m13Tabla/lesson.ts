@@ -59,7 +59,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic before reaching for EQ: target, viewpoint and distance first; a filter only after you hear what it removes from the bayan.',
   },
   practice: {
@@ -113,7 +113,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ta.set.1',
     page: 'setting',
-    prompt: 'A microphone channel is labelled “right”. Which drum is it?',
+    prompt: 'A microphone channel is labeled “right”. Which drum is it?',
     options: ['Check by the drum itself: the dayan or the bayan', 'The dayan, since it sits on the player’s right side', 'The bayan, since right is the audience’s view'],
     correct: 'Check by the drum itself: the dayan or the bayan',
     explain: 'Name each drum by what it is. “Right” can mean the player’s right or the audience’s, and some players set the drums the other way round.',
@@ -162,12 +162,12 @@ const scenarios: MikingScenario[] = [
     id: 'ta.mic.1',
     page: 'microphone',
     prompt: 'Does the bayan need a large-diaphragm mic for its low tones?',
-    options: ['No — compare the whole response and the placement', 'Yes, small diaphragms cannot hear the low tones', 'Yes, unless you place the mic within a few centimetres'],
+    options: ['No — compare the whole response and the placement', 'Yes, small diaphragms cannot hear the low tones', 'Yes, unless you place the mic within a few centimeters'],
     correct: 'No — compare the whole response and the placement',
     explain: 'A small diaphragm does not mean weak lows, and a large one is not required for the bayan. Check the actual mic’s response and compare by ear.',
     why: {
       'Yes, small diaphragms cannot hear the low tones': 'Diaphragm size alone does not decide the low end. Check the response.',
-      'Yes, unless you place the mic within a few centimetres': 'Moving closer changes the balance, but diaphragm size is not the rule.',
+      'Yes, unless you place the mic within a few centimeters': 'Moving closer changes the balance, but diaphragm size is not the rule.',
     },
   },
   {
@@ -294,12 +294,12 @@ const scenarios: MikingScenario[] = [
     id: 'ta.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Which drum rings with a clear pitch thanks to its centered black patch?',
-    options: ['The dayan, the smaller wooden drum', 'The bayan, the larger kettle drum', 'Both drums, since both patches are centred'],
+    options: ['The dayan, the smaller wooden drum', 'The bayan, the larger kettle drum', 'Both drums, since both patches are centered'],
     correct: 'The dayan, the smaller wooden drum',
     explain: 'The dayan’s centered patch lets it ring with a clear pitch; the bayan’s patch is off-center and its pitch is bent by the hand.',
     why: {
       'The bayan, the larger kettle drum': 'The bayan’s patch is off-center; its pitch is bent by the hand.',
-      'Both drums, since both patches are centred': 'Only the dayan’s patch is centered.',
+      'Both drums, since both patches are centered': 'Only the dayan’s patch is centered.',
     },
   },
   {
@@ -567,12 +567,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'Where is each drum’s black patch?',
-    options: ['Centered on the dayan; off-center on the bayan', 'Centred on both drums, as on the dayan', 'Off-centre on the dayan; centred on the bayan'],
+    options: ['Centered on the dayan; off-center on the bayan', 'Centered on both drums, as on the dayan', 'Off-center on the dayan; centered on the bayan'],
     correct: 'Centered on the dayan; off-center on the bayan',
     explain: 'The dayan’s patch is in the middle; the bayan’s sits off-center.',
     why: {
-      'Centred on both drums, as on the dayan': 'Only the dayan’s is centered; the bayan’s sits off-center.',
-      'Off-centre on the dayan; centred on the bayan': 'The other way round: centered on the dayan, off-center on the bayan.',
+      'Centered on both drums, as on the dayan': 'Only the dayan’s is centered; the bayan’s sits off-center.',
+      'Off-center on the dayan; centered on the bayan': 'The other way round: centered on the dayan, off-center on the bayan.',
     },
   },
   {
@@ -666,11 +666,11 @@ export const M13_LESSON: Lesson = {
       { id: 'bayan', label: 'the bayan, on the player’s left here', short: 'BAYAN', note: 'The larger drum. The heel of the hand presses and slides across its head: its whole path is the player’s space.', prov: { kind: 'illustrative', reason: 'a right-handed layout: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'player', label: 'the player, seated on the floor', short: 'PLAYER', note: 'Knees, supports and the way out stay clear. Low stands or booms from the audience side.', prov: { kind: 'illustrative', reason: 'a player seated on the floor: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'the player’s wedge', short: 'WEDGE', note: 'Live, a floor monitor downstage, facing back toward the player. Check the mic’s real pattern before placing it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'louder neighbours', short: 'BAND', note: 'Amplified instruments nearby — the reason to start close and directional, and to talk about stage balance.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'louder neighbors', short: 'BAND', note: 'Amplified instruments nearby — the reason to start close and directional, and to talk about stage balance.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Listen from here first, without amplification. The mics come from this side.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'MIC SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good studio, a coincident pair or a room mic can add space — when the music wants it.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors, louder neighbours and a PA. Start with the fewest mics that give the balance, only the monitor level the player needs, and check the mic’s real pattern before placing a wedge.',
+    stage: 'LIVE: monitors, louder neighbors and a PA. Start with the fewest mics that give the balance, only the monitor level the player needs, and check the mic’s real pattern before placing a wedge.',
     studio: 'STUDIO: time to compare one shared mic with one per drum, and a room that may add space — compare at matched loudness, and ask the player about the balance between the drums.',
   },
   diagnostic,

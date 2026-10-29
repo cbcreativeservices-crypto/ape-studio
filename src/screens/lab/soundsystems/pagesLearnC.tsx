@@ -64,14 +64,14 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
       wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy'}>{gainVerdictCopy(verdict, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>GAIN STRUCTURE AND SIGNAL LEVELS</ChapterTag>
-      <Body>The same vocal peak followed from the microphone to the loudspeaker, one meter per stage. Each meter has its clip line above and its noise floor rising from below. Right now the preamp is starved and every later stage is making up for it — read the grey haze.</Body>
+      <Body>The same vocal peak followed from the microphone to the loudspeaker, one meter per stage. Each meter has its clip line above and its noise floor rising from below. Right now the preamp is starved and every later stage is making up for it — read the gray haze.</Body>
       <Prompt>Raise the preamp, bring the faders and trims back to unity, and watch the haze fall.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <ChainMeterKey />
       <KeyFact>Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity. On many consoles the nominal +4 dBu reads around −18 to −20 dBFS on the digital meters, and this lab’s console puts it at −18. The reference varies: EBU R68 aligns 0 dBu to −18 dBFS, SMPTE RP155 aligns +4 dBu to −20 dBFS — check your console’s own.</KeyFact>
       <Card>
         <Eyebrow>THE VOCABULARY, ON THE METER</Eyebrow>
-        <Body>Noise floor — the grey haze. Headroom — the bracket from the peak up to the red clip line. Signal-to-noise — the height of the signal above the haze. Unity — the control at 0, passing what it receives. Analog clipping flattens at a rail; digital clipping stops at 0 dBFS, and both light the same red CLIP indicator here. Gain-before-feedback and the power-up order belong to the next pages.</Body>
+        <Body>Noise floor — the gray haze. Headroom — the bracket from the peak up to the red clip line. Signal-to-noise — the height of the signal above the haze. Unity — the control at 0, passing what it receives. Analog clipping flattens at a rail; digital clipping stops at 0 dBFS, and both light the same red CLIP indicator here. Gain-before-feedback and the power-up order belong to the next pages.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>ILLUSTRATIVE MODEL</Eyebrow>
@@ -303,7 +303,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
               ]}
               beams={beams}
               overlay={overlay}
-              a11y={`Mains and delay loudspeakers ${dist} metres apart. Delay set ${setMs} milliseconds; ${need.toFixed(1)} needed. ${aligned ? 'Aligned.' : ''}`}
+              a11y={`Mains and delay loudspeakers ${dist} meters apart. Delay set ${setMs} milliseconds; ${need.toFixed(1)} needed. ${aligned ? 'Aligned.' : ''}`}
             />
           </StageFit>
         ),
@@ -325,8 +325,8 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>FROM THE CALCULATOR</Eyebrow>
         <Text style={styles.path}>t = d ÷ c · c = 331.3 × √(1 + T/273.15)</Text>
-        <Body>Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C — roughly 2.9 ms per metre. Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
-        <Body>Many engineers then add 5–10 ms MORE on purpose: with the mains arriving first, the ear localises to the stage and the delay tower disappears (the precedence effect). Align first, then decide.</Body>
+        <Body>Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C — roughly 2.9 ms per meter. Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
+        <Body>Many engineers then add 5–10 ms MORE on purpose: with the mains arriving first, the ear localizes to the stage and the delay tower disappears (the precedence effect). Align first, then decide.</Body>
       </Card>
       <Card>
         <Eyebrow>POLARITY, PHASE AND THE SUBWOOFER CROSSOVER</Eyebrow>
@@ -476,9 +476,9 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE ORDER OF OPERATIONS</Eyebrow>
-        <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; about 110–125° off axis for a super- or hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
+        <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; about 110–125° off axis for a super- or hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyzer and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
       </Card>
-      <KeyFact>Feedback is a loop, and it takes off at the first frequency where the gain around the loop passes unity, in phase. Gain-before-feedback is how much level you can add before that happens — won first with geometry, then with lower stage levels, and only last with an equaliser.</KeyFact>
+      <KeyFact>Feedback is a loop, and it takes off at the first frequency where the gain around the loop passes unity, in phase. Gain-before-feedback is how much level you can add before that happens — won first with geometry, then with lower stage levels, and only last with an equalizer.</KeyFact>
       <Card tone="warn">
         <Eyebrow>WHEN IT HAPPENS DURING A PERFORMANCE</Eyebrow>
         <Body>Pull the offending send or channel down first — a hand on the fader beats a search for the frequency. Mute unused microphones as a habit. Then find the frequency and notch it while the room is quiet. Excessive graphic EQ to “fix” feedback leaves a wedge that sounds hollow and still rings somewhere else.</Body>
@@ -487,7 +487,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         question="A wedge rings as the send comes up. Which change buys the MOST gain-before-feedback?"
         options={['Moving the wedge into the microphone’s null', 'Cutting six bands on the graphic EQ', 'Raising the amplifier level', 'Adding compression to the vocal']}
         correct={0}
-        explain="Geometry first: placement changes how much of the loudspeaker the microphone hears at every frequency at once. An equaliser can only treat the frequencies it finds, one at a time, at a tonal cost."
+        explain="Geometry first: placement changes how much of the loudspeaker the microphone hears at every frequency at once. An equalizer can only treat the frequencies it finds, one at a time, at a tonal cost."
       />
     </SoundSystemsRackLayout>
   );

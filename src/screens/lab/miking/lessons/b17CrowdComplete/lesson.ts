@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the viewpoint, the routing, the overlap and every stage first — then reach for processing.',
   },
   practice: {
@@ -178,12 +178,12 @@ const scenarios: MikingScenario[] = [
     id: 'cc.mic.2',
     page: 'microphone',
     prompt: 'You widen an M/S pair’s Side. What happens to the mono sum?',
-    options: ['It stays the Mid alone', 'It gets louder and wider', 'It loses the centre'],
+    options: ['It stays the Mid alone', 'It gets louder and wider', 'It loses the center'],
     correct: 'It stays the Mid alone',
     explain: 'Left = Mid + k × Side and Right = Mid − k × Side: halve their sum and the Side cancels — (L + R) ÷ 2 = Mid, whatever the width. With matched paths and opposite signs.',
     why: {
       'It gets louder and wider': 'Mono has no width, and the Side cancels in the sum.',
-      'It loses the centre': 'The Mid is the center, and it is all the sum keeps.',
+      'It loses the center': 'The Mid is the center, and it is all the sum keeps.',
     },
   },
   {
@@ -323,12 +323,12 @@ const scenarios: MikingScenario[] = [
     id: 'cc.prac.gain',
     page: 'practice',
     prompt: 'In the quiet practice, a gentle collective clap peaks at −26 dBFS. Where do you set the practice gain?',
-    options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought right up to −3 dBFS', 'Left as it is, the files normalised later'],
+    options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought right up to −3 dBFS', 'Left as it is, the files normalized later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: bring it near −12 dBFS as a trial. A real roar can be far louder, so set the event gain from the real crowd, with much more margin. It is an input peak, not a loudness target.',
     why: {
       'The gentle clap brought right up to −3 dBFS': 'With a gentle clap already at −3 dBFS, the first real roar clips.',
-      'Left as it is, the files normalised later': 'Normalising cannot fix a clip, or the noise of a gain set too low.',
+      'Left as it is, the files normalized later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',
     },
   },
   {
@@ -439,7 +439,7 @@ const symptoms: Symptom[] = [
     correct: 'Switch to the verified fallback',
     explain: 'Use the verified stereo or mono fallback and identify the failed version; do not silently relabel a channel or send an unverified subset.',
     why: {
-      'Relabel another channel to fill it': 'A relabelled channel sends sound to the wrong place.',
+      'Relabel another channel to fill it': 'A relabeled channel sends sound to the wrong place.',
       'Send the three channels left': 'An unverified subset is not a known-good version.',
     },
   },
@@ -632,7 +632,7 @@ export const B17_LESSON: Lesson = {
   unknowns: [
     { text: 'The mock venue’s action point, audience places, stereo center, closer viewpoint, action mic and their heights are the lesson’s own; the footprints, the commentary station, the camera view, the access route and the audience’s 1.5 m mouth height are drawing defaults.', dims: [] },
     { text: 'The arena (court, bowl, PA cluster, platforms and spots) is a typical layout drawn at common dimensions, not read from any rulebook.', dims: [] },
-    { text: 'The downmix and delivery figures are labelled examples; the coverage planner’s two layouts are the lesson’s own examples, their counts calculated.', dims: [] },
+    { text: 'The downmix and delivery figures are labeled examples; the coverage planner’s two layouts are the lesson’s own examples, their counts calculated.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

@@ -159,7 +159,7 @@ const ACOUSTIC_ZONES: DocumentedZone[] = [
 /** The amp: the speaker module's own starting points, unchanged in number
  *  and reference (from the grille cloth), with the harp amp's words. */
 const HARP_WORDS: Record<string, { tendency: string; checks: string[] }> = {
-  'cab.boundary': { tendency: 'A dependable first listen on a harp amp: the player’s amplified tone with the speaker’s bite. From here, move toward the centre for more bite or outward for a softer top end — one change at a time.', checks: ['The grille is not touched', 'Which speaker is really sounding', 'The level on the player’s loudest phrase'] },
+  'cab.boundary': { tendency: 'A dependable first listen on a harp amp: the player’s amplified tone with the speaker’s bite. From here, move toward the center for more bite or outward for a softer top end — one change at a time.', checks: ['The grille is not touched', 'Which speaker is really sounding', 'The level on the player’s loudest phrase'] },
   'cab.centre': { tendency: 'Most often more bite and edge — on a distorted harp tone it can turn harsh. If it does, slide toward the edge, keeping the distance.', checks: ['Harshness on the loudest notes', 'The grille is not touched', 'Low end lifted by the closeness'] },
   'cab.edge': { tendency: 'Most often a softer top end and a rounder tone — a tendency to check on this speaker.', checks: ['The notes still clear in the band', 'That it is still the speaker that sounds', 'The grille is not touched'] },
   'cab.mid': { tendency: 'A softer attack, more of the whole amp and a little of the room. In a quiet studio, a second view to compare with the close one.', checks: ['Spill from the band and the monitors', 'Matched level when you compare', 'The pair in mono with the close mic'] },

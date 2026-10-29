@@ -158,14 +158,14 @@ export function EnrollmentSelection({
       <View
         style={s.ghost}
         accessible
-        accessibilityLabel="No certificates or programs yet. Ones you enrol in appear here, beside your topics."
+        accessibilityLabel="No certificates or programs yet. Ones you enroll in appear here, beside your topics."
       >
         <View style={s.ghostThumb}>
           <Text style={s.ghostGlyph}>+</Text>
         </View>
         <View style={{ flex: 1 }}>
           <Text style={s.ghostTitle}>Your certificates and programs</Text>
-          <Text style={s.ghostBody}>Enrol in one and it appears here, beside your topics.</Text>
+          <Text style={s.ghostBody}>Enroll in one and it appears here, beside your topics.</Text>
         </View>
       </View>
     );

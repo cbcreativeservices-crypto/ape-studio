@@ -359,7 +359,7 @@ export const STAGE8_DELIVER: StageDef = {
           fieldId: "archive_copies",
           label: "How many archive copies exist",
           kind: "number",
-          help: "One copy is not an archive. A synchronised folder is not a copy — it propagates deletions.",
+          help: "One copy is not an archive. A synchronized folder is not a copy — it propagates deletions.",
           unit: "copies"
         },
         {
@@ -574,8 +574,8 @@ export const STAGE8_DELIVER: StageDef = {
       severity: "attention",
       kind: "unsafe",
       title: "One copy is not an archive",
-      detail: "There is a single archive copy, or no location is recorded. A synchronised folder is not a second copy either — it faithfully propagates every deletion.",
-      fixHint: "Two copies at minimum, on different media, at least one of them somewhere else, and neither of them synchronised to the other.",
+      detail: "There is a single archive copy, or no location is recorded. A synchronized folder is not a second copy either — it faithfully propagates every deletion.",
+      fixHint: "Two copies at minimum, on different media, at least one of them somewhere else, and neither of them synchronized to the other.",
       needsLogic: true,
       logicIntent: "Fire when archive_copies is a number less than 2, or when archive_copies is set and archive_locations is empty."
     },

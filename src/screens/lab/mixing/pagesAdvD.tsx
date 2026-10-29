@@ -653,7 +653,7 @@ function PageAdvFinal({ ctx }: { ctx: PageCtx }) {
           <Eyebrow>DELIVERED</Eyebrow>
           <Body>
             You diagnosed, repaired, glued, translated and shipped a mix you did not start — the advanced skill in one sentence.
-            {priorities.length === 3 ? ` And your page-2 contract — ${priorities.join(', ')} — did the repair honour it? That question, asked at the end of every mix, is the habit that keeps improving you.` : ''}{' '}
+            {priorities.length === 3 ? ` And your page-2 contract — ${priorities.join(', ')} — did the repair honor it? That question, asked at the end of every mix, is the habit that keeps improving you.` : ''}{' '}
             Both mixing labs are yours now; the deep-dive labs (EQ, dynamics, de-esser, ear training, analyzers) sharpen every edge you just used.
           </Body>
         </Card>

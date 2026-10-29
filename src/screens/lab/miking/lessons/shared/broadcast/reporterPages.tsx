@@ -190,7 +190,7 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
   const verdict =
     pattern === 'omni'
       ? Math.abs(s - 0.5) < 0.08
-        ? 'Shared, the omni favours neither voice — fine in a quiet place, and it needs no rushed aiming. It hears the loud source from every side just as well: being a dynamic does not make it pick out a voice.'
+        ? 'Shared, the omni favors neither voice — fine in a quiet place, and it needs no rushed aiming. It hears the loud source from every side just as well: being a dynamic does not make it pick out a voice.'
         : `Moved ${where}: the speaker is ${Math.round(R.distDb)} dB above the other voice by distance alone — and above the street by the same closeness. The pattern adds nothing: an omni hears all round.`
       : aimMode === 'between'
         ? `Pointed between the mouths, the cardioid serves neither: each voice arrives about ${Math.round(R.offSpeaker / 5) * 5}° off its front. Turn it to whoever is speaking.`

@@ -864,7 +864,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     sourceNotes: [
       'Ruggedized fiber shell systems house standard optical connections (commonly LC-based; fiber count varies by version) — the shell is protection, not a new optical standard: manufacturer documentation — VERIFIED 2026-08-15: Neutrik opticalCON DUO/QUAD product pages',
       'Fiber end-face cleanliness/inspection practice: IEC 61300-3-35 — VERIFIED 2026-08-15: IEC 61300-3-35',
-      'Optical transmitters in comms equipment commonly operate at invisible infrared wavelengths (700–1400 nm retinal hazard); do-not-view guidance: IEC 60825-2 (Safety of optical fibre communication systems) — VERIFIED 2026-08-15: IEC 60825-2',
+      'Optical transmitters in comms equipment commonly operate at invisible infrared wavelengths (700–1400 nm retinal hazard); do-not-view guidance: IEC 60825-2 (Safety of optical fiber communication systems) — VERIFIED 2026-08-15: IEC 60825-2',
       'Some ruggedized fiber chassis accept bare standard LC connectors directly (one-way, system-dependent compatibility): Neutrik opticalCON DUO product documentation — VERIFIED 2026-08-15',
     ],
   },

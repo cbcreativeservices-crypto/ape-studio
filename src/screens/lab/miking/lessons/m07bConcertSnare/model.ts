@@ -98,7 +98,7 @@ export const CSN_ZONES: DocumentedZone[] = [
     drawn: { side: { u0: R, u1: R + 450, v0: -650, v1: -250 }, top: { u0: R, u1: R + 450, v0: -320, v1: 320 } },
     start: { p: { x: 300, y: -380, z: 200 }, az: -34, el: -46 },
     tendency: 'A more balanced drum-and-room picture, closer to what the ensemble mics hear — with more bleed and less gain before feedback on a loud stage.',
-    checks: ['Quiet rolls and accents, not one loud hit', 'How much of the neighbours it hears', 'Whether the main pickup already does this job'],
+    checks: ['Quiet rolls and accents, not one loud hit', 'How much of the neighbors it hears', 'Whether the main pickup already does this job'],
   },
   {
     id: 'csn.bottom',

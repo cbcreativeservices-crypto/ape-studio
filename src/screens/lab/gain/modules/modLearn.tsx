@@ -291,7 +291,7 @@ const LOWHIGH_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Every dB of gain lifts the noise a stage was handed along with the signal. Boost late and you boost the accumulated hiss of everything upstream — the meter reads healthy, the recording hisses. Set a healthy level EARLY instead.',
-  wrongHint: 'Run the TOO LOW scenario and watch the grey band at the bottom of the meters.',
+  wrongHint: 'Run the TOO LOW scenario and watch the gray band at the bottom of the meters.',
 };
 
 const SCENARIOS: Record<string, { pre: number; out: number }> = {
@@ -400,7 +400,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
             {anyClip
               ? 'TOO HIGH: the preamp is clipping — the output is quieter now, but the distortion is baked in.'
               : anyLow
-                ? 'TOO LOW: to make the weak signal usable you piled on gain later — and the grey hiss at the bottom of the meters came up with it.'
+                ? 'TOO LOW: to make the weak signal usable you piled on gain later — and the gray hiss at the bottom of the meters came up with it.'
                 : anyHot
                   ? 'HOT: nothing is clipping yet, but a stage is riding the ceiling — one loud note and it will.'
                   : 'BALANCED: healthy level at every stage, with headroom to spare.'}

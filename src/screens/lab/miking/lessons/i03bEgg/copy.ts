@@ -73,7 +73,7 @@ export const EGG_COPY: LessonCopy = spCopy({
   setting: {
     kitA11y: 'A percussion station from above: the egg player in the middle, other percussion beside them, a drum kit and an amp upstage, a singer’s microphone downstage.',
     kitLanding: 'Tap anything around the egg player — or step through ITEM — to see what it means for an egg mic. There is nothing to answer yet.',
-    kitIdle: 'Egg shakers are quiet and small; around them, loud neighbours — cymbals, drums, amps and voices. The egg chosen matters as much as the mic.',
+    kitIdle: 'Egg shakers are quiet and small; around them, loud neighbors — cymbals, drums, amps and voices. The egg chosen matters as much as the mic.',
     leftHanded: 'Players use one egg or two, in either hand — check the real part and how far apart the hands go.',
     stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
@@ -96,7 +96,7 @@ export const EGG_COPY: LessonCopy = spCopy({
       intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the usual playing area, aimed into it, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. With two eggs close together, one mic between them; wide apart, perhaps one each. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with the same grip and phrase. The distance is to the middle of the motion, not to the nearest excursion.',
       clearance: 'Clearance comes first. At 30 cm a hand may still come close in a big stroke — check the real closest approach. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
-      tendencies: 'If one stroke leaps in level, move back or recentre; if the egg is buried, try closer outside the path, better rejection, or a louder egg. All tendencies to check by ear.',
+      tendencies: 'If one stroke leaps in level, move back or recenter; if the egg is buried, try closer outside the path, better rejection, or a louder egg. All tendencies to check by ear.',
     },
   },
   context: {

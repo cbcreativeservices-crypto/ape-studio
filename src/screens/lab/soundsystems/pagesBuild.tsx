@@ -380,7 +380,7 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
   return (
     <SoundSystemsRackLayout rack={r.rack} caption="Tap PART, pick a part, then tap a highlighted position on the plot. Tap a device, then another, to run a cable; tap a cable to remove it. The loudspeakers light when a source reaches them." wellTop={r.wellTop}>
       <ChapterTag n={0}>BUILD · THE EMPTY VENUE</ChapterTag>
-      <Body>An empty venue in plan — the deck and its riser at the top, wings either side, the audience below — and every part in the catalogue. Build anything; the loudspeakers light when a source reaches them.</Body>
+      <Body>An empty venue in plan — the deck and its riser at the top, wings either side, the audience below — and every part in the catalog. Build anything; the loudspeakers light when a source reaches them.</Body>
       <Prompt>{r.prompt}</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />

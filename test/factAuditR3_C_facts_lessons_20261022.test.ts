@@ -143,7 +143,7 @@ describe('src/data copy', () => {
     assert.ok(!LABREQ.includes('FM is the technique most often used'));
   });
   it('F094184: court acceptance is the requirement; certification is weighed', () => {
-    assert.ok(CRED.includes('requires acceptance as an expert by the court, which usually weighs recognised professional certification'));
+    assert.ok(CRED.includes('requires acceptance as an expert by the court, which usually weighs recognized professional certification'));
   });
   it('F094648: the speed of sound depends on temperature', () => {
     assert.ok(!ABOUT.includes('moving through air at a fixed speed'));

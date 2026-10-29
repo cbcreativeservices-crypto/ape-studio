@@ -61,7 +61,7 @@ export const HORN_ART: LessonArt = {
       nearA11y: 'A horn player from above: the player on a chair facing right, the horn’s bell beside the right thigh pointing back toward a wall, the player’s space hatched, a music stand in front, a second horn to the player’s left and a low-brass player to the right.',
       wideA11y: { stage: 'The same from above, on a stage: the horn player’s wedge in front, a side-fill behind them, off to one side, the wall behind, the audience below.', studio: 'The same from above, in a studio room: a piano to the front left and a main pair in front of the horn; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the horn player — or step through ITEM — to see what it means for a horn mic. There is nothing to answer yet.',
-      nearIdle: 'The bell points back toward the wall; the right hand is in it; the bell may rise for “bells up”. Everything else is a neighbour a horn mic will hear — or a surface that sends the horn on.',
+      nearIdle: 'The bell points back toward the wall; the right hand is in it; the bell may rise for “bells up”. Everything else is a neighbor a horn mic will hear — or a surface that sends the horn on.',
       stageIdle: 'A wedge in front faces the player; a side-fill behind faces across the stage. A mic behind the horn sits between the bell and that fill.',
       studioIdle: 'No monitors: each player hears the band on headphones, from a personal mixer beside them. The room — and, for a recital, the piano and a main pair — are the picture now.',
       before: [

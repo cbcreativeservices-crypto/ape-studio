@@ -51,7 +51,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 20, max: 150 },
     bandProv: ill('Shure prints “2-15 cm” for amplifiers'),
-    radial: { line: 'axis', min: 0, max: 30, prov: ill('“towards the center”: within 3 cm of the speaker’s centre line') },
+    radial: { line: 'axis', min: 0, max: 30, prov: ill('“towards the center”: within 3 cm of the speaker’s center line') },
     requires: { variants: BOTH, micTypeIds: MICS },
     aim: { maxOffAxis: 15, prov: ill('aimed at the center: within 15°') },
     drawn: {
@@ -73,7 +73,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 20, max: 150 },
     bandProv: ill('Shure prints “2-15 cm” for amplifiers'),
-    radial: { line: 'axis', min: R_SUR - 40, max: R_SUR + 10, prov: ill('“towards the edge”: 9–14 cm off the centre (the surround’s radius is a drawing default)') },
+    radial: { line: 'axis', min: R_SUR - 40, max: R_SUR + 10, prov: ill('“towards the edge”: 9–14 cm off the center (the surround’s radius is a drawing default)') },
     requires: { variants: BOTH, micTypeIds: MICS },
     aim: { maxOffAxis: 20, prov: ill('still aimed straight in: within 20°') },
     drawn: {
@@ -82,7 +82,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     },
     start: { p: { x: G + 60, y: -110, z: 0 }, az: 0, el: 0 },
     tendency: 'A smoother, rounder attack — but the percussive bite the part may need can go with it.',
-    checks: ['Does the attack still cut through the band?', 'Move back toward the centre a little at a time'],
+    checks: ['Does the attack still cut through the band?', 'Move back toward the center a little at a time'],
   },
   {
     id: 'cl.angle',

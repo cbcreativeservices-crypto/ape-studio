@@ -58,7 +58,7 @@ export const LABS: Record<LabKind, LabDef> = {
     title: 'Audio Post-Production',
     subtitle: 'Take a finished recording through to a verified delivery.',
     blurb:
-      'Everything between a folder of recordings and a delivery somebody has accepted. Organise it, edit it, ' +
+      'Everything between a folder of recordings and a delivery somebody has accepted. Organize it, edit it, ' +
       'build it, mix it, finish it to the specification, and prove it arrived intact.',
     packetName: 'Delivery Package',
     newProjectNoun: 'project',

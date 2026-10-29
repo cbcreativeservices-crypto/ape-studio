@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'The stroke and the scraper first — then the aim, the support, the stage that overloads, spill and the monitors.',
   },
   practice: {
@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Farther back, to cover the whole path',
     explain: 'Move farther when the instrument or scraper travels widely; never force the player to scrape toward the mic.',
     why: {
-      'Closer, so the ridges dominate the sound': 'Closer favours one section of the stroke.',
+      'Closer, so the ridges dominate the sound': 'Closer favors one section of the stroke.',
       'Into the path, so it follows the scraper': 'Never across the scraper’s path.',
     },
   },
@@ -202,9 +202,9 @@ const scenarios: MikingScenario[] = [
     id: 'gui.place.3',
     page: 'placement',
     prompt: 'Closer to the active ridges: what is the risk?',
-    options: ['One small section of the stroke is overemphasised', 'The room becomes too loud in the recording', 'Less direct sound than from a position farther away'],
-    correct: 'One small section of the stroke is overemphasised',
-    explain: 'Closer gives more direct scrape but can overemphasise a small section and track the body’s movement unevenly.',
+    options: ['One small section of the stroke is overemphasized', 'The room becomes too loud in the recording', 'Less direct sound than from a position farther away'],
+    correct: 'One small section of the stroke is overemphasized',
+    explain: 'Closer gives more direct scrape but can overemphasize a small section and track the body’s movement unevenly.',
     why: {
       'The room becomes too loud in the recording': 'Closer brings less room, not more.',
       'Less direct sound than from a position farther away': 'Closer gives more direct sound.',
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Low thumps or rattles on the scrapes. Where do you look first?',
     options: ['The body, holder or cable touching the stand', 'The ridges — they are wearing out under the scraper', 'The scraper — it needs replacing now'],
     correct: 'The body, holder or cable touching the stand',
-    explain: 'Stabilise the support, clear the cable and reassess the handling.',
+    explain: 'Stabilize the support, clear the cable and reassess the handling.',
     why: {
       'The ridges — they are wearing out under the scraper': 'Thumps point at contact with the stand first.',
       'The scraper — it needs replacing now': 'Check the support and the cable before the scraper.',
@@ -336,7 +336,7 @@ const symptoms: Symptom[] = [
     explain: 'Audition the source, the grip, an alternate surface and a safe mic distance.',
     why: {
       'A deep treble cut on the channel’s EQ to soften the scratch': 'EQ dulls the rasp without adding body.',
-      'A brighter mic, aimed straight at the ridges': 'That favours the scratch even more.',
+      'A brighter mic, aimed straight at the ridges': 'That favors the scratch even more.',
     },
   },
   {

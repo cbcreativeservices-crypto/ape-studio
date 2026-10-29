@@ -34,7 +34,7 @@ function parts(s: TmbState): Part[] {
     const r = TMB_DIMS.crescentR.mm - TMB_DIMS.crescentW.mm / 2;
     const caps = crescentCapsules(s, r);
     return [
-      { id: `tmb.frame.${v}`, label: 'crescent frame (with a grip)', short: 'frame', role: 'A curved half-ring frame with a moulded grip — no head. The player holds it by the grip and shakes or strikes it.', moving: true, prov: TMB_DIMS.crescentR.prov, solid: { kind: 'capsule', a: caps[1].a, b: caps[2].b, r: TMB_DIMS.crescentW.mm / 2 + 6 } },
+      { id: `tmb.frame.${v}`, label: 'crescent frame (with a grip)', short: 'frame', role: 'A curved half-ring frame with a molded grip — no head. The player holds it by the grip and shakes or strikes it.', moving: true, prov: TMB_DIMS.crescentR.prov, solid: { kind: 'capsule', a: caps[1].a, b: caps[2].b, r: TMB_DIMS.crescentW.mm / 2 + 6 } },
       { id: `tmb.jingles.${v}`, label: 'jingle pairs (one row)', short: 'jingles', role: 'Pairs of thin metal discs loose on pins in slots along the frame. Every shake and strike throws them against each other — the whole sound of a headless tambourine.', moving: true, prov: TMB_DIMS.slots.prov, solid: { kind: 'capsule', a: caps[0].a, b: caps[3].b, r: TMB_DIMS.crescentW.mm / 2 } },
     ];
   }

@@ -305,7 +305,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
                 s={scene}
                 wallBehind={wallBehind}
                 register={register}
-                accessibilityLabel={`From above: the horn player, the bell pointing back toward a wall ${(wallBehind / 1000).toFixed(1)} metres behind the chair, and a listener in front. The sound reaching the listener by the wall travels ${(refl.extra / 1000).toFixed(1)} metres farther than the direct way and arrives ${refl.delayMs.toFixed(1)} milliseconds later. ${REG_LABEL[register]}: ${cfg.registers[register]}`}
+                accessibilityLabel={`From above: the horn player, the bell pointing back toward a wall ${(wallBehind / 1000).toFixed(1)} meters behind the chair, and a listener in front. The sound reaching the listener by the wall travels ${(refl.extra / 1000).toFixed(1)} meters farther than the direct way and arrives ${refl.delayMs.toFixed(1)} milliseconds later. ${REG_LABEL[register]}: ${cfg.registers[register]}`}
               />
             ) : (
               <BellSpread w={w} h={h} s={scene} register={register} accessibilityLabel={`From the player's right: the ${lesson.noun.one} with its bell ${orient === 'up' ? 'up' : 'to the front'}. ${REG_LABEL[register]}: ${cfg.registers[register]}`} />

@@ -32,7 +32,7 @@ export const C05A_COPY = stringsCopy({
   coupledNote: 'The head bows in and out round the bridge — a simplified picture of its lowest motion. The next step shows the head’s other shapes, driven off-center by the bridge.',
   setting: {
     kitA11y: 'The banjo player from above, standing with the banjo on a strap, a vocal mic in front of the mouth.',
-    kitIdle: 'The space round a banjo player is theirs: the picking hand and forearm over the head, the fretting hand travelling the neck, and the long neck itself swinging as they move.',
+    kitIdle: 'The space round a banjo player is theirs: the picking hand and forearm over the head, the fretting hand traveling the neck, and the long neck itself swinging as they move.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the player with a floor wedge in front, a shared band mic out front, the band upstage, the PA at the front corners.',
     studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls round them.',
@@ -71,7 +71,7 @@ export const C05A_COPY = stringsCopy({
     body: 'With a wedge in front, a pattern’s rejection is a tool to aim. A tight pattern is not automatically natural: very close miking magnifies a small region and the playing noises.',
     studioId: 'bj.ctx.studio',
     studioPrompt: 'A quiet studio, a good room, solo banjo: when could an omni be the right choice?',
-    studioNote: 'In a quiet, good room an omni near the neck junction gives a detailed, broad view — and the room with it. Try a cardioid when the room or neighbours need more control. Switch back to LIVE for the wedge exercise.',
+    studioNote: 'In a quiet, good room an omni near the neck junction gives a detailed, broad view — and the room with it. Try a cardioid when the room or neighbors need more control. Switch back to LIVE for the wedge exercise.',
   },
   twoMic: {
     variant: 'reso',

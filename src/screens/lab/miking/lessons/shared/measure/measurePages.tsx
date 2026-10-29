@@ -72,7 +72,7 @@ export function useFieldStep(words: FieldStepWords, opts: { fields?: readonly Fi
       : []),
     { kind: 'options', id: 'freq', label: 'PITCH', valueLabel: freq >= 1000 ? `${freq / 1000} kHz` : `${freq} Hz`, selectedId: String(freq), onSelect: (id) => setFreq(Number(id)), options: FREQS.map((f) => ({ id: String(f), label: `${f / 1000} kHz`, blurb: `Wavefronts about ${Math.round(wavelengthMm(f))} mm apart.` })) },
   ];
-  const a11y = `A 1/2 inch measurement microphone drawn at true size, pointing left. ${F.label}: ${F.field}${field === 'freeField' ? ` Sound arriving ${angle} degrees off its axis.` : ''} Wavefronts about ${Math.round(lam)} millimetres apart at ${freq} hertz.`;
+  const a11y = `A 1/2 inch measurement microphone drawn at true size, pointing left. ${F.label}: ${F.field}${field === 'freeField' ? ` Sound arriving ${angle} degrees off its axis.` : ''} Wavefronts about ${Math.round(lam)} millimeters apart at ${freq} hertz.`;
   return {
     key: 'field',
     title: words.title,

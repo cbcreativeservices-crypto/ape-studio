@@ -145,7 +145,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
   const back: P2[] = ol.map(([x, y]) => B({ x, y, z: -rib }));
   const out: { back: Item[]; ribs: Item[]; top: Item[]; above: Item[] } = { back: [], ribs: [], top: [], above: [] };
 
-  // BACK: the plate and its arch on the centre line.
+  // BACK: the plate and its arch on the center line.
   out.back.push(item(back, BACK, { color: OUTLINE, w: 1.6 * k }));
   const archB: P2[] = [];
   for (let i = 0; i <= 40; i++) {
@@ -170,7 +170,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
     ribPath.close();
   }
   out.ribs.push({ path: ribPath, fill: RIB, box: bbox([...top, ...back]) });
-  // TOP: its arch on the centre line (seen edge-on), the plate, grain,
+  // TOP: its arch on the center line (seen edge-on), the plate, grain,
   // purfling, f-holes and a rim light.
   const archT: P2[] = [];
   for (let i = 0; i <= 40; i++) {
@@ -211,7 +211,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
   if (facing > 0.15) out.top.push(item(purf, undefined, { color: '#1c0b02', w: 1.3 * k, opacity: 0.9 }));
   // f-holes (art pass 2026-10-10): the S-shaped stem as a cut of varying
   // width — narrow at its middle, flaring into the WINGS by each eye — the
-  // small upper eye toward the neck and nearer the centre line, the larger
+  // small upper eye toward the neck and nearer the center line, the larger
   // lower eye toward the tail and farther out, and the nicks on the bridge
   // line. Each point sits on the arch.
   const [fx0, fx1] = spec.fholeX;
@@ -241,7 +241,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
       // Stem width: 0.032 fl at its middle, the wings to 0.075 fl near each eye.
       const wing = Math.exp(-(((t - 0.16) / 0.09) ** 2)) * 0.8 + Math.exp(-(((t - 0.84) / 0.09) ** 2));
       const w = fl * (0.032 + 0.043 * wing);
-      // The wings flare to the f-hole's outer side (away from the centre line).
+      // The wings flare to the f-hole's outer side (away from the center line).
       const nx = -ty / tl;
       const ny = tx / tl;
       const outSide = Math.sign(ny * s) || 1;

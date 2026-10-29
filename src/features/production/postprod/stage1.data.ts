@@ -59,7 +59,7 @@ export const STAGE1_BRIEF: StageDef = {
           fieldId: "client",
           label: "Client or producer",
           kind: "text",
-          help: "The person or organisation the work is for.",
+          help: "The person or organization the work is for.",
           required: true
         },
         {
@@ -428,7 +428,7 @@ export const STAGE1_BRIEF: StageDef = {
       detail: "\"The label\", \"the team\" or two names joined by \"and\" is not an approval authority. When two of them disagree, nothing is approved and the work stops.",
       fixHint: "Name one person. Others can be consulted; one decides.",
       needsLogic: true,
-      logicIntent: "Fire when approval_authority is filled and either names more than one person (an 'and', an '&', a comma or a slash) or reads as an organisation rather than a person, such as team, label, committee, board, client or department."
+      logicIntent: "Fire when approval_authority is filled and either names more than one person (an 'and', an '&', a comma or a slash) or reads as an organization rather than a person, such as team, label, committee, board, client or department."
     },
     {
       ruleId: "brief-material-still-changing",
@@ -491,7 +491,7 @@ export const STAGE1_BRIEF: StageDef = {
       severity: "blocker",
       kind: "missing",
       title: "Picture work with no frame rate agreed",
-      detail: "This job involves picture and the frame rate has not been established. Every synchronisation decision, every timecode reference and every export depends on it, and getting it wrong is not a small correction later.",
+      detail: "This job involves picture and the frame rate has not been established. Every synchronization decision, every timecode reference and every export depends on it, and getting it wrong is not a small correction later.",
       fixHint: "Get the frame rate from the picture department in writing, along with whether the timecode is drop-frame, and the program start.",
       needsLogic: true,
       logicIntent: "Fire only on the pathways where frame_rate exists, when frame_rate is unknown or empty. Do not fire when it is set to none, which is the answer for an audio-only job.",

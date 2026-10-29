@@ -451,8 +451,8 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
                 : `Here the cone is large next to the wavelength, so the sound narrows into a beam: half the level (−6 dB) by about ±${Math.round(half)}° off the axis. A mic off to the side hears less of these highs.`}
             </Point>
           </Card>
-          <Note>{`This beam is a far-field picture. At ${fmtHz(fHz)} it only applies from ${fmtLen(farFrom)} out. A mic a few centimetres from the grille sits in the speaker’s near field, where the spot it faces on the cone matters more — the next step.`}</Note>
-          {inNearField(50, fHz) ? null : <Note>At this low pitch the wide pattern already holds a few centimetres from the cone, so even a close mic hears it spread wide.</Note>}
+          <Note>{`This beam is a far-field picture. At ${fmtHz(fHz)} it only applies from ${fmtLen(farFrom)} out. A mic a few centimeters from the grille sits in the speaker’s near field, where the spot it faces on the cone matters more — the next step.`}</Note>
+          {inNearField(50, fHz) ? null : <Note>At this low pitch the wide pattern already holds a few centimeters from the cone, so even a close mic hears it spread wide.</Note>}
         </>
       ),
     },
@@ -664,7 +664,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
             accessibilityLabel={scene === 'stage' ? `A stage from above: a guitar combo on the backline with its player in front and the guitarist's wedge downstage, a side fill, a drum kit, an organ with its bench and pedals and the rotary cabinet beside it, and the audience and PA.${ps ? ` Highlighted: ${ps.label}.` : ''}` : `A studio room from above: the guitar combo, the organ and the rotary cabinet, no monitors on the floor — each player's headphone mixer, fed from the control room.${ps ? ` Highlighted: ${ps.label}.` : ''}`}
           />
         ),
-        badge: scene === 'stage' ? 'From above · a typical layout · grey dashes = the players’ space, keep clear' : 'From above · a typical studio room',
+        badge: scene === 'stage' ? 'From above · a typical layout · gray dashes = the players’ space, keep clear' : 'From above · a typical studio room',
         bezel: [
           { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },
           { k: 'FOR A MIC', v: ps ? ps.tag : '—', flex: 1.4 },
@@ -1011,7 +1011,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         <>
           <Landing looking={`The rotary cabinet · ${ARR.find((a) => a.id === arr)!.label.toLowerCase()}`} prompt={power ? 'Run it, slow then fast: watch which mic each bell points at as it turns. Switch the cabinet OFF to move a mic.' : 'With the cabinet OFF, choose a PICKUP and set the DISTANCE. Build an upper-and-lower pickup inside the starting range — then switch it on.'} />
           <Card>
-            <Point title="WHERE WE SUGGEST YOU BEGIN">{`Start about 7.5–30 cm (3–12 in) outside the upper louvers, and the same outside a lower opening. Side mics can sit from a few centimetres to about 30 cm out, just under the top louvers. A pair farther back: about 2 m, in a good room.`}</Point>
+            <Point title="WHERE WE SUGGEST YOU BEGIN">{`Start about 7.5–30 cm (3–12 in) outside the upper louvers, and the same outside a lower opening. Side mics can sit from a few centimeters to about 30 cm out, just under the top louvers. A pair farther back: about 2 m, in a good room.`}</Point>
           </Card>
           <Body>{`Activity: an upper-and-lower pickup built outside, in range, with the cabinet off — ${built ? 'done' : 'not yet'}.`}</Body>
           {!allIn ? <Note tone="warn">{mics.some((m) => distanceFromCabinet(m) < LESLIE_RANGES.close.min && m.level !== 'room') ? 'Closer than the starting range: keep every mic clear of the openings and the moving air — move it out.' : 'Farther than the starting range: try it closer, from outside.'}</Note> : null}

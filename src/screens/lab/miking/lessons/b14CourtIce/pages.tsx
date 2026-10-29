@@ -52,7 +52,7 @@ function B14Meet(p: PageProps) {
         title="THE PRACTICE LINE"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice line from above: a straight mock boundary, the source points A, B and C 2, 5 and 8 metres inside it, the mic mark M 3 metres outside, all on one line." labels={venueLabels(PRACTICE_LINE, { layers: true })}>
+          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice line from above: a straight mock boundary, the source points A, B and C 2, 5 and 8 meters inside it, the mic mark M 3 meters outside, all on one line." labels={venueLabels(PRACTICE_LINE, { layers: true })}>
             {(px) => <VenuePlan scene={PRACTICE_LINE} px={px} />}
           </FieldStage>
         )}

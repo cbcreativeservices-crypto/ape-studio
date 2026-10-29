@@ -854,7 +854,7 @@ export function SignalGenScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityState={{ selected: colorsOn }}
               aria-pressed={colorsOn}
-              accessibilityLabel="Toggle MIDI amplitude colours on the waveform"
+              accessibilityLabel="Toggle MIDI amplitude colors on the waveform"
             >
               <Text style={[styles.colorsBtnText, colorsOn && styles.colorsBtnTextOn]}>COLORS</Text>
             </Pressable>

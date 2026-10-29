@@ -1014,7 +1014,7 @@ const WS_MIC_GAIN: Workspace = {
       plainFormula:
         'The maximum SPL equals 93.98 (the SPL of exactly 1 pascal) plus the preamp’s input clip level in dBu, minus the mic’s output level at 1 pascal.',
       explain:
-        'Where the mic’s own output reaches the preamp’s input clip point at minimum gain — engage a pad before this SPL. With more gain dialled in, the preamp clips sooner. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
+        'Where the mic’s own output reaches the preamp’s input clip point at minimum gain — engage a pad before this SPL. With more gain dialed in, the preamp clips sooner. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
       keySymbols: ['−'],
       note: 'Where the MIC OUTPUT alone hits the preamp’s input clip point — engage a pad before this, and remember the mic has its own max-SPL limit too.',
       compute: (v) => {

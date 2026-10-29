@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the claves by its properties — pattern, power, size and how it handles brief peaks — not by its brand.',
     credit: { scenarios: ['clv.mic.1', 'clv.mic.peak', 'clv.mic.power', 'clv.mic.omni', 'clv.rec.1'], note: 'Answer the five checks (one reaches back to how the claves sound).' },
-    takeaway: 'A small condenser can show the short decay; a dynamic can also suit. A cardioid helps against room and neighbours; an omni only in a quiet, good room.',
+    takeaway: 'A small condenser can show the short decay; a dynamic can also suit. A cardioid helps against room and neighbors; an omni only in a quiet, good room.',
   },
   placement: {
     title: 'Placement Studio',
@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the grip and the pair first — then distance, the striking area’s motion, spill and the monitors — before gain or EQ.',
   },
   practice: {
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'From a mic farther back, what tends to change?',
     options: ['Click and body cohere, with more room and spill', 'The click gets sharper as the room gets quieter', 'Nothing: distance does not change a clave'],
     correct: 'Click and body cohere, with more room and spill',
-    explain: 'Close placement favours direct sound; moving away lets strike and body cohere — at the cost of more room and competing sound.',
+    explain: 'Close placement favors direct sound; moving away lets strike and body cohere — at the cost of more room and competing sound.',
     why: {
       'The click gets sharper as the room gets quieter': 'Farther brings more room, not less.',
       'Nothing: distance does not change a clave': 'Distance changes the direct-to-room balance.',
@@ -354,7 +354,7 @@ const symptoms: Symptom[] = [
   {
     id: 'clv.s.spill',
     observation: 'Cymbal or snare dominates the clave channel',
-    firstChecks: 'Is the direct clave sound too low against the neighbours?',
+    firstChecks: 'Is the direct clave sound too low against the neighbors?',
     options: ['The player’s and the mic’s position, and the pattern', 'More gain on the clave channel until it wins', 'A gate set to open only on the clave strikes'],
     correct: 'The player’s and the mic’s position, and the pattern',
     explain: 'Move the player or the mic and use the pattern’s rejection; test with the full band.',
@@ -426,11 +426,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'clv.q.2',
     covers: 'instrument',
     prompt: '“Clave” names two things. Which does this lesson mic?',
-    options: ['The pair of wooden sticks, the instrument', 'The rhythmic pattern that organises the music', 'Both — the pattern decides the placement'],
+    options: ['The pair of wooden sticks, the instrument', 'The rhythmic pattern that organizes the music', 'Both — the pattern decides the placement'],
     correct: 'The pair of wooden sticks, the instrument',
     explain: 'Clave is also a rhythmic pattern; this lesson is about picking up the instrument.',
     why: {
-      'The rhythmic pattern that organises the music': 'The pattern belongs in a music lesson; here, the instrument.',
+      'The rhythmic pattern that organizes the music': 'The pattern belongs in a music lesson; here, the instrument.',
       'Both — the pattern decides the placement': 'The instrument and its motion decide the placement.',
     },
   },
@@ -511,7 +511,7 @@ export const I05B_LESSON: SpLesson = {
     items: [
       { id: 'claves', label: 'the clave player at the station', short: 'CLAVES', note: 'At a percussion station, both hands in use. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal: the player may switch between them; a shared mic may serve if positions and levels suit.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few metres away: raising the clave channel raises them too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: raising the clave channel raises them too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the clave mic’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'vocal', label: 'a singer’s microphone', short: 'VOCAL MIC', note: 'If the player sings, the vocal mic hears the click — a second channel does not remove it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       ...stageItems('the claves', 'An ensemble, main or percussion-area mic may already give a balanced clave pulse; a spot is added only for its own level.'),

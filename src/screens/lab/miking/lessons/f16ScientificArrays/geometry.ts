@@ -24,7 +24,7 @@ import type { TestSpeakerGeom } from '../shared/measure/MeasureArt';
 export const FLOOR16 = 1200;
 /** The baseline (mm): the element spacing, and the wider one. */
 export const BASE = { b: 500, wide: 1000 };
-/** The source line: the centre point and the side point (mm, drawing defaults). */
+/** The source line: the center point and the side point (mm, drawing defaults). */
 export const CENTRE_PT: Vec3 = { x: 2000, y: 0, z: 0 };
 export const SIDE_PT: Vec3 = { x: 2000, y: 0, z: 1000 };
 /** The room (drawing default). */

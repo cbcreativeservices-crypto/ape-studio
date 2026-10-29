@@ -33,7 +33,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the voices come from',
-    goal: 'See where speech leaves each talker, what turning to a neighbour does at a fixed mic, and what every extra open mic adds to the mix and costs in margin.',
+    goal: 'See where speech leaves each talker, what turning to a neighbor does at a fixed mic, and what every extra open mic adds to the mix and costs in margin.',
     credit: { scenarios: ['b6.snd.1', 'b6.snd.2', 'b6.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Every distance is read from the lips. A turn swings the voice off a fixed mic; every open mic hears the others later and lower, and costs margin before feedback. Tendencies, and panels vary.',
   },
@@ -53,7 +53,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a panel gooseneck about 20–30 cm from the mouth, a little below its line, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
     credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbour and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbor and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -70,7 +70,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause and the route first — the distance, the turn, the open mics, the handoff, what each feed carries — before reaching for gain or processing.',
   },
   practice: {
@@ -92,10 +92,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b6.snd.1',
     page: 'sound',
-    prompt: 'A panelist turns to answer the neighbour. What happens at their gooseneck, fixed on the table?',
+    prompt: 'A panelist turns to answer the neighbor. What happens at their gooseneck, fixed on the table?',
     options: ['The voice swings off its axis and dulls', 'The gooseneck bends round to follow them', 'Nothing, as long as the talker stays seated'],
     correct: 'The voice swings off its axis and dulls',
-    explain: 'The gooseneck stays where it was bent; the mouth turns. Off its axis the voice is duller — and it now points more toward the neighbour’s mic.',
+    explain: 'The gooseneck stays where it was bent; the mouth turns. Off its axis the voice is duller — and it now points more toward the neighbor’s mic.',
     why: {
       'The gooseneck bends round to follow them': 'A gooseneck holds the shape it was bent to.',
       'Nothing, as long as the talker stays seated': 'A turn of the head is enough to move the mouth off the axis.',
@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The speaker later and lower, and more room',
     explain: 'Each open mic hears the speaker from farther away — later and lower — plus the room. Summed, the speaker combs; live, each doubling of open mics costs about 3 dB of margin.',
     why: {
-      'Nothing, because each mic is aimed elsewhere': 'A mic aimed elsewhere still hears a voice a metre away, lower but clearly.',
+      'Nothing, because each mic is aimed elsewhere': 'A mic aimed elsewhere still hears a voice a meter away, lower but clearly.',
       'Only the other panelists’ breathing': 'They hear the speaker too, and the room.',
     },
   },
@@ -119,7 +119,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a shared boundary mic between two panelists change more with each head turn?',
     options: ['It is farther from each mouth than a gooseneck', 'It hears only the talker on its left side', 'A boundary mic only works when people are silent'],
     correct: 'It is farther from each mouth than a gooseneck',
-    explain: 'Farther away and low on the table, the voice is a smaller part of what it hears. When a turn dulls the voice, it sinks further into the room and the table — and the mic hears more of the neighbour.',
+    explain: 'Farther away and low on the table, the voice is a smaller part of what it hears. When a turn dulls the voice, it sinks further into the room and the table — and the mic hears more of the neighbor.',
     why: {
       'It hears only the talker on its left side': 'It hears both — that is the idea of sharing it.',
       'A boundary mic only works when people are silent': 'It works for speech; it is simply farther from each mouth.',
@@ -168,10 +168,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Two panel mics are open, one panelist speaks. What reaches the mix twice?',
     options: ['That panelist’s voice, the far copy later', 'Nothing, because each mic has its own talker', 'Only the room, and not a voice'],
     correct: 'That panelist’s voice, the far copy later',
-    explain: 'The speaker reaches their own mic first and the neighbour’s later; summed, some frequencies cancel.',
+    explain: 'The speaker reaches their own mic first and the neighbor’s later; summed, some frequencies cancel.',
     why: {
-      'Nothing, because each mic has its own talker': 'Each mic also hears the neighbours.',
-      'Only the room, and not a voice': 'A voice a metre away reaches the mic clearly.',
+      'Nothing, because each mic has its own talker': 'Each mic also hears the neighbors.',
+      'Only the room, and not a voice': 'A voice a meter away reaches the mic clearly.',
     },
   },
   {
@@ -276,7 +276,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A press conference with a PA. A fair first step for the lectern mic?',
     options: ['Close to the mouth, its rejection toward the PA', 'Farther back, so that it covers the whole stage', 'Turned up until it is louder than the PA'],
     correct: 'Close to the mouth, its rejection toward the PA',
-    explain: 'In a live room, prioritise proximity, the PA’s place and the smallest useful set of open mics; aim the pattern’s rejection toward the loudspeaker.',
+    explain: 'In a live room, prioritize proximity, the PA’s place and the smallest useful set of open mics; aim the pattern’s rejection toward the loudspeaker.',
     why: {
       'Farther back, so that it covers the whole stage': 'Farther from the mouth, it hears more PA and room: less margin.',
       'Turned up until it is louder than the PA': 'More gain brings feedback closer.',
@@ -519,7 +519,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'sound',
-    prompt: 'A panelist turns to a neighbour. What happens at their fixed gooseneck?',
+    prompt: 'A panelist turns to a neighbor. What happens at their fixed gooseneck?',
     options: ['The voice swings off its axis and dulls', 'The gooseneck bends to follow the turning head', 'Nothing while they stay seated'],
     correct: 'The voice swings off its axis and dulls',
     explain: 'The gooseneck holds still while the mouth turns.',

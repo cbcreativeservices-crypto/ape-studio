@@ -294,7 +294,7 @@ const RFLINK: Workspace = {
   warnings:
     'Free-space (Friis) path loss only: FSPL(dB) = 20·log₁₀(4πd/λ) = 20·log₁₀(d) + 20·log₁₀(f) − ' + FSPL_K_TXT + ' ' +
     '(d in m, f in Hz; the same as + 32.45 with d in km and f in MHz). It assumes clear line of sight, ' +
-    'matched polarisation and the far field — distances under one wavelength are refused. Real ' +
+    'matched polarization and the far field — distances under one wavelength are refused. Real ' +
     'environments add ground reflection, multipath, body and obstruction loss, and noise — always ' +
     'keep margin well above zero. Enter frequency in MHz; powers in dBm.',
   glossary: ['Radio Frequency', 'Wireless microphone system', 'Decibel', 'Antenna', 'Gain'],
@@ -317,7 +317,7 @@ const RFLINK: Workspace = {
       plainFormula:
         'The free-space path loss in dB equals twenty times the base-ten log of the distance, plus twenty times the base-ten log of the frequency, minus ' + FSPL_K_TXT + '.',
       explain:
-        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so a higher band loses more over the same path; ' + FSPL_K_TXT + ' is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
+        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so a higher band loses more over the same path; ' + FSPL_K_TXT + ' is the constant that makes it work with distance in meters and frequency in hertz. Walls and bodies add more on top.',
       keySymbols: ['·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;

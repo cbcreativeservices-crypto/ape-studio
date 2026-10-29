@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the euphonium’s surroundings — the chair and the path to stand, both valve hands, the bell’s tilt, the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the euphonium’s surroundings — the chair and the path to stand, both valve hands, the bell’s tilt, the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['eu.set.1', 'eu.set.2', 'eu.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bell, both valve hands and the player’s path to stand are the player’s space: no mic, boom or cable goes there. Identify the horn and its bell, hear the line, and protect your hearing.',
   },
@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the angle and distance, the gain stages, a filter, the room, the balance with the ensemble and the mount — before reaching for tone controls.',
   },
   practice: {
@@ -214,11 +214,11 @@ const scenarios: MikingScenario[] = [
     id: 'eu.place.2',
     page: 'placement',
     prompt: 'For a lyrical line, your mic is about 60 cm above an upright bell, aimed toward its edge, clear of the player rising. A sensible place to begin?',
-    options: ['Yes — then compare a closer, slightly off-axis spot', 'No — it belongs right over the bell’s centre', 'No — lower it into the bell for more warmth'],
+    options: ['Yes — then compare a closer, slightly off-axis spot', 'No — it belongs right over the bell’s center', 'No — lower it into the bell for more warmth'],
     correct: 'Yes — then compare a closer, slightly off-axis spot',
     explain: 'That is the above-the-bell starting point: open and rounded, with the room and the section. Compare a closer view at matched level before deciding.',
     why: {
-      'No — it belongs right over the bell’s centre': 'Directly over the center emphasises one local, direct sound. Toward the edge is the suggestion.',
+      'No — it belongs right over the bell’s center': 'Directly over the center emphasizes one local, direct sound. Toward the edge is the suggestion.',
       'No — lower it into the bell for more warmth': 'A mic never goes into the bell — and a ribbon there would meet the bell’s air.',
     },
   },
@@ -425,7 +425,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A stereo pair on the euphonium alone, to make the solo wider', ok: false, power: 'phantom', feedback: 'One player inside the band does not need a stereo pair; it pulls the image apart.' },
       { id: 'e', label: 'Turn the main pair up until the solo stands out', ok: false, power: 'phantom', feedback: 'That raises the whole band with it. A gentle spot gives the line its own share.' },
     ],
-    reasons: [docReason('the bell'), clearReason('the bell’s tilt, both valve hands and the neighbours'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('euphonium'), { id: 'r.size', label: 'A larger diaphragm will make the solo rounder', role: 'wrong', feedback: 'No guarantee: the actual mic and its placement decide.' }],
+    reasons: [docReason('the bell'), clearReason('the bell’s tilt, both valve hands and the neighbors'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('euphonium'), { id: 'r.size', label: 'A larger diaphragm will make the solo rounder', role: 'wrong', feedback: 'No guarantee: the actual mic and its placement decide.' }],
     explain: 'Two spots pass. What passes is the reasoning: a sensible starting point, clearance, the right power and a ribbon kept out of the air — and a spot that supports the main pair rather than replacing it.',
   },
 ];
@@ -481,7 +481,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A mic farther from the bell, compared with a close one, tends to hear…',
     options: ['More of the room and the section', 'More valve and breath detail', 'None of the euphonium’s overtones'],
     correct: 'More of the room and the section',
-    explain: 'Farther away, the bell, the room and the neighbours blend; close up, local bell, valve and breath detail dominate.',
+    explain: 'Farther away, the bell, the room and the neighbors blend; close up, local bell, valve and breath detail dominate.',
     why: {
       'More valve and breath detail': 'That is what a close mic tends to hear.',
       'None of the euphonium’s overtones': 'A farther mic still hears the overtones — blended with the room.',

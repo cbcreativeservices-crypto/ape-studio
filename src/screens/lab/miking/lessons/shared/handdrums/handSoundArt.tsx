@@ -476,7 +476,7 @@ export function StrokeMap({ w, h, drum, head, stroke, accessibilityLabel, scaleR
     });
   }, [rowH]);
   const skin = head === 'rawhide' ? RAWHIDE : head === 'goat' ? GOAT : FILM;
-  // The strike point: toward the player (−x, drawn to the LEFT of centre).
+  // The strike point: toward the player (−x, drawn to the LEFT of center).
   const sx = stroke.frac == null ? -rr - 4 : -stroke.frac * R;
   // The hand from above, placed by the stroke: flat fingers' pads on the spot
   // (open / muted tone), the palm's centre on it (bass), or the cupped

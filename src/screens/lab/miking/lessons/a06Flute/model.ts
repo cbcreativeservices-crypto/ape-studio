@@ -45,7 +45,7 @@ const CLOSE_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 30, prov: ill('aimed at the flute between the lip plate and the left hand: within 30°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.between, N_KEYS, 65, 50, 100),
-  tendency: 'Detail and separation: the tone, the attack and some air. Close to the mouth, breath and wind can take over — move a few centimetres and recheck low and high passages; an omni can be less sensitive to wind here.',
+  tendency: 'Detail and separation: the tone, the attack and some air. Close to the mouth, breath and wind can take over — move a few centimeters and recheck low and high passages; an omni can be less sensitive to wind here.',
   checks: ['The capsule outside the air jet, not blowing into it', 'The head’s turn and the flute’s swing clear of the mic', 'Breath, lips and key clicks against the tone'],
 };
 
@@ -64,8 +64,8 @@ const BEHIND_Z: Omit<DocumentedZone, 'start'> = {
   aimAt: { surface: 'holes', r: 200, prov: ill('aimed at the finger holes: the mic’s axis meets the holes’ plane within 20 cm of them') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.head, BEHIND_DIR, 35, 190, 330),
-  tendency: 'A natural balance with less breath — the air jet blows away from the mic. Watch the head’s movement and how much of the neighbours it hears.',
-  checks: ['The boom and stand clear of a turning head and the flute’s swing', 'Balance as the player moves their head', 'Spill from neighbours behind the player'],
+  tendency: 'A natural balance with less breath — the air jet blows away from the mic. Watch the head’s movement and how much of the neighbors it hears.',
+  checks: ['The boom and stand clear of a turning head and the flute’s swing', 'Balance as the player moves their head', 'Spill from neighbors behind the player'],
 };
 
 const FRONT_Z: Omit<DocumentedZone, 'start'> = {
@@ -103,7 +103,7 @@ const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 45, dir: TOWARD_HEAD, prov: ill('aimed back along the flute, toward the keys: within 45°') },
   requires: { micTypeIds: ['wwMini'], variants: [...KEYED] },
   draw: draws(A.foot, N_KEYS, 75, 30, 110),
-  tendency: 'A steady close sound that moves with the flute — useful for a moving player. It can favour the holes and the keys over the embouchure: test the whole register.',
+  tendency: 'A steady close sound that moves with the flute — useful for a moving player. It can favor the holes and the keys over the embouchure: test the whole register.',
   checks: ['A clip made for this flute, with the player’s agreement', 'Nothing over a hole, a key, a rod, a pad or a joint', 'The cable relieved, clear of the right hand'],
 };
 
@@ -122,7 +122,7 @@ const HEADSET_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 40, prov: ill('aimed at the embouchure hole: within 40°') },
   requires: { micTypeIds: ['wwHeadset'] },
   draw: draws(A.emb, HEADSET_DIR, 45, 40, 95),
-  tendency: 'A fixed view that follows the head — it favours the embouchure: more air and attack, less of the holes. Test feedback and the whole register.',
+  tendency: 'A fixed view that follows the head — it favors the embouchure: more air and attack, less of the holes. Test feedback and the whole register.',
   checks: ['The capsule out of the air jet', 'A headset the player agrees to wear', 'Feedback with the monitors at show level'],
 };
 

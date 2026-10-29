@@ -185,7 +185,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
               <SectionTitle>TUNING AS A SET</SectionTitle>
               <Card>
                 <Point title="A practical range for each drum">Start each drum in the band where it responds well (Chapter 2's starting bands), then nudge toward the sound you want. A drum fighting its range costs tone on every hit.</Point>
-                <Point title="Separation between the toms">Toms tuned too close crowd together — a fill reads as one drum repeated. A clear step between neighbours (many players aim for about a third to a fifth; the drums decide) keeps every drum its own voice. Too wide, and the kit falls apart into unrelated drums.</Point>
+                <Point title="Separation between the toms">Toms tuned too close crowd together — a fill reads as one drum repeated. A clear step between neighbors (many players aim for about a third to a fifth; the drums decide) keeps every drum its own voice. Too wide, and the kit falls apart into unrelated drums.</Point>
                 <Point title="Listen in the musical context">A tom that sounds perfect alone may sit under the bass guitar or on top of the vocal. Tune with the band's recordings playing, at the volume the drums will be played.</Point>
                 <Point title="Recheck after moving or re-heading">Temperature, humidity, a van ride and a new head all move tuning. Walk the lugs again before the gig.</Point>
                 <Point title="Write it down">The next steps build the tom range and save notes you can reproduce.</Point>
@@ -229,7 +229,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
               <DrumStatus playing={rack.playing || floor.playing || both.playing} pending={rack.pending || floor.pending || both.pending} failed={rack.failed || floor.failed || both.failed} rendering={rack.status === 'rendering' || floor.status === 'rendering' || both.status === 'rendering'} idle="stopped · ride RACK and FLOOR, then ▶ BOTH" label={both.playing || both.pending ? 'rack then floor' : rack.playing || rack.pending ? 'the rack tom' : 'the floor tom'} />
               <Feedback tone={verdict.kind === 'distinct' ? 'ok' : 'warn'}>{verdict.message}</Feedback>
               <Card>
-                <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighbouring toms with both drums in their bands. TOO CLOSE: under that. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>
+                <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighboring toms with both drums in their bands. TOO CLOSE: under that. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>
                 <Point title="Credit">Reach DISTINCT and hear ▶ BOTH. With two toms placed, a third sits between or above; the snare and kick are tuned for their own jobs (Chapter 5).</Point>
               </Card>
             </>

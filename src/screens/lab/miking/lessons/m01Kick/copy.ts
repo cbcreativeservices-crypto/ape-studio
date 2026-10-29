@@ -31,9 +31,9 @@ export const KICK_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: '1', label: '1 IN ABOVE', mm: 1 * IN, blurb: '1 in (25 mm) above the centre — a common strike point.' },
-      { id: '2', label: '2 IN ABOVE', mm: 2 * IN, blurb: '2 in (51 mm) above the centre — about as high as a beater usually strikes.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
+      { id: '1', label: '1 IN ABOVE', mm: 1 * IN, blurb: '1 in (25 mm) above the center — a common strike point.' },
+      { id: '2', label: '2 IN ABOVE', mm: 2 * IN, blurb: '2 in (51 mm) above the center — about as high as a beater usually strikes.' },
     ],
     strikeDefault: '1',
     striker: 'BEATER',
@@ -48,7 +48,7 @@ export const KICK_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the front head OUTWARD, away from the player — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads spring back and keep ringing for a while — the BODY of the sound. How long depends on the tuning, the damping and the drum (the Drum Tuning Lab covers that).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Beaters usually strike at the centre or 1–2 in above it.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Beaters usually strike at the center or 1–2 in above it.',
       'This is a simplified head in empty space. On a real kick, the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the kick',
@@ -58,7 +58,7 @@ export const KICK_COPY: LessonCopy = {
   setting: {
     kitA11y: 'The drum kit from above: the kick in the middle, its pedal and the throne behind it, the hi-hat and snare to the player\'s left, the floor tom to the right, two rack toms over the kick, and the cymbals above.',
     kitLanding: 'Tap anything around the kick — or step through ITEM — to see what it means for a kick mic. There is nothing to answer yet.',
-    kitIdle: 'The kick sits in the middle of the kit, on the floor, with the player behind its batter head. Everything around it is either the player’s space or a loud neighbour.',
+    kitIdle: 'The kick sits in the middle of the kit, on the floor, with the player behind its batter head. Everything around it is either the player’s space or a loud neighbor.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hat on the right, the floor tom on the left.',
     stageA11y: 'The kit on a stage, from above: the drummer\'s fill monitor beside the throne, a downstage wedge on the audience side of the kick, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room\'s walls around it.',
@@ -76,12 +76,12 @@ export const KICK_COPY: LessonCopy = {
     workedClear: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: { intact: ' A stand mic cannot pass an intact head: mic it from outside.' },
     reveal: 'Moving toward the front head tends to bring more resonance — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
-    typeNotes: { kickDynCard: 'Ideas to try with this kind of mic: a few centimetres from the batter head (lots of attack, dry), or midway between the heads (less attack). Another experiment on a real drum: turn the mic away from where the beater strikes, and listen for whether the attack eases.' },
+    typeNotes: { kickDynCard: 'Ideas to try with this kind of mic: a few centimeters from the batter head (lots of attack, dry), or midway between the heads (less attack). Another experiment on a real drum: turn the mic away from where the beater strikes, and listen for whether the attack eases.' },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Port air can pop a mic — try changing the mic’s angle in the hole rather than pushing it farther in, if that would narrow the clearance.',
     availableLead: 'Starting points for this mic and head',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum is different.',
-      separate: 'Height, distance and angle are separate variables: change one at a time. A starting point that names an aim (“facing the beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Height, distance and angle are separate variables: change one at a time. A starting point that names an aim (“facing the beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Moving toward the beater side often increases the emphasis of attack; toward the front head can reveal more resonance — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows as it nears a radiating surface; how much depends on the source’s size and the mic, and close to a large head it is usually less than a point-source chart suggests.',
     },
@@ -116,7 +116,7 @@ export const KICK_COPY: LessonCopy = {
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: an intact front head may be miked from outside on stage, and an internal close mic may suit a studio session.',
       points: [
-        { title: 'HOW MUCH ROOM', text: 'Studio: an outside or more distant perspective may help when the room contributes usefully. Live: stage spill and the available gain before feedback may favour close, directional pickup.' },
+        { title: 'HOW MUCH ROOM', text: 'Studio: an outside or more distant perspective may help when the room contributes usefully. Live: stage spill and the available gain before feedback may favor close, directional pickup.' },
         { title: 'HOW MANY MICS', text: 'Studio: a second mic can offer a complementary perspective if it improves the combined sound. Live: start with the open mics actually needed — extra channels add spill and acoustic interactions.' },
         { title: 'WHAT THE KICK NEEDS TO DO', text: 'Studio: judge it against the bass and the kit perspective. Live: first consider the acoustic kick the audience already hears, and what the PA needs to add.' },
         { title: 'MOUNTING', text: 'Studio: repeated trials are practical when the performer stops. Live: stable, repeatable mounting and a protected cable route matter most during a show.' },
@@ -132,7 +132,7 @@ export const KICK_COPY: LessonCopy = {
       'A common idea: a boundary mic inside for the attack, and a kick dynamic near the port for low-frequency weight. The point is to blend two different perspectives — two mics are not automatically better. Start with each mic useful on its own.',
       'When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and check it with the rest of the kit. If it loses body or turns uneven, adjust position and level, or leave the second mic out.',
     ],
-    warn: 'The inside and outside mics hear DIFFERENT surfaces of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold a few centimetres from a 56 cm head, so read the depths as illustrative only. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.',
+    warn: 'The inside and outside mics hear DIFFERENT surfaces of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold a few centimeters from a 56 cm head, so read the depths as illustrative only. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.',
   },
   practice: {
     gain: 'k.prac.gain',

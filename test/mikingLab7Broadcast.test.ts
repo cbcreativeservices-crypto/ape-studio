@@ -63,7 +63,7 @@ describe('the seated talker (talkerPose.ts)', () => {
     assert.equal(top.facing, Math.PI);
     assert.ok(Math.abs(top.neck.u - onTalker(B, v3(SEATED_TOP.neck.u, 0, 0)).x) < 1e-9);
   });
-  it('a head turn moves the mouth on a circle about the head’s centre, and its axis turns with it', () => {
+  it('a head turn moves the mouth on a circle about the head’s center, and its axis turns with it', () => {
     const r0 = dist(LIP, HEAD_C);
     for (const yaw of [-60, -30, 0, 30, 60]) {
       for (const pitch of [TURN_LIMITS.pitch.min, 0, TURN_LIMITS.pitch.max]) {

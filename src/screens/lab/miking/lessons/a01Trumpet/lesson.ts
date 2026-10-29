@@ -36,7 +36,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the horn sits — the player, the bell’s movement, the valve hands and the mutes, the music stand and the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the horn sits — the player, the bell’s movement, the valve hands and the mutes, the music stand and the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['tp.set.1', 'tp.set.2', 'tp.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bell points wherever the player turns, mutes go in and out, and the valve hands never stop. No mic, stand or cable goes there. Ask the player first, and protect your hearing.',
   },
@@ -67,7 +67,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the angle to the bell, the distance, overload in the mic itself, the player’s movement, a mute, the combination — before reaching for tone controls.',
   },
   practice: {
@@ -302,7 +302,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Raise it only for a stated balance; check mono',
     explain: 'Hear the section mic first: the spot supports it. Bring the spot up only as the music needs, and check the blend in stereo and mono — spill and different arrival times color it.',
     why: {
-      'Make it the loudest channel, as it has the lead': 'A loud spot pulls the trumpet out of the section and brings its neighbours’ spill up too.',
+      'Make it the loudest channel, as it has the lead': 'A loud spot pulls the trumpet out of the section and brings its neighbors’ spill up too.',
       'Mute the section mic whenever the trumpet plays': 'The section mic is the picture of the group; the spot only supports it.',
     },
   },
@@ -325,7 +325,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two mics, both 40 cm from the bell: one on its axis, one 45° off. Why do they sound different?',
     options: ['The highs beam along the axis; 45° off gets less', 'The farther mic of the two hears more of the room', 'They cannot: the same distance gives the same sound'],
     correct: 'The highs beam along the axis; 45° off gets less',
-    explain: 'Same distance, different angle: the bell’s high-frequency beam favours the axis. Angle and distance are separate tone controls.',
+    explain: 'Same distance, different angle: the bell’s high-frequency beam favors the axis. Angle and distance are separate tone controls.',
     why: {
       'The farther mic of the two hears more of the room': 'They are the same distance. It is the angle that differs.',
       'They cannot: the same distance gives the same sound': 'Distance is only one variable. The angle to the bell’s axis changes the brightness.',
@@ -419,7 +419,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Two close mics either side of the bell, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not a requirement for one horn; two close mics move the image as it turns.' },
       { id: 'e', label: 'A mic beside the valves, out of the bell’s way', ok: false, power: 'none', feedback: 'The valves are where the hands work — and the sound leaves the bell, not the valves.' },
     ],
-    reasons: [docReason('the centre of the bell’s rim'), clearReason('the bell’s movement, the mutes and the valve hands'), DYN_POWER_REASON, { id: 'r.room', label: 'In a good room, a little distance lets the room join the sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('trumpet'), LOUD_REASON],
+    reasons: [docReason('the center of the bell’s rim'), clearReason('the bell’s movement, the mutes and the valve hands'), DYN_POWER_REASON, { id: 'r.room', label: 'In a good room, a little distance lets the room join the sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('trumpet'), LOUD_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the bell, clearance from what moves, and the power the mic needs (a dynamic needs none; the condensers here need phantom).',
   },
   {
@@ -427,13 +427,13 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a trumpet soloist with drums and a singer, moving and turning, with a cup mute in one tune. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit, the cup mute and the cable.' },
+      { id: 'a', label: 'A miniature on a bell clip, aimed between center and edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit, the cup mute and the cable.' },
       { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, its null aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
-      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, a mic a metre away hears much more of the band and the monitors, and feedback comes sooner.' },
+      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, a mic a meter away hears much more of the band and the monitors, and feedback comes sooner.' },
       { id: 'd', label: 'A generic clamp tightened onto the bell, then taped', ok: false, power: 'phantom', feedback: 'Never an unapproved clamp on a bell or its finish: use a clip made for it, with the player’s agreement.' },
       { id: 'e', label: 'A mic aimed straight at the singer’s mic, to share it', ok: false, power: 'none', feedback: 'That puts the bell at the singer’s ear and mic — a layout problem, not a mic choice.' },
     ],
-    reasons: [docReason('the centre of the bell’s rim'), clearReason('the bell’s movement, the cup mute, the hands and the singer'), CLIP_POWER_REASON, { id: 'r.move', label: 'A clip that rides on the bell holds the sound as the player turns', role: 'optional', feedback: 'A fair live reason for a clip.' }, BRAND_REASON('trumpet'), { id: 'r.loudest', label: 'Turn it up until the trumpet is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
+    reasons: [docReason('the center of the bell’s rim'), clearReason('the bell’s movement, the cup mute, the hands and the singer'), CLIP_POWER_REASON, { id: 'r.move', label: 'A clip that rides on the bell holds the sound as the player turns', role: 'optional', feedback: 'A fair live reason for a clip.' }, BRAND_REASON('trumpet'), { id: 'r.loudest', label: 'Turn it up until the trumpet is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a mount and a place that keep the horn steady, clearance from the mute, the hands and the singer, and the power each mic needs.',
   },
 ];
@@ -559,7 +559,7 @@ export const A01_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The lips buzz', text: 'The player’s breath pushes the lips apart; they spring shut; the breath opens them again — a buzz, puffing air into the mouthpiece’s cup each time.' },
-      { title: 'A wave runs down the tube', text: 'Each puff starts a pressure wave travelling down the tube toward the bell — drawn here as if the tube were unwound.' },
+      { title: 'A wave runs down the tube', text: 'Each puff starts a pressure wave traveling down the tube toward the bell — drawn here as if the tube were unwound.' },
       { title: 'The tube answers', text: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave in the air column, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The valves change the tube’s length, and so the notes.', byVariant: { flugelhorn: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave in the air column, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The flugelhorn’s tube widens gradually along most of its length.' } },
       { title: 'Sound leaves the bell', text: 'Part of the wave escapes at every cycle — almost all of it at the bell. The low notes spread out nearly all round; the higher the pitch, the more it beams straight ahead along the bell’s axis.' },
     ],
@@ -603,7 +603,7 @@ export const A01_LESSON: Lesson = {
     { text: 'The bell’s travel as the player moves, the valve hands’ box and the mutes’ reach past the rim — illustrative; the mutes are drawn as typical shapes.', dims: [] },
     { text: 'The off-axis bands of each starting point (5–20°, 25–55°, …), the close-behind-the-bell distance (10–22 cm) and the clip capsule’s 4–13 cm — drawing defaults; the clip’s fit on a flugelhorn bell is not known.', dims: [] },
     { text: 'The radiation shapes on HOW IT SOUNDS — a simplified picture of the measured trend (no flugelhorn was measured on its own); the valve loops’ lengths are the ideal ones.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

@@ -69,7 +69,7 @@ export function figureSolids(mouth: Vec3): Record<'head' | 'neck' | 'torso' | 'l
 export const PLAZA = {
   /** The street singer's lips (1.55 m up), 6 m from the listener's point. */
   singerMouth: v3(5900, -1550, 0),
-  /** The public footpath across the square (its centre line along z). */
+  /** The public footpath across the square (its center line along z). */
   path: { x0: 2200, x1: 3600 },
   /** The walker's walk along the path (left to right of the listener). */
   walk: { a: v3(2900, -1550, -5500), b: v3(2900, -1550, 5500) },

@@ -76,7 +76,7 @@ export const GLOCK_ZONES: DocumentedZone[] = [
     words: {
       label: 'Closer, slightly toward the audience',
       band: 'Start about 30–45 cm (1–1½ ft) from the bars, above them and a little toward the audience side, aimed down across the played bars — only where every stroke clears it.',
-      tendency: 'A closer, more immediate view: more attack and less of the room, and it can favour one area of the keyboard. Compare it with the higher view at matched level.',
+      tendency: 'A closer, more immediate view: more attack and less of the room, and it can favor one area of the keyboard. Compare it with the higher view at matched level.',
       checks: ['The strongest stroke and the damping hand clear it', 'Click against pitch', 'An even run from the lowest to the highest note'],
     },
   }),
@@ -95,7 +95,7 @@ export const GLOCK_ZONES: DocumentedZone[] = [
       label: 'A safe lateral angle — audience side',
       band: 'To compare: lower and farther toward the audience, about 40–70 cm (1¼–2¼ ft) from the bars at a slant, aimed back across them.',
       tendency: 'An oblique view across the bars: tends to soften the attack. Compare it with the higher view at matched level.',
-      checks: ['The player’s and conductor’s sightlines', 'Click against pitch', 'Neighbours and monitors in the pickup'],
+      checks: ['The player’s and conductor’s sightlines', 'Click against pitch', 'Neighbors and monitors in the pickup'],
     },
   }),
 ];

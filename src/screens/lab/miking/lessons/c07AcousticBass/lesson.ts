@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, the room, the signal paths, gain, levels and polarity — and the monitoring, before reaching for EQ.',
   },
   practice: {
@@ -290,7 +290,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Small condenser 3 cm into the sound hole, for the most low end', ok: false, power: 'phantom', feedback: 'At the hole it booms unevenly and invites feedback, and it is in the plucking hand’s path.' },
       { id: 'e', label: 'Small omni 1 m away, to hear the whole instrument naturally', ok: false, power: 'phantom', feedback: 'On a loud stage an omni that far out hears the drums and the wedge as much as the bass.' },
     ],
-    reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.paths', label: 'The pickup and the mic are labelled as separate paths and checked together', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(BASS), { id: 'r.big', label: 'A large-diaphragm mic will capture the low end best', role: 'wrong', feedback: 'Diaphragm size alone does not decide low-end capture. Check the published response and listen.' }],
+    reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.paths', label: 'The pickup and the mic are labeled as separate paths and checked together', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(BASS), { id: 'r.big', label: 'A large-diaphragm mic will capture the low end best', role: 'wrong', feedback: 'Diaphragm size alone does not decide low-end capture. Check the published response and listen.' }],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic — and honest labels for the pickup path.',
   },
   {

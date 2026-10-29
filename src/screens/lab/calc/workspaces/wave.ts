@@ -106,7 +106,7 @@ export const WS_WAVE: Workspace = {
       inputs: ['temp'],
       formula: 'c = 331.3 · √(1 + T/273.15)',
       plainFormula:
-        'The speed of sound equals 331.3 metres per second times the square root of one plus the temperature in Celsius divided by 273.15.',
+        'The speed of sound equals 331.3 meters per second times the square root of one plus the temperature in Celsius divided by 273.15.',
       explain:
         'Sound travels faster in warmer air. This classroom dry-air model gives the speed from temperature alone (273.15 shifts Celsius onto the absolute Kelvin scale). Use it to convert between distance and time — the basis of delay alignment and the “about a foot per millisecond” rule of thumb.',
       // T here is air TEMPERATURE (°C), not the key's "period" — so it's left out

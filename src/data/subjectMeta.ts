@@ -263,7 +263,7 @@ export const SUBJECT_META: Record<string, SubjectMeta> = {
     careers: 'Stagehand, rigger, production manager, venue crew.',
   },
   'Theatrical & Worship': {
-    description: 'Sound for theatre and worship — wireless mic wrangling, intelligibility, and fixed-venue production.',
+    description: 'Sound for theater and worship — wireless mic wrangling, intelligibility, and fixed-venue production.',
     careers: 'Theatrical/worship A1, wireless tech, install engineer.',
   },
 };

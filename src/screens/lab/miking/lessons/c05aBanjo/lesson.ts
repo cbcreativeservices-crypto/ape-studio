@@ -58,7 +58,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the room, the player’s movement, gain and polarity — and never the banjo’s setup: a buzz goes to the player.',
   },
   practice: {
@@ -86,12 +86,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'The bridge stands off the head’s center. What does that mean for the head’s shapes?',
-    options: ['Most of them move under the bridge, so most are driven', 'Only the lowest shape is driven; the rest stay still', 'None are driven, because the bridge is not at the centre'],
+    options: ['Most of them move under the bridge, so most are driven', 'Only the lowest shape is driven; the rest stay still', 'None are driven, because the bridge is not at the center'],
     correct: 'Most of them move under the bridge, so most are driven',
     explain: 'A shape is driven only as much as the head moves under the driving point. Off center, few shapes have a still line there — so many ring together: bright and quick.',
     why: {
       'Only the lowest shape is driven; the rest stay still': 'Not even a center strike does that: it drives every shape without a still line through the middle. Off center, many more are driven.',
-      'None are driven, because the bridge is not at the centre': 'A drive anywhere off a still line sets a shape moving.',
+      'None are driven, because the bridge is not at the center': 'A drive anywhere off a still line sets a shape moving.',
     },
   },
   {
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A quiet studio, a good room, solo banjo. When could an omni be the right choice?',
     options: ['When the room is noisy and its sound needs rejecting', 'When the banjo must be isolated from a band', 'When the room is good and its sound is wanted'],
     correct: 'When the room is good and its sound is wanted',
-    explain: 'An omni near the neck junction gives a detailed, broad view — and hears the room and any neighbours. Choose it when that contribution is wanted.',
+    explain: 'An omni near the neck junction gives a detailed, broad view — and hears the room and any neighbors. Choose it when that contribution is wanted.',
     why: {
       'When the room is noisy and its sound needs rejecting': 'An omni rejects nothing; a cardioid helps there.',
       'When the banjo must be isolated from a band': 'Isolation calls for a directional mic, closer in.',
@@ -256,12 +256,12 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.papery`,
     observation: 'A hard, papery head sound',
     firstChecks: 'Is a close mic aimed at one spot of the head? Move toward the neck-junction blend, or step back.',
-    options: ['Cut the high frequencies until the head sounds soft', 'Move toward the neck junction, or step back a little', 'Move even closer in, right onto the head’s centre'],
+    options: ['Cut the high frequencies until the head sounds soft', 'Move toward the neck junction, or step back a little', 'Move even closer in, right onto the head’s center'],
     correct: 'Move toward the neck junction, or step back a little',
     explain: 'One close spot on the head magnifies it. A broader view balances it.',
     why: {
       'Cut the high frequencies until the head sounds soft': 'EQ dulls the whole banjo; the position is the cause.',
-      'Move even closer in, right onto the head’s centre': 'Closer to one spot makes it harder still.',
+      'Move even closer in, right onto the head’s center': 'Closer to one spot makes it harder still.',
     },
   },
   {
@@ -270,7 +270,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the room or bleed masking it? Bring a directional mic closer and check with the ensemble.',
     options: ['Turn the banjo channel up until it is the loudest thing', 'Bring a directional mic closer and check with the band', 'Swap to an omni so it hears more of the stage'],
     correct: 'Bring a directional mic closer and check with the band',
-    explain: 'Closer, with a pattern aimed against the neighbours, the banjo gains on the band. Judge it in the ensemble.',
+    explain: 'Closer, with a pattern aimed against the neighbors, the banjo gains on the band. Judge it in the ensemble.',
     why: {
       'Turn the banjo channel up until it is the loudest thing': 'More gain raises the bleed too, and brings feedback closer.',
       'Swap to an omni so it hears more of the stage': 'An omni hears more of everything else — the opposite of what is needed.',

@@ -1493,7 +1493,7 @@ export function CourseSelectionScreen() {
 
   // Changing the centring pad re-lays out the deck while the scroll offset stays
   // where it was in PIXELS, so the card the user was looking at ends up sitting
-  // half off the centre line. Re-snap to it. Skipped on mount so it never races
+  // half off the center line. Re-snap to it. Skipped on mount so it never races
   // the session-landing scroll below.
   const lastDeckW = useRef(0);
   useEffect(() => {

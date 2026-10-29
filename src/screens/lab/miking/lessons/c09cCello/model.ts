@@ -68,7 +68,7 @@ export const CELLO_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdcCard'] },
     draw: sideOf(A.bridgeTop, ax.z, 40, 250, 350),
     start: aimAt(along(A.bridgeTop, FRONT_DIR, 300), A.bridgeTop),
-    tendency: 'A defined, fairly balanced cello — body, string and some room together. It hears neighbouring instruments too. Move it and listen.',
+    tendency: 'A defined, fairly balanced cello — body, string and some room together. It hears neighboring instruments too. Move it and listen.',
     checks: ['The bow’s full sweep and the bow arm stay clear of the mic and stand', 'The low C and the high A both sound even', 'How much of the other players it hears'],
   },
   {

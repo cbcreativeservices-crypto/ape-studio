@@ -34,7 +34,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the clarinet sits — the hands and the bell, the chair and the music stand, the neighbours in a section — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the clarinet sits — the hands and the bell, the chair and the music stand, the neighbors in a section — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['cl.set.1', 'cl.set.2', 'cl.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The hands, the keys and the bell move; the player breathes and phrases. Ask the player first, hear the whole range, keep the mic clear — and protect your hearing.',
   },
@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — where the mic looks, its distance, the pattern, the player’s movement, the mount, the filter — before reaching for tone controls.',
   },
   practice: {
@@ -125,7 +125,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic pointed straight into the bell tends to hear…',
     options: ['All the notes equally, so it is the safest choice', 'Only the key clicks and the breath, not the tone', 'The lowest notes strongly, the rest less'],
     correct: 'The lowest notes strongly, the rest less',
-    explain: 'The lowest notes leave mainly from the bell; most others leave from open holes up the body. A bell-only view favours a few notes.',
+    explain: 'The lowest notes leave mainly from the bell; most others leave from open holes up the body. A bell-only view favors a few notes.',
     why: {
       'All the notes equally, so it is the safest choice': 'Most notes leave from the open holes, not the bell. A bell-only view is uneven.',
       'Only the key clicks and the breath, not the tone': 'The bell carries real tone — mostly of the lowest notes.',
@@ -135,12 +135,12 @@ const scenarios: MikingScenario[] = [
     id: 'cl.mic.1',
     page: 'microphone',
     prompt: 'In a quiet, good-sounding room, is an omni a fair first try on a solo clarinet?',
-    options: ['No — an omni hears too much of the bell on its own', 'No — an omni works only more than a metre away', 'Yes — a broad pickup that lets holes and bell blend'],
+    options: ['No — an omni hears too much of the bell on its own', 'No — an omni works only more than a meter away', 'Yes — a broad pickup that lets holes and bell blend'],
     correct: 'Yes — a broad pickup that lets holes and bell blend',
     explain: 'An omni hears all round with no directional proximity effect — welcome when the room adds to the sound and nothing loud is near. As separation matters more, a wide cardioid or cardioid helps.',
     why: {
       'No — an omni hears too much of the bell on its own': 'An omni hears all round — the holes, the bell and the room together; it does not single out the bell.',
-      'No — an omni works only more than a metre away': 'An omni works at any distance; up close it also has no directional proximity bass.',
+      'No — an omni works only more than a meter away': 'An omni works at any distance; up close it also has no directional proximity bass.',
     },
   },
   {
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Back up the clarinet toward the keys',
     explain: 'Aimed back toward the keys, the capsule hears the open holes and some bell; into the bell it hears mostly the lowest notes. With a longer gooseneck, looking back toward the upper joint tends to even out the range.',
     why: {
-      'Straight down into the bell’s opening': 'Into the bell, the mic favours the lowest notes and misses the open holes.',
+      'Straight down into the bell’s opening': 'Into the bell, the mic favors the lowest notes and misses the open holes.',
       'At the player’s mouth, to hear the reed': 'Near the mouth it hears breath and reed edge; the sound leaves lower down.',
     },
   },
@@ -182,10 +182,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cl.place.2',
     page: 'placement',
-    prompt: 'You move the mic from 15–20 cm to about a metre in front. What tends to change?',
+    prompt: 'You move the mic from 15–20 cm to about a meter in front. What tends to change?',
     options: ['Only the level drops; the tone stays the same', 'More of the room and the blend; less key detail', 'Less low end, because the bell is now farther off'],
     correct: 'More of the room and the blend; less key detail',
-    explain: 'Farther away, the holes and the bell blend, the key clicks fall back, and more of the room and the neighbours arrive. Closer, a directional mic adds low end (proximity effect).',
+    explain: 'Farther away, the holes and the bell blend, the key clicks fall back, and more of the room and the neighbors arrive. Closer, a directional mic adds low end (proximity effect).',
     why: {
       'Only the level drops; the tone stays the same': 'Distance changes the balance too: more room, more blend, fewer clicks.',
       'Less low end, because the bell is now farther off': 'Moving a directional mic away tends to lose proximity bass — not because of the bell.',
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cl.place.3',
     page: 'placement',
-    prompt: 'Is a mic a few centimetres from the lower joint’s keys a good first choice?',
+    prompt: 'Is a mic a few centimeters from the lower joint’s keys a good first choice?',
     options: ['Yes — the closer the mic, the clearer the tone', 'Yes, if you cut the high end to hide the clicks', 'Not usually: keys and fingers can take over'],
     correct: 'Not usually: keys and fingers can take over',
     explain: 'Very close to the mechanism, the clicks and pads can rival the notes, and one hole dominates. The suggested start keeps 15–20 cm, facing the holes, so the holes and the bell blend.',
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In an orchestra recording with the main pair up, how do you use a clarinet spot?',
     options: ['Make it the loudest channel whenever the clarinet has the tune', 'Bring it up only for a stated balance, and check it in mono', 'Leave the main pair out whenever the clarinet plays a solo'],
     correct: 'Bring it up only for a stated balance, and check it in mono',
-    explain: 'The main pair carries the ensemble image; a spot supports it. Bring it in gently, watch that the clarinet does not leap ahead of its neighbours, and check the mono sum.',
+    explain: 'The main pair carries the ensemble image; a spot supports it. Bring it in gently, watch that the clarinet does not leap ahead of its neighbors, and check the mono sum.',
     why: {
       'Make it the loudest channel whenever the clarinet has the tune': 'A loud spot pulls the clarinet unnaturally forward of the other woodwinds.',
       'Leave the main pair out whenever the clarinet plays a solo': 'The main pair is the picture of the orchestra; the spot only supports it.',
@@ -336,7 +336,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the holes and the bell — then small changes by ear.' },
       { id: 'b', label: 'Small condenser about 0.6–1 m in front, aimed at the middle of the clarinet', ok: true, power: 'phantom', feedback: 'A suggested starting point that blends the clarinet and the good room.' },
-      { id: 'c', label: 'A mic pointed straight into the bell from a few centimetres', ok: false, power: 'phantom', feedback: 'A bell-only view favours the lowest notes and misses the holes.' },
+      { id: 'c', label: 'A mic pointed straight into the bell from a few centimeters', ok: false, power: 'phantom', feedback: 'A bell-only view favors the lowest notes and misses the holes.' },
       { id: 'd', label: 'A mic beside the mouthpiece, to hear the reed', ok: false, power: 'phantom', feedback: 'By the mouth it hears breath and reed edge, and sits in the player’s face.' },
       { id: 'e', label: 'Two clip mics, one at the bell and one on the barrel, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not needed for a small solo source, and two close views move as the player moves.' },
     ],
@@ -350,7 +350,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the clarinet — check the clip’s fit and the cable.' },
       { id: 'b', label: 'A cardioid on a stand close in front of the holes, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
-      { id: 'c', label: 'Small condenser a metre in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the wedge more than the clarinet.' },
+      { id: 'c', label: 'Small condenser a meter in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a meter away hears the band and the wedge more than the clarinet.' },
       { id: 'd', label: 'A clip squeezed over the ring keys of the lower joint', ok: false, power: 'phantom', feedback: 'Nothing goes on the ring keys, rods or pads: it stops the notes and risks the instrument.' },
       { id: 'e', label: 'An omni close to the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'An omni rejects nothing; turned up, it brings the stage and feedback with it.' },
     ],
@@ -362,7 +362,7 @@ const setupTasks: SetupTask[] = [
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the clarinet?', options: ['The bell', 'An open hole on the body', 'The mouthpiece'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the mic from 15–20 cm out to about a metre. What changes?', options: ['More room and blend', 'More key clicks', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you move the mic from 15–20 cm out to about a meter. What changes?', options: ['More room and blend', 'More key clicks', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the clarinet reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -410,7 +410,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Why can a mic aimed only into the bell sound uneven?',
     options: ['The bell blocks the high notes coming out', 'The bell is too loud for a stand mic', 'Each note leaves from a different place'],
     correct: 'Each note leaves from a different place',
-    explain: 'The bell carries mostly the lowest notes; the rest leave from open holes up the body. A bell-only view favours a few notes.',
+    explain: 'The bell carries mostly the lowest notes; the rest leave from open holes up the body. A bell-only view favors a few notes.',
     why: {
       'The bell blocks the high notes coming out': 'Nothing is blocked; most notes simply leave earlier, from the holes.',
       'The bell is too loud for a stand mic': 'Level is not the issue: the place each note leaves from is.',
@@ -489,7 +489,7 @@ const copy: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the middle of the clarinet, or the top of the bell. They are starting points, not rules. Move from there and listen: there is no single right answer, and every clarinet and room is different.',
-      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the fingers and thumbs, the keys, the bell as it moves, and the face. The engine stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a balance of holes and bell; into the bell, the lowest notes stand out; very close to the keys, the clicks; farther, more room and blend. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and clarinets vary.',
     },
@@ -526,7 +526,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a solo may want the room and a blend of holes and bell. Live: a clarinet among drums and amps needs a closer, separated sound.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — and nothing alone prevents feedback.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — and nothing alone prevents feedback.' },
         { title: 'MOVEMENT', text: 'Clarinettists move as they breathe and phrase. A stand mic has a working zone — mark it; a miniature on a clip keeps one distance as the player moves.' },
         { title: 'IN A SECTION', text: 'With a main pair up, a clarinet mic is a spot: bring it up only for a stated balance, and check it in mono. A section spot can sit between two players, pointing down.' },
       ],
@@ -632,7 +632,7 @@ export const A08A_LESSON: WindLesson = {
     { text: 'The 629 mm body is a 1924 museum clarinet used as a modern size; the mouthpiece (88 mm), barrel, joint split, bell Ø 65 and key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
     { text: 'The hands, arms, head and the bell’s movement — illustrative keep-outs (a 20 mm margin round the clarinet).', dims: [] },
     { text: 'The section spot’s box beside the player, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
@@ -641,7 +641,7 @@ export const A08A_LESSON: WindLesson = {
   wind: windExtra(SPEC, {
     soundSubject: 'A B♭ clarinet held by a seated player, seen from the audience, its bore drawn open',
     breath: 'The player’s breath and the tonguing are heard close to the mouthpiece; a clarinet sends little air out of its holes, so wind noise is rarely the problem a flute’s jet is.',
-    keys: 'Key clicks, pads closing and the thumbs on the register key and the rings: strongest within a few centimetres of the keywork.',
+    keys: 'Key clicks, pads closing and the thumbs on the register key and the rings: strongest within a few centimeters of the keywork.',
     directivity: 'Measured round a player in an anechoic (echoless) room: up to about 1 kHz the sound spreads fairly evenly, strongest toward the front; by 2 kHz more of it beams out of the bell, and behind the player it is about 13 dB quieter than in front.',
     noteDefault: 9,
   }),

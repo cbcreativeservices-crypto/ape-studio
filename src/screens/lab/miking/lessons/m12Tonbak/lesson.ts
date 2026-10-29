@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic before reaching for EQ: target, viewpoint and distance first; a filter only after you know what it removes.',
   },
   practice: {
@@ -657,11 +657,11 @@ export const M12_LESSON: Lesson = {
       { id: 'player', label: 'the player and their hands', short: 'PLAYER', note: 'The hands move over the head and its edge, sometimes vigorously. Their whole path is the player’s space: no mic, stand or cable in it.', prov: { kind: 'illustrative', reason: 'a seated player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'chair', label: 'the chair and the legs', short: 'LEGS', note: 'The drum rests on the lap: the legs and feet move too. Stands go clear of them.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'the player’s wedge', short: 'WEDGE', note: 'Live, a floor monitor downstage, facing back toward the player. Check the mic’s real pattern before placing it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'other players', short: 'BAND', note: 'Louder neighbours on a stage — the reason to start close and directional.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'other players', short: 'BAND', note: 'Louder neighbors on a stage — the reason to start close and directional.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Listen from here first, without amplification. The mic usually comes from this side.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'MIC SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet studio, a farther mic or a room mic can add the space — when the room sounds good.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors, louder neighbours and a PA. Start with one directional mic and only the monitor level the player needs; check the mic’s real pattern before placing a wedge.',
+    stage: 'LIVE: monitors, louder neighbors and a PA. Start with one directional mic and only the monitor level the player needs; check the mic’s real pattern before placing a wedge.',
     studio: 'STUDIO: headphones instead of monitor speakers, time to compare, and a room that may add something — compare positions at matched loudness.',
   },
   diagnostic,

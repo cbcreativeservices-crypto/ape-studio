@@ -6,7 +6,7 @@
  *          envelopes (ILLUSTRATIVE);
  *   STAND  the pair on a stand (heads 900 mm up, a drawing default): the
  *          floor moves 340 mm down; a column and three legs under the
- *          centre block (ILLUSTRATIVE), a standing player.
+ *          center block (ILLUSTRATIVE), a standing player.
  * The hands work over each head "from the front, rear or either side" (the
  * lesson): each head carries a 250 mm hand envelope straight above it.
  */
@@ -19,7 +19,7 @@ export const DRUMS = [MACHO, HEMBRA] as const;
 const BLOCK_Y0 = HEAD_Y + 22;
 const BLOCK_Y1 = MACHO.bottomY - 8;
 
-/** The stand under the centre block (ILLUSTRATIVE). */
+/** The stand under the center block (ILLUSTRATIVE). */
 export const STAND = (() => {
   const top: Vec3 = { x: 0, y: BLOCK_Y1, z: 0 };
   const hub: Vec3 = { x: 0, y: STAND_FLOOR - 160, z: 0 };
@@ -47,7 +47,7 @@ const parts: Part[] = [
   ...DRUMS.flatMap((d) => [headPart(d, ROLE[d.id as 'macho' | 'hembra'], D.headClear), shellPart(d, SHELL_ROLE)]),
   {
     id: 'bongo.block',
-    label: 'centre block',
+    label: 'center block',
     short: 'BLOCK',
     role: 'The block that joins the two drums. Clamp nothing to it unless the mount is made for it and the owner agrees.',
     prov: src('LP-GEN2', 'reinforced center block'),
@@ -74,7 +74,7 @@ export const BONGO_MODEL: InstrumentModel = {
     headSurface(MACHO),
   ],
   lines: [
-    { id: 'between', label: 'the centre line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
+    { id: 'between', label: 'the center line', point: { x: BETWEEN.x, y: HEAD_Y, z: BETWEEN.z }, dir: { x: 0, y: 1, z: 0 } },
     axisLine(HEMBRA),
     axisLine(MACHO),
   ],

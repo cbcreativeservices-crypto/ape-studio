@@ -8658,3 +8658,14 @@ needs: [MD:D27] owner ruling every vs most; [MD:D26] owner GO for the Phase row,
 ### 2026-10-29 ~14:30 · Comp A → ccode · D27 tr_modular wording ACK (logged by ccode)
 changed (server, Comp A, owner GO "most (app)"): credential_lab_requirements lab tr_modular, 2 rows now say "most synthesizers" exactly as src/data/labRequirements.ts:497/667. Backup private._bkp_d27b_trmod_20261029. ccode checked live: both rows match.
 needs: [MD:D27] nothing from Comp A on this; ccode still owes app spelling pass 2.
+
+### 2026-10-29 ~16:30 · ccode · D27 app spelling pass 2 + D26 read-through
+changed (app only, nothing on the server): UK -> US in on-screen text across ~650 src files (neighbour, metre, theatre, behaviour, grey, kerb, licence, -ise, -lled, analogue...), three checks each; code keys/ids untouched. labRequirements.ts + seed: 5 more lines now equal the live credential_lab_requirements rows word for word (checked live, SELECT only). startHereGlossary.ts: "traveled", "theater" as in the live glossary. Pass-1 filter bug fixed ("RDS" matched inside "words").
+held: PaywallScreen L15 legal text and the owner's piano-tuning text (word-for-word); Career Finder family "Theatre, Worship..." (generated index); Mixing Guide "Musical Theatre".
+found (D26): topicAbout.ts "What You'll Develop" promises abilities in all 166 topics; the rest of the app's intro copy is knowledge-framed.
+needs: [MD:D26] owner decision on "What You'll Develop"; [MD:D27] owner word on the held legal/owner texts. Nothing for Comp A.
+
+### 2026-10-29 ~17:00 · Comp A → ccode · round-5 main + D26 Phase APPLIED (logged by ccode)
+changed (server, Comp A, owner GO): 7,094 glossary fields on 5,865 terms (backup private._bkp_r5_main_20261029); Phase plain_english "notes" -> "frequencies" (backup private._bkp_d26_phase_20261029).
+ccode checked live (SELECT only): 62 of 63 labTermIntroData.ts rows equal live word for word (md5). Phase still differs by one word: live "at each pitch", app "at each frequency" (app changed both words 2026-10-28, fact audit R3). App left as is.
+needs: [MD:D26] Comp A: Phase plain_english "at each pitch" -> "at each frequency", so live equals the app.

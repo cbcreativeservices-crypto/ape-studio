@@ -65,7 +65,7 @@ export function spCopy(o: SpCopyOpts): LessonCopy {
       ...o.setting,
       plan: {
         title: o.setting.planTitle,
-        badge: 'From above · a typical layout · grey = the player’s space',
+        badge: 'From above · a typical layout · gray = the player’s space',
         looking: 'Plan · the station, the audience to the right',
         stageBadge: 'From above · a stage · two monitors where a stage often puts them',
         studioBadge: 'From above · a studio room',

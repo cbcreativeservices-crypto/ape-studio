@@ -59,7 +59,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the stage that overloads, the mount, the overlap and the path first — then reach for processing.',
   },
   practice: {
@@ -211,11 +211,11 @@ const scenarios: MikingScenario[] = [
     id: 'mo.place.2',
     page: 'placement',
     prompt: 'What capsule height does a trackside mic need?',
-    options: ['What the assigned place and its protection allow', 'About one metre, the usual trackside height', 'As high as possible, so it can see over the barrier'],
+    options: ['What the assigned place and its protection allow', 'About one meter, the usual trackside height', 'As high as possible, so it can see over the barrier'],
     correct: 'What the assigned place and its protection allow',
-    explain: 'There is no universal one-metre trackside height: the height follows the assigned access and the protection from projectiles — capsule, windshield, stand and cable inside the authorized envelope.',
+    explain: 'There is no universal one-meter trackside height: the height follows the assigned access and the protection from projectiles — capsule, windshield, stand and cable inside the authorized envelope.',
     why: {
-      'About one metre, the usual trackside height': 'No height is universal; the practice’s 1 m is for a quiet room only.',
+      'About one meter, the usual trackside height': 'No height is universal; the practice’s 1 m is for a quiet room only.',
       'As high as possible, so it can see over the barrier': 'Height is set by the approved envelope, not by the view.',
     },
   },
@@ -331,12 +331,12 @@ const scenarios: MikingScenario[] = [
     id: 'mo.prac.gain',
     page: 'practice',
     prompt: 'In the practice, a gentle clap peaks at −28 dBFS. Your strongest repeatable clap is louder. Your gain?',
-    options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap right up to −6 dBFS', 'Leave it as it is and normalise it later'],
+    options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap right up to −6 dBFS', 'Leave it as it is and normalize it later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: near −12 dBFS is a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
     why: {
       'Bring the gentle clap right up to −6 dBFS': 'With a gentle clap already at −6 dBFS, your strongest clap clips.',
-      'Leave it as it is and normalise it later': 'Normalising cannot fix a clip, or the noise of a gain set too low.',
+      'Leave it as it is and normalize it later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',
     },
   },
   {

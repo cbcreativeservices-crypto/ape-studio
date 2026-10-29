@@ -83,7 +83,7 @@ const parts: Part[] = [
   armB.part,
   { id: 'b1.laptop', label: 'the laptop', short: 'laptop', role: 'The host reads the rundown here. The mic and its arm stay out of the line from the eyes to the screen; its fan is a noise to check.', solid: { kind: 'box', min: v3(LAPTOP_A.x - 115, DESK_TOP_Y - 16, LAPTOP_A.z - 165), max: v3(LAPTOP_A.x + 135, DESK_TOP_Y, LAPTOP_A.z + 165) }, prov: DD },
   { id: 'b1.script', label: 'the script', short: 'script', role: 'Paper on the desk: page turns are a noise to check, and its surface reflects a little too.', prov: DD },
-  { id: 'b1.chair', label: 'the chair', short: 'chair', role: 'A quiet chair that lets the host sit naturally: a creaking or swivelling chair is a noise the mic hears.', listIn: [], prov: DD },
+  { id: 'b1.chair', label: 'the chair', short: 'chair', role: 'A quiet chair that lets the host sit naturally: a creaking or swiveling chair is a noise the mic hears.', listIn: [], prov: DD },
   { id: 'b1.pa', label: 'the PA loudspeaker', short: 'PA', role: 'It faces the audience, but its back and side spill toward the desk: every open mic hears it. Fewest open mics, and the pattern’s rejection toward it.', variants: ['live'], prov: DD },
   REACH_PART,
 ];

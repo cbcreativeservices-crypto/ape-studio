@@ -743,7 +743,7 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
         console.warn('[final-exam] dropping permanently rejected submission:', msg);
         await clearAttemptDraft(r.attemptId);
       } else {
-        console.warn('[final-exam] keeping queued submission after an unrecognised error:', msg);
+        console.warn('[final-exam] keeping queued submission after an unrecognized error:', msg);
         remaining.push(r);
       }
     }

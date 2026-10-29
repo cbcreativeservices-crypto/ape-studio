@@ -780,7 +780,7 @@ const TVU_INK = '#33200e';
  *  down to roughly 155 pt, so a unit is about a twelfth of a pixel: 58 units
  *  rendered 5 px and could not be read at all. 124 lands near 11 px, matching
  *  the tile's own title band, and still clears the blade (which stays within
- *  +/-600 of centre) because these sit hard against the face's left and right
+ *  +/-600 of center) because these sit hard against the face's left and right
  *  edges. Raised to weight 700 and a 0.5 resting opacity so the honest
  *  em-dash - what shows when no pitch is detected - is legible AS an em-dash
  *  rather than invisible; it stays clearly dimmer than a real reading. */

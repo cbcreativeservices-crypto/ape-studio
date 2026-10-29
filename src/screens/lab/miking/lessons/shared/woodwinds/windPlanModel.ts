@@ -124,7 +124,7 @@ export function toPlan(own: SlotId, p: { x: number; z: number }): PlanPt {
 /**
  * A seated (or standing) woodwind player from above, in the lesson frame
  * (the lips at the origin): the head, shoulders, arms and hands, the legs
- * and feet, the chair, and the instrument along its centre line at its
+ * and feet, the chair, and the instrument along its center line at its
  * drawn radius (a bass clarinet's peg too) — the box WindScene's top view
  * fills.
  */

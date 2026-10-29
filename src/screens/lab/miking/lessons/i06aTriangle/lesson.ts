@@ -33,7 +33,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the triangle sits — the player, the beater and the damping hand, its neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where the triangle sits — the player, the beater and the damping hand, its neighbors, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['tri.set.1', 'tri.set.hear', 'tri.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for the whole passage: soft and strong strokes, rolls and cutoffs. The beater, the damping hand and the clip hand set the clearance; check the clip and both lines first. Protect your hearing.',
   },
@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the triangle by its properties — pattern, power, size, mount and peak handling — not by its brand.',
     credit: { scenarios: ['tri.mic.1', 'tri.mic.2', 'tri.mic.3', 'tri.mic.4', 'tri.rec.1'], note: 'Answer the five checks (one reaches back to how the triangle sounds).' },
-    takeaway: 'A small condenser is a common place to start for the attack and the long ring; a dynamic can suit a loud stage. The pattern decides how much room and how many neighbours you hear. No type is required.',
+    takeaway: 'A small condenser is a common place to start for the attack and the long ring; a dynamic can suit a loud stage. The pattern decides how much room and how many neighbors you hear. No type is required.',
   },
   placement: {
     title: 'Placement Studio',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Look at the instrument first — a freely hanging suspension, the beater and the playing spot, a rattling clip — then the mic’s angle and distance, other open mics and the monitors, before reaching for EQ or a gate.',
   },
   practice: {
@@ -179,8 +179,8 @@ const scenarios: MikingScenario[] = [
     id: 'tri.mic.4',
     page: 'microphone',
     prompt: 'What does the mic’s pattern mostly change for a triangle spot?',
-    options: ['How much of the room and the neighbours it hears', 'How long the triangle keeps ringing after each stroke', 'Which pitch the triangle sounds when struck'],
-    correct: 'How much of the room and the neighbours it hears',
+    options: ['How much of the room and the neighbors it hears', 'How long the triangle keeps ringing after each stroke', 'Which pitch the triangle sounds when struck'],
+    correct: 'How much of the room and the neighbors it hears',
     explain: 'The pattern decides how much sound from other directions — the room, the drums, the monitors — reaches the mic. The ring and the pitch belong to the triangle.',
     why: {
       'How long the triangle keeps ringing after each stroke': 'The ring is the instrument’s; a mic can only hear more or less of it against the room.',
@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the mic from 30 to 60 cm. What tends to change?',
     options: ['More room and blend, less isolation', 'A fuller attack with less of the room', 'Nothing: the ring stays the same'],
     correct: 'More room and blend, less isolation',
-    explain: 'Farther away the attack and the ring blend with the room, and the neighbours come up too. Closer tends the other way. Tendencies to check by ear, at matched level.',
+    explain: 'Farther away the attack and the ring blend with the room, and the neighbors come up too. Closer tends the other way. Tendencies to check by ear, at matched level.',
     why: {
       'A fuller attack with less of the room': 'That is the closer position’s tendency.',
       'Nothing: the ring stays the same': 'The triangle’s ring is the same; what the mic hears of it against the room changes.',

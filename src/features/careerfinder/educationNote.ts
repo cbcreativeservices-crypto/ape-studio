@@ -21,7 +21,7 @@
 export type EducationFacts = { regulated: boolean; professionalEngineer: boolean; preparation: string };
 
 export const PE_NOTE =
-  'A Professional Engineer licence is commonly required to offer engineering services to the public or seal reports.';
+  'A Professional Engineer license is commonly required to offer engineering services to the public or seal reports.';
 
 const GRADUATE = /master's|doctorate|law degree|graduate degree/i;
 

@@ -91,8 +91,8 @@ export const BASS_FRONT: ZoneT = {
   aim: { maxOffAxis: 25, prov: ill('aimed back at the bridge area: within 25°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: { side: zoneSection('side', ABOVE, ax.z, 25, 152.4, 304.8), top: zoneSection('top', ABOVE, ax.z, 25, 152.4, 304.8) },
-  tendency: 'A well-defined, natural bass: the note, the body and the finger (or bow) together. It hears the room and the neighbours too.',
-  checks: ['Clear of the hands and the bassist’s movement', 'Several notes, low and high — one note booming?', 'Drum and neighbour spill, and where the pattern rejects it'],
+  tendency: 'A well-defined, natural bass: the note, the body and the finger (or bow) together. It hears the room and the neighbors too.',
+  checks: ['Clear of the hands and the bassist’s movement', 'Several notes, low and high — one note booming?', 'Drum and neighbor spill, and where the pattern rejects it'],
 };
 
 export const BASS_FHOLE: ZoneT = {

@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose mics and a stereo method by their properties for the room and the pipes’ spread — omni or wide cardioid, coincident, near-coincident or spaced — not by brand.',
     credit: { scenarios: ['org.mic.1', 'org.mic.2', 'org.mic.3', 'org.mic.4', 'org.rec.1'], note: 'Answer the five checks (one reaches back to how the organ sounds).' },
-    takeaway: 'Omni takes in the room with the organ; a wide cardioid helps when the room or the bass is less favourable. A coincident pair keeps the mono sum robust; a spaced pair is wider and needs a mono check. Headroom for full organ first.',
+    takeaway: 'Omni takes in the room with the organ; a wide cardioid helps when the room or the bass is less favorable. A coincident pair keeps the mono sum robust; a spaced pair is wider and needs a mono check. Headroom for full organ first.',
   },
   placement: {
     title: 'Placement Studio',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Position and the room first: the pedal’s peaks and dips, the divisions’ balance, room against attack, a spot over the pair, noise sources, PA routing — before EQ. Lower the level at the first sign of feedback.',
   },
   practice: {
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'org.snd.1',
     page: 'sound',
-    prompt: 'A stop is labelled 16′. What does that tell you for sure?',
+    prompt: 'A stop is labeled 16′. What does that tell you for sure?',
     options: ['Its pitch: the pipes may be shorter than 16 ft', 'Each one of its pipes is exactly 16 feet long', 'It is the loudest stop that the whole organ has'],
     correct: 'Its pitch: the pipes may be shorter than 16 ft',
     explain: 'The label names the pitch of an open pipe of that length. A stopped pipe sounds an octave lower than an open one of the same length, so the longest pipe of a stopped 16′ stop is only about 8 ft long. Verify the real low range by ear.',
@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'org.snd.2',
     page: 'sound',
-    prompt: 'Why can’t a mic a few centimetres from one pipe stand for the organ?',
+    prompt: 'Why can’t a mic a few centimeters from one pipe stand for the organ?',
     options: ['It hears that pipe, not the divisions and room', 'Pipes are far too loud for a mic placed that close', 'A pipe makes no sound near its own mouth'],
     correct: 'It hears that pipe, not the divisions and room',
     explain: 'The organ sounds from many ranks in several places, and a listener hears them with the room. A mic beside one pipe hears a local view.',
@@ -166,7 +166,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'org.mic.3',
     page: 'microphone',
-    prompt: 'The room, or its bass balance, is less favourable. What pattern might help?',
+    prompt: 'The room, or its bass balance, is less favorable. What pattern might help?',
     options: ['A wide cardioid, taking in less of the room', 'An omni, to hear even more of the room', 'A Figure-8 (Bidirectional) pair, facing the two side walls'],
     correct: 'A wide cardioid, taking in less of the room',
     explain: 'A wide cardioid narrows the view a little — less room, a different low balance — when the room is not helping.',
@@ -179,11 +179,11 @@ const scenarios: MikingScenario[] = [
     id: 'org.mic.4',
     page: 'microphone',
     prompt: 'Before the first full-organ chord, what do you check?',
-    options: ['Max SPL, pad and phantom for the exact mics', 'That the mics match the colour of the case', 'Nothing: an organ is quiet at a distance'],
+    options: ['Max SPL, pad and phantom for the exact mics', 'That the mics match the color of the case', 'Nothing: an organ is quiet at a distance'],
     correct: 'Max SPL, pad and phantom for the exact mics',
     explain: 'Set input gain with full organ and the most forceful attack, leaving headroom — and check each mic’s rating, pad and power for the exact model.',
     why: {
-      'That the mics match the colour of the case': 'Looks do not matter; headroom and power do.',
+      'That the mics match the color of the case': 'Looks do not matter; headroom and power do.',
       'Nothing: an organ is quiet at a distance': 'Full organ is loud even far down the nave; check the headroom.',
     },
   },
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A balanced main pair is the organ’s sound; adjust it for the pipes’ layout and the room. Add spots only for a stated need.',
     why: {
       'A spot on each division, all mixed together': 'Many spots mean many delays, and no room; the pair comes first.',
-      'A single mic placed inside the Swell’s box': 'Inside the organ needs the technician’s authorisation — and it hears one division.',
+      'A single mic placed inside the Swell’s box': 'Inside the organ needs the technician’s authorization — and it hears one division.',
     },
   },
   {
@@ -358,7 +358,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is a mic too close to that pipe group or aimed away from the others? Map the divisions; move the main pair or add a restrained, targeted spot.',
     options: ['Map the divisions; move the pair, or a spot', 'Ask the organist to play that division less', 'Cut that division’s range with EQ'],
     correct: 'Map the divisions; move the pair, or a spot',
-    explain: 'Find where each division sounds; a pair too near one favours it. Move the pair, or add a restrained spot for the one that is missing.',
+    explain: 'Find where each division sounds; a pair too near one favors it. Move the pair, or add a restrained spot for the one that is missing.',
     why: {
       'Ask the organist to play that division less': 'The registration is the music; fix the balance in the placement.',
       'Cut that division’s range with EQ': 'EQ cannot separate divisions that share a range.',
@@ -418,7 +418,7 @@ const symptoms: Symptom[] = [
 const PAIR_REASON: SetupReason = { id: 'r.pair', label: 'It is the listener’s perspective: a main pair in the body of the room', role: 'required', feedback: 'Say why it represents the organ: all divisions with the room.' };
 const ACCESS_REASON: SetupReason = { id: 'r.access', label: 'A safe floor stand, clear of aisles, exits and the organ', role: 'required', feedback: 'Safe access is part of every passing setup.' };
 const ROUTE_REASON: SetupReason = { id: 'r.route', label: 'Stream and PA feeds are kept apart', role: 'optional', feedback: 'A fair reason: the room pair for the stream, local spots only for a PA.' };
-const TOUCH_REASON: SetupReason = { id: 'r.touch', label: 'A mic among the pipes is closest to the real sound', role: 'wrong', feedback: 'Inside the organ is a local view — and needs the technician’s authorisation.' };
+const TOUCH_REASON: SetupReason = { id: 'r.touch', label: 'A mic among the pipes is closest to the real sound', role: 'wrong', feedback: 'Inside the organ is a local view — and needs the technician’s authorization.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -544,7 +544,7 @@ export const A12_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Many sets of pipes — ranks — grouped into divisions, played from the console’s keyboards and pedals and blown by a wind supply. A distributed source: it sounds from several places at once.', src: 'OHS-RANK' },
     { title: 'WHERE YOU MEET IT', text: 'In churches, concert halls and other large rooms — for services, concerts, recordings and streams. It is usually recorded or broadcast rather than amplified in the same room.', src: 'S-HOW' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Everything from the softest single stop to full organ, with pedal notes far below the voices; it plays alone, or accompanies choirs, congregations and instruments.', src: 'LESSON-ORG' },
-    { title: 'ITS SIZE', text: 'Room-sized. This lab draws a stylised case 8 m wide and 10 m high in a 30 m nave. Stop labels such as 16′ and 32′ name a pitch, not always a pipe’s length.', src: 'OHS-PIPES' },
+    { title: 'ITS SIZE', text: 'Room-sized. This lab draws a stylized case 8 m wide and 10 m high in a 30 m nave. Stop labels such as 16′ and 32′ name a pitch, not always a pipe’s length.', src: 'OHS-PIPES' },
   ],
   sound: {
     stages: [
@@ -555,11 +555,11 @@ export const A12_LESSON: Lesson = {
     ],
     attack: 'A pipe’s speech: the brief start as its air column builds up — crisp on some stops, soft on others — then the room’s first reflections. A closer view hears more of it.',
     body: 'The sustained sound of every division blended in the room, and the long decay after the last chord. A distant pair hears more of the blend and the decay; a spot, more of one division. Tendencies — organs and rooms vary.',
-    head: { diameterMm: 8000, rods: 0, label: 'a stylised organ case', strikeSrc: 'S-HOW' },
+    head: { diameterMm: 8000, rods: 0, label: 'a stylized organ case', strikeSrc: 'S-HOW' },
   },
   setting: {
     items: [
-      { id: 'case', label: 'the organ case and its divisions', short: 'ORGAN', note: 'The main case with its divisions. Never touch the pipes, the shutters, the panels, the wiring or the blower; never hang anything from it. Access to the loft and the chambers is the venue’s to give.', prov: { kind: 'illustrative', reason: 'a stylised layout' }, tag: 'NEVER TOUCH', scene: 'all' },
+      { id: 'case', label: 'the organ case and its divisions', short: 'ORGAN', note: 'The main case with its divisions. Never touch the pipes, the shutters, the panels, the wiring or the blower; never hang anything from it. Access to the loft and the chambers is the venue’s to give.', prov: { kind: 'illustrative', reason: 'a stylized layout' }, tag: 'NEVER TOUCH', scene: 'all' },
       { id: 'console', label: 'the console and the organist', short: 'CONSOLE', note: 'The organist’s keyboards and stops, in the chancel. Keep stands and cables clear of the console, the organist and their way in and out.', prov: { kind: 'illustrative', reason: 'a detached console: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pews', label: 'the pews', short: 'PEWS', note: 'Where the congregation sits — and where a main pair usually listens from, on a stand in a clear row. In a service, only where the venue agrees.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'LISTENING POSITIONS', scene: 'all' },
       { id: 'aisles', label: 'the aisles', short: 'AISLES', note: 'The ways in and out: never a stand or a cable across them.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
@@ -583,7 +583,7 @@ export const A12_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The whole organ is a stylised drawing: the case 8 × 10 × 2.5 m, its divisions’ places, the console in the chancel — no particular organ is drawn.', dims: ['caseW', 'caseH', 'caseD'] },
+    { text: 'The whole organ is a stylized drawing: the case 8 × 10 × 2.5 m, its divisions’ places, the console in the chancel — no particular organ is drawn.', dims: ['caseW', 'caseH', 'caseD'] },
     { text: 'The room is a drawing default: a nave 30 × 15 × 14 m, pews every 1 m from 7.7 m (so the fourth pew is the case study’s 35 ft), aisles at 2.8–3.8 m either side, side passages from 7 m, a rear gallery.', dims: ['naveL', 'naveW', 'naveH', 'firstPew', 'pewPitch', 'pewRows', 'aisleZ0', 'aisleZ1', 'sideZ'] },
     { text: 'Only the case study has numbers (about 35 ft from the pipework, about 8 ft up, midway between the walls). The congregation pair’s band (the pew area, 1.5–3.5 m up) and the division spot’s 3–6 m are the drawing’s own; no universal distance exists.', dims: [] },
     { text: 'The room picture is one lengthwise resonance of an ideal hard-walled nave — illustrative; real rooms mix many, in every direction.', dims: [] },
@@ -591,6 +591,6 @@ export const A12_LESSON: Lesson = {
   ],
   live: { wedges: A12_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylised organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by a qualified rigger; never touch or hang anything from the organ; protect hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylized organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by a qualified rigger; never touch or hang anything from the organ; protect hearing.',
   copy: { words: metalWords('organ', 'organist') },
 };

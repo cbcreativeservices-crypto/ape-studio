@@ -44,7 +44,7 @@ const surfaces = (p: Pose, v: string): ReferenceSurface[] => {
 };
 const lines = (p: Pose, v: string): RefLine[] => {
   const out: RefLine[] = [
-    { id: `level.${v}`, label: 'its centre line', point: { x: 0, y: p.c.y, z: 0 }, dir: { x: 1, y: 0, z: 0 }, variants: [v] },
+    { id: `level.${v}`, label: 'its center line', point: { x: 0, y: p.c.y, z: 0 }, dir: { x: 1, y: 0, z: 0 }, variants: [v] },
     { id: `axis.${v}`, label: 'the head’s axis', point: p.c, dir: p.n, variants: [v] },
   ];
   if (v !== 'mounted') out.push({ id: `rimLine.${v}`, label: 'the rim’s edge line', point: add(p.c, p.e1, R + JINGLE_OUT), dir: p.e1, variants: [v] });

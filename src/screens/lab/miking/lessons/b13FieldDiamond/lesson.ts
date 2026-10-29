@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'The pickup methods',
     goal: 'Choose a pickup method by what it contributes and what limits it — a perimeter shotgun, a parabolic dish, fixed ambience, an approved structure mic — not by a label or a brand.',
     credit: { scenarios: ['fd.mic.1', 'fd.mic.2', 'fd.mic.3', 'fd.rec.1'], note: 'Answer the four checks (one reaches back to the sports).' },
-    takeaway: 'Shotguns and dishes favour selected action; fixed pickup favours continuity. Each has a gap, and the plan names who covers it.',
+    takeaway: 'Shotguns and dishes favor selected action; fixed pickup favors continuity. Each has a gap, and the plan names who covers it.',
   },
   placement: {
     title: 'Placement Studio',
@@ -58,7 +58,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the aim, the range, the mount and the chain first — then reach for processing.',
   },
   practice: {
@@ -103,7 +103,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Can a dish or a shotgun make a far target sound close?',
     options: ['It cannot: neither one zooms the sound', 'It can, if the gain is raised enough', 'It can, once the mic is aimed exactly'],
     correct: 'It cannot: neither one zooms the sound',
-    explain: 'Directional mics favour what is on their axis; they do not bring it closer. Raising the gain raises the background too.',
+    explain: 'Directional mics favor what is on their axis; they do not bring it closer. Raising the gain raises the background too.',
     why: {
       'It can, if the gain is raised enough': 'Gain raises the target and the background together.',
       'It can, once the mic is aimed exactly': 'Aim helps the balance; it does not change the distance.',
@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why start with an ambience bed plus one action zone?',
     options: ['Add channels only when a tested gap needs one', 'More fixed mics would only add feedback risk', 'A single action mic can cover the whole field well'],
     correct: 'Add channels only when a tested gap needs one',
-    explain: 'Start with a stable ambience source and one prioritized action zone; add a channel when a tested gap justifies it. Raising gain does not repair an unfavourable place.',
+    explain: 'Start with a stable ambience source and one prioritized action zone; add a channel when a tested gap justifies it. Raising gain does not repair an unfavorable place.',
     why: {
       'More fixed mics would only add feedback risk': 'Effects mics normally stay off the venue PA; the reason is the plan, not feedback.',
       'A single action mic can cover the whole field well': 'A view of the whole field is not coverage of it.',
@@ -318,12 +318,12 @@ const scenarios: MikingScenario[] = [
     id: 'fd.prac.gain',
     page: 'practice',
     prompt: 'A quiet rehearsal peaks at −30 dBFS; the match will be far louder. What do you do?',
-    options: ['Set the loudest safe peak near −12 dBFS', 'Turn it up until the quiet peak hits −6', 'Leave it, and normalise the files later'],
+    options: ['Set the loudest safe peak near −12 dBFS', 'Turn it up until the quiet peak hits −6', 'Leave it, and normalize the files later'],
     correct: 'Set the loudest safe peak near −12 dBFS',
     explain: 'Set the gain on the nearest, loudest credible event you can make safely, near −12 dBFS, and keep more margin for what the match adds. Never make a hazardous peak to test.',
     why: {
       'Turn it up until the quiet peak hits −6': 'Set on the quiet peak, the first loud one clips.',
-      'Leave it, and normalise the files later': 'Normalising later cannot fix a clip — or the noise of a gain set too low.',
+      'Leave it, and normalize the files later': 'Normalizing later cannot fix a clip — or the noise of a gain set too low.',
     },
   },
   {
@@ -357,7 +357,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The shotgun is lowered to about 0.6 m. What is a fair concern?',
     options: ['It is easier to strike and hears grass', 'It can no longer hear the target at all', 'It becomes a boundary mic at that height'],
     correct: 'It is easier to strike and hears grass',
-    explain: 'Low hardware is easier to strike and can collect splash or grass noise; it may also favour shoe and ball detail. Height is a trial.',
+    explain: 'Low hardware is easier to strike and can collect splash or grass noise; it may also favor shoe and ball detail. Height is a trial.',
     why: {
       'It can no longer hear the target at all': 'Re-aimed, it still hears the target — from a new angle.',
       'It becomes a boundary mic at that height': 'A boundary mic needs its capsule at a large hard surface.',

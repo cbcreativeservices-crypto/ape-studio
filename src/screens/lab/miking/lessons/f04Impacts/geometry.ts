@@ -49,7 +49,7 @@ const VARIANTS: Variant[] = [
   { id: 'impact', label: 'IMPACT', blurb: 'A padded block struck on a sturdy wooden table: the contact, the table’s body and the room.', phrase: 'with an impact' },
   { id: 'water', label: 'WATER', blurb: 'A small pour into a shallow basin on a stable low table, a non-slip mat and a towel at hand: the entry, the splash, the drips.', phrase: 'with water' },
   { id: 'texture', label: 'TEXTURE', blurb: 'A dry brush drawn across coarse fabric on a board: a steady friction and a natural end.', phrase: 'with a texture' },
-  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theatre: the impact at a fixed station beside the stage, the PA beside the stage and a wedge in front. No wet effect live without approved containment and cleanup.', phrase: 'at a live station' },
+  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theater: the impact at a fixed station beside the stage, the PA beside the stage and a wedge in front. No wet effect live without approved containment and cleanup.', phrase: 'at a live station' },
 ];
 
 function parts(): Part[] {
@@ -62,7 +62,7 @@ function parts(): Part[] {
     { id: 'f04.lowTable', label: 'stable low table and mat', short: 'low table', role: 'A low, stable table and a non-slip mat under the basin; power, cables and connectors kept away from the wet area.', prov: ill('a low work table 600 mm high (drawing default)'), variants: ['water'], solid: { kind: 'box', min: v3(-380, BASIN.water, -380), max: v3(380, FLOOR.water, 380) } },
     { id: 'f04.board', label: 'fabric-covered board and a dry brush', short: 'board', role: 'A dry brush drawn across coarse fabric: continuous friction along the stroke, the board’s resonance, a natural end.', moving: true, prov: ill('a board 600 × 400 mm (drawing default)'), variants: ['texture'] },
     { id: 'f04.room', label: 'the stage room', short: 'room', role: 'A farther mic joins the source and the room — and may avoid direct splash or air bursts, at the cost of more room noise.', prov: ill('a generic Foley stage room (drawing default)') },
-    { id: 'f04.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR.live).pa },
+    { id: 'f04.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theater layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR.live).pa },
     { id: 'f04.booth', label: 'the station’s front rail', short: 'station', role: 'A fixed effects station beside the stage: small, contained effects, the same place every night.', prov: { kind: 'sourced', src: 'ENO-FOLEY', quote: 'A special booth is constructed stage left … so that the foley artist is visible to the audience' }, variants: ['live'], solid: boothSolids(FLOOR.live).rail },
   ];
 }

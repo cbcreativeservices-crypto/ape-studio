@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'The stroke, the port and the balance first — then position, polarity, the stand, spill and the monitors.',
   },
   practice: {
@@ -91,12 +91,12 @@ const scenarios: MikingScenario[] = [
     id: 'caj.snd.2',
     page: 'sound',
     prompt: 'A center stroke, then a top-corner slap. What changes?',
-    options: ['Low bass from the center, a snare-like slap at the corner', 'Very little — the plate sounds much the same wherever it is struck', 'The corner stroke is lower in pitch than the centre stroke'],
+    options: ['Low bass from the center, a snare-like slap at the corner', 'Very little — the plate sounds much the same wherever it is struck', 'The corner stroke is lower in pitch than the center stroke'],
     correct: 'Low bass from the center, a snare-like slap at the corner',
     explain: 'Center hits give the low thump; top-corner hits give a snare-like slap with the wires.',
     why: {
       'Very little — the plate sounds much the same wherever it is struck': 'Where the hand lands is the bass or the slap.',
-      'The corner stroke is lower in pitch than the centre stroke': 'The center gives the low end; the corner the slap.',
+      'The corner stroke is lower in pitch than the center stroke': 'The center gives the low end; the corner the slap.',
     },
   },
   {
@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Both are working examples — compare by ear',
     explain: 'Different practitioners’ examples, not two distances to average, and not a guarantee of the same sound.',
     why: {
-      'The close one — close is the better choice on a cajón': 'Close favours attack and puts the mic near the hands.',
+      'The close one — close is the better choice on a cajón': 'Close favors attack and puts the mic near the hands.',
       'Average them: put the mic at about 25 cm': 'Averaging two examples is not a third example.',
     },
   },
@@ -319,12 +319,12 @@ const symptoms: Symptom[] = [
     id: 'caj.s.weak',
     observation: 'Hollow or weak bass',
     firstChecks: 'The center stroke, the front/port balance — and do two mics cancel in mono?',
-    options: ['The balance and the mono sum; then position and polarity', 'A big low-end boost on the front channel’s EQ to fill it out', 'Ask the player to hit the centre much harder'],
+    options: ['The balance and the mono sum; then position and polarity', 'A big low-end boost on the front channel’s EQ to fill it out', 'Ask the player to hit the center much harder'],
     correct: 'The balance and the mono sum; then position and polarity',
     explain: 'Listen to the center stroke and the balance; try relative position and polarity as a conditional test.',
     why: {
       'A big low-end boost on the front channel’s EQ to fill it out': 'A boost cannot really undo a cancellation.',
-      'Ask the player to hit the centre much harder': 'The strokes are the music.',
+      'Ask the player to hit the center much harder': 'The strokes are the music.',
     },
   },
   {
@@ -436,11 +436,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'caj.q.3',
     covers: 'sound',
     prompt: 'Where does the snare-like slap come from?',
-    options: ['A top-corner stroke, with the wires', 'A centre stroke, deep in the plate', 'The port, on each stroke the hands make'],
+    options: ['A top-corner stroke, with the wires', 'A center stroke, deep in the plate', 'The port, on each stroke the hands make'],
     correct: 'A top-corner stroke, with the wires',
     explain: 'Top-corner hits give the snare-like slap; the wires inside add the buzz.',
     why: {
-      'A centre stroke, deep in the plate': 'The center gives the low thump.',
+      'A center stroke, deep in the plate': 'The center gives the low thump.',
       'The port, on each stroke the hands make': 'The port carries the low end and air.',
     },
   },
@@ -496,7 +496,7 @@ export const I02_LESSON: SpLesson = {
   ],
   sound: {
     stages: [
-      { title: 'The hand strikes', text: 'A hand strikes the plate — centre for bass, top corner for slap: the ATTACK.' },
+      { title: 'The hand strikes', text: 'A hand strikes the plate — center for bass, top corner for slap: the ATTACK.' },
       { title: 'The plate flexes', text: 'The plate flexes (drawn much larger); at the top the wires buzz against it.' },
       { title: 'The box’s air', text: 'The plate pushes and pulls the air in the box: the BODY and the low end.' },
       { title: 'Sound leaves', text: 'From the plate — and from the port: low end, and a puff of air on bass strokes.' },

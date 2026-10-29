@@ -111,7 +111,7 @@ export function feedProblemWords(spec: FeedSpec, plan: RoutingPlan, p: FeedProbl
 /** What happens while a key is held, in words. */
 export const KEY_WORDS: Readonly<Record<MicKey, string>> = {
   onAir: 'ON AIR: the mic goes to the program and the recorder, and back into the commentator’s own headphones directly (the sidetone).',
-  cough: 'COUGH: while the key is held the mic is cut from everything — a cough, a sip, a word to a neighbour stays off the air.',
+  cough: 'COUGH: while the key is held the mic is cut from everything — a cough, a sip, a word to a neighbor stays off the air.',
   talkback: 'TALKBACK: while the key is held the mic goes to the producer only, off the program.',
 };
 
@@ -124,6 +124,6 @@ export const BODY_CHAIN: readonly { id: string; label: string; words: string }[]
   { id: 'mic', label: 'MIC', words: 'The capsule where the approval says — clear of fabric, straps and protective gear.' },
   { id: 'tx', label: 'TRANSMITTER', words: 'The bodypack in its approved place, its antenna straight, the cable with a strain-relief loop.' },
   { id: 'rx', label: 'RECEIVER', words: 'On a frequency the venue’s radio coordinator assigned; watched for dropouts.' },
-  { id: 'ch', label: 'ITS OWN CHANNEL', words: 'Isolated and labelled: one person, one channel, muted when it must be.' },
+  { id: 'ch', label: 'ITS OWN CHANNEL', words: 'Isolated and labeled: one person, one channel, muted when it must be.' },
   { id: 'dest', label: 'THE APPROVED PATH', words: 'Only where permission says: live, delayed, recorded for review — or nowhere.' },
 ];

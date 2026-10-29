@@ -121,7 +121,7 @@ export const A11_ZONES: DocumentedZone[] = [
     aim: { maxOffAxis: 30, prov: ill('facing the instrument: within 30° is the lab’s tolerance') },
     requires: { micTypeIds: STAND },
     start: pose(v3(450, MID_Y, CENTRE_Z), CENTRE),
-    tendency: 'The two sides and a little of the room combined — an integrated, natural view. Moving toward the treble side tends to favour the melody; toward the bass, the accompaniment.',
+    tendency: 'The two sides and a little of the room combined — an integrated, natural view. Moving toward the treble side tends to favor the melody; toward the bass, the accompaniment.',
     checks: ['Bass and treble balance over a whole passage', 'Both bellows directions, not a held note', 'Key and bellows noise'],
   },
   {
@@ -198,7 +198,7 @@ export const A11_MODEL: InstrumentModel = {
   ],
   surfaces: [
     { id: 'front', partId: 'ac.treble', label: 'the instrument’s front', point: v3(0, MID_Y, CENTRE_Z), normal: FRONT_N },
-    { id: 'grille', partId: 'ac.grille', label: 'the grille’s centre', point: A0, normal: FRONT_N, target: true },
+    { id: 'grille', partId: 'ac.grille', label: 'the grille’s center', point: A0, normal: FRONT_N, target: true },
     { id: 'keys', partId: 'ac.keys', label: 'the keyboard side', point: v3(MID_X, MID_Y, TREBLE.z1), normal: v3(0, 0, 1) },
     { id: 'bass', partId: 'ac.bassSide', label: 'the bass side (fully open)', point: v3(MID_X, MID_Y, BASS_FULL), normal: v3(0, 0, -1) },
   ],

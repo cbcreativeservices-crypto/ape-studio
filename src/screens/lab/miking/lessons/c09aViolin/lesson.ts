@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the violin sits — under the chin, the bow’s sweep and the bow arm, the music stand and the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know where the violin sits — under the chin, the bow’s sweep and the bow arm, the music stand and the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['vn.set.1', 'vn.set.2', 'vn.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bow sweeps out to the player’s right and the bow arm with it; the head is at the chin rest. No mic, stand or cable goes there. Ask the player first, and protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — distance, angle, the pattern, the player’s movement, the mount and the combination — before reaching for tone controls.',
   },
   practice: {
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'vn.place.2',
     page: 'placement',
-    prompt: 'You bring the mic from about a metre to about 30 cm from the violin. What tends to change?',
+    prompt: 'You bring the mic from about a meter to about 30 cm from the violin. What tends to change?',
     options: ['Only the level rises; the tone stays exactly the same', 'More bow articulation and detail; less of the room', 'Less low end, because the mic is now nearer the strings'],
     correct: 'More bow articulation and detail; less of the room',
     explain: 'Closer tends to bring more of the bow and the strings, more separation, and less room. Too close, the scratch can take over — and a directional mic adds low end (proximity effect).',
@@ -370,10 +370,10 @@ const symptoms: Symptom[] = [
   {
     id: 'vn.sym.string',
     observation: 'One string is much brighter than the others',
-    firstChecks: 'Is the capsule localised on one region? Take a broader perspective and test all four strings.',
+    firstChecks: 'Is the capsule localized on one region? Take a broader perspective and test all four strings.',
     options: ['Cut that string’s frequencies with a narrow EQ', 'Ask the player to avoid that string where possible', 'Take a broader view and test all four strings'],
     correct: 'Take a broader view and test all four strings',
-    explain: 'A close capsule can favour the string or region it faces. A little more distance or a different angle evens the strings out.',
+    explain: 'A close capsule can favor the string or region it faces. A little more distance or a different angle evens the strings out.',
     why: {
       'Cut that string’s frequencies with a narrow EQ': 'Notes move between strings; a fixed EQ cannot follow. Fix the view.',
       'Ask the player to avoid that string where possible': 'The music decides the strings. The mic should serve all four.',
@@ -422,7 +422,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser about 0.5–1 m in front and a little above, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point that blends the violin and the room — then small changes by ear.' },
       { id: 'b', label: 'Small condenser about 30 cm in front of where the bow meets the strings', ok: true, power: 'phantom', feedback: 'A suggested starting point for more definition — listen that the bow does not take over.' },
-      { id: 'c', label: 'A mic a few centimetres from the bridge, for the most detail', ok: false, power: 'phantom', feedback: 'Very close to the bridge the friction and rosin take over — and the mic sits in the bow’s way.' },
+      { id: 'c', label: 'A mic a few centimeters from the bridge, for the most detail', ok: false, power: 'phantom', feedback: 'Very close to the bridge the friction and rosin take over — and the mic sits in the bow’s way.' },
       { id: 'd', label: 'Two miniatures, one on each side, to make the solo stereo', ok: false, power: 'phantom', feedback: 'Stereo is not a requirement for a small solo instrument; two close mics move the image.' },
       { id: 'e', label: 'A stand mic level with the bow arm, beside the player’s right hand', ok: false, power: 'phantom', feedback: 'That is the bow arm’s path: the mic would be struck.' },
     ],
@@ -436,7 +436,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the fiddle — check the clip fits and the cable is relieved.' },
       { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over the strings.' },
-      { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the fiddle.' },
+      { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a meter away hears the band and the monitors more than the fiddle.' },
       { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'No mic goes on the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A miniature taped to the top, by the f-hole', ok: false, power: 'phantom', feedback: 'Do not tape or stick a mic to the varnish or the f-hole edge. Use a mount made for the violin, with the player’s OK.' },
     ],
@@ -448,7 +448,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you bring the mic from a metre to about 30 cm. What changes?', options: ['More bow and detail', 'More of the room', 'It depends on this violin'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you bring the mic from a meter to about 30 cm. What changes?', options: ['More bow and detail', 'More of the room', 'It depends on this violin'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the violin reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -610,7 +610,7 @@ export const C09A_LESSON: Lesson = {
     { text: 'The bow’s sweep (±25° for the string crossings), the bow hand, the bow arm, the left hand and the player’s head — illustrative envelopes; the player’s body and the chair (seated) are drawn from the proposal’s head and tail positions.', dims: [] },
     { text: 'The 0.5–1.2 m front distance is the lesson’s own trial; the side zone’s 5–10 cm reads “a few inches”; the clip and holder distances — drawing defaults.', dims: [] },
     { text: 'The miniature’s capsule and gooseneck reach, the small condenser’s diameter, and whether a body clip fits this violin’s depth (rib 30 mm plus the arching) — drawing defaults to check on the real instrument.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

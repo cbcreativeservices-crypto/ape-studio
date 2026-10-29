@@ -181,7 +181,7 @@ test('3 · educationChip: PE LICENSE / DEGREE REQ. on the collapsed row; LICENSE
   const row = code('screens/careerfinder/CareerFamilyScreen.tsx');
   assert.match(row, /const edu = educationChip\(c\);/);
   assert.match(row, /\{edu \? <View style=\{styles\.lic\}><Text style=\{styles\.licText\}>\{edu\}<\/Text><\/View> : null\}/, 'same style as LICENSED');
-  assert.match(row, /edu === 'PE LICENSE' \? ', Professional Engineer licence commonly required' : edu \? ', degree required' : ''/, 'screen readers hear it too');
+  assert.match(row, /edu === 'PE LICENSE' \? ', Professional Engineer license commonly required' : edu \? ', degree required' : ''/, 'screen readers hear it too');
 });
 
 /* ───────────────────────── 4. enrollment claim (G7) ───────────────────────── */

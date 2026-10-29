@@ -20,7 +20,7 @@ const ALIGN: Workspace = {
     'realigns them, and shows the phase relationship any offset creates at a given frequency.',
   whyItMatters:
     'Time alignment is the difference between a punchy, coherent system and a hollow, phasey one. A ' +
-    'few centimetres of driver offset can be tens of degrees of phase error at the crossover; a metre ' +
+    'few centimeters of driver offset can be tens of degrees of phase error at the crossover; a meter ' +
     'of sub-to-top offset is a few milliseconds you can dial back in with delay.',
   example:
     'A sub 1.2 m closer than the tops (20 °C): delay = 1.2 ÷ 343 ≈ 3.5 ms to add to the SUB. At an ' +
@@ -113,7 +113,7 @@ const ALIGN: Workspace = {
               ? `Partly out of phase — some loss: two equal sources add only about +${fmt(sum, 2)} dB over one alone.`
               : near > 179.9
                 ? `Close to 180° — equal sources cancel almost completely here until aligned.`
-                : `Mostly cancelling — two equal sources come out about ${fmt(-sum, 2)} dB quieter than one alone; align them.`,
+                : `Mostly canceling — two equal sources come out about ${fmt(-sum, 2)} dB quieter than one alone; align them.`,
         ];
       },
     },

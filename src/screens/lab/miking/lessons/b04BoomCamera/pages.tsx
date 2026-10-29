@@ -82,7 +82,7 @@ function useTwoTalkerStep(): MikingStep {
   const a = read(A_LIP);
   const b = read(B_LIP);
   const diff = a.db - 20 * Math.log10(a.d) - (b.db - 20 * Math.log10(b.d));
-  const a11y = `From above: two talkers face to face 1.1 metres apart, a boom above and between them, aimed ${cue === 'A' ? 'at the talker' : cue === 'B' ? 'at the interviewer' : 'between them'}. The talker is ${deg5(a.th)} off its axis, the interviewer ${deg5(b.th)}. Cueing from one mouth to the other is a swing of about ${deg5(swing)}.`;
+  const a11y = `From above: two talkers face to face 1.1 meters apart, a boom above and between them, aimed ${cue === 'A' ? 'at the talker' : cue === 'B' ? 'at the interviewer' : 'between them'}. The talker is ${deg5(a.th)} off its axis, the interviewer ${deg5(b.th)}. Cueing from one mouth to the other is a swing of about ${deg5(swing)}.`;
   const params: DockParam[] = [
     {
       kind: 'options',

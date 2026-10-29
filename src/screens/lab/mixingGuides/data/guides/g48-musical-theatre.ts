@@ -15,8 +15,8 @@ import type { MixingGuide } from '../types';
 export const GUIDE: MixingGuide = {
   "id": "musical-theatre",
   "num": 48,
-  "title": "Musical Theatre",
-  "expects": "Theatre audiences are seated, attentive and paying high ticket prices; they expect the sound to be clear, warm and “invisible,” with the voice appearing to come from the performer’s mouth rather than from a speaker cluster.",
+  "title": "Musical Theater",
+  "expects": "Theater audiences are seated, attentive and paying high ticket prices; they expect the sound to be clear, warm and “invisible,” with the voice appearing to come from the performer’s mouth rather than from a speaker cluster.",
   "glance": {
     "origin": "Broadway (New York) and London’s West End, from operetta and vaudeville roots in the early 1900s; radio-mic’d “megamusical” sound from the 1980s; now worldwide touring and resident productions",
     "tempo": "Wide: 60–90 BPM ballads, 100–140 BPM up-tempo and dance numbers, frequent rubato (flexible, push-pull tempo), tempo changes and spoken-over underscore within a single song",
@@ -27,7 +27,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "A musical is storytelling first: songs exist to move plot and reveal character, so the audience must catch every lyric, every joke and every whispered line. Theatre audiences are seated, attentive and paying high ticket prices; they expect the sound to be clear, warm and “invisible,” with the voice appearing to come from the performer’s mouth rather than from a speaker cluster. The target is to hear every word as easily as on TV while the show still feels exciting and unamplified. What makes this audience say “that sounded wrong”: a missed first word from a late fader, a phasey voice from two open mics, an orchestra burying a lyric, a boomy body mic, costume rustle, or a show so loud it becomes tiring."
+      "text": "A musical is storytelling first: songs exist to move plot and reveal character, so the audience must catch every lyric, every joke and every whispered line. Theater audiences are seated, attentive and paying high ticket prices; they expect the sound to be clear, warm and “invisible,” with the voice appearing to come from the performer’s mouth rather than from a speaker cluster. The target is to hear every word as easily as on TV while the show still feels exciting and unamplified. What makes this audience say “that sounded wrong”: a missed first word from a late fader, a phasey voice from two open mics, an orchestra burying a lyric, a boomy body mic, costume rustle, or a show so loud it becomes tiring."
     }
   ],
   "instruments": [
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Musical theatre has the widest dynamic range of almost any amplified genre. A show can carry 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore can sit 30 dB or more below the finale. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
+      "text": "Musical theater has the widest dynamic range of almost any amplified genre. A show can carry 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore can sit 30 dB or more below the finale. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
     }
   ],
   "balance": [
@@ -282,7 +282,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Imaging",
-        "live": "Delay-based localisation to the actor’s stage position",
+        "live": "Delay-based localization to the actor’s stage position",
         "studio": "Stereo picture; panning to suggest staging, dialogue mostly cut"
       },
       {

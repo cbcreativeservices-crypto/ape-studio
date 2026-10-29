@@ -678,7 +678,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               onSelect: (id) => setPatch(id as 'cab' | 'desk'),
               options: [
                 { id: 'cab', label: 'SPEAKER OUT → THE CABINET', blurb: 'By a speaker cable, as the amp’s manual says — to a speaker, or to a load or DI made for speaker level.' },
-                { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognise it — never do it: a speaker output carries high power.' },
+                { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognize it — never do it: a speaker output carries high power.' },
               ],
             },
           ],
@@ -705,7 +705,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         layout: 'rack',
         rack: {
           render: (w, h) => <BacklinePlan w={w} h={h} who={spec.who} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: the amp, the player and their keep-clear space, a DI box, the other amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
-          badge: scene === 'stage' ? 'From above · a typical layout · grey dashes = the player’s space, keep clear' : 'From above · a typical studio room',
+          badge: scene === 'stage' ? 'From above · a typical layout · gray dashes = the player’s space, keep clear' : 'From above · a typical studio room',
           bezel: [
             { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },
             { k: 'FOR A MIC', v: ps ? ps.tag : '—', flex: 1.4 },
@@ -1212,7 +1212,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             {rearMode ? (
               <Body>{switchB === 1 ? 'With the rear switch at +, the two arrive OPPOSED: the back of the cone is the same motion, inverted. The lows cancel most — thin.' : 'With the rear switch at −, the inversion is undone: the two arrive in step, and only the delay is left — its notches sit higher up.'}</Body>
             ) : (
-              <Body>{`The DI reaches the desk at once; the mic hears the speaker only after the sound crosses the air — about ${fmtMs(dt).replace('≈ ', '')} here. Every centimetre the mic moves back adds about 0.03 ms. Flipping the DI's polarity changes where the notches fall, not that delay.`}</Body>
+              <Body>{`The DI reaches the desk at once; the mic hears the speaker only after the sound crosses the air — about ${fmtMs(dt).replace('≈ ', '')} here. Every centimeter the mic moves back adds about 0.03 ms. Flipping the DI's polarity changes where the notches fall, not that delay.`}</Body>
             )}
             {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             {!rearMode ? <Note>This lab cannot tell whether your amp and speaker flip the signal — so try BOTH polarity settings by ear, in mono, and keep the fuller one. In a fixed studio setup the DI can also be delayed to line up; no single delay or polarity fixes every frequency.</Note> : null}

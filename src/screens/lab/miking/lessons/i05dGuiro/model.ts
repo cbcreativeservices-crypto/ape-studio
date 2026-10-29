@@ -95,7 +95,7 @@ function zonesFor(v: GuId): DocumentedZone[] {
       variants: [v],
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 100 },
-      tendency: 'More of the rasp: each ridge’s click. Closer favours a small section of the stroke; check both ends of a long scrape.',
+      tendency: 'More of the rasp: each ridge’s click. Closer favors a small section of the stroke; check both ends of a long scrape.',
       checks: ['Both ends of the longest scrape', 'Rasp against hollow body', 'The forward and the return stroke'],
     }),
     targetZone({
@@ -118,7 +118,7 @@ function zonesFor(v: GuId): DocumentedZone[] {
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 100 },
       tendency: 'More of the hollow resonance against the rasp — not a rule that one side is less harsh; compare by ear at matched level.',
-      checks: ['Rasp against hollow body', 'Hand noise from the holding hand', 'Neighbours the mic now faces'],
+      checks: ['Rasp against hollow body', 'Hand noise from the holding hand', 'Neighbors the mic now faces'],
     }),
   ];
 }

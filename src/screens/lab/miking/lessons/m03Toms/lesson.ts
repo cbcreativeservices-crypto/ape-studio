@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, aim, the pattern, gain staging, levels and polarity — and the drums themselves, before reaching for tone controls.',
   },
   practice: {
@@ -109,12 +109,12 @@ const scenarios: MikingScenario[] = [
     id: 'tm.snd.3',
     page: 'sound',
     prompt: 'The stick strikes the exact center of a tom’s batter head. Which of its vibration shapes can it set moving?',
-    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
     explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape. The ring-shaped ones include the lowest shape, the plain dome; off center, more shapes join in.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves there.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the center means the head does not move there.',
+      'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there.',
     },
   },
   micRatingCheck({ id: 'tm.set.1', page: 'setting', mic: 'tom mic', loudest: 'the hardest tom hit' }),
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A wider one, so both toms are picked up evenly',
     explain: 'Tight patterns help isolate one tom; a mic covering two wants a wider pattern so both toms come through at useful levels — at the cost of more surrounding sound.',
     why: {
-      'The tightest available, so it hears only one tom': 'A tight pattern would favour one tom. Covering two calls for a wider one.',
+      'The tightest available, so it hears only one tom': 'A tight pattern would favor one tom. Covering two calls for a wider one.',
       'Whichever pattern, because both toms are equally loud': 'The pattern sets how evenly the two are heard, whatever their level.',
     },
   },
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
     explain: '“Above the head” means away from the head’s surface, along its straight-on line. On a tilted tom that is not straight up.',
     why: {
       'Straight up from the floor to the mic': 'The floor is not the reference. Measure from the head, square to it.',
-      'From the top of the kick drum underneath it': 'The kick is a neighbour, not the reference: measure from the tom’s own head.',
+      'From the top of the kick drum underneath it': 'The kick is a neighbor, not the reference: measure from the tom’s own head.',
     },
   },
   {
@@ -424,7 +424,7 @@ const symptoms: Symptom[] = [
   {
     id: 'tm.sym.spill',
     observation: 'Excessive cymbal or snare spill in a tom channel',
-    firstChecks: 'Check safe mic height, aim, actual pattern and neighbouring source levels; decide whether some spill belongs in the kit sound.',
+    firstChecks: 'Check safe mic height, aim, actual pattern and neighboring source levels; decide whether some spill belongs in the kit sound.',
     options: ['Height, aim and the actual pattern — then how much is fine', 'Turn the tom channel up until the tom covers the spill', 'Swap to a condenser, which hears less of the cymbals'],
     correct: 'Height, aim and the actual pattern — then how much is fine',
     explain: 'Aim the rejection by the actual pattern from a safe position, and decide how much cymbal belongs in the kit sound.',
@@ -608,7 +608,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Fills sweep across all the toms, and the crashes above swing when struck.',
     why: {
       'The kick’s front head, so the audience can still see it': 'How the kit looks is not the safety question.',
-      'The floor tom’s space on the far side of the kit': 'Neighbours matter, but the sticks and the cymbals above are what move.',
+      'The floor tom’s space on the far side of the kit': 'Neighbors matter, but the sticks and the cymbals above are what move.',
     },
   },
   {
@@ -704,10 +704,10 @@ export const M03_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'toms', label: 'the toms (rack pair and floor tom)', short: 'TOMS', note: 'Ringed in amber: the 10 in and 12 in rack toms over the kick, and the 16 in floor tom at the player’s right. The drums this lesson mics.', prov: { kind: 'sourced', src: 'YMH-TC', quote: 'TMT-1007, TMT-1208; TAMA 16"x16" Floor Tom' }, tag: 'THE DRUMS', scene: 'all', planIds: ['tom2', 'tom1', 'floor'] },
-      { id: 'cymbals', label: 'crash and ride cymbals', short: 'CYMBALS', note: 'A crash over each rack tom and the ride over the floor tom: the loudest neighbours a tom mic hears — and they swing when struck, so mics keep clear of them.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['crash2', 'crash1', 'ride'] },
+      { id: 'cymbals', label: 'crash and ride cymbals', short: 'CYMBALS', note: 'A crash over each rack tom and the ride over the floor tom: the loudest neighbors a tom mic hears — and they swing when struck, so mics keep clear of them.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['crash2', 'crash1', 'ride'] },
       { id: 'kick', label: 'kick drum (and the tom holder on it)', short: 'KICK', note: 'The rack toms’ holder stands on the kick’s shell here. A boom reaching over the rack toms passes above the kick — and the holder takes room there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'BOOM PATH', scene: 'kit', planIds: ['kick', 'pedal'] },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The player sits behind the kit; fills sweep the sticks across every tom, and the right leg sits right beside the floor tom.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'snare', label: 'snare and hi-hat', short: 'SNARE · HI-HAT', note: 'Across the kit on the player’s left: loud neighbours a rack-tom mic can hear.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['snare', 'hihat'] },
+      { id: 'snare', label: 'snare and hi-hat', short: 'SNARE · HI-HAT', note: 'Across the kit on the player’s left: loud neighbors a rack-tom mic can hear.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['snare', 'hihat'] },
       { id: 'fill', label: 'the drummer’s fill (monitor)', short: 'DRUM FILL', note: 'A floor monitor beside the throne so the drummer can hear the band — loud, close to the floor tom.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'downstage', label: 'a downstage wedge (another player’s monitor)', short: 'WEDGE', note: 'Out on the audience side, facing back toward the stage.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience hears the acoustic toms too; in a small room the PA adds what the room needs, in a big one it carries most of them.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
@@ -737,7 +737,7 @@ export const M03_LESSON: Lesson = {
     { text: 'The sticks’ envelope over each tom (the drummer-facing half, 40 cm up) and the player’s right leg beside the floor tom — drawn illustratively.', dims: [] },
     { text: 'The bottom-mic distance (3–8 cm) and where inside a head-off floor tom a mic sits — the sources give positions only.', dims: [] },
     { text: 'The supercardioid drum dynamic’s outline (not published), the condenser head’s length and a clamp’s reach.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

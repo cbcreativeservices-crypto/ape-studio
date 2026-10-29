@@ -16,7 +16,7 @@
  *         β, scaled): a bar half as long rings four times higher.
  *   DISC  the Cymatics Lab's free circular plate (plateModes, Leissa's
  *         free-edge λ², J_n(k r)·cos nθ): a gong hangs by cords at its rim,
- *         so its edge is free. A strike at the exact centre drives only the
+ *         so its edge is free. A strike at the exact center drives only the
  *         ring-shaped (n = 0) shapes, because J_n(0) = 0 for n ≥ 1.
  *   STRIKE a stroke drives a shape in proportion to how much the metal moves
  *         THERE in that shape (the rule the drum lessons use).

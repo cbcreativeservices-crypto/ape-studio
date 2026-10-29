@@ -81,7 +81,7 @@ describe('head fix 2026-10-08 — one shared head-icon module', () => {
     const ys = pts.map((q) => q[1]);
     assert.ok(Math.min(...ys) <= -49.9 && Math.max(...ys) >= 49, 'crown −50 … chin +50');
     const xs = pts.map((q) => q[0]);
-    assert.ok(Math.abs(Math.min(...xs) + Math.max(...xs)) < 0.5, 'symmetric about the centre line');
+    assert.ok(Math.abs(Math.min(...xs) + Math.max(...xs)) < 0.5, 'symmetric about the center line');
     // Canon faces +y (down the screen); aboveRotation(1, 0) faces +x.
     assert.ok(Math.abs(aboveRotation(0, 1)) < 1e-9);
     const east = points((p) => appendHeadIcon(p, null, 'above', 0, 0, 100, { rotation: aboveRotation(1, 0) }));

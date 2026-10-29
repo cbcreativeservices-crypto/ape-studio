@@ -134,7 +134,7 @@ export const F15_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdcCard', 'measFF'] },
     start: toward(S.far, HUB),
     tendency: 'The fan with the room round it, as a listener would meet it — a designed perspective, not an unaltered measurement.',
-    checks: ['The load and the surface logged', 'A layered effect labelled as designed', 'Beside the airflow, not in it'],
+    checks: ['The load and the surface logged', 'A layered effect labeled as designed', 'Beside the airflow, not in it'],
   },
 ];
 

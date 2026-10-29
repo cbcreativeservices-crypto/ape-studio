@@ -152,7 +152,7 @@ const SCHROEDER: Workspace = {
       plainFormula:
         'The Schroeder frequency equals 2000 times the square root of the reverberation time divided by the room volume.',
       explain:
-        'Marks the transition between a room’s two behaviours: below it, sparse resonant modes you can count and treat individually; above it, the modes overlap into a dense field managed statistically with diffusion and absorption. Small rooms push it high — which is why small control rooms are a low-frequency battle.',
+        'Marks the transition between a room’s two behaviors: below it, sparse resonant modes you can count and treat individually; above it, the modes overlap into a dense field managed statistically with diffusion and absorption. Small rooms push it high — which is why small control rooms are a low-frequency battle.',
       keySymbols: ['·', '√', '/'],
       compute: (v) => {
         const fs = 2000 * Math.sqrt(n(v.rt60) / n(v.vol));
@@ -316,7 +316,7 @@ const REFLECTION: Workspace = {
     'notch (1/2 the comb spacing) and how tight the teeth are; a longer difference packs more, ' +
     'closer-spaced notches. It is the physics behind the 3:1 rule and desk-bounce dips.',
   example:
-    'A mic 0.30 m from a source with a desk reflection travelling 0.75 m total: Δd = 0.45 m, ' +
+    'A mic 0.30 m from a source with a desk reflection traveling 0.75 m total: Δd = 0.45 m, ' +
     'Δt ≈ 1.31 ms. Comb teeth every c/Δd ≈ 762 Hz, first notch at half that ≈ 381 Hz.',
   mistakes: [
     'Assuming a distant reflection is harmless — a long path difference makes the comb FINER (more notches per octave), and only shallower if the reflection arrives much quieter.',

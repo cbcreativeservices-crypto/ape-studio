@@ -31,11 +31,11 @@ export const STAGE3_PEOPLE: StageDef = {
     {
       sectionId: "team",
       title: "Team",
-      intro: "The roles this production needs and the people filling them. Where a role requires a licence or certification beyond this app, the field says so; treat that as a requirement to check, not a formality.",
+      intro: "The roles this production needs and the people filling them. Where a role requires a license or certification beyond this app, the field says so; treat that as a requirement to check, not a formality.",
       notices: [
         {
           kind: "qualified",
-          text: "Where a role below is marked as licensed or certified work, confirm the person's qualification with the venue or authority before the day. A qualified person must approve rigging, electrical distribution and anything that bears load, and wireless systems may need a spectrum licence where you are."
+          text: "Where a role below is marked as licensed or certified work, confirm the person's qualification with the venue or authority before the day. A qualified person must approve rigging, electrical distribution and anything that bears load, and wireless systems may need a spectrum license where you are."
         }
       ],
       fields: [
@@ -105,7 +105,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "rf_coordinator",
           label: "RF coordinator",
           kind: "text",
-          help: "Plans and assigns the wireless frequencies. Depending on the country and frequency band, operating wireless microphones and in-ears may need a spectrum licence; the coordinator finds out which applies.",
+          help: "Plans and assigns the wireless frequencies. Depending on the country and frequency band, operating wireless microphones and in-ears may need a spectrum license; the coordinator finds out which applies.",
           required: false
         },
         {
@@ -141,7 +141,7 @@ export const STAGE3_PEOPLE: StageDef = {
           showWhen: { field: "rigging_required", notEquals: ["no"] },
           label: "Qualified rigger",
           kind: "text",
-          help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognised certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
+          help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognized certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
           required: false,
           onlyFor: [
             "live"
@@ -256,7 +256,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "crew_other",
           label: "Other crew and roles",
           kind: "table",
-          help: "Everyone else: runners, loaders, camera, lighting, first aid, security, drivers. Mark any role that needs a licence or certification, and whether you have seen it.",
+          help: "Everyone else: runners, loaders, camera, lighting, first aid, security, drivers. Mark any role that needs a license or certification, and whether you have seen it.",
           required: false,
           columns: [
             {
@@ -295,7 +295,7 @@ export const STAGE3_PEOPLE: StageDef = {
             },
             {
               columnId: "crew_certification",
-              label: "Licence or certification required?",
+              label: "License or certification required?",
               kind: "choice",
               options: [
                 {
@@ -323,7 +323,7 @@ export const STAGE3_PEOPLE: StageDef = {
       notices: [
         {
           kind: "qualified",
-          text: "A task that involves rigging, electrical distribution or structural loading can only be assigned to a person who holds the licence or certification the venue and authority require. Assigning it here does not make anyone qualified to do it."
+          text: "A task that involves rigging, electrical distribution or structural loading can only be assigned to a person who holds the license or certification the venue and authority require. Assigning it here does not make anyone qualified to do it."
         }
       ],
       fields: [
@@ -717,7 +717,7 @@ export const STAGE3_PEOPLE: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Wireless channels with nobody coordinating them",
-      detail: "Wireless systems that were not planned together interfere with each other and with whatever else is on the air at the venue, and the failure is heard by the audience. Depending on the country and the band, operating them may also need a licence that someone has to hold.",
+      detail: "Wireless systems that were not planned together interfere with each other and with whatever else is on the air at the venue, and the failure is heard by the audience. Depending on the country and the band, operating them may also need a license that someone has to hold.",
       fixHint: "Name an RF coordinator, even if it is the engineer, and have them plan the frequencies and check the licensing that applies where you are.",
       needsLogic: true,
       logicIntent: "Fire when wireless_channels is greater than zero and rf_coordinator is empty."
@@ -731,7 +731,7 @@ export const STAGE3_PEOPLE: StageDef = {
       severity: "blocker",
       kind: "unsafe",
       title: "Something is being flown and no qualified rigger is named",
-      detail: "Anything hung above people is a structural load, and a failure can kill. Rigging is skilled work that most venues, unions and insurers require a recognised certification for, and no amount of audio experience substitutes for it. This plan should not proceed until a qualified person owns the rigging.",
+      detail: "Anything hung above people is a structural load, and a failure can kill. Rigging is skilled work that most venues, unions and insurers require a recognized certification for, and no amount of audio experience substitutes for it. This plan should not proceed until a qualified person owns the rigging.",
       fixHint: "Name a qualified rigger, confirm their certification with the venue or authority, and have them design and sign off everything that is flown.",
       needsLogic: true,
       logicIntent: "Fire when rigging_required is yes and rigger is empty. The unknown case is handled by people-hazards-unknown.",
@@ -748,7 +748,7 @@ export const STAGE3_PEOPLE: StageDef = {
       severity: "blocker",
       kind: "unsafe",
       title: "Temporary power with no licensed electrician",
-      detail: "Tie-ins, temporary distribution and generators feeding distribution are licensed electrical work, and a mistake is a fire or an electrocution. The venue and the insurer will require a qualified person to make and sign off the connection. An audio technician is not that person unless they also hold the licence.",
+      detail: "Tie-ins, temporary distribution and generators feeding distribution are licensed electrical work, and a mistake is a fire or an electrocution. The venue and the insurer will require a qualified person to make and sign off the connection. An audio technician is not that person unless they also hold the license.",
       fixHint: "Name the licensed electrician or certified entertainment electrician responsible for the power, or change the power source to venue-provided distribution connected by venue staff.",
       needsLogic: true,
       logicIntent: "Fire when power_source is temporary_distro or generator_distro and electrician is empty. Do not fire for existing_outlets, house_distro or generator_direct. The unknown case is handled by people-hazards-unknown."

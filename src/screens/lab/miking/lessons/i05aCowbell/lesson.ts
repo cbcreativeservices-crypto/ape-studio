@@ -30,7 +30,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the cowbell sits — on a kit or a percussion rig, under overheads, by loud neighbours — and what to do before any mic.',
+    goal: 'Know where the cowbell sits — on a kit or a percussion rig, under overheads, by loud neighbors — and what to do before any mic.',
     credit: { scenarios: ['bell.set.1', 'bell.set.hear', 'bell.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Mark every stick path, choose the bell and any mute first, and keep hands out of an active striking area. Protect your hearing.',
   },
@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Tell the bell’s own ring from mount buzz and from electronic distortion; find the stage that overloads; separate by placement before EQ.',
   },
   practice: {
@@ -178,11 +178,11 @@ const scenarios: MikingScenario[] = [
     id: 'bell.place.1',
     page: 'placement',
     prompt: 'The starting point is 20–40 cm. Why is 20 cm not automatically safe?',
-    options: ['The stick’s path and rebound may reach that close', 'Twenty centimetres is too far away for a cowbell spot', 'The bell’s ring overloads a mic placed inside 20 cm of it'],
+    options: ['The stick’s path and rebound may reach that close', 'Twenty centimeters is too far away for a cowbell spot', 'The bell’s ring overloads a mic placed inside 20 cm of it'],
     correct: 'The stick’s path and rebound may reach that close',
     explain: 'The near end is closer than one general tip for percussion (a gap of about 30 cm or more) and may sit in some stick paths: the stick defines the minimum.',
     why: {
-      'Twenty centimetres is too far away for a cowbell spot': 'It is a close spot; the question is the stick’s reach.',
+      'Twenty centimeters is too far away for a cowbell spot': 'It is a close spot; the question is the stick’s reach.',
       'The bell’s ring overloads a mic placed inside 20 cm of it': 'Overload depends on the mic and the hit; clearance is the issue here.',
     },
   },
@@ -511,7 +511,7 @@ export const I05A_LESSON: SpLesson = {
     items: [
       { id: 'cowbell', label: 'the cowbell and its player', short: 'COWBELL', note: 'On a stand at the kit or the percussion rig — or held. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'kit', label: 'the drum kit and its overheads', short: 'KIT · OHs', note: 'Snare and cymbals a hand’s width from a kit bell; the overheads above may already carry it in balance.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL · MAIN PICKUP', scene: 'kit' },
-      { id: 'perc', label: 'the timbales and percussion rig', short: 'PERCUSSION', note: 'Several bells may share a rig: a shared directional mic, or spots — and document which bell a shared mic favours.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
+      { id: 'perc', label: 'the timbales and percussion rig', short: 'PERCUSSION', note: 'Several bells may share a rig: a shared directional mic, or spots — and document which bell a shared mic favors.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the bell spot’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'vocal', label: 'a singer’s microphone', short: 'VOCAL MIC', note: 'Another open mic: it hears the bell, bright and loud.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       ...stageItems('the cowbell', 'Kit or percussion overheads may already carry the bell, with cymbals and a woodblock; a spot is added only for the bell’s own level.'),

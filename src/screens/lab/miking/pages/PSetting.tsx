@@ -125,7 +125,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       layout: 'rack',
       rack: {
         render: render('kit', kitSel, pickKit, `${C.setting.kitA11y} ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
-        badge: PW?.badge ?? 'The kit from above · a typical right-handed layout · grey hatch = the player’s space',
+        badge: PW?.badge ?? 'The kit from above · a typical right-handed layout · gray hatch = the player’s space',
         bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
         params: kitParams,
         initialParam: 'item',

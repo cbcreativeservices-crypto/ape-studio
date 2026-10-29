@@ -120,7 +120,7 @@ export const TYPES_SCENARIOS: readonly DrumScenario[] = [
 ];
 
 export const TROUBLE_SCENARIOS: readonly DrumScenario[] = [
-  { id: 'r1', chapterId: 'trouble', prompt: 'A tuning device reads every lug at the same number but the drum still sounds wrong. What now?', options: ['Trust the device — the drum is fine', 'Listen: the device measures one thing; the sound is the judgement', 'Replace the device'], correct: 'Listen: the device measures one thing; the sound is the judgement', explain: 'Devices help you repeat a setting consistently. They do not hear the head relationship, the room or the music. The final call is by ear.' },
+  { id: 'r1', chapterId: 'trouble', prompt: 'A tuning device reads every lug at the same number but the drum still sounds wrong. What now?', options: ['Trust the device — the drum is fine', 'Listen: the device measures one thing; the sound is the judgment', 'Replace the device'], correct: 'Listen: the device measures one thing; the sound is the judgment', explain: 'Devices help you repeat a setting consistently. They do not hear the head relationship, the room or the music. The final call is by ear.' },
   { id: 'r2', chapterId: 'trouble', prompt: 'A drum will not hold its tuning. Which is the LEAST likely cause?', options: ['A rod backing out under vibration', 'A worn washer or a damaged lug', 'The shell finish'], correct: 'The shell finish', explain: 'Rods, lugs, washers and tension consistency are where drift lives. Hardware first.' },
 ];
 

@@ -414,7 +414,7 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>WAVE PROPAGATION · THE WAVE PHYSICS LAB</Eyebrow>
         <Body>How sound travels through a medium and meets the environment: speed of sound, distance, reflection, absorption, diffraction, refraction, coverage.</Body>
       </Card>
-      <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one metre or twenty — what changes with distance and the room is propagation, and that is the next lab’s subject.</Body>
+      <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one meter or twenty — what changes with distance and the room is propagation, and that is the next lab’s subject.</Body>
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
       {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
     </View>

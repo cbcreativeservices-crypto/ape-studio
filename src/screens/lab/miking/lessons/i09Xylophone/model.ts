@@ -79,8 +79,8 @@ export const XYLO_ZONES: DocumentedZone[] = [
     words: {
       label: 'A safe off-axis position — audience side',
       band: 'Out of the mallets’ way: on the audience side, about 60–90 cm (2–3 ft) from the middle of the keyboard, up at about 45°, aimed back at the bars.',
-      tendency: 'A less direct view: tends to soften the click and blend more of the keyboard, with more of the room and the neighbours.',
-      checks: ['The player’s sightline over the keyboard', 'Melody still clear, attack less brittle', 'Spill from loud neighbours'],
+      tendency: 'A less direct view: tends to soften the click and blend more of the keyboard, with more of the room and the neighbors.',
+      checks: ['The player’s sightline over the keyboard', 'Melody still clear, attack less brittle', 'Spill from loud neighbors'],
     },
   }),
   underZone(XYLO_FAM, {

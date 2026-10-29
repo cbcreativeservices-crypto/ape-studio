@@ -67,14 +67,14 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the position, the wind protection, the stand, the geometry, the routing — before reaching for a filter or more gain.',
   },
   practice: {
     title: 'Practice',
     goal: 'Put an ambience session in order, choose and justify setups for a woodland bed and a city plaza, and say what one take can honestly be called.',
     credit: { scenarios: ['amb.prac.order', 'amb.prac.gain', 'amb.prac.setup1', 'amb.prac.setup2', 'amb.prac.3', 'amb.mix.1', 'amb.mix.2', 'amb.mix.3'], note: 'Put the session in order, answer the level check, complete both briefs, and answer the four reasoning cards. The field log is optional — it needs a real site.' },
-    takeaway: 'A listening point chosen by ear, the geometry and the protection written down, headroom for the loudest event, mono checked — and a take labelled for what it is. More than one setup can pass.',
+    takeaway: 'A listening point chosen by ear, the geometry and the protection written down, headroom for the loudest event, mono checked — and a take labeled for what it is. More than one setup can pass.',
   },
 };
 
@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'amb.snd.1',
     page: 'sound',
-    prompt: 'By a stream, you move the stand two metres nearer the water. What tends to change most?',
+    prompt: 'By a stream, you move the stand two meters nearer the water. What tends to change most?',
     options: ['The water grows against the birds', 'The birds grow against the water', 'Only the overall level, nothing else'],
     correct: 'The water grows against the birds',
     explain: 'Near moving water a small move changes its distance a lot, while the birds, farther off, barely change: the balance tips toward the water. Choose the point for the balance, not for the meters.',
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     correct: 'An omni at the listening point',
     explain: 'An omni hears about equally all round: the whole place in one track. A directional mic aimed at a region is the other fair choice — when one region matters more.',
     why: {
-      'A cardioid aimed at the ground': 'Aimed at the ground it favours the ground; for the whole place an omni is the simple start.',
+      'A cardioid aimed at the ground': 'Aimed at the ground it favors the ground; for the whole place an omni is the simple start.',
       'A figure-8 alone, decoded as stereo': 'A figure-8 alone is not stereo: it is the Side of an M/S pair and needs a Mid.',
     },
   },
@@ -325,11 +325,11 @@ const scenarios: MikingScenario[] = [
     id: 'amb.two.3',
     page: 'twoMic',
     prompt: 'Spaced omnis sound wide and open. Folded to mono, what do you listen for?',
-    options: ['A comb from their time difference', 'The Side cancelling to silence', 'Nothing: two omnis sum as one clean mic'],
+    options: ['A comb from their time difference', 'The Side canceling to silence', 'Nothing: two omnis sum as one clean mic'],
     correct: 'A comb from their time difference',
     explain: 'A source off to one side reaches the two omnis at different times; summed, some frequencies cancel. Compare each channel too — two spaced mics are not one omni.',
     why: {
-      'The Side cancelling to silence': 'That is M/S. Spaced omnis have no Side: their difference is time.',
+      'The Side canceling to silence': 'That is M/S. Spaced omnis have no Side: their difference is time.',
       'Nothing: two omnis sum as one clean mic': 'Their time difference stays in the sum as a comb.',
     },
   },
@@ -363,7 +363,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second ambience position?',
     options: ['It adds a clear editorial option', 'Two takes are better than one take', 'The first position felt too quiet'],
     correct: 'It adds a clear editorial option',
-    explain: 'A second labelled position or a foreground detail earns its place when it gives a clear choice the first does not — logged with its own geometry.',
+    explain: 'A second labeled position or a foreground detail earns its place when it gives a clear choice the first does not — logged with its own geometry.',
     why: {
       'Two takes are better than one take': 'More takes are more to sort; add one for a reason.',
       'The first position felt too quiet': 'Quiet is fixed by placement and gain — a second position is for a different picture.',
@@ -396,7 +396,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'amb.mix.3',
     page: 'practice',
-    prompt: 'A take is denoised, looped and layered from two spots. How is it labelled?',
+    prompt: 'A take is denoised, looped and layered from two spots. How is it labeled?',
     options: ['As an assembled bed, with its sources', 'As one unaltered recording of the site', 'As a calibrated measurement of the site'],
     correct: 'As an assembled bed, with its sources',
     explain: 'Keep raw channels apart from assembled deliverables: say where each layer came from and what was done to it. Never claim a built bed is one unaltered place.',
@@ -436,11 +436,11 @@ const symptoms: Symptom[] = [
     id: 'amb.sym.side',
     observation: 'An M/S take sounds hollow and the center wanders',
     firstChecks: 'The matrix routing and the Side’s orientation — is the raw Side being used as a right channel?',
-    options: ['The matrix routing and the Side', 'The windscreen’s colour and fit', 'The length of the take'],
+    options: ['The matrix routing and the Side', 'The windscreen’s color and fit', 'The length of the take'],
     correct: 'The matrix routing and the Side',
     explain: 'The raw Side is not a right channel. Decode Left = Mid + Side and Right = Mid − Side, and check the Side faces left–right.',
     why: {
-      'The windscreen’s colour and fit': 'A windscreen does not move the center; the decoding does.',
+      'The windscreen’s color and fit': 'A windscreen does not move the center; the decoding does.',
       'The length of the take': 'Length does not cause it: check the matrix.',
     },
   },
@@ -506,7 +506,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A film bed for a quiet woodland scene: a stream off camera, birds, a light breeze. Stereo delivery that must also play in mono.',
     setups: [
       { id: 'a', label: 'An X/Y pair at the listening point, 1.5 m up, in fur over a basket', ok: true, power: 'phantom', feedback: 'A suggested starting point: compact and dependable in mono — check what lands in the middle.' },
-      { id: 'b', label: 'An M/S pair just off the path, its Side and Mid kept labelled', ok: true, power: 'phantom', feedback: 'A fair choice: width set later, the Mid holds in mono — keep the raw tracks labelled.' },
+      { id: 'b', label: 'An M/S pair just off the path, its Side and Mid kept labeled', ok: true, power: 'phantom', feedback: 'A fair choice: width set later, the Mid holds in mono — keep the raw tracks labeled.' },
       { id: 'c', label: 'Spaced omnis 3 m apart right on the bank', ok: false, power: 'phantom', feedback: 'The bank may be unstable, the water would take over, and wide spacing combs in mono.' },
       { id: 'd', label: 'One cardioid on the path, aimed at the birds', ok: false, power: 'phantom', feedback: 'The path stays clear — and one mic gives no stereo.' },
       { id: 'e', label: 'An X/Y pair in bare foam, a filter on to stop the wind', ok: false, power: 'phantom', feedback: 'Foam alone may not be enough in a breeze, and a filter cannot rescue buffeting.' },
@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you move it: two metres nearer the stream, what grows most?', options: ['The water', 'The birds', 'Both the same'], after: 'Now move LISTEN AT toward the water and back, and watch SINCE THE START.' },
+  sound: { prompt: 'Before you move it: two meters nearer the stream, what grows most?', options: ['The water', 'The birds', 'Both the same'], after: 'Now move LISTEN AT toward the water and back, and watch SINCE THE START.' },
   microphone: { prompt: 'Before you move anything: where does a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front of it'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic 6 m back from the stream. What changes?', options: ['More birds and wood, less water', 'More water', 'Nothing you could hear'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Open grassland, a breeze: is foam enough?', options: ['Usually not', 'Yes, it is enough', 'Only at night'], after: 'Now add the layers with COVER and change SITE.' },
@@ -592,10 +592,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'amb.q.5',
     covers: 'setting',
     prompt: 'Where do stands go in a plaza?',
-    options: ['Off lanes, walks and routes', 'Beside the kerb, on the road', 'In the walkway, coned off'],
+    options: ['Off lanes, walks and routes', 'Beside the curb, on the road', 'In the walkway, coned off'],
     correct: 'Off lanes, walks and routes',
     explain: 'Keep stands and cables off vehicle lanes, walking paths and access routes — a cone does not make a route safe.',
-    why: { 'Beside the kerb, on the road': 'Nothing goes on the road.', 'In the walkway, coned off': 'A cone does not make a walkway safe for a stand.' },
+    why: { 'Beside the curb, on the road': 'Nothing goes on the road.', 'In the walkway, coned off': 'A cone does not make a walkway safe for a stand.' },
   },
   {
     id: 'amb.q.6',
@@ -647,7 +647,7 @@ export const F06_LESSON: Lesson = {
       { id: 'wildlife', label: 'wildlife', short: 'WILDLIFE', note: 'Local distances first; if an animal reacts, you are too close.', prov: { kind: 'sourced', src: 'NPS-WILD', quote: 'If animals react to your presence you are too close' }, tag: 'SETBACK', scene: 'all' },
     ],
     stage: 'LIVE: one open ambience channel off the PA, routed on purpose, checked at a controlled level — never by making it ring.',
-    studio: 'FILM OR STUDIO: an identifiable bed and separate foreground options, each labelled with its place and time.',
+    studio: 'FILM OR STUDIO: an identifiable bed and separate foreground options, each labeled with its place and time.',
   },
   diagnostic,
   practice: {
@@ -656,10 +656,10 @@ export const F06_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'Both sites — the stream, the path, the trees, the plaza, the road, the café and the facade — are illustrated drawings, not measured places.', dims: [] },
-    { text: 'The 1.5 m mic height, the 5–7 m and 11–14 m distances from the water, the 7–11 m and 12.5–15.5 m distances from the kerb — drawing defaults (no source gives an ambience height or distance).', dims: [] },
+    { text: 'The 1.5 m mic height, the 5–7 m and 11–14 m distances from the water, the 7–11 m and 12.5–15.5 m distances from the curb — drawing defaults (no source gives an ambience height or distance).', dims: [] },
     { text: 'The spaced-omni spacing of 60 cm (O-8): no source gives one for ambience.', dims: [] },
     { text: 'The image position drawn from level and time differences (full side at 15 dB or 1.1 ms) — a simplified picture; the balance readout treats each source as a point in a free field.', dims: [] },
-    { text: 'Birds are drawn about a metre across so they can be found; the wind curls at the capsule are a cue, not a level.', dims: [] },
+    { text: 'Birds are drawn about a meter across so they can be found; the wind curls at the capsule are a cue, not a level.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

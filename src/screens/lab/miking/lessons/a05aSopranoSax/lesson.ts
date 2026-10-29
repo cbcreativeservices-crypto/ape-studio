@@ -68,15 +68,15 @@ export const A05A_LESSON: Lesson = buildSaxLesson({
   setup: (R) => saxSetupTasks('ss', 'soprano', R),
   neighbours: [
     { id: 'n1', label: 'an alto beside (a saxophone quartet)', short: 'ALTO', note: 'In a quartet or a section the next horn sits close: a close soprano mic hears it too, more so from the side.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'n2', label: 'a tenor on the other side', short: 'TENOR', note: 'The other neighbour. Every horn mic in a group hears the horns either side of it.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
+    { id: 'n2', label: 'a tenor on the other side', short: 'TENOR', note: 'The other neighbor. Every horn mic in a group hears the horns either side of it.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A soprano player moves the straight horn a lot: a closer, aimed mic — or a clip on the bell that moves with it — helps against the stage and feedback.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can blend the straight bell and the body and make the soprano feel less “inside the bell”.',
   placementReveal: 'Toward the holes tends to bring warmth and more key noise; toward the bell, brightness and edge; farther, more of the whole horn and the room. On the straight soprano the bell and the upper holes sit far apart, so no close spot hears all of it. Each zone’s LISTEN FOR line is an idea to check by ear.',
   typeNotes: {
-    saxDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed up the body toward the holes; then compare the bell axis and the middle of the key stack, one change at a time, with low and high notes each time.',
+    saxDynCard: 'Ideas to try: begin a few centimeters above the bell, aimed up the body toward the holes; then compare the bell axis and the middle of the key stack, one change at a time, with low and high notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',
-    saxLdc: 'Ideas to try: begin about half a metre in front, aimed between the bell and the left-hand keys; a little distance blends the straight bell and the body.',
+    saxLdc: 'Ideas to try: begin about half a meter in front, aimed between the bell and the left-hand keys; a little distance blends the straight bell and the body.',
     saxClip: 'Ideas to try with a clip: far from the bell and aimed back at the upper keys for a round, warm sound; in front of the bell for bite.',
   },
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the space in front. They are starting points, not rules. The soprano is straight, so compare more than one: there is no single right answer, and every horn, player and room is different.',

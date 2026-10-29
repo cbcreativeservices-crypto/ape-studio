@@ -86,7 +86,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     sections: [
       {
         head: 'SOUND IS SLOW',
-        body: 'Sound travels at roughly 343 metres per second — close to a foot per millisecond, or about 2.9 milliseconds per metre. A microphone ten metres from the PA hears everything about 29 milliseconds late. In measurement terms, distance is time.',
+        body: 'Sound travels at roughly 343 meters per second — close to a foot per millisecond, or about 2.9 milliseconds per meter. A microphone ten meters from the PA hears everything about 29 milliseconds late. In measurement terms, distance is time.',
       },
       {
         head: 'TWO SIGNALS, ONE CLOCK',
@@ -126,7 +126,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'WHAT EACH REGION TELLS YOU',
-        body: 'The gap between direct sound and first reflections encodes the geometry around the mic and source — milliseconds convert straight to metres. The slope of the late decay is the room’s reverberant character, and it is where RT60 estimates come from. Where the tail sinks into the noise floor marks the limit of the measurement: whatever happens below that line is invisible, and visible late energy may already include noise.',
+        body: 'The gap between direct sound and first reflections encodes the geometry around the mic and source — milliseconds convert straight to meters. The slope of the late decay is the room’s reverberant character, and it is where RT60 estimates come from. Where the tail sinks into the noise floor marks the limit of the measurement: whatever happens below that line is invisible, and visible late energy may already include noise.',
       },
       {
         head: 'FROM IMPULSE TO DECAY CURVE',

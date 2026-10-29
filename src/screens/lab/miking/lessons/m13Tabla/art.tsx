@@ -363,7 +363,7 @@ export function tablaLabels(view: ViewId): ArtLabel[] {
   if (view === 'top') {
     return [
       { id: 'dayan', text: 'DAYAN · PATCH CENTERED', short: 'DAYAN', u: DAYAN.H.x, v: DAYAN.H.z + DAYAN.maxR + 50, align: 'center' },
-      { id: 'bayan', text: 'BAYAN · PATCH OFF-CENTRE', short: 'BAYAN', u: BAYAN.H.x, v: BAYAN.H.z - BAYAN.maxR - 40, align: 'center' },
+      { id: 'bayan', text: 'BAYAN · PATCH OFF-CENTER', short: 'BAYAN', u: BAYAN.H.x, v: BAYAN.H.z - BAYAN.maxR - 40, align: 'center' },
       // In the free space between the arms, its leader to the chest, its leader to the body (it
       // was set on the arm and moved out with a leader across the dayan:
       // clash sweep 2026-10-10).

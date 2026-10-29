@@ -9,7 +9,7 @@
  * typical layout, ILLUSTRATIVE (never a measurement).
  *
  * Collision pass 2026-10-15 (owner: "no collisions or impossible layering in
- * ANY plan"): the louder neighbours sit UPSTAGE of the player, behind them
+ * ANY plan"): the louder neighbors sit UPSTAGE of the player, behind them
  * (clear of a dancer's route), their amp behind them; the PA stands on the
  * deck's downstage corners, clear of the front row; the front row keeps a
  * centre aisle (where its name sits) and the whole row stays inside the
@@ -40,7 +40,7 @@ export const HAND_STAGE_BOX: ViewBox = { u0: -1300, u1: 4250, v0: -1800, v1: 200
 export const DECK_EDGE_U = 2400;
 /** A head icon in this plan, crown→chin, mm (a real head ≈ 230 mm). */
 export const PLAN_HEAD_MM = 230;
-/** The louder neighbours: two seated players upstage of the player, on the
+/** The louder neighbors: two seated players upstage of the player, on the
  *  player's left (−v), seen as head icons facing the audience (+u). */
 export const BAND_HEADS = [
   { u: -820, v: -1350 },

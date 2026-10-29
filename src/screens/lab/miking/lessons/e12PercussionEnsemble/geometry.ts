@@ -106,7 +106,7 @@ const main = (id: string, variant: string, c: Vec3, mid: Vec3): DocumentedZone =
     start: toward(c, mid),
     variants: [variant],
     micTypeIds: PAIR_TYPES,
-    tendency: 'The whole group with the room. Closer favours the front instruments; higher changes which surfaces and instruments dominate — not always a better blend.',
+    tendency: 'The whole group with the room. Closer favors the front instruments; higher changes which surfaces and instruments dominate — not always a better blend.',
     checks: ['The quietest part and the loudest accent', 'The edges and the middle', 'The mono sum'],
   });
 
@@ -134,7 +134,7 @@ export const E12_ZONES: DocumentedZone[] = [
   targetZone({
     id: 'pc.mar',
     label: 'One mic just over the marimba’s bars',
-    band: 'One mic about 10–15 cm (4–6 in) above the bars at the middle, aimed down — then play the low, middle and high registers: one close mic favours the bars nearest it.',
+    band: 'One mic about 10–15 cm (4–6 in) above the bars at the middle, aimed down — then play the low, middle and high registers: one close mic favors the bars nearest it.',
     src: 'S-REC',
     quote: 'single "4 - 6 inches above bars" (percussion_ensemble/SOURCES.md L46 row)',
     kind: 'sourced',

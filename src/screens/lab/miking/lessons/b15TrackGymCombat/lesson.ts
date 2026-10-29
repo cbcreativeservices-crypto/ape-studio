@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'The pickup methods',
     goal: 'Choose a pickup method by what it contributes and what limits it — a fixed directional, a compact directional, a boundary on a hard surface, an approved plant, the ambience — not by a label or a brand.',
     credit: { scenarios: ['tg.mic.1', 'tg.mic.2', 'tg.mic.3', 'tg.rec.1'], note: 'Answer the four checks (one reaches back to the venues).' },
-    takeaway: 'Fixed detail favours a place, the ambience favours continuity, and air and structure are different paths — choose by the perspective you want.',
+    takeaway: 'Fixed detail favors a place, the ambience favors continuity, and air and structure are different paths — choose by the perspective you want.',
   },
   placement: {
     title: 'Placement Studio',
@@ -57,7 +57,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the aim, the height, the mount and the chain first — then reach for processing.',
   },
   practice: {
@@ -318,12 +318,12 @@ const scenarios: MikingScenario[] = [
     id: 'tg.prac.gain',
     page: 'practice',
     prompt: 'In the practice, a gentle clap peaks at −30 dBFS. Your strongest repeatable clap is louder. Where do you set the gain?',
-    options: ['The loudest safe peak near −12 dBFS', 'Bring the quiet clap up to −6 dBFS', 'Leave it as it is, and normalise it later'],
+    options: ['The loudest safe peak near −12 dBFS', 'Bring the quiet clap up to −6 dBFS', 'Leave it as it is, and normalize it later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: set it near −12 dBFS, then keep more margin for an unpredictable event — a trial starting point, not a broadcast standard.',
     why: {
       'Bring the quiet clap up to −6 dBFS': 'With a quiet clap already at −6 dBFS, your strongest clap clips.',
-      'Leave it as it is, and normalise it later': 'Normalising later cannot fix a clip, or the noise of a gain set too low.',
+      'Leave it as it is, and normalize it later': 'Normalizing later cannot fix a clip, or the noise of a gain set too low.',
     },
   },
   {
@@ -603,7 +603,7 @@ export const B15_LESSON: Lesson = {
     items: [
       { id: 'cue', label: 'start cues, bells and whistles', short: 'CUES', note: 'They can peak far above the detail you want. Keep headroom for them, and keep a supplied cue feed separately controllable — never patched from the start or timing system.', prov: { kind: 'illustrative', reason: 'the lesson L58–L59, L107' }, tag: 'PEAKS', scene: 'all' },
       { id: 'music', label: 'routine music and the PA', short: 'MUSIC · PA', note: 'Music spill may be part of the event; a clean authorized music feed stays separate, its delay logged. Avoid summing several equally loud delayed copies.', prov: { kind: 'illustrative', reason: 'the lesson L99, L104' }, tag: 'SPILL', scene: 'all' },
-      { id: 'apparatus', label: 'apparatus, rings and platforms', short: 'STRUCTURE', note: 'They transmit mechanical noise to their supports: a mic near a frame may favour rattles over the useful airborne action.', prov: { kind: 'illustrative', reason: 'the lesson L81, L111' }, tag: 'VIBRATION', scene: 'all' },
+      { id: 'apparatus', label: 'apparatus, rings and platforms', short: 'STRUCTURE', note: 'They transmit mechanical noise to their supports: a mic near a frame may favor rattles over the useful airborne action.', prov: { kind: 'illustrative', reason: 'the lesson L81, L111' }, tag: 'VIBRATION', scene: 'all' },
       { id: 'bodies', label: 'athletes, officials and crews', short: 'PEOPLE', note: 'Bodies block one mic and then another as the action turns; their routes are never a place for a stand or a cable.', prov: { kind: 'illustrative', reason: 'the lesson L132, L158' }, tag: 'IN THE WAY', scene: 'all' },
       { id: 'camera', label: 'the cameras', short: 'CAMERAS', note: 'Sound positions are resolved with the cameras and the apparatus crew before installation.', prov: { kind: 'illustrative', reason: 'the lesson L18, L83' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'weather', label: 'wind, rain, sweat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing and humidity tolerance is not immersion protection; mute and replace a soaked mic only when released.', prov: { kind: 'illustrative', reason: 'the lesson L169–L179' }, tag: 'WIND', scene: 'all' },

@@ -14,7 +14,7 @@ export const F02_COPY: Partial<LessonCopy> = foleyCopy({
   sceneSubject: {
     held: 'a Foley artist holding a leather jacket at chest height',
     worn: 'a Foley artist walking in place in a leather jacket',
-    live: 'a Foley artist at a live theatre station, the PA beside the stage',
+    live: 'a Foley artist at a live theater station, the PA beside the stage',
   },
   axesBlurb: 'Up or down (y). The active fabric is height 0: a little above it, the mic looks down onto the movement.',
   instrument: {
@@ -26,7 +26,7 @@ export const F02_COPY: Partial<LessonCopy> = foleyCopy({
     variantNotes: {
       held: 'HELD: most cloth passes are performed with the garment in the hands — a whole jacket for leather, not just a crumpled ball. Switch GARMENT to see it worn.',
       worn: 'WORN: the artist wears it and walks — for a whole garment, a heavy coat or winter synthetics. The sleeves brush the body with each swing.',
-      live: 'LIVE: a fixed station beside a theatre stage — the PA and a wedge share the room with a quiet sound. Switch GARMENT to go back to the studio.',
+      live: 'LIVE: a fixed station beside a theater stage — the PA and a wedge share the room with a quiet sound. Switch GARMENT to go back to the studio.',
     },
   },
   sound: {

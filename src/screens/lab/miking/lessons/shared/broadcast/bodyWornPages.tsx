@@ -272,7 +272,7 @@ export function useCableStep(spec: CableSpec): MikingStep {
   const pack = packAt(spec.standing);
   const showBroadcast = loops.broadcast && !(!loops.secondary && mv.mm >= LOOPS.broadcast.mm);
   const showSecondary = loops.secondary && mv.mm < LOOPS.secondary.mm;
-  const a11y = `The ${spec.words.subject} from the side, close on the chest: a lavalier clipped ${spec.mount.label.toLowerCase()}, its cable down the shirt to a bodypack on the belt. The wearer is ${mv.words}; ${LOOP_OPTS.find((o) => o.id === loopsId)!.label.toLowerCase()}. ${pull.atCapsule > 0 ? `The pull reaches the capsule: about ${pull.atCapsule} millimetres of tug.` : 'No pull reaches the capsule.'}`;
+  const a11y = `The ${spec.words.subject} from the side, close on the chest: a lavalier clipped ${spec.mount.label.toLowerCase()}, its cable down the shirt to a bodypack on the belt. The wearer is ${mv.words}; ${LOOP_OPTS.find((o) => o.id === loopsId)!.label.toLowerCase()}. ${pull.atCapsule > 0 ? `The pull reaches the capsule: about ${pull.atCapsule} millimeters of tug.` : 'No pull reaches the capsule.'}`;
   const params: DockParam[] = [
     {
       kind: 'options',

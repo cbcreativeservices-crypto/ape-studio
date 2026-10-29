@@ -186,7 +186,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
         size: 'L',
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend, verbatim from the pre-rack panel head.
-        badge: 'TARGET = thin grey line · YOUR EQ = bold line (its colour follows its gain)',
+        badge: 'TARGET = thin gray line · YOUR EQ = bold line (its color follows its gain)',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
@@ -197,7 +197,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
     >
       <View style={styles.well}>
         <Text style={styles.body}>
-          Recreate the thin grey TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
+          Recreate the thin gray TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
           required — this is pure understanding of frequency, gain and Q.
           {bands.length > 1 ? ' Tap the BAND key to switch bands.' : ''}
         </Text>

@@ -77,7 +77,7 @@ export function headSurface(d: HandDrum): ReferenceSurface {
 
 /** The drum's centre line (vertical, through the head centre). */
 export function axisLine(d: HandDrum): RefLine {
-  return { id: `${d.id}.axis`, label: `the ${d.name}’s centre line`, point: headCentre(d), dir: DOWN };
+  return { id: `${d.id}.axis`, label: `the ${d.name}’s center line`, point: headCentre(d), dir: DOWN };
 }
 
 /** The rim a clip mount clamps to (its top edge). */

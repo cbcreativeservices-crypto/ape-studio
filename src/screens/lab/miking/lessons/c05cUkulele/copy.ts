@@ -51,7 +51,7 @@ export const C05C_COPY = stringsCopy({
     instDynCard: 'Ideas to try with a dynamic: a little closer, off the strumming arc; watch the proximity bass.',
     clipCond: 'Ideas to try with a clip-on: measure the body’s depth first; the clip’s range must fit it. It holds its place as the player moves, but not always the tone.',
   },
-  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. The neck joins a soprano at a different place from a baritone — use the actual instrument, not a memorised guitar fret. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
+  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. The neck joins a soprano at a different place from a baritone — use the actual instrument, not a memorized guitar fret. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
   learnTendencies: 'The upper body and neck joint is a balanced first experiment, borrowed from the guitar; toward the bridge, strum attack; toward the hole, body; farther back, the whole instrument and the room. These are questions to audition, not labels.',
   context: {
     zone: 'upper.soprano',

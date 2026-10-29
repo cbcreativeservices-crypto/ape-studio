@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the geometry, the route and the timing before the loudspeaker: the active sources, the tap, the delay, the window, the room’s paths.',
   },
   practice: {
@@ -386,12 +386,12 @@ const symptoms: Symptom[] = [
     id: 'sy.sym.1',
     observation: 'The off-axis trace differs from the on-axis one far more than expected',
     firstChecks: 'The radius, the drive, the processor state, the room’s paths',
-    options: ['The geometry and the drive first', 'The tweeter, which must be failing', 'The analyzer’s colour settings'],
+    options: ['The geometry and the drive first', 'The tweeter, which must be failing', 'The analyzer’s color settings'],
     correct: 'The geometry and the drive first',
     explain: 'Verify that the source and mic geometry — not an accidental level or processor change — caused it, and check the room’s paths before calling it directivity.',
     why: {
       'The tweeter, which must be failing': 'A failing driver is a late suspect: an accidental change in radius or drive is far commoner.',
-      'The analyzer’s colour settings': 'Display colors do not change a measurement.',
+      'The analyzer’s color settings': 'Display colors do not change a measurement.',
     },
   },
   {
@@ -410,12 +410,12 @@ const symptoms: Symptom[] = [
     id: 'sy.sym.3',
     observation: 'The trace changed between two runs, but nobody touched the system',
     firstChecks: 'Which sources were live; the processing mode; the tap',
-    options: ['The live sources and the processing', 'The weather outside the venue that night', 'The colour of the stage lighting'],
+    options: ['The live sources and the processing', 'The weather outside the venue that night', 'The color of the stage lighting'],
     correct: 'The live sources and the processing',
     explain: 'An unmuted source, a dynamic process or a changed tap can change the trace. Log the active channels, the mute state and the processing mode for every run.',
     why: {
       'The weather outside the venue that night': 'Indoors, check the system and its sources first.',
-      'The colour of the stage lighting': 'Lighting does not change the sound path.',
+      'The color of the stage lighting': 'Lighting does not change the sound path.',
     },
   },
   {
@@ -573,11 +573,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'sy.q.5',
     covers: 'setting',
     prompt: 'What do you write down before setting a stand?',
-    options: ['The question you are answering', 'The analyzer’s screen colour scheme', 'The loudest seat in the room'],
+    options: ['The question you are answering', 'The analyzer’s screen color scheme', 'The loudest seat in the room'],
     correct: 'The question you are answering',
     explain: 'Direct sound, coverage, an overlap or the audience’s experience: each needs different positions.',
     why: {
-      'The analyzer’s screen colour scheme': 'Display settings do not decide a position.',
+      'The analyzer’s screen color scheme': 'Display settings do not decide a position.',
       'The loudest seat in the room': 'The question decides the seats, not the loudest one.',
     },
   },
@@ -652,7 +652,7 @@ export const F14_LESSON: Lesson = {
     { text: 'The venue: its size, the mains’ and fill’s positions, the sub, the rows and the standing area — drawing defaults (shared/measure/venue.ts). The seat mic heights 1.2 m / 1.7 m are sourced.', dims: [] },
     { text: 'The studio: the monitors’ spacing (1.6 m), the triangle, the desk and the nearby positions (30 cm, 50 cm) — drawing defaults.', dims: [] },
     { text: 'The near-field gap at the woofer (about 1–3 cm from the cap) — a drawing default (proposal: 10 mm).', dims: [] },
-    { text: 'The processor latency (2 ms), the arrival heights and the bench room’s walls on the pages — made-up examples, labelled as such; the arrival times are geometry ÷ the calculator’s speed of sound.', dims: [] },
+    { text: 'The processor latency (2 ms), the arrival heights and the bench room’s walls on the pages — made-up examples, labeled as such; the arrival times are geometry ÷ the calculator’s speed of sound.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

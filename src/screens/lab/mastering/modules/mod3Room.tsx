@@ -63,13 +63,13 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           key: 'room', title: 'Room and listening environment', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <Body>The room comes before the gear list. A mastering judgement is a judgement about what reached the ears, and the room is the last stage of that chain.</Body>
+              <Body>The room comes before the gear list. A mastering judgment is a judgment about what reached the ears, and the room is the last stage of that chain.</Body>
               <ReadFigure aspect={ROOM_FIG_ASPECT} title="A TREATED ROOM" badge="ILLUSTRATION · one treated room from above, not a measurement" render={(w, h) => <RoomDiagram width={w} height={h} />} />
               <SectionTitle>ROOM DESIGN AND ACOUSTIC CONTROL</SectionTitle>
               <Card>
                 <Point title="Room noise">Fans, traffic, HVAC: a low noise floor is what lets quiet detail, fades and tails be heard at a moderate level.</Point>
                 <Point title="Reflections">Early reflections from nearby surfaces smear the direct sound; treatment at the first-reflection points (the amber pads in the drawing) keeps the stereo image honest.</Point>
-                <Point title="Low-frequency behaviour">Room modes and boundary effects set the bass at the listening position — the corner traps are for this. It is the hardest part to get right and the one most likely to mislead a tonal decision.</Point>
+                <Point title="Low-frequency behavior">Room modes and boundary effects set the bass at the listening position — the corner traps are for this. It is the hardest part to get right and the one most likely to mislead a tonal decision.</Point>
                 <Point title="Listening position">Symmetrical, away from the walls, with the monitors and the listener forming the triangle the monitors were designed for. In the drawing the listener sits about 38 % of the way down the room's length (an example, not a rule) — the plan is to scale, a 5 m room with 330 × 400 mm monitors.</Point>
                 <Point title="Avoiding misleading coloration">Everything above is about ONE thing: hearing the program, not the room, so that what you fix is in the file.</Point>
               </Card>
@@ -112,7 +112,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
                 <Point title="Smaller room → lower reference">83 dB SPL (C) is the large-room reference; small rooms commonly sit at 76–80. The number that matters is the one YOUR room repeats.</Point>
                 <Point title="Measure, don't guess">A calibrated SPL meter (C-weighted, slow) at the listening position. A common calibration — EXAMPLE figures — is pink noise at −20 dBFS RMS from one channel reading about 83 dB SPL C in a large room, lower (76–80) in a small room. Pick the number for your room, write it on the controller, return to it.</Point>
                 <Point title="Headphones hide the level">The room meter cannot measure headphone level, and headphone listening is usually louder than it feels. Treat the daily limit as reached sooner, not later.</Point>
-                <Point title="Listening fatigue">Judgement drifts with time and level. Short breaks, the same level, and the room's silence in between are part of the method.</Point>
+                <Point title="Listening fatigue">Judgment drifts with time and level. Short breaks, the same level, and the room's silence in between are part of the method.</Point>
                 <Point title="Hearing safety">The scale on the display follows hearing-safety guidance: the orange band begins where the daily exposure limit is approached. Exposure limits are quoted A-weighted; a C-weighted music reading is a few dB higher, so this scale errs on the safe side. Mastering never needs the red.</Point>
               </Card>
             </>

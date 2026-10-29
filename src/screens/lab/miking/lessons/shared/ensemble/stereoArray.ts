@@ -313,7 +313,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'Two small mics at the ears of a model head (or in a person’s ears): the head and the outer ears shape what reaches each one, as they do for a listener.',
     tends: 'A fixed listening position over headphones, with sounds at the sides and behind; on loudspeakers it depends on the head and the processing.',
-    check: 'The head at the listener’s height, its face to the scene front, left and right labelled — then listen on the headphones it is made for.',
+    check: 'The head at the listener’s height, its face to the scene front, left and right labeled — then listen on the headphones it is made for.',
     prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #2: a dummy head at the listener position, face = front; ear spacing a drawing default' },
   },
   dms: {

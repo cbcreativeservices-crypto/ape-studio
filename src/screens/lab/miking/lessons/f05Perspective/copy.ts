@@ -14,7 +14,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
   variantShort: { keys: 'a quiet Foley stage', live: 'a live station' },
   sceneSubject: {
     keys: 'a Foley artist carrying a key ring across a marked 2 m path at hand level',
-    live: 'a Foley artist carrying a key ring across a marked path at a live theatre station',
+    live: 'a Foley artist carrying a key ring across a marked path at a live theater station',
   },
   axesBlurb: 'Up or down (y). The keys at the middle of the path are height 0.',
   instrument: {
@@ -24,8 +24,8 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
     partsLooking: { side: 'Side view · from the artist’s right', top: 'From above · the marked path across the stage' },
     partsIdle: 'One action, carried across a marked path: the keys move, the room stays. Tap the keys, the path, the artist — then think about what each mic would hear.',
     variantNotes: {
-      keys: 'STUDIO: a quiet Foley stage — the room you hear is the stage’s own. Switch STAGE for a live theatre station.',
-      live: 'LIVE: a station beside a theatre stage — the PA and a wedge share the room; open mics are few.',
+      keys: 'STUDIO: a quiet Foley stage — the room you hear is the stage’s own. Switch STAGE for a live theater station.',
+      live: 'LIVE: a station beside a theater stage — the PA and a wedge share the room; open mics are few.',
     },
   },
   sound: {

@@ -874,7 +874,7 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
-        length, drawn to scale. Follow a coloured molecule — it only swings around its mark as
+        length, drawn to scale. Follow a colored molecule — it only swings around its mark as
         the pattern flows past. The wave crosses the room; the air does not.
       </Text>
       {wellBottom}
@@ -1262,11 +1262,11 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       ) : null}
       <Text style={styles.caption}>
         Two lines, one lesson: the dashed AMBER line is what you SEND — identical at every
-        frequency. The COLOURED curve is what you HEAR — the ear pulls it down at the lows and
-        highs, and its colour is read off the loudness scale at the left. Sweep FREQ with LEVEL
-        untouched: SEND never moves, but the dot slides down the curve, its colour cools, and the
+        frequency. The COLORED curve is what you HEAR — the ear pulls it down at the lows and
+        highs, and its color is read off the loudness scale at the left. Sweep FREQ with LEVEL
+        untouched: SEND never moves, but the dot slides down the curve, its color cools, and the
         wave in the inset shrinks with it — that wave IS the calculated heard level. Move LEVEL:
-        the whole curve re-colours. (Headphones make it honest — phone speakers roll off lows
+        the whole curve re-colors. (Headphones make it honest — phone speakers roll off lows
         themselves.)
       </Text>
       {wellBottom}
@@ -1296,7 +1296,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       label: 'PHASE',
       value: phase / 360,
       onChange: (v) => setPhase(Math.round(v * 360)),
-      format: () => `${phase}°${phase >= 175 && phase <= 185 ? ' — CANCELLED' : phase <= 5 || phase >= 355 ? ' — ALIGNED' : ''}`,
+      format: () => `${phase}°${phase >= 175 && phase <= 185 ? ' — CANCELED' : phase <= 5 || phase >= 355 ? ' — ALIGNED' : ''}`,
       formatShort: () => `${phase}°`,
       helpKey: 'phase_sum',
     },
@@ -1356,7 +1356,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
           { k: 'PHASE', v: `${phase}°`, helpKey: 'phase_sum' },
           {
             k: 'SUM',
-            v: phase >= 175 && phase <= 185 ? 'CANCELLED' : phase <= 5 || phase >= 355 ? 'ALIGNED' : 'PARTIAL',
+            v: phase >= 175 && phase <= 185 ? 'CANCELED' : phase <= 5 || phase >= 355 ? 'ALIGNED' : 'PARTIAL',
             flex: 1.3,
             helpKey: 'phase_sum',
           },
@@ -1493,7 +1493,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS · PHASE-LOCKED, SLOWED · EACH ROW'S COLOUR = ITS LEVEL" />
+      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS · PHASE-LOCKED, SLOWED · EACH ROW'S COLOR = ITS LEVEL" />
       {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
           {__DEV__
@@ -1504,7 +1504,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       <Text style={styles.caption}>
         H1 (the fundamental) is at the BOTTOM; higher harmonics stack upward. Every layer is a pure
         sine at a whole-number multiple of {M11_F0} Hz — changing a harmonic's amplitude changes the
-        TIMBRE, not the pitch, and its row colour tracks the level (blue = quiet → red = loud).
+        TIMBRE, not the pitch, and its row color tracks the level (blue = quiet → red = loud).
       </Text>
       {wellBottom}
     </RackUnit>
@@ -1921,7 +1921,7 @@ const STEPS: Step[] = [
     title: 'LOUDNESS vs AMPLITUDE',
     paras: [
       'Module 4 said bigger amplitude = louder. True — for one frequency at a time. Across frequencies, the ear applies its own hidden curve.',
-      'The COLOURED curve is what you actually hear: it peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows. Its colour is read off the loudness scale at the left, so warm = loud, cool = faint.',
+      'The COLORED curve is what you actually hear: it peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows. Its color is read off the loudness scale at the left, so warm = loud, cool = faint.',
       'Sweep the frequency WITHOUT touching the level: the amplitude number stays fixed while the loudness visibly (audibly) changes. Amplitude is physics; loudness is perception wearing that curve.',
     ],
     Rack: M9Rack,

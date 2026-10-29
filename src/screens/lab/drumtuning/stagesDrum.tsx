@@ -240,7 +240,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
   const spec = DRUMS[drum];
   const lugs = spec.lugs;
   const cx = 180;
-  // The drum sits a touch below centre so the drum key's T-handle on the top
+  // The drum sits a touch below center so the drum key's T-handle on the top
   // rod (cy − R − 36) clears the title line at the top-left, even with the
   // short-phone font boost widening the title; the bottom lug casing
   // (cy + R + 36) stays inside the 250-unit frame.
@@ -810,7 +810,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
   // (x1 − y, cy + x).
   const local = `translate(${x1},${cy}) rotate(90)`;
   const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, sg]) => ({ xShell: side * R * k, yHead: sg > 0 ? 0 : D * k, side, s: sg, k }));
-  const port = { a: 6, b: 6 + 127 * k }; // the port's span on the front head, local x (screen y below centre)
+  const port = { a: 6, b: 6 + 127 * k }; // the port's span on the front head, local x (screen y below center)
   // Pedal geometry (screen).
   const ax = x1 + 22;
   const ay = floorY - 175 * k;

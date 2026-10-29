@@ -48,7 +48,7 @@ export const CLAV_COPY: LessonCopy = {
     stageA11y: 'The amp and the clavinet on a stage, from above: the keyboardist’s wedge, the band’s monitor, the band and the PA.',
     studioA11y: 'The amp and the clavinet in a studio, from above: a DI box, a close mic and a room mic.',
     stageIdle: 'On a loud stage the direct signal usually goes to the PA; the amp is miked when it is part of the sound the player wants.',
-    studioIdle: 'In the studio a clean direct track and a close mic on the amp are often kept side by side, each labelled.',
+    studioIdle: 'In the studio a clean direct track and a close mic on the amp are often kept side by side, each labeled.',
     before: [
       { title: 'DRAW THE PATH FIRST', text: 'Write down the chain before any mic: clavinet → pedals → amp → speaker → mic → console, and where a direct signal is taken (before or after the pedals). Note the clavinet’s pickup and filter switches, the pedal order and the amp settings — they are part of the sound.' },
       { title: 'ELECTRICAL SAFETY', text: 'The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input, never phantom power. Keep mains cables, extension leads and the amp’s vents clear. Never open a powered amp. Leave any change to the instrument’s wiring to a qualified technician, and any fault inside the instrument or the amp too: hum from inside it, or an output that cuts in and out.' },

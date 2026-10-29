@@ -350,7 +350,7 @@ function buildFace(sc: GuitarScene) {
     hole = oval(g.hole.x, 0, g.hole.r, g.hole.r2);
     for (const k of [1.12, 1.24]) ros.addOval(Skia.XYWHRect(g.hole.x - g.hole.r * k, -g.hole.r2 * k, g.hole.r * 2 * k, g.hole.r2 * 2 * k));
   } else if (op.kind === 'fholes') {
-    // Two carved f-holes, mirrored about the centre line (drawing default
+    // Two carved f-holes, mirrored about the center line (drawing default
     // place), cut as the violin family's are: an S stem flaring into wings,
     // the small eye toward the neck and nearer the centre, the larger eye
     // toward the tail and farther out.

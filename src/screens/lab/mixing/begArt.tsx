@@ -758,7 +758,7 @@ export function CompArt({ settings }: { settings: CompSettings | null }) {
       h={298}
       a11y={
         settings
-          ? `The snare compressor: threshold ${settings.thresholdDb} dB, ${settings.ratio} to 1, attack ${settings.attackMs} milliseconds, release ${settings.releaseMs} milliseconds. One real snare hit, dry in grey and compressed in amber, level-matched: ${settings.attackMs < 5 ? 'the fast attack clamps the front of the hit, so the crack is flattened' : 'the slow attack lets the first crack through before the gain comes down on the body'}. The gain reduction dips up to ${Math.round(-deepest)} dB.`
+          ? `The snare compressor: threshold ${settings.thresholdDb} dB, ${settings.ratio} to 1, attack ${settings.attackMs} milliseconds, release ${settings.releaseMs} milliseconds. One real snare hit, dry in gray and compressed in amber, level-matched: ${settings.attackMs < 5 ? 'the fast attack clamps the front of the hit, so the crack is flattened' : 'the slow attack lets the first crack through before the gain comes down on the body'}. The gain reduction dips up to ${Math.round(-deepest)} dB.`
           : 'The snare compressor, bypassed. One real snare hit, dry; the gain line is flat at 0 dB.'
       }
     >
@@ -783,7 +783,7 @@ export function CompArt({ settings }: { settings: CompSettings | null }) {
         HIT
       </T>
       <T x={x0 + HIT_COLS} y={lane.y - 5} anchor="end" color={settings ? ART.amber : ART.inkDim} ls={0.4}>
-        {settings ? 'GREY = DRY (ON TOP) · AMBER = COMPRESSED, MATCHED' : 'ONE REAL SNARE HIT, DRY'}
+        {settings ? 'GRAY = DRY (ON TOP) · AMBER = COMPRESSED, MATCHED' : 'ONE REAL SNARE HIT, DRY'}
       </T>
       {/* gain the compressor applies */}
       <Rect x={x0} y={grLane.y} width={HIT_COLS} height={grLane.h} fill="#0b0c10" stroke="#232833" strokeWidth={0.7} />

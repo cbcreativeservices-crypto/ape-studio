@@ -52,7 +52,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Listen to the main pair alone first. Move it, change one thing at a time, check mono — and reach for gain, a pad or EQ only after the placement. Lower the level at the first sign of feedback.',
   },
   practice: {
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Higher, the distances to the front and back rows even out and the pair sees past the front players — more back rows and hall, less front-desk weight. Compare at matched level.',
     why: {
       'Only the level: nothing else moves': 'Height changes the balance of rows and the room, not only the level.',
-      'The pair hears the front desks more': 'It is the other way round: higher favours them less.',
+      'The pair hears the front desks more': 'It is the other way round: higher favors them less.',
     },
   },
   {
@@ -419,10 +419,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'orc.q.2',
     covers: 'meet',
     prompt: 'In the modern layout, where are the cellos as the conductor faces them?',
-    options: ['Right, the basses behind', 'Left, beside the violins', 'Centre, behind the winds'],
+    options: ['Right, the basses behind', 'Left, beside the violins', 'Center, behind the winds'],
     correct: 'Right, the basses behind',
     explain: 'High to low, left to right: in this layout the cellos sit on the outside right, the basses behind them. Some orchestras swap the cellos and violas.',
-    why: { 'Left, beside the violins': 'That is the other layout, with the violins facing each other.', 'Centre, behind the winds': 'Behind the winds sit the brass and percussion.' },
+    why: { 'Left, beside the violins': 'That is the other layout, with the violins facing each other.', 'Center, behind the winds': 'Behind the winds sit the brass and percussion.' },
   },
   {
     id: 'orc.q.3',
@@ -487,7 +487,7 @@ export const E14_LESSON: EnsembleLesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'Strings, woodwinds, brass, percussion and often a harp and keyboards — fifty or more players sounding as one ensemble, led by a conductor.', src: 'LESSON-ORCH' },
-    { title: 'WHERE YOU MEET IT', text: 'In concert halls and theatres — for concerts, recordings, broadcasts and, in large spaces, with some reinforcement.', src: 'LESSON-ORCH' },
+    { title: 'WHERE YOU MEET IT', text: 'In concert halls and theaters — for concerts, recordings, broadcasts and, in large spaces, with some reinforcement.', src: 'LESSON-ORCH' },
     { title: 'HOW IT IS SEATED', text: 'Strings at the front, woodwinds behind them, brass and percussion at the back; the layouts vary — this lab draws two, as the conductor faces the players.', src: 'JAX-SEAT' },
     { title: 'ITS SIZE', text: 'Stage-sized: this drawing is about 10 m wide and 9 m deep, 57 players. A typical layout, not a particular orchestra.', src: 'ABSIL' },
   ],
@@ -525,7 +525,7 @@ export const E14_LESSON: EnsembleLesson = {
       { id: 'array', label: 'Main array: method, patterns, spacing', kind: 'text' },
       { id: 'pos', label: 'Height, distance from the front row, across', kind: 'text' },
       { id: 'support', label: 'Any support, and the need it met', kind: 'text' },
-      { id: 'notes', label: 'What you heard: centre, rows, hall, mono (in words)', kind: 'text' },
+      { id: 'notes', label: 'What you heard: center, rows, hall, mono (in words)', kind: 'text' },
     ],
   },
   unknowns: [
@@ -563,7 +563,7 @@ export const E14_LESSON: EnsembleLesson = {
       clearance: 'The stand behind the podium, out of the conductor’s and the players’ way and off the walkways; nothing over the players. Higher and safer is fine — a flown array is the venue’s rigging, by a qualified rigger.',
     },
     learnZones: [
-      'What you just did, in words. After our research, each blue zone is where we suggest you begin with the main array’s centre: over the podium, or just behind it, about 3–4 m up. They are places to start and compare — the best place for a mic need not be the best seat for a person.',
+      'What you just did, in words. After our research, each blue zone is where we suggest you begin with the main array’s center: over the podium, or just behind it, about 3–4 m up. They are places to start and compare — the best place for a mic need not be the best seat for a person.',
       'Change one thing at a time — height, then distance, then spacing — and compare at matched level, on the same passage, so louder never wins by itself. Restore the setting you prefer and say why.',
       'The array moves as a unit: its own geometry (17 cm and 110°, or the tree’s 2 m and 1.5 m) stays as it is. A different spacing is a different method, chosen on purpose.',
     ],

@@ -84,7 +84,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
       availableLead: 'Starting points for this mic',
       learn: {
         intro: `What you just did, in words. After our research, each blue zone is a suggested, possible place to begin with that kind of mic on ${o.what}, measured from ${o.ref} to the mic’s capsule. They are starting points, not rules: move from there and listen — your ears and the room decide, and there is no single right answer.`,
-        separate: 'Distance, aim and height are separate variables: change one at a time, with the same shoe, surface, performer and action. Distances are read to the capsule — on a shotgun that is at the back of its tube, not at its grille — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m, so no millimetre claim is made.',
+        separate: 'Distance, aim and height are separate variables: change one at a time, with the same shoe, surface, performer and action. Distances are read to the capsule — on a shotgun that is at the back of its tube, not at its grille — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m, so no millimeter claim is made.',
         clearance: 'Clearance comes first. The mic, stand, base and cable stay outside the whole movement and the exit path — keep-clear areas appear as the mic gets close, in red with the reason if a move is stopped. Leave more room for a real performer.',
         tendencies: o.tendencies,
       },
@@ -117,7 +117,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
       studioPrompt: o.studio.prompt,
       studioNote: o.studio.note,
       learn: {
-        intro: 'These are scenario-based comparisons, not restrictions: the same action, a quiet Foley stage or a live theatre with a PA.',
+        intro: 'These are scenario-based comparisons, not restrictions: the same action, a quiet Foley stage or a live theater with a PA.',
         points: o.live.points,
         body: 'In a live room every open mic also hears the PA and the wedges. Aim the pattern’s rejection at the loudest one, keep the mic close enough, and keep the open channels few.',
         warn: 'No mic position alone prevents feedback: the PA, the wedges, the channel gain, the room and the open mics all matter — check them with the system operator at the intended level. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',

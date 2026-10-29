@@ -63,12 +63,12 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a boom and a body mic on the same voice can sound hollow together, how their arrival-time difference places comb notches, and why each stays on its own channel.',
     credit: { scenarios: ['loc.two.1', 'loc.two.2', 'loc.two.3', 'loc.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the voice at different times: some frequencies cancel in the sum. Keep separate channels, favour the one that serves the scene; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics at different distances hear the voice at different times: some frequencies cancel in the sum. Keep separate channels, favor the one that serves the scene; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the distance, the frame, the head’s turn, the clothing, the wind, the open mics — before reaching for noise reduction or EQ.',
   },
   practice: {
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'loc.set.3',
     page: 'setting',
-    prompt: 'Why keep the boom, the body mic and the plant each on its own labelled channel?',
+    prompt: 'Why keep the boom, the body mic and the plant each on its own labeled channel?',
     options: ['So each perspective can be heard, chosen and blended', 'So the three mics can be summed into one louder voice track', 'So the boom and the body mic make a stereo pair'],
     correct: 'So each perspective can be heard, chosen and blended',
     explain: 'Each mic is a different perspective with its own distance, room and timing. On separate channels they can be soloed, compared and blended on purpose — or one chosen.',
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom and the body mic sound hollow when blended. Why?',
     options: ['The voice reaches them at different times', 'The body mic reverses the voice’s polarity', 'The closer mic is louder, so it cancels'],
     correct: 'The voice reaches them at different times',
-    explain: 'The body mic is nearer the mouth, so it hears each word first; the boom a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Favour one channel, or delay the body mic to the boom, then rebalance.',
+    explain: 'The body mic is nearer the mouth, so it hears each word first; the boom a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Favor one channel, or delay the body mic to the boom, then rebalance.',
     why: {
       'The body mic reverses the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -586,7 +586,7 @@ const wedges: Wedge[] = [
     p: WEDGE_P,
     lift: 250,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'On the floor about a metre in front of the presenter, facing back at them: behind a handheld aimed at the mouth, and well below it — so the pattern and the tilt both decide how much it hears.',
+    note: 'On the floor about a meter in front of the presenter, facing back at them: behind a handheld aimed at the mouth, and well below it — so the pattern and the tilt both decide how much it hears.',
     prov: { kind: 'illustrative', reason: 'Lab 5’s wedge (E01): in front of the talker = behind the mic; its distance and size are drawing defaults' },
   },
 ];

@@ -31,7 +31,7 @@ const BASE = standingVoiceCopy({
     note: 'On a set there is no wedge to reject: the frame, the head turns and the room decide. A boom just above the frame, aimed at the mouth, with a body mic on its own channel as a second option, is a place to begin. Switch to LIVE for the wedge exercise.',
   },
   contextPoints: [
-    { title: 'PERSPECTIVE', text: 'On set or outdoors: a boom as close as the frame allows, a body mic for wide shots or busy blocking, a planted mic for one action — each on its own labelled channel. Live: a close handheld or a well-fitted headset or body mic for a steady speech feed.' },
+    { title: 'PERSPECTIVE', text: 'On set or outdoors: a boom as close as the frame allows, a body mic for wide shots or busy blocking, a planted mic for one action — each on its own labeled channel. Live: a close handheld or a well-fitted headset or body mic for a steady speech feed.' },
     { title: 'SPILL AND FEEDBACK', text: 'Live, the audience hears the loudspeakers as it happens: every open mic hears the PA and the room. Keep unused mics closed, put the wedge where the pattern rejects most, and check the stream, the recorder and the local PA as separate paths.' },
     { title: 'MOVEMENT', text: 'Talkers turn and walk. A boom follows the head, turned by its operator; a body mic stays the same distance from the mouth but turns with the chest, not the head; a planted mic covers one place only.' },
     { title: 'THE FRAME', text: 'A wider shot pushes the boom farther from the mouth. When it cannot get close enough for the shot, a body mic often takes over — both can be recorded and the editor chooses.' },
@@ -92,7 +92,7 @@ export const F09_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches the talker, the pole and its shadow stay out of the shot, cables stay out of the walking path, and outdoors nothing comes within 3 m (10 ft) of a power line (more for higher voltages, or if unsure). Ask before putting anything on a person.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on location, measured from the lips to the mic’s capsule. They are starting points, not rules — move from there and listen. Experimentation is encouraged: there is no single right answer, and every talker, place and shot is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables; the frame and the head turn change them during a take. Distances are measured to the mic’s CAPSULE and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m, so no millimetre claim is made. On the shotgun drawn here, the tip is about 20 cm nearer the mouth than the capsule.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables; the frame and the head turn change them during a take. Distances are measured to the mic’s CAPSULE and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m, so no millimeter claim is made. On the shotgun drawn here, the tip is about 20 cm nearer the mouth than the capsule.',
       clearance: 'Clearance comes first: out of the shot, clear of the talker and the walking path, and away from power lines.',
       tendencies: 'Closer tends to bring more voice and less room; farther, more room and noise; a body mic, a steady distance with a chest-heavy tone and clothing noise; a planted mic, one place only. These are tendencies, and places vary.',
     },
@@ -108,8 +108,8 @@ export const F09_COPY: Partial<LessonCopy> = {
     A: { typeId: 'locBoomSgCap', pattern: 'supercardioid', zone: 'loc.boom' },
     B: { typeId: 'locLav', pattern: 'omni', zone: 'loc.lav' },
     learn: [
-      'A boom and a body mic hear the same voice from different distances and directions: the body mic first, the boom a little later. They are two choices for the editor, each on its own labelled channel — not two sides of a stereo picture.',
-      'Listen to each alone, then together in MONO at the levels you would use. A hollow, thin sound means some frequencies cancel: favour one channel, change the blend or rebalance — a polarity switch only tests the idea, it never removes a delay.',
+      'A boom and a body mic hear the same voice from different distances and directions: the body mic first, the boom a little later. They are two choices for the editor, each on its own labeled channel — not two sides of a stereo picture.',
+      'Listen to each alone, then together in MONO at the levels you would use. A hollow, thin sound means some frequencies cancel: favor one channel, change the blend or rebalance — a polarity switch only tests the idea, it never removes a delay.',
     ],
     warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. Real mics at different distances hear different mixes of voice, room and clothes, and the talker moves — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono.',
   },

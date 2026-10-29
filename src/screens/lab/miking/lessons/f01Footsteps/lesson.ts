@@ -58,7 +58,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the footstep mic so its rejection faces the wedge in a live booth — and know why a quiet Foley stage and a theatre with a PA need different first plans.',
+    goal: 'Aim the footstep mic so its rejection faces the wedge in a live booth — and know why a quiet Foley stage and a theater with a PA need different first plans.',
     credit: { scenarios: ['f01.ctx.1', 'f01.ctx.2', 'f01.ctx.ring', 'f01.ctx.studio', 'f01.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
     takeaway: 'On a quiet stage, one directional mic and the room are a place to begin. Live, one protected mic close enough to keep the PA down in it, the wedge in its rejection, the open mics few — and ringing out left to the system operator.',
   },
@@ -71,12 +71,12 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the shoe and the surface, the floor under it, the stand and its shock mount, the distance, the wedge, the gain — before reaching for EQ or a filter.',
   },
   practice: {
     title: 'Practice',
-    goal: 'Set up a footstep mic in the right order, choose and justify a setup for a quiet Foley stage and a live theatre booth, and say what would justify a second mic.',
+    goal: 'Set up a footstep mic in the right order, choose and justify a setup for a quiet Foley stage and a live theater booth, and say what would justify a second mic.',
     credit: { scenarios: ['f01.prac.order', 'f01.prac.gain', 'f01.prac.setup1', 'f01.prac.setup2', 'f01.prac.3', 'f01.mix.1', 'f01.mix.2', 'f01.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
     takeaway: 'Shoe and surface named, the movement and the exit path clear, a starting point read to the capsule, headroom for the hardest step, and a mono check for a second mic pass. A brand or a louder signal do not — and more than one setup can pass.',
   },
@@ -128,11 +128,11 @@ const scenarios: MikingScenario[] = [
     id: 'f01.set.1',
     page: 'setting',
     prompt: 'The scene shows carpet. What do you check before choosing a mic position?',
-    options: ['What the carpet lies on, and the shoe for the step', 'Only the carpet’s colour, to match the picture', 'Whether a closer mic can hide the floor that lies under it'],
+    options: ['What the carpet lies on, and the shoe for the step', 'Only the carpet’s color, to match the picture', 'Whether a closer mic can hide the floor that lies under it'],
     correct: 'What the carpet lies on, and the shoe for the step',
     explain: 'A carpet always lies on another surface — tile, concrete, hardwood or hollow wood — and the shoe changes the step as much as the floor does. Choose the shoe and the layered surface first; then the mic.',
     why: {
-      'Only the carpet’s colour, to match the picture': 'The color does not reach the mic. What lies under the carpet does.',
+      'Only the carpet’s color, to match the picture': 'The color does not reach the mic. What lies under the carpet does.',
       'Whether a closer mic can hide the floor that lies under it': 'No mic position removes the floor under a carpet: choose the surface that makes the wanted step.',
     },
   },
@@ -203,9 +203,9 @@ const scenarios: MikingScenario[] = [
     id: 'f01.place.2',
     page: 'placement',
     prompt: 'One stage compared two shotguns at about 1.5–2 m. One sounded blurred. A fair next move?',
-    options: ['Try it about half a metre closer, then compare', 'Swap the shoes for louder ones, then compare', 'Raise the gain until the steps sound clearer'],
-    correct: 'Try it about half a metre closer, then compare',
-    explain: 'When the steps need more articulation, moving the mic a little closer — about half a metre, as that stage did — is a fair first change. Keep everything else the same and compare at matched level.',
+    options: ['Try it about half a meter closer, then compare', 'Swap the shoes for louder ones, then compare', 'Raise the gain until the steps sound clearer'],
+    correct: 'Try it about half a meter closer, then compare',
+    explain: 'When the steps need more articulation, moving the mic a little closer — about half a meter, as that stage did — is a fair first change. Keep everything else the same and compare at matched level.',
     why: {
       'Swap the shoes for louder ones, then compare': 'That changes two things at once. Move one variable — the distance — first.',
       'Raise the gain until the steps sound clearer': 'Gain makes everything louder, room included. Distance changes the balance.',
@@ -226,7 +226,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f01.ctx.1',
     page: 'context',
-    prompt: 'A live theatre booth: footsteps through a PA, a wedge in front of the performer. A fair first plan?',
+    prompt: 'A live theater booth: footsteps through a PA, a wedge in front of the performer. A fair first plan?',
     options: ['One close, stable mic with the wedge in its rejection', 'A room mic farther back to catch the whole stage', 'Two mics open at once, so there is more to choose from later'],
     correct: 'One close, stable mic with the wedge in its rejection',
     explain: 'Live, one protected pickup close enough to keep the PA down in it, aimed so the wedge sits in its rejection, is a place to begin. A farther mic that works on a quiet stage may have too little gain before feedback.',
@@ -383,7 +383,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'f01.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A live theatre: footsteps performed in a booth beside the stage, through the PA, a wedge in front of the performer.',
+    brief: 'BRIEF 2 · A live theater: footsteps performed in a booth beside the stage, through the PA, a wedge in front of the performer.',
     setups: [
       { id: 'a', label: 'One shotgun about 0.9 m out on a stable stand, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: close, protected, aimed — check the whole cue with the operator.' },
       { id: 'b', label: 'A small supercardioid about 1 m out, the wedge off its rear to one side', ok: true, power: 'phantom', feedback: 'A fair live choice if the wedge sits near its rejection — check at show level.' },
@@ -445,11 +445,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'setting',
     prompt: 'The picture shows carpet. What do you check first?',
-    options: ['What the carpet lies on, and the shoe', 'The carpet’s colour in the picture', 'How close a mic can get to it'],
+    options: ['What the carpet lies on, and the shoe', 'The carpet’s color in the picture', 'How close a mic can get to it'],
     correct: 'What the carpet lies on, and the shoe',
     explain: 'A carpet always lies on something — tile, concrete, hardwood or hollow wood — and the shoe changes the step as much as the floor. Choose them first.',
     why: {
-      'The carpet’s colour in the picture': 'The color does not reach the mic; what lies under the carpet does.',
+      'The carpet’s color in the picture': 'The color does not reach the mic; what lies under the carpet does.',
       'How close a mic can get to it': 'Distance comes after the surface and the shoe are chosen.',
     },
   },
@@ -494,7 +494,7 @@ export const F01_LESSON: Lesson & { sp: SpExtra } = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A Foley footstep is performed, not recorded on set: a Foley artist walks in place in a pit of the right surface, in the right shoes, in time with the picture — or live, beside a theatre stage.', src: 'NF-FOLEY' },
+    { title: 'WHAT IT IS', text: 'A Foley footstep is performed, not recorded on set: a Foley artist walks in place in a pit of the right surface, in the right shoes, in time with the picture — or live, beside a theater stage.', src: 'NF-FOLEY' },
     { title: 'THE PIT', text: 'Here, a pit about 1.2 × 1 m set into the stage floor, framed in concrete about 10 cm wide, on a heavy slab: one surface per pit — tile, wood, gravel, carpet and more.', src: 'FF-PIT' },
     { title: 'THE SHOE AND THE SURFACE', text: 'The shoe and the surface choose most of the sound — and what lies under the surface joins in: a carpet always lies on something, and a hollow panel can boom.', src: 'FF-CUE' },
     { title: 'THE MOVEMENT', text: 'The walker’s whole movement — feet, arms, body, a pivot or a missed step — and the way out are keep-outs. Every mic, stand and cable stays outside them.', src: 'LESSON-F01' },

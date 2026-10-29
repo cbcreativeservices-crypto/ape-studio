@@ -36,7 +36,7 @@ const base = stringsCopy({
   coupledNote: 'The plate bows in and out round the bridge over the resonator’s air — a simplified picture of the lowest motion. The gourd under the neck is a support, not a second main soundboard.',
   setting: {
     kitA11y: 'The veena player from above, seated cross-legged on a rug: the resonator on the floor at the right, the neck across the lap to the left; a mridangam player beside, a tanpura player behind.',
-    kitIdle: 'The space round a seated veena player is theirs: the plucking hand over the plate, the little finger on the tala strings, the left hand travelling a long neck and pulling strings for gamakas, the crossed legs and the gourd on the thigh.',
+    kitIdle: 'The space round a seated veena player is theirs: the plucking hand over the plate, the little finger on the tala strings, the left hand traveling a long neck and pulling strings for gamakas, the crossed legs and the gourd on the thigh.',
     leftHanded: 'A left-handed player may hold the veena mirrored: the neck goes the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A concert stage from above: the veena player on a rug, a mridangam beside, a tanpura behind, a side-fill monitor on a stand at the player’s right, the PA at the front corners and the audience edge.',
     studioA11y: 'A studio room from above: the veena player on a rug, no monitors, the walls round them.',
@@ -69,7 +69,7 @@ const base = stringsCopy({
       { title: 'LOOKING DOWN', text: 'A mic over the veena looks down at the plate, so its rear faces the ceiling and the sides. A side-fill at head height can sit in its rejection; a floor wedge in front sits at its side, where no null reaches.' },
       { title: 'ONE MIC FIRST', text: 'Live, start with one directional mic and the nearest safe view of the plate that represents the music. A second live mic must justify its extra spill.' },
       { title: 'STUDIO', text: 'Hear the plate start before adding channels; compare a farther view if the room helps. Include the melody and the drone — one bass note does not represent the instrument.' },
-      { title: 'A PICKUP', text: 'A built-in pickup is labelled separately and tested in the actual rig — its level, its input and its feedback — and it does not exactly represent the air sound.' },
+      { title: 'A PICKUP', text: 'A built-in pickup is labeled separately and tested in the actual rig — its level, its input and its feedback — and it does not exactly represent the air sound.' },
     ],
     body: 'With a monitor on the side, a pattern’s rejection is a tool to aim — and patterns often reject least at low frequencies.',
     studioId: 'vn.ctx.studio',

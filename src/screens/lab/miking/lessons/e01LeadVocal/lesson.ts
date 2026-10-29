@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the distance, the angle to the mouth, the screen, the singer’s movement, the wedge, the gain — before reaching for EQ or compression.',
   },
   practice: {
@@ -347,7 +347,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Both 15 cm from the lips: one mic on the mouth’s axis, one 30° below it. Why might the S sounds differ?',
     options: ['The hiss travels along the axis; below it, less', 'The lower mic is closer to the singer’s chest', 'They cannot: the same distance sounds the same'],
     correct: 'The hiss travels along the axis; below it, less',
-    explain: 'Same distance, different angle: the S hiss and the air favour the mouth’s axis. Angle and distance are separate tone controls.',
+    explain: 'Same distance, different angle: the S hiss and the air favor the mouth’s axis. Angle and distance are separate tone controls.',
     why: {
       'The lower mic is closer to the singer’s chest': 'Both are 15 cm from the lips; the chest is not where the hiss leaves.',
       'They cannot: the same distance sounds the same': 'Distance is one variable; the angle off the mouth’s axis changes the hiss and the air.',
@@ -552,7 +552,7 @@ const wedges: Wedge[] = [
     p: { x: 1000, y: VOICE_DIMS.lipStanding.mm, z: 0 },
     lift: 250,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'On the floor about a metre in front of the singer, facing back at them: behind a mic aimed at the mouth, and well below it — so the pattern and the tilt both decide how much it hears.',
+    note: 'On the floor about a meter in front of the singer, facing back at them: behind a mic aimed at the mouth, and well below it — so the pattern and the tilt both decide how much it hears.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout: in front of the singer (S-VOC-TIPS) = behind the mic (S-SM58-UG); its distance and size are drawing defaults' },
   },
 ];

@@ -63,7 +63,7 @@ function F15Sound({ lesson, answers, onAnswered }: PageProps) {
       badge: 'Straight paths at 20 °C · dashed rings = one bounce off the table, the floor and the wall behind · simplified',
       prompt: 'Drag TIME and watch the direct sound reach the point, then each bounce; change POINT between A, B and C.',
       looking: 'The fan in its room',
-      note: 'As if the fan made one click. A, B and C sit at the same radius, so the direct sound reaches each at the same moment — but the bounces do not: the wall behind is close to C and far from A. The picture shows the paths and the times, not the levels or the direction the fan favours.',
+      note: 'As if the fan made one click. A, B and C sit at the same radius, so the direct sound reaches each at the same moment — but the bounces do not: the wall behind is close to C and far from A. The picture shows the paths and the times, not the levels or the direction the fan favors.',
       arrived: 'arrived after',
       pending: 'arrives after',
       subject: 'the fan and its room',

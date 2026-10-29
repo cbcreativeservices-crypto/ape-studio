@@ -517,7 +517,7 @@ export function WaveformScreen({ navigation }: Props) {
     // Level-colour gradient axis (owner 2026-07-31): the loudness ramp is keyed to
     // TRUE amplitude — red at ±full scale, deep green at the zero line — mapped in
     // panel pixels so the colour tracks level regardless of vertical zoom.
-    // fullPix = pixels from the centre line to |amp| = 1.0 (0 dBFS).
+    // fullPix = pixels from the center line to |amp| = 1.0 (0 dBFS).
     const fullPix = (zoom * usable) / scaleMax;
     const gradY0 = half - fullPix; // +full scale (top) → red
     const gradY1 = half + fullPix; // −full scale (bottom) → red
@@ -762,7 +762,7 @@ export function WaveformScreen({ navigation }: Props) {
                   shows the current colour. */}
               <View style={[styles.chip, styles.colorChip]}>
                 <View style={[styles.colorDot, { backgroundColor: traceColor }]} />
-                <ColorWheelButton onCustomize={() => { setWaveSpectrum(false); setWavePopup('color'); }} accessibilityLabel="Waveform colour" feature="the waveform trace color" size={20} />
+                <ColorWheelButton onCustomize={() => { setWaveSpectrum(false); setWavePopup('color'); }} accessibilityLabel="Waveform color" feature="the waveform trace color" size={20} />
               </View>
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
@@ -920,7 +920,7 @@ export function WaveformScreen({ navigation }: Props) {
                  trace shows exactly what this popup recolours. */
               <PickerSectionHeader
                 diagram={<WaveTraceDiagram tint={waveSpectrum ? (wavePreviewHex ?? waveColor) : waveColor} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
-                title="TRACE COLOUR"
+                title="TRACE COLOR"
                 subtitle="The waveform line — picking a color turns COLORS off"
               />
             ) : (
@@ -979,7 +979,7 @@ export function WaveformScreen({ navigation }: Props) {
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
                       aria-pressed={sel}
-                      accessibilityLabel={`Waveform colour ${c}${c === WAVE_COLOR_SWATCHES[0] ? ' (default)' : ''}`}
+                      accessibilityLabel={`Waveform color ${c}${c === WAVE_COLOR_SWATCHES[0] ? ' (default)' : ''}`}
                     />
                   );
                 })}

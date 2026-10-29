@@ -328,7 +328,7 @@ export function HarmonographViewer(props: {
                 setSpectrumOn(false);
               }}
               accessibilityRole="button"
-              accessibilityLabel="Close colour picker"
+              accessibilityLabel="Close color picker"
             />
             <View style={styles.overlayCard}>
               <Text style={styles.pickerTitle}>HARMONOGRAPH INK</Text>

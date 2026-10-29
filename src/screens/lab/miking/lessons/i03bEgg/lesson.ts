@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — a hand coming close, a palm over the shell, the egg itself, spill and the monitors — before gain or EQ.',
   },
   practice: {
@@ -321,7 +321,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Does one hand or accent travel much closer to the mic?',
     options: ['Whether one hand or accent comes much closer', 'The cable, because level jumps are usually electrical', 'A compressor setting, before watching the player'],
     correct: 'Whether one hand or accent comes much closer',
-    explain: 'Move back, recentre, or change the playing spot; listen to the whole phrase.',
+    explain: 'Move back, recenter, or change the playing spot; listen to the whole phrase.',
     why: {
       'The cable, because level jumps are usually electrical': 'Watch the player first: a hand coming closer is the common cause.',
       'A compressor setting, before watching the player': 'Processing hides a placement problem; find the physical cause first.',
@@ -425,7 +425,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'egg.q.2',
     covers: 'instrument',
-    prompt: 'A set of eggs is labelled soft, medium, loud and extra-loud. What are those labels?',
+    prompt: 'A set of eggs is labeled soft, medium, loud and extra-loud. What are those labels?',
     options: ['Relative product choices — not calibrated levels', 'Exact sound levels, measured at a set distance', 'Settings that change how a mic should be placed'],
     correct: 'Relative product choices — not calibrated levels',
     explain: 'They help choose an egg for the setting; they are not measured levels and promise nothing on a loud stage.',
@@ -511,7 +511,7 @@ export const I03B_LESSON: SpLesson = {
     items: [
       { id: 'egg', label: 'the egg player at the station', short: 'EGGS', note: 'Standing at a percussion station with one egg or two. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: much louder than an egg, and close.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few metres away: the loudest spill into a quiet egg mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: the loudest spill into a quiet egg mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud and bright upstage: aim the egg mic’s rejection, not its front, toward it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'vocal', label: 'a singer’s microphone', short: 'VOCAL MIC', note: 'Another open mic near the station: it hears the eggs, and the egg mic hears the voice.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       ...stageItems('the eggs', 'An area or ensemble mic over the percussion may already carry the eggs; a spot is added only if they need their own control.'),

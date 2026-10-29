@@ -61,7 +61,7 @@ export function c05cZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       aimAtR: { r: 80, prov: ill('aimed toward the hole') },
       micTypeIds: STAND,
       start: { d: 205, dx: -10 },
-      tendency: 'More body and low-mid. Straight into the hole from close up it can favour one local resonance and lose the strings — compare with the upper body.',
+      tendency: 'More body and low-mid. Straight into the hole from close up it can favor one local resonance and lose the strings — compare with the upper body.',
       checks: ['The strumming hand', 'A boomy or hollow body note', 'Compare the lowest notes with the upper-body start'],
     },
     {

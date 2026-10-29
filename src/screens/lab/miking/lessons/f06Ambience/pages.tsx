@@ -53,7 +53,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
       mainWord: 'water',
       otherWord: 'birds',
       note: 'The stream is a steady bed; the birds are events that come and go. Near moving water a few steps change the balance between them a lot — the mic’s position chooses the balance, not the fader.',
-      after: 'A few metres nearer the water and it takes over; a few metres back and the birds come forward. Choose the listening point for the balance the scene needs — then keep it while you record.',
+      after: 'A few meters nearer the water and it takes over; a few meters back and the birds come forward. Choose the listening point for the balance the scene needs — then keep it while you record.',
     },
     box: { x0: -4000, x1: 16000, z0: -10500, z1: 10500 },
     x: { min: -500, max: 4500, start: 0 },
@@ -61,7 +61,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
     main: (p) => nearestOnPolyline(STREAM_PTS, p, 0),
     others: BIRD_PTS,
     Background: Woods,
-    a11y: (x) => `Plan of the woodland stream from above. The listening point ${Math.abs(x / 1000).toFixed(1)} metres ${x >= 0 ? 'toward' : 'back from'} the water from where it started.`,
+    a11y: (x) => `Plan of the woodland stream from above. The listening point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the water from where it started.`,
     prediction: lesson.predictions.sound,
   });
   const plaza = useBalanceStep({
@@ -84,7 +84,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
     main: (p) => ({ x: 10750, y: -600, z: p.z }),
     others: CAFE_PTS,
     Background: Plaza,
-    a11y: (x) => `Plan of the city plaza from above. The listening point ${Math.abs(x / 1000).toFixed(1)} metres ${x >= 0 ? 'toward' : 'back from'} the road from where it started.`,
+    a11y: (x) => `Plan of the city plaza from above. The listening point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the road from where it started.`,
     prediction: lesson.predictions.sound,
   });
   const steps: MikingStep[] = [
@@ -183,7 +183,7 @@ function F06TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
         <>
           <Card>
             <Point title="LEFT, RIGHT AND MONO">Check left and right and the mono sum at the start, the middle and the end of a take. For X/Y and decoded M/S the center should stay useful; for ORTF and spaced omnis listen for changes in the low end and the transients.</Point>
-            <Point title="M/S STAYS LABELLED">Record the Mid and the Side as their own tracks, or decode them correctly to left and right. The raw Side is not a right channel.</Point>
+            <Point title="M/S STAYS LABELED">Record the Mid and the Side as their own tracks, or decode them correctly to left and right. The raw Side is not a right channel.</Point>
             <Point title="TWO SPACED MICS ARE NOT ONE OMNI">Summing two spaced mics does not recreate one omni at the middle: the time difference between them stays in the sum.</Point>
           </Card>
           <Note>For ORTF the 110° is the angle between the two capsules’ axes — 55° each side of the front — not 110° to each side.</Note>

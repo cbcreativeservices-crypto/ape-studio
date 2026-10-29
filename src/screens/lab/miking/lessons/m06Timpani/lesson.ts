@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where they sit',
-    goal: 'Know where the timpani sit in the orchestra — their neighbours, the player’s space and sightline, what an amplified stage and a recording add — and what to do before any mic.',
+    goal: 'Know where the timpani sit in the orchestra — their neighbors, the player’s space and sightline, what an amplified stage and a recording add — and what to do before any mic.',
     credit: { scenarios: ['tp.set.1', 'tp.set.hear', 'tp.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Listen to the main pickup before adding a spot. The mallets’ sweep, the pedals and the sightline to the conductor are the player’s; protect your hearing.',
   },
@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the timpani by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['tp.mic.1', 'tp.mic.2', 'tp.mic.3', 'tp.mic.4', 'tp.rec.1'], note: 'Answer the five checks (one reaches back to how the timpani sound).' },
-    takeaway: 'A cardioid condenser is a common spot; other mics can work when their response, pattern, maximum level, power, size and mount suit the job. A pattern rejects only part of a neighbour.',
+    takeaway: 'A cardioid condenser is a common spot; other mics can work when their response, pattern, maximum level, power, size and mount suit the job. A pattern rejects only part of a neighbor.',
   },
   placement: {
     title: 'Placement Studio',
@@ -59,7 +59,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — drum order, distance, the main/spot balance, clearance, gain staging and polarity — before reaching for tone controls or asking the player to change.',
   },
   practice: {
@@ -189,7 +189,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A spot close to one head hears more of what, and less of what?',
     options: ['More attack from a small part of the head; less of the note’s bloom', 'More of the note’s full bloom, and less of the mallet’s attack on the head', 'More of the bowl’s air; less of anything the head does'],
     correct: 'More attack from a small part of the head; less of the note’s bloom',
-    explain: 'Close to a large head, a mic favours the attack and the part of the head nearest it; the full note blooms over the whole head and the hall. A tendency to check by ear.',
+    explain: 'Close to a large head, a mic favors the attack and the part of the head nearest it; the full note blooms over the whole head and the hall. A tendency to check by ear.',
     why: {
       'More of the note’s full bloom, and less of the mallet’s attack on the head': 'The reverse: the bloom needs the whole head and the hall; close in, the attack wins.',
       'More of the bowl’s air; less of anything the head does': 'The head is what moves the air in the room; the bowl holds the air under it.',
@@ -235,11 +235,11 @@ const scenarios: MikingScenario[] = [
     id: 'tp.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Your boom is clear of the mallets. What else do you check with the player?',
-    options: ['Their sightline to the conductor and the pedals', 'The colour of the bowls under the stage lights', 'How the stand looks from out in the audience seats'],
+    options: ['Their sightline to the conductor and the pedals', 'The color of the bowls under the stage lights', 'How the stand looks from out in the audience seats'],
     correct: 'Their sightline to the conductor and the pedals',
     explain: 'The timpanist’s space includes the mallets’ sweep, the path round the set, the pedals and the line of sight to the conductor.',
     why: {
-      'The colour of the bowls under the stage lights': 'How it looks is not the question; the player’s space and sightline are.',
+      'The color of the bowls under the stage lights': 'How it looks is not the question; the player’s space and sightline are.',
       'How the stand looks from out in the audience seats': 'Appearance matters less than the player’s sightline and motion.',
     },
   },
@@ -249,7 +249,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An amplified outdoor show. What can push toward a closer, directional timpani spot?',
     options: ['Monitor and PA spill, wind, and gain before feedback', 'A closer mic makes the timpani themselves louder outdoors', 'The hall sound is usually more useful outdoors'],
     correct: 'Monitor and PA spill, wind, and gain before feedback',
-    explain: 'Outdoors and amplified, spill, wind and the gain before feedback favour a stable, directional, closer setup — chosen with the PA operator.',
+    explain: 'Outdoors and amplified, spill, wind and the gain before feedback favor a stable, directional, closer setup — chosen with the PA operator.',
     why: {
       'A closer mic makes the timpani themselves louder outdoors': 'A mic does not change how loud the drum is; it changes what the channel hears.',
       'The hall sound is usually more useful outdoors': 'Outdoors there is no hall to help; that argument belongs to a good indoor room.',
@@ -448,11 +448,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'tp.q.3',
     covers: 'sound',
     prompt: 'Why does a timpanist usually strike about a third of the way in from the hoop, not the center?',
-    options: ['It drives the pitched shapes well; the center gives mostly thud', 'The centre of a timpani head is much too hard to strike cleanly', 'It keeps the mallet away from the tuning pedal mechanism'],
+    options: ['It drives the pitched shapes well; the center gives mostly thud', 'The center of a timpani head is much too hard to strike cleanly', 'It keeps the mallet away from the tuning pedal mechanism'],
     correct: 'It drives the pitched shapes well; the center gives mostly thud',
     explain: 'The note lives in the see-saw shapes, still at the center; a center strike drives only the ring shapes — more thud, less note.',
     why: {
-      'The centre of a timpani head is much too hard to strike cleanly': 'The center can be struck; it just drives the wrong shapes for the note.',
+      'The center of a timpani head is much too hard to strike cleanly': 'The center can be struck; it just drives the wrong shapes for the note.',
       'It keeps the mallet away from the tuning pedal mechanism': 'The pedal is under the drum; the strike point is about which shapes ring.',
     },
   },

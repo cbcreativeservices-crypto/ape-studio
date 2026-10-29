@@ -80,7 +80,7 @@ function useFrameStep(): MikingStep {
   // Owner 2026-10-08 (L6A): the tip keeps the clearance; the readout is the capsule.
   const tail = sub(boom.tip, v3(boom.aim.x * 250, boom.aim.y * 250, 0));
   const words = `${SHOTS[shot].label.toLowerCase()} shot (${SHOTS[shot].words})`;
-  const a11y = `A talker at a counter seen from the right, the camera 2.5 metres in front, its frame drawn as dashed lines: a ${words}. The boom mic’s tip sits 15 centimetres above the top of the frame, aimed at the mouth, its capsule ${cm(dBoom)} from the lips; a body mic on the chest is ${cm(dLav)} from the lips.`;
+  const a11y = `A talker at a counter seen from the right, the camera 2.5 meters in front, its frame drawn as dashed lines: a ${words}. The boom mic’s tip sits 15 centimeters above the top of the frame, aimed at the mouth, its capsule ${cm(dBoom)} from the lips; a body mic on the chest is ${cm(dLav)} from the lips.`;
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -337,8 +337,8 @@ const F09Setting = makeVoiceSetting({
   path: {
     title: 'Each mic on its own channel',
     points: [
-      { title: 'LABELLED, SEPARATE TRACKS', text: 'Keep each useful mic — boom, body mic, plant, camera reference — on its own labelled channel, with notes on noise and the shot. A boom and a body mic are two perspectives to choose between or blend on purpose, not the two sides of a stereo picture.' },
-      { title: 'SOLO, THEN TOGETHER IN MONO', text: 'Listen to each alone, then to any blend in mono: a hollow, thin sound means some frequencies cancel between two mics at different distances. Favour the channel that serves the scene; polarity is a test, not a cure for a delay.' },
+      { title: 'LABELED, SEPARATE TRACKS', text: 'Keep each useful mic — boom, body mic, plant, camera reference — on its own labeled channel, with notes on noise and the shot. A boom and a body mic are two perspectives to choose between or blend on purpose, not the two sides of a stereo picture.' },
+      { title: 'SOLO, THEN TOGETHER IN MONO', text: 'Listen to each alone, then to any blend in mono: a hollow, thin sound means some frequencies cancel between two mics at different distances. Favor the channel that serves the scene; polarity is a test, not a cure for a delay.' },
       { title: 'LIVE: SEPARATE PATHS', text: 'Live, check what goes to the stream, the recorder and the local PA as separate paths, so an ambience or backup mic never feeds a loudspeaker by accident. Fewest open mics: each one adds room and lowers the margin before feedback.' },
     ],
     note: 'Record a separate room tone for editing — it smooths the cuts, but it cannot bring back a lost word.',

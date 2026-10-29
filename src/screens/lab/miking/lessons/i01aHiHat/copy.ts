@@ -41,7 +41,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hats on the right.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
-    stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. On a loud stage, the snare is still the hats’ loudest neighbour.',
+    stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. On a loud stage, the snare is still the hats’ loudest neighbor.',
     studioIdle: 'No monitors on the floor. A good overhead pair often carries the hi-hat well on its own.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Hear the hats played the way the song needs them — closed, open, with the foot. Does the music need a hat channel at all, or do the overheads already carry it? The two cymbals and the clutch are the player’s: a mic never goes where they would have to change how they play.' },

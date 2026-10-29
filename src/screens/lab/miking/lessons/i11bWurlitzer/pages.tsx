@@ -21,8 +21,8 @@ import { I11B_PLACE_START, I11B_WORKED } from './model.ts';
 const CHAIN = { pedals: null, rig: 'combo', diBox: false, ampDirect: true, ampDirectDi: true, icons: { player: 'keys', amp: 'keysAmp', cab: 'lidSpeakers' } } as const;
 
 const AXES: AxisWords = {
-  x: { label: 'TOWARD THE PLAYER', short: 'TOWARD', blurb: 'Toward the player, or back toward the lid (x). Distances are read from the grille.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.x))} ${v >= C_BASS.x ? 'toward the player from' : 'behind'} the grille’s centre` },
-  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.y))} ${v <= C_BASS.y ? 'above' : 'below'} the speaker’s centre` },
+  x: { label: 'TOWARD THE PLAYER', short: 'TOWARD', blurb: 'Toward the player, or back toward the lid (x). Distances are read from the grille.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.x))} ${v >= C_BASS.x ? 'toward the player from' : 'behind'} the grille’s center` },
+  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.y))} ${v <= C_BASS.y ? 'above' : 'below'} the speaker’s center` },
   z: { label: 'ALONG THE KEYS', short: 'ALONG', blurb: 'Toward the bass end or the treble end (z).', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.z))} toward the ${v >= C_BASS.z ? 'treble' : 'bass'} end from the speaker’s center` },
 };
 
@@ -89,7 +89,7 @@ export const I11B_SPEC: KeysPagesSpec = {
   ],
   parts: [
     { id: 'wur.keys', title: 'KEYS', text: 'The player’s hands work right here, just below the grilles. Every mic and stand stays clear of the keys’ travel and the hands.', views: ['front', 'side'] },
-    { id: 'wur.lid', title: 'LID', text: 'A moulded lid over the action. On the later model the speakers are screwed to it, so the lid becomes their baffle — part of the sound, and a possible rattle. It stays closed, and nothing is clamped to it.', views: ['front', 'side'] },
+    { id: 'wur.lid', title: 'LID', text: 'A molded lid over the action. On the later model the speakers are screwed to it, so the lid becomes their baffle — part of the sound, and a possible rattle. It stays closed, and nothing is clamped to it.', views: ['front', 'side'] },
     { id: 'wur.grille', title: 'SPEAKER GRILLES', text: 'Two grilles in the lid’s front slope, one oval speaker behind each, facing the player. Two grilles do not mean stereo: check what feeds each before panning anything.', views: ['front', 'side'] },
     { id: 'wur.cone', title: 'OVAL SPEAKER', text: 'A small 4 × 8 in oval speaker: the source you mic. On the earlier model it sits on the amplifier’s rail behind the grille; on the later one, on the lid itself.', views: ['side'] },
     { id: 'wur.controls', title: 'VOLUME AND VIBRATO', text: 'The player’s level and the “vibrato” — really a tremolo, a pulse in level. Part of their sound: ask, and leave them as set. An auxiliary output sits nearby; on the later model a small trim sets its level.', views: ['front'] },

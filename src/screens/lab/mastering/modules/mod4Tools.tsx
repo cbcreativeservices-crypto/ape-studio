@@ -140,7 +140,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
         {
           key: 'practice', title: 'Choose a tool for the job', kind: 'PRACTICE', layout: 'read',
           body: (
-            <ScenarioDeck scenarios={TOOL_SCENARIOS} keepOrder compact onAnswered={onAnswered} intro="A listening goal → which tool, or which next CHECK, might help. The feedback emphasises listening and verification; there are no preset answers in a real session either." />
+            <ScenarioDeck scenarios={TOOL_SCENARIOS} keepOrder compact onAnswered={onAnswered} intro="A listening goal → which tool, or which next CHECK, might help. The feedback emphasizes listening and verification; there are no preset answers in a real session either." />
           ),
         },
         {

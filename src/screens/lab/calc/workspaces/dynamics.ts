@@ -75,7 +75,7 @@ const WS_COMPRESSOR: Workspace = {
   warnings:
     'Static hard-knee model: output = threshold + (input − threshold) / ratio for levels at or ' +
     'above the threshold, and output = input below it. It ignores knee shape, attack/release ' +
-    'timing, and any program-dependent (auto) behaviour — so it predicts the SETTLED gain, not ' +
+    'timing, and any program-dependent (auto) behavior — so it predicts the SETTLED gain, not ' +
     'the moment-to-moment gain reduction during a transient.',
   glossary: ['Dynamic range compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [

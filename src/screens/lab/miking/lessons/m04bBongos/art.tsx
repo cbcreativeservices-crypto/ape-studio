@@ -2,7 +2,7 @@
  * M04b BONGOS — the look (charter §2 layer 3), drawn only from model.ts /
  * geometry.ts anchors with the hand-drum family's parts. Side view: an
  * elevation from the player's right — the hembra in front, the macho behind
- * it. Top view: both heads, the centre block between them. Rod counts, rims
+ * it. Top view: both heads, the center block between them. Rod counts, rims
  * and the stand are drawing defaults (never stated in words).
  */
 import { useMemo } from 'react';
@@ -137,7 +137,7 @@ export function BongoArt({ view, variant }: { view: ViewId; variant: VariantId }
       {onStand ? <StandLegs legs={legs} view="top" ring={{ cx: 0, cv: 0, r: 0 }} /> : <Legs view="top" which="both" />}
       <Block view="top" />
       {/* the macho turned half a lug pitch: its hooks sit either side of the
-          centre block instead of meeting the hembra's (clash sweep 2026-10-10) */}
+          center block instead of meeting the hembra's (clash sweep 2026-10-10) */}
       <HeadTop d={MACHO} look="rawhide" lugs={RODS} seed={5} phaseDeg={90 + 180 / RODS} />
       <HeadTop d={HEMBRA} look="rawhide" lugs={RODS} seed={17} />
     </Group>

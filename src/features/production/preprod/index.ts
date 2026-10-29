@@ -42,7 +42,7 @@ export const PREPROD_STAGES: StageDef[] = [
 export const PREPROD_OUTLINE: { stageId: string; num: number; title: string }[] = [
   { stageId: 'define', num: 1, title: 'Define the Project' },
   { stageId: 'deliver', num: 2, title: 'Establish Deliverables' },
-  { stageId: 'people', num: 3, title: 'Organise People and Responsibilities' },
+  { stageId: 'people', num: 3, title: 'Organize People and Responsibilities' },
   { stageId: 'schedule', num: 4, title: 'Build the Schedule' },
   { stageId: 'technical', num: 5, title: 'Prepare the Creative and Technical Plan' },
   { stageId: 'readiness', num: 6, title: 'Confirm Production Readiness' },

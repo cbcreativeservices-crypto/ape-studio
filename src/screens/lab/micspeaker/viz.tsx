@@ -3407,7 +3407,7 @@ function BandTop({ cx, chestY }: { cx: number; chestY: number }) {
     tube.addCircle(230, 0, 12);
     return { head: headAbove(pt(0, 0), 100).fill, base, tube };
   }, []);
-  // Plan positions (mm across the stage from the centre line).
+  // Plan positions (mm across the stage from the center line).
   const players: { kind: 'guitar' | 'bass'; dx: number }[] = [
     { kind: 'guitar', dx: -1900 },
     { kind: 'bass', dx: 1750 },

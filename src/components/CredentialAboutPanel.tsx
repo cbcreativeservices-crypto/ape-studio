@@ -62,7 +62,7 @@ export function CredentialAboutPanel({
            */}
           <Text style={s.note}>
             {copy.careers.some((c) => c.requires)
-              ? 'Roles marked above need a degree, licence or certification beyond this Academy. This credential supports your preparation for them; it does not by itself qualify you.'
+              ? 'Roles marked above need a degree, license or certification beyond this Academy. This credential supports your preparation for them; it does not by itself qualify you.'
               : 'This credential supports your preparation for these roles. Employers set their own hiring requirements, which may include education or certification beyond this Academy.'}
           </Text>
         </View>

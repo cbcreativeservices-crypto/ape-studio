@@ -272,7 +272,7 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
               fig={cfg.fig}
               st={st}
               swing={swing}
-              accessibilityLabel={`${cfg.fig.subject}. Note ${st.name}, ${Math.round(st.hz)} hertz, ${st.register.toLowerCase()}. ${st.hole > 0 ? `The first open hole is hole ${st.hole}; most of the sound leaves there` : `Every hole is closed; the sound leaves from the ${endWord.toLowerCase()}`}. The sounding air column is ${Math.round(st.L / 10)} centimetres long.`}
+              accessibilityLabel={`${cfg.fig.subject}. Note ${st.name}, ${Math.round(st.hz)} hertz, ${st.register.toLowerCase()}. ${st.hole > 0 ? `The first open hole is hole ${st.hole}; most of the sound leaves there` : `Every hole is closed; the sound leaves from the ${endWord.toLowerCase()}`}. The sounding air column is ${Math.round(st.L / 10)} centimeters long.`}
             />
           ),
           badge: 'A simplified fingering · holes where the semitone rule puts them · the pressure drawn beside the tube · silent',

@@ -116,7 +116,7 @@ export const M1_FREQUENCY: EarModule = {
   // NEW COPY
   listenFor: 'Anchor 1 kHz in your head first. Below it tones gain weight, then boom; above it, edge, then sizzle.',
   levels: 4,
-  levelNames: ['Octave centers', 'Half-octave grid', 'Third-octave, neighbour = half credit', 'Third-octave, exact'], // NEW COPY (L3)
+  levelNames: ['Octave centers', 'Half-octave grid', 'Third-octave, neighbor = half credit', 'Third-octave, exact'], // NEW COPY (L3)
   hasSubBassTrials: true,
   makeTrial: (level, seed, opts) => {
     const rng = rngFor(seed);

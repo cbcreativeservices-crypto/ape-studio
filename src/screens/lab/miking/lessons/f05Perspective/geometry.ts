@@ -42,7 +42,7 @@ export const LANE = { x0: -760, x1: 240, z0: -HALF_PATH - 380, z1: HALF_PATH + 3
 
 const VARIANTS: Variant[] = [
   { id: 'keys', label: 'STUDIO', blurb: 'A quiet Foley stage: the artist carries a key ring across a marked 2 m zone at hand height.', phrase: 'carrying keys across a marked zone' },
-  { id: 'live', label: 'LIVE STAGE', blurb: 'A theatre’s Foley station: the same action, the PA beside the stage, a wedge in front of the artist. The audience sees the artist.', phrase: 'at a live Foley station' },
+  { id: 'live', label: 'LIVE STAGE', blurb: 'A theater’s Foley station: the same action, the PA beside the stage, a wedge in front of the artist. The audience sees the artist.', phrase: 'at a live Foley station' },
 ];
 
 function parts(): Part[] {
@@ -52,7 +52,7 @@ function parts(): Part[] {
     { id: 'f05.keys', label: 'key ring', short: 'keys', role: 'Keys jingling as they are carried: a small, bright source that MOVES — from one side of the zone to the other.', moving: true, prov: ill('a key ring, four keys (group 1’s drawing default)') },
     { id: 'f05.path', label: 'the marked path', short: 'path', role: 'A 2 m zone marked on the floor: where the keys start, pass the middle and finish. Every mic, stand and cable stays outside the lane round it.', prov: ill('2 m across, the practice’s “key ring carried across a marked zone” (F05 L53; the width a drawing default)'), solid: { kind: 'box', min: v3(-130, F05_FLOOR - 5, -HALF_PATH - 30), max: v3(130, F05_FLOOR, HALF_PATH + 30) } },
     { id: 'f05.room', label: 'the stage room', short: 'room', role: 'The room round the action: a farther mic hears more of it — the right room for some scenes, the wrong one for others.', prov: ill('a generic Foley stage room (drawing default)') },
-    { id: 'f05.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: booth.pa },
+    { id: 'f05.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theater layout (drawing default)'), variants: ['live'], solid: booth.pa },
     { id: 'f05.booth', label: 'the station’s front rail', short: 'station', role: 'A known station beside the stage: the action always performed in the same place for the mics.', prov: { kind: 'sourced', src: 'ENO-FOLEY', quote: 'A special booth is constructed stage left … so that the foley artist is visible to the audience' }, variants: ['live'], solid: booth.rail },
   ];
 }

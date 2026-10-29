@@ -73,7 +73,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
       { symbol: 'π', name: 'pi', meaning: 'The constant 3.14159… the circle ratio; appears wherever rotation or waves do.', example: 'XL = 2·π·f·L', glossaryTerm: 'Pi' },
       { symbol: 'Σ', name: 'sigma (capital)', meaning: 'Sum — add up every term in a series. Also the Calc Lab’s emblem.', example: 'Total absorption = Σ (S·α)' },
       { symbol: 'Δ', name: 'delta (capital)', meaning: 'A change, or the difference between two values.', example: 'Δt = arrival-time difference' },
-      { symbol: 'λ', name: 'lambda', meaning: 'Wavelength — the length of one cycle in space, in metres.', example: 'λ = c / f', glossaryTerm: 'Wavelength' },
+      { symbol: 'λ', name: 'lambda', meaning: 'Wavelength — the length of one cycle in space, in meters.', example: 'λ = c / f', glossaryTerm: 'Wavelength' },
       { symbol: 'ω', name: 'omega (small)', meaning: 'Angular frequency in radians per second: ω = 2πf.', example: 'XL = ω·L', glossaryTerm: 'Angular Frequency' },
       { symbol: 'Ω', name: 'omega (capital)', meaning: 'Ohms — the unit of impedance, resistance and reactance.', example: '8 Ω loudspeaker', glossaryTerm: 'Ohm (Ω)' },
       { symbol: 'φ', name: 'phi', meaning: 'Phase angle between voltage and current (or between two signals).', example: 'φ = atan((XL − XC) / R)', glossaryTerm: 'Phase Angle' },

@@ -77,7 +77,7 @@ export const JACKET = { hangs: 330, across: 230, thick: 90 } as const;
 const VARIANTS: Variant[] = [
   { id: 'held', label: 'HELD', blurb: 'The artist holds a leather jacket in both hands at chest height and flexes it in time with the picture — the usual way a cloth pass is performed.', phrase: 'held in the hands' },
   { id: 'worn', label: 'WORN', blurb: 'The artist wears the jacket and walks in place: the sleeves and the body move against each other — for a whole garment, a heavy coat or winter synthetics.', phrase: 'worn and walked' },
-  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theatre: the artist at a fixed station beside the stage, the jacket held, the PA beside the stage and a wedge in front.', phrase: 'at a live station' },
+  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theater: the artist at a fixed station beside the stage, the jacket held, the PA beside the stage and a wedge in front.', phrase: 'at a live station' },
 ];
 
 function parts(): Part[] {
@@ -87,7 +87,7 @@ function parts(): Part[] {
     { id: 'f02.jacketWorn', label: 'leather jacket, worn', short: 'jacket', role: 'Worn and walked in: the sleeves brush the body and the coat flaps — the sound of the whole garment on a moving body.', moving: true, prov: src('FF-CLOTH', 'dressing in the clothes ("especially applicable to winter synthetic fabrics")'), variants: ['worn'] },
     { id: 'f02.hands', label: 'the hands', short: 'hands', role: 'The hands set the fold moving. Finger rub and a clasping hand can make their own small sounds close to a mic.', moving: true, prov: ill('the shared figure’s hands (drawing default)') },
     { id: 'f02.room', label: 'the stage room', short: 'room', role: 'Cloth is quiet, so the room is loud by comparison: ventilation, hum, traffic and other noises sit close under it.', prov: ill('a generic Foley stage room (drawing default)') },
-    { id: 'f02.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic on stage hears it too: a quiet cloth sound has little margin before feedback.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR).pa },
+    { id: 'f02.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic on stage hears it too: a quiet cloth sound has little margin before feedback.', prov: ill('a typical theater layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR).pa },
     { id: 'f02.booth', label: 'the performance station’s front rail', short: 'station', role: 'A fixed, repeatable station at the side of the stage: the same place, the same distance, every night.', prov: src('ENO-FOLEY', 'A special booth is constructed stage left … so that the foley artist is visible to the audience'), variants: ['live'], solid: boothSolids(FLOOR).rail },
   ];
 }

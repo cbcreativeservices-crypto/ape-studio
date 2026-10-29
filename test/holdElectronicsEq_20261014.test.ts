@@ -16,7 +16,7 @@ import { DEFAULTS, PHRASE, processPhrase } from '../src/features/deesser/deEsser
 const read = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8');
 
 describe('#9 — Amp class C TUNE rides a log lane', () => {
-  test('endpoints unchanged, 1.00× at the exact centre', () => {
+  test('endpoints unchanged, 1.00× at the exact center', () => {
     assert.equal(laneFromValue(0.5, 0.5, 2, 'log'), 0);
     assert.equal(laneFromValue(2, 0.5, 2, 'log'), 1);
     assert.ok(Math.abs(laneFromValue(1, 0.5, 2, 'log') - 0.5) < 1e-12);

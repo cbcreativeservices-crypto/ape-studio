@@ -72,7 +72,7 @@ export const PLANT_WORDS: Readonly<Record<PlantMount, { label: string; short: st
     label: 'A contact sensor on the structure',
     short: 'CONTACT',
     hears: 'The structure, not the air: thuds and resonance, exaggerated — not the same perspective as an airborne mic.',
-    check: 'Its input impedance and interface from its own documentation; no phantom power unless that documentation specifies it; labelled as a contact sensor in the mix.',
+    check: 'Its input impedance and interface from its own documentation; no phantom power unless that documentation specifies it; labeled as a contact sensor in the mix.',
   },
 };
 export const PLANT_IDS: readonly PlantMount[] = ['isolated', 'rigid', 'contact'];

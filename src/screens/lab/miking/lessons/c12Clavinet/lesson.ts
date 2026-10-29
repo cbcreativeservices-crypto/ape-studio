@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Find the stage of the chain first — the clavinet, a pedal, the input, the amp, the mic position, the monitors — and fix it there. Unsafe power, and hum from a fault inside the gear, belong to a qualified technician.',
   },
   practice: {
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It takes high sound levels and needs no power',
     explain: 'Close to a loud speaker, a dynamic copes with the level and needs no phantom power. A small condenser can work too, if its maximum level suits.',
     why: {
-      'It hears only the speaker, nothing else on stage': 'It favours what it faces; it still hears the stage.',
+      'It hears only the speaker, nothing else on stage': 'It favors what it faces; it still hears the stage.',
       'It is the only kind that can face a speaker': 'Condensers and ribbons are used on amps too, with care over the level.',
     },
   },
@@ -508,7 +508,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or an instrument (Hi-Z) input; phantom only where a mic or an active DI needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labeled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cables are safe: off the grille, clear of a hot amp and the player’s feet', role: 'required', feedback: 'Safety and clearance are part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Right on the center, closest, always gives the best clavinet', role: 'wrong', feedback: 'The center tends to be brightest, not best; the part decides.' };
@@ -697,7 +697,7 @@ export const C12_LESSON: Lesson = {
       { id: 'room', label: 'a room mic', short: 'ROOM MIC', note: 'Add room distance only when the room contributes something useful; each added mic adds spill and a timing check.', prov: { kind: 'illustrative', reason: 'a typical layout; the lesson gives no distance' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: the direct signal usually gives more gain before feedback and less spill. Mic the amp when it is part of the player’s sound — close, its null aimed at the loudest monitor, the amp’s volume under control.',
-    studio: 'STUDIO: keep a clean direct track, labelled pre or post the pedals, and a close mic on one chosen speaker; add a room mic only when the room helps. Align them in mono.',
+    studio: 'STUDIO: keep a clean direct track, labeled pre or post the pedals, and a close mic on one chosen speaker; add a room mic only when the room helps. Align them in mono.',
   },
   diagnostic,
   practice: {
@@ -717,7 +717,7 @@ export const C12_LESSON: Lesson = {
     { text: 'The speaker’s dust cap (radius 5 cm) and surround (12.8 cm) are drawing defaults; the cone’s size comes from a real 12-inch speaker.', dims: [] },
     { text: 'The clavinet’s case (100 × 45 cm), the stage layout and the keyboardist’s position are drawing defaults: the leaflet gives no dimensions. The mechanism is drawn as one straight string, not to scale.', dims: [] },
     { text: 'The bands round the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

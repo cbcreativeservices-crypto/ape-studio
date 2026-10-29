@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Diagnose the source, the room and the monitoring before a large low-frequency boost or cut: one boomy note is often the room.',
   },
   practice: {
@@ -103,7 +103,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Released, the pulled triangle splits into two corners that run apart and back; the string rings on, and with nothing to keep it going the note dies away — the body of the sound.',
     why: {
       'It stops at once, because nothing keeps pulling it after release': 'It rings on after release; nothing keeps it going, so it fades — but not at once.',
-      'It keeps the exact triangle the finger gave it until it is damped': 'The shape changes at once into two travelling corners; it is the same triangle again only half a cycle later, mirrored.',
+      'It keeps the exact triangle the finger gave it until it is damped': 'The shape changes at once into two traveling corners; it is the same triangle again only half a cycle later, mirrored.',
     },
   },
   {
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before placing a mic, what do you ask the bassist to play?',
     options: ['One long low E, to set the level for the whole show', 'Nothing: a starting point does not depend on what the bassist plays', 'Low notes, higher walking lines, accents, soft notes and any slap'],
     correct: 'Low notes, higher walking lines, accents, soft notes and any slap',
-    explain: 'Set gain for the peaks, not the first gentle note, and listen across the range. Ask about the pickup, the posture, the room and the neighbours too.',
+    explain: 'Set gain for the peaks, not the first gentle note, and listen across the range. Ask about the pickup, the posture, the room and the neighbors too.',
     why: {
       'One long low E, to set the level for the whole show': 'One note shows neither the accents’ peaks nor the higher notes’ detail.',
       'Nothing: a starting point does not depend on what the bassist plays': 'A starting point is where to begin; the playing decides where you end up.',
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A directional mic very close to the bass sounds boomy. A likely reason?',
     options: ['The omni pattern is collecting the room’s bass from all around it', 'Proximity effect: a directional mic up close lifts the lows', 'The strings are too thick for the mic to hear'],
     correct: 'Proximity effect: a directional mic up close lifts the lows',
-    explain: 'A directional mic develops a bass boost very close; an omni has different proximity behaviour and hears more room. Back off or change the angle before a big cut.',
+    explain: 'A directional mic develops a bass boost very close; an omni has different proximity behavior and hears more room. Back off or change the angle before a big cut.',
     why: {
       'The omni pattern is collecting the room’s bass from all around it': 'The mic in question is directional. Close-up lift is proximity effect.',
       'The strings are too thick for the mic to hear': 'String size is not the issue; the close distance is.',
@@ -221,7 +221,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the mic a little higher, toward the fingerboard. What tends to change?',
     options: ['More low end, because the strings are longer there', 'Nothing: the height along the strings makes no difference', 'More finger attack and pitch definition; less body'],
     correct: 'More finger attack and pitch definition; less body',
-    explain: 'Toward the fingerboard tends to bring the fingers and the pitch; too localised and the body thins. Compare it with a lower, topward view.',
+    explain: 'Toward the fingerboard tends to bring the fingers and the pitch; too localized and the body thins. Compare it with a lower, topward view.',
     why: {
       'More low end, because the strings are longer there': 'Higher tends toward attack, not more low end.',
       'Nothing: the height along the strings makes no difference': 'Height changes the balance of attack and body — try it.',
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A good, isolated studio room, a natural jazz bass. Why might you try an omni?',
     options: ['An omni rejects the room’s sound better than a cardioid aimed at the bass', 'A broad picture of the whole bass and the room, with no proximity lift', 'Omnis only work on bass, so there is no other choice'],
     correct: 'A broad picture of the whole bass and the room, with no proximity lift',
-    explain: 'In a favourable, isolated room an omni can capture the whole instrument broadly; a directional mic helps when isolation is needed. Check the room’s low-frequency decay too.',
+    explain: 'In a favorable, isolated room an omni can capture the whole instrument broadly; a directional mic helps when isolation is needed. Check the room’s low-frequency decay too.',
     why: {
       'An omni rejects the room’s sound better than a cardioid aimed at the bass': 'An omni hears more of the room, not less.',
       'Omnis only work on bass, so there is no other choice': 'Both kinds work; the room and the isolation decide.',
@@ -589,7 +589,7 @@ export const C06A_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The finger pulls the string', text: 'The plucking finger pulls the string sideways and stretches it — a few millimetres, many times larger here than it really moves.' },
+      { title: 'The finger pulls the string', text: 'The plucking finger pulls the string sideways and stretches it — a few millimeters, many times larger here than it really moves.' },
       { title: 'Released, it swings back', text: 'Let go, the string swings back past its resting place and rings. Nothing keeps it going, so the note slowly dies away — unlike a bowed note.' },
       { title: 'The string rocks the bridge', text: 'The vibrating string pulls the top of the tall bridge from side to side, and the bridge rocks on its two feet.' },
       { title: 'The bridge drives the top', text: 'Under one foot the top moves in and out; under the other, the soundpost holds the top nearly still and passes the motion to the back. The large top, the back and the air inside all vibrate.' },
@@ -622,7 +622,7 @@ export const C06A_LESSON: Lesson = {
     { text: 'The plucking hand’s envelope (60–300 mm above the bridge, ±60), the left hand, the player’s body and where the bassist stands (drawn from the instrument: the bass’s back against the player) — illustrative.', dims: [] },
     { text: '“Just above the bridge” read as 6–15 cm up the strings, 15–30 cm out in front; the f-hole’s “a few inches” as 5–10 cm; the clip distances — drawing defaults.', dims: [] },
     { text: 'The miniature’s capsule and gooseneck reach, and the small condenser’s diameter — drawing defaults.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

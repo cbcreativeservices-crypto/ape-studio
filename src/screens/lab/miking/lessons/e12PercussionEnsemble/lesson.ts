@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet it — where the sound comes from',
     goal: 'Meet a percussion ensemble in brief — hand drums, mallet keyboards, small percussion, timpani and concert drums at their stations — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['pe.meet.1', 'pe.meet.2', 'pe.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
-    takeaway: 'A percussion ensemble is an extended source: drums speak from their heads, mallet keyboards from their bars and tubes, cymbals from both faces, shakers from wherever they move. A mic that favours one cymbal or one end of a marimba misrepresents the group.',
+    takeaway: 'A percussion ensemble is an extended source: drums speak from their heads, mallet keyboards from their bars and tubes, cymbals from both faces, shakers from wherever they move. A mic that favors one cymbal or one end of a marimba misrepresents the group.',
   },
   setups: {
     title: 'Starting setups',
@@ -54,8 +54,8 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Placement and coverage before gain: the acoustic balance, the register a mic favours, distance and angle on metal, the supports’ overlap, the clipping stage, the open channels, and anything touching a stand.',
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
+    takeaway: 'Placement and coverage before gain: the acoustic balance, the register a mic favors, distance and angle on metal, the supports’ overlap, the clipping stage, the open channels, and anything touching a stand.',
   },
   practice: {
     title: 'Practice',
@@ -73,9 +73,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic sits close over one end of the marimba. What does it misrepresent?',
     options: ['The rest of the keyboard’s range', 'Nothing: the marimba is one source', 'Only the player’s mallet noise'],
     correct: 'The rest of the keyboard’s range',
-    explain: 'A long keyboard is an extended source: a close mic favours the bars nearest it. Play low, middle and high registers at comparable dynamics and move the mics until no bars disappear.',
+    explain: 'A long keyboard is an extended source: a close mic favors the bars nearest it. Play low, middle and high registers at comparable dynamics and move the mics until no bars disappear.',
     why: {
-      'Nothing: the marimba is one source': 'A concert marimba can be over two metres long: each end is a different distance from the mic.',
+      'Nothing: the marimba is one source': 'A concert marimba can be over two meters long: each end is a different distance from the mic.',
       'Only the player’s mallet noise': 'It hears the notes too — mostly those nearest it.',
     },
   },
@@ -83,12 +83,12 @@ const scenarios: MikingScenario[] = [
     id: 'pe.meet.2',
     page: 'meet',
     prompt: 'Where do a conga’s deep tones partly leave from?',
-    options: ['The open lower end, near the floor', 'The tuning lugs all along the shell', 'Only the very centre of the head'],
+    options: ['The open lower end, near the floor', 'The tuning lugs all along the shell', 'Only the very center of the head'],
     correct: 'The open lower end, near the floor',
     explain: 'The hands strike the heads, and the open bottom lets out a deeper part of the sound. Add lower support only if the music needs it.',
     why: {
       'The tuning lugs all along the shell': 'The lugs hold the head; the sound leaves the head and the open end.',
-      'Only the very centre of the head': 'The whole head moves, and the open end radiates too.',
+      'Only the very center of the head': 'The whole head moves, and the open end radiates too.',
     },
   },
   {
@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which main pair relies on level differences, with almost no time differences?',
     options: ['An X/Y pair, capsules together', 'A pair of omni mics spaced apart', 'A 17 cm, 110° pair of mics'],
     correct: 'An X/Y pair, capsules together',
-    explain: 'With the capsules as nearly coincident as practical, the X/Y pair minimises arrival-time differences: its picture comes from the level differences between two angled cardioids.',
+    explain: 'With the capsules as nearly coincident as practical, the X/Y pair minimizes arrival-time differences: its picture comes from the level differences between two angled cardioids.',
     why: {
       'A pair of omni mics spaced apart': 'Spacing adds time differences — its main cue.',
       'A 17 cm, 110° pair of mics': 'Near-coincident: it uses time and level differences.',
@@ -146,8 +146,8 @@ const scenarios: MikingScenario[] = [
     id: 'pe.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Why can a close mic over a cymbal sound harsh?',
-    options: ['It favours the local attack and the axis', 'Cymbals are far too quiet for close mics', 'Its pattern changes near loud metal'],
-    correct: 'It favours the local attack and the axis',
+    options: ['It favors the local attack and the axis', 'Cymbals are far too quiet for close mics', 'Its pattern changes near loud metal'],
+    correct: 'It favors the local attack and the axis',
     explain: 'Close in, a mic hears the local attack and its own on-axis response. Increase the distance or change the angle, keeping the part audible.',
     why: {
       'Cymbals are far too quiet for close mics': 'They are loud; the closeness is the problem.',
@@ -183,11 +183,11 @@ const scenarios: MikingScenario[] = [
     id: 'pe.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Quiet instruments sit at the edges of a wide image. Check what?',
-    options: ['That they stay audible at the edges', 'That they are panned dead centre', 'Nothing: a wider picture helps them more'],
+    options: ['That they stay audible at the edges', 'That they are panned dead center', 'Nothing: a wider picture helps them more'],
     correct: 'That they stay audible at the edges',
     explain: 'A wide image can make the spatial pattern clear, but width is a production decision: check that quiet instruments at the edges do not become too soft.',
     why: {
-      'That they are panned dead centre': 'The array places them; check their level where they are.',
+      'That they are panned dead center': 'The array places them; check their level where they are.',
       'Nothing: a wider picture helps them more': 'Width can leave them too soft.',
     },
   },
@@ -328,10 +328,10 @@ const symptoms: Symptom[] = [
   {
     id: 'pe.s.notes',
     observation: 'A pitched instrument has uneven notes',
-    firstChecks: 'Does the pickup favour one part of the bars? Test the full register and revise the coverage.',
+    firstChecks: 'Does the pickup favor one part of the bars? Test the full register and revise the coverage.',
     options: ['Test the full range; revise coverage', 'EQ out the loud notes one at a time', 'Ask the player to play the low notes louder'],
     correct: 'Test the full range; revise coverage',
-    explain: 'A close mic favours the bars nearest it: play the whole register and move or add a mic until the range is even.',
+    explain: 'A close mic favors the bars nearest it: play the whole register and move or add a mic until the range is even.',
     why: { 'EQ out the loud notes one at a time': 'EQ cannot follow every note across the range.', 'Ask the player to play the low notes louder': 'The player plays the music; fix the coverage.' },
   },
   {
@@ -340,7 +340,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Local attack or the axis dominating? Increase the distance or change the angle, then reassess.',
     options: ['More distance or a new angle', 'Cut the treble on the cymbal mic hard', 'Ask for softer strikes on accents'],
     correct: 'More distance or a new angle',
-    explain: 'A close mic over-emphasises the attack; a little more distance or another angle keeps the part and softens the edge.',
+    explain: 'A close mic over-emphasizes the attack; a little more distance or another angle keeps the part and softens the edge.',
     why: { 'Cut the treble on the cymbal mic hard': 'That dulls the cymbal, not just its harshness.', 'Ask for softer strikes on accents': 'The accents are the music; fix the view.' },
   },
   {
@@ -390,7 +390,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'An X/Y pair about 2.5 m in front and 2.2 m up', ok: true, power: 'phantom', feedback: 'The group as one picture with the room, a dependable mono sum.' },
       { id: 'b', label: 'The pair plus one support over the congas for a named need', ok: true, power: 'phantom', feedback: 'Fair: one main pickup, one support with a reason.' },
       { id: 'c', label: 'A close mic on each instrument and no main pickup', ok: false, power: 'phantom', feedback: 'No shared perspective; many overlapping arrivals.' },
-      { id: 'd', label: 'A pair 30 cm over one end of the marimba', ok: false, power: 'phantom', feedback: 'It favours a few bars and ignores the rest of the group.' },
+      { id: 'd', label: 'A pair 30 cm over one end of the marimba', ok: false, power: 'phantom', feedback: 'It favors a few bars and ignores the rest of the group.' },
       { id: 'e', label: 'A tall stand leaning into the players’ path', ok: false, power: 'phantom', feedback: 'Stands stay clear of paths, pedals and changes.' },
     ],
     reasons: [PAIR_REASON, SAFE_REASON, POWER_REASON, BRAND_REASON, SPOTS_REASON],
@@ -521,8 +521,8 @@ export const E12_LESSON: EnsembleLesson = {
       { title: 'An extended source', text: 'The instruments spread over the stage, near and far, loud and quiet: a mic hears the nearest ones most.' },
       { title: 'Movement', text: 'Shakers, maracas and a moving player change where the sound comes from during the piece — a fixed mic cannot follow an instrument swung out of its pickup.' },
     ],
-    attack: 'Strikes reach a close mic first and hardest; a main array hears them softened by distance and the room. A close mic can over-emphasise the attack.',
-    body: 'The rolls, rings and resonances blended in the room. A main pickup hears the group’s balance; a support, one part with its neighbours. Tendencies — groups and rooms vary.',
+    attack: 'Strikes reach a close mic first and hardest; a main array hears them softened by distance and the room. A close mic can over-emphasize the attack.',
+    body: 'The rolls, rings and resonances blended in the room. A main pickup hears the group’s balance; a support, one part with its neighbors. Tendencies — groups and rooms vary.',
     head: { diameterMm: 4000, rods: 0, label: 'a percussion ensemble', strikeSrc: 'LESSON-PERC' },
   },
   setting: {
@@ -567,7 +567,7 @@ export const E12_LESSON: EnsembleLesson = {
     before: [
       { title: 'KNOW THE PIECE', text: 'The quietest instrument, the loudest accent, the low notes, the sustained rolls, the instrument changes and the walking routes.' },
       { title: 'REHEARSE THE BALANCE', text: 'Acoustically, before any mic: quiet parts where the main pickup can hear them, sightlines and technique kept — agreed with the performers.' },
-      { title: 'PLOT THE STAGE', text: 'Instruments, players, changes, wedges, mains and safe cable routes; each mic labelled by the source or area it serves, with its pattern, power, pad, height, distance, angle and routing.' },
+      { title: 'PLOT THE STAGE', text: 'Instruments, players, changes, wedges, mains and safe cable routes; each mic labeled by the source or area it serves, with its pattern, power, pad, height, distance, angle and routing.' },
       { title: 'PLAN THE INPUTS', text: 'Enough channels for the sources sounding together, not for an average moment of the piece.' },
     ],
     safety: 'Suitably rated stands, secured, with overhead hardware out of reach; cables clear of paths, pedals and instrument changes. Never block a resonator or touch a vibrating bar. Keep ears away from close strikes and use hearing protection when the exposure warrants it. Avoid uncontrolled feedback.',

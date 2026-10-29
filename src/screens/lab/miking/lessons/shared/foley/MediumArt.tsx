@@ -61,7 +61,7 @@ function ContactPuck({ x, y }: { x: number; y: number }) {
 
 export function MediumCardArt({ w, h }: { w: number; h: number }) {
   const labels: StaticLabel[] = MEDIA.map((m, i) => ({ id: m.id, text: m.title, u: i * STEP, v: -520, align: 'center' as const, tone: (i === 0 ? 'amber' : 'blue') as 'amber' | 'blue' }));
-  labels.push({ id: 'n', text: 'THREE PATHS · EACH ITS OWN LABELLED TRACK', short: 'THREE PATHS', u: 700, v: 205, align: 'center', tone: 'illustrative' });
+  labels.push({ id: 'n', text: 'THREE PATHS · EACH ITS OWN LABELED TRACK', short: 'THREE PATHS', u: 700, v: 205, align: 'center', tone: 'illustrative' });
   const label = `Three ways to pick up a basin of water. ${MEDIA.map((m) => `${m.title}: ${m.sensor}. ${m.hears}`).join(' ')}`;
   return (
     <SoundCanvas w={w} h={h} box={MEDIUM_BOX} label={label} labels={labels}>

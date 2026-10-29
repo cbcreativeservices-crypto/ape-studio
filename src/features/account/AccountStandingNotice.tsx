@@ -44,7 +44,7 @@ const REASON_LABEL: Record<string, string> = {
   spam: 'Unsolicited or repeated messages',
   harassment: 'Harassment or abusive conduct',
   solicitation: 'Unwanted soliciting or recruiting',
-  impersonation: 'Impersonating another person or organisation',
+  impersonation: 'Impersonating another person or organization',
   other: 'Conduct reported by another member',
 };
 

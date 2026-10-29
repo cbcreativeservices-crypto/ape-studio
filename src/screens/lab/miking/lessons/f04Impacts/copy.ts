@@ -16,7 +16,7 @@ export const F04_COPY: Partial<LessonCopy> = foleyCopy({
     impact: 'a Foley artist striking a padded block on a wooden table',
     water: 'a Foley artist pouring water into a shallow basin on a low table',
     texture: 'a Foley artist drawing a dry brush across fabric on a board',
-    live: 'a Foley artist at a live theatre effects station',
+    live: 'a Foley artist at a live theater effects station',
   },
   axesBlurb: 'Up or down (y). The action — the impact point, the water’s entry, the stroke — is height 0.',
   instrument: {
@@ -86,7 +86,7 @@ export const F04_COPY: Partial<LessonCopy> = foleyCopy({
     { title: 'DEFINE THE EVENT FIRST', text: 'Which part does the scene need — the click, the body, the tail? The striking object, the surface, the resonant body and the room all contribute; water is an entry, a splash, flow, bubbles and drips. Have the performer repeat it with similar energy.' },
     { title: 'MARK THE SPLASH WITH THE MIC ABSENT', text: 'Rehearse the water action with no mic there and mark the splash footprint; then set the stand outside it. Power supplies, the recorder, cables and connectors stay away from the wet area; dry your hands before touching controls; stop if water escapes its containment.' },
     { title: 'A WINDSCREEN IS NOT A WATER BARRIER', text: 'Do not treat a foam windscreen or a basket as waterproof: a splash on one gives a loud thump and can ruin the take. Some rain covers are for between takes only, not while recording. Keep the mic dry — water inside a mic can cause fire or electric shock; if equipment gets wet, stop and follow the maker’s guidance.' },
-    { title: 'SAFE SOURCES ONLY', text: 'No heavy drops, explosive charges, glass breaking, blades, hot liquid, fine powder or chemicals are needed; no staged falls, and never strike a person. Non-slip flooring round any water. Never energise wet equipment or improvise electrical waterproofing.' },
+    { title: 'SAFE SOURCES ONLY', text: 'No heavy drops, explosive charges, glass breaking, blades, hot liquid, fine powder or chemicals are needed; no staged falls, and never strike a person. Non-slip flooring round any water. Never energize wet equipment or improvise electrical waterproofing.' },
   ],
   worked: { impact: 'f04.contact', water: 'f04.side', texture: 'f04.stroke', live: 'f04.contact' },
   live: {
@@ -122,7 +122,7 @@ export const F04_COPY: Partial<LessonCopy> = foleyCopy({
     A: { typeId: 'scSupercard', zone: 'f04.side' },
     B: { typeId: 'scSupercard', zone: 'f04.room' },
     learn: [
-      'Begin with one mic for each cue. If a second mic is justified, give it a different task: one aimed at the water’s entry, one hearing the body, the room or the drip tail — recorded on its own channel and labelled.',
+      'Begin with one mic for each cue. If a second mic is justified, give it a different task: one aimed at the water’s entry, one hearing the body, the room or the drip tail — recorded on its own channel and labeled.',
       'Check each alone, then the sum in mono over the whole action: different arrival times change the attack, and moving water makes any one alignment imperfect. Choosing between mics is as fair as combining them.',
     ],
     warn: 'This simplified graph treats the water as one point and both mics as hearing the same sound. Moving water changes the delay as it flows, and the farther mic hears more of the room. Read the notch POSITIONS and treat their depths as illustrative.',

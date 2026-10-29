@@ -273,7 +273,7 @@ export const F14_ZONES: DocumentedZone[] = [
   },
   {
     id: 'st.back',
-    label: 'Half a metre back',
+    label: 'Half a meter back',
     band: 'Try the mic about 50 cm (20 in) behind the listening position, the same height: the lows change most.',
     kind: 'trial',
     src: 'F14-LESSON',
@@ -287,7 +287,7 @@ export const F14_ZONES: DocumentedZone[] = [
     drawn: { side: { u0: S.back.x - 60, u1: S.back.x + 60, v0: -1300, v1: -1100 }, top: { u0: S.back.x - 60, u1: S.back.x + 60, v0: -100, v1: 100 } },
     requires: { variant: 'studio', micTypeIds: FF },
     start: toward(S.back, MON_L),
-    tendency: 'The room’s lows rearranged: a bass peak or dip moves with half a metre. Compare before blaming the monitor.',
+    tendency: 'The room’s lows rearranged: a bass peak or dip moves with half a meter. Compare before blaming the monitor.',
     checks: ['Only the distance changed', 'The lows compared, not just the overall level', 'The room’s state the same'],
   },
 ];

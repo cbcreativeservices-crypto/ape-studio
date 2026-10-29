@@ -63,16 +63,16 @@ export const HARP_COPY: LessonCopy = {
     blocked: {},
     reveal: 'Closer to the board tends to bring more of one region and of its low resonance; farther away, more of the whole harp and the room — and every harp and room is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
-      sdcCard: 'Ideas to try with a small condenser: with the omni capsule, step back for the whole harp and the room; with the cardioid, a spot that picks out the harp from its neighbours — closer to the board brings more low end.',
+      sdcCard: 'Ideas to try with a small condenser: with the omni capsule, step back for the whole harp and the room; with the cardioid, a spot that picks out the harp from its neighbors — closer to the board brings more low end.',
       miniOmni: 'Ideas to try with a miniature: only on an approved holder, at the opening — then compare it with a stand mic before deciding.',
     },
     note: 'Clearance comes first: keep every mic, stand and cable out of the harpist’s reach and view, off the pedals or levers, and never over the harp or the harpist’s head without a secure stand.',
     availableLead: 'Starting points for this mic and harp',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this harp, measured from the surface it names — the soundboard, the crown, the floor, a sound hole. They are starting points, not rules: move from there and listen — there is no single right answer.',
-      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. The harpist’s hands work both sides of the strings; their feet work the pedals; they look past the neck at the music and the conductor. Keep-clear areas appear as the mic gets close. If a move is stopped, they turn red and show the reason. They are rough: leave more room on a real stage.',
-      tendencies: 'A close cardioid aimed straight at the middle of the board tends to favour one region and boom; higher and looking down, more of the upper strings; farther away, the whole harp and the room. These are tendencies; harps and rooms vary.',
+      tendencies: 'A close cardioid aimed straight at the middle of the board tends to favor one region and boom; higher and looking down, more of the upper strings; farther away, the whole harp and the room. These are tendencies; harps and rooms vary.',
     },
   },
   context: {

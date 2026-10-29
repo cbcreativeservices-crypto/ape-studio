@@ -279,7 +279,7 @@ const REVERB: readonly Q[] = [
       'The reverb tail takes 2 seconds to fall by 60 dB',
       'The reverb is twice as loud as the dry sound',
       '2 seconds pass before the reverb starts',
-      'The room is 60 metres long',
+      'The room is 60 meters long',
     ],
     correct: 'The reverb tail takes 2 seconds to fall by 60 dB',
     explanation: 'RT60 is a TIME — where the decay slope crosses −60 dB. How loud the reverb is belongs to MIX, and when it starts belongs to PRE-DELAY.',
@@ -363,7 +363,7 @@ const CHORUS: readonly Q[] = [
 const FLANGER: readonly Q[] = [
   {
     id: 'notch-spacing',
-    prompt: 'A flanger’s centre delay is 2 ms. How far apart are its comb notches?',
+    prompt: 'A flanger’s center delay is 2 ms. How far apart are its comb notches?',
     options: ['500 Hz', '2 Hz', '200 Hz', '2,000 Hz'],
     correct: '500 Hz',
     explanation: 'Notch spacing is 1 ÷ delay time: 1 ÷ 0.002 s = 500 Hz. A shorter delay spreads the notches further apart; a longer one packs them closer.',
@@ -559,7 +559,7 @@ const OSCILLATOR: readonly Q[] = [
     prompt: 'Which classic waveform contains EVERY harmonic, each at 1/n of the fundamental?',
     options: ['Sawtooth', 'Square', 'Triangle', 'Sine'],
     correct: 'Sawtooth',
-    explanation: 'The sawtooth has the full harmonic series falling at 1/n — the brightest, buzziest classic wave and the favourite raw material for filters. A sine has just one harmonic: the fundamental.',
+    explanation: 'The sawtooth has the full harmonic series falling at 1/n — the brightest, buzziest classic wave and the favorite raw material for filters. A sine has just one harmonic: the fundamental.',
   },
   {
     id: 'triangle-vs-square',
@@ -622,7 +622,7 @@ const NOISE: readonly Q[] = [
   },
   {
     id: 'brown',
-    prompt: 'Which colour of noise falls 6 dB per octave and sounds like rumble, surf or distant thunder?',
+    prompt: 'Which color of noise falls 6 dB per octave and sounds like rumble, surf or distant thunder?',
     options: ['Brown', 'White', 'Blue', 'Violet'],
     correct: 'Brown',
     explanation: 'Brown (also called red) noise puts most of its energy in the lows. Blue and violet tilt the other way, toward the treble.',
@@ -632,9 +632,9 @@ const NOISE: readonly Q[] = [
     prompt: 'Why is pink noise the standard test noise for rooms and loudspeakers?',
     options: [
       'Equal energy per octave matches how we hear, so it sounds balanced',
-      'It is the loudest colour',
+      'It is the loudest color',
       'It has no high frequencies to damage tweeters',
-      'It is the only colour a microphone can measure',
+      'It is the only color a microphone can measure',
     ],
     correct: 'Equal energy per octave matches how we hear, so it sounds balanced',
     explanation: 'Hearing works on a roughly log scale, closer to octaves than to equal slices of hertz. Pink noise puts the same energy in each octave, so it sounds even from bottom to top. It also reads flat on an octave or 1/3-octave analyzer, the way rooms and speakers are measured.',
@@ -726,7 +726,7 @@ const ENVELOPE: readonly Q[] = [
       'Only if the snare is miked closely',
     ],
     correct: 'No — release is the source stopping; the tail is the room still returning energy',
-    explanation: 'ADSR describes the sound at its source. What the room adds is propagation — reverberation. The snare’s own envelope is the same at one metre or twenty.',
+    explanation: 'ADSR describes the sound at its source. What the room adds is propagation — reverberation. The snare’s own envelope is the same at one meter or twenty.',
   },
 ];
 
@@ -830,7 +830,7 @@ const BINAURAL: readonly Q[] = [
       'Elevation only works with a sine tone',
     ],
     correct: 'Up-and-down cues come from the outer ear’s filtering, which a time-and-level model does not produce',
-    explanation: 'Time and level differences mostly tell left from right. Height — and much of front-from-back — comes from how the outer ear (pinna) colours sound, which this simplified model deliberately leaves out.',
+    explanation: 'Time and level differences mostly tell left from right. Height — and much of front-from-back — comes from how the outer ear (pinna) colors sound, which this simplified model deliberately leaves out.',
   },
 ];
 
@@ -1188,7 +1188,7 @@ const SPEECH: readonly Q[] = [
     options: [
       'They are speaking off-axis, so the mic’s pattern rolls off the highs and the level drops',
       'The proximity effect is fading as they turn away',
-      'The room’s reflections are cancelling the voice',
+      'The room’s reflections are canceling the voice',
       'Their vocal folds tighten when the head turns',
     ],
     correct: 'They are speaking off-axis, so the mic’s pattern rolls off the highs and the level drops',
@@ -1252,7 +1252,7 @@ const TUBE: readonly Q[] = [
     options: [
       'The idle point on its transfer curve, so the signal swings in the straight middle region',
       'The loudness of the output',
-      'The colour of the glow',
+      'The color of the glow',
       'The warm-up time',
     ],
     correct: 'The idle point on its transfer curve, so the signal swings in the straight middle region',
@@ -1355,7 +1355,7 @@ const EQ: readonly Q[] = [
       'It moves to a higher frequency',
     ],
     correct: 'It gets narrower — a higher Q affects a smaller range of frequencies',
-    explanation: 'Q = centre frequency ÷ bandwidth, so a bigger Q number means a narrower band. Wide Q suits broad, musical moves; narrow Q suits surgical notches. Gain changes the amount, not the width.',
+    explanation: 'Q = center frequency ÷ bandwidth, so a bigger Q number means a narrower band. Wide Q suits broad, musical moves; narrow Q suits surgical notches. Gain changes the amount, not the width.',
   },
   {
     id: 'high-pass',
@@ -1374,7 +1374,7 @@ const EQ: readonly Q[] = [
       'A parametric band has a fixed frequency; a graphic band can move',
     ],
     correct: 'A graphic band has a fixed frequency and width — only its gain moves; a parametric band adjusts frequency, gain and Q',
-    explanation: 'Graphic EQ gives fast, fixed-band control (one fader per octave or per third of an octave). Parametric EQ gives precision. Note that a graphic’s sliders are not its exact response — neighbouring bands overlap.',
+    explanation: 'Graphic EQ gives fast, fixed-band control (one fader per octave or per third of an octave). Parametric EQ gives precision. Note that a graphic’s sliders are not its exact response — neighboring bands overlap.',
   },
   {
     id: 'slope',

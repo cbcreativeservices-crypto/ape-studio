@@ -63,7 +63,7 @@ export function c05bZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       aimAtR: { r: 100, prov: ill('aimed toward the opening') },
       micTypeIds: STAND,
       start: { d: 205, dx: 15 },
-      tendency: 'A different body resonance and more projection. Straight into the opening and very close, it can favour one resonance and sound uneven or boomy — treat it as an audition.',
+      tendency: 'A different body resonance and more projection. Straight into the opening and very close, it can favor one resonance and sound uneven or boomy — treat it as an audition.',
       checks: ['The picking hand and its arc', 'Boom or unevenness from note to note', 'Compare with the neck junction at matched levels'],
     },
     {

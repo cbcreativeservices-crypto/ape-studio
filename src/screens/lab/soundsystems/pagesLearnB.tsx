@@ -259,7 +259,7 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
         <Body>{l.what}</Body>
         <Body>THE TRADE · {l.cost}</Body>
       </Card>
-      <KeyFact>Low frequencies are long: a 60 Hz wave is nearly six metres. Two subwoofers a room-width apart are, to that wave, two sources that cannot help interfering. Preventing low-frequency build-up is mostly geometry: fewer separated sources, boundaries used deliberately, and a high-pass filter on every channel that has no business below 100 Hz.</KeyFact>
+      <KeyFact>Low frequencies are long: a 60 Hz wave is nearly six meters. Two subwoofers a room-width apart are, to that wave, two sources that cannot help interfering. Preventing low-frequency build-up is mostly geometry: fewer separated sources, boundaries used deliberately, and a high-pass filter on every channel that has no business below 100 Hz.</KeyFact>
       <DeeperRow>
         <LabLink route="WaveLab" label="Wave Physics — interference and standing waves" />
         <CalcLink id={CALC_LINKS.comb.workspace} label="Comb filter from a path difference" />
@@ -452,7 +452,7 @@ const LEVELS: readonly { level: SignalLevel; volts: string; carried: string; cab
   { level: 'instrument', volts: 'tenths of a volt, high impedance, unbalanced', carried: 'Guitars, basses, keyboards', cable: 'Unbalanced ¼-inch TS — short runs only, then a DI' },
   { level: 'line', volts: 'about a volt (+4 dBu nominal)', carried: 'Console outputs, processors, playback', cable: 'Balanced XLR or TRS' },
   { level: 'speaker', volts: 'tens of volts, amps of current', carried: 'Amplifier outputs only', cable: 'Speaker cable with speakON — never a signal cable' },
-  { level: 'digital', volts: 'audio carried as data', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: '110 Ω AES cable on XLR (AES3), coax (AES3id or MADI), category cable (Dante or AVB) or fibre — clocked from one master' },
+  { level: 'digital', volts: 'audio carried as data', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: '110 Ω AES cable on XLR (AES3), coax (AES3id or MADI), category cable (Dante or AVB) or fiber — clocked from one master' },
 ];
 
 const PAIRS: readonly { from: GearKind; to: GearKind }[] = [
@@ -536,7 +536,7 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
       <KeyFact>Five signal levels travel on cables (sound in the air and radio links are the other two the lab tracks), and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input can damage the input. Mic level into a line input is 40–60 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker barely moves the cone — a faint sound at best. Most refusals in BUILD mode are one of these three sentences; the rest are housekeeping — a full input, a loop, a link that already exists, or a device with no signal output.</KeyFact>
       <Card>
         <Eyebrow>THE REST OF THE CHAPTER LIVES IN THE CABLE LABS</Eyebrow>
-        <Body>Balanced and unbalanced signals, XLR/TRS/TS/speakON/Ethernet, correct amplifier-to-loudspeaker wiring, clocking and sample rate, cable routing and strain relief, signal cables kept apart from power, ground loops and isolation, redundancy, labelling and documentation.</Body>
+        <Body>Balanced and unbalanced signals, XLR/TRS/TS/speakON/Ethernet, correct amplifier-to-loudspeaker wiring, clocking and sample rate, cable routing and strain relief, signal cables kept apart from power, ground loops and isolation, redundancy, labeling and documentation.</Body>
       </Card>
       <DeeperRow>
         <LabLink route="CableLab" label="Cable & Connector Fundamentals" />

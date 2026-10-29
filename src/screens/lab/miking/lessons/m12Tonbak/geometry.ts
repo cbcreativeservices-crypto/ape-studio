@@ -118,7 +118,7 @@ export const TONBAK_ZONES: DocumentedZone[] = [
   z({
     id: 'tb.C',
     label: 'Farther back, for the room',
-    band: 'In a quiet studio, try about 60–100 cm (24–40 in) from the drum, seeing the head and the body, favouring neither hand.',
+    band: 'In a quiet studio, try about 60–100 cm (24–40 in) from the drum, seeing the head and the body, favoring neither hand.',
     quote: 'Trial C: in a suitable quiet studio, compare 60–100 cm from the instrument, selecting a viewpoint that covers the head and body without favoring one hand',
     refSurface: 'head',
     distance: { min: 600, max: 1000 },

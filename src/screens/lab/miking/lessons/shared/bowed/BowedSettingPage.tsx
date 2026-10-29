@@ -522,7 +522,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         layout: 'rack',
         rack: {
           render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.near} scene="kit" wedges={lesson.live.wedges} items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={cfg.nearA11y} />,
-          badge: cfg.hands === 'pluck' ? 'From above · a typical layout · grey hatch = the plucking hand’s path' : 'From above · a typical layout · grey hatch = the bow’s sweep',
+          badge: cfg.hands === 'pluck' ? 'From above · a typical layout · gray hatch = the plucking hand’s path' : 'From above · a typical layout · gray hatch = the bow’s sweep',
           bezel: bezel(nearSelItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',

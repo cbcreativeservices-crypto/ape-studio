@@ -37,7 +37,7 @@ export const SAX_MIC_TYPES = {
     mount: 'stand',
     examples: [{ model: 'Shure SM57 (the compact instrument dynamic the S-SAX engineers use close on horns)', fact: '"Dynamic (moving coil)"; "Cardioid"; 157 mm long, 32 mm grille.', src: 'S-SM57-UG' }],
     art: 'smallDynamic',
-    blurb: 'A compact instrument dynamic with a cardioid pattern — a common close choice on a horn, live and in the studio. It takes the level a few centimetres from a bell. Needs no power.',
+    blurb: 'A compact instrument dynamic with a cardioid pattern — a common close choice on a horn, live and in the studio. It takes the level a few centimeters from a bell. Needs no power.',
   },
   saxLdc: {
     id: 'saxLdc',

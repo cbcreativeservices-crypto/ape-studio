@@ -1058,7 +1058,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
                   />
                 </View>
                 <Text style={dstyles.caption}>
-                  Set CARDIOID and sweep the frequency: the rear stays cancelled across the band while the front rides up and down a little — spacing sets those limits. Set WRONG WAY near 71 Hz and watch the null land on the audience.
+                  Set CARDIOID and sweep the frequency: the rear stays canceled across the band while the front rides up and down a little — spacing sets those limits. Set WRONG WAY near 71 Hz and watch the null land on the audience.
                 </Text>
               </View>
             ),
@@ -2116,7 +2116,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
           {/* Accuracy note, first thing under the display (owner rule: every
               lab/tool says "learn here, measure with a calibrated instrument";
               the outside view added a model that needs it — 2026-09-26). */}
-          <Text style={dstyles.eyebrow}>OUTSIDE THE ROOM — WHAT THE NEIGHBOURS HEAR</Text>
+          <Text style={dstyles.eyebrow}>OUTSIDE THE ROOM — WHAT THE NEIGHBORS HEAR</Text>
           <Text style={dstyles.body}>
             The rings beyond the walls show what each wall lets through at the frequency you are viewing. Each
             material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let

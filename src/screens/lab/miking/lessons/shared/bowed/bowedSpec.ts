@@ -5,7 +5,7 @@
  *
  *   origin B0 = the bridge's centre line on the top plate (where the bridge
  *   feet line crosses the instrument's centre line), at the top surface;
- *   +x along the centre line toward the neck and scroll; +y across the top
+ *   +x along the center line toward the neck and scroll; +y across the top
  *   toward the HIGHEST string (E on the violin, A on viola and cello, G on
  *   the bass); +z out of the top (the front). Millimetres.
  *
@@ -394,7 +394,7 @@ export function outline(s: BowedSpec, _n = 120): [number, number][] {
   return patternOf(s).pts;
 }
 
-/** Height of the top's surface above the rib edge on the centre line (z),
+/** Height of the top's surface above the rib edge on the center line (z),
  *  a smooth arch (drawing default), 0 at both ends of the body. */
 export function archAt(s: BowedSpec, x: number, y = 0): number {
   const st = stationsOf(s);

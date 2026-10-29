@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Reinforcement and recording',
     goal: 'Turn the guitar spot so the guitarist’s wedge sits in its rejection — and decide what a small room really needs from a PA.',
     credit: { scenarios: ['ac.ctx.1', 'ac.ctx.2', 'ac.ctx.studio', 'ac.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the guitar spot (or change its pattern) until the wedge sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Live favours close directional mics, pickups or DIs, a stereo pair only where it is safe. In a small room, less reinforcement may sound more natural. Stop the group before moving equipment; do not push the system into feedback during a performance.',
+    takeaway: 'Live favors close directional mics, pickups or DIs, a stereo pair only where it is safe. In a small room, less reinforcement may sound more natural. Stop the group before moving equipment; do not push the system into feedback during a performance.',
   },
   twoMic: {
     title: 'The pair and a spot',
@@ -54,7 +54,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'The players first — their seating, angle and dynamics — then the pair, then the spots; EQ last. A thin mono sum is a geometry question before a processing one.',
   },
   practice: {
@@ -85,7 +85,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a mandolin or fiddle dominate a guitar’s mic?',
     options: ['Its bright highs carry along its axis', 'It is the loudest instrument in the group, by far', 'It radiates mostly into the floor'],
     correct: 'Its bright highs carry along its axis',
-    explain: 'High-frequency sources like a mandolin or fiddle throw their bright highs more one way than another; keep that side off a neighbour mic’s axis.',
+    explain: 'High-frequency sources like a mandolin or fiddle throw their bright highs more one way than another; keep that side off a neighbor mic’s axis.',
     why: {
       'It is the loudest instrument in the group, by far': 'It need not be loud; its brightness is what cuts through.',
       'It radiates mostly into the floor': 'Not a mandolin or fiddle. Only the upright bass sends much into the floor, through its endpin — and even the bass sounds mostly from its body.',
@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which pair keeps the most stable image and mono sum?',
     options: ['A coincident X/Y pair', 'A spaced pair of omnis', 'Two spots, one on each player'],
     correct: 'A coincident X/Y pair',
-    explain: 'With the capsules at the same point, the pair hears each player at the same time: stable localisation and a dependable mono sum.',
+    explain: 'With the capsules at the same point, the pair hears each player at the same time: stable localization and a dependable mono sum.',
     why: {
       'A spaced pair of omnis': 'Spacing adds timing differences that can blur the image and change the tone in mono.',
       'Two spots, one on each player': 'Two spots are separate mics, not a stereo pair.',
@@ -233,7 +233,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does a fiddle’s bright sound carry?',
     options: ['Along its own axis, into nearby mics', 'Only to the player’s own ear, nearby', 'Down into the floor under the player'],
     correct: 'Along its own axis, into nearby mics',
-    explain: 'Keep the brighter instrument off a neighbour mic’s axis — out of the most aggressive bow or pick line.',
+    explain: 'Keep the brighter instrument off a neighbor mic’s axis — out of the most aggressive bow or pick line.',
     why: {
       'Only to the player’s own ear, nearby': 'It reaches every mic in its path.',
       'Down into the floor under the player': 'The fiddle radiates up and out; the bass reaches the floor.',
@@ -328,10 +328,10 @@ const symptoms: Symptom[] = [
     id: 'ac.s.thin',
     observation: 'The mono mix becomes thin',
     firstChecks: 'Timing and off-axis differences between mics? Change the spacing or angle, reduce mics, check the array in mono.',
-    options: ['Change spacing or angle; fewer mics', 'Boost the low end on the master', 'Pan everything to the centre'],
+    options: ['Change spacing or angle; fewer mics', 'Boost the low end on the master', 'Pan everything to the center'],
     correct: 'Change spacing or angle; fewer mics',
     explain: 'Something cancels when summed: fix the geometry, then check in mono.',
-    why: { 'Boost the low end on the master': 'A boost cannot fill a cancellation.', 'Pan everything to the centre': 'Panning does not change what cancels.' },
+    why: { 'Boost the low end on the master': 'A boost cannot fill a cancellation.', 'Pan everything to the center': 'Panning does not change what cancels.' },
   },
   {
     id: 'ac.s.dominates',
@@ -412,7 +412,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A stand where the bow and the walkway cross', ok: false, power: 'phantom', feedback: 'Keep stands out of reach of a performer or a bow.' },
     ],
     reasons: [
-      { id: 'r.close', label: 'Close mics or the pickup for gain before feedback', role: 'required', feedback: 'Say why: live favours stable gain.' },
+      { id: 'r.close', label: 'Close mics or the pickup for gain before feedback', role: 'required', feedback: 'Say why: live favors stable gain.' },
       { id: 'r.null', label: 'The wedge where each mic rejects most', role: 'required', feedback: 'Check the real polar plot.' },
       POWER_REASON,
       BRAND_REASON,
@@ -441,10 +441,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'ac.q.2',
     covers: 'meet',
-    prompt: 'Which instrument most easily sends bright sound into a neighbour’s mic?',
+    prompt: 'Which instrument most easily sends bright sound into a neighbor’s mic?',
     options: ['A mandolin or fiddle', 'An upright bass', 'A nylon-string guitar'],
     correct: 'A mandolin or fiddle',
-    explain: 'High-frequency sources project bright highs along their axis; keep them off a neighbour mic’s axis.',
+    explain: 'High-frequency sources project bright highs along their axis; keep them off a neighbor mic’s axis.',
     why: { 'An upright bass': 'The bass sends lows round and into the floor.', 'A nylon-string guitar': 'It is warmer and quieter than a mandolin or fiddle.' },
   },
   {
@@ -526,7 +526,7 @@ export const E08_LESSON: EnsembleLesson = {
     stages: [
       { title: 'Each instrument its own way', text: 'The guitar from its top and hole, the mandolin bright from its opening, the fiddle up from under the chin, the bass low at its bridge and into the floor.' },
       { title: 'The room joins them', text: 'In a quiet group the room’s reflections blend the players into one sound — what a main pair hears.' },
-      { title: 'A close mic hears a part', text: 'Close in, a spot hears one region of one instrument — and its brighter neighbours, if they point at it.' },
+      { title: 'A close mic hears a part', text: 'Close in, a spot hears one region of one instrument — and its brighter neighbors, if they point at it.' },
     ],
     attack: 'Picks and bows reach a close spot first and clearest; a main pair hears them softened by distance and the room.',
     body: 'The sustained group sound blended in the room. A pair hears the blend; a spot, more of one player. Tendencies — groups and rooms vary.',
@@ -542,7 +542,7 @@ export const E08_LESSON: EnsembleLesson = {
       { id: 'pickup', label: 'pickups and DI boxes', short: 'DI', note: 'A pickup or DI often gives the stable live foundation, with a mic blended for detail — each path useful alone before they are blended.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'a pickup or DI often provides the stable foundation (L39)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'noise', label: 'chairs, pages and the room', short: 'NOISE', note: 'Listen for chair noise, page turns, foot movement, ventilation and the room’s reflections when you set the gain.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Monitor chair noise, page turns, foot movement, HVAC, and room reflections (L34)' }, tag: 'LISTEN', scene: 'studio' },
     ],
-    stage: 'LIVE: favour stable gain before feedback — close directional mics, pickups or DIs; a stereo pair only where it is safe. Turn the monitors and the stage down before any feedback suppression; in a small room, less reinforcement may sound more natural.',
+    stage: 'LIVE: favor stable gain before feedback — close directional mics, pickups or DIs; a stereo pair only where it is safe. Turn the monitors and the stage down before any feedback suppression; in a small room, less reinforcement may sound more natural.',
     studio: 'A RECORDING: seat the group as they play, capture the simplest credible pair, move it in small steps, change the players before the EQ, then add one spot at a time for a clear reason.',
   },
   diagnostic,
@@ -581,7 +581,7 @@ export const E08_LESSON: EnsembleLesson = {
     before: [
       { title: 'LISTEN UNAMPLIFIED', text: 'From the listener’s position: the loudest and softest sections, unison and harmony, sustained notes, rhythmic passages and any solos.' },
       { title: 'CHOOSE THE GOAL', text: 'Ensemble-first — the group as one acoustic instrument — or individual control with spots and direct outputs. Neither is automatically more professional.' },
-      { title: 'SEAT THEM', text: 'About the same distance from where the main pair will go; a loud instrument farther, a quiet one nearer; bright instruments off their neighbours’ mics.' },
+      { title: 'SEAT THEM', text: 'About the same distance from where the main pair will go; a loud instrument farther, a quiet one nearer; bright instruments off their neighbors’ mics.' },
       { title: 'MARK IT', text: 'Mark the chairs, stands and mic bases so a second take or the interval returns to the same geometry.' },
     ],
     safety: 'Keep stands out of reach of a performer, a bow, a case or a stagehand; wait for a break or stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; do not push the system into feedback during a performance.',

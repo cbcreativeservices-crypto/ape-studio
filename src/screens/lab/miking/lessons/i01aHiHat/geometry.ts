@@ -38,7 +38,7 @@ export const HAT_MODEL: InstrumentModel = cymbalModel({
     top: { u0: -800, u1: -180, v0: -1380, v1: -220 },
   },
   roles: {
-    'kit.snare': 'Right beside the hats and a little lower: the loudest neighbour a hi-hat mic hears. Keep the snare off the mic’s front — or let the pair hide it.',
+    'kit.snare': 'Right beside the hats and a little lower: the loudest neighbor a hi-hat mic hears. Keep the snare off the mic’s front — or let the pair hide it.',
     'cym.crash1': 'The crash hangs above the hats’ audience side: a stand mic over that side runs into it (and its swing).',
     'kit.throne': 'The player sits here: the left foot on the pedal, the left hand or the right stick crossing over to the hats.',
   },
@@ -55,7 +55,7 @@ export const HAT_MODEL: InstrumentModel = cymbalModel({
     { id: 'r.stick', partId: 'hat.top', label: 'the stick on the top cymbal', anchor: STRIKE, prov: { kind: 'sourced', src: 'DPA-HH', quote: 'where the drummer hits the hi hat with the stick (usually around 2-3 cm (1 inch) from the edge)' }, note: 'Where the stick strikes the top cymbal, about 2–3 cm in from the edge: the attack starts here.' },
     { id: 'r.edge', partId: 'hat.bottom', label: 'the pair’s edge (the air)', anchor: at(HAT, HAT_R, TH_FAR, -GAP.open / 2), prov: { kind: 'sourced', src: 'S-REC1', quote: 'the hi-hat resonates horizontally' }, note: 'Between the two edges: the pair’s sound spreads out sideways from here — and so does the air as it closes.' },
     { id: 'r.bell', partId: 'hat.top', label: 'the top cymbal’s cup', anchor: at(HAT, 0, 0, HAT_RISE), prov: layout, note: 'The raised cup at the center: the higher overtones sit toward it.' },
-    { id: 'r.snare', partId: 'kit.snare', label: 'the snare', anchor: KIT_DRUMS.snare.c, prov: layout, note: 'The snare’s head, beside the hats: the neighbour a hat mic should hear least.' },
+    { id: 'r.snare', partId: 'kit.snare', label: 'the snare', anchor: KIT_DRUMS.snare.c, prov: layout, note: 'The snare’s head, beside the hats: the neighbor a hat mic should hear least.' },
   ],
   rims: [{ id: 'rim.hatStand', label: 'the hi-hat stand', c: { x: HAT.c.x, y: STAND_CLAMP_Y, z: HAT.c.z }, axis: { x: 0, y: 1, z: 0 }, r: HIHAT_HARDWARE.upperTube.mm / 2 + 2 }],
   // Out of the kit, on the hats' far side (the player's left).

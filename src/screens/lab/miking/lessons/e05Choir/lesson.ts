@@ -39,7 +39,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — nearer, farther, higher — and see what changes for the first and back rows and across the width.',
     credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Choose the array, then move it toward or away and listen. Nearer favours the first rows and diction; farther, the blend and the room — and the whole choir inside the pair’s angle. Move the pair as a unit.',
+    takeaway: 'Choose the array, then move it toward or away and listen. Nearer favors the first rows and diction; farther, the blend and the room — and the whole choir inside the pair’s angle. Move the pair as a unit.',
   },
   context: {
     title: 'Live and recording',
@@ -56,7 +56,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Layout and placement first: the array’s angle and distance, the spacing between mics, the spots’ level, the monitors’ nulls, the stands and risers — before EQ. Lower the gain at the first sign of ringing.',
   },
   practice: {
@@ -96,7 +96,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ch.meet.3',
     page: 'meet',
-    prompt: 'A mic a metre in front of the first row. Why is the back row quieter in it?',
+    prompt: 'A mic a meter in front of the first row. Why is the back row quieter in it?',
     options: ['It is farther away, behind other singers', 'The back row sings more quietly than the others', 'The back row faces the ceiling'],
     correct: 'It is farther away, behind other singers',
     explain: 'The back row is farther from the mic and sings past the heads in front. Raising the mic, aiming at the back rows, or moving back evens the distances out.',
@@ -544,7 +544,7 @@ export const E05_LESSON: EnsembleLesson = {
       height: `A little above the first row’s heads, so it sees past them to the rows on the steps behind. Higher hears more of the back rows and the room; lower, more of the first row and its diction.`,
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front and 0.3–0.9 m (1–3 ft) above the first row’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s center — near, about 0.6–1.2 m (2–4 ft) in front and 0.3–0.9 m (1–3 ft) above the first row’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
       'Change one variable at a time — distance, height, then the angle — and compare at a consistent level on the same passage, on loudspeakers.',
       'Area mics follow the same idea: a few feet out, a little above, aimed at the middle or back rows, and at least three times their distance to the singers apart from each other.',
     ],

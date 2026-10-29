@@ -10,7 +10,7 @@
 import type { LessonCopy } from '../../engine/model/copy.ts';
 import { standingVoiceCopy } from '../shared/voice/voiceCopy.ts';
 
-const INTRO = 'This lesson is about putting microphones on a group of talkers — a panel at a table, a presenter at a lectern, questions from the audience — and sending the right voices to the PA, the stream and the press. First the talkers: where each voice leaves, what a turn to a neighbour does, and what every open mic hears; then real starting setups, the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.';
+const INTRO = 'This lesson is about putting microphones on a group of talkers — a panel at a table, a presenter at a lectern, questions from the audience — and sending the right voices to the PA, the stream and the press. First the talkers: where each voice leaves, what a turn to a neighbor does, and what every open mic hears; then real starting setups, the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.';
 
 const BASE = standingVoiceCopy({
   what: 'a panelist or a presenter',
@@ -78,9 +78,9 @@ export const B06_COPY: Partial<LessonCopy> = {
     workedZone: { panel: 'b6.goose', lectern: 'b6.lectern' },
     workedAim: 'Aim it at the mouth — across the talker’s normal speaking arc; the lab counts it while the mic points within about {tol}° of the lips.',
     workedClear: 'Clear of the talker: the capsule and the neck keep off the face, out of the sight line and the paper’s path, the base away from the hands. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more voice and less room and fewer neighbours; farther, more room, more of the next panelist and more of each head turn; below the mouth’s line, fewer breath bursts. Talkers vary, so “it depends on this panel” is fair too.',
+    reveal: 'Closer tends to bring more voice and less room and fewer neighbors; farther, more room, more of the next panelist and more of each head turn; below the mouth’s line, fewer breath bursts. Talkers vary, so “it depends on this panel” is fair too.',
     typeNotes: {
-      bcGoose: 'Ideas to try with a gooseneck: bend the capsule toward the mouth, a little below its line, aimed across the speaking arc; then have the talker turn to a neighbour and listen.',
+      bcGoose: 'Ideas to try with a gooseneck: bend the capsule toward the mouth, a little below its line, aimed across the speaking arc; then have the talker turn to a neighbor and listen.',
       bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: tighter at the sides, with a small lobe behind — check where the PA and the next panelist sit against it.',
       bcBoundary: 'Ideas to try with a shared boundary: between two talkers, its front toward them, clear of papers and hands — then a turn from each.',
       vocHeadset: 'Ideas to try with a headset: the capsule where its maker says, near the corner of the mouth — and a plan for muting the lectern.',
@@ -91,7 +91,7 @@ export const B06_COPY: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every panel, room and PA is different.',
       separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
       clearance: 'Clearance comes first: off the face, out of the sight line and the paper’s path, clear of the hands and the aisle.',
-      tendencies: 'Closer tends to bring more voice against the room and the neighbours; farther, more room, more bleed and more of each head turn. These are tendencies, and rooms vary.',
+      tendencies: 'Closer tends to bring more voice against the room and the neighbors; farther, more room, more bleed and more of each head turn. These are tendencies, and rooms vary.',
     },
   },
   context: {

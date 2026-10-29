@@ -34,7 +34,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the vibraphone sits in a band — its neighbours, the player’s space, the monitors — and what to check before any mic.',
+    goal: 'Know where the vibraphone sits in a band — its neighbors, the player’s space, the monitors — and what to check before any mic.',
     credit: { scenarios: ['vb.set.1', 'vb.set.hear', 'vb.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Hear the player demonstrate first: low, middle and high notes, chords, pedal and motor. The mallets’ arc over both rows, the pedal foot and the motor are the player’s space.',
   },
@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the source first — the pedal, the damper, the motor, the frame — then coverage and gain staging, before EQ or a gate.',
   },
   practice: {
@@ -346,9 +346,9 @@ const symptoms: Symptom[] = [
   {
     id: 'vb.s.short',
     observation: 'Notes die too quickly',
-    firstChecks: 'Is the pedal up, or is the damper rubbing the bars? Check the intended pedalling and the damper’s action.',
-    options: ['The pedalling and whether the damper rubs the bars', 'Add reverb on the channel until the notes sound long enough', 'Raise the input gain so the tails stay above the noise'],
-    correct: 'The pedalling and whether the damper rubs the bars',
+    firstChecks: 'Is the pedal up, or is the damper rubbing the bars? Check the intended pedaling and the damper’s action.',
+    options: ['The pedaling and whether the damper rubs the bars', 'Add reverb on the channel until the notes sound long enough', 'Raise the input gain so the tails stay above the noise'],
+    correct: 'The pedaling and whether the damper rubs the bars',
     explain: 'A short note is often the pedal up — or a damper touching when it should not. Check the mechanism with the player.',
     why: {
       'Add reverb on the channel until the notes sound long enough': 'Reverb disguises it; find out why the bars stop.',
@@ -370,7 +370,7 @@ const symptoms: Symptom[] = [
   {
     id: 'vb.s.thump',
     observation: 'A thump each time the pedal moves',
-    firstChecks: 'Does the stand or the floor carry the pedal’s action into the mic? Stabilise and separate the paths; filter only unwanted rumble.',
+    firstChecks: 'Does the stand or the floor carry the pedal’s action into the mic? Stabilize and separate the paths; filter only unwanted rumble.',
     options: ['The stand and the floor carrying the pedal into the mic', 'Ask the player to stop using the pedal for this song', 'Turn the mic around so it faces away from the pedal'],
     correct: 'The stand and the floor carrying the pedal into the mic',
     explain: 'Separate the mechanical path — a steadier stand, away from the pedal and the frame — then use a high-pass filter only for rumble below the wanted notes.',
@@ -389,7 +389,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'vb.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · A solo overdub in a good room. The part uses the whole keyboard, with the motor on slowly and long pedalled chords. Two channels; phantom power is available.',
+    brief: 'BRIEF 1 · A solo overdub in a good room. The part uses the whole keyboard, with the motor on slowly and long pedaled chords. Two channels; phantom power is available.',
     setups: [
       { id: 'a', label: 'Two condensers, spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'A suggested pair for the whole range; check the middle and the mono sum.' },
       { id: 'b', label: 'Two condensers with their grilles together, 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: no arrival-time difference, a picture made by level.' },
@@ -552,7 +552,7 @@ const copy: Partial<LessonCopy> = {
   setting: {
     kitA11y: 'A small jazz group from above: the vibraphone with its player, a drum kit, a bass amp and a piano.',
     kitLanding: 'Tap anything around the vibraphone — or step through ITEM — to see what it means for a vibraphone mic. There is nothing to answer yet.',
-    kitIdle: 'The vibraphone in a small band: the player behind it, the drums and the bass amp close by — loud neighbours for any mic over the bars.',
+    kitIdle: 'The vibraphone in a small band: the player behind it, the drums and the bass amp close by — loud neighbors for any mic over the bars.',
     leftHanded: 'Most vibraphones put the low end on the player’s left, but layouts vary. Check the real layout and every note the part uses with the player.',
     stageA11y: 'The group on a stage, from above: a floor wedge in front of the vibraphone, a side fill on stage left, the audience below.',
     studioA11y: 'The vibraphone in a studio room, from above: the walls around it, no monitors.',
@@ -580,7 +580,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim down at the bars — the starting point counts while the mic looks within 30° of straight down. Height and angle are separate things to try.',
     workedClear: 'Clear of the raised mallets over both rows, the player’s view of the bars, the pedal and the motor. Clearance comes first, and the player stops before a real stand moves.',
     blocked: { motor: ' Raise it above the mallets’ travel, or move it out to the side.', nomotor: ' Raise it above the mallets’ travel, or move it out to the side.' },
-    reveal: 'Over the low half, the mic favours the low notes; over the middle, it hears the keyboard more evenly — and every room and passage differs, so “it depends” is fair too.',
+    reveal: 'Over the low half, the mic favors the low notes; over the middle, it hears the keyboard more evenly — and every room and passage differs, so “it depends” is fair too.',
     typeNotes: { mlDynCard: 'A dynamic can work too, especially live: choose by response, pattern, power and mount, and compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real stand. 45 cm is a starting height, not a safety clearance — the highest mallet stroke decides.',
     availableLead: 'Starting points for this mic',
@@ -682,7 +682,7 @@ export const I07_LESSON: MalletLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A tuned percussion instrument of metal bars, laid out like a piano keyboard, each over a tube. A pedal works a felt damper; on many, fans in the tube tops, turned by a small motor, make the notes pulse. The motor needs electricity — the sound is still the struck bars.', src: 'YMH-HUB-VIBE' },
     { title: 'WHERE YOU MEET IT', text: 'In jazz groups, orchestras and concert bands, percussion ensembles and on recordings — played with two or four mallets.', src: 'LESSON-VIBE' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody and chords that can ring on with the pedal down or stop short, with or without the pulsing. Pedalling, hand damping, the mallets and the motor speed are the player’s choices.', src: 'PAS-VIBE' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody and chords that can ring on with the pedal down or stop short, with or without the pulsing. Pedaling, hand damping, the mallets and the motor speed are the player’s choices.', src: 'PAS-VIBE' },
     { title: 'ITS SIZE', text: `A common size covers three octaves, F3 to F6: 37 bars, about 1.5 m long and 56–75 cm deep, the bars about 87–101 cm high. This lab draws one, with its motor and without.`, src: 'ADAMS-VIBC' },
   ],
   sound: {

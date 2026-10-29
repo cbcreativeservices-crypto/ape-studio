@@ -70,7 +70,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Some problems are audio problems; a loose pack, a displaced pad, heat or a dangling cable is a STOP — mute it and use the fallback. Never send crew into play.',
   },
   practice: {
@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b11.two.4',
     page: 'twoMic',
-    prompt: 'Why does each miked person get their own labelled channel?',
+    prompt: 'Why does each miked person get their own labeled channel?',
     options: ['Each is checked, muted and routed alone', 'Two channels make both of the voices louder', 'So the mics form a stereo pair'],
     correct: 'Each is checked, muted and routed alone',
     explain: 'One person, one channel: soloed, muted when it must be, sent only to its approved destination.',
@@ -360,7 +360,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The equipment reviewer withdraws approval for an athlete’s mount. What now?',
     options: ['The approved perimeter or interview fallback', 'Fit it anyway, but somewhere a little less visible', 'Move the mic onto the athlete’s helmet'],
     correct: 'The approved perimeter or interview fallback',
-    explain: 'No mount: use the approved perimeter mic, a boom outside play or a post-event interview — labelled as a different perspective.',
+    explain: 'No mount: use the approved perimeter mic, a boom outside play or a post-event interview — labeled as a different perspective.',
     why: {
       'Fit it anyway, but somewhere a little less visible': 'No approval, no mount — hidden or not.',
       'Move the mic onto the athlete’s helmet': 'Not on protective equipment without approval — and here approval was withdrawn.',
@@ -487,7 +487,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A chest mic and a headset both open in the program', ok: false, power: 'pack', feedback: 'Two open mics on one voice comb. Choose one.' },
       { id: 'e', label: 'A mic hidden on the bench, not mentioned to the team', ok: false, power: 'none', feedback: 'Never record someone with a hidden mic without approval.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the team’s equipment and the field'), { id: 'r.approval', label: 'The event and the coach approved the mic, its place and its destination', role: 'required', feedback: 'Say what was approved and by whom.' }, { id: 'r.channel', label: 'Its own labelled channel, to the approved destination only', role: 'required', feedback: 'Say where the audio may go.' }, BRAND_REASON('coach'), LOUD_VOICE],
+    reasons: [docReason('the lips'), clearReason('the team’s equipment and the field'), { id: 'r.approval', label: 'The event and the coach approved the mic, its place and its destination', role: 'required', feedback: 'Say what was approved and by whom.' }, { id: 'r.channel', label: 'Its own labeled channel, to the approved destination only', role: 'required', feedback: 'Say where the audio may go.' }, BRAND_REASON('coach'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: approval, a start measured from the lips, clear of the team’s equipment, its own channel to the approved destination.',
   },
   {

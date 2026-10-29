@@ -98,7 +98,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
       top: { u0: 40, u1: SMALL.R, v0: -55, v1: 45 },
     },
     start: { p: { x: 140, y: HEAD_Y + 80, z: -6 }, az: 0, el: 0 },
-    tendency: 'Can favour the cáscara on the shells; check that the heads and rimshots stay usable. One band’s live choice, not a rule.',
+    tendency: 'Can favor the cáscara on the shells; check that the heads and rimshots stay usable. One band’s live choice, not a rule.',
     checks: ['Clear of the shell strikes and the tension hardware', 'The heads and rimshots still usable', 'The mount secure between the drums'],
   },
   ...([SMALL, LARGE] as const).map<DocumentedZone>((d) => ({

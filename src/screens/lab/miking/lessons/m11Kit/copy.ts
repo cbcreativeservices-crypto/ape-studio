@@ -85,7 +85,7 @@ export const PLAN_WORDS = {
   buildPrompt: 'Choose a PLAN, then add or remove channels under CHANNELS. Build one small plan (four mics or fewer) and one large one (eight or more), and compare what each costs.',
   done: 'done — a small plan and a large one, built and compared',
   learnStages: 'The stages are functional examples, not a rule to add mics in a fixed order. One whole-kit mic; plus the kick; plus the snare; two overheads with kick and snare; then toms, hi-hat, ride, a snare bottom or a room pair — each only when it gives a control you need. Count the channels, the stands, the inputs and the bleed: an optional channel is not automatically an improvement.',
-  learnImage: 'Establish the picture before the close mics: one overhead or a pair, placed so that the kick and snare are usable and the toms and cymbals sit where the music needs them. A coincident pair keeps a steadier mono sum; a spaced pair can be wider and needs a closer mono check. The line through the kick and the snare is a useful centre for the image.',
+  learnImage: 'Establish the picture before the close mics: one overhead or a pair, placed so that the kick and snare are usable and the toms and cymbals sit where the music needs them. A coincident pair keeps a steadier mono sum; a spaced pair can be wider and needs a closer mono check. The line through the kick and the snare is a useful center for the image.',
   learnClose: 'Then each close mic for a purpose: the kick for weight and attack; the snare top from outside the sticks’ path; a mic per tom, or a shared one; a hi-hat or ride spot only when its pattern needs its own balance; crashes left to the overheads unless there is a clear need. Even a close mic hears plenty of bleed — work with it, or move the mic.',
   note: 'The counts describe a plan; they never grade it. A two-overhead jazz plan and a fully spotted rock plan can both be right for their goals.',
 };
@@ -97,7 +97,7 @@ export const ROUTE_WORDS = {
   studioPrompt: 'STUDIO: a session may keep every channel on its own track, even when the blend uses few. Switch to LIVE for the routing task.',
   done: 'done — live, the room pair feeds only the recording and broadcast',
   learn: [
-    { title: 'STUDIO', text: 'Separate tracks keep later decisions open. In a shared room, other instruments’ bleed can make the kit cohesive — or reduce later control. A poor-sounding room may favour more close pickup.' },
+    { title: 'STUDIO', text: 'Separate tracks keep later decisions open. In a shared room, other instruments’ bleed can make the kit cohesive — or reduce later control. A poor-sounding room may favor more close pickup.' },
     { title: 'LIVE', text: 'Open mics hear the monitors and the PA: use the channels the audience needs and check gain before feedback with the system operator. A room or audience mic for a recording or broadcast can stay out of the PA and the wedge mixes.' },
     { title: 'SOUNDCHECK', text: 'The drummer plays the whole show’s dynamics; the operator checks the kick, snare and tom balance, the cymbals, the monitor sends and the level at the audience. Check mutes, patching and polarity labels. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. If a stage before the fader overloads, lower its gain: a fader cannot undo it.' },
   ],

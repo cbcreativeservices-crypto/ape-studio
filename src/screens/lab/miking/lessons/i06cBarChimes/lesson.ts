@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where they sit',
-    goal: 'Know where bar chimes sit — the stand, the player’s sweep, the neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where bar chimes sit — the stand, the player’s sweep, the neighbors, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['bc.set.1', 'bc.set.hear', 'bc.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for the whole gesture: direction, start and end bars, speed, accents and any damping. The swinging bars and the hand set the clearance; check the filaments and the stand. Protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Separate the source and the mount from the mic: an uneven sweep, a clank, a bar hitting hardware or a cut-off tail usually start at the instrument or a gate — before the mic’s position.',
   },
   practice: {
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser about 50 cm from the middle of the row, facing its length, at the bars’ height', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the swing; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 75 cm away, for a more blended row in the good room', ok: true, power: 'phantom', feedback: 'A wider view — check both sweep directions and the tail.' },
-      { id: 'c', label: 'A mic level with the rail, close to one end', ok: false, power: 'phantom', feedback: 'It misses the bars below it and favours one end.' },
+      { id: 'c', label: 'A mic level with the rail, close to one end', ok: false, power: 'phantom', feedback: 'It misses the bars below it and favors one end.' },
       { id: 'd', label: 'A gate to keep the room out between sweeps', ok: false, power: 'phantom', feedback: 'A gate would cut the shimmer’s tail.' },
       { id: 'e', label: 'Ask the player to sweep faster so the mic hears it better', ok: false, power: 'none', feedback: 'The sweep is the music; the mic is placed for it.' },
     ],
@@ -476,7 +476,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A mic sits near the long end of the row. What does a rising sweep sound like?',
     options: ['Loud at the start, fading toward the end', 'Even from the first bar to the last', 'Silent until the last bars ring'],
     correct: 'Loud at the start, fading toward the end',
-    explain: 'Nearer bars are louder at the mic: a mic at one end favours that end.',
+    explain: 'Nearer bars are louder at the mic: a mic at one end favors that end.',
     why: {
       'Even from the first bar to the last': 'The far bars are farther from the mic, so they drop away.',
       'Silent until the last bars ring': 'The near bars are the loudest at that mic.',

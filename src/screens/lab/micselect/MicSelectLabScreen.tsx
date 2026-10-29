@@ -307,7 +307,7 @@ function PatternsStep() {
         {w > 0 ? <PolarStage w={w} h={H} pattern={pattern} verdictFor={verdictFor} /> : null}
       </View>
       <Text style={styles.stageCaption}>
-        Each dashed line runs from the mic toward one neighbour. Where it crosses the outline shows how much of that neighbour the
+        Each dashed line runs from the mic toward one neighbor. Where it crosses the outline shows how much of that neighbor the
         mic hears; the dotted ring is full pickup.
       </Text>
       <View style={styles.detailCard}>

@@ -55,7 +55,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the cloth mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a theatre with a PA need different first plans for a quiet sound.',
+    goal: 'Aim the cloth mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a theater with a PA need different first plans for a quiet sound.',
     credit: { scenarios: ['f02.ctx.1', 'f02.ctx.2', 'f02.ctx.ring', 'f02.ctx.studio', 'f02.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
     takeaway: 'On a quiet stage, about 1–1.5 m out and the room part of the sound. Live, a close directional mic at a fixed station, the wedge in its rejection, one open channel if that is what works — and ringing out left to the system operator.',
   },
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the performance and the garment first, then the room, the stand and its shock mount, the distance and the gain — before reaching for a filter, noise reduction or a gate.',
   },
   practice: {
@@ -234,7 +234,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f02.ctx.1',
     page: 'context',
-    prompt: 'A live theatre: a cloth effect through the PA, a wedge in front. A fair first plan?',
+    prompt: 'A live theater: a cloth effect through the PA, a wedge in front. A fair first plan?',
     options: ['A close mic at a fixed station, the wedge in its rejection', 'A room mic farther back so the cloth sounds natural to the hall', 'Two mics open at once, so there is more to choose from'],
     correct: 'A close mic at a fixed station, the wedge in its rejection',
     explain: 'A quiet sound needs gain: a close directional mic at a fixed, repeatable station raises the cloth against the PA, with the wedge in its rejection and the whole body still clear.',
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'f02.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A live theatre: a coat’s movement performed at a station beside the stage, through the PA, a wedge in front.',
+    brief: 'BRIEF 2 · A live theater: a coat’s movement performed at a station beside the stage, through the PA, a wedge in front.',
     setups: [
       { id: 'a', label: 'Small supercardioid close at a fixed station, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: close, repeatable, aimed — check at show level with the operator.' },
       { id: 'b', label: 'Short shotgun about 1 m out, the wedge off its rear to one side', ok: true, power: 'phantom', feedback: 'A fair live choice if the gain before feedback holds — check with the operator.' },

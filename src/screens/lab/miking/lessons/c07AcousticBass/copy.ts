@@ -32,7 +32,7 @@ export const C07_COPY = stringsCopy({
   coupledNote: 'The top bows in and out round the bridge and pumps the air through the sound hole — a simplified picture of the lowest motion. A close mic hears the part of the top, the hole or the strings it faces most.',
   setting: {
     kitA11y: 'The bassist from above, seated with the instrument: the chair behind, a vocal mic in front of the mouth, a DI box on the floor by the tail.',
-    kitIdle: 'The space round a seated bassist is theirs: the plucking hand over the body, the fretting hand travelling a long neck, and their view of it.',
+    kitIdle: 'The space round a seated bassist is theirs: the plucking hand over the body, the fretting hand traveling a long neck, and their view of it.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the bassist with a floor wedge in front, a bass amp and a drum kit upstage, the PA at the front corners and the audience edge.',
     studioA11y: 'A studio room from above: the bassist on a rug, no monitors on the floor, the walls round them.',

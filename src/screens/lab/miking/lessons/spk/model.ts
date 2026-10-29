@@ -31,7 +31,7 @@ const R_CONE = SPEAKER_12.rCone.mm;
 export const SPK_MICS = ['instDynCard', 'sdcCard', 'kickDynCard'] as const;
 const ALL = [...SPK_MICS];
 /** The lab's tolerance for "aimed at …" (no source gives one). */
-const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aim towards the centre / the edge / on-axis": ±20° is the lab’s tolerance') };
+const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aim towards the center / the edge / on-axis": ±20° is the lab’s tolerance') };
 const AIM_LOOSE = { maxOffAxis: 45, prov: ill('"aim towards the center … or towards the edge": ±45° covers both aims; the lab’s tolerance') };
 /** The radial band drawn round a named spot on the cone (the lab's tolerance). */
 const SPOT_TOL = 15;
@@ -103,7 +103,7 @@ export const SPK_FRONT_ZONES: DocumentedZone[] = [
     radial: { line: 'axis', max: R_CONE, prov: ill('"in front of the speaker": within the cone’s own radius (141.5 mm) of its axis') },
     aim: AIM_LOOSE,
     start: { p: { x: G + 80, y: 0, z: 0 }, az: 0, el: 0 },
-    tendency: 'The speaker itself, with little of the room — useful isolation in a dense mix or on a loud stage. Aim toward the centre for a clearer, more aggressive sound, toward the edge for a mellower one.',
+    tendency: 'The speaker itself, with little of the room — useful isolation in a dense mix or on a loud stage. Aim toward the center for a clearer, more aggressive sound, toward the edge for a mellower one.',
     checks: ['One variable at a time: keep the distance while you move across', 'Room and stage spill', 'The level on the loudest passage'],
   },
   {
@@ -120,7 +120,7 @@ export const SPK_FRONT_ZONES: DocumentedZone[] = [
     aim: AIM_TIGHT,
     start: { p: { x: G + 225, y: 0, z: 0 }, az: 0, el: 0 },
     tendency: 'A softer attack and a fuller, more balanced sound, with a little of the room.',
-    checks: ['Room and neighbouring instruments', 'Monitor and PA spill on a stage', 'Matched level when you compare'],
+    checks: ['Room and neighboring instruments', 'Monitor and PA spill on a stage', 'Matched level when you compare'],
   },
   {
     id: 'cab.far',

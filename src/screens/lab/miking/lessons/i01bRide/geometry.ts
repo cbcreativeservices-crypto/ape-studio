@@ -43,7 +43,7 @@ export const RIDE_MODEL: InstrumentModel = cymbalModel({
     { id: 'r.tip', partId: 'ride.bow', label: 'the stick’s tip on the bow', anchor: STRIKE_BOW, prov: ill('the bow, toward the player (a drawing default on the sourced area)'), note: 'Where the stick’s tip plays the bow for time: the ride’s definition starts here.' },
     { id: 'r.bell', partId: 'ride.bell', label: 'the bell', anchor: at(RIDE, STRIKE.bell, TH_THRONE, RIDE.spec.rise.mm), prov: ill('the bell'), note: 'The raised center: bright, cutting accents.' },
     { id: 'r.edge', partId: 'ride.edge', label: 'the edge (a crash on the ride)', anchor: at(RIDE, STRIKE.edge, TH_THRONE, 2), prov: ill('the edge band'), note: 'Crashed with the stick’s shoulder: the ride opens into its wash.' },
-    { id: 'r.floor', partId: 'kit.floor', label: 'the floor tom below', anchor: FLOOR.c, prov: ill('the shared 5-piece kit'), note: 'The floor tom right under the ride: the neighbour a ride mic hears most.' },
+    { id: 'r.floor', partId: 'kit.floor', label: 'the floor tom below', anchor: FLOOR.c, prov: ill('the shared 5-piece kit'), note: 'The floor tom right under the ride: the neighbor a ride mic hears most.' },
   ],
   boomOut: { x: 0.3, y: 0, z: 0.95 },
   boomLength: 520,

@@ -143,7 +143,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
           },
           well: (
             <>
-              <Body>Choose an ORDER, ride GAP, try CROSSFADE. The top strip is the running order on a real time base: block length is the track length, block height and color are its loudness, the wedge is its fade-out. The lower strip zooms the three transitions to ±15 s so the gap, the fade wedge and a crossfade overlap are all visible and all move with the fader; with CROSSFADE on the gap is 0 and the next track starts inside the fade. The largest loudness step between neighbours is the number sequencing watches (steps over 6 LU flagged) — here the quiet song makes a step the client asked for, so the gap around it is a decision, not an accident.</Body>
+              <Body>Choose an ORDER, ride GAP, try CROSSFADE. The top strip is the running order on a real time base: block length is the track length, block height and color are its loudness, the wedge is its fade-out. The lower strip zooms the three transitions to ±15 s so the gap, the fade wedge and a crossfade overlap are all visible and all move with the fader; with CROSSFADE on the gap is 0 and the next track starts inside the fade. The largest loudness step between neighbors is the number sequencing watches (steps over 6 LU flagged) — here the quiet song makes a step the client asked for, so the gap around it is a decision, not an accident.</Body>
               <Card tone="accent">
                 <Point title={seq.label}>{seq.why}</Point>
               </Card>

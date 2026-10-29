@@ -307,8 +307,8 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
               excite={cfg.excite}
               accessibilityLabel={
                 cfg.excite === 'bow'
-                  ? `The bowed string, ${Math.round(phase * 100)} percent through one cycle: two straight lines meeting at a corner that is travelling toward the ${corner.outbound ? 'nut' : 'bridge'}. Under the bow the string is ${state === 'stick' ? 'sticking to the hair' : 'slipping back'}.`
-                  : `The plucked string, ${Math.round(phase * 100)} percent through one cycle: the starting triangle has split into two corners travelling apart.`
+                  ? `The bowed string, ${Math.round(phase * 100)} percent through one cycle: two straight lines meeting at a corner that is traveling toward the ${corner.outbound ? 'nut' : 'bridge'}. Under the bow the string is ${state === 'stick' ? 'sticking to the hair' : 'slipping back'}.`
+                  : `The plucked string, ${Math.round(phase * 100)} percent through one cycle: the starting triangle has split into two corners traveling apart.`
               }
             />
           ),

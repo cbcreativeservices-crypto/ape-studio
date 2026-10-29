@@ -32,7 +32,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
     { title: 'WHAT IT IS', text: 'The baritone saxophone, pitched in E♭, is the largest and lowest of the four common saxophones. Its long conical tube is folded: a loop at the top of the body, just below the neck, then the long body, the bow and an upturned bell. Many modern baritones have a low A key, one note lower than the others.', src: 'Y-HUB-SAX' },
     { title: 'WHERE YOU MEET IT', text: 'Big bands and horn sections, jazz, R&B and rock, concert bands and saxophone quartets — often doubling the bass line.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The bottom of the section: weight, punch and the bass line, and a gruff solo voice. Ask for the lowest notes the part uses before you set any filter.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'About a metre tall. Its lowest notes sound near 69 Hz (a D♭), or 65 Hz (a C) with a low A key. It hangs on a harness at the hip, standing or seated — this lab draws one with a low A.', src: 'DPA-TABLE' },
+    { title: 'ITS SIZE', text: 'About a meter tall. Its lowest notes sound near 69 Hz (a D♭), or 65 Hz (a C) with a low A key. It hangs on a harness at the hip, standing or seated — this lab draws one with a low A.', src: 'DPA-TABLE' },
   ],
   place3: {
     prompt: 'Why can a bell clip sound less complete on a baritone than on an alto?',
@@ -73,7 +73,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A big horn rewards distance: a farther mic — the triangle — takes in the whole baritone, alone or beside a close mic.',
   placementReveal: 'Toward the key stack tends to bring warmth and key noise; toward the bell, focus and a nasal edge; farther, more of the whole horn and the room. On a baritone the holes are spread far apart, so distance matters more. Each zone’s LISTEN FOR line is an idea to check by ear.',
   typeNotes: {
-    saxDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then compare a little farther and lower, toward the middle of the body, with the lowest and the highest notes each time.',
+    saxDynCard: 'Ideas to try: begin a few centimeters above the bell, aimed at the holes; then compare a little farther and lower, toward the middle of the body, with the lowest and the highest notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',
     saxLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up; in a good room try the triangle — about the horn’s length from its top and its bottom.',
     saxClip: 'Ideas to try with a clip: keep it on the rim, angled between the bell and the keys — and remember it hears only part of a big horn.',
@@ -81,6 +81,6 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the top and the bottom of the horn. They are starting points, not rules; the bigger the horn, the farther away it can blend. Move from there and listen: there is no single right answer.',
   unknowns: [{ text: 'The baritone’s length: a museum baritone measures app. 96.7 cm overall; the modern height drawn (1 m) and the low-A extension are drawing defaults.', dims: [] }],
   wedges: saxWedges(MOUTH_HEIGHT.standing, 820, 200, { x: 1300, z: -1100 }),
-  accuracyExtra: 'The baritone is drawn about a metre tall with a 16 cm bell and a low A.',
+  accuracyExtra: 'The baritone is drawn about a meter tall with a 16 cm bell and a low A.',
   contextBoxes: { plan: { u0: -500, u1: 1850, v0: -700, v1: 1100 }, side: { u0: -500, u1: 1850, v0: -400, v1: 1650 } },
 });

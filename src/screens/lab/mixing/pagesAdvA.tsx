@@ -142,7 +142,7 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
         <Body>{priorities.length === 3 ? '✓ Three named. Every decision from here negotiates around these.' : `${priorities.length}/3 chosen — a priority list longer than three is a wish list.`}</Body>
       </Card>
       <UnderstandingCheck
-        question="Halfway through a dense mix you realise the drums, percussion and two loops all need the same treatment. The planning lesson:"
+        question="Halfway through a dense mix you realize the drums, percussion and two loops all need the same treatment. The planning lesson:"
         options={['Copy the same plugin to all nine tracks now', 'Bus architecture decided up front would have given them one shared path — build it now, carefully', 'Mix the nine tracks quieter to avoid the issue', 'Bounce everything and start a new session']}
         correct={1}
         explain="Nine copies of one plugin is nine chances to drift apart. The shared-path decision belongs at the planning stage — and when you missed it, the fix is still routing, retrofitted deliberately."
@@ -179,7 +179,7 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>A complex session is an instrument of its own. The mixes that survive 80 tracks are the ones where the SESSION was mixed first: organised, mapped, and light enough to run.</Lead>
+      <Lead>A complex session is an instrument of its own. The mixes that survive 80 tracks are the ones where the SESSION was mixed first: organized, mapped, and light enough to run.</Lead>
       <Card>
         <Eyebrow>THE PRACTICES</Eyebrow>
         <ConceptList items={SESSION_MGMT.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />

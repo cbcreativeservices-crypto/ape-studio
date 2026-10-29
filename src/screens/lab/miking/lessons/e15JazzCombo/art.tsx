@@ -40,7 +40,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'THE CLUB', text: 'The kit and the horns may already fill the room: reinforce only what the audience lacks. Close pickup gives the gain before feedback a distant view cannot; aim each mic with the loudspeakers and monitors in mind.' },
       { title: 'THE STREAM', text: 'Remote listeners hear none of the room: build them their own balance from the close mics and a pair, and keep that pair out of the wedges.' },
-      { title: 'THE STUDIO', text: 'Ensemble-first when the players and the room set the balance; a more separated session with each neighbour audible enough to keep the cueing. Keep a room pair on its own tracks.' },
+      { title: 'THE STUDIO', text: 'Ensemble-first when the players and the room set the balance; a more separated session with each neighbor audible enough to keep the cueing. Keep a room pair on its own tracks.' },
     ],
   },
   two: {
@@ -65,7 +65,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real group, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ movement, the piano pedals and lid, the bass endpin, the walkways — nothing fixed to an instrument without the owner’s approval.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A bass mic aimed back at the bridge turns its back toward the audience — the wedge, on the floor in front, sits low behind it.',
     sourceNote: 'What you just saw: a player reaches the two mics at different times. Summed, the late copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',

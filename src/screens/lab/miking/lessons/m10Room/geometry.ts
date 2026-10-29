@@ -66,7 +66,7 @@ export const M10_MODEL = kitModel({
   extraParts: [...ROOM_PARTS, ...PA_PARTS],
   extraEnvelopes: [WALKWAY],
   roles: {
-    'kit.kick': 'The kick: low and in the middle. A low mic about a metre in front of it hears an integrated kit with plenty of kick.',
+    'kit.kick': 'The kick: low and in the middle. A low mic about a meter in front of it hears an integrated kit with plenty of kick.',
     'kit.snare': 'The snare: its crack reaches a room mic first, then its echoes from the floor, the walls and the ceiling.',
     'cym.crash2': 'The highest cymbal: a high room mic in its line of sight tends to hear plenty of it.',
     'cym.ride': 'The ride, over the floor tom; a room mic on that side hears it strongly.',

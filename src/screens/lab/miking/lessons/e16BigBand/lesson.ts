@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Choose the microphones',
     goal: 'Compare a cardioid condenser, a moving-coil dynamic, a figure-8 ribbon and an instrument-mounted miniature by what they do — and check the loudest brass against each one.',
     credit: { scenarios: ['bb.mic.1', 'bb.mic.2', 'bb.mic.3', 'bb.rec.1'], note: 'Answer the four checks (one reaches back to where the sound leaves).' },
-    takeaway: 'Choose by the job: a condenser for detail and the main view, a dynamic for close horns and amps, a figure-8 ribbon to turn its sides on a neighbour. A pad helps only before the stage that overloads; follow each ribbon’s own manual on air and power.',
+    takeaway: 'Choose by the job: a condenser for detail and the main view, a dynamic for close horns and amps, a figure-8 ribbon to turn its sides on a neighbor. A pad helps only before the stage that overloads; follow each ribbon’s own manual on air and power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -55,8 +55,8 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Distances, angles and the main position first; overload versus brightness; the support’s level and the handoff; the neighbours of a masked part — before adding level. Reduce a send at once when it rings.',
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
+    takeaway: 'Distances, angles and the main position first; overload versus brightness; the support’s level and the handoff; the neighbors of a masked part — before adding level. Reduce a send at once when it rings.',
   },
   practice: {
     title: 'Practice',
@@ -132,7 +132,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bb.mic.1',
     page: 'microphone',
-    prompt: 'You turn a figure-8 ribbon’s side toward a loud neighbour. What else do you check?',
+    prompt: 'You turn a figure-8 ribbon’s side toward a loud neighbor. What else do you check?',
     options: ['What its back lobe hears', 'Nothing: figure-8s hear only the front', 'That its front faces the floor'],
     correct: 'What its back lobe hears',
     explain: 'A figure-8 rejects at its sides but hears equally from its back. Check what lies behind it — in a horseshoe, that can be the other side of the U.',
@@ -232,7 +232,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Inputs are short. The trumpet is clear everywhere; the piano is lost. Which mic?',
     options: ['The piano, before a trumpet mic', 'The trumpet first, as the lead part', 'Neither: add a second pair instead'],
     correct: 'The piano, before a trumpet mic',
-    explain: 'Prioritise the sources that need reinforcement, then exposed solos, then section correction. A trumpet already audible everywhere needs less help than a masked piano.',
+    explain: 'Prioritize the sources that need reinforcement, then exposed solos, then section correction. A trumpet already audible everywhere needs less help than a masked piano.',
     why: {
       'The trumpet first, as the lead part': 'It already reaches the audience; the piano does not.',
       'Neither: add a second pair instead': 'A distant pair adds room and spill, not the piano.',
@@ -368,9 +368,9 @@ const symptoms: Symptom[] = [
     id: 'bb.s.mask',
     observation: 'The piano or bass is masked',
     firstChecks: 'Inspect the nearby drums and amps, the target and the working distance before adding low-frequency level.',
-    options: ['Check neighbours, target and distance', 'Boost the lows until it comes through', 'Add a second mic of the same kind'],
-    correct: 'Check neighbours, target and distance',
-    explain: 'A masked piano or bass is often its neighbours in its mic: check them, its aim and distance first.',
+    options: ['Check neighbors, target and distance', 'Boost the lows until it comes through', 'Add a second mic of the same kind'],
+    correct: 'Check neighbors, target and distance',
+    explain: 'A masked piano or bass is often its neighbors in its mic: check them, its aim and distance first.',
     why: { 'Boost the lows until it comes through': 'Low boost lifts the drum and amp spill too.', 'Add a second mic of the same kind': 'Another open mic adds more spill.' },
   },
   {
@@ -524,7 +524,7 @@ export const E16_LESSON: EnsembleLesson = {
     stages: [
       { title: 'Three rows, three distances', text: 'Reeds nearest and lowest, trombones next, trumpets highest and farthest: anything in front hears the rows at different distances.' },
       { title: 'Each horn its own way', text: 'Brass from the bell, strongly directional; saxes from their tone holes and bells; the trombones’ slides moving in front of them.' },
-      { title: 'The rhythm section beside', text: 'The piano under its lid, the bass from its body, the guitar mostly from its amp, the kit from every drum and cymbal — loud neighbours for every horn mic.' },
+      { title: 'The rhythm section beside', text: 'The piano under its lid, the bass from its body, the guitar mostly from its amp, the kit from every drum and cymbal — loud neighbors for every horn mic.' },
     ],
     attack: 'Brass attacks and drum hits reach close mics first and hardest; the main view hears them softened by distance and the room.',
     body: 'The band blended in the room. A main pair hears the rows as the hall does; section and close mics hear their players with the band behind them. Tendencies — bands and rooms vary.',

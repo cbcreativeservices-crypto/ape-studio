@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the concert bass drum sits in the orchestra — its neighbours, the player’s space, its stand, what an amplified stage and a recording add — and what to do before any mic.',
+    goal: 'Know where the concert bass drum sits in the orchestra — its neighbors, the player’s space, its stand, what an amplified stage and a recording add — and what to do before any mic.',
     credit: { scenarios: ['cbd.set.1', 'cbd.set.hear', 'cbd.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Listen to the main pickup first. The mallet’s swing and both damping hands are the player’s; the stand is the crew’s, locked and never moved for a mic. Protect your hearing.',
   },
@@ -59,7 +59,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — gain staging, the main/spot balance, clearance, the stand’s locks and polarity — before reaching for tone controls or asking the player to change.',
   },
   practice: {
@@ -102,12 +102,12 @@ const scenarios: MikingScenario[] = [
     id: 'cbd.snd.3',
     page: 'sound',
     prompt: 'The mallet strikes the exact center of the head. Which of its vibration shapes can it set moving?',
-    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
     explain: 'A strike drives a shape in proportion to how much the head moves at the strike point in that shape. Shapes with a still line across the head are still at the center — which is one reason players choose their strike area for color.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The mallet touches one area. A shape is driven only as much as the head moves there.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the center means the head does not move there in that shape.',
+      'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there in that shape.',
     },
   },
   {
@@ -225,7 +225,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the spot closer to the playing head. What tends to change?',
     options: ['More of the drum and the mallet; less room and less bleed', 'The low end disappears and only the attack is left', 'Nothing, as long as the mic is aimed at the head'],
     correct: 'More of the drum and the mallet; less room and less bleed',
-    explain: 'Closer usually raises the direct drum against the room and the neighbours, and makes the exact head area and the mallet more prominent — a tendency to check with rolls, big strokes and damping.',
+    explain: 'Closer usually raises the direct drum against the room and the neighbors, and makes the exact head area and the mallet more prominent — a tendency to check with rolls, big strokes and damping.',
     why: {
       'The low end disappears and only the attack is left': 'Closer shifts the balance; it does not remove the low end. Check by ear.',
       'Nothing, as long as the mic is aimed at the head': 'Distance changes the balance of drum, room and spill even at the same aim.',
@@ -366,7 +366,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Stop work around the drum; the percussion crew checks the casters and the pivot locks.',
     options: ['Stop work there; the crew checks the brakes and pivots', 'Tighten the wing bolts yourself, then carry on', 'Wedge the casters with something you find on the stage'],
     correct: 'Stop work there; the crew checks the brakes and pivots',
-    explain: 'A falling bass drum can injure someone. Stop, and let the authorised percussion crew follow the stand’s own manual.',
+    explain: 'A falling bass drum can injure someone. Stop, and let the authorized percussion crew follow the stand’s own manual.',
     why: {
       'Tighten the wing bolts yourself, then carry on': 'The stand is the crew’s to adjust, following its manual.',
       'Wedge the casters with something you find on the stage': 'Improvised fixes are not safe; stop and call the crew.',
@@ -404,7 +404,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small dynamic above the playing head, closer than 45 cm, looking down at it', ok: true, power: 'none', feedback: 'A stable, directional spot as near as safely useful; a dynamic needs no phantom.' },
       { id: 'b', label: 'Small dynamic about 45 cm from the playing head, looking diagonally down', ok: true, power: 'none', feedback: 'The suggested starting point; check its gain before feedback with the operator.' },
       { id: 'c', label: 'Small condenser at the 45 cm spot', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
-      { id: 'd', label: 'A room mic two metres away to catch the whole drum', ok: false, power: 'none', feedback: 'On a loud amplified stage a far mic hears more bleed and gives less gain before feedback.' },
+      { id: 'd', label: 'A room mic two meters away to catch the whole drum', ok: false, power: 'none', feedback: 'On a loud amplified stage a far mic hears more bleed and gives less gain before feedback.' },
       { id: 'e', label: 'Tilt the drum toward the audience so it needs no mic', ok: false, power: 'none', feedback: 'You do not move the drum yourself; that is the player’s and crew’s call, under the stand’s manual.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, STAND_REASON, BRAND_REASON, LOW_REASON],
@@ -522,7 +522,7 @@ export const M07A_LESSON: Lesson = {
     items: [
       { id: 'bassDrum', label: 'the concert bass drum (in its stand)', short: 'BASS DRUM', note: 'In the percussion row, hanging in its tilting stand, its heads facing along the stage; the player stands at the playing head. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Big and low, along the row. A bass-drum spot hears them, and their spots hear the bass drum.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Beside the bass drum, often played by a neighbouring percussionist. Its player’s space and yours must not cross.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Beside the bass drum, often played by a neighboring percussionist. Its player’s space and yours must not cross.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud nearby. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Mallets and small instruments wait here; players reach for them between passages. Keep stands and cables out of that path — and away from the drum’s casters.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'KEEP CLEAR', scene: 'kit' },
       { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Loud, just downstage of the percussion. A farther bass-drum mic hears much more of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
@@ -533,7 +533,7 @@ export const M07A_LESSON: Lesson = {
       { id: 'main', label: 'the main pair over the conductor', short: 'MAIN PAIR', note: 'Two mics on a tall stand, hearing the whole orchestra. Recording, it often carries the bass drum’s low end — the spot adds the transient.', prov: { kind: 'illustrative', reason: 'a typical recording layout' }, tag: 'MAIN PICKUP', scene: 'studio' },
       { id: 'hall', label: 'the hall', short: 'THE HALL', note: 'In a quiet, good hall a little more distance can blend the two heads and the room; a spot pushed too loud in the mix can pull the drum out of its place.', prov: { kind: 'illustrative', reason: 'a generic hall; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: an amplified orchestra or band — monitors on stage, the PA facing the audience. Low-frequency feedback, bleed and the gain before feedback favour one stable, directional spot near the playing head, worked out with the operator.',
+    stage: 'LIVE: an amplified orchestra or band — monitors on stage, the PA facing the audience. Low-frequency feedback, bleed and the gain before feedback favor one stable, directional spot near the playing head, worked out with the operator.',
     studio: 'RECORDING: the main pickup carries the orchestra and much of the bass drum’s low end; a spot adds the transient, low in the mix. A quiet hall can reward a little more distance.',
   },
   diagnostic,
@@ -550,10 +550,10 @@ export const M07A_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'The drum’s center height on its stand (drawn at 800 mm) — so no height above the floor is shown.', dims: ['yFloor', 'centreH'] },
-    { text: 'The spot’s elevation: the source says “just above … looking diagonally downwards … about 45 cm”; the lab draws 45° above the head centre (a drawing default) and counts 20–70° off the head’s axis.', dims: ['deccaElev'] },
+    { text: 'The spot’s elevation: the source says “just above … looking diagonally downwards … about 45 cm”; the lab draws 45° above the head center (a drawing default) and counts 20–70° off the head’s axis.', dims: ['deccaElev'] },
     { text: 'The stand’s width and footprint, pivots, casters, the hoop material and size, the rod count (drawn 12) — drawing defaults.', dims: ['standHalfZ', 'standHalfX'] },
     { text: 'The mallet’s swing, both damping hands and the player’s position — ILLUSTRATIVE.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: {
     wedges: [

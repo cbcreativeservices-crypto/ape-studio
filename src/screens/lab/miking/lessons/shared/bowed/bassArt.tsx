@@ -69,7 +69,7 @@ export function bassArt(kind: BassKind): LessonArt {
               ],
               pointDefault: 'mid',
               subject: 'The double bass cut across at the bridge, seen along the strings: the arched top and the back, the ribs, the bass bar, the soundpost, the tall bridge, four strings and the bow',
-              shapesNote: 'This is a simplified string. On a real bass the thick strings are stiff, the ends are not perfectly still, and the body favours some pitches — but the whole-number pattern, and the still points, hold closely.',
+              shapesNote: 'This is a simplified string. On a real bass the thick strings are stiff, the ends are not perfectly still, and the body favors some pitches — but the whole-number pattern, and the still points, hold closely.',
               motionNote: 'This is the ideal bowed string. Real bowing adds roughness — the bow’s bite, and on a bass the rosin’s grip is heavy — and how hard and how fast the bassist bows changes the tone.',
               silentNote: 'This lab never plays a sound and draws no frequency curve for the bass: how a real bass sounds depends on the instrument, the strings, the bow and the player. The pictures show where the sound comes from and where it leaves.',
               reveal: 'The bow never strikes: it grips the string, lets it slip, and grips it again — once every vibration, for as long as it moves.',
@@ -86,7 +86,7 @@ export function bassArt(kind: BassKind): LessonArt {
               ],
               pointDefault: 'mid',
               subject: 'The double bass cut across at the bridge, seen along the strings: the arched top and the back, the ribs, the bass bar, the soundpost, the tall bridge, four strings and a plucking finger',
-              shapesNote: 'This is a simplified string. On a real bass the thick strings are stiff, the ends are not perfectly still, and the body favours some pitches — but the whole-number pattern, and the still points, hold closely.',
+              shapesNote: 'This is a simplified string. On a real bass the thick strings are stiff, the ends are not perfectly still, and the body favors some pitches — but the whole-number pattern, and the still points, hold closely.',
               motionNote: 'This is the ideal plucked string, ringing without losses. A real string loses its high shapes first, so the note grows rounder as it dies away — and where and how the bassist plucks changes the tone.',
               silentNote: 'This lab never plays a sound and draws no frequency curve for the bass: how a real bass sounds depends on the instrument, the strings and the player. The pictures show where the sound comes from and where it leaves.',
               reveal: 'Nothing keeps a plucked string going: after the pluck it rings, and the note slowly dies away.',
@@ -100,8 +100,8 @@ export function bassArt(kind: BassKind): LessonArt {
         wideA11y: { stage: 'The same from above, on a stage: the bassist’s wedge in front, the audience below.', studio: 'The same from above, in a studio room.' },
         nearLanding: 'Tap anything around the bassist — or step through ITEM — to see what it means for a bass mic. There is nothing to answer yet.',
         nearIdle: bowed
-          ? 'The bassist stands behind the bass; the bow sweeps out to both sides; the endpin and the feet share the floor. The drums and the piano are neighbours a bass mic will hear.'
-          : 'The bassist stands behind the bass; the plucking hand works a little above the bridge; the endpin and the feet share the floor. The drums and the piano are neighbours a bass mic will hear.',
+          ? 'The bassist stands behind the bass; the bow sweeps out to both sides; the endpin and the feet share the floor. The drums and the piano are neighbors a bass mic will hear.'
+          : 'The bassist stands behind the bass; the plucking hand works a little above the bridge; the endpin and the feet share the floor. The drums and the piano are neighbors a bass mic will hear.',
         stageIdle: 'A floor wedge in front of the bassist, a loud kit beside — and the bass’s large body reflects both into a mic. The PA carries most of the bass to the audience.',
         studioIdle: 'No monitors on the floor. The room is part of the picture now — and its low-frequency modes can make one note boom.',
         before: [

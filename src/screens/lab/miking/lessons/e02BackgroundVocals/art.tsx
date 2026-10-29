@@ -49,8 +49,8 @@ const SPEC = ensembleHandSpec({
     label: 'Two backing singers, each with a handheld: A the middle singer’s, B the high singer’s',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real voices move and turn: listen to each mic alone, then the sum in mono.',
     learn: [
-      'Each singer reaches their own mic first and the neighbour’s later and quieter. The relevant distance is the difference in paths from that singer to each mic — 1 m is about 2.9 ms.',
-      'Spaced 3:1 or more, the neighbour’s copy is quiet and the comb shallow. Too close, it is loud and the stack turns phasey — fewer mics, closer mics, or more space.',
+      'Each singer reaches their own mic first and the neighbor’s later and quieter. The relevant distance is the difference in paths from that singer to each mic — 1 m is about 2.9 ms.',
+      'Spaced 3:1 or more, the neighbor’s copy is quiet and the comb shallow. Too close, it is loud and the stack turns phasey — fewer mics, closer mics, or more space.',
     ],
   },
   practice: {
@@ -62,7 +62,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real group, with the singers’ agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the singers’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the singers’ space · pinch to zoom',
     clearance: 'Clearance comes first: the singers’ faces, hands and feet as they move, and their way in and out of a shared mic.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A handheld aimed level at the mouth has its back toward the wedge — but the wedge is low, so tilt or a tighter pattern decides how much it hears.',
     sourceNote: 'What you just saw: a voice reaches two mics at different times. Summed, the late copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each singer gives their own delay.',

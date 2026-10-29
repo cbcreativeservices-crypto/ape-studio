@@ -248,7 +248,7 @@ const VDROP: Workspace = {
   section: 'electronics',
   reportPrefix: 'VDROP',
   intro:
-    'Every metre of cable has resistance, and current through it drops voltage before it reaches ' +
+    'Every meter of cable has resistance, and current through it drops voltage before it reaches ' +
     'the load. Enter the wire gauge, the run length, and the current, and see the round-trip ' +
     'resistance, the voltage lost, and the percentage that never arrives.',
   whyItMatters:
@@ -271,7 +271,7 @@ const VDROP: Workspace = {
     'conductor temperature you enter — use 75 °C (or the insulation rating) for a cable carrying ' +
     'its load; costed at 20 °C a loaded cable’s drop reads about 18% low. Stranded wire reads about ' +
     '2% higher than solid. Conductor reactance, power factor and connector resistance are not ' +
-    'modelled (reactance matters on large AC conductors). AWG area from the ASTM B258 definition.',
+    'modeled (reactance matters on large AC conductors). AWG area from the ASTM B258 definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
@@ -290,7 +290,7 @@ const VDROP: Workspace = {
       plainFormula:
         'The round-trip resistance equals the copper resistivity at the conductor temperature times twice the length over the cross-section area; the voltage drop equals the current times that resistance; and the power lost equals the current squared times the resistance.',
       explain:
-        'Every metre of cable has resistance, and the current flows out and back (hence ×2), dropping voltage before it reaches the load. Copper resistance rises with temperature (0.393% per °C), so a loaded cable at 75 °C drops about 22% more than the same cable at 20 °C. This gives the round-trip resistance, the volts lost, the share that never arrives, and the power burned as heat. Model: solid copper, DC or single-phase AC, no reactance.',
+        'Every meter of cable has resistance, and the current flows out and back (hence ×2), dropping voltage before it reaches the load. Copper resistance rises with temperature (0.393% per °C), so a loaded cable at 75 °C drops about 22% more than the same cable at 20 °C. This gives the round-trip resistance, the volts lost, the share that never arrives, and the power burned as heat. Model: solid copper, DC or single-phase AC, no reactance.',
       keySymbols: ['ρ', '·', '/', 'R', 'x²'],
       compute: (v) => {
         const A = awgAreaM2(n(v.awg));

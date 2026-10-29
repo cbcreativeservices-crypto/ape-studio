@@ -69,7 +69,7 @@ const TP_OFF: Z = {
   aim: { maxOffAxis: 25, prov: ill('aimed toward the bell: within 25° (the lab’s tolerance)') },
   requires: { variant: 'trumpet', micTypeIds: STAND },
   draw: draw(TP, 5, 20, 300, 500, UP),
-  tendency: 'A balanced, focused trumpet with some definition — less of the straight blast than dead center. Closer and more centered tends to bring more edge and breath; farther, more room and neighbours.',
+  tendency: 'A balanced, focused trumpet with some definition — less of the straight blast than dead center. Closer and more centered tends to bring more edge and breath; farther, more room and neighbors.',
   checks: ['The loudest accent and the softest ending, for overload', 'How far the bell moves as the player plays', 'Mutes going in and out, and the valve hands, clear of the stand'],
 };
 
@@ -89,7 +89,7 @@ const TP_SIDE: Z = {
   requires: { variant: 'trumpet', micTypeIds: STAND },
   draw: draw(TP, 25, 55, 300, 600, UP),
   tendency: 'A softer, mellower top with less bite — the high harmonics beam along the axis, and this mic sits beside that beam. Listen that the attacks still read.',
-  checks: ['Attacks and high notes still clear', 'The tone as the bell swings toward and away from the mic', 'More of the room and the neighbours'],
+  checks: ['Attacks and high notes still clear', 'The tone as the bell swings toward and away from the mic', 'More of the room and the neighbors'],
 };
 
 const TP_FAR: Z = {
@@ -108,7 +108,7 @@ const TP_FAR: Z = {
   requires: { variant: 'trumpet', micTypeIds: STAND },
   draw: draw(TP, 5, 30, 600, 1200, UP),
   tendency: 'More of the player and the room together, and more spill. A quiet, good-sounding room helps; on a loud stage it hears the band.',
-  checks: ['How much room and how many neighbours it hears', 'The player moving: does the tone hold?', 'The stand out of the player’s walk path and sight line'],
+  checks: ['How much room and how many neighbors it hears', 'The player moving: does the tone hold?', 'The stand out of the player’s walk path and sight line'],
 };
 
 const TP_BACK: Z = {
@@ -203,7 +203,7 @@ export const A01_ZONES: DocumentedZone[] = [
   start(TP_BACK, 'trumpet', cands(TP, 120, norm({ x: 0, y: -0.35, z: -1 }), [170, 160, 180, 150, 190, 140, 200, 130, 210], 18)),
   clipZone(TP, 'tp.clip', 'trumpet', 'bell', {
     label: 'Miniature on a bell clip',
-    band: 'Clip it to the bell’s rim where its maker allows, and bring the capsule a few centimetres in front of the bell, aimed between the bell’s center and its edge — not straight down the middle.',
+    band: 'Clip it to the bell’s rim where its maker allows, and bring the capsule a few centimeters in front of the bell, aimed between the bell’s center and its edge — not straight down the middle.',
     tendency: 'A steady close sound as the player moves and turns — the distance stays put. Closer and more colored than a stand mic; it can carry handling or bell noise.',
     checks: ['A clip made for this bell, with the player’s agreement', 'Every mute the piece uses, and the hand on a plunger', 'The cable secured clear of the valves and the hands'],
   }),
@@ -211,7 +211,7 @@ export const A01_ZONES: DocumentedZone[] = [
   start(FH_CLOSE, 'flugelhorn', cands(FH, 16, UPV, [450, 420, 480, 400, 520, 360, 560], 10)),
   clipZone(FH, 'fh.clip', 'flugelhorn', FB, {
     label: 'Miniature on a bell clip — check its range',
-    band: 'If a clip is made for this bell, clip it to the rim and bring the capsule a few centimetres in front, aimed between the center and the edge. A trumpet clip may not fit a flugelhorn’s wider bell: check the clip’s range first.',
+    band: 'If a clip is made for this bell, clip it to the rim and bring the capsule a few centimeters in front, aimed between the center and the edge. A trumpet clip may not fit a flugelhorn’s wider bell: check the clip’s range first.',
     tendency: 'The distance holds as the player moves; a closer, more colored view of a mellow horn. Listen for clip vibration and valve noise.',
     checks: ['The clip’s range against this bell, with the player’s agreement', 'A mute, if the piece uses one, and the player’s hands', 'Cable and wireless pack secured without pulling on the horn'],
   }),

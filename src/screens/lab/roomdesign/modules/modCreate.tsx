@@ -58,7 +58,7 @@ const CEILINGS: { id: CeilingType; label: string }[] = [
   { id: 'mixed', label: 'MIXED' },
 ];
 const UNITS: { id: Units; label: string }[] = [
-  { id: 'metric', label: 'METRES · CM' },
+  { id: 'metric', label: 'METERS · CM' },
   { id: 'imperial', label: 'FEET · INCHES' },
 ];
 
@@ -206,7 +206,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.create, bezel, params, initialParam: 'length', hideDragTag: true }}
-      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's colour. Tap VIEW on the readouts to switch between plan and side view."
+      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's color. Tap VIEW on the readouts to switch between plan and side view."
       wellTop={
         <View style={styles.summary}>
           <Text style={styles.summaryLine}>
@@ -356,7 +356,7 @@ function ShapeTray({
           <TrayButton label="REMOVE" tint="dim" onPress={() => setRoom((r) => ({ ...r, features: r.features.filter((x) => x.id !== f.id) }))} />
         </View>
       ))}
-      <Caption>The desk is modelled: its top bounces the sound to the ears (the strongest early reflection in most nearfield setups), and the model draws that path. Every other object is drawn with a dotted outline and blocks nothing in the model — the reflection paths treat it as transparent. Its effect on the sound is real but not modelled here — one more reason to measure.</Caption>
+      <Caption>The desk is modeled: its top bounces the sound to the ears (the strongest early reflection in most nearfield setups), and the model draws that path. Every other object is drawn with a dotted outline and blocks nothing in the model — the reflection paths treat it as transparent. Its effect on the sound is real but not modeled here — one more reason to measure.</Caption>
     </View>
   );
 }

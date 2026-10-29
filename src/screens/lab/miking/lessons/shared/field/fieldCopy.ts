@@ -1,7 +1,7 @@
 /**
  * THE FIELD FAMILY'S PAGE WORDS (engine/model/copy.ts) for a site in frame G
  * (F06–F08): the "instrument" is a place, distances are read from what the
- * lesson names (the water's edge, the kerb, the path, the animal), and the
+ * lesson names (the water's edge, the curb, the path, the animal), and the
  * mics stand on tripods at a listening point. The lesson hands in what is
  * its own; the rest is the family's. Starting-points voice; no sources,
  * brands or badges. Pure data.

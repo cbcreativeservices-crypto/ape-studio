@@ -82,7 +82,7 @@ export type OudGeom = {
   halfMax: number;
   /** Face half-width at x (0 outside the face). */
   half: (x: number) => number;
-  /** Bowl depth at x (on the centre line). */
+  /** Bowl depth at x (on the center line). */
   depth: (x: number) => number;
   /** Fingerboard half-width at x. */
   boardHalf: (x: number) => number;

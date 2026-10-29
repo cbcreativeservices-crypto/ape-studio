@@ -408,7 +408,7 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
         layout: 'rack',
         rack: {
           render: (w, h) => <LowBrassPlan w={w} h={h} cfg={cfg} orient={orient} box={cfg.near} scene="kit" wedges={lesson.live.wedges} items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={cfg.nearA11y} />,
-          badge: 'From above · a typical layout · grey hatch = the player’s space',
+          badge: 'From above · a typical layout · gray hatch = the player’s space',
           bezel: bezel(nearSelItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',

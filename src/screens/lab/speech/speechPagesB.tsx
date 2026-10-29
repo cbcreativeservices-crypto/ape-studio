@@ -237,11 +237,11 @@ export function PageSibilance({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Say a long "sss". No pitch, just hiss — air squeezed through a narrow gap and broken up on the edge of the teeth. That turbulence is sibilance.</Lead>
       {toggle}
-      <SpectrumBars hz={sp.hz} db={sp.db} ghostDb={show === 's' ? ah.db : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GREY' : 'VOWEL "AH" · ENERGY MOSTLY BELOW 1.5 kHz'} a11y={show === 's' ? 'Spectrum of an S: almost nothing below 2 kilohertz, most energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of the vowel AH: harmonics of the voice with peaks near 700 hertz and 1.1 kilohertz; above 4 kilohertz it falls below the bottom of the scale.'} controls={toggle} />
+      <SpectrumBars hz={sp.hz} db={sp.db} ghostDb={show === 's' ? ah.db : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GRAY' : 'VOWEL "AH" · ENERGY MOSTLY BELOW 1.5 kHz'} a11y={show === 's' ? 'Spectrum of an S: almost nothing below 2 kilohertz, most energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of the vowel AH: harmonics of the voice with peaks near 700 hertz and 1.1 kilohertz; above 4 kilohertz it falls below the bottom of the scale.'} controls={toggle} />
       <Notice>Flip between the two: the vowel and the S barely overlap. That gap is what a de-esser exploits — and what a presence boost accidentally targets.</Notice>
       <Card>
         <Eyebrow>WHY IT EXISTS</Eyebrow>
-        <Body>The tongue almost touches the ridge behind the upper teeth, leaving a channel a millimetre or two wide. Air forced through it goes turbulent and hits the lower front teeth — a noise source whose energy sits roughly between 4 and 10 kHz, a band the ear picks out easily.</Body>
+        <Body>The tongue almost touches the ridge behind the upper teeth, leaving a channel a millimeter or two wide. Air forced through it goes turbulent and hits the lower front teeth — a noise source whose energy sits roughly between 4 and 10 kHz, a band the ear picks out easily.</Body>
         <Eyebrow>WHY IT GETS WORSE</Eyebrow>
         <Body>Bright condenser microphones and presence boosts lift exactly that band. Close placement puts the mic in the jet. Some voices and some dental shapes simply make more of it.</Body>
         <Eyebrow>WHAT TO DO</Eyebrow>
@@ -389,7 +389,7 @@ export function PageProblems({ ctx }: { ctx: PageCtx }) {
       {/* ONE figure hosts both drawings (same 340 × 130 box), so full screen
           stays open when a chip swaps the spectrum for a waveform. */}
       <View style={{ gap: 4 }}>
-        <Title>{p.visual === 'spectrum' ? `${p.name.toUpperCase()} · VS A CLEAN VOICE (GREY)` : `${p.name.toUpperCase()} · WAVEFORM`}</Title>
+        <Title>{p.visual === 'spectrum' ? `${p.name.toUpperCase()} · VS A CLEAN VOICE (GRAY)` : `${p.name.toUpperCase()} · WAVEFORM`}</Title>
         <ExpandableFigure aspect={340 / 130} title="PROBLEM" controls={picker} render={(w, h) => (
           p.visual === 'spectrum'
             ? <SpectrumSvg hz={sp.hz} mag={sp.mag} ghost={clean.mag} band={p.band ? [p.band.lo, p.band.hi] : undefined} bandKind={p.band?.kind} bandLabel={p.band?.label} a11y={`Spectrum with ${p.name} compared to a clean voice. ${p.see}`} w={w} h={h} />

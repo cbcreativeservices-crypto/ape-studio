@@ -74,7 +74,7 @@ function B15Meet(p: PageProps) {
         title="THE PRACTICE ROOM"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice room from above: three source points A, B and C two metres apart on one walking line, equipment area M1 two metres to one side of B and M2 two metres to the other, the walking path's clearance between them." labels={venueLabels(PRACTICE_SMALL, { layers: true })}>
+          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The practice room from above: three source points A, B and C two meters apart on one walking line, equipment area M1 two meters to one side of B and M2 two meters to the other, the walking path's clearance between them." labels={venueLabels(PRACTICE_SMALL, { layers: true })}>
             {(px) => <VenuePlan scene={PRACTICE_SMALL} px={px} />}
           </FieldStage>
         )}
@@ -118,7 +118,7 @@ const METHODS_RAW: Method[] = [
 const METHODS: Method[] = METHODS_RAW.map((m) => (!m.scene ? m : m.mics[0]?.kind === 'hydrophone' ? { ...m, box: withInsetRoom(m.box ?? m.scene.frame) } : { ...m, noCloseUp: true }));
 
 function B15Microphone(p: PageProps) {
-  const methods = useMethodsStep({ scene: PRACTICE_SMALL, methods: METHODS, prediction: p.lesson.predictions.microphone, prompt: 'Choose each METHOD: what it gives, and what limits it.', done: 'Fixed detail favours a place, ambience favours continuity, and air and structure are different paths. Start with one useful sector and the ambience; add a channel only for a gap you can name.' });
+  const methods = useMethodsStep({ scene: PRACTICE_SMALL, methods: METHODS, prediction: p.lesson.predictions.microphone, prompt: 'Choose each METHOD: what it gives, and what limits it.', done: 'Fixed detail favors a place, ambience favors continuity, and air and structure are different paths. Start with one useful sector and the ambience; add a channel only for a gap you can name.' });
   return <PageSteps steps={[methods, checkStep(p, 'microphone')]} />;
 }
 

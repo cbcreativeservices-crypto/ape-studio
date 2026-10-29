@@ -112,7 +112,7 @@ const MOUNTED = (
 
 const AXES: HandSpec['axes'] = {
   x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the instrument’s front (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'in front of' : 'behind'} the instrument’s front` },
-  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} the grille’s centre` },
+  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} the grille’s center` },
   z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the treble side (the player’s right) or the bass side (z).', fmt: (v) => `${fmtLen(Math.abs(v))} toward the ${v >= 0 ? 'treble side' : 'bass side'}` },
 };
 
@@ -120,7 +120,7 @@ const worked = (z: DocumentedZone) => [
   { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with an accordion — an integrated view of both sides, not a rule, and not a promise of a sound.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the instrument’s front to the mic’s FRONT, rounded to ≈ 5 mm. The readout also says how far the mic is off the line through the instrument’s middle.', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
-  { title: 'CENTERED', text: 'Between the treble and the bass sides, so the two combine. Toward the treble favours the melody; toward the bass, the accompaniment.', cell: 1 },
+  { title: 'CENTERED', text: 'Between the treble and the bass sides, so the two combine. Toward the treble favors the melody; toward the bass, the accompaniment.', cell: 1 },
   { title: 'THE AIM', text: `At the instrument — the lab counts anything within ±${z.aim?.maxOffAxis ?? 30}°. Compare farther and nearer at matched level, over both bellows directions.`, cell: 2 },
   { title: 'CLEARANCE', text: 'Outside the bellows’ whole travel, the hands, the straps and the elbows — and, for a seated player, the chair’s turn and the lower bellows arc. Stand legs and cables out of the way.', cell: 3 },
 ];
@@ -171,8 +171,8 @@ const HAND: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic in front and centred, a dynamic facing the grille, a mic about 30 cm from the keyboard side, a mic just beyond the fully open bass side. They are starting points, not rules — every accordion, register and room is different.',
-    'A farther position integrates the two sides and the room; toward the treble favours the melody, toward the bass the accompaniment. A close mic emphasises the nearest surface — and its mechanism. Verify both bellows directions and register changes, not a held note.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic in front and centered, a dynamic facing the grille, a mic about 30 cm from the keyboard side, a mic just beyond the fully open bass side. They are starting points, not rules — every accordion, register and room is different.',
+    'A farther position integrates the two sides and the room; toward the treble favors the melody, toward the bass the accompaniment. A close mic emphasizes the nearest surface — and its mechanism. Verify both bellows directions and register changes, not a held note.',
     'The bass side moves: the bellows-side zone is measured from its FULLEST opening, so the stand stays outside the travel. On every push the side moves away from that mic — its level and timing change through the phrase.',
   ],
   ctx: {
@@ -212,7 +212,7 @@ const HAND: HandSpec = {
     sheetNote: 'For a real accordion, with the player’s agreement and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the bellows’ travel and the player · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the bellows’ travel and the player · pinch to zoom',
     clearance: 'Clearance comes first: the bellows’ whole travel — opening and closing, the lower arc most — the hands, the straps, the elbows and, seated, the chair’s turn. No stand leg or cable in that path; slack for the full cycle.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A mic facing the accordion turns its back toward the audience side — where a floor wedge often sits. The side-fill on the bass side sits off to its side: no null reaches it.',
     sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE and the BELLOWS: each side, at each moment of the cycle, gives its own delay.',

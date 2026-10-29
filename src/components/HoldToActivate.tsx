@@ -122,7 +122,7 @@ export function HoldToActivate({
     if (e.nativeEvent.actionName !== 'activate' || disabled) return;
     if (holding) {
       reset();
-      AccessibilityInfo.announceForAccessibility('Cancelled.');
+      AccessibilityInfo.announceForAccessibility('Canceled.');
       return;
     }
     start();

@@ -202,7 +202,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>{`You are looking at the mixer’s EQ and filter knobs for both channels (CH1 on the left, CH2 on the right), under the frequency response of channel ${plotCh}. The ring marks the knob you are moving.`}</Look>
         <P>Each channel’s EQ splits its sound into three bands — LOW, MID and HIGH, crossing over at about 250 Hz and 2.5 kHz on this mixer — and each knob boosts a little (+6 dB) and cuts a lot, killing the band at its end stop.</P>
-        <P>The FILTER is one knob: left for a low-pass, right for a high-pass, centre for off; RESONANCE adds a peak at its edge.</P>
+        <P>The FILTER is one knob: left for a low-pass, right for a high-pass, center for off; RESONANCE adds a peak at its edge.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>

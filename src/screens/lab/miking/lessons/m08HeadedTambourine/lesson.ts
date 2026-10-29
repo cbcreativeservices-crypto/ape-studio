@@ -30,7 +30,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the tambourine sits in the orchestra — its neighbours, the player’s space and moves, what an amplified stage and a recording add — and what to do before any mic.',
+    goal: 'Know where the tambourine sits in the orchestra — its neighbors, the player’s space and moves, what an amplified stage and a recording add — and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.hear', 'tb.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for the whole phrase and every station the player uses. The player’s motion sets the clearance; nothing is clipped to the instrument without hardware made for it and the owner’s agreement. Protect your hearing.',
   },
@@ -61,7 +61,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — aim, distance, the frame’s motion toward the mic, peak headroom, clearance and other open mics — before reaching for tone controls or asking the player to change.',
   },
   practice: {
@@ -94,7 +94,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player shakes the tambourine instead of striking it. What leads the sound?',
     options: ['The jingles, thrown against each other; the head barely moves', 'The head, pushed in and out by each change of direction', 'The frame’s wood, ringing like the shell of a snare drum'],
     correct: 'The jingles, thrown against each other; the head barely moves',
-    explain: 'Shaking moves the frame; the loose jingles lag and clash. The head hardly moves, so shaking favours the bright metallic part of the sound.',
+    explain: 'Shaking moves the frame; the loose jingles lag and clash. The head hardly moves, so shaking favors the bright metallic part of the sound.',
     why: {
       'The head, pushed in and out by each change of direction': 'A shake moves the whole frame; the head barely bends. The jingles clash.',
       'The frame’s wood, ringing like the shell of a snare drum': 'The thin frame is mostly a holder; the jingles carry a shake’s sound.',
@@ -263,7 +263,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, would a fixed high-pass filter for every headed tambourine be a good rule?',
     options: ['No — the head carries useful low and mid; judge each one', 'Yes — tambourines make no sound below the jingles', 'Yes, and add a hard limiter for all of the jingle peaks too'],
     correct: 'No — the head carries useful low and mid; judge each one',
-    explain: 'A headed tambourine’s head may carry musically important low and mid. Any live filter is judged by the full sound and the feedback behaviour at the intended level.',
+    explain: 'A headed tambourine’s head may carry musically important low and mid. Any live filter is judged by the full sound and the feedback behavior at the intended level.',
     why: {
       'Yes — tambourines make no sound below the jingles': 'A headed tambourine’s head makes low and mid sound; a blanket filter can remove it.',
       'Yes, and add a hard limiter for all of the jingle peaks too': 'No universal limiter setting suits every tambourine; set gain for the peaks first.',
@@ -516,7 +516,7 @@ export const M08_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A frame drum and a set of jingles in one: a head (skin or plastic) on one face of a frame, most often wood, with pairs of thin metal jingles loose on pins in slots round it — here, a staggered double row. (The headless tambourine and the jingles on their own come in Lab 2.)', src: 'YMH-CPCAT' },
     { title: 'WHERE YOU MEET IT', text: 'In orchestras and concert bands, in percussion sections and on band stages — recorded close or in a room, and amplified live. It is often one of several instruments a percussionist moves between.', src: 'LESSON-TAMB' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fingertip strikes, loud accents, shakes, thumb or finger rolls, knee-and-fist rhythms. Striking favours the head; shaking favours the jingles — and the player’s hold, often about 45°, blends the two.', src: 'PAS-ROD' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fingertip strikes, loud accents, shakes, thumb or finger rolls, knee-and-fist rhythms. Striking favors the head; shaking favors the jingles — and the player’s hold, often about 45°, blends the two.', src: 'PAS-ROD' },
     { title: 'ITS SIZE', text: 'Concert tambourines are often about 10 in across. This lab draws a 10 in tambourine with a skin head and a staggered double row of jingles.', src: 'YMH-CPCAT' },
   ],
   sound: {

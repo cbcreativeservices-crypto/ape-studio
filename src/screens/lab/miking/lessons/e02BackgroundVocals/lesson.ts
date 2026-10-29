@@ -24,7 +24,7 @@ const pages: LessonPages = {
     title: 'Meet it — where the sound comes from',
     goal: 'Meet the backing group — three singers in a row, round one mic, or in a studio circle — and where each voice leaves: the mouth, forward.',
     credit: { scenarios: ['bv.meet.1', 'bv.meet.2', 'bv.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
-    takeaway: 'Every voice leaves its own mouth, forward. Close to a mic, a few centimetres change a voice’s level a lot; at a shared mic, each singer’s distance is their fader.',
+    takeaway: 'Every voice leaves its own mouth, forward. Close to a mic, a few centimeters change a voice’s level a lot; at a shared mic, each singer’s distance is their fader.',
   },
   setups: {
     title: 'Starting setups',
@@ -52,14 +52,14 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two singers, two mics',
-    goal: 'Two handhelds in the row: see each singer reach the neighbouring mic later and quieter, what polarity changes and what it does not, and why spacing helps.',
+    goal: 'Two handhelds in the row: see each singer reach the neighboring mic later and quieter, what polarity changes and what it does not, and why spacing helps.',
     credit: { scenarios: ['bv.two.1', 'bv.two.2', 'bv.two.3'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'Each voice reaches every open mic — its own first, the others later and quieter. Spaced 3:1 the late copies are quiet and the comb shallow; solo each mic and check the mono sum.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Distance, angle and spacing first — each singer to their mic, the mics to each other, the wedge to the pattern — then the arrangement, before EQ. Lower the level at the first ring.',
   },
   practice: {
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · The 3:1 guideline is measured between…',
     options: ['The two mics', 'A mic and the next singer', 'The singer and the floor'],
     correct: 'The two mics',
-    explain: 'Mic to mic: at least three times each mic’s distance to its own singer. Measured from a mic to the neighbouring SINGER, it is a different number.',
+    explain: 'Mic to mic: at least three times each mic’s distance to its own singer. Measured from a mic to the neighboring SINGER, it is a different number.',
     why: {
       'A mic and the next singer': 'That is not the guideline: it is measured between the mics.',
       'The singer and the floor': 'The floor plays no part in 3:1.',
@@ -227,7 +227,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A close handheld, its rejection on the wedge',
     explain: 'Close, each voice stays ahead of the band; the wedge sits where the pattern rejects most. More gain only raises the stage in the mic and brings feedback closer.',
     why: {
-      'A condenser 1 m away for a natural, open blend': 'At a metre on a loud stage the mic hears the band almost as much as the voices.',
+      'A condenser 1 m away for a natural, open blend': 'At a meter on a loud stage the mic hears the band almost as much as the voices.',
       'Turn them up until they cut through': 'More gain raises everything in the mic, and brings feedback closer.',
     },
   },
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Close to a handheld, a small step changes the level a lot. So?',
     options: ['Rehearse a steady distance', 'Compress it until it stops', 'Move the mic with the singer'],
     correct: 'Rehearse a steady distance',
-    explain: 'Close in, a few centimetres is a big share of the distance. A rehearsed, steady distance — farther for loud lines, closer for quiet — beats heavy compression.',
+    explain: 'Close in, a few centimeters is a big share of the distance. A rehearsed, steady distance — farther for loud lines, closer for quiet — beats heavy compression.',
     why: {
       'Compress it until it stops': 'Compression evens the level but not the changing tone, and brings the stage up.',
       'Move the mic with the singer': 'The singer keeps the distance; the mic stays on its stand.',
@@ -262,9 +262,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two handhelds 1.1 m apart, each singer 6 cm from their own. Does the high singer reach the middle mic?',
     options: ['Yes, much quieter and later', 'No, a cardioid hears only its own singer', 'Yes, as loud as in their own mic'],
     correct: 'Yes, much quieter and later',
-    explain: 'Every open mic hears every voice. At 1.1 m against 6 cm the neighbour’s copy is far quieter and a few milliseconds late: the comb in the sum is shallow.',
+    explain: 'Every open mic hears every voice. At 1.1 m against 6 cm the neighbor’s copy is far quieter and a few milliseconds late: the comb in the sum is shallow.',
     why: {
-      'No, a cardioid hears only its own singer': 'A cardioid favours its front; it still hears the singer beside it.',
+      'No, a cardioid hears only its own singer': 'A cardioid favors its front; it still hears the singer beside it.',
       'Yes, as loud as in their own mic': 'About eighteen times farther away, it arrives far quieter.',
     },
   },
@@ -361,7 +361,7 @@ const symptoms: Symptom[] = [
 ];
 
 const DIST_REASON: SetupReason = { id: 'r.dist', label: 'Each mic measured from its singer’s lips, at a matched distance', role: 'required', feedback: 'Say what the distance is measured from — the lips — and keep the parts matched.' };
-const R31: SetupReason = { id: 'r.31', label: 'The mics at least three times their distance apart', role: 'optional', feedback: 'A fair reason: mic to mic, 3:1 keeps the neighbours’ copies quiet.' };
+const R31: SetupReason = { id: 'r.31', label: 'The mics at least three times their distance apart', role: 'optional', feedback: 'A fair reason: mic to mic, 3:1 keeps the neighbors’ copies quiet.' };
 const MATCH_REASON: SetupReason = { id: 'r.match', label: 'Every mouth at a matched distance; the loudest steps back', role: 'required', feedback: 'Say how the balance is made at a shared mic: distance.' };
 const REHEARSE_REASON: SetupReason = { id: 'r.rehearse', label: 'The moves rehearsed with the real song, the floor marked', role: 'required', feedback: 'A shared mic needs choreography: say how it is rehearsed.' };
 
@@ -373,7 +373,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A handheld each, 4–8 cm from the lips, the wedge behind it', ok: true, power: 'none', feedback: 'A suggested start: close, separate, each part on its own fader; check the wedge against the pattern.' },
       { id: 'b', label: 'A supercardioid handheld each, the wedge well to one side of its rear', ok: true, power: 'none', feedback: 'Fair beside loud drums, with the wedge near its null.' },
-      { id: 'c', label: 'One condenser a metre in front of all three', ok: false, power: 'phantom', feedback: 'It hears the drums almost as much as the voices, and no part has its own level.' },
+      { id: 'c', label: 'One condenser a meter in front of all three', ok: false, power: 'phantom', feedback: 'It hears the drums almost as much as the voices, and no part has its own level.' },
       { id: 'd', label: 'Handhelds the singers cup to sound louder', ok: false, power: 'none', feedback: 'Cupping muffles the voice and brings feedback closer.' },
       { id: 'e', label: 'Wedges up until it rings, then back a little', ok: false, power: 'none', feedback: 'Not until it rings: up only to the agreed level — backing off a little leaves no margin.' },
     ],
@@ -429,7 +429,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['At least 90 cm apart', 'At least 90 cm from the next singer', 'About 30 cm apart'],
     correct: 'At least 90 cm apart',
     explain: 'The 3:1 guideline is mic to mic: at least three times each mic’s distance to its own singer.',
-    why: { 'At least 90 cm from the next singer': 'It is measured between the mics, not from a mic to a singer.', 'About 30 cm apart': 'At 1:1 the neighbouring voice arrives almost as loud: a deep comb.' },
+    why: { 'At least 90 cm from the next singer': 'It is measured between the mics, not from a mic to a singer.', 'About 30 cm apart': 'At 1:1 the neighboring voice arrives almost as loud: a deep comb.' },
   },
   {
     id: 'bv.q.4',
@@ -502,7 +502,7 @@ export const E02_LESSON: EnsembleLesson = {
   sound: {
     stages: [
       { title: 'Every mouth, forward', text: 'Each singer’s voice leaves the mouth, forward and round the head — every distance here is read from the lips.' },
-      { title: 'Distance is level', text: 'Close to a mic a few centimetres change a voice a lot; at a shared mic, each singer’s distance is their fader.' },
+      { title: 'Distance is level', text: 'Close to a mic a few centimeters change a voice a lot; at a shared mic, each singer’s distance is their fader.' },
       { title: 'Every mic hears every voice', text: 'An open mic hears the singer beside it too — later and quieter. That is why separate mics are spaced 3:1.' },
     ],
     attack: 'Consonants — P, B, S, T — reach a close mic sharp and early; a singer close and on the axis makes them jump out of the blend. A little angle, distance or a screen keeps them in line.',
@@ -512,7 +512,7 @@ export const E02_LESSON: EnsembleLesson = {
   setting: {
     items: [
       { id: 'singers', label: 'the singers’ feet, faces and moves', short: 'SINGERS', note: 'Stable stands and secured cables so the singers can move without tripping or striking a mic; known approach and exit paths at a shared mic.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Use stable stands and secure cables so singers can move without tripping (L71)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'neighbour', label: 'the singer beside each mic', short: 'NEIGHBOURS', note: 'Every open mic hears the next singer too — later and quieter. Space separate mics at least three times their distance to their own singers apart.', prov: { kind: 'sourced', src: 'S-CHOIR', quote: 'a second microphone should be placed three times the distance from the first microphone as the first microphone distance is from the sound source' }, tag: 'SPILL', scene: 'all' },
+      { id: 'neighbour', label: 'the singer beside each mic', short: 'NEIGHBORS', note: 'Every open mic hears the next singer too — later and quieter. Space separate mics at least three times their distance to their own singers apart.', prov: { kind: 'sourced', src: 'S-CHOIR', quote: 'a second microphone should be placed three times the distance from the first microphone as the first microphone distance is from the sound source' }, tag: 'SPILL', scene: 'all' },
       { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'In front of each singer, facing back: behind a handheld aimed at the mouth — a cardioid rejects it straight behind, a supercardioid well to one side of its rear.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band and the PA', short: 'BAND · PA', note: 'The drums and amps reach every backing mic: close, directional mics keep the voices ahead of them.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Live backing vocals need enough direct-to-stage ratio to compete with instruments while preserving feedback margin (L36)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'phones', label: 'the headphone mix', short: 'HEADPHONES', note: 'The same reference for every singer, loud enough to stay in tune without shouting — and not leaking into a close mic.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Give each singer the same reference track and enough headphone level to stay in tune without shouting (L32)' }, tag: 'SPILL', scene: 'studio' },
@@ -571,7 +571,7 @@ export const E02_LESSON: EnsembleLesson = {
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin — for a shared mic, in the middle at the mouths’ height or a little higher; for a group mic over a row, about 0.6–1.2 m (2–4 ft) in front and a little above the heads. Places to start and rehearse, not a best place.',
-      'At a shared mic, every centimetre toward one singer is level for that singer: the NEAR / FAR readout is the balance the mic hears. Match the distances, then let the singers do the mixing.',
+      'At a shared mic, every centimeter toward one singer is level for that singer: the NEAR / FAR readout is the balance the mic hears. Match the distances, then let the singers do the mixing.',
       'Change one thing at a time — the height, then the distance — and mark the stand height and the singers’ places on the floor once it works.',
     ],
   },

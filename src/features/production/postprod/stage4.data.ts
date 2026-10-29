@@ -146,7 +146,7 @@ export const STAGE4_EDIT: StageDef = {
           fieldId: "missing_marked",
           label: "Is missing material marked in the timeline",
           kind: "choice",
-          help: "A gap that is labelled is a task. A gap that is silent is a surprise.",
+          help: "A gap that is labeled is a task. A gap that is silent is a surprise.",
           options: [
             { value: "marked", label: "Marked with what is needed" },
             { value: "silent", label: "Left silent, unmarked" },
@@ -496,8 +496,8 @@ export const STAGE4_EDIT: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Silent gaps where material is missing",
-      detail: "The assembly has holes and they are not labelled. A silent gap looks exactly like a deliberate pause, right up to the moment it is delivered as one.",
-      fixHint: "Put a marker or a labelled clip in every gap saying what belongs there and who is getting it.",
+      detail: "The assembly has holes and they are not labeled. A silent gap looks exactly like a deliberate pause, right up to the moment it is delivered as one.",
+      fixHint: "Put a marker or a labeled clip in every gap saying what belongs there and who is getting it.",
       needsLogic: true,
       logicIntent: "Fire when missing_marked is silent."
     },
@@ -644,6 +644,6 @@ export const STAGE4_EDIT: StageDef = {
       ]
     },
     passWhen: "Every problem row carries an action, including the dropout that had none; neither of the two subtle problems is still set to re-record or ADR; a processing order is written down; the comparison method includes listening to the removed signal and level-matched comparison; the artefact check is no longer outstanding; breaths are no longer being removed wholesale; and the preferred take records a reason beyond being the quietest.",
-    debrief: "Two of the five original decisions were the expensive kind. Re-recording a guest to remove a mouth noise nobody would notice costs a session, a favour and a performance that will not match the one around it — and ADR for the same reason is worse. Meanwhile the one row with no decision at all was the genuinely serious one: half a word missing from the remote feed, which no amount of processing repairs and which needs either the guest's local file or a re-record of that line. Notice the pattern. Effort was being spent in inverse proportion to severity, which is what happens whenever repairs are judged soloed and one at a time. The working method fixes it better than any individual decision: listen to what you are removing, match the levels, and judge it in the mix."
+    debrief: "Two of the five original decisions were the expensive kind. Re-recording a guest to remove a mouth noise nobody would notice costs a session, a favor and a performance that will not match the one around it — and ADR for the same reason is worse. Meanwhile the one row with no decision at all was the genuinely serious one: half a word missing from the remote feed, which no amount of processing repairs and which needs either the guest's local file or a re-record of that line. Notice the pattern. Effort was being spent in inverse proportion to severity, which is what happens whenever repairs are judged soloed and one at a time. The working method fixes it better than any individual decision: listen to what you are removing, match the levels, and judge it in the mix."
   }
 };

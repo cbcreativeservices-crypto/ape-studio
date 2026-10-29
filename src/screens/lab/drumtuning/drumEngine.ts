@@ -846,9 +846,9 @@ export function tomInterval(rackHz: number, floorHz: number): IntervalVerdict {
     const which = !rackIn ? 'rack tom' : 'floor tom';
     return { kind: 'unbalanced', semitones: st, message: `Unbalanced: the ${which} is outside the range where it responds well (${!rackIn ? `${DRUMS.rack.usefulHz[0]}–${DRUMS.rack.usefulHz[1]}` : `${DRUMS.floor.usefulHz[0]}–${DRUMS.floor.usefulHz[1]}`} Hz here). Forcing a drum there costs tone before it buys an interval.` };
   }
-  if (st < 2.5) return { kind: 'close', semitones: st, message: `Too close: ${st.toFixed(1)} semitones between neighbouring toms. The two crowd each other — a fill reads as one drum.` };
-  if (st > 9) return { kind: 'unbalanced', semitones: st, message: `A wide step: ${st.toFixed(1)} semitones between neighbouring toms. Both drums respond, but the pair no longer reads as one kit — a fill jumps instead of falling.` };
-  return { kind: 'distinct', semitones: st, message: `Distinct: ${st.toFixed(1)} semitones between neighbouring toms — each drum keeps its own pitch and the fall reads as one kit.` };
+  if (st < 2.5) return { kind: 'close', semitones: st, message: `Too close: ${st.toFixed(1)} semitones between neighboring toms. The two crowd each other — a fill reads as one drum.` };
+  if (st > 9) return { kind: 'unbalanced', semitones: st, message: `A wide step: ${st.toFixed(1)} semitones between neighboring toms. Both drums respond, but the pair no longer reads as one kit — a fill jumps instead of falling.` };
+  return { kind: 'distinct', semitones: st, message: `Distinct: ${st.toFixed(1)} semitones between neighboring toms — each drum keeps its own pitch and the fall reads as one kit.` };
 }
 
 /* ── goals (Tune a drum for a sound) ─────────────────────────────────────── */

@@ -26,7 +26,7 @@ export const CSN_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
       { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the rim — explore what it drives.' },
       { id: 'edge', label: 'NEAR THE RIM', mm: R * 0.85, blurb: 'Close to the rim — explore what it drives.' },
     ],
@@ -53,7 +53,7 @@ export const CSN_COPY: LessonCopy = {
   setting: {
     kitA11y: 'The percussion section from above, at the back of an orchestra: the concert snare on its stand with its player upstage of it; the concert bass drum, the timpani, a suspended cymbal and the trap table nearby; a row of brass players in front.',
     kitLanding: 'Tap anything around the concert snare — or step through ITEM — to see what it means for a snare mic. There is nothing to answer yet.',
-    kitIdle: 'The concert snare stands in the percussion row at the back, its player behind it. Around it: loud neighbours, the trap table the player turns to, and the brass in front.',
+    kitIdle: 'The concert snare stands in the percussion row at the back, its player behind it. Around it: loud neighbors, the trap table the player turns to, and the brass in front.',
     leftHanded: 'Percussion sections are laid out differently from one orchestra to the next — check the real stage plan before you place anything.',
     stageA11y: 'The orchestra on an amplified stage, from above: the percussion at the back, the conductor and the audience at the front, PA stacks at the front corners, and two floor monitors near the percussion.',
     studioA11y: 'The orchestra recorded in a hall, from above: the main pair of microphones over the conductor, the hall’s walls around the stage, no monitors.',
@@ -66,7 +66,7 @@ export const CSN_COPY: LessonCopy = {
     ],
     plan: {
       title: 'In the orchestra',
-      badge: 'The percussion from above · a typical concert layout · grey hatch = the players’ space',
+      badge: 'The percussion from above · a typical concert layout · gray hatch = the players’ space',
       looking: 'Plan · the percussion row, the audience toward the bottom',
       stageBadge: 'From above · an amplified orchestra · two monitors where a stage often puts them',
       studioBadge: 'From above · an orchestra recorded in a hall',
@@ -81,7 +81,7 @@ export const CSN_COPY: LessonCopy = {
     workedAim: 'Angle the mic toward the center of the head — the starting point counts while its axis meets the head there. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every stroke — the highest and widest stick motion, the throw-off, the stand and the player. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to bring more direct detail and less room; farther, more of the whole drum and more of its neighbours — and drums, rooms and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more direct detail and less room; farther, more of the whole drum and more of its neighbors — and drums, rooms and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: { orchSdc: 'Ideas to try with a small condenser: start a little farther than with a dynamic and compare the roll at matched level. Either type can work — choose by response, pattern, maximum level, power and mount.' },
     note: 'Clearance comes first: stop the player before moving a real mic, and check the whole passage — not one stroke. None of these distances is a safety clearance.',
     availableLead: 'Starting points for this mic',
@@ -123,7 +123,7 @@ export const CSN_COPY: LessonCopy = {
       intro: 'These are scenario-based comparisons, not rules: a concert snare may need no spot at all, live or recorded, and a close spot may be right on a loud outdoor stage.',
       points: [
         { title: 'IS A SPOT NEEDED?', text: 'Recording: the main array and section mics come first; a gentle spot only if the roll or the soft strokes are missing. Live: listen to what the hall and the other mics already give before adding a channel.' },
-        { title: 'HOW CLOSE', text: 'Recording: a broader spot keeps the drum in its place in the orchestra. Live: monitor and PA spill and the gain before feedback can favour a closer, directional spot — outside the sticks’ reach.' },
+        { title: 'HOW CLOSE', text: 'Recording: a broader spot keeps the drum in its place in the orchestra. Live: monitor and PA spill and the gain before feedback can favor a closer, directional spot — outside the sticks’ reach.' },
         { title: 'HOW MANY MICS', text: 'Each extra open mic adds spill and another arrival time. A bottom mic earns its channel only if it adds something the top mic and the main pickup do not.' },
         { title: 'THE IMAGE', text: 'A spot raised too far pulls the snare to the front of the orchestra. Bring it up under the main pickup and check where the drum seems to sit.' },
       ],
@@ -139,7 +139,7 @@ export const CSN_COPY: LessonCopy = {
       'A common idea on a snare: a top mic for the stick and the head, and a bottom mic for more of the snares. On a concert snare the bottom mic is optional — the snares’ response is part of the drum’s color, but the bottom mic also hears the stand, the throw-off and the floor. Start with the top mic alone.',
       'When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and then check the pair against the main pickup. If it adds more hiss and spill than character, leave it out.',
     ],
-    warn: 'The two mics hear DIFFERENT heads of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — that does not hold a few centimetres from a head, so read the depths as illustrative only.',
+    warn: 'The two mics hear DIFFERENT heads of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — that does not hold a few centimeters from a head, so read the depths as illustrative only.',
   },
   practice: {
     gain: 'cs.prac.gain',

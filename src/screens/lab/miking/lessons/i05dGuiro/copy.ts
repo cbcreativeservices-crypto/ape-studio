@@ -96,7 +96,7 @@ export const GU_COPY: LessonCopy = spCopy({
       intro: 'What you just did, in words. After our research, a mic roughly 30–60 cm (1–2 ft) from the middle of the scraped area is where we suggest you begin — facing more of the ridges, or a little lower for more body. One general tip for percussion is a gap of about 30 cm or more. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time with the whole pattern. Compare the two viewpoints at matched level.',
       clearance: 'Clearance comes first: the scraper’s whole travel, past both ends, both ways, and the holding hand. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
-      tendencies: 'Closer gives more direct rasp but can favour one small section of the stroke; farther takes in the whole path with more room and spill. All tendencies to check by ear.',
+      tendencies: 'Closer gives more direct rasp but can favor one small section of the stroke; farther takes in the whole path with more room and spill. All tendencies to check by ear.',
     },
   },
   context: {

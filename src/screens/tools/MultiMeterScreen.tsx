@@ -740,7 +740,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   // ---- Cursor (tap/drag on the hero plot) ----------------------------------
   const [cursorX, setCursorX] = useState<number | null>(null);
   const [plotW, setPlotW] = useState(0);
-  // RTA bar colour (owner 2026-10-23): null = the amplitude level colours.
+  // RTA bar color (owner 2026-10-23): null = the amplitude level colours.
   const [mmRtaColor, setMmRtaColor] = useToolColorPref('ape:tools:multimeterRtaColor');
   // 83% of the old 240–340 / 36%-of-screen height (owner 2026-10-23: it took too much vertical space).
   const heroH = Math.round(0.83 * Math.min(340, Math.max(240, winH * 0.36)));
@@ -1494,10 +1494,10 @@ export function MultiMeterScreen({ navigation }: Props) {
                 style={styles.rtaColorBtn}
                 current={mmRtaColor}
                 onPick={setMmRtaColor}
-                accessibilityLabel="RTA bar colour"
-                feature="the RTA bar colour"
-                pickerTitle="RTA BAR COLOUR"
-                subtitle="The spectrum bars (Default = level colours)"
+                accessibilityLabel="RTA bar color"
+                feature="the RTA bar color"
+                pickerTitle="RTA BAR COLOR"
+                subtitle="The spectrum bars (Default = level colors)"
                 defaultLabel="Level"
                 renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={levelColorForDb(-30)} />}
                 defaultSwatchColor={levelColorForDb(-30)}
@@ -1842,7 +1842,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             )}
             {estimatedBelowHz != null && (
               <Text style={styles.grayNote}>
-                {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse`}
+                {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbors share a reading — the rumble is real, the exact pitch is coarse`}
               </Text>
             )}
           </View>

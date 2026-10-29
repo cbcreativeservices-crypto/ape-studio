@@ -60,7 +60,7 @@ test('dB scale labels: +half, 0, −half with the unit on the top one', async ()
 test('Match the Curve names the colours the lines really have', () => {
   const src = read('screens/lab/eq/modules/MatchCurve.tsx');
   assert.doesNotMatch(src, /YOUR EQ \(amber\)/);
-  assert.match(src, /thin grey/);
+  assert.match(src, /thin gray/);
 });
 
 test('Distortion: one true level scale — real −20 dBFS input, ±0 dBFS ceiling, no peak normalising', () => {

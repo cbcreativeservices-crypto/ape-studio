@@ -93,7 +93,7 @@ export const E11_ZONES: DocumentedZone[] = [
     start: toward(Q_C, Q_MID),
     variants: ['quartet', 'quartetVa'],
     micTypeIds: PAIR_TYPES,
-    tendency: 'The quartet blended with the room. Closer favours the front players and adds direct sound; farther back, more room and less clarity.',
+    tendency: 'The quartet blended with the room. Closer favors the front players and adds direct sound; farther back, more room and less clarity.',
     checks: ['Cello definition and the inner voices', 'First-violin dominance', 'Room decay and mono'],
   }),
   cello('q.vc', 'quartet', VC_Q, 't.vcQ'),
@@ -185,7 +185,7 @@ export const E11_SETUPS: EnsembleSetup[] = [
 ];
 
 export const E11_PLACE: PlaceZone[] = [
-  { id: 'pz.qnear', label: 'Nearer: 1–1.5 m in front', band: 'About 1–1.5 m (3–5 ft) in front of the quartet, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1000), max: v3(700, -1800, 1500) }, variants: QS, tendency: 'More direct sound and definition; the front players are favoured.' },
+  { id: 'pz.qnear', label: 'Nearer: 1–1.5 m in front', band: 'About 1–1.5 m (3–5 ft) in front of the quartet, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1000), max: v3(700, -1800, 1500) }, variants: QS, tendency: 'More direct sound and definition; the front players are favored.' },
   { id: 'pz.qfar', label: 'Farther: 1.5–2 m in front', band: 'About 1.5–2 m (5–6.5 ft) in front, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1500), max: v3(700, -1800, 2000) }, variants: QS, tendency: 'More of the room and the blend; less clarity if the room is live.' },
   { id: 'pz.over', label: 'Over the podium, 3–4 m up', band: 'Above the conductor’s podium, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z - P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2) }, variants: ['sections'], tendency: 'Closer to the front desks: more direct sound.' },
   { id: 'pz.behind', label: 'Just behind the podium, 3–4 m up', band: 'Right behind the conductor, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z + P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2 + 1200) }, variants: ['sections'], tendency: 'More blend between the desks and more of the room.' },

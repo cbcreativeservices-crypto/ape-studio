@@ -61,7 +61,7 @@ describe('frame V — the shared voice family (lessons/shared/voice)', () => {
     assert.ok(Math.abs(HEAD_C.x + 84 * k) < 1e-9 && Math.abs(HEAD_C.y + 52 * k) < 1e-9);
     assert.ok(NOSE.x > 0 && NOSE.x < 30, `nose ${NOSE.x} mm ahead`);
     assert.ok(NOSE.y < -15 && NOSE.y > -45, `nose ${NOSE.y} mm (y down: above)`);
-    assert.ok(EAR.x < HEAD_C.x, 'the ear is behind the head’s centre');
+    assert.ok(EAR.x < HEAD_C.x, 'the ear is behind the head’s center');
   });
   it('the sourced numbers: the mouth reference point 25 mm, the screen at least 10 cm from the mic', () => {
     assert.equal(VOICE_DIMS.mrp.mm, 25);
@@ -84,7 +84,7 @@ describe('frame V — the shared voice family (lessons/shared/voice)', () => {
     assert.equal(SINGER_SIDE.footR.v, FLOOR_Y);
     const torso = SINGER_SOLIDS.torso;
     assert.ok(torso.kind === 'box' && torso.max.x < 20, 'the chest is behind the lips');
-    assert.ok(SINGER_SIDE.head.c.u < 0 && SINGER_SIDE.head.c.v < 0, 'the head’s centre behind and above the lips');
+    assert.ok(SINGER_SIDE.head.c.u < 0 && SINGER_SIDE.head.c.v < 0, 'the head’s center behind and above the lips');
     const hipV = (SINGER_SIDE.hipR.v + SINGER_SIDE.hipL.v) / 2;
     assert.ok(hipV > 500 && hipV < 800, 'adult proportions: the hips about halfway down');
   });

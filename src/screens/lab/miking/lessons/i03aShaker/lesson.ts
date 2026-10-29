@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the shaker player stands — the station, the neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where the shaker player stands — the station, the neighbors, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['shk.set.1', 'shk.set.hear', 'shk.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Watch the whole part and the whole arc; choose the shaker before the mic; place for the player’s comfortable motion. Protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the stroke’s path toward the mic, the shaker itself, distance, spill and the monitors — before reaching for gain or EQ.',
   },
   practice: {
@@ -356,7 +356,7 @@ const symptoms: Symptom[] = [
   {
     id: 'shk.s.spill',
     observation: 'Cymbals or monitors dominate the shaker channel',
-    firstChecks: 'Compare solo and full-band bleed; check the mic’s pattern against the loudest neighbour.',
+    firstChecks: 'Compare solo and full-band bleed; check the mic’s pattern against the loudest neighbor.',
     options: ['The bleed in the full band, and the pattern’s aim', 'Gate the channel so it opens only on the shaker', 'Turn the shaker channel up until it wins'],
     correct: 'The bleed in the full band, and the pattern’s aim',
     explain: 'Move the mic or the player, aim a null at the loudest unwanted source — or use a dedicated spot instead of a broad overhead.',
@@ -369,7 +369,7 @@ const symptoms: Symptom[] = [
   {
     id: 'shk.s.thump',
     observation: 'Low thumps or rattles in the shaker channel',
-    firstChecks: 'Is the stand or cable being struck, or is vibration travelling up the stand?',
+    firstChecks: 'Is the stand or cable being struck, or is vibration traveling up the stand?',
     options: ['Whether the stand or cable is struck, or vibrating', 'A high-pass filter set high, whatever it takes away', 'The fill inside the shaker breaking up'],
     correct: 'Whether the stand or cable is struck, or vibrating',
     explain: 'Clear and secure the path, isolate stand vibration — and use a high-pass filter only if the useful body is kept.',
@@ -522,7 +522,7 @@ export const I03A_LESSON: SpLesson = {
     items: [
       { id: 'shaker', label: 'the shaker player at the station', short: 'SHAKER', note: 'Standing at a percussion station, often moving between small instruments. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: loud, close, and often played in turn. A mic placed for the shaker may miss the next instrument — or hear this one instead.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL · STATIONS', scene: 'kit' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few metres away: the loudest spill into a quiet shaker mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: the loudest spill into a quiet shaker mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud and bright upstage. Aim the shaker mic so its rejection, not its front, faces the backline where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'vocal', label: 'a singer’s microphone', short: 'VOCAL MIC', note: 'Another open mic near the station: it hears the shaker too, and the shaker mic hears the voice.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       { id: 'downstage', label: 'a floor wedge downstage of the station', short: 'WEDGE', note: 'On the audience side, behind a mic facing the player and off to one side — a case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },

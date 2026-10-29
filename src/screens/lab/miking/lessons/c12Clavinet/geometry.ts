@@ -49,7 +49,7 @@ export const CLAV_MODEL: InstrumentModel = {
     { id: 'r.back', partId: 'co.back', label: 'open back', anchor: { x: -120, y: 0, z: 0 }, prov: dflt, variants: CO, note: 'The back of the cone, through the open back: the same sound in the opposite polarity.' },
   ],
   surfaces,
-  lines: [{ id: 'axis', label: 'the speaker’s centre', point: { x: 0, y: 0, z: 0 }, dir: { x: 1, y: 0, z: 0 } }],
+  lines: [{ id: 'axis', label: 'the speaker’s center', point: { x: 0, y: 0, z: 0 }, dir: { x: 1, y: 0, z: 0 } }],
   envelopes: [],
   variants: [
     { id: 'combo', label: 'OPEN-BACK COMBO', blurb: 'A combo amplifier: the amp and one 12-inch speaker in one cabinet, its back partly open.', phrase: 'its open back' },

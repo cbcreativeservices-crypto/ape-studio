@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Mostly 60–130 BPM (ballads 60–80; valse musette (accordion waltz) in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
     "ensemble": "From solo voice + piano or guitar, to a 3–5 piece chanson band (piano, accordion, double bass, guitar, light drums), to a 7–12 piece variété touring band with backing vocals, strings or brass",
     "priority": "The lead vocal and every word of the French text — clear, natural, and in front",
-    "liveSpl": "Theatre/concert-hall chanson 85–92 dBA LAeq-15; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC LAeq-15",
+    "liveSpl": "Theater/concert-hall chanson 85–92 dBA LAeq-15; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC LAeq-15",
     "studioLoudness": "Acoustic chanson masters often −14 to −11 LUFS-I; modern variété-pop −10 to −8; streaming normalizes to about −14"
   },
   "purpose": [
@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Classic layout: singer front centre, piano stage left or right (often angled so singer and pianist see each other), accordion and double bass close by, drums small and upstage. In variété tours expect the full pop lineup: drums, bass, two guitars, keys/MD, two or three backing vocalists, sometimes strings and brass (a big variété tour can carry a four-piece string section and three-piece brass). The arrangement frames the words: sparse verses (often voice and one instrument), the band entering progressively, and choruses lifted by strings and harmonies, with instruments filling the breath gaps rather than the lines. Many chansons build to a final emotional climax (Brel’s “Amsterdam” is a long crescendo), so leave headroom."
+      "text": "Classic layout: singer front center, piano stage left or right (often angled so singer and pianist see each other), accordion and double bass close by, drums small and upstage. In variété tours expect the full pop lineup: drums, bass, two guitars, keys/MD, two or three backing vocalists, sometimes strings and brass (a big variété tour can carry a four-piece string section and three-piece brass). The arrangement frames the words: sparse verses (often voice and one instrument), the band entering progressively, and choruses lifted by strings and harmonies, with instruments filling the breath gaps rather than the lines. Many chansons build to a final emotional climax (Brel’s “Amsterdam” is a long crescendo), so leave headroom."
     }
   ],
   "dynamics": [
@@ -230,7 +230,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Concert hall",
         "appliedTo": "Piano, strings, ballads",
         "setting": "1.8–2.5 s decay, 20–40 ms pre-delay",
-        "amount": "Moderate in studio; minimal in a reverberant theatre"
+        "amount": "Moderate in studio; minimal in a reverberant theater"
       },
       {
         "effect": "Short room",
@@ -259,19 +259,19 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Chanson favours dry, close vocals (Gainsbourg, Brassens); reverb belongs on the space, not the words."
+        "text": "Chanson favors dry, close vocals (Gainsbourg, Brassens); reverb belongs on the space, not the words."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The voice is the mix. Place it clearly in front, with every syllable understood, including the mute “e” that chanson singers often pronounce as a sung syllable. Tone should be natural and warm with present but not edgy consonants; many classic records sound slightly dark on top rather than airy. French sibilants and nasal vowels (an, on, in) need care: too much cut at 300–800 Hz thins nasal vowels, too much 2–4 kHz makes “s” and “ch” piercing. Pitch correction should be transparent and sparing in chanson — slight imperfection is expressive and accepted — while modern variété-pop often uses fuller tuning. Backing vocals are tucked well below the lead. Live, condenser handhelds or headset/capsule mics suit quieter theatre stages; a simple chain of capsule, preamp, compressor, de-esser and EQ is often enough. In seated theatres keep the vocal near natural size — realism is lost when voices are far louder than life."
+      "text": "The voice is the mix. Place it clearly in front, with every syllable understood, including the mute “e” that chanson singers often pronounce as a sung syllable. Tone should be natural and warm with present but not edgy consonants; many classic records sound slightly dark on top rather than airy. French sibilants and nasal vowels (an, on, in) need care: too much cut at 300–800 Hz thins nasal vowels, too much 2–4 kHz makes “s” and “ch” piercing. Pitch correction should be transparent and sparing in chanson — slight imperfection is expressive and accepted — while modern variété-pop often uses fuller tuning. Backing vocals are tucked well below the lead. Live, condenser handhelds or headset/capsule mics suit quieter theater stages; a simple chain of capsule, preamp, compressor, de-esser and EQ is often enough. In seated theaters keep the vocal near natural size — realism is lost when voices are far louder than life."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret (decree) 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theatres."
+      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret (decree) 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theaters."
     },
     {
       "label": "Studio / streaming:",
@@ -287,7 +287,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Room",
-        "live": "Theatre acoustics already add reverb; use little or none",
+        "live": "Theater acoustics already add reverb; use little or none",
         "studio": "Reverb creates the space; shared hall or plate"
       },
       {

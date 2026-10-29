@@ -103,7 +103,7 @@ async function fetchNative(url: string, key: string): Promise<FetchedBytes> {
   }
   if (!res || res.status < 200 || res.status >= 300) {
     await FileSystem.deleteAsync(tmp, { idempotent: true }).catch(() => {});
-    throw res ? httpError(res.status) : new LabClipError('offline', 'Download cancelled');
+    throw res ? httpError(res.status) : new LabClipError('offline', 'Download canceled');
   }
   // Complete file only: the final name never holds a partial download.
   await FileSystem.deleteAsync(final, { idempotent: true }).catch(() => {});

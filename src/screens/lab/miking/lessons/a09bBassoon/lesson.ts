@@ -66,7 +66,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — where the mic looks, its distance, the pattern, the player’s movement, the mount, the filter — before reaching for tone controls.',
   },
   practice: {
@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can an omni suit a bassoon in a good room?',
     options: ['It rejects the room better than a cardioid', 'It hears the bell only, which carries the tone', 'The bassoon radiates from many places at once'],
     correct: 'The bassoon radiates from many places at once',
-    explain: 'With sound leaving the holes, the boot and the bell in a pattern that changes note by note, a broad pickup can hold the instrument together — where the room and the neighbours allow. A cardioid separates when needed.',
+    explain: 'With sound leaving the holes, the boot and the bell in a pattern that changes note by note, a broad pickup can hold the instrument together — where the room and the neighbors allow. A cardioid separates when needed.',
     why: {
       'It rejects the room better than a cardioid': 'An omni rejects nothing: it hears more room, not less.',
       'It hears the bell only, which carries the tone': 'An omni hears all round; most notes leave from the holes, not the bell.',
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Down the instrument, toward the keys',
     explain: 'Near the bell, pointed down toward the keys, the capsule hears the open holes below and some bell. Into the bell it hears mostly the lowest note.',
     why: {
-      'Straight up into the bell, where it opens': 'Into the bell it favours the very lowest note and misses the holes.',
+      'Straight up into the bell, where it opens': 'Into the bell it favors the very lowest note and misses the holes.',
       'Across at the player’s face and reed': 'Toward the face it hears breath and the reed’s edge; the sound leaves below.',
     },
   },
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bsn.place.3',
     page: 'placement',
-    prompt: 'Is a mic a few centimetres from the bocal a good close position?',
+    prompt: 'Is a mic a few centimeters from the bocal a good close position?',
     options: ['Yes — the bocal is where the sound is strongest', 'Yes, if it is clamped to the bocal for stability', 'Not usually: it is fragile and hears mostly reed'],
     correct: 'Not usually: it is fragile and hears mostly reed',
     explain: 'The bocal and the reed start the sound, but it leaves from the holes and the bell. Near the bocal a mic sits by the player’s face and hears the reed’s edge — and nothing may ever be clamped to it.',
@@ -348,7 +348,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser about a foot from the boot’s finger holes, facing them', ok: true, power: 'phantom', feedback: 'A suggested starting point for a balanced bassoon — then compare a little farther and higher.' },
       { id: 'b', label: 'Small condenser 15–20 cm from the long joint, a third of the way down from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a focused spot — check the lowest note against the rest.' },
-      { id: 'c', label: 'A mic pointed straight into the bell, a few centimetres away', ok: false, power: 'phantom', feedback: 'A bell-only view favours the very lowest note and misses the holes below.' },
+      { id: 'c', label: 'A mic pointed straight into the bell, a few centimeters away', ok: false, power: 'phantom', feedback: 'A bell-only view favors the very lowest note and misses the holes below.' },
       { id: 'd', label: 'A small clip on the bocal, right by the reed', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal — and the sound leaves lower down.' },
       { id: 'e', label: 'A mic on the floor under the boot, aimed up', ok: false, power: 'phantom', feedback: 'Under the boot it sits in the seat strap’s and the feet’s way, and hears little of the holes and the bell.' },
     ],
@@ -362,7 +362,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature on the bell joint, aimed down the instrument at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the bassoon — check the clip and the lowest note.' },
       { id: 'b', label: 'A cardioid close to the long joint, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
-      { id: 'c', label: 'An omni a metre away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a metre away hears the band and the wedge more than the bassoon.' },
+      { id: 'c', label: 'An omni a meter away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a meter away hears the band and the wedge more than the bassoon.' },
       { id: 'd', label: 'A clip squeezed round the bocal', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal: it is delicate and can be bent.' },
       { id: 'e', label: 'A mic straight into the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'A bell-only view hears the lowest note; turned up, it brings the stage and feedback.' },
     ],
@@ -520,7 +520,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a solo may want the room and the folded tube’s many outlets blended. Live: a bassoon among drums and amps needs a closer view, or a clip.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band — and a pattern often rejects least in the lows. Nothing alone prevents feedback.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA and the band — and a pattern often rejects least in the lows. Nothing alone prevents feedback.' },
         { title: 'MOVEMENT', text: 'The bassoon pivots a little on its strap. A stand mic has a working zone; a miniature on the bell joint keeps one distance.' },
         { title: 'IN A SECTION', text: 'With a main pair up, a bassoon mic is a spot: bring it up only for a stated balance, check it in mono. A section spot can sit between two bassoons at about head height.' },
       ],
@@ -627,7 +627,7 @@ export const A09B_LESSON: WindLesson = {
     { text: 'The split of the 2.6 m bore between the bocal, wing joint, boot, long joint and bell, the joints’ diameters and the key layout are drawing defaults; the 1.35 m height, the bore’s ends and the bell are sourced; the holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
     { text: 'The hands, arms, head, the seat strap and the bassoon’s pivot — illustrative keep-outs (a 20 mm margin round the bassoon).', dims: [] },
     { text: 'The bell view’s 12–30 cm, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
@@ -636,7 +636,7 @@ export const A09B_LESSON: WindLesson = {
   wind: windExtra(SPEC, {
     soundSubject: 'A bassoon on its side, keys toward you, its folded air column drawn open',
     breath: 'Breath and the reed’s buzz are heard close to the reed and the bocal, at the player’s face — a body-facing mic hears little wind.',
-    keys: 'Long rods, the thumbs’ many keys and the pads closing: loud within a few centimetres of the boot and the wing joint.',
+    keys: 'Long rods, the thumbs’ many keys and the pads closing: loud within a few centimeters of the boot and the wing joint.',
     directivity: 'Measured round a player in an anechoic (echoless) room: around 125 Hz the bassoon radiates about equally in every direction; between 1 and 2 kHz its pattern is most pronounced, and the 1 kHz band beams strongly toward the bell.',
     noteDefault: 9,
   }),

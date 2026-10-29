@@ -67,12 +67,12 @@ export function shotgunRoom(w: FoleyWords, page: SourcePageId, id = `${w.p}.mic.
     id,
     page,
     prompt: 'On a reflective Foley stage, what can you expect from a short shotgun?',
-    options: ['Narrower highs, but the room’s reflections still reach it', 'A narrow pickup at all pitches, so the room is gone', 'The same pickup as an omni once it is a metre or more away'],
+    options: ['Narrower highs, but the room’s reflections still reach it', 'A narrow pickup at all pitches, so the room is gone', 'The same pickup as an omni once it is a meter or more away'],
     correct: 'Narrower highs, but the room’s reflections still reach it',
     explain: 'Through the lows and mids the tube does little: the mic hears like its supercardioid capsule. Higher up its pickup narrows, unevenly. In a reflective room the reflections arrive from every side, so a shotgun is less effective there than one might wish — compare it with a small supercardioid in the same place.',
     why: {
       'A narrow pickup at all pitches, so the room is gone': 'Only the highs narrow. Through the lows and mids it hears like its capsule — and reflections come from every side.',
-      'The same pickup as an omni once it is a metre or more away': 'Distance does not change a pattern. It stays supercardioid at the base, narrower in the highs — it just hears more room farther away.',
+      'The same pickup as an omni once it is a meter or more away': 'Distance does not change a pattern. It stays supercardioid at the base, narrower in the highs — it just hears more room farther away.',
     },
   };
 }

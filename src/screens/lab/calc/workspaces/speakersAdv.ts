@@ -55,7 +55,7 @@ const CROSSOVER: Workspace = {
     '(6 dB/oct) and a second-order Butterworth (12 dB/oct) network.',
   whyItMatters:
     'The right L and C send highs to the tweeter and lows to the woofer while protecting each from ' +
-    'the band it can’t handle. Order sets the steepness (and the phase behaviour) — first-order is ' +
+    'the band it can’t handle. Order sets the steepness (and the phase behavior) — first-order is ' +
     'gentle and phase-coherent; second-order is steeper, but the tweeter has to be wired with its polarity reversed.',
   example:
     'A 2.5 kHz crossover into 8 Ω. First-order: C = 0.1592/(2500·8) ≈ 7.96 µF, L = 0.1592·8/2500 ≈ ' +
@@ -162,7 +162,7 @@ const LINEARRAY: Workspace = {
   warnings:
     'Teaching relationships: directivity control onset ≈ c/L (tight at 2c/L); spatial-aliasing ' +
     'frequency ≈ c/(element spacing); near-field line source loses ~3 dB per distance doubling vs ' +
-    '~6 dB for a point source. Real array behaviour (steering, curvature) needs manufacturer data.',
+    '~6 dB for a point source. Real array behavior (steering, curvature) needs manufacturer data.',
   glossary: ['Directivity', 'Inverse square law', 'Wavelength', 'Sound Pressure Level', 'Comb Filtering'],
   fields: [
     { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
@@ -232,7 +232,7 @@ const LINEARRAY: Workspace = {
       plainFormula:
         'A point source loses twenty times the base-ten log of the distance ratio; a line source in its near field loses only ten times that log.',
       explain:
-        'How level falls with distance for the two source types. A point source drops about 6 dB per doubling of distance; a line source in its near field drops only about 3 dB per doubling, giving it more reach — but only while the near field lasts, after which it reverts to point-source behaviour.',
+        'How level falls with distance for the two source types. A point source drops about 6 dB per doubling of distance; a line source in its near field drops only about 3 dB per doubling, giving it more reach — but only while the near field lasts, after which it reverts to point-source behavior.',
       keySymbols: ['−', 'log₁₀', '/', 'x₁'],
       // A level past the ceiling of air is never printed (D53, audit R2).
       refuse: (v) => {

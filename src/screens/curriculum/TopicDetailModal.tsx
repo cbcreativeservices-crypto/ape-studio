@@ -239,7 +239,7 @@ export function TopicDetailModal({
             {/* ⛔ UNCONDITIONAL — see the twin note in CredentialDetailModal. */}
             <Text style={styles.rolesNote}>
               Studying this topic supports these roles; it does not qualify anyone for them. Some
-              need a degree, licence or certification beyond the Academy (shown on the role).
+              need a degree, license or certification beyond the Academy (shown on the role).
             </Text>
           </View>
         ) : null}

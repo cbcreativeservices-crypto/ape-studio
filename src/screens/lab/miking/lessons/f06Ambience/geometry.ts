@@ -64,10 +64,10 @@ const REGIONS: RadiatingRegion[] = [
   { id: 'reflect', partId: 'facade', label: 'the facade’s reflection', anchor: PLAZA_SITE.sources[4].p, prov: SITE, variants: ['plaza'], note: 'The plaza’s sound coming back off the wall behind: stronger the nearer the mic is to it.' },
 ];
 
-/** Distances are read from the water's edge (woodland) or the kerb (plaza). */
+/** Distances are read from the water's edge (woodland) or the curb (plaza). */
 export const F06_SURFACES: ReferenceSurface[] = [
   { id: 'water', partId: 'stream', label: 'the water’s edge', point: { x: STREAM_BANK_X, y: -AMB_H, z: 0 }, normal: { x: -1, y: 0, z: 0 }, plus: { words: 'back from', key: 'BACK FROM' }, variants: ['woodland'] },
-  { id: 'kerb', partId: 'road', label: 'the kerb', point: { x: PLAZA_KERB_X, y: -AMB_H, z: 0 }, normal: { x: -1, y: 0, z: 0 }, plus: { words: 'back from', key: 'BACK FROM' }, variants: ['plaza'] },
+  { id: 'kerb', partId: 'road', label: 'the curb', point: { x: PLAZA_KERB_X, y: -AMB_H, z: 0 }, normal: { x: -1, y: 0, z: 0 }, plus: { words: 'back from', key: 'BACK FROM' }, variants: ['plaza'] },
 ];
 
 /** The ground as a reference plane: the signed distance is the height above it. */

@@ -232,7 +232,7 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
         <Do>Put deck A on air, load the spare deck with a track that can match it, play and pause it, set a cue point, jump back to it with CUE, and search the track.</Do>
         {loadMsg ? <Note tone={loadMsg.ok ? 'try' : 'safety'}>{loadMsg.text}</Note> : null}
         <GoalChips goals={goals.slice(0, 6)} latched={latched.slice(0, 6)} />
-        <Note tone="try">Before a gig: organise your files at home and let the software analyse them (it reads each track’s tempo, beats and waveform ahead of time), set cue points, build playlists (the tracks for a set, in an order that makes sense to you), export them to a USB stick — and carry a second, tested stick. A streaming service may need an internet connection and may limit what you can do, so keep a tested set of local files as your backup.</Note>
+        <Note tone="try">Before a gig: organize your files at home and let the software analyze them (it reads each track’s tempo, beats and waveform ahead of time), set cue points, build playlists (the tracks for a set, in an order that makes sense to you), export them to a USB stick — and carry a second, tested stick. A streaming service may need an internet connection and may limit what you can do, so keep a tested set of local files as your backup.</Note>
       </Step>
       <Step n={5}>
         <UnderstandingCheck

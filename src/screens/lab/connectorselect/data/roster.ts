@@ -97,7 +97,7 @@ export const CABLE_PARTS: readonly CablePart[] = [
   { id: 'contacts', name: 'Contacts / pins', blurb: 'The metal points where signal actually crosses. Their count and assignment differ by application — the same three contacts can serve three different jobs.' },
   { id: 'conductors', name: 'Signal conductors', blurb: 'The wires that carry the signal itself. How many there are, and their gauge, is the cable construction question.' },
   { id: 'shield', name: 'Shield', blurb: 'A conductive screen around the signal conductors that drains interference. Speaker and optical cables manage without one — for different reasons.' },
-  { id: 'insulation', name: 'Insulation', blurb: 'The dielectric separating each conductor from its neighbours. Damaged insulation is how shorts start.' },
+  { id: 'insulation', name: 'Insulation', blurb: 'The dielectric separating each conductor from its neighbors. Damaged insulation is how shorts start.' },
   { id: 'jacket', name: 'Outer jacket', blurb: 'The cable’s skin. Its printing is where the construction is declared — read it instead of guessing from the plug.' },
   { id: 'relief', name: 'Strain relief', blurb: 'The transition that spreads bending stress where cable meets connector. The most common failure point on any cable.' },
 ];

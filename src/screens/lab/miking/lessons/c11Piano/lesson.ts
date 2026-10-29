@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the lid, the mic’s distance from the hammers, the pair’s geometry, the monitors, the stands — and the piano itself, before reaching for tone controls.',
   },
   practice: {
@@ -532,7 +532,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Lid on the short stick; one dynamic about 15 cm over the middle strings, 20 cm back from the hammers', ok: true, power: 'none', feedback: 'A suggested starting point under a lower lid: close, separated, and the dynamic needs no power.' },
       { id: 'b', label: 'Lid on the short stick; a small condenser aimed into a sound hole in the frame', ok: true, power: 'phantom', feedback: 'A suggested one-mic live option, separated by the lower lid — the condenser has its phantom power here.' },
       { id: 'c', label: 'Short stick; a treble mic and a bass mic over the strings, checked in mono', ok: true, power: 'phantom', feedback: 'Suggested starting points for a split pair, separated by the lid — and the mono check is in the plan.' },
-      { id: 'd', label: 'Lid on the full stick; a pair of omnis two metres out in the room', ok: false, power: 'phantom', feedback: 'Omnis far out hear the drums and the wedges more than the piano: a poor choice beside a loud stage.' },
+      { id: 'd', label: 'Lid on the full stick; a pair of omnis two meters out in the room', ok: false, power: 'phantom', feedback: 'Omnis far out hear the drums and the wedges more than the piano: a poor choice beside a loud stage.' },
       { id: 'e', label: 'A dynamic resting on the strings near the hammers, for the most attack', ok: false, power: 'none', feedback: 'Nothing may touch the strings, dampers or hammers. Keep the mic above them.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.lid', label: 'The lower lid helps separate the piano from the stage', role: 'optional', feedback: 'A fair live reason — at the cost of a closer, more percussive sound.' }, BRAND_REASON, WIDE_REASON],
@@ -788,7 +788,7 @@ export const C11_LESSON: Lesson = {
     { text: 'The octave span (164 mm) comes from a museum Bechstein (ca. 1893); the black keys are drawn centered on their white keys’ boundary.', dims: [] },
     { text: 'The pianist and bench (proposal §5): bench 760 × 360 at 480, head 1250 up, hands over the keys, feet on the pedals — drawn illustratively.', dims: [] },
     { text: 'The bands round the guides’ single figures (±5 cm), the outside pair’s 30 cm–1 m and its height, the under-the-piano 15–45 cm, the sound-hole 12–30 cm, the upright top 3–25 cm and inside 5–25 cm, the panel-off 6–20 cm — the lab’s drawing.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

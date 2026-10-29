@@ -195,7 +195,7 @@ export function continueToCancelLabel(p: Provider): string {
 }
 // OWNER-APPROVED COPY (2026-10-24) (spec C1: "explain that cancellation must be completed there").
 export function completeThereNote(p: Provider): string {
-  return `Cancelling is finished on ${PROVIDER_NAME[p]}'s subscription page. We check the result when you come back.`;
+  return `Canceling is finished on ${PROVIDER_NAME[p]}'s subscription page. We check the result when you come back.`;
 }
 
 // ── Cancellation copy (spec §3, verbatim) ────────────────────────────────────

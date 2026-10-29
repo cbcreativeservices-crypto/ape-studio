@@ -43,12 +43,12 @@ export const DJ_MODEL: InstrumentModel = {
   ],
   surfaces: [
     { id: 'head', partId: 'djembe.head', label: 'the head', point: headCentre(DJEMBE), normal: UP, minus: { words: 'below', key: 'BELOW' } },
-    { id: 'diag', partId: 'djembe.head', label: 'the head’s centre', point: headCentre(DJEMBE), normal: DIAG_N, minus: { words: 'behind', key: 'BEHIND' } },
+    { id: 'diag', partId: 'djembe.head', label: 'the head’s center', point: headCentre(DJEMBE), normal: DIAG_N, minus: { words: 'behind', key: 'BEHIND' } },
     { id: 'opening', partId: 'djembe.foot', label: 'the bottom opening', point: { x: 0, y: 0, z: 0 }, normal: DOWN, minus: { words: 'above', key: 'ABOVE' } },
     { id: 'floorR', partId: 'djembe.foot', label: 'the floor', point: { x: 0, y: SUPPORT, z: 0 }, normal: UP, minus: { words: 'below', key: 'BELOW' } },
   ],
   lines: [
-    { id: 'axis', label: 'the centre line', point: headCentre(DJEMBE), dir: { x: 0, y: 1, z: 0 } },
+    { id: 'axis', label: 'the center line', point: headCentre(DJEMBE), dir: { x: 0, y: 1, z: 0 } },
     { id: 'diag', label: 'the aim line', point: headCentre(DJEMBE), dir: DIAG_N },
   ],
   envelopes: [

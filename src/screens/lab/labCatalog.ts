@@ -207,13 +207,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab', key: 'af_wave_physics' },
+      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behavior.', route: 'WaveLab', key: 'af_wave_physics' },
       { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true },
       // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
       // tool that expands the Wave lab's room work — model your room, place
       // the monitors and the listening position, explore, treat, review.
       // Member-only like its neighbour (no credit key: progress, not credit).
-      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labelled calculated, estimated or measured.', route: 'RoomDesignLab', member: true },
+      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true },
     ],
   },
   {

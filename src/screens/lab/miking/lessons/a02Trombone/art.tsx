@@ -82,14 +82,14 @@ export const A02_ART: LessonArt = {
         bass: 'The bass trombone has the same 2.7 m tube; its valves add loops of tubing for the lowest notes. With the F valve, the slide has six positions over its whole length.',
       },
       silentNote: 'This lab never plays a sound and draws no frequency curve for the horn: how a real trombone sounds depends on the horn, the mouthpiece, the player and the room. The pictures show where the sound comes from and where it goes.',
-      reveal: 'The lips are the source, but the tube decides the note: the standing wave in the air column locks the lips to it. The slide changes the tube’s length — and moves the crook, the hand and the arm half a metre and more.',
+      reveal: 'The lips are the source, but the tube decides the note: the standing wave in the air column locks the lips to it. The slide changes the tube’s length — and moves the crook, the hand and the arm half a meter and more.',
     }),
     setting: makeBrassSettingPage({
       ...A02_PLAN,
       nearA11y: 'A trombonist from above, the bell pointing right toward the audience and the slide reaching past it; the slide’s reach to 7th position dashed. A music stand to the left, a second trombone and a trumpet beside, the drum kit behind.',
       wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another player’s wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trombone mic. There is nothing to answer yet.',
-      nearIdle: 'The slide reaches straight out from the player’s mouth, past the bell, and at 7th position about 56 cm farther. The bell points out toward the audience. Everything else is a neighbour a trombone mic will hear.',
+      nearIdle: 'The slide reaches straight out from the player’s mouth, past the bell, and at 7th position about 56 cm farther. The bell points out toward the audience. Everything else is a neighbor a trombone mic will hear.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front — beyond the slide’s reach — and another player’s to the side. Monitors, the PA and a loud band all reach a trombone mic.',
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the trombone plays in a section — are part of the picture now.',
       before: [

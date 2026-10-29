@@ -67,8 +67,8 @@ export const STAGE6_MIX: StageDef = {
             { value: "alternates_kept", label: "Alternates preserved" },
             { value: "consolidated", label: "Approved clips consolidated" },
             { value: "fades_checked", label: "Fades confirmed" },
-            { value: "sync_checked", label: "Synchronisation re-checked" },
-            { value: "labelled", label: "Tracks labelled" },
+            { value: "sync_checked", label: "Synchronization re-checked" },
+            { value: "labelled", label: "Tracks labeled" },
             { value: "routing_verified", label: "Routing verified" },
             { value: "plugins_available", label: "Processing available on this machine" }
           ]
@@ -85,7 +85,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "monitoring_level_fixed",
           label: "Is the monitoring level consistent",
           kind: "choice",
-          help: "Balance judgements change with level. A moving reference makes every comparison unreliable, including the ones with yourself an hour ago.",
+          help: "Balance judgments change with level. A moving reference makes every comparison unreliable, including the ones with yourself an hour ago.",
           options: [
             { value: "calibrated", label: "Calibrated and kept there" },
             { value: "consistent", label: "Not calibrated, but kept consistent" },
@@ -461,7 +461,7 @@ export const STAGE6_MIX: StageDef = {
           options: [
             { value: "start_end", label: "Correct start and end" },
             { value: "duration", label: "Correct duration" },
-            { value: "sync", label: "Synchronisation" },
+            { value: "sync", label: "Synchronization" },
             { value: "channels", label: "Channel count and order" },
             { value: "routing", label: "Routing" },
             { value: "complete", label: "Nothing missing" },

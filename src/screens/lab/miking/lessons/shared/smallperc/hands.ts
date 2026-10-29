@@ -24,7 +24,7 @@
 
 export type Pt = readonly [number, number];
 
-/** One finger (or the thumb): its centre line and its widths at base and tip. */
+/** One finger (or the thumb): its center line and its widths at base and tip. */
 export type FingerGeo = { pts: Pt[]; w0: number; w1: number; nail: boolean; /** 0 = farthest from the viewer. */ layer: number; tip: Pt; tipDir: Pt };
 export type HandGeo = {
   /** The hand's body (back of the hand and palm) as a closed outline. */

@@ -64,8 +64,8 @@ export const TUBA_ZONES: DocumentedZone[] = [
     requires: { variant: 'up', micTypeIds: ABOVE_FIRST },
     draw: coneDraw(UP.bell.rim, UP.bell.axis, null, 560, 660, 0, 30),
     start: poseAt(UP.bell.rim, ABOVE_DIR, 610, frontEdge(UP)),
-    tendency: 'An open, rounded tuba with some room — the whole bell rather than one spot in it. It hears more of the neighbours and the room than a closer mic.',
-    checks: ['The bell’s tilt and sway while playing', 'The boom stays outside the space above the bell', 'Spill from the neighbours'],
+    tendency: 'An open, rounded tuba with some room — the whole bell rather than one spot in it. It hears more of the neighbors and the room than a closer mic.',
+    checks: ['The bell’s tilt and sway while playing', 'The boom stays outside the space above the bell', 'Spill from the neighbors'],
   },
   {
     id: 'tu.side',
@@ -121,7 +121,7 @@ export const TUBA_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdcCard', 'lbRibbon', 'lbLdc'] },
     draw: coneDraw(CENTRE, X, null, 1000, 1400, 0, 35),
     start: poseAt(CENTRE, FAR_DIR, 1150),
-    tendency: 'The tuba’s size and the room together — sustained lows and the decay in the space. More of the neighbours and the room’s low-end modes come with it.',
+    tendency: 'The tuba’s size and the room together — sustained lows and the decay in the space. More of the neighbors and the room’s low-end modes come with it.',
     checks: ['Whether the room is worth hearing', 'Low notes uneven from room modes', 'Spill from the band'],
   },
 ];

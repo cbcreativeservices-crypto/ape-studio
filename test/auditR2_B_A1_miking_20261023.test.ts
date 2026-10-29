@@ -26,7 +26,7 @@ const CASES: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'R007118', file: 'a10Harmonica/pages.tsx', now: 'Each reed is tuned to one note.', gone: 'Every reed is a different length' },
   { id: 'R007360', file: 'b17CrowdComplete/pages.tsx', now: 'A polarity flip on one path swaps left and right; a delay between the paths blurs the image.', gone: 'breaks the matrix' },
   { id: 'R008440', file: 'a06Flute/lesson.ts', now: 'A windscreen does not cut spill', gone: 'a windscreen helps most once the capsule is off the jet' },
-  { id: 'R010699', file: 'a01Trumpet/lesson.ts', now: 'a mic a metre away hears much more of the band and the monitors', gone: 'hears the band and the monitors more than the horn' },
+  { id: 'R010699', file: 'a01Trumpet/lesson.ts', now: 'a mic a meter away hears much more of the band and the monitors', gone: 'hears the band and the monitors more than the horn' },
   { id: 'R011316', file: 'b10Sideline/lesson.ts', now: 'It reaches the handheld from above, on the camera side.', gone: 'reaches the handheld from in front and above' },
   { id: 'R014089a', file: 'c09aViolin/lesson.ts', now: 'The real move is tiny; it is drawn many times larger here.', gone: 'a tiny way, many times larger here' },
   { id: 'R014089b', file: 'c09bViola/lesson.ts', now: 'The real move is tiny; it is drawn many times larger here.', gone: 'a tiny way, many times larger here' },

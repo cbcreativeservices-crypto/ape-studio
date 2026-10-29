@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the snare’s neighbours on the kit — the hi-hat above all — the player’s space and the sticks’ path, what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the snare’s neighbors on the kit — the hi-hat above all — the player’s space and the sticks’ path, what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['sn.set.1', 'sn.set.2', 'sn.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The near half of the snare is the sticks’ path: no mic, stand or cable goes there. The hi-hat sits just beside and above it. Ask the player first, and protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, aim, the pattern, gain staging, levels and polarity — and the drum itself, before reaching for tone controls.',
   },
   practice: {
@@ -98,12 +98,12 @@ const scenarios: MikingScenario[] = [
     id: 'sn.snd.2',
     page: 'sound',
     prompt: 'The stick strikes the exact center of the batter head. Which of its vibration shapes can it set moving?',
-    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
     explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center — so a center strike drives only the ring-shaped ones, the lowest shape among them; off center, more join in.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the center means the head does not move there, so a center strike cannot push that shape.',
+      'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there, so a center strike cannot push that shape.',
     },
   },
   {
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a typical right-handed kit, where is the hi-hat relative to the snare?',
     options: ['Just beside and above it, to the player’s left', 'In front of it, out toward the audience side', 'Below it, down beside the snare stand on the floor'],
     correct: 'Just beside and above it, to the player’s left',
-    explain: 'The hi-hat sits close, beside and a little above the snare on the player’s left — which is why it is the neighbour a snare mic hears most, and why a top mic usually comes in from the front, between the hi-hat and the rack tom.',
+    explain: 'The hi-hat sits close, beside and a little above the snare on the player’s left — which is why it is the neighbor a snare mic hears most, and why a top mic usually comes in from the front, between the hi-hat and the rack tom.',
     why: {
       'In front of it, out toward the audience side': 'The audience side, in front of the snare, is usually where a top mic comes in. The hi-hat is beside it, to the left.',
       'Below it, down beside the snare stand on the floor': 'Its pedal is on the floor, but its cymbals sit beside the snare and a little above it.',
@@ -248,7 +248,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Clearance comes first: the player’s side of the snare, the rim the sticks hit, and the hi-hat moving above it. Stop the drummer before anything moves.',
     why: {
       'The front of the drum, so the audience can see it clearly': 'The front is usually where a top mic comes in. The space to protect is the sticks’ and the hi-hat’s.',
-      'The kick drum’s shell, which rings in sympathy': 'Neighbours matter for spill, but the safety question is the sticks’ path and the hi-hat’s travel.',
+      'The kick drum’s shell, which rings in sympathy': 'Neighbors matter for spill, but the safety question is the sticks’ path and the hi-hat’s travel.',
     },
   },
   {
@@ -581,12 +581,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A stroke exactly at the center of a drumhead drives which of its vibration shapes?',
-    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the centre'],
+    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the center'],
     correct: 'Only the ring-shaped ones — the rest stand still there',
-    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the center does not move there.',
     why: {
       'All of the shapes, each one just as hard': 'The stick touches one spot. A shape is driven only as much as the head moves there — not at all on a still line.',
-      'Only the shapes split by a line through the centre': 'The reverse: those shapes are still at the centre, so a centre strike cannot drive them.',
+      'Only the shapes split by a line through the center': 'The reverse: those shapes are still at the center, so a center strike cannot drive them.',
     },
   },
   {
@@ -610,7 +610,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The near half of the snare belongs to the sticks — strokes, rimshots, cross-stick — and the hi-hat moves just above. The front usually stays clear for a mic.',
     why: {
       'The front of the drum, so the audience can see it clearly': 'The front is usually where a top mic comes in. The sticks’ path is what to keep clear.',
-      'The floor tom’s space on the far side of the kit': 'Neighbours matter, but the space that moves all the time is the sticks’ and the hi-hat’s.',
+      'The floor tom’s space on the far side of the kit': 'Neighbors matter, but the space that moves all the time is the sticks’ and the hi-hat’s.',
     },
   },
   {
@@ -688,7 +688,7 @@ export const M02_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The stick strikes', text: 'The tip of the stick strikes the batter head. That brief contact is where the ATTACK — the crack at the start of the sound — begins.' },
-      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the centre, not at all at the hoop: its lowest vibration shape, drawn here many times larger than it really moves.' },
+      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the center, not at all at the hoop: its lowest vibration shape, drawn here many times larger than it really moves.' },
       { title: 'The air pushes the snare-side head', text: 'The batter head squeezes the air inside, and the air pushes the snare-side head down. The two heads are coupled through the air — and the snare-side head carries the wires with it.' },
       {
         title: 'The wires buzz',
@@ -708,7 +708,7 @@ export const M02_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'snare', label: 'the snare drum (on its stand)', short: 'SNARE', note: 'Between the player’s knees, on its own stand, drawn flat. Ringed in amber: the drum this lesson mics.', prov: { kind: 'sourced', src: 'YMH-TCS', quote: 'TMS-1455 14"×5.5"' }, tag: 'THE DRUM', scene: 'all' },
-      { id: 'hihat', label: 'hi-hat', short: 'HI-HAT', note: 'Just beside and above the snare, to the player’s left on most kits — the neighbour a snare mic hears most. Its cymbals open and close, and air bursts out of their edges: keep a mic clear of both.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'hihat', label: 'hi-hat', short: 'HI-HAT', note: 'Just beside and above the snare, to the player’s left on most kits — the neighbor a snare mic hears most. Its cymbals open and close, and air bursts out of their edges: keep a mic clear of both.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit' },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The player sits behind the snare. Their hands and sticks work over its near half — the sticks’ path — so no mic, stand or cable goes there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'toms', label: 'two rack toms', short: 'RACK TOMS', note: 'Up and to the snare’s right, over the kick. A top mic’s stand usually comes in between the small tom and the hi-hat.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'MIC PATH', scene: 'kit', planIds: ['tom1', 'tom2'] },
       { id: 'cymbals', label: 'crash and ride cymbals', short: 'CYMBALS', note: 'A crash above, just in front of the snare; another crash and the ride across the kit. Loud, and they swing when struck: a top mic’s stand passes under the near crash.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['crash1', 'crash2', 'ride'] },
@@ -747,7 +747,7 @@ export const M02_LESSON: Lesson = {
     { text: 'The bottom-mic distance (3–8 cm below the snare-side head): the source gives a position only.', dims: [] },
     { text: 'The snare stand’s basket and legs, and a clamp’s reach from the hoop.', dims: [] },
     { text: 'The supercardioid drum dynamic’s outline (not published) and the rim condenser’s head length — drawing defaults.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

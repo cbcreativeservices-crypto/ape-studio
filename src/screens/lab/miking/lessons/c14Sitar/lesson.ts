@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a sitar player on the floor — the mizrab hand, the long neck, the bends, the gourd — the neighbours (tabla, tanpura), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space round a sitar player on the floor — the mizrab hand, the long neck, the bends, the gourd — the neighbors (tabla, tanpura), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The space round the sitar is the player’s, low on the floor. Check what this sitar has before promising a sound. Ask the player first, and protect your hearing.',
   },
@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — aim, distance, the instrument itself, the room, the signal paths, levels and polarity — before reaching for EQ. A rattle in the sitar itself is the player’s to diagnose; one from a stand, clip or cable is yours.',
   },
   practice: {

@@ -49,7 +49,7 @@ const HAND: HandSpec = {
   },
   axes: {
     x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the audience side (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'in front of' : 'behind'} the triangle` },
-    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - P0.y))} ${v <= P0.y ? 'above' : 'below'} the triangle’s centre` },
+    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - P0.y))} ${v <= P0.y ? 'above' : 'below'} the triangle’s center` },
     z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the player’s left (the open corner’s side) or right (the beater’s side) (z).', fmt: (v) => `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'}` },
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
@@ -75,7 +75,7 @@ const HAND: HandSpec = {
     looking: 'the triangle from above',
     prompt: 'Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then change one thing at a time.',
     label: 'The triangle held in front of the player',
-    tried: (p) => `You predicted “${p}”. Farther back, the attack and the ring blend with the room — and the neighbours come up too. Closer, more attack and isolation. Which suits depends on the room and the music.`,
+    tried: (p) => `You predicted “${p}”. Farther back, the attack and the ring blend with the room — and the neighbors come up too. Closer, more attack and isolation. Which suits depends on the room and the music.`,
     notes: () => <VariantChips />,
   },
   learnZones: [

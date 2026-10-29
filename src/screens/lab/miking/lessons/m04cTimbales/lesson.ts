@@ -31,7 +31,7 @@ const pages: LessonPages = {
     title: 'Where they sit',
     goal: 'Know where the timbales sit in a band, the player’s stick space, the accessories, and what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.2', 'tb.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The sticks reach above both heads, round the shells and to the accessories: no stand, boom or cable goes there. Bells and cymbals are loud neighbours in every timbale mic. Ask the player first, and protect your hearing.',
+    takeaway: 'The sticks reach above both heads, round the shells and to the accessories: no stand, boom or cable goes there. Bells and cymbals are loud neighbors in every timbale mic. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic above the pair, between the shells, under each drum, or a clip-on per drum — out of every stick path; then move the mic and see what changes.',
     credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'Top and shell positions favour different surfaces: heads and rimshots above, the cáscara near the shells. Bring in a separate mic only for a demonstrated need — and never a mic right above a rimshot target.',
+    takeaway: 'Top and shell positions favor different surfaces: heads and rimshots above, the cáscara near the shells. Bring in a separate mic only for a demonstrated need — and never a mic right above a rimshot target.',
   },
   context: {
     title: 'Studio or live',
@@ -60,7 +60,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the part, the aim, the accessories, the gain and the open channels before reaching for tone controls.',
   },
   practice: {
@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
     explain: 'We found the idea, not its pattern, distance or aim. Try it as a perspective on the shell area, keep it secure and out of every stick path, and check that the heads and rimshots stay usable.',
     why: {
       'No — without a distance or an aim, it cannot be placed': 'A region to begin in is enough to start: place it safely, then move it and listen.',
-      'Yes — it captures the heads and the cáscara equally well': 'It can favour the cáscara and the shells; check the heads and rimshots by ear.',
+      'Yes — it captures the heads and the cáscara equally well': 'It can favor the cáscara and the shells; check the heads and rimshots by ear.',
     },
   },
   {
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, for the surfaces the part uses', role: 'required', feedback: 'Say why it is a good place to begin, and which surfaces it favours.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, for the surfaces the part uses', role: 'required', feedback: 'Say why it is a good place to begin, and which surfaces it favors.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of every stick path', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on timbales', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the pair', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -509,7 +509,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · Timbales with a bell, a studio session with other percussion, limited channels. The part uses heads, rimshots and a steady cáscara. Phantom power is available.',
     setups: [
       { id: 'a', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point with the fewest channels; check the cáscara and the bell in it.' },
-      { id: 'b', label: 'A compact dynamic right between the shells, on the audience side', ok: true, power: 'none', feedback: 'A starting idea that can favour the cáscara; check that the heads and rimshots stay usable.' },
+      { id: 'b', label: 'A compact dynamic right between the shells, on the audience side', ok: true, power: 'none', feedback: 'A starting idea that can favor the cáscara; check that the heads and rimshots stay usable.' },
       { id: 'c', label: 'A clip-on condenser on each drum’s far rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control; it needs the phantom power this input has. Check the bell in both.' },
       { id: 'd', label: 'A mic just above a rimshot target on the player’s side', ok: false, power: 'none', feedback: 'That is in the stick path: it will be struck.' },
       { id: 'e', label: 'A mic taped to the shell where the cáscara is played', ok: false, power: 'none', feedback: 'That is the shell-strike zone, and nothing is mounted to the instrument without the right hardware and permission.' },
@@ -525,7 +525,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A compact dynamic spot on each drum, outside the stick path', ok: true, power: 'none', feedback: 'Close, directional, independent control on a loud stage; dynamics need no phantom.' },
       { id: 'b', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'c', label: 'A clip-on condenser on each rim', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
-      { id: 'd', label: 'A small-condenser pair a metre above the drums', ok: false, power: 'phantom', feedback: 'Distant on a loud stage, and it needs phantom power.' },
+      { id: 'd', label: 'A small-condenser pair a meter above the drums', ok: false, power: 'phantom', feedback: 'Distant on a loud stage, and it needs phantom power.' },
       { id: 'e', label: 'Two dynamics beneath the drums among the stand legs', ok: false, power: 'none', feedback: 'A studio idea to try — not a safe default for a crowded stage.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
@@ -658,7 +658,7 @@ export const M04C_LESSON: HandLesson = {
     items: [
       { id: 'drums', label: 'the timbales (the same drawing as every other page)', short: 'TIMBALES', note: 'The 14 in on the player’s left, the 15 in on the right, on their stand — with a cowbell on the bracket here.', prov: { kind: 'sourced', src: 'LP-257', quote: '14″ & 15″ diameter, 6-1/2″ deep' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'player', label: 'the player, standing with sticks', short: 'PLAYER', note: 'The sticks reach above both heads, round the shells and to the bell; the player moves between instruments. Nothing of yours goes there, or where it could drop onto them.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbour; its cymbals in particular reach a timbale mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
+      { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor; its cymbals in particular reach a timbale mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into the timbale mics.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'perc', label: 'other percussion (congas, more bells)', short: 'PERCUSSION', note: 'Bells, blocks and cymbals may be louder than the heads and enter several mics; the player moves between them.', prov: { kind: 'illustrative', reason: 'a typical percussion setup; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'vox', label: 'a vocal mic', short: 'VOCAL MIC', note: 'Another open mic that hears the timbales and the bell.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'OPEN MIC', scene: 'all' },
@@ -716,7 +716,7 @@ export const M04C_LESSON: HandLesson = {
     strikeWord: 'STICK',
     face: { kind: 'crown', lugs: D.lugs.mm },
     facePoints: [
-      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact centre of the head.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact center of the head.' },
       { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the rim.' },
       { id: 'e', label: 'NEAR THE RIM', frac: 0.9, blurb: 'Close to the rim, where a rimshot lands.' },
     ],
@@ -760,7 +760,7 @@ export const M04C_LESSON: HandLesson = {
       badge: 'The band from above · a typical layout · the player at the left, the audience to the right',
       looking: 'Plan · the band from above · the player behind the timbales',
       prompt: 'Tap anything around the timbales — or step through ITEM — to see what it means for a timbale mic. There is nothing to answer yet.',
-      intro: 'The timbales stand in front of the player, with loud neighbours around them — and a bell on their own stand. Everything near them is either the player’s stick space or a source of spill.',
+      intro: 'The timbales stand in front of the player, with loud neighbors around them — and a bell on their own stand. Everything near them is either the player’s stick space or a source of spill.',
       label: 'The band from above: the timbales in the middle with the player behind them, a drum kit and a bass amp behind the player, other percussion to the player’s right and a vocal mic in front.',
     },
     before: {
@@ -777,7 +777,7 @@ export const M04C_LESSON: HandLesson = {
     },
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so the distances shown are our own rough guides: begin out of every stick path, then listen. Starting points, not rules.',
-      'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
+      'The shell-oriented and above-head starting points differ because they favor different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close and show roughly where; if a move is stopped, they turn red and give the reason. Recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',
     ],

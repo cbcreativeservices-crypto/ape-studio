@@ -69,7 +69,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — where the mic is when the answer starts, the wind, the hand, the open mics, the radio path — before reaching for EQ or more gain.',
   },
   practice: {
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A headset steadies the reporter’s questions at one distance; the guest still needs a handheld, a body mic or a boom.',
     why: {
       'Nothing: the headset hears both of them clearly': 'The guest is far from the reporter’s mouth corner: distant and crowd-heavy.',
-      'The crowd: the headset cancels it': 'The crowd has its own mics; even a noise-cancelling headset only lowers it.',
+      'The crowd: the headset cancels it': 'The crowd has its own mics; even a noise-canceling headset only lowers it.',
     },
   },
   {
@@ -290,7 +290,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With time and approval, a body mic or a boom at a controlled mark gives a steady, repeatable voice — each on its own channel.',
     why: {
       'A handheld left on a stand right beside the backdrop': 'A mic on a stand is not at the mouth, and the guest will move.',
-      'A camera-top mic, since the camera is close by': 'The camera is metres away: distant and crowd-heavy.',
+      'A camera-top mic, since the camera is close by': 'The camera is meters away: distant and crowd-heavy.',
     },
   },
   {
@@ -333,10 +333,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b10.two.4',
     page: 'twoMic',
-    prompt: 'Why keep the reporter and the guest on separate labelled channels?',
+    prompt: 'Why keep the reporter and the guest on separate labeled channels?',
     options: ['Each can be checked and balanced alone', 'Two channels make both of the voices louder', 'So the two mics form a stereo pair'],
     correct: 'Each can be checked and balanced alone',
-    explain: 'On separate channels each voice can be soloed, levelled, pulled down when unused and checked in mono. A sum made at the source cannot be undone.',
+    explain: 'On separate channels each voice can be soloed, leveled, pulled down when unused and checked in mono. A sum made at the source cannot be undone.',
     why: {
       'Two channels make both of the voices louder': 'Level comes from gain, not from channels.',
       'So the two mics form a stereo pair': 'They are two close voice mics, not a stereo pair.',
@@ -498,7 +498,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'An approved body mic at the breastbone, its own channel', ok: true, power: 'pack', feedback: 'A suggested start: steady, with nothing in the hands — check rub, sweat and the radio path.' },
       { id: 'b', label: 'A boom held outside the frame, aimed down at the mouth', ok: true, power: 'phantom', feedback: 'A suggested start: nothing on the body — keep it close and re-aimed.' },
       { id: 'c', label: 'The body mic and a handheld both open, to be safe', ok: false, power: 'none', feedback: 'Two open mics on one voice comb. Choose one, or switch on purpose.' },
-      { id: 'd', label: 'A mic on the camera, since the shot is close', ok: false, power: 'none', feedback: 'The camera is metres away: distant and crowd-heavy.' },
+      { id: 'd', label: 'A mic on the camera, since the shot is close', ok: false, power: 'none', feedback: 'The camera is meters away: distant and crowd-heavy.' },
       { id: 'e', label: 'A mic taped to the guest’s protective gear', ok: false, power: 'none', feedback: 'Never improvise a mount on regulated or protective gear.' },
     ],
     reasons: [docReason('the lips'), clearReason('the faces, the frame and the walkway'), { id: 'r.approval', label: 'The guest and the event approved the fit', role: 'required', feedback: 'Say who approved anything on the guest.' }, { id: 'r.radio', label: 'The radio channel is coordinated and a fallback is ready', role: 'optional', feedback: 'A fair post-event reason.' }, BRAND_REASON('post-event interview'), { id: 'r.both', label: 'Two open mics on the guest give a fuller voice', role: 'wrong', feedback: 'Two open mics on one voice sound hollower.' }],

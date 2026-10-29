@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Distance, angle and spacing first — the semicircle, the mics to each other, the wedges to the patterns — before EQ or compression. Lower the level at the first ring.',
   },
   practice: {
@@ -268,7 +268,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes, later and much quieter',
     explain: 'Every open mic hears both voices. Spaced well past 3:1, the other singer’s copy is far quieter and a little late — a shallow comb in the sum.',
     why: {
-      'No, a cardioid hears only its own singer': 'A cardioid favours its front; it still hears the singer beside it.',
+      'No, a cardioid hears only its own singer': 'A cardioid favors its front; it still hears the singer beside it.',
       'Yes, as loud as in their own mic': 'Several times farther away, it arrives far quieter.',
     },
   },
@@ -578,7 +578,7 @@ export const E04_LESSON: EnsembleLesson = {
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin — for one shared mic, in the middle at the mouths’ height or a little higher; for a figure-8, halfway between the mouths; for a quartet’s pair, 0.6–1.8 m in front. Places to start and rehearse, not a best place.',
-      'At one mic, every centimetre toward a singer is level for that singer — the NEAR / FAR readout is the balance the mic hears. Match the distances first.',
+      'At one mic, every centimeter toward a singer is level for that singer — the NEAR / FAR readout is the balance the mic hears. Match the distances first.',
       'Move the singers before adding mics; change one thing at a time and compare at matched level.',
     ],
   },

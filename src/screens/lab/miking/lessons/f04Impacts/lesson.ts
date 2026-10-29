@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what else reaches the mic — handling, stand and table vibration, the room — and the water and electrical rules to settle before any stand goes up: the splash marked with the mic absent, electronics away from the wet area.',
     credit: { scenarios: ['f04.set.1', 'f04.set.2', 'f04.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'Mark the splash with the mic absent and set the stand outside it; keep power, cables and connectors away from water; a windscreen is not a water barrier; never energise wet equipment. Hearing comes first.',
+    takeaway: 'Mark the splash with the mic absent and set the stand outside it; keep power, cables and connectors away from water; a windscreen is not a water barrier; never energize wet equipment. Hearing comes first.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -56,7 +56,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the effects mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a live theatre need different plans, and no wet effect live without approved containment.',
+    goal: 'Aim the effects mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a live theater need different plans, and no wet effect live without approved containment.',
     credit: { scenarios: ['f04.ctx.1', 'f04.ctx.2', 'f04.ctx.ring', 'f04.ctx.studio', 'f04.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
     takeaway: 'On a quiet stage, change props, distance and protection between takes. Live, small contained effects at a fixed station, the wedge in the rejection, no wet effect without approved containment — and ringing out left to the system operator.',
   },
@@ -64,12 +64,12 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two mics on one splash can blur its attack together, how the arrival-time difference places comb notches, and why each mic is given a different task.',
     credit: { scenarios: ['f04.two.1', 'f04.two.2', 'f04.two.3', 'f04.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Begin with one mic per cue. A second earns its place with a different task — the entry or the tail, the room — recorded and labelled separately, checked in mono; choosing between mics is as fair as summing them.',
+    takeaway: 'Begin with one mic per cue. A second earns its place with a different task — the entry or the tail, the room — recorded and labeled separately, checked in mono; choosing between mics is as fair as summing them.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the source, the force and the splash first — the headroom at the mic, the preamp and the recorder — before any processing. If anything gets wet, stop.',
   },
   practice: {
@@ -246,7 +246,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f04.ctx.1',
     page: 'context',
-    prompt: 'A live theatre wants a splash effect through the PA. What comes first?',
+    prompt: 'A live theater wants a splash effect through the PA. What comes first?',
     options: ['Approved containment, cleanup and separation', 'A mic close in over the water for plenty of level', 'A louder splash to beat the PA'],
     correct: 'Approved containment, cleanup and separation',
     explain: 'Avoid a wet effect in a live stage area unless the venue has approved containment, cleanup and equipment separation. Then a small contained effect at a fixed station, the wedge in the rejection.',
@@ -392,7 +392,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Set gain on the strongest planned splash, with headroom', early: 'Gain is set once the mic is connected and powered.' },
       { text: 'Record, and let the drips finish before the next take', early: 'Record only once the level is set safely.' },
     ],
-    explain: 'A sensible order. Phantom: mute the outputs and lower the monitoring before switching it, and follow the mic’s manual. Water: stop if it escapes its containment, and never energise wet equipment.',
+    explain: 'A sensible order. Phantom: mute the outputs and lower the monitoring before switching it, and follow the mic’s manual. Water: stop if it escapes its containment, and never energize wet equipment.',
   },
 ];
 
@@ -414,7 +414,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'f04.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A live theatre: a padded impact at a station beside the stage, through the PA, a wedge in front.',
+    brief: 'BRIEF 2 · A live theater: a padded impact at a station beside the stage, through the PA, a wedge in front.',
     setups: [
       { id: 'a', label: 'A small supercardioid about 50 cm from the impact, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: close, contained, aimed — check at show level.' },
       { id: 'b', label: 'A dynamic close to the impact, the wedge behind it', ok: true, power: 'none', feedback: 'A fair live choice for a strong hit — check the wedge against the real pattern.' },
@@ -527,8 +527,8 @@ export const F04_LESSON: Lesson & { sp: SpExtra } = {
   orient: [
     { title: 'WHAT IT IS', text: 'Small, controllable Foley sources performed to picture: a padded impact, a little water in a stable basin, a dry brush across fabric.', src: 'LESSON-F04' },
     { title: 'ATTACK AND TAIL', text: 'An impact is a contact and a resonating body; water is an entry, a splash, bubbles and a surprisingly long drip tail; a texture is a steady friction with a natural end.', src: 'KROTOS-VAL' },
-    { title: 'THREE PATHS', text: 'An airborne mic hears the surface; a hydrophone made for immersion hears the water; a contact sensor hears the structure. Each is its own labelled track.', src: 'ASE-ELEM' },
-    { title: 'WATER AND ELECTRICITY', text: 'Mark the splash with the mic absent; keep every mic, stand, cable and power supply outside it; a windscreen is not a water barrier; never energise wet equipment.', src: 'S-SM4-UG' },
+    { title: 'THREE PATHS', text: 'An airborne mic hears the surface; a hydrophone made for immersion hears the water; a contact sensor hears the structure. Each is its own labeled track.', src: 'ASE-ELEM' },
+    { title: 'WATER AND ELECTRICITY', text: 'Mark the splash with the mic absent; keep every mic, stand, cable and power supply outside it; a windscreen is not a water barrier; never energize wet equipment.', src: 'S-SM4-UG' },
   ],
   sound: {
     stages: [

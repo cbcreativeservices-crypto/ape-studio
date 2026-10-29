@@ -28,7 +28,7 @@
  *   auxOut      an instrument's own ¼ in auxiliary output on its panel
  *   combo       1 × 12 combo FRONT: 622 × 445 (the lesson's model), control
  *               panel band 90 (2 inputs, 9 knobs, pilot lamp), grille cloth,
- *               the speaker 60 right of centre and 255 below the top, a strap
+ *               the speaker 60 right of center and 255 below the top, a strap
  *               handle 180 × 22
  *   head        compact bass head 330 × 75 × 250, three-quarter view
  *   guitarHead  a guitar valve head 600 × 250 front: vent grille, control
@@ -998,7 +998,7 @@ function WurliLidIcon({ S }: { S: number }) {
 /** An instrument dynamic on a short stand, side view, aimed LEFT at the speaker. */
 function MicIcon({ S }: { S: number }) {
   // Grille Ø 32 (front 42 long), body tapering to Ø 25, 157 overall; XLR plug Ø 19 × 50 and its boot.
-  // Set right of centre so the air arcs in front of it stay clear of the grille.
+  // Set right of center so the air arcs in front of it stay clear of the grille.
   const total = 157 + 70;
   const k = fit(S, total, total, 0.86, 1.0);
   const hw = 0.5 / k;

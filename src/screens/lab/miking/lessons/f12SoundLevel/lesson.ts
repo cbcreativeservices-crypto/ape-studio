@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the position, the wind, the background and the settings before the number — and keep the raw records whatever you find.',
   },
   practice: {
@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     explain: 'LAFmax is the largest fast-time-weighted level; a peak is the meter’s peak detector under the weighting the method names. Never relabel one as the other.',
     why: {
       'A fast maximum is a peak in C-weighting': 'Changing the weighting does not change a time-weighted maximum into a peak.',
-      'A maximum of either kind may be called a peak': 'Fast, slow and peak are different detectors: each is labelled as what it is.',
+      'A maximum of either kind may be called a peak': 'Fast, slow and peak are different detectors: each is labeled as what it is.',
     },
   },
   {
@@ -346,7 +346,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sl.mix.1',
     page: 'practice',
-    prompt: 'A reading taken at the facade is labelled “free field”. What is wrong?',
+    prompt: 'A reading taken at the facade is labeled “free field”. What is wrong?',
     options: ['A facade reading includes the wall’s reflection', 'A facade reading is too low to count at all', 'Nothing is wrong, if the windscreen was on'],
     correct: 'A facade reading includes the wall’s reflection',
     explain: 'Reflections are part of what a meter at a wall receives: name it a facade position and use the method’s correction if it has one.',
@@ -495,7 +495,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'sl.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · Does the neighbour’s new air unit add to the night-time level at the bedroom window?',
+    brief: 'BRIEF 2 · Does the neighbor’s new air unit add to the night-time level at the bedroom window?',
     setups: [
       { id: 'onoff', label: 'Unit running and stopped, same position at the window, same window length', ok: true, power: 'none', feedback: 'Total and background at the same position: subtract in energy, or report that they could not be separated.' },
       { id: 'onoffpair', label: 'The same, plus a second meter in the open as a reference', ok: true, power: 'none', feedback: 'A reference position helps show what else changed during the night.' },
@@ -595,7 +595,7 @@ export const F12_LESSON: Lesson = {
   setupPairs: [{ label: 'Two receivers: A in the open + B at the facade', A: { zone: 'sl.open' }, B: { zone: 'sl.facade' }, line: 'Two meters on one clock: the open spot and the facade, each named — each with its own check and its own record.' }],
   orient: [
     { title: 'WHAT IT IS', text: 'A sound-level survey: a complete sound level meter — capsule, preamp, weighting, averaging and display in one instrument — on a tripod, with a windscreen outdoors, at positions chosen for a named question.', src: 'F12-LESSON' },
-    { title: 'WHERE YOU MEET IT', text: 'A neighbourhood baseline, a traffic study, a venue’s boundary check, a machine next door. A worker’s daily exposure is different again: it is measured on the person, not at a spot.', src: 'OSHA-G' },
+    { title: 'WHERE YOU MEET IT', text: 'A neighborhood baseline, a traffic study, a venue’s boundary check, a machine next door. A worker’s daily exposure is different again: it is measured on the person, not at a spot.', src: 'OSHA-G' },
     { title: 'WHAT IT DOES', text: 'It reports a DESCRIPTOR over a WINDOW — an energy average, the loudest fast level, the levels exceeded part of the time, a peak — at one position. What it stands for is that spot, at that time.', src: 'F12-LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a handheld meter on a tripod, its capsule 1.5 m (5 ft) above the ground — the height one highway method names — at a house by a road, with a lawn, an air unit and a power line. The site is a drawing; your question names the real receivers.', src: 'FHWA-FG' },
   ],
@@ -631,7 +631,7 @@ export const F12_LESSON: Lesson = {
     { text: '“Close to but not touching” the facade: drawn 6–30 cm.', dims: [] },
     { text: 'The open position’s distance from the road (3–4.5 m) is a drawing default: the question names the receiver.', dims: [] },
     { text: 'The meter’s size, its class and its orientation rule are not in the lesson; it is drawn as a free-field meter aimed as its data says.', dims: [] },
-    { text: 'The level histories are made-up examples; the background limit (3 dB) is this lab’s default, labelled “your method sets this”.', dims: [] },
+    { text: 'The level histories are made-up examples; the background limit (3 dB) is this lab’s default, labeled “your method sets this”.', dims: [] },
   ],
   live: { wedges: [] },
   accuracyDetail:

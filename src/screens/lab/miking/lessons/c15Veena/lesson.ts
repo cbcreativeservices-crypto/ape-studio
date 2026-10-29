@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a veena player on the floor — the plucking hand, the long neck and its gamakas, the gourd on the thigh — the neighbours (mridangam, tanpura), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space round a veena player on the floor — the plucking hand, the long neck and its gamakas, the gourd on the thigh — the neighbors (mridangam, tanpura), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The posture is the player’s — the mic adapts to it, never the reverse. Know which veena it is. Ask the player first, and protect your hearing.',
   },
@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — aim, distance, the player’s space, the signal paths, levels and polarity — before reaching for EQ. Never ask the player to change the instrument or the posture for the mic.',
   },
   practice: {
@@ -153,7 +153,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An engineer’s notes say they took the windscreen and grille off their dynamics for a veena session. Should you copy that?',
     options: ['Yes: removing the grille is how veenas are usually miked on a stage', 'No: keep a mic’s protective parts unless its maker allows it', 'Yes, as long as the mic is a dynamic and not a condenser'],
     correct: 'No: keep a mic’s protective parts unless its maker allows it',
-    explain: 'One session’s notes are not an instruction. A mic’s windscreen and grille protect it; leave them on unless its manufacturer explicitly authorises a change.',
+    explain: 'One session’s notes are not an instruction. A mic’s windscreen and grille protect it; leave them on unless its manufacturer explicitly authorizes a change.',
     why: {
       'Yes: removing the grille is how veenas are usually miked on a stage': 'One session is not a norm. Keep the protective parts on.',
       'Yes, as long as the mic is a dynamic and not a condenser': 'The type does not make it safe. Follow the maker’s instructions.',
@@ -260,9 +260,9 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · The plate’s measured radiation changed with pitch, direction and distance. What does that suggest for a live mic?',
-    options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions round the face; one spot may favour some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
-    correct: 'Compare a few positions round the face; one spot may favour some notes',
-    explain: 'Because the pattern changes with pitch and direction, a single close spot can favour some notes or a local resonance. Compare positions round the main face at matched levels.',
+    options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions round the face; one spot may favor some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
+    correct: 'Compare a few positions round the face; one spot may favor some notes',
+    explain: 'Because the pattern changes with pitch and direction, a single close spot can favor some notes or a local resonance. Compare positions round the main face at matched levels.',
     why: {
       'Each spot on the plate gives a similar sound, so just pick one of them': 'The measurements show the opposite: the radiation varies with direction.',
       'The mic must sit exactly where the study measured, 25 cm out': 'That was a measurement radius, not a placement rule.',
@@ -399,7 +399,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The veena’s measured radiation changed with pitch, direction and distance. What does that suggest?',
     options: ['The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound', 'Compare a few positions round the face before settling'],
     correct: 'Compare a few positions round the face before settling',
-    explain: 'A pattern that changes with pitch and direction means one spot can favour some notes. Compare positions round the main face at matched levels.',
+    explain: 'A pattern that changes with pitch and direction means one spot can favor some notes. Compare positions round the main face at matched levels.',
     why: {
       'The positions all sound alike, so the first one will do fine': 'The measurements show the opposite: the sound varies round the face.',
       'Only the 25 cm study radius gives a true sound': 'That was where the study measured, not a placement rule.',

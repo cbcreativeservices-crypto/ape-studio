@@ -176,7 +176,7 @@ export function wurliModel(id: string, name: string): InstrumentModel {
     lines: [
       { id: 'axis', label: 'the speaker’s axis', point: C_BASS, dir: W.n, surfaces: ['grille'] },
       { id: 'axis2', label: 'the other speaker’s axis', point: C_TREBLE, dir: W.n, surfaces: ['grille2'] },
-      { id: 'mid', label: 'the case’s centre line', point: { x: 0, y: (W.caseTopY + W.caseBottomY) / 2, z: 0 }, dir: { x: 1, y: 0, z: 0 }, surfaces: ['back'] },
+      { id: 'mid', label: 'the case’s center line', point: { x: 0, y: (W.caseTopY + W.caseBottomY) / 2, z: 0 }, dir: { x: 1, y: 0, z: 0 }, surfaces: ['back'] },
     ],
     envelopes: envelopes(),
     variants: [{ id: 'lid', label: 'SPEAKERS IN THE LID', blurb: 'The later model: the two oval speakers are screwed to the lid, which becomes their baffle.' }],

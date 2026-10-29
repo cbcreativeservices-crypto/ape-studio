@@ -56,11 +56,11 @@ const SPEC = ensembleHandSpec({
     gainId: 'sq.prac.gain',
     secondId: 'sq.prac.3',
     mixIds: ['sq.hole', 'sq.need', 'sq.first2'],
-    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s centre, what earns a support, and a support’s early arrival.',
+    mixIntro: 'Three cards from earlier pages, mixed: a spaced pair’s center, what earns a support, and a support’s early arrival.',
     sheetNote: 'For a real quartet or section, with the players’ agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = suggested starting points · grey dashes = the players and their bows · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · gray dashes = the players and their bows · pinch to zoom',
     clearance: 'Clearance comes first: the bows’ full sweep, the left hands, the chairs, the cello’s endpin, the cables and the players’ sightlines. Mounts only with the player’s approval.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — a floor monitor below it sits off that axis, so turn or tilt the mic, or try a tighter pattern.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',

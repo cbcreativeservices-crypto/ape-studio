@@ -66,7 +66,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the position, the headroom, the aim, the wind protection, the routing — before reaching for a limiter or a filter.',
   },
   practice: {
@@ -302,7 +302,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A start mic and an end mic hear the walker. What are they?',
     options: ['Two separate perspectives', 'A stereo pair by default', 'One mic and its spare'],
     correct: 'Two separate perspectives',
-    explain: 'Each is loud where the other is far: two perspectives, each its own labelled channel — unless planned as a stereo pair.',
+    explain: 'Each is loud where the other is far: two perspectives, each its own labeled channel — unless planned as a stereo pair.',
     why: {
       'A stereo pair by default': 'Two channels are not stereo by themselves.',
       'One mic and its spare': 'Each hears a different part of the pass.',
@@ -338,7 +338,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two recorders capture one pass. What makes them line up later?',
     options: ['A synced clock and a common event', 'Pressing record at the same moment', 'The same make of recorder in both'],
     correct: 'A synced clock and a common event',
-    explain: 'Synchronise and log the clocks or timecode, and a common event both recorders hear.',
+    explain: 'Synchronize and log the clocks or timecode, and a common event both recorders hear.',
     why: {
       'Pressing record at the same moment': 'Hands are never that exact; log a clock and a common event.',
       'The same make of recorder in both': 'Matching recorders does not sync their clocks.',
@@ -360,8 +360,8 @@ const scenarios: MikingScenario[] = [
     id: 'pb.prac.3',
     page: 'practice',
     prompt: 'Is a tracked mono take a fair choice for a scene that follows the subject?',
-    options: ['Yes — labelled as a tracked view', 'No — a pass needs a stereo pair', 'No — tracking is unsafe outdoors'],
-    correct: 'Yes — labelled as a tracked view',
+    options: ['Yes — labeled as a tracked view', 'No — a pass needs a stereo pair', 'No — tracking is unsafe outdoors'],
+    correct: 'Yes — labeled as a tracked view',
     explain: 'A tracked mic matches a camera that follows the subject. Label it as a focused, tracked perspective — a fixed pair is a different viewpoint, not a rule.',
     why: {
       'No — a pass needs a stereo pair': 'A fixed pair is one viewpoint; tracking is another.',
@@ -429,10 +429,10 @@ const symptoms: Symptom[] = [
     id: 'pb.sym.hole',
     observation: 'A spaced pair sounds thin in mono as the source crosses',
     firstChecks: 'The spacing and the mono fold-down; compare an X/Y or M/S pair for a mono delivery.',
-    options: ['The spacing and the mono fold', 'The walker’s shoes and route', 'The stand’s colour and height'],
+    options: ['The spacing and the mono fold', 'The walker’s shoes and route', 'The stand’s color and height'],
     correct: 'The spacing and the mono fold',
     explain: 'Time differences between spaced capsules comb in mono and change through the pass.',
-    why: { 'The walker’s shoes and route': 'They change the sound, not the mono comb.', 'The stand’s colour and height': 'Neither causes a comb.' },
+    why: { 'The walker’s shoes and route': 'They change the sound, not the mono comb.', 'The stand’s color and height': 'Neither causes a comb.' },
   },
   {
     id: 'pb.sym.handling',
@@ -487,7 +487,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A walking pass for a film: a stationary viewer by a park path closed to traffic. Stereo, must fold to mono.',
     setups: [
       { id: 'a', label: 'An X/Y pair 3 m from the path’s line, outside the envelope', ok: true, power: 'phantom', feedback: 'A suggested starting point: the walker crosses the image and the pair holds in mono.' },
-      { id: 'b', label: 'An M/S pair at the same spot, Mid and Side labelled', ok: true, power: 'phantom', feedback: 'A fair choice: decoded, it crosses the image; in mono the Mid remains.' },
+      { id: 'b', label: 'An M/S pair at the same spot, Mid and Side labeled', ok: true, power: 'phantom', feedback: 'A fair choice: decoded, it crosses the image; in mono the Mid remains.' },
       { id: 'c', label: 'A stand at the path’s edge, its cable across the path', ok: false, power: 'phantom', feedback: 'The cable across the path is a trip hazard; route it away.' },
       { id: 'd', label: 'Spaced omnis 4 m apart either side of the path', ok: false, power: 'phantom', feedback: 'One mic sits on the far side, so its cable crosses the path — and wide spacing combs in mono.' },
       { id: 'e', label: 'A tracked shotgun, the operator walking alongside', ok: false, power: 'phantom', feedback: 'The operator stays at a fixed station — and the brief asked for a stationary viewer.' },

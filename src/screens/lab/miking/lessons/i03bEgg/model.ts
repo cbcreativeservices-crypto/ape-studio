@@ -100,7 +100,7 @@ export const EGG_ZONES: DocumentedZone[] = [
     micTypeIds: BOTH,
     clear: { line: 'clear.one', min: 100 },
     tendency: 'A different balance of egg, hand noise and spill than the level spot — compare by ear, with the same grip and phrase.',
-    checks: ['The palm shielding the egg from this angle', 'Neighbours the mic now faces', 'The arm, face and head stay clear'],
+    checks: ['The palm shielding the egg from this angle', 'Neighbors the mic now faces', 'The arm, face and head stay clear'],
   }),
   targetZone({
     id: 'egg.between.two',

@@ -108,7 +108,7 @@ export const B16_PLACE: PlanZone[] = [
 const zoneOf = (id: string, label: string, short: string, c: P2, r: number, ok: CoverageTask['ok'], handoff: string, why: string, tag: CoverageTask['tag'] = 'detail'): CoverageTask => ({ id, label, short, c, r, tag, ok, handoff, why });
 export const B16_COVERAGE: CoverageTask[] = [
   zoneOf('cB', 'The closest point (B)', 'PASS', PS.B, 0.5, ['detail'], 'M2, then the wider fallback', 'The pass in front of M1: the strongest point — and the one that needs the most headroom.', 'ambience'),
-  zoneOf('cA', 'The approach (A)', 'APPROACH', PS.A, 0.5, ['detail', 'ambience'], 'M1 aimed along the walk, or the wider fallback', 'Farther and off an across-the-walk axis: detail if the aim favours it, else the wider view.'),
+  zoneOf('cA', 'The approach (A)', 'APPROACH', PS.A, 0.5, ['detail', 'ambience'], 'M1 aimed along the walk, or the wider fallback', 'Farther and off an across-the-walk axis: detail if the aim favors it, else the wider view.'),
   zoneOf('cC', 'The departure (C)', 'DEPART', PS.C, 0.5, ['detail', 'ambience'], 'M2, or the wider fallback', 'As far as the approach, on the other side of the axis — test it; do not assume it.'),
   zoneOf('cX', 'Past C, at the room’s end', 'END', p2(5.3, 0), 0.4, ['ambience', 'unavailable'], 'the wider fallback — and say the gap', 'Off every axis and beyond the walk: ambience only, or nothing. Never move a mic into the path to chase it.'),
 ];

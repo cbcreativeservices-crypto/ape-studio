@@ -630,7 +630,7 @@ async function replayQuizSubmissionsOnce(): Promise<
       const permanent = /attempt_not_found|already_finalized|invalid_attempt/i.test(msg);
       if (transient) break; // still offline — leave this row and every row after it
       if (!permanent) {
-        console.warn('[quiz] keeping queued submission after an unrecognised error:', msg);
+        console.warn('[quiz] keeping queued submission after an unrecognized error:', msg);
         continue;
       }
       console.warn('[quiz] dropping permanently rejected queued submission:', msg);

@@ -163,7 +163,7 @@ export function clipMemoryBytes(b: Pick<LabClipBuffer, 'channels' | 'frames'>): 
 }
 
 function abortError(): LabClipError {
-  return new LabClipError('aborted', 'Load cancelled');
+  return new LabClipError('aborted', 'Load canceled');
 }
 
 /** Race a shared promise against ONE caller's signal (the shared work goes on). */

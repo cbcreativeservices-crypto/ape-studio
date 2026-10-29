@@ -59,7 +59,7 @@ const FOOT_Z: Omit<DocumentedZone, 'start'> = {
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.holes, N_HOLES, 45, 250, 350),
   tendency: 'A balanced bassoon: the holes up close, the bell from farther off, with more room than the close spot. Check the lowest note.',
-  checks: ['The stand clear of the seat strap, the knees and the right hand', 'The lowest note: is the bell still heard?', 'Room and neighbours at this distance'],
+  checks: ['The stand clear of the seat strap, the knees and the right hand', 'The lowest note: is the bell still heard?', 'Room and neighbors at this distance'],
 };
 
 const SIDE_Z: Omit<DocumentedZone, 'start'> = {
@@ -77,8 +77,8 @@ const SIDE_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 25, prov: ill('aimed at the keys: within 25°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.holes, SIDE_DIR, 30, 900, 1220),
-  tendency: 'The whole bassoon from its right side, the holes and the bell blending, with the room. Farther from the keys’ clicks; more of the neighbours.',
-  checks: ['The stand clear of the aisle and the next chair', 'The bell’s lowest note from this side', 'How much of the neighbours it hears'],
+  tendency: 'The whole bassoon from its right side, the holes and the bell blending, with the room. Farther from the keys’ clicks; more of the neighbors.',
+  checks: ['The stand clear of the aisle and the next chair', 'The bell’s lowest note from this side', 'How much of the neighbors it hears'],
 };
 
 const BELL_Z: Omit<DocumentedZone, 'start'> = {

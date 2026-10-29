@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the horn’s surroundings — the bell behind the player, the wall or shell it faces, the hands, the neighbours — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the horn’s surroundings — the bell behind the player, the wall or shell it faces, the hands, the neighbors — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['hn.set.1', 'hn.set.2', 'hn.set.3'], note: 'Answer the three checks.' },
     takeaway: 'The bell, the right hand and the bell’s rise in “bells up” passages are the player’s space: no mic, stand or cable goes there. Listen from in front and from behind first, and protect your hearing.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the balance between front and rear, the gain stages, the player’s technique, the mount and the combination — before reaching for tone controls.',
   },
   practice: {
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A horn-and-piano session puts a figure-8 above the horn. What makes that pattern useful there?',
     options: ['Its sides reject, so a side can face the piano', 'Its back is silent, so the room stays out of it', 'It hears only straight down, so nothing else gets in'],
     correct: 'Its sides reject, so a side can face the piano',
-    explain: 'A figure-8 hears its front and its back equally and rejects its sides. Aimed at the horn with a side toward the piano, it favours the horn without a deep cut of the room.',
+    explain: 'A figure-8 hears its front and its back equally and rejects its sides. Aimed at the horn with a side toward the piano, it favors the horn without a deep cut of the room.',
     why: {
       'Its back is silent, so the room stays out of it': 'A figure-8’s back hears as strongly as its front. Its nulls are at the sides.',
       'It hears only straight down, so nothing else gets in': 'It hears front and back; only the sides are rejected — and real nulls are shallower than the picture.',
@@ -350,7 +350,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The main mic hears too much room or too many players: move or aim a safe spot and rebalance at the audience position.',
     options: ['Move or aim a safe spot, and rebalance as heard out front', 'Push the main pair’s level up until the horn comes forward', 'Add reverb to the horn, so it seems bigger in the mix'],
     correct: 'Move or aim a safe spot, and rebalance as heard out front',
-    explain: 'A main pickup can carry too much room or too many neighbours for a horn line. A spot — front or rear — gives control; judge the balance where the audience listens.',
+    explain: 'A main pickup can carry too much room or too many neighbors for a horn line. A spot — front or rear — gives control; judge the balance where the audience listens.',
     why: {
       'Push the main pair’s level up until the horn comes forward': 'That raises everything else too. The horn needs its own share, not more of the room.',
       'Add reverb to the horn, so it seems bigger in the mix': 'More room makes a distant horn more distant. Add direct sound first.',

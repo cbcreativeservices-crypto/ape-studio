@@ -3,7 +3,7 @@
  * steps on the physics of arrays.ts, and the air/water units card.
  *
  *   useBaselineStep   two omni elements on a straight baseline and a source
- *                     at the centre point, at the side point, or at the side
+ *                     at the center point, at the side point, or at the side
  *                     point's MIRROR behind the array: each arrival (ms) and
  *                     the difference R − L through the ensemble family's
  *                     dtLR — the mirror gives the same difference (the front/
@@ -67,7 +67,7 @@ type SrcId = 'centre' | 'side' | 'mirror';
 
 export function useBaselineStep({ words, baseline, centre, side, third }: { words: BaselineWords; baseline: number; centre: Vec3; side: Vec3; third: Vec3 }): MikingStep {
   const caps = useMemo(() => baselinePair(baseline), [baseline]);
-  const SRC: Record<SrcId, { label: string; p: Vec3 }> = { centre: { label: 'the centre point', p: centre }, side: { label: 'the side point', p: side }, mirror: { label: 'the side point’s mirror, behind', p: mirrorOf(side) } };
+  const SRC: Record<SrcId, { label: string; p: Vec3 }> = { centre: { label: 'the center point', p: centre }, side: { label: 'the side point', p: side }, mirror: { label: 'the side point’s mirror, behind', p: mirrorOf(side) } };
   const [src, setSrc] = useState<SrcId>('centre');
   const [withThird, setWithThird] = useState(false);
   const S = SRC[src].p;
@@ -195,14 +195,14 @@ export function useLineArrayStep({ words, onDone }: { words: LineArrayWords; onD
   }, [seen.ok, seen.bad, onDone]);
   const params: DockParam[] = [
     { kind: 'options', id: 'top', label: 'TOP', valueLabel: fmtHz(top), selectedId: String(top), onSelect: (id) => setTop(Number(id)), options: TOPS.map((f) => ({ id: String(f), label: `Up to ${fmtHz(f)}`, blurb: `Half a wavelength at ${fmtHz(f)}: about ${Math.round(spacingFor(f))} mm.` })) },
-    { kind: 'fader', id: 'spacing', label: 'SPACING', value: (d - 10) / 290, onChange: (v) => setD(Math.round((10 + v * 290) / 5) * 5), format: () => `${d} mm between neighbouring elements`, formatShort: () => `${d} mm` },
+    { kind: 'fader', id: 'spacing', label: 'SPACING', value: (d - 10) / 290, onChange: (v) => setD(Math.round((10 + v * 290) / 5) * 5), format: () => `${d} mm between neighboring elements`, formatShort: () => `${d} mm` },
   ];
   const bezel: BezelItem[] = [
     { k: 'SPACING', v: `${d}`, sub: 'mm', flex: 0.8 },
     { k: 'HALF λ AT TOP', v: `${Math.round(spacingFor(top))}`, sub: 'mm', flex: 1 },
     { k: 'NO ALIASING TO', v: fmtHz(fmax), sub: 'c ÷ 2d', tint: ok ? GREEN : RED, flex: 1.1 },
   ];
-  const a11y = `A uniform line of eight measurement mics, ${d} millimetres apart. Half a wavelength at ${fmtHz(top)} is about ${Math.round(spacingFor(top))} millimetres: the line keeps clear of spatial aliasing up to ${fmtHz(fmax)}${ok ? ', above the top frequency' : ', below the top frequency'}.`;
+  const a11y = `A uniform line of eight measurement mics, ${d} millimeters apart. Half a wavelength at ${fmtHz(top)} is about ${Math.round(spacingFor(top))} millimeters: the line keeps clear of spatial aliasing up to ${fmtHz(fmax)}${ok ? ', above the top frequency' : ', below the top frequency'}.`;
   return {
     key: 'lineArray',
     title: words.title,
@@ -297,7 +297,7 @@ export function useProbeStep({ words, onDone }: { words: ProbeWords; onDone: () 
     { k: 'ALONG THE AXIS', v: `${share >= 0 ? '' : '−'}${Math.abs(Math.round(share * 100))} %`, sub: 'cos θ', tint: Math.abs(share) < 0.05 ? RED : share > 0 ? GREEN : AMBER, flex: 1.1 },
     { k: 'PRESSURE', v: 'UNCHANGED', sub: 'scalar', flex: 1 },
   ];
-  const a11y = `From above: a small device inside a dashed enclosing surface with outward normals; a pressure–pressure intensity probe on one normal, its ${spacer} millimetre spacer between two capsules, its axis ${deg} degrees from the normal. It reads ${Math.round(share * 100)} percent of the flow along its axis; the pressure it sees is the same.`;
+  const a11y = `From above: a small device inside a dashed enclosing surface with outward normals; a pressure–pressure intensity probe on one normal, its ${spacer} millimeter spacer between two capsules, its axis ${deg} degrees from the normal. It reads ${Math.round(share * 100)} percent of the flow along its axis; the pressure it sees is the same.`;
   return {
     key: 'probe',
     title: words.title,

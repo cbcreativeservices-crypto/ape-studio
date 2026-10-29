@@ -23,19 +23,19 @@ const F = TENOR_SAX;
 
 export const TENOR_ZONES: DocumentedZone[] = [
   saxZone(F, 'above', 'ts.above', {
-    label: 'A few centimetres above the bell, aimed at the sound holes',
+    label: 'A few centimeters above the bell, aimed at the sound holes',
     band: 'Try about 5–10 cm (2–4 in) above the bell rim, aimed down across the body at the sound holes — a natural place to begin, hearing the bell and the holes together.',
     tendency: 'A natural blend of the bell and the body. Move it toward the bell for focus, or across the body to soften it; the tenor’s honk lives near the bell.',
     checks: ['The bell’s swing as the player moves', 'The lowest and the highest notes the part uses', 'Key noise as the fingers work'],
   }),
   saxZone(F, 'into', 'ts.into', {
-    label: 'A few centimetres from the bell, aimed into it',
+    label: 'A few centimeters from the bell, aimed into it',
     band: 'Try about 5–10 cm (2–4 in) from the bell rim, on its axis, aimed into the bell — bright and direct, with the least spill.',
     tendency: 'Direct, punchy and isolated, with a good margin before feedback; it can sound honky or change character from register to register, and it hears less of the open holes.',
     checks: ['Middle notes for thinness or honk', 'High notes for harshness', 'The bell’s swing as the player moves'],
   }),
   saxZone(F, 'holes', 'ts.holes', {
-    label: 'A few centimetres from the sound holes',
+    label: 'A few centimeters from the sound holes',
     band: 'Try about 5–10 cm (2–4 in) from the middle of the key stack, aimed at the holes — warmer and fuller; angle it across the body if the keys get loud.',
     tendency: 'Warm and full, with more key and pad noise. A higher or less direct angle across the body, or a little more distance, can keep the warmth and lose the clatter.',
     checks: ['Key and pad noise', 'The hands — nothing within their reach', 'The lowest notes, which leave at the bell'],

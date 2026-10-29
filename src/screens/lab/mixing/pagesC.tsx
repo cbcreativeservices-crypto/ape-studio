@@ -83,7 +83,7 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>TWO HABITS THAT KEEP EQ HONEST</Eyebrow>
-        <Body>Judge EQ IN CONTEXT — endless soloing optimises a track for a world where it plays alone. And after any boost, ask: did that fix the tone, or just make the track LOUDER? (If louder: undo, and match levels before judging.) For the full EQ toolkit — shelves, Q, dynamic EQ — the EQ Lab goes deep; this page is about the mix decision.</Body>
+        <Body>Judge EQ IN CONTEXT — endless soloing optimizes a track for a world where it plays alone. And after any boost, ask: did that fix the tone, or just make the track LOUDER? (If louder: undo, and match levels before judging.) For the full EQ toolkit — shelves, Q, dynamic EQ — the EQ Lab goes deep; this page is about the mix decision.</Body>
         <OpenLabLink route="EqLabHome" label="OPEN THE EQ LAB" />
       </Card>
       <UnderstandingCheck
@@ -148,7 +148,7 @@ function PageCompression({ ctx }: { ctx: PageCtx }) {
         <Prompt>The snare, alone, three ways — all level-matched, same threshold and ratio. Only ATTACK differs. Listen to the front of each hit.</Prompt>
         <AbPlayer pb={pb} variants={variants} onPick={setPick} note="Loudness is matched, so the difference you hear is pure envelope. Which one you PREFER depends on the song — that part is yours." />
         <CompArt settings={(variants.find((v) => v.id === pick)?.settings.snare?.comp as CompSettings | undefined) ?? null} />
-        <Text style={styles.fixName}>The picture follows the button you press: the compressor’s knobs at that render’s settings, one real snare hit from the session before (grey) and after (amber), and the gain the compressor applies.</Text>
+        <Text style={styles.fixName}>The picture follows the button you press: the compressor’s knobs at that render’s settings, one real snare hit from the session before (gray) and after (amber), and the gain the compressor applies.</Text>
       </Card>
       <Card tone="note">
         <Eyebrow>THE HONEST COMPARISON RULE</Eyebrow>
@@ -213,7 +213,7 @@ function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
       <Lead>Reverb and delay answer the DEPTH question: what is close, what is far, what shares a room? The fastest way to a coherent mix: one shared space, fed by sends.</Lead>
       <Card>
         <Eyebrow>THE DEPTH VOCABULARY</Eyebrow>
-        <Body>DRY/WET is how much room rides along. On a send-fed return, set the reverb 100 % wet; the send sets how much room. PRE-DELAY is the gap before the room answers — longer keeps the source up front. DECAY is how long the room hangs on. Short ambience places; long ambience romanticises. Delays locked to the tempo disappear into the groove; unlocked ones float on top.</Body>
+        <Body>DRY/WET is how much room rides along. On a send-fed return, set the reverb 100 % wet; the send sets how much room. PRE-DELAY is the gap before the room answers — longer keeps the source up front. DECAY is how long the room hangs on. Short ambience places; long ambience romanticizes. Delays locked to the tempo disappear into the groove; unlocked ones float on top.</Body>
       </Card>
       <Card>
         <Eyebrow>ONE ROOM GLUES THE BAND</Eyebrow>
@@ -289,14 +289,14 @@ function PageSixTerms({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Drum SUBGROUP vs drum VCA — what is the real difference?"
-        options={['They are simply two names for the same drum rig', 'Audio sums THROUGH a subgroup; a VCA only turns the gains together', 'A VCA sounds noticeably warmer than a subgroup does', 'Subgroups are the analogue version; VCAs are the digital one']}
+        options={['They are simply two names for the same drum rig', 'Audio sums THROUGH a subgroup; a VCA only turns the gains together', 'A VCA sounds noticeably warmer than a subgroup does', 'Subgroups are the analog version; VCAs are the digital one']}
         correct={1}
         explain="Audio flows THROUGH a subgroup — so one compressor there squeezes the whole kit. A VCA is remote control for the channel gains: convenient, but there is no summed path to process."
         wrong={[
           'They are routinely confused, and the difference decides whether shared processing is even possible.',
           undefined,
           'Neither has a sound — one is a signal path, the other is a control relationship.',
-          'Both exist in analogue and digital consoles alike — the technology is not the difference.',
+          'Both exist in analog and digital consoles alike — the technology is not the difference.',
         ]}
         onCorrect={() => setCheckDone(true)}
       />

@@ -187,7 +187,7 @@ export function Fader({ x, y, len, value, horizontal = false, capW, capL, ticks 
       {/* the slot: a dark groove with a lit lower lip */}
       <RoundedRect x={sx} y={sy} width={sw} height={sh} r={slotW / 2} color="#030304" />
       <RoundedRect x={sx} y={sy} width={sw} height={sh} r={slotW / 2} style="stroke" strokeWidth={slotW * 0.25} color="rgba(255,255,255,0.08)" />
-      {/* cap: shadow, body, ridges, the centre line */}
+      {/* cap: shadow, body, ridges, the center line */}
       <RoundedRect x={cx + capW * 0.08} y={cy + capW * 0.12} width={cw} height={ch} r={capW * 0.14} color="rgba(0,0,0,0.65)">
         <BlurMask blur={capW * 0.14} style="normal" />
       </RoundedRect>

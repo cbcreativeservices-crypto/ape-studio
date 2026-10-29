@@ -348,7 +348,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then ride TEMPO A: the drum machine follows, tick for tick.</P>
-        <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analogue sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals. A clock from a mixer’s beat counter is only as good as its BPM reading: if the counter reads half or double time (Screen 11), the follower does too.</Note>
+        <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analog sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals. A clock from a mixer’s beat counter is only as good as its BPM reading: if the counter reads half or double time (Screen 11), the follower does too.</Note>
       </Step>
       <Step n={4}>
         <Do>Get the drum machine following deck A, with its bar 1 on the one, its audio in the room, and still following when deck A’s tempo moves.</Do>

@@ -9,7 +9,7 @@
  * bottom of the plan, looking up at the ensemble — and nothing is mirrored
  * (the engine's frame is left-handed: facing +x, +z is on the right):
  *
- *   origin  on the FLOOR, at the front of the front row, on the centre line
+ *   origin  on the FLOOR, at the front of the front row, on the center line
  *           (the front desks' line for an orchestra, the front riser edge for
  *           a choir, the front of a quartet's arc)
  *   +x      toward the CONDUCTOR'S RIGHT (and the audience's right): across
@@ -23,7 +23,7 @@
  *                            the top) — the engine's 'top' view
  *   front    u = x,  v = y   from the hall, as the audience sees it — the
  *                            engine's 'side' view
- *   section  u = −z, v = y   cut along the centre line, seen from the
+ *   section  u = −z, v = y   cut along the center line, seen from the
  *                            conductor's right: the hall at the left, the
  *                            back rows at the right (Lab 5's own pages)
  *

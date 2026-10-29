@@ -52,7 +52,7 @@ const HAND: HandSpec = {
   },
   axes: {
     x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the struck face (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'in front of' : 'behind'} the gong` },
-    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - CY))} ${v <= CY ? 'above' : 'below'} the gong’s centre` },
+    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - CY))} ${v <= CY ? 'above' : 'below'} the gong’s center` },
     z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Across the face: toward the player’s side or the far side (z).', fmt: (v) => `${fmtLen(Math.abs(v))} toward the ${v >= 0 ? 'far side' : 'player’s side'}` },
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
@@ -161,8 +161,8 @@ const SPEC: MetalSpec = {
               { id: 'outer', label: 'OUT TOWARD THE RIM', words: 'out toward the rim', blurb: 'Far from the boss.', r: 0.75 },
             ]
           : [
-              { id: 'off', label: 'A LITTLE OFF CENTRE', words: 'a little off centre', blurb: 'The usual playing area, drawn a quarter of the way out.', r: 0.25 },
-              { id: 'centre', label: 'THE CENTRE', words: 'at the exact centre', blurb: 'The middle of the face.', r: 0 },
+              { id: 'off', label: 'A LITTLE OFF CENTER', words: 'a little off center', blurb: 'The usual playing area, drawn a quarter of the way out.', r: 0.25 },
+              { id: 'centre', label: 'THE CENTER', words: 'at the exact center', blurb: 'The middle of the face.', r: 0 },
               { id: 'outer', label: 'OUT TOWARD THE RIM', words: 'out toward the rim', blurb: 'Most of the way to the rim.', r: 0.75 },
             ],
       metal: BRONZE,

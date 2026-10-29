@@ -348,7 +348,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
   {
     "id": "musical-theatre",
     "num": 48,
-    "title": "Musical Theatre",
+    "title": "Musical Theater",
     "line": "Every word intelligible — lyrics and dialogue carry the story — with voices that seem to come from the actor, not the speakers",
     "origin": "Broadway (New York) and London’s West End, from operetta and vaudeville roots in the early 1900s; radio-mic’d “megamusical” sound from the 1980s; now worldwide touring and resident productions"
   },

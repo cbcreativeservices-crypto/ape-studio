@@ -321,7 +321,7 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
     const holeLabel = sp.opening.kind === 'fholes' ? 'the f-holes' : sp.opening.kind === 'coverplate' ? 'the coverplate' : sp.opening.kind === 'head' ? 'the head' : 'the sound hole';
     if (sp.body.pot) {
       surf('joint', 'neck', 'the neck joint', at.joint, 'the neck-joint line');
-      surf('hole', 'top', 'the head', v(sp.body.pot.cx.mm, 0, 0), 'the head’s centre line');
+      surf('hole', 'top', 'the head', v(sp.body.pot.cx.mm, 0, 0), 'the head’s center line');
       surf('bridge', 'bridge', 'the bridge', at.bridge, 'the bridge line');
     } else {
       if (sp.jointFret && sp.jointFret.mm !== 12) surf('fret12', 'board', 'the 12th fret', at.fret12, 'the 12th-fret line');

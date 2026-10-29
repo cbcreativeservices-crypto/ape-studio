@@ -65,7 +65,7 @@ export type StarterTerm = {
 
 export const STARTER_TERMS: readonly StarterTerm[] = [
   // ── Sound and hearing ──
-  { id: 'sound', term: 'Sound', group: 'hearing', def: 'Vibration travelling through a material, such as air.', glossary: 'Sound' },
+  { id: 'sound', term: 'Sound', group: 'hearing', def: 'Vibration traveling through a material, such as air.', glossary: 'Sound' },
   { id: 'vibration', term: 'Vibration', group: 'hearing', def: 'Repeated movement back and forth.', note: 'A guitar string, a drum skin, your vocal cords and a speaker cone all vibrate.', glossary: 'vibration' },
   {
     id: 'source',
@@ -345,7 +345,7 @@ export const UNPLUG_OPTIONS: readonly { id: Unplug; label: string; blurb: string
 /** Step 5: reflect — tap to reveal. */
 export const REFLECT_PROMPTS: readonly { q: string; a: string }[] = [
   { q: 'What vibrated first?', a: 'The source — your vocal cords, or the cone of the small speaker playing the test tone. Every sound starts with a vibration.' },
-  { q: 'Where did sound become an audio signal?', a: 'At the microphone. From there to the speaker it travelled as an electrical signal, which you cannot hear. (A real tone generator usually skips the microphone and plugs straight into a mixer input — its tone starts life as a signal.)' },
+  { q: 'Where did sound become an audio signal?', a: 'At the microphone. From there to the speaker it traveled as an electrical signal, which you cannot hear. (A real tone generator usually skips the microphone and plugs straight into a mixer input — its tone starts life as a signal.)' },
   { q: 'Where did it become sound again?', a: 'At the speaker. Its cone moved with the signal and pushed the air, and the air carried it to your ears.' },
   { q: 'What did the meter tell you that your ears could not?', a: 'An exact number for the level at one point in the path. Your ears tell you how loud it seems — both are useful, and they are not the same thing.' },
 ];
@@ -445,7 +445,7 @@ export const SECTIONS: readonly StartSection[] = [
         paras: [
           'Every sound starts with something vibrating — moving back and forth, over and over. Here it is a speaker cone. It could just as well be a guitar string, a drum skin or your vocal cords.',
           'Each push of the cone squeezes the air in front of it together; each pull lets the air spread apart. That pattern of squeezes and stretches travels outward through the air. The air is the medium: the material the sound travels through.',
-          'The air does not blow across the room. Each tiny bit of air only moves a little way back and forth and passes the push on to its neighbour — like a push passed down a line of people standing close together.',
+          'The air does not blow across the room. Each tiny bit of air only moves a little way back and forth and passes the push on to its neighbor — like a push passed down a line of people standing close together.',
           'When the wave reaches you, it pushes your eardrum back and forth, and your brain hears sound.',
           TONE_NOTE,
         ],
@@ -471,8 +471,8 @@ export const SECTIONS: readonly StartSection[] = [
         ],
         terms: ['source', 'medium', 'listener', 'vibration'],
         check: {
-          question: 'You hear a neighbour’s music through the wall. What is the medium?',
-          options: ['The neighbour’s speaker', 'The air — and the wall itself', 'You'],
+          question: 'You hear a neighbor’s music through the wall. What is the medium?',
+          options: ['The neighbor’s speaker', 'The air — and the wall itself', 'You'],
           correctIdx: 1,
           reveal: 'Yes — the speaker is the source, the air and the wall carry the vibration (both are media), and you are the listener.',
           wrongHint: 'The medium is what the sound travels THROUGH on its way to the listener.',
@@ -640,7 +640,7 @@ export const SECTIONS: readonly StartSection[] = [
         lead: 'On the display: a waveform — time runs left to right, and the height of the shape is the size of the signal at that moment.',
         caption: 'Pick a SIGNAL, then slide SIZE and watch the whole shape grow and shrink.',
         paras: [
-          'A waveform is a picture of a signal over time. The further the shape swings above and below the centre line, the bigger the amplitude at that moment. How big a signal is overall is usually called its level.',
+          'A waveform is a picture of a signal over time. The further the shape swings above and below the center line, the bigger the amplitude at that moment. How big a signal is overall is usually called its level.',
           'Speech comes in bursts — syllables with small gaps between them. A steady test tone makes an even band that never changes size.',
           'Recording and editing apps show a waveform like this on every track, so you can see where the loud and quiet moments are before you even press play.',
           'This display draws an example signal built into the app — it is not listening to a microphone.',
@@ -701,7 +701,7 @@ export const SECTIONS: readonly StartSection[] = [
         id: 'fs-capture',
         title: 'Step 2 · Capture it',
         rack: true,
-        lead: 'On the display: sound travelling from the source to a microphone (top), and the electrical signal the microphone makes (bottom).',
+        lead: 'On the display: sound traveling from the source to a microphone (top), and the electrical signal the microphone makes (bottom).',
         caption: 'Watch the two views move together: every squeeze and stretch in the air becomes a rise and fall in the signal. Tap FREEZE to stop the motion and compare them.',
         paras: [
           'A microphone has a very light part inside — the diaphragm — that the sound pushes back and forth. The mic turns that movement into an electrical signal with the same pattern.',
@@ -750,7 +750,7 @@ export const SECTIONS: readonly StartSection[] = [
         id: 'fs-listen',
         title: 'Step 5 · Listen and reflect',
         rack: true,
-        lead: 'On the display: the speaker turning your signal back into sound, and the sound travelling to your ear.',
+        lead: 'On the display: the speaker turning your signal back into sound, and the sound traveling to your ear.',
         caption: 'With the test tone, press PLAY and listen at a comfortable, low volume. Then tap each question below to check your thinking.',
         paras: [
           'The speaker’s cone moves with the signal, pushes the air, and the air carries the sound to you. The journey is complete: sound → audio signal → sound.',
@@ -783,7 +783,7 @@ export const SECTIONS: readonly StartSection[] = [
         id: 'l6-safe',
         title: 'The big picture — and listening safely',
         rack: false,
-        lead: 'The big picture in four lines: sound is vibration travelling through a medium. A microphone turns it into an audio signal. Equipment carries, changes, measures and records that signal. A speaker turns it back into sound for a listener.',
+        lead: 'The big picture in four lines: sound is vibration traveling through a medium. A microphone turns it into an audio signal. Equipment carries, changes, measures and records that signal. A speaker turns it back into sound for a listener.',
         paras: [
           'Before you go, one habit that protects everything else you will learn:',
           'Keep headphones and speakers at a comfortable level. If you have to raise your voice to talk over the sound, or your ears ring or feel dull afterwards, it was too loud.',
@@ -875,7 +875,7 @@ export const NEXT_STEPS: readonly { want: string; steps: readonly NextStep[] }[]
     want: 'How sound looks on a graph',
     steps: [
       { id: 'waveform', mic: true, title: 'Waveform', blurb: 'See your own voice as a waveform, live.', access: 'free', to: { kind: 'route', route: 'WaveformLive' } },
-      { id: 'rta', mic: true, title: 'Spectrum analyser (RTA)', blurb: 'See which frequencies are in a sound, low to high, live.', access: 'free', to: { kind: 'route', route: 'Rta' } },
+      { id: 'rta', mic: true, title: 'Spectrum analyzer (RTA)', blurb: 'See which frequencies are in a sound, low to high, live.', access: 'free', to: { kind: 'route', route: 'Rta' } },
     ],
   },
   {

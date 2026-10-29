@@ -80,13 +80,13 @@ export const F08_ZONES: DocumentedZone[] = [
     z1: 2000,
     types: ['arrCard', 'arrOmni', 'arrFig8'],
     label: 'A stereo pair at the listening point',
-    band: 'For a stereo pass, start with an X/Y or M/S pair at the same spot — about 1.5 m up, 2–4 m back from the path’s line — facing the crossing, its channels labelled.',
+    band: 'For a stereo pass, start with an X/Y or M/S pair at the same spot — about 1.5 m up, 2–4 m back from the path’s line — facing the crossing, its channels labeled.',
     src: 'DPA-STEREO',
     quote: 'XY 90° (±45°), no comb summing to mono; MS mono-compatible; ORTF 17 cm, wider than XY with reasonable mono',
     bandProv: ill('the spot is a drawing default; the pairs’ geometry is sourced'),
     start: facing(F08_START.walk),
     tendency: 'The walker crosses the image from one side to the other without a hole in the middle — check the channel order and fold it to mono.',
-    checks: ['Left and right labelled and checked', 'No hole in the middle as the walker crosses', 'The mono sum over the whole pass'],
+    checks: ['Left and right labeled and checked', 'No hole in the middle as the walker crosses', 'The mono sum over the whole pass'],
   }),
   pbZone({
     id: 'pb.walk.track',
@@ -105,7 +105,7 @@ export const F08_ZONES: DocumentedZone[] = [
     bandProv: ill('the station and the pole are drawing defaults'),
     start: walkAim(TRACK_P, 0),
     tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling noise can creep in, and off-axis color if the aim lags.',
-    checks: ['Feet planted: the operator never steps toward the route', 'A smooth swing, no handling noise', 'The take labelled as a tracked, focused perspective'],
+    checks: ['Feet planted: the operator never steps toward the route', 'A smooth swing, no handling noise', 'The take labeled as a tracked, focused perspective'],
   }),
   pbZone({
     id: 'pb.walk.start',
@@ -123,7 +123,7 @@ export const F08_ZONES: DocumentedZone[] = [
     bandProv: ill('its place is a drawing default'),
     start: walkAim(F08_START.start, -6000),
     tendency: 'The approach close up, the departure far away: a perspective of its own, as one of two.',
-    checks: ['Outside the envelope at the approach', 'Labelled as its own channel', 'Listened to alone before any blend'],
+    checks: ['Outside the envelope at the approach', 'Labeled as its own channel', 'Listened to alone before any blend'],
   }),
   pbZone({
     id: 'pb.walk.end',
@@ -141,7 +141,7 @@ export const F08_ZONES: DocumentedZone[] = [
     bandProv: ill('its place is a drawing default'),
     start: walkAim(F08_START.end, 6000),
     tendency: 'The departure close up: with the start mic, two perspectives — and a moving comb if they are summed.',
-    checks: ['Outside the envelope at the departure', 'Labelled as its own channel', 'Summed only after listening for a comb'],
+    checks: ['Outside the envelope at the departure', 'Labeled as its own channel', 'Summed only after listening for a comb'],
   }),
   pbZone({
     id: 'pb.veh.fixed',
@@ -169,13 +169,13 @@ export const F08_ZONES: DocumentedZone[] = [
     z1: 2500,
     types: ['arrCard', 'arrOmni', 'arrFig8'],
     label: 'A stereo pair behind the setback line',
-    band: 'On the paper plan, an X/Y or M/S pair at the same spot, facing the route — its channels labelled, its geometry written down.',
+    band: 'On the paper plan, an X/Y or M/S pair at the same spot, facing the route — its channels labeled, its geometry written down.',
     src: 'DPA-STEREO',
     quote: 'XY 90°; MS mono-compatible; ORTF 17 cm',
     bandProv: ill('the spot is a drawing default'),
     start: facing(F08_START.veh),
     tendency: 'The vehicle crosses the image. An X/Y or M/S pair has no time gap between its capsules; a spaced pair’s time differences would change fast on a quick pass. Check mono over the whole pass.',
-    checks: ['Channels labelled', 'Mono over the entire pass', 'The crew behind the line for every pass'],
+    checks: ['Channels labeled', 'Mono over the entire pass', 'The crew behind the line for every pass'],
   }),
 ];
 

@@ -67,7 +67,7 @@ export const E13_ZONES: DocumentedZone[] = [
     start: toward(CH_C, CH_MID),
     variants: ['chamber'],
     micTypeIds: PAIR_TYPES,
-    tendency: 'The whole group blended with the room. Closer tends to favour the front players; farther back, more blend and more room.',
+    tendency: 'The whole group blended with the room. Closer tends to favor the front players; farther back, more blend and more room.',
     checks: ['Every player, quiet and loud', 'The edges and the center', 'The mono sum'],
   }),
   targetZone({
@@ -122,7 +122,7 @@ export const E13_ZONES: DocumentedZone[] = [
     variants: ['orchestra'],
     micTypeIds: ['arrOmni', 'arrCard', 'arrFig8'],
     tendency: 'A broad view of the whole orchestra with the hall. Higher tends to hear more of the back rows and the room.',
-    checks: ['Every section, quiet and loud', 'A stable centre', 'The mono sum'],
+    checks: ['Every section, quiet and loud', 'A stable center', 'The mono sum'],
   }),
   targetZone({
     id: 'orc.sup',
@@ -174,7 +174,7 @@ export const E13_SETUPS: EnsembleSetup[] = [
   { id: 'ab', role: 'MAIN PAIR · SPACED', title: 'A spaced omni pair in front of the group', variants: ['chamber'], rig: chRig('ab', { spacing: 500 }), mics: 'Two omni small condensers, 50 cm (20 in) apart on one bar.', start: 'The same place; spacing, distance and height judged together.', line: 'More room and spaciousness; wide spacing can weaken the middle and change the tone in mono.', core: true, view: 'front' },
   { id: 'spot', role: 'MAIN PAIR + SOLOIST SPOT', title: 'The pair and a spot on the featured cello', variants: ['chamber'], rig: chRig('xy', { angle: 90 }), singles: [single('vc', CH_VC, VC, 'CELLO SPOT')], mics: 'The X/Y pair, plus a cardioid on its own stand for the cello.', start: 'The spot about 0.6–1.2 m (2–4 ft) in front of the cello, a little above; muted first, then raised until the line is clearer.', line: 'Supports a featured part; too much detaches it from the group. Pan it where the pair places the cello.', core: true, view: 'section' },
   { id: 'sup', role: 'MAIN PAIR + SECTION SUPPORT', title: 'The pair and a support across the winds', variants: ['chamber'], rig: chRig('xy', { angle: 90 }), singles: [single('w', CH_WINDS.pose, CH_WINDS.target, 'WIND SUPPORT')], mics: 'The X/Y pair, plus a cardioid on a boom stand at the side, across the flute, clarinet and horn.', start: 'About 1–1.5 m (3–5 ft) from the three players, from the side and above, aimed across them.', line: 'Clearer winds behind the strings; it hears them before the pair does — judge the sum, in mono.', core: false, view: 'plan' },
-  { id: 'ms', role: 'MAIN PAIR · MID-SIDE', title: 'A Mid-Side pair in front of the group', variants: ['chamber'], rig: chRig('ms'), mics: 'A forward cardioid (Mid) with a sideways figure-8 (Side) just above it.', start: 'The same place; Left = Mid + Side, Right = Mid − Side, the width set in the matrix.', line: 'Width you can set later; the mono sum is the Mid. Keep the raw Mid and Side labelled.', core: false, view: 'plan' },
+  { id: 'ms', role: 'MAIN PAIR · MID-SIDE', title: 'A Mid-Side pair in front of the group', variants: ['chamber'], rig: chRig('ms'), mics: 'A forward cardioid (Mid) with a sideways figure-8 (Side) just above it.', start: 'The same place; Left = Mid + Side, Right = Mid − Side, the width set in the matrix.', line: 'Width you can set later; the mono sum is the Mid. Keep the raw Mid and Side labeled.', core: false, view: 'plan' },
   { id: 'oab', role: 'MAIN PAIR · SPACED', title: 'A spaced omni pair over the podium', variants: ['orchestra'], rig: orRig('ab', { spacing: 500 }), mics: 'Two omni small condensers, 50 cm (20 in) apart, on a tall boom stand behind the podium.', start: 'Above or just behind the podium, about 3–4 m (10–13 ft) up; 40–60 cm apart to start.', line: 'A broad view of the orchestra and the hall; check the center, the spacing and mono.', core: true, view: 'section' },
   { id: 'tree', role: 'MAIN ARRAY · THREE-OMNI TREE', title: 'A three-omni tree over the podium', variants: ['orchestra'], rig: { id: 'tree', params: { turn: 0 }, place: { c: OR_TREE, face: 0, tilt: 25 }, mount: { kind: 'boom', reach: 1600 } }, mics: 'Three omni small condensers on a T-bar: left and right 2 m (6.6 ft) apart, the center 1.5 m (4.9 ft) ahead.', start: 'Over the podium, about 3–4 m up. Left to left, right to right, the center into both, a few dB down — raised from silence until the middle fills.', line: 'A filled-in center and a broad picture; the advanced extension of the pair, where the room, the mount and the channels allow.', core: true, view: 'plan' },
   { id: 'treeOut', role: 'MAIN ARRAY · TREE + OUTRIGGERS', title: 'The tree with two outriggers', variants: ['orchestra'], rig: { id: 'tree', params: { turn: 0, ...OUT }, place: { c: OR_TREE, face: 0, tilt: 25 }, mount: { kind: 'boom', reach: 1600 } }, mics: 'The tree, plus an omni on its own tall stand at each side, about 6.1 m (20 ft) apart.', start: 'At the tree’s height, about 1.5 m (5 ft) in front of the outer strings; added one at a time, panned for a coherent picture.', line: 'More of the width at the edges; check the center, the low notes and mono as each one comes up.', core: true, view: 'front' },

@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where a splash sits — between the toms and the crashes, or on a crash — the space the stick and the swing need, what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['sp.set.1', 'sp.set.2', 'sp.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'A splash sits among loud neighbours: a crash above or under it, a tom below. Ask the player which cues it plays, and protect your hearing.',
+    takeaway: 'A splash sits among loud neighbors: a crash above or under it, a tom below. Ask the player which cues it plays, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -63,7 +63,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, the swing, aim, the pattern, gain and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -166,11 +166,11 @@ const scenarios: MikingScenario[] = [
     id: 'sp.place.1',
     page: 'placement',
     prompt: 'No distance is published for a splash. How do you use “about 15–25 cm above”?',
-    options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimetre', 'As a limit: closer than 15 cm is not allowed'],
+    options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimeter', 'As a limit: closer than 15 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
     explain: 'With no fixed number to go by, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',
     why: {
-      'As an exact rule, measured to the millimetre': 'Starting points are places to begin, not exact rules.',
+      'As an exact rule, measured to the millimeter': 'Starting points are places to begin, not exact rules.',
       'As a limit: closer than 15 cm is not allowed': 'It is not a limit. Clearance from the stick and the swing is.',
     },
   },
@@ -192,7 +192,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the mic closer to the splash. What tends to change?',
     options: ['More of its quick attack, less of the kit around it', 'Only the level rises; the tone itself stays exactly the same', 'A fixed bass boost you can read off a chart'],
     correct: 'More of its quick attack, less of the kit around it',
-    explain: 'Closer tends to catch more of the splash’s attack and less of its neighbours — and very close, a narrower part of the plate. Tendencies.',
+    explain: 'Closer tends to catch more of the splash’s attack and less of its neighbors — and very close, a narrower part of the plate. Tendencies.',
     why: {
       'Only the level rises; the tone itself stays exactly the same': 'Distance changes the balance too, not only the level.',
       'A fixed bass boost you can read off a chart': 'These are tendencies, not fixed amounts.',
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each starting point is measured from the cymbal it names, square to its plate.',
     why: {
       'From the floor, straight up to the mic, like a stand': 'The floor is not the reference.',
-      'From the tom below, up through the plate to the mic': 'The tom is a neighbour, not the reference.',
+      'From the tom below, up through the plate to the mic': 'The tom is a neighbor, not the reference.',
     },
   },
   {
@@ -430,7 +430,7 @@ export const I01D_LESSON: CymbalLesson = {
   id: 'I01d',
   labId: 'percussion',
   title: 'Splash Cymbal',
-  subtitle: 'On an arm or on top of a crash — a short cue among loud neighbours',
+  subtitle: 'On an arm or on top of a crash — a short cue among loud neighbors',
   noun: { one: 'splash', many: 'splashes' },
   model: SPLASH_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard', 'standClip'],

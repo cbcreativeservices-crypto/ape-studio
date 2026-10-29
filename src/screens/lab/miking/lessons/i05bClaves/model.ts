@@ -89,7 +89,7 @@ function zonesFor(v: 'solid' | 'hollow'): DocumentedZone[] {
       variants: [v],
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 100 },
-      tendency: 'The click and the short woody ring together; closer favours the click and the direct sound, farther lets them cohere with the room.',
+      tendency: 'The click and the short woody ring together; closer favors the click and the direct sound, farther lets them cohere with the room.',
       checks: ['Both hands’ full motion', 'Click against body', 'Stand or hand noise'],
     }),
     targetZone({
@@ -112,7 +112,7 @@ function zonesFor(v: 'solid' | 'hollow'): DocumentedZone[] {
       micTypeIds: BOTH,
       clear: { line: `clear.${v}`, min: 100 },
       tendency: 'A different balance of click, body and spill than the level spot — compare at matched level, with both hands moving.',
-      checks: ['The striker’s highest point', 'Click against body', 'Neighbours the mic now faces'],
+      checks: ['The striker’s highest point', 'Click against body', 'Neighbors the mic now faces'],
     }),
   ];
 }

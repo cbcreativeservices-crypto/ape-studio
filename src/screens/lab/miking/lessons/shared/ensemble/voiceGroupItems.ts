@@ -27,7 +27,7 @@ export const threeToOne = (p: string, page: SourcePageId, r = '30 cm (1 ft)', d 
   prompt: `Each singer is about ${r} from their own mic. As a starting guideline, how far apart do the two mics go?`,
   options: [`At least ${d} from each other`, `At least ${d} from each other singer`, 'Close together, so the voices match'],
   correct: `At least ${d} from each other`,
-  explain: `The 3:1 guideline is mic to mic: at least three times each mic’s distance to its own singer — here ${d}. A voice then reaches the neighbouring mic much quieter and later, so the comb in the mix is shallow. A starting point; listen in mono and adjust.`,
+  explain: `The 3:1 guideline is mic to mic: at least three times each mic’s distance to its own singer — here ${d}. A voice then reaches the neighboring mic much quieter and later, so the comb in the mix is shallow. A starting point; listen in mono and adjust.`,
   why: {
     [`At least ${d} from each other singer`]: 'The rule is measured between the MICS, not from a mic to the next singer — the two are not the same distance.',
     'Close together, so the voices match': 'Close mics hear each voice twice at nearly the same level, a little apart in time: the comb is deepest then.',
@@ -41,7 +41,7 @@ export const threeToOneWhy = (p: string, page: SourcePageId): MikingScenario => 
   prompt: 'Two open mics both hear one singer. What does keeping them 3:1 apart change?',
   options: ['The far mic hears that voice much quieter', 'The two arrivals then line up exactly in time', 'The far mic stops hearing that voice'],
   correct: 'The far mic hears that voice much quieter',
-  explain: 'Farther away, the neighbouring mic hears the voice much quieter by distance alone, and later. Summed, a quiet late copy makes only shallow notches. It does not remove the copy or line it up.',
+  explain: 'Farther away, the neighboring mic hears the voice much quieter by distance alone, and later. Summed, a quiet late copy makes only shallow notches. It does not remove the copy or line it up.',
   why: {
     'The two arrivals then line up exactly in time': 'Spacing changes how late and how quiet the second copy is; it never makes the arrivals coincide.',
     'The far mic stops hearing that voice': 'It still hears it — just quieter. That is why mono and mute checks still matter.',

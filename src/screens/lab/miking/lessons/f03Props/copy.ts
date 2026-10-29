@@ -16,7 +16,7 @@ export const F03_COPY: Partial<LessonCopy> = foleyCopy({
     paper: 'a Foley artist handling a sheet of paper at a table',
     door: 'a Foley artist at a door on its Foley stand',
     chair: 'a Foley artist lifting a wooden chair',
-    live: 'a Foley artist handling keys at a live theatre station',
+    live: 'a Foley artist handling keys at a live theater station',
   },
   axesBlurb: 'Up or down (y). The prop’s sounding part is height 0.',
   instrument: {
@@ -30,7 +30,7 @@ export const F03_COPY: Partial<LessonCopy> = foleyCopy({
       paper: 'PAPER: a lift, the friction of a bend, a fold, a set-down — on a sturdy table that can answer too.',
       door: 'DOOR: the handle, the latch, the hinge, the panel and the frame — and its swing and pinch points, keep-outs for hands and hardware.',
       chair: 'CHAIR: lifted, dragged, set down — the legs on the floor and the frame. An assistant for anything heavy.',
-      live: 'LIVE: keys at a fixed prop station beside a theatre stage — the PA and a wedge share the room.',
+      live: 'LIVE: keys at a fixed prop station beside a theater stage — the PA and a wedge share the room.',
     },
   },
   sound: {

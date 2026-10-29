@@ -181,7 +181,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "1.5:1–2:1, very low threshold",
         "attackRelease": "50–100 ms / 1–3 s",
         "gainReduction": "2–4 dB",
-        "notes": "Slow “upward” leveller for TV or radio only"
+        "notes": "Slow “upward” leveler for TV or radio only"
       },
       {
         "source": "Master limiter",
@@ -215,7 +215,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Spot-mic delay (time alignment)",
         "appliedTo": "Every spot mic",
-        "setting": "Delay each spot to its distance from the main (about 2.9 ms per metre); some add 10–25% extra so the main arrives first",
+        "setting": "Delay each spot to its distance from the main (about 2.9 ms per meter); some add 10–25% extra so the main arrives first",
         "amount": "Essential, not a “sound”"
       },
       {

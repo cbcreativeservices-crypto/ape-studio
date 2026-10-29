@@ -991,7 +991,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       />
       <Text style={styles.legend}>
         {above
-          ? 'Color key (teaching colors, this scene only): grey / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.'
+          ? 'Color key (teaching colors, this scene only): gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.'
           : confirmed
             ? 'FINISHED — the same section done right, with your run on your hooks. From the room below, both versions look identical — which is why inspectors lift tiles.'
             : 'FINISHED — the same section done right; the dashed outline is where your run goes in Exercise 2. From the room below, both versions look identical — which is why inspectors lift tiles.'}

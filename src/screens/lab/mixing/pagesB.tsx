@@ -236,7 +236,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
               .map((r) =>
                 r.risk === 'lowEndOffCentre'
                   ? `${track(r.id).name}: low frequencies far off-center unbalance the sides, and its level shifts when the mix folds to mono.`
-                  : `${track(r.id).name}: the focal anchor drifting off-centre destabilises the whole image.`,
+                  : `${track(r.id).name}: the focal anchor drifting off-center destabilizes the whole image.`,
               )
               .join(' ')}
           </Text>

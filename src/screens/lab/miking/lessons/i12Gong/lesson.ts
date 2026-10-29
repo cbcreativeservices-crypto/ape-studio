@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'Meet the gong',
     goal: 'Get to know the gong — which kind you have (an orchestral tam-tam or a bossed gong), where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A metal plate, most often bronze, hanging freely on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised centre for a more pitch-centred sound. Identify it first.',
+    takeaway: 'A metal plate, most often bronze, hanging freely on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised center for a more pitch-centered sound. Identify it first.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -33,7 +33,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the gong sits — its frame and its swing, the player and the mallet, its neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where the gong sits — its frame and its swing, the player and the mallet, its neighbors, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['gg.set.1', 'gg.set.hear', 'gg.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for quiet and forceful strokes, rolls, the intended decay and damping. Mark the full swing and the mallet’s arc; never attach a mic to the gong, its cords or the frame without the owner’s approval. Protect your hearing.',
   },
@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
     takeaway: 'Placement and the source first: move off a dominant local area, compare a broader view, check the mallet and the stroke, mind proximity effect and the swing — before EQ, and never restrain the gong to protect a mic.',
   },
   practice: {
@@ -98,7 +98,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A center stroke drives mostly the ring-shaped shapes',
     explain: 'A stroke drives a shape only as much as the face moves where it lands. At the center, every shape with a still line across it stands still — so fewer shapes ring, and the sound centers on a pitch. (The boss shapes it further.)',
     why: {
-      'The boss is tuned so that it makes no other sounds at all': 'The face still rings in several shapes; the center stroke favours fewer of them.',
+      'The boss is tuned so that it makes no other sounds at all': 'The face still rings in several shapes; the center stroke favors fewer of them.',
       'The boss stops the rest of the face moving': 'The whole face still moves; it is which shapes are driven that changes.',
     },
   },
@@ -155,11 +155,11 @@ const scenarios: MikingScenario[] = [
     id: 'gg.mic.2',
     page: 'microphone',
     prompt: 'Before the first forceful stroke, what do you check on a condenser?',
-    options: ['Its maximum SPL, its pad and its phantom supply', 'Its colour, so it matches the gong on camera', 'Nothing: condensers handle huge levels with ease'],
+    options: ['Its maximum SPL, its pad and its phantom supply', 'Its color, so it matches the gong on camera', 'Nothing: condensers handle huge levels with ease'],
     correct: 'Its maximum SPL, its pad and its phantom supply',
     explain: 'Verify the mic’s headroom for the strongest planned stroke, any pad it offers, and its power — for the exact model.',
     why: {
-      'Its colour, so it matches the gong on camera': 'Looks do not matter here; headroom and power do.',
+      'Its color, so it matches the gong on camera': 'Looks do not matter here; headroom and power do.',
       'Nothing: condensers handle huge levels with ease': 'Every mic has a limit; check it against the strongest stroke.',
     },
   },
@@ -346,7 +346,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Move off the locally dominant struck area or farther back; check the mallet and the stroke are the intended ones.',
     options: ['Off the dominant area or farther back; the mallet', 'Cut the upper mids with EQ until it calms down', 'Ask the player to strike much more softly'],
     correct: 'Off the dominant area or farther back; the mallet',
-    explain: 'A close mic can favour one local area of the face. Move off it or back, and confirm the mallet and stroke with the player.',
+    explain: 'A close mic can favor one local area of the face. Move off it or back, and confirm the mallet and stroke with the player.',
     why: {
       'Cut the upper mids with EQ until it calms down': 'Find the placement or source cause before EQ.',
       'Ask the player to strike much more softly': 'The dynamics are the music; move the mic first.',
@@ -356,11 +356,11 @@ const symptoms: Symptom[] = [
     id: 'gg.s.thin',
     observation: 'Weak bloom or thin low body',
     firstChecks: 'A broader, a little more distant front position; the stand and nearby reflective surfaces; the high-pass setting.',
-    options: ['A broader view, the surfaces and the high-pass', 'Push the mic right up to the centre of the face', 'Add a big low-shelf boost on the desk'],
+    options: ['A broader view, the surfaces and the high-pass', 'Push the mic right up to the center of the face', 'Add a big low-shelf boost on the desk'],
     correct: 'A broader view, the surfaces and the high-pass',
     explain: 'Compare a broader, modestly more distant front position; inspect the stand and nearby surfaces; check a high-pass is not cutting the body.',
     why: {
-      'Push the mic right up to the centre of the face': 'Too close favours one area; a broader view hears the bloom.',
+      'Push the mic right up to the center of the face': 'Too close favors one area; a broader view hears the bloom.',
       'Add a big low-shelf boost on the desk': 'Check the placement and the filter before EQ.',
     },
   },
@@ -486,13 +486,13 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'gg.q.4',
     covers: 'sound',
-    prompt: 'Why does a stroke on the boss favour fewer vibration shapes?',
-    options: ['At the center, the shapes with still lines stand still', 'The boss is far too thick to vibrate at all, so it stays still', 'The two cords hold the centre of the face still'],
+    prompt: 'Why does a stroke on the boss favor fewer vibration shapes?',
+    options: ['At the center, the shapes with still lines stand still', 'The boss is far too thick to vibrate at all, so it stays still', 'The two cords hold the center of the face still'],
     correct: 'At the center, the shapes with still lines stand still',
     explain: 'A stroke drives a shape only as much as the face moves there; at the center only the ring-shaped ones move.',
     why: {
       'The boss is far too thick to vibrate at all, so it stays still': 'The boss vibrates with the face; it is which shapes are driven.',
-      'The two cords hold the centre of the face still': 'The cords hold the rim, not the centre.',
+      'The two cords hold the center of the face still': 'The cords hold the rim, not the center.',
     },
   },
   {
@@ -528,7 +528,7 @@ export const I12_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A large bronze plate hanging on cords in a frame, struck with a soft mallet — the metal itself vibrates. Two kinds matter here: an orchestral tam-tam (no boss) and a bossed gong (a raised centre that is struck). Identify which you have first.', src: 'PAI-GONG' },
+    { title: 'WHAT IT IS', text: 'A large bronze plate hanging on cords in a frame, struck with a soft mallet — the metal itself vibrates. Two kinds matter here: an orchestral tam-tam (no boss) and a bossed gong (a raised center that is struck). Identify which you have first.', src: 'PAI-GONG' },
     { title: 'WHERE YOU MEET IT', text: 'At the back of orchestras and percussion sections, in film and concert music, in many gong traditions — in the studio and on stage. (The whole orchestra and its percussion section come later, in Lab 5.)', src: 'LESSON-GONG' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A swelling wash at a climax, a soft roll, a single stroke left to decay — or damped on purpose. Mallet, stroke and where it lands all change the sound.', src: 'PAI-GONG' },
     { title: 'ITS SIZE', text: 'Orchestral gongs run from about 50 cm (20 in) to 1 m (40 in) and beyond; bossed gongs often 30–60 cm (12–24 in). This lab draws an 81 cm (32 in) tam-tam and a 46 cm (18 in) bossed gong.', src: 'PAI-GONG' },
@@ -549,7 +549,7 @@ export const I12_LESSON: Lesson = {
       { id: 'gong', label: 'the gong in its frame', short: 'GONG', note: 'Hanging on cords in a frame stand, swinging freely. Leave the gong and its suspension to the owner or the venue’s technician.', prov: { kind: 'illustrative', reason: 'a typical position: a drawing default' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'player', label: 'the player and the mallet', short: 'PLAYER', note: 'Beside the struck face, with the mallet’s whole arc and follow-through. Their space, and the gong’s swing, come before any mic.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor in front, facing back toward the player — behind a mic that faces the gong, where a pattern’s null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'band', label: 'the rest of the percussion and the band', short: 'BAND', note: 'Loud neighbours: a closer directional mic outside the swing helps more than gain.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'band', label: 'the rest of the percussion and the band', short: 'BAND', note: 'Loud neighbors: a closer directional mic outside the swing helps more than gain.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'Listen first from an ordinary audience position, safely, before choosing a target.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'MIC SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'Walls nearby change the bloom; in a good room, a room layer can carry the decay.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],

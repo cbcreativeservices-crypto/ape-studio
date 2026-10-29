@@ -37,7 +37,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
           key: 'contexts', title: 'Delivery contexts', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <Body>Every destination has its own CURRENT requirements and every client has a request. Five briefs, five different deliveries — the facts, the labelled examples and the checklist for each are on the next page, beside the sheet.</Body>
+              <Body>Every destination has its own CURRENT requirements and every client has a request. Five briefs, five different deliveries — the facts, the labeled examples and the checklist for each are on the next page, beside the sheet.</Body>
               {DESTINATIONS.map((d) => (
                 <Card key={d.id}>
                   <Point title={d.name}>{d.brief}</Point>
@@ -78,7 +78,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and tick each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list. FACTS are facts; EXAMPLES are labelled as examples to verify against the destination's current specification — they are not the rule.</Body>
+              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and tick each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list. FACTS are facts; EXAMPLES are labeled as examples to verify against the destination's current specification — they are not the rule.</Body>
               <Card tone="accent">
                 <Point title={dest.name}>{dest.brief}</Point>
                 {dest.facts.map((f) => <Body key={f}>• FACT — {f}</Body>)}

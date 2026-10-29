@@ -60,7 +60,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — position, aim, the pattern, the player’s movement, gain staging, levels and polarity — and the guitar itself, before reaching for tone controls.',
   },
   practice: {
@@ -696,7 +696,7 @@ export const C01_LESSON: Lesson = {
     { text: 'The “near” tolerance (8 cm), the aim tolerance (11 cm), the clip’s capsule height (3–9 cm) and reach (20 cm), and the upper-bout band (25–36 cm for “approximately 12 in”).', dims: [] },
     { text: 'The small condenser’s diameter and the clip mini’s capsule size — drawing defaults.', dims: [] },
     { text: 'The wedge, the vocal mic, the DI box, the band and the PA positions — a typical layout.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges: C01_WEDGES },
   accuracyDetail:

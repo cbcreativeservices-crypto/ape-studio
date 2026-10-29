@@ -51,7 +51,7 @@ export const CYM_CONTEXT_WORDS: Pick<LessonCopy['context'], 'deepNull' | 'cardio
       { title: 'CHANNEL COUNT', text: 'Each cymbal mic is one more open channel: more spill to manage and less gain before feedback. Fewer open mics are simpler.' },
       { title: 'MOUNTING', text: 'Cymbals swing and stands get bumped. Live, use secure, repeatable mounts and protect the cables; in the studio, stopped sessions allow careful moves.' },
     ],
-    body: 'Cymbals are loud and spread their sound widely: placement and the overheads matter more than the mic model. A pattern’s rejection helps — it does not remove a loud neighbour.',
+    body: 'Cymbals are loud and spread their sound widely: placement and the overheads matter more than the mic model. A pattern’s rejection helps — it does not remove a loud neighbor.',
     warn: 'No cymbal-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the PA and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
   },
 };

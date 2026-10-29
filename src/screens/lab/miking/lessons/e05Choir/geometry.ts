@@ -105,7 +105,7 @@ export const E05_ZONES: DocumentedZone[] = [
     start: AREA_L,
     variants: ['risers'],
     micTypeIds: ['arrCard'],
-    tendency: 'The section’s blend, with a little of the room; closer and lower favours the first row, higher and farther evens the rows out.',
+    tendency: 'The section’s blend, with a little of the room; closer and lower favors the first row, higher and farther evens the rows out.',
     checks: ['The front row against the back rows', 'The 3:1 spacing to the next mic, and the sum in mono', 'Where the monitor sits against the pattern'],
   }),
   mainZone({

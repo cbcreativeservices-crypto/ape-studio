@@ -11,7 +11,7 @@ import { KICK_FRONT } from '../shared/kitScene/kitSceneModel.ts';
 export const M10_COPY: Partial<LessonCopy> = {
   variantKey: 'WHERE',
   variantShort: { studio: 'studio room', live: 'live stage' },
-  sceneSubject: { studio: 'a 5-piece drum kit in a studio live room about 6.5 by 5.4 metres', live: 'a 5-piece drum kit on a stage with monitors and a PA' },
+  sceneSubject: { studio: 'a 5-piece drum kit in a studio live room about 6.5 by 5.4 meters', live: 'a 5-piece drum kit on a stage with monitors and a PA' },
   viewTag: { side: 'SIDE · THE ROOM FROM THE PLAYER’S RIGHT', top: 'TOP · THE ROOM FROM ABOVE' },
   axes: {
     x: { plus: 'out from the kick', minus: 'back toward the kit', label: 'OUT FROM KIT', blurb: 'Out into the room or back toward the kit (x), from the kick’s front head.' },
@@ -21,7 +21,7 @@ export const M10_COPY: Partial<LessonCopy> = {
   },
   instrument: {
     figureBadge: 'The kit in its room — what a room mic hears',
-    figureLabel: 'Side view of a studio live room about 6.5 metres long with a 3 metre ceiling: the drum kit near the back wall, the wooden floor, absorber panels on the walls.',
+    figureLabel: 'Side view of a studio live room about 6.5 meters long with a 3 meter ceiling: the drum kit near the back wall, the wooden floor, absorber panels on the walls.',
     partsBadge: 'The kit in its room, from the side and from above · tap a part',
     partsLooking: { side: 'Side view · the room from the player’s right', top: 'Top view · the room from above' },
     partsIdle: 'A room mic hears the kit after its parts have begun to blend — and the room answering back. Tap a part of the kit, or switch to LIVE STAGE.',

@@ -219,7 +219,7 @@ const DIFFUSER: Workspace = {
     'Sitting too close — a diffuser needs several wavelengths of distance to form its scattered field; nearfield it just adds comb filtering.',
   ],
   warnings:
-    'Idealised QRD geometry: well depth dₙ = sₙ·λ₀/(2N) with sₙ = n² mod N, low edge ≈ the design ' +
+    'Idealized QRD geometry: well depth dₙ = sₙ·λ₀/(2N) with sₙ = n² mod N, low edge ≈ the design ' +
     'frequency, high edge ≈ c/(2·well width). Real diffusers add fin thickness and finite-size ' +
     'effects; treat depths as a starting point.',
   glossary: ['Diffusion', 'Reflection (acoustics)', 'Wavelength', 'Comb Filtering', 'Standing wave'],
@@ -300,7 +300,7 @@ const ABSORBER: Workspace = {
   whyItMatters:
     'Low-frequency room problems need absorbers that WORK low, and porous foam that thin doesn’t. ' +
     'Panel and Helmholtz resonators put absorption in the band where a mode or a boom lives, using ' +
-    'depth and mass instead of metres of foam.',
+    'depth and mass instead of meters of foam.',
   example:
     'Panel absorber: a 5 kg/m² membrane over a 5 cm gap tunes to 59.9/√(5·0.05) ≈ 120 Hz. ' +
     'Perforated Helmholtz: 5% open area, 10 cm cavity, 12 mm panel, 8 mm holes tunes near 285 Hz.',
@@ -319,7 +319,7 @@ const ABSORBER: Workspace = {
     'and construction — measure the built absorber.',
   glossary: ['Absorption Coefficient', 'Resonance', 'Room Mode', 'Standing wave', 'Reverberation'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square meter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
     { key: 'gap', name: 'AIR GAP DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Depth of the sealed air cavity behind the panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Gap must be greater than zero.' } },
     // D53 (audit R2, 2026-10-23): 0 % is no Helmholtz absorber, and no panel is
     // more than 100 % holes — both refused in words, never "0 Hz" / "284700 Hz".
@@ -430,7 +430,7 @@ const TRANSMISSION: Workspace = {
     'performance is measured (ASTM E90 / STC, ISO 10140), not computed here.',
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square meter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', positive: true, warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
   ],

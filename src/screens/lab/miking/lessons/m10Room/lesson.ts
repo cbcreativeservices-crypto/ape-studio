@@ -24,7 +24,7 @@ const pages: LessonPages = {
     title: 'How the room answers',
     goal: 'See when the kit reaches points near and far, and how the floor, the walls and the ceiling send it back.',
     credit: { scenarios: ['rm.snd.1', 'rm.snd.2', 'rm.snd.3'], interactive: 'soundPath', note: 'On step 2, drag TIME past the last reflection, and answer the three checks.' },
-    takeaway: 'Every part of the kit reaches a room mic late — about 3 ms per metre — and the room’s reflections follow it. Farther out, the room’s share grows.',
+    takeaway: 'Every part of the kit reaches a room mic late — about 3 ms per meter — and the room’s reflections follow it. Farther out, the room’s share grows.',
   },
   setting: {
     title: 'Where it sits',
@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Choose the microphones',
     goal: 'Choose a room mic by its properties — pattern, power, how it is addressed and mounted — for the question you are asking.',
     credit: { scenarios: ['rm.mic.1', 'rm.mic.2', 'rm.mic.3', 'rm.mic.4', 'rm.rec.1'], note: 'Answer the five checks (one reaches back to how the room sounds).' },
-    takeaway: 'An omni hears the room from every side; a directional mic favours the kit in front of it. A side-address mic is aimed with its face. A condenser is common, not compulsory.',
+    takeaway: 'An omni hears the room from every side; a directional mic favors the kit in front of it. A side-address mic is aimed with its face. A condenser is common, not compulsory.',
   },
   placement: {
     title: 'Placement Studio',
@@ -59,7 +59,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each heard result to its likely cause and the first experiment to try.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic, compare positions at the same level, check mono — or leave the room feed out — before reaching for EQ.',
   },
   practice: {
@@ -82,7 +82,7 @@ const scenarios: MikingScenario[] = [
     correct: 'About 12 ms later',
     explain: 'Sound travels about 34 cm per millisecond at 20 °C: 4 m farther is about 12 ms later. That delay is part of what a room mic brings.',
     why: {
-      'About 1 ms later': 'One millisecond is about 34 cm. Four metres farther is about twelve times that.',
+      'About 1 ms later': 'One millisecond is about 34 cm. Four meters farther is about twelve times that.',
       'At the same moment': 'Both mics hear the same stroke, but the farther one hears it later — set by the extra distance.',
     },
   },
@@ -164,9 +164,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want a room mic to hear the room from every side. Which pattern fits that question?',
     options: ['Omni', 'Cardioid', 'Hypercardioid'],
     correct: 'Omni',
-    explain: 'An omni hears all round — room included. A directional pattern favours what it faces and colors the room sound arriving off-axis.',
+    explain: 'An omni hears all round — room included. A directional pattern favors what it faces and colors the room sound arriving off-axis.',
     why: {
-      Cardioid: 'A cardioid favours its front and turns down its back: it hears less of the room behind it.',
+      Cardioid: 'A cardioid favors its front and turns down its back: it hears less of the room behind it.',
       Hypercardioid: 'A hypercardioid is more directional still: it hears even less of the room around it.',
     },
   },
@@ -416,7 +416,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.dry',
     observation: 'A clear kit with very little room',
-    firstChecks: 'Position fairly near, directional aim favours the kit, or the room is absorptive: move to a safe farther site or change pattern.',
+    firstChecks: 'Position fairly near, directional aim favors the kit, or the room is absorptive: move to a safe farther site or change pattern.',
     options: ['A farther safe spot or a wider pattern, then listen to the reflections', 'Raise the room channel’s fader until the room finally appears in the mix', 'Add artificial reverb before trying the room at all'],
     correct: 'A farther safe spot or a wider pattern, then listen to the reflections',
     explain: 'Near and directional, the mic hears mostly kit. Try farther out, or an omni — and listen to whether the new reflections help.',
@@ -440,10 +440,10 @@ const symptoms: Symptom[] = [
   {
     id: 's.cymbals',
     observation: 'The cymbals dominate the room mic',
-    firstChecks: 'A high or line-of-sight position favours cymbals; drummer balance may contribute: compare a lower front aim and the drummer’s dynamics.',
+    firstChecks: 'A high or line-of-sight position favors cymbals; drummer balance may contribute: compare a lower front aim and the drummer’s dynamics.',
     options: ['A lower front position or aim, and the drummer’s own balance', 'Turn all the room channels down together until the cymbals sit back', 'Raise the mic higher, above the cymbals’ line of sight'],
     correct: 'A lower front position or aim, and the drummer’s own balance',
-    explain: 'High and in their line of sight, a mic favours the cymbals. Try lower and in front — and talk to the player about the balance.',
+    explain: 'High and in their line of sight, a mic favors the cymbals. Try lower and in front — and talk to the player about the balance.',
     why: {
       'Turn all the room channels down together until the cymbals sit back': 'Lowering every room channel throws away the room too; change the position first.',
       'Raise the mic higher, above the cymbals’ line of sight': 'Higher usually brings MORE cymbals, not fewer.',
@@ -648,7 +648,7 @@ export const M10_LESSON: Lesson = {
   ],
   sound: {
     stages: [{ title: 'Direct sound', text: 'The kit’s sound reaches the mic along the straight path.' }, { title: 'Early reflections', text: 'The nearest surfaces send it back.' }, { title: 'Decay', text: 'Many bounces blend into the room’s decay.' }, { title: 'The balance', text: 'Farther out, the room’s share grows.' }],
-    attack: 'The direct sound arrives first, along the straight path from each drum and cymbal — later the farther the mic is from the kit, about 3 ms per metre.',
+    attack: 'The direct sound arrives first, along the straight path from each drum and cymbal — later the farther the mic is from the kit, about 3 ms per meter.',
     body: 'Then the room answers: early reflections from the nearest surfaces, a few milliseconds behind, and after many bounces the decay. Close mics hear mostly direct sound; a distant mic hears a bigger share of the room.',
     head: { diameterMm: 14 * 25.4, rods: 10, label: '14 in snare head', strikeSrc: 'YMH-TCS', hoop: 'metal' },
   },
@@ -689,7 +689,7 @@ export const M10_LESSON: Lesson = {
     { text: 'The floor line (M01’s floor).', dims: ['yFloor'] },
     { text: `The cymbal family’s drawing defaults: ${CYMBAL_DRAWING_DEFAULTS.join('; ')}.`, dims: [] },
     { text: `The drum family’s drawing defaults: ${DRUM_DRAWING_DEFAULTS.join('; ')}.`, dims: [] },
-    { text: 'Reflections drawn as single bounces off flat surfaces; no absorption, diffusion or room modes are modelled.', dims: [] },
+    { text: 'Reflections drawn as single bounces off flat surfaces; no absorption, diffusion or room modes are modeled.', dims: [] },
   ],
   live: { wedges: M10_WEDGES },
   accuracyDetail:

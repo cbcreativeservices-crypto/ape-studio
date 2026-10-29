@@ -78,7 +78,7 @@ const TB_FAR: Z = {
   requires: { micTypeIds: STAND },
   draw: draw(TB, 10, 40, 600, 1200, AWAY),
   tendency: 'More of the room and the section with the horn — a blended, fuller view, and more spill. It suits a quiet, good room.',
-  checks: ['The slide’s reach at 7th: the stand stays well outside it', 'Room and neighbours against the closer view', 'The lowest notes: is the body still there?'],
+  checks: ['The slide’s reach at 7th: the stand stays well outside it', 'Room and neighbors against the closer view', 'The lowest notes: is the body still there?'],
 };
 
 const clip = (P: HornPose, id: string, variant: string, rimWord: string): DocumentedZone => {
@@ -86,7 +86,7 @@ const clip = (P: HornPose, id: string, variant: string, rimWord: string): Docume
   const z: Z = {
     id,
     label: 'Miniature on a bell clip — never on the slide',
-    band: `Clip it to the bell’s rim where its maker allows (${rimWord}) — never on the slide — and bring the capsule a few centimetres in front of the bell on the side away from the slide, aimed between the bell’s center and its edge.`,
+    band: `Clip it to the bell’s rim where its maker allows (${rimWord}) — never on the slide — and bring the capsule a few centimeters in front of the bell on the side away from the slide, aimed between the bell’s center and its edge.`,
     kind: 'sourced',
     src: 'DPA-MOUNT',
     quote: 'do not point the microphone directly into the center of the bell, but position it between the center position and the bell’s edge (DPA-MOUNT); mount only on the approved stationary bell area, never on the slide (L21)',
@@ -95,7 +95,7 @@ const clip = (P: HornPose, id: string, variant: string, rimWord: string): Docume
     side: 'outside',
     distance: { min: 40, max: 130 },
     cone: { min: 0, max: 60, toward: AWAY, prov: ill('in front of the rim, away from the slide') },
-    aim: { maxOffAxis: 50, minOffAxis: 6, prov: ill('aimed between the centre and the edge: 6–50° off the line to the centre') },
+    aim: { maxOffAxis: 50, minOffAxis: 6, prov: ill('aimed between the center and the edge: 6–50° off the line to the center') },
     aimAt: { surface: 'bell', r: R, prov: ill('the capsule’s axis meets the bell’s opening, inside the rim') },
     requires: { variant, micTypeIds: ['brClip'], mount: 'clip' },
     draw: draw(P, 0, 60, 40, 130, AWAY),

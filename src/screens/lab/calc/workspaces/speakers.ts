@@ -595,7 +595,7 @@ const WS_CABLE: Workspace = {
       inputs: ['len', 'awg', 'z', 'pamp'],
       formula: 'Rloop = 2·L·R/m; loss = 20·log10(Z/(Z+Rloop))',
       plainFormula:
-        'The loop resistance equals two times the length times the resistance per metre; the level loss is twenty times the log of the load impedance divided by the load plus the loop resistance.',
+        'The loop resistance equals two times the length times the resistance per meter; the level loss is twenty times the log of the load impedance divided by the load plus the loop resistance.',
       explain:
         'Speaker cable is a resistor in series with the speaker, and the current travels out and back (hence ×2). This turns gauge and length into the level lost, the share of amplifier power burned heating copper, and the ceiling it puts on system damping factor — the amp’s grip on the woofer.',
       keySymbols: ['·', 'R', '/', 'log₁₀', 'Z'],
@@ -647,7 +647,7 @@ const WS_CABLE: Workspace = {
       inputs: ['awg', 'z', 'maxloss'],
       formula: 'Rloop_max = Z·(10^(loss/20) − 1); Lmax = Rloop_max / (2·R/m)',
       plainFormula:
-        'The maximum loop resistance equals the impedance times (ten raised to the loss over twenty, minus one); the maximum length is that resistance divided by twice the resistance per metre.',
+        'The maximum loop resistance equals the impedance times (ten raised to the loss over twenty, minus one); the maximum length is that resistance divided by twice the resistance per meter.',
       explain:
         'The level-loss formula solved backwards for length: the longest one-way cable run of a given gauge that stays within your loss budget. A thicker gauge (lower AWG number) or a higher load impedance both allow a longer run.',
       keySymbols: ['Z', '·', 'x²', '/', '−', 'R'],

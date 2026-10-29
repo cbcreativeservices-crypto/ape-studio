@@ -260,7 +260,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and stadium Punjabi pop shows run hot. At big Punjabi stadium tours, peaks often pass 108 dBA, and stadium shows in India now deploy large flown-plus-ground sub arrays for 75,000-plus crowds. As a sensible target, run 98–104 dBA LAeq-15 at FOH with C-weighted LCeq of 115–122 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a metre, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
+      "text": "Arena and stadium Punjabi pop shows run hot. At big Punjabi stadium tours, peaks often pass 108 dBA, and stadium shows in India now deploy large flown-plus-ground sub arrays for 75,000-plus crowds. As a sensible target, run 98–104 dBA LAeq-15 at FOH with C-weighted LCeq of 115–122 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a meter, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
     },
     {
       "label": "Studio / streaming:",

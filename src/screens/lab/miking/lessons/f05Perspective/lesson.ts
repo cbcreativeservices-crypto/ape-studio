@@ -72,7 +72,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check timing, movement, labels and geometry before EQ: solo each mic, relocate the room channel, verify the pair — and keep the open mics few.',
   },
   practice: {
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The stage’s room sounds nothing like the pictured place. What follows?',
     options: ['A distant mic records the wrong room', 'The room will vanish once it is mixed', 'A louder room mic will fix the match'],
     correct: 'A distant mic records the wrong room',
-    explain: 'A farther mic prints the stage’s own room. If it cannot match the picture, favour a closer, drier track — knowing processing will not recreate every reflection.',
+    explain: 'A farther mic prints the stage’s own room. If it cannot match the picture, favor a closer, drier track — knowing processing will not recreate every reflection.',
     why: {
       'The room will vanish once it is mixed': 'A recorded room stays in the track.',
       'A louder room mic will fix the match': 'More of the wrong room makes the mismatch worse.',
@@ -164,11 +164,11 @@ const scenarios: MikingScenario[] = [
     id: 'f05.mic.1',
     page: 'microphone',
     prompt: 'For an X/Y pair, what do the two mics need?',
-    options: ['A matched pair, capsules together', 'Two unmatched mics, a metre apart', 'One shotgun and one room mic'],
+    options: ['A matched pair, capsules together', 'Two unmatched mics, a meter apart', 'One shotgun and one room mic'],
     correct: 'A matched pair, capsules together',
     explain: 'Two matched directional capsules close together without touching, angled 90° to start: a level-based image.',
     why: {
-      'Two unmatched mics, a metre apart': 'That is neither coincident nor matched: arbitrary spacing is not X/Y.',
+      'Two unmatched mics, a meter apart': 'That is neither coincident nor matched: arbitrary spacing is not X/Y.',
       'One shotgun and one room mic': 'That is close + room: two distances, not a stereo pair.',
     },
   },
@@ -325,7 +325,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f05.mix.1',
     page: 'practice',
-    prompt: 'A close mic and a farther room mic are labelled “L” and “R”. What is wrong?',
+    prompt: 'A close mic and a farther room mic are labeled “L” and “R”. What is wrong?',
     options: ['They are distances, not sides', 'Nothing: two mics make stereo', 'Only the order: R should be first'],
     correct: 'They are distances, not sides',
     explain: 'Label close + room as two perspectives. A stereo pair is a planned geometry at one place.',
@@ -420,7 +420,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'f05.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A live theatre: keys carried across a Foley station beside the stage, through the PA, a wedge in front.',
+    brief: 'BRIEF 2 · A live theater: keys carried across a Foley station beside the stage, through the PA, a wedge in front.',
     setups: [
       { id: 'a', label: 'One close mic at the station, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: one stable pickup — rehearse the whole crossing with the operator.' },
       { id: 'b', label: 'A small supercardioid at the station, the wedge off its rear side', ok: true, power: 'phantom', feedback: 'A fair live choice — check the margin at show level.' },
@@ -475,7 +475,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The stage’s room cannot match the picture. A distant mic will…',
     options: ['Record the wrong room', 'Hide the room’s sound', 'Fix the picture’s match'],
     correct: 'Record the wrong room',
-    explain: 'A farther mic prints the stage’s own room: favour a closer, drier track.',
+    explain: 'A farther mic prints the stage’s own room: favor a closer, drier track.',
     why: { 'Hide the room’s sound': 'It records more of it.', 'Fix the picture’s match': 'It records the mismatch.' },
   },
   clearanceDiag(W),
@@ -543,7 +543,7 @@ export const F05_LESSON: Lesson & { sp: SpExtra } = {
       { id: 'pa', label: 'the PA and the wedge', short: 'PA · WEDGE', note: 'Live, every open mic hears them: one close pickup, the wedge in its rejection, the open mics few.', prov: { kind: 'illustrative', reason: 'S-AUTOMIX, S-LIVE' }, tag: 'FEEDBACK PATH', scene: 'stage' },
     ],
     stage: 'LIVE: one stable close mic at a known station, the wedge in its rejection, a second feed only with a purpose. Leave any ring-out to the system operator.',
-    studio: 'STUDIO: one mic for the whole action, then a room channel or a pair only when the scene asks — each on its own labelled channel.',
+    studio: 'STUDIO: one mic for the whole action, then a room channel or a pair only when the scene asks — each on its own labeled channel.',
   },
   diagnostic,
   practice: {

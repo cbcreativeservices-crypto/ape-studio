@@ -71,7 +71,7 @@ const handRow = (id: string, variant: string): VoiceZoneSpec => ({
   variant,
   start: { d: [57, 55, 60, 50, 65, 70], at: 'mouth' },
   tendency: 'A close, clear part with little of the stage; very close it gains low end (the proximity effect). Matching the distance across the singers keeps the stack even.',
-  checks: ['The grille open, never cupped', 'The loudest phrase: back off a little', 'The neighbour’s voice in this mic, and the 3:1 spacing'],
+  checks: ['The grille open, never cupped', 'The loudest phrase: back off a little', 'The neighbor’s voice in this mic, and the 3:1 spacing'],
 });
 const HAND_MID = voiceZone(E02_MODEL, singerAnchor(LI, 'mid.1'), handRow('bv.hand', 'live'), MIC_TYPES, { surface: E02_SURFACES[0].id });
 const HAND_HI = voiceZone(E02_MODEL, singerAnchor(LI, 'hi.1'), handRow('bv.hand2', 'live'), MIC_TYPES, { surface: E02_SURFACES[1].id });
@@ -148,7 +148,7 @@ export const E02_ZONES: DocumentedZone[] = [
 
 /** A wedge in front of the middle singer (behind the handheld): a typical stage. */
 export const E02_WEDGES: Wedge[] = [
-  { id: 'wedge', label: 'the middle singer’s floor wedge, in front, facing back at them', short: 'WEDGE', p: v3(0, 0, 900), lift: 250, faces: v3(0, 0, -1), note: 'On the floor about a metre in front of the middle singer, facing back: behind a handheld aimed at the mouth, and well below it — the pattern and the tilt both decide how much it hears.', prov: ill('in front of the singer = behind the mic (S-VOC-TIPS, S-SM58-UG); the distance a drawing default') },
+  { id: 'wedge', label: 'the middle singer’s floor wedge, in front, facing back at them', short: 'WEDGE', p: v3(0, 0, 900), lift: 250, faces: v3(0, 0, -1), note: 'On the floor about a meter in front of the middle singer, facing back: behind a handheld aimed at the mouth, and well below it — the pattern and the tilt both decide how much it hears.', prov: ill('in front of the singer = behind the mic (S-VOC-TIPS, S-SM58-UG); the distance a drawing default') },
 ];
 
 /* ── STARTING SETUPS ── */

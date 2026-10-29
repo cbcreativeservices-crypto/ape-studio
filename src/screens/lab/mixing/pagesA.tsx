@@ -128,7 +128,7 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
           onOpen={(id) => setSeen((s) => new Set(s).add(id))}
         />
         <PrepArt opened={seen} />
-        <Body>The session updates as you open each step: names and colors, the junk gone, the quiet clip levelled, headroom on the master meter, references parked, an untouched copy saved.</Body>
+        <Body>The session updates as you open each step: names and colors, the junk gone, the quiet clip leveled, headroom on the master meter, references parked, an untouched copy saved.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>SEPARATE THE JOBS</Eyebrow>

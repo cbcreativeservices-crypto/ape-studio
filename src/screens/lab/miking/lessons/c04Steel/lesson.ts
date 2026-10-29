@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalized).' },
     takeaway: 'Small moves across the cone before EQ; gain for the loudest realistic passage; for anything electrical you are unsure of, stop.',
   },
   practice: {
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Next to vocal mics on a busy stage, which pattern habit helps the steel mic?',
     options: ['Point its front straight at the vocal mic to cancel it out', 'Aim its rejection at the loudest competing source', 'Choose an omni so that all the sources are balanced'],
     correct: 'Aim its rejection at the loudest competing source',
-    explain: 'Use the mic’s real pattern: face the speaker, and turn its rejection toward the loudest neighbour or monitor.',
+    explain: 'Use the mic’s real pattern: face the speaker, and turn its rejection toward the loudest neighbor or monitor.',
     why: {
       'Point its front straight at the vocal mic to cancel it out': 'The front is where a mic picks up most.',
       'Choose an omni so that all the sources are balanced': 'An omni hears the stage all round — more spill, not less.',
@@ -528,7 +528,7 @@ const orderTasks: OrderTask[] = [
       { text: 'With the amp off or muted, find the speaker and place the mic near the cap’s edge, clear of the grille', early: 'Place the mic once the keep-clear zone is known.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom if it is needed', early: 'Power comes after connecting — outputs muted first.' },
       { text: 'Set the gain on the loudest realistic passage: the swell’s peak and the hardest attack', early: 'Gain is set once the mic is connected and powered.' },
-      { text: 'Compare centre, cap edge and outer cone at matched level', early: 'Compare once the level is set safely.' },
+      { text: 'Compare center, cap edge and outer cone at matched level', early: 'Compare once the level is set safely.' },
       { text: 'Write down the speaker, spot, distance, angle and the player’s settings', early: 'Document last.' },
     ],
     explain: 'A sensible order. Keep the player’s working zone clear throughout; follow each device’s manual for phantom power and connections.',
@@ -561,14 +561,14 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A studio, a lap steel through an open-backed combo; the player wants a rounder sound. Two inputs, NO phantom power; the amp has a simulated-mic XLR.',
     setups: [
-      { id: 'a', label: 'A dynamic toward the outer cone, plus the amp’s simulated-mic output on its own labelled channel', ok: true, power: 'none', feedback: 'A rounder mic position and a labelled electrical source, checked together in mono.' },
+      { id: 'a', label: 'A dynamic toward the outer cone, plus the amp’s simulated-mic output on its own labeled channel', ok: true, power: 'none', feedback: 'A rounder mic position and a labeled electrical source, checked together in mono.' },
       { id: 'b', label: 'A dynamic at the cap’s edge, plus a dynamic behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair on a real open back — judged in mono.' },
       { id: 'c', label: 'A small condenser farther back, alone', ok: false, power: 'phantom', feedback: 'No phantom here for the condenser.' },
-      { id: 'd', label: 'The simulated-mic output alone, labelled as the amp mic', ok: false, power: 'none', feedback: 'It is electrical, not a mic — and the brief asks for the amp’s sound.' },
+      { id: 'd', label: 'The simulated-mic output alone, labeled as the amp mic', ok: false, power: 'none', feedback: 'It is electrical, not a mic — and the brief asks for the amp’s sound.' },
       { id: 'e', label: 'A dynamic inside the open back, near the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each source heard alone, then together in mono', role: 'optional', feedback: 'A good habit with any blend.' }, BRAND_REASON, BRIGHT_REASON],
-    explain: 'Two setups pass. What passes is the reasoning: a deliberate position, sources that work without phantom, labelled electrical paths, a mono check.',
+    explain: 'Two setups pass. What passes is the reasoning: a deliberate position, sources that work without phantom, labeled electrical paths, a mono check.',
   },
 ];
 
@@ -698,10 +698,10 @@ export const C04_LESSON: Lesson = {
       { id: 'amp', label: 'the steel amp', short: 'AMP', note: 'The player’s amp, often a combo, sometimes tilted back toward them. Its settings and reverb are their sound; it must stand firm.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the speaker', short: 'SPEAKER', note: 'The cone moves the air: what the mic hears. Find it behind the grille before placing the mic.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
       { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of the speaker, the box and the room — on a low, stable stand at the amp, away from the player.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
-      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Each source on its own labelled channel. Set the gain for the loudest swell and attack.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
+      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Each source on its own labeled channel. Set the gain for the loudest swell and attack.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
       { id: 'ampdi', label: 'the amp’s direct output', short: 'AMP OUT', note: 'Some steel amps have an XLR that imitates a miked speaker, beside other line outputs. Where each is taken is in that amp’s manual. Still electrical — not the air.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'wedge', label: 'the steel player’s wedge', short: 'WEDGE', note: 'A floor monitor in front of the steel, facing back toward the player — off the amp mic’s rear, toward one side.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbour; a close, directional amp mic hears more of the steel.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbor; a close, directional amp mic hears more of the steel.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
       { id: 'otherAmp', label: 'the bass amp', short: 'BASS AMP', note: 'Another loud speaker on the backline.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Coordinate the amp and the PA so the player hears themselves and the audience hears the steel — without pushing the amp.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good studio room, a farther mic can add space once the close mic is right.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },

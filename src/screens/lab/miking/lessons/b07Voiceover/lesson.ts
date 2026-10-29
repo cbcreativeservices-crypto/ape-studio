@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Booth or desk',
     goal: 'See where a monitor loudspeaker sits against a desk mic’s pattern — and why the talent hears on headphones and the monitor stays off while the mics are open.',
     credit: { scenarios: ['b7.ctx.1', 'b7.ctx.2', 'b7.ctx.studio', 'b7.rec.3'], interactive: 'wedgeInNull', note: 'GUEST DESK: aim the mic (or change its pattern) until the monitor sits in the rejection. BOOTH: answer the decision card. Then the three checks.' },
-    takeaway: 'A studio narration can use the room on purpose; a live read favours a close, repeatable place. Loudspeakers stay out of open mics: headphones for the talent, and a pattern’s rejection is only a help.',
+    takeaway: 'A studio narration can use the room on purpose; a live read favors a close, repeatable place. Loudspeakers stay out of open mics: headphones for the talent, and a pattern’s rejection is only a help.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -69,7 +69,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the distance, the angle to the mouth, the script, the room, the guest’s real input, the return — before reaching for EQ or noise reduction.',
   },
   practice: {
@@ -498,7 +498,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'An external mic near the mouth, chosen as the input, on headphones', ok: true, power: 'none', feedback: 'A suggested start: check the app chose it, and give them a return without their own voice.' },
       { id: 'b', label: 'A wired earbud mic held steady, on its own earbuds', ok: true, power: 'none', feedback: 'A fair fallback: check speech and cable rub.' },
-      { id: 'c', label: 'The laptop’s own mic, the guest a metre back, on speakers', ok: false, power: 'none', feedback: 'A distant mic and loudspeakers: room, echo and spill.' },
+      { id: 'c', label: 'The laptop’s own mic, the guest a meter back, on speakers', ok: false, power: 'none', feedback: 'A distant mic and loudspeakers: room, echo and spill.' },
       { id: 'd', label: 'Heavy noise reduction on the laptop mic', ok: false, power: 'none', feedback: 'Software cannot restore missing consonants. Placement first.' },
       { id: 'e', label: 'The guest’s return set to the whole program', ok: false, power: 'none', feedback: 'They would hear themselves late. Mix-minus.' },
     ],

@@ -1002,7 +1002,7 @@ export const STAGE6_READINESS: StageDef = {
       severity: "blocker",
       kind: "unsafe",
       title: "Temporary power is in use and has not been signed off",
-      detail: "Stage 3 says the system is fed by a tie-in, temporary distribution or a generator through distribution. Until the licensed or certified electrician has tested and signed off the connection, it should not be energised with people on it. The production does not sign this off for itself.",
+      detail: "Stage 3 says the system is fed by a tie-in, temporary distribution or a generator through distribution. Until the licensed or certified electrician has tested and signed off the connection, it should not be energized with people on it. The production does not sign this off for itself.",
       fixHint: "Have the electrician named in stage 3 test and sign off the power, and record the sign-off as approved.",
       needsLogic: true,
       logicIntent: "Fire when people.power_source is temporary_distro or generator_distro and power_signoff is anything other than Approved, including empty. Do not fire for existing_outlets, house_distro, generator_direct or unknown."

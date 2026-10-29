@@ -30,7 +30,7 @@ export const TAMB_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
       { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the frame — explore what it drives.' },
       { id: 'edge', label: 'NEAR THE FRAME', mm: R * 0.85, blurb: 'Close to the frame — explore what it drives.' },
     ],
@@ -47,11 +47,11 @@ export const TAMB_COPY: LessonCopy = {
     reveal: 'Struck, the head is pushed in and the frame jolts; the loose jingle pairs are thrown against each other. Two sounds start at once: the head’s body and the jingles’ bright clash.',
     after: 'Then the head rings briefly and the jingles keep shimmering for a moment. Head material, jingle metal, the rows and the player’s technique all change the balance between them.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them.',
       'This is a simplified head on a closed rim. A real tambourine’s back is open and its frame is held in a hand, so these numbers shift — the next step shows the head and the jingles together.',
     ],
     coupledSubject: 'The tambourine edge-on',
-    coupledNote: 'One instrument, two sources: the head (a drum) and the jingles (metal). Striking favours the head; shaking favours the jingles — a mic hears more of whichever it is closer to and faces.',
+    coupledNote: 'One instrument, two sources: the head (a drum) and the jingles (metal). Striking favors the head; shaking favors the jingles — a mic hears more of whichever it is closer to and faces.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real tambourine sounds depends on its head, its jingles, how it is held and the player. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Head and jingles',
@@ -88,7 +88,7 @@ export const TAMB_COPY: LessonCopy = {
   setting: {
     kitA11y: 'The percussion section from above, at the back of an orchestra: the tambourine held by its player at the end of the row, beside the trap table and a suspended cymbal; the concert snare, the bass drum and the timpani along the row; a row of brass in front.',
     kitLanding: 'Tap anything around the tambourine — or step through ITEM — to see what it means for a tambourine mic. There is nothing to answer yet.',
-    kitIdle: 'The tambourine player stands in the percussion row, often moving between instruments at the trap table. Around them: bright neighbours, and the brass in front.',
+    kitIdle: 'The tambourine player stands in the percussion row, often moving between instruments at the trap table. Around them: bright neighbors, and the brass in front.',
     leftHanded: 'Players hold and strike with either hand, and move between stations — check the real passage, and where the player stands for each part of it.',
     stageA11y: 'The orchestra on an amplified stage, from above: the percussion at the back, the conductor and the audience at the front, PA stacks at the front corners, and two floor monitors near the percussion.',
     studioA11y: 'The orchestra recorded in a hall, from above: the main pair of microphones over the conductor, the hall’s walls around the stage, no monitors.',
@@ -101,7 +101,7 @@ export const TAMB_COPY: LessonCopy = {
     ],
     plan: {
       title: 'In the orchestra',
-      badge: 'The percussion from above · a typical concert layout · grey hatch = the players’ space',
+      badge: 'The percussion from above · a typical concert layout · gray hatch = the players’ space',
       looking: 'Plan · the percussion row, the audience toward the bottom',
       stageBadge: 'From above · an amplified orchestra · two monitors where a stage often puts them',
       studioBadge: 'From above · an orchestra recorded in a hall',
@@ -124,7 +124,7 @@ export const TAMB_COPY: LessonCopy = {
       intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine is where we suggest you begin. From there, aim at the head for more body or at the rim for more jingle. Starting points, not rules: move and listen — there is no single right answer.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the same passage. A held tambourine moves toward and away from a fixed mic: find a spot that covers the whole motion.',
       clearance: 'Clearance comes first. Have the player show the whole arm, wrist, hand and stick motion, and the shake, before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room for a real player.',
-      tendencies: 'Closer usually raises the tambourine against its neighbours but lets one jingle or one impact jump out; a little farther blends head, rim and room. If it is too bright, try distance and angle first. All tendencies to check by ear.',
+      tendencies: 'Closer usually raises the tambourine against its neighbors but lets one jingle or one impact jump out; a little farther blends head, rim and room. If it is too bright, try distance and angle first. All tendencies to check by ear.',
     },
   },
   context: {

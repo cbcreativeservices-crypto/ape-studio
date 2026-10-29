@@ -443,7 +443,7 @@ describe('units — exact conversion both ways', () => {
 });
 
 describe('stereo geometry and symmetry', () => {
-  it('the default layout is the equilateral starting point: 60°, equal paths, on the centre line', () => {
+  it('the default layout is the equilateral starting point: 60°, equal paths, on the center line', () => {
     const d = design();
     const g = stereoGeometry(d.room, d.layouts[0])!;
     near(g.angleDeg, 60, 0.5);
@@ -703,14 +703,14 @@ describe('analysis bundle, suggestions and comparison', () => {
     assert.equal(L.level, 'check');
     assert.match(L.text, /Move fore\/aft — try the seat at roughly 35–40 % of the room length/);
     const W = a.suggestions.find((s) => /every odd width mode/.test(s.text))!;
-    assert.equal(W.level, 'ok', 'the width null on the centre line is the accepted trade, not a warning');
+    assert.equal(W.level, 'ok', 'the width null on the center line is the accepted trade, not a warning');
     assert.match(W.text, /here 42\.9 Hz/);
     assert.match(W.text, /Keep the symmetry/);
     const H = a.suggestions.find((s) => /first height mode/.test(s.text))!;
     assert.equal(H.level, 'info');
     assert.match(H.text, /not a reason to move/);
     assert.ok(a.suggestions.some((s) => s.level === 'info' && /SHAPE of each mode, not how strongly the speakers excite it/.test(s.text)), 'the map-shows-shape note');
-    // never "move off the centre line" for the width axis
+    // never "move off the center line" for the width axis
     assert.ok(!a.suggestions.some((s) => /W-axis/.test(s.text) && /move the position/.test(s.text)));
     // "!" first, then "▸", then "✓", then ⓘ; measuring closes the list
     const order = { check: 0, try: 1, ok: 2, info: 3 } as const;

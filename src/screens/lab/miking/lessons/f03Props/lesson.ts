@@ -56,7 +56,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the prop mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a theatre with a PA need different first plans.',
+    goal: 'Aim the prop mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a theater with a PA need different first plans.',
     credit: { scenarios: ['f03.ctx.1', 'f03.ctx.2', 'f03.ctx.ring', 'f03.ctx.studio', 'f03.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
     takeaway: 'On a quiet stage, the whole action first, then a closer look. Live, a compact, stable mic at a known station, the wedge in its rejection, a distant room mic used with care — and ringing out left to the system operator.',
   },
@@ -69,7 +69,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the prop, the performance and the aim first — a click without body, a boomy surface, a noisy stand — before processing.',
   },
   practice: {
@@ -235,7 +235,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f03.ctx.1',
     page: 'context',
-    prompt: 'A live theatre: keys and a door performed at a station, through the PA. A fair first plan?',
+    prompt: 'A live theater: keys and a door performed at a station, through the PA. A fair first plan?',
     options: ['A compact mic at a known station, the wedge in its rejection', 'A room mic far back, so the props sound natural to the hall', 'Several mics open, one on each prop all the time'],
     correct: 'A compact mic at a known station, the wedge in its rejection',
     explain: 'A compact, stable position and a known object station keep the active prop in the pickup; aim the rejection at the wedge. A distant room mic returns the PA and takes away feedback margin.',
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'f03.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A live theatre: keys and a drawer performed at a station beside the stage, through the PA, a wedge in front.',
+    brief: 'BRIEF 2 · A live theater: keys and a drawer performed at a station beside the stage, through the PA, a wedge in front.',
     setups: [
       { id: 'a', label: 'A small supercardioid close at the station, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: compact, stable, aimed — check at show level.' },
       { id: 'b', label: 'A dynamic close at the station, the wedge behind it', ok: true, power: 'none', feedback: 'A fair live choice where spill is heavy — check the wedge against the real pattern.' },

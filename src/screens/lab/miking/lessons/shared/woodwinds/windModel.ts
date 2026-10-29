@@ -8,7 +8,7 @@
  * safety words: "never place a stand or boom where a turning head or flute
  * can strike it", "keep stands, clips and cables clear of fingers, keywork,
  * pads, joints and the player's face"):
- *   • the instrument, each piece as capsules along its centre line, with a
+ *   • the instrument, each piece as capsules along its center line, with a
  *     20 mm clearance for the instrument's own movement;
  *   • the player's head (and breath), torso, shoulders, both arms, both
  *     hands on the keys, the legs and feet; the chair; the bass clarinet's
@@ -59,7 +59,7 @@ export type WindModelOpts = {
 
 export const CLEAR: Dim = { mm: 20, prov: ill('a 20 mm keep-out round the instrument for its movement as the player breathes and phrases (drawing default)') };
 
-/** The instrument's pieces as capsule solids along the centre line. */
+/** The instrument's pieces as capsule solids along the center line. */
 export function instrumentParts(L: Layout, w: WindPartWords): Part[] {
   const spec = L.spec;
   const parts: Part[] = [];

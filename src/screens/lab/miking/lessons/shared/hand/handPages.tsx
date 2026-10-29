@@ -496,7 +496,7 @@ function HandPlacement(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={spec.art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${spec.place.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. ${nowLine(rig, ['A'], spec.outside)}`} />,
-          badge: spec.words?.placeBadge ?? 'Blue = suggested starting points · grey dashes = the player’s hands and body · pinch to zoom',
+          badge: spec.words?.placeBadge ?? 'Blue = suggested starting points · gray dashes = the player’s hands and body · pinch to zoom',
           bezel,
           params,
           initialParam: 'pos',

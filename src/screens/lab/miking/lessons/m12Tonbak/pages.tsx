@@ -230,9 +230,9 @@ const SPEC: HandSpec = {
     mountLine: (m) => (m.transducer === 'dynamic' ? 'Mount: a stand from the audience side, clear of the hands — compact on a stage' : 'Mount: a stand from the audience side, clear of the hands and the legs'),
   },
   axes: {
-    x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the audience side (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'toward the audience from' : 'toward the player from'} the head’s centre` },
-    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - T_H0.y))} ${v <= T_H0.y ? 'above' : 'below'} the head’s centre` },
-    z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the player’s right (the way the head faces) or left (z).', fmt: (v) => `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'} of the head’s centre` },
+    x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the audience side (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'toward the audience from' : 'toward the player from'} the head’s center` },
+    y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - T_H0.y))} ${v <= T_H0.y ? 'above' : 'below'} the head’s center` },
+    z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the player’s right (the way the head faces) or left (z).', fmt: (v) => `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'} of the head’s center` },
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'outside the drum',
@@ -275,7 +275,7 @@ const SPEC: HandSpec = {
     label: 'the tonbak with a mic on the audience side.',
     learn: [
       { title: 'STUDIO', text: 'A balanced position for the whole vocabulary; a farther, room-inclusive view can suit a solo in a good room. Compare at matched loudness, and keep the pattern and the distance as separate changes.' },
-      { title: 'LIVE', text: 'One workable directional mic first, and only the monitor level the player needs. A closer pickup helps against louder neighbours — if the player stays comfortable. A second mic must justify its extra spill.' },
+      { title: 'LIVE', text: 'One workable directional mic first, and only the monitor level the player needs. A closer pickup helps against louder neighbors — if the player stays comfortable. A second mic must justify its extra spill.' },
       { title: 'WHAT TO SEND', text: 'Reinforce only what the audience needs. Let the system operator route the PA, wedges, in-ears and recording separately.' },
     ],
   },

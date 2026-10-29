@@ -74,7 +74,7 @@ export const STAGE7_FINISH: StageDef = {
             { value: "lf", label: "Low-frequency balance" },
             { value: "dynamics", label: "Dynamic range" },
             { value: "noise", label: "Noise floor" },
-            { value: "endings", label: "Intro and ending behaviour" },
+            { value: "endings", label: "Intro and ending behavior" },
             { value: "spacing", label: "Spacing between items" }
           ]
         },
@@ -175,7 +175,7 @@ export const STAGE7_FINISH: StageDef = {
               kind: "choice",
               options: [
                 { value: "gain", label: "Gain" },
-                { value: "eq", label: "Equalisation" },
+                { value: "eq", label: "Equalization" },
                 { value: "compression", label: "Compression" },
                 { value: "multiband", label: "Multiband" },
                 { value: "saturation", label: "Saturation" },
@@ -449,7 +449,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "blocker",
       kind: "mismatch",
       title: "The program misses its loudness target",
-      detail: "The measured integrated loudness is outside the target and tolerance recorded in the brief. Delivered as it stands, it will either be rejected or normalised by the platform, and a platform turning it down is not the same as you turning it down.",
+      detail: "The measured integrated loudness is outside the target and tolerance recorded in the brief. Delivered as it stands, it will either be rejected or normalized by the platform, and a platform turning it down is not the same as you turning it down.",
       fixHint: "Overall gain first. Reach for compression or limiting only if the loudness range is genuinely the problem, and re-measure the exported file rather than the session.",
       needsLogic: true,
       logicIntent: "Fire when brief.loudness_target is a number and measured_integrated is a number and the difference exceeds brief.loudness_tolerance, or exceeds a default tolerance that ccode chooses when none is set. Do not fire when either measurement is empty.",
@@ -494,7 +494,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "The dynamics have been flattened to reach the target",
-      detail: "The loudness range is very small and the correction was compression or limiting. Pushed this way, a program gets louder and stops being able to emphasise anything — and on a platform that normalises, the loudness is turned back down while the flatness stays.",
+      detail: "The loudness range is very small and the correction was compression or limiting. Pushed this way, a program gets louder and stops being able to emphasize anything — and on a platform that normalizes, the loudness is turned back down while the flatness stays.",
       fixHint: "Back off the compression or limiting, then meet the target with overall gain. Where the range is genuinely too wide, ride the loud moments rather than compressing everything.",
       needsLogic: true,
       logicIntent: "Fire when measured_lra is a number below a threshold that ccode chooses and loudness_action is compression or limiting."
@@ -704,6 +704,6 @@ export const STAGE7_FINISH: StageDef = {
       ]
     },
     passWhen: "The measured integrated loudness is within tolerance of the target and the true peak is at or below the ceiling; the measurement is taken from the exported deliverable rather than the session; the correction is no longer compression or limiting while the loudness range stays flattened; every processing row has a stated purpose and a level-matched comparison; dither is decided rather than left unconsidered; the deliverable has been played through in full; the encoded version has been compared with the master; a creative review has happened; speech accessibility has been checked; the caption timing is verified against the final master; and the series has been compared across the set.",
-    debrief: "The file was three decibels too loud and over the ceiling, and the instinct — more limiting — is what got it there. Six decibels of limiting and a broadband compressor had already squeezed the loudness range down to 2 LU, which on speech means nothing can be emphasised any more, and the platform was going to turn the whole thing down by three decibels anyway. The fix was to back off the limiting and compression — that is what gives the dynamics back — and then set the level to the target with plain gain and check the true peak again. Two of the other faults would have survived every meter in the room: captions timed against a cut that no longer exists, and an episode in a series that had never been compared with the episodes around it. And notice the measurement itself was of the session, not the file — so even the numbers everyone was reacting to were not the numbers the client would get."
+    debrief: "The file was three decibels too loud and over the ceiling, and the instinct — more limiting — is what got it there. Six decibels of limiting and a broadband compressor had already squeezed the loudness range down to 2 LU, which on speech means nothing can be emphasized any more, and the platform was going to turn the whole thing down by three decibels anyway. The fix was to back off the limiting and compression — that is what gives the dynamics back — and then set the level to the target with plain gain and check the true peak again. Two of the other faults would have survived every meter in the room: captions timed against a cut that no longer exists, and an episode in a series that had never been compared with the episodes around it. And notice the measurement itself was of the session, not the file — so even the numbers everyone was reacting to were not the numbers the client would get."
   }
 };

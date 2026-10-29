@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — the jet, the mic’s response and angle, the distance, the mount — before EQ or a louder channel.',
   },
   practice: {
@@ -114,7 +114,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The loud piccolo sits right beside their ear',
     explain: 'The piccolo is held right by the player’s right ear, and its top register is loud. Manage rehearsal and show exposure, use hearing protection where it helps, and keep monitor and in-ear levels comfortable.',
     why: {
-      'The piccolo’s sound reaches the audience first': 'The audience is far away; the player’s ear is centimetres from the instrument.',
+      'The piccolo’s sound reaches the audience first': 'The audience is far away; the player’s ear is centimeters from the instrument.',
       'Their earplugs change the pitch of the piccolo': 'Hearing protection changes what the player hears, not the piccolo’s pitch.',
     },
   },
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A piccolo player moves around a dense stage. Which mount keeps one distance?',
     options: ['A stand mic in front, carefully aimed', 'A properly fitted headset', 'A mic on the music stand'],
     correct: 'A properly fitted headset',
-    explain: 'A fitted headset follows the head — it favours the head joint, so test the whole register. If no mount truly fits, a stand is the safe choice.',
+    explain: 'A fitted headset follows the head — it favors the head joint, so test the whole register. If no mount truly fits, a stand is the safe choice.',
     why: {
       'A stand mic in front, carefully aimed': 'A stand mic has a working zone; a moving player leaves it.',
       'A mic on the music stand': 'The music stand stays put, and its desk reflects sound into the mic.',
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is a mic behind and slightly above the player’s head aimed at the piccolo?',
     options: ['No — it hears only the back of the head', 'Yes — past the head, at the finger holes', 'No — it points up to hear the room'],
     correct: 'Yes — past the head, at the finger holes',
-    explain: 'It looks over the shoulder at the finger holes; the jet blows away from it, so it tends to hear less breath. Check the head’s movement and the neighbours.',
+    explain: 'It looks over the shoulder at the finger holes; the jet blows away from it, so it tends to hear less breath. Check the head’s movement and the neighbors.',
     why: {
       'No — it hears only the back of the head': 'Placed a little above and to the side, it sees past the head.',
       'No — it points up to hear the room': 'It is aimed at the finger holes, not the ceiling.',
@@ -205,13 +205,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pc.place.3',
     page: 'placement',
-    prompt: 'You move from close to about a metre in front. What tends to change?',
+    prompt: 'You move from close to about a meter in front. What tends to change?',
     options: ['More room; key clicks and gusts fall back', 'Only the level drops; nothing else changes', 'More breath, as the mic faces the lips'],
     correct: 'More room; key clicks and gusts fall back',
     explain: 'Farther away the clicks and breath fall back and more room and ensemble arrive — with less isolation and more change as the player moves.',
     why: {
       'Only the level drops; nothing else changes': 'Distance changes the balance: more room, less mechanism and breath.',
-      'More breath, as the mic faces the lips': 'At a metre the jet has spread out; breath is less, not more.',
+      'More breath, as the mic faces the lips': 'At a meter the jet has spread out; breath is less, not more.',
     },
   },
   {
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why can the piccolo player’s hearing be at risk on a stage?',
     options: ['The loud instrument is right by their ear', 'The PA speakers point straight back at them', 'The mic is louder than the instrument'],
     correct: 'The loud instrument is right by their ear',
-    explain: 'The piccolo sits centimetres from the player’s right ear. Manage the exposure under the venue’s hearing practice, and keep monitor and in-ear levels comfortable.',
+    explain: 'The piccolo sits centimeters from the player’s right ear. Manage the exposure under the venue’s hearing practice, and keep monitor and in-ear levels comfortable.',
     why: {
       'The PA speakers point straight back at them': 'The PA faces the audience; the risk is the instrument beside the ear.',
       'The mic is louder than the instrument': 'A mic makes no sound of its own; the instrument and the monitors do.',
@@ -285,7 +285,7 @@ const scenarios: MikingScenario[] = [
     correct: 'One — multiple close mics are seldom needed',
     explain: 'One well-placed mic gives a coherent piccolo; more close mics add delays and combining checks for little gain.',
     why: {
-      'Two — one for each hand on the body': 'The hands are a few centimetres apart; two close mics only add a delay.',
+      'Two — one for each hand on the body': 'The hands are a few centimeters apart; two close mics only add a delay.',
       'Three — one for each register, low, middle and top': 'One mic hears the whole register; place it well instead.',
     },
   },
@@ -375,7 +375,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · An orchestra recording in a good hall. The main pair hears the piccolo but a little distant. Phantom power available.',
     setups: [
       { id: 'a', label: 'A small condenser near head height, close and off the jet, brought in gently under the main pair', ok: true, power: 'phantom', feedback: 'A suggested starting point for a restrained spot — check mono and depth.' },
-      { id: 'b', label: 'A small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A suggested starting point with less breath — check the neighbours’ spill.' },
+      { id: 'b', label: 'A small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A suggested starting point with less breath — check the neighbors’ spill.' },
       { id: 'c', label: 'Three close mics on the piccolo, one per register', ok: false, power: 'phantom', feedback: 'Multiple close mics on one piccolo add delays for nothing.' },
       { id: 'd', label: 'A presence-peak vocal mic close to the lips', ok: false, power: 'phantom', feedback: 'In the jet, and a presence peak can turn the piccolo shrill.' },
       { id: 'e', label: 'Make the spot the loudest channel in the piccolo passages', ok: false, power: 'phantom', feedback: 'A loud spot pulls the piccolo unnaturally forward of the orchestra.' },
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A properly fitted headset, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the head — check the register and feedback.' },
       { id: 'b', label: 'A stand mic close, off the jet, its rejection aimed at the wedge — the player stays on a mark', ok: true, power: 'phantom', feedback: 'A suggested starting point if the player agrees to a working zone.' },
       { id: 'c', label: 'A concert-flute clip squeezed onto the piccolo', ok: false, power: 'phantom', feedback: 'A clip of the wrong size or pressure can slip, cover a hole or press the body.' },
-      { id: 'd', label: 'A mic a metre away, turned up to clear the band', ok: false, power: 'phantom', feedback: 'Far away on a loud stage it hears the band; turned up, it brings feedback.' },
+      { id: 'd', label: 'A mic a meter away, turned up to clear the band', ok: false, power: 'phantom', feedback: 'Far away on a loud stage it hears the band; turned up, it brings feedback.' },
       { id: 'e', label: 'Raise the piccolo channel because the instrument is small', ok: false, power: 'phantom', feedback: 'A small instrument is not a quiet one — and more gain brings feedback closer.' },
     ],
     reasons: [docReason('the embouchure or the piccolo’s close position'), clearReason('the jet, the head’s turn, the hands and the cable path'), POWER_REASON, { id: 'r.ears', label: 'Monitor and in-ear levels kept comfortable for the player', role: 'optional', feedback: 'A fair reason — the piccolo is already loud at their ear.' }, BRAND_REASON('piccolo'), { id: 'r.loudest', label: 'Turn it up until the piccolo is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: half a flute’s length — how high does a piccolo sound?', options: ['An octave higher', 'A fifth higher', 'The same'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the mic from close to a metre in front. What changes?', options: ['Fewer clicks, more room', 'More breath', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you move the mic from close to a meter in front. What changes?', options: ['Fewer clicks, more room', 'More breath', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the piccolo reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -513,7 +513,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin — the flute’s starting points, transferred: the piccolo between the lip plate and the left hand, the player’s head, the middle of the piccolo, the embouchure hole. Places to begin and compare, not piccolo-specific optimums.',
       separate: 'Distance, height and angle are separate variables: change one at a time, and play low, high, soft, strong and fast passages each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the air jet, a turning head and the hands. The engine stops the mic and names what it would touch.',
-      tendencies: 'Close tends to bring detail, breath and keys; behind the head, less breath; a metre in front, more room. A presence peak can turn a piccolo shrill. These are tendencies, and piccolos vary.',
+      tendencies: 'Close tends to bring detail, breath and keys; behind the head, less breath; a meter in front, more room. A presence peak can turn a piccolo shrill. These are tendencies, and piccolos vary.',
     },
   },
   context: {
@@ -549,7 +549,7 @@ const copy: Partial<LessonCopy> = {
       points: [
         { title: 'PERSPECTIVE', text: 'Orchestra: the main pair first, a restrained spot only if needed. Solo: a stand mic near head height, off the jet. Loud stage: close, a fitted headset or an approved mount.' },
         { title: 'SPILL AND FEEDBACK', text: 'Monitors, the PA and the band. Place wedges for the actual pattern — a supercardioid has a rear lobe — and bring levels up deliberately, listening for piercing pickup.' },
-        { title: 'MOVEMENT', text: 'A fitted headset follows the head and favours the head joint; a stand mic has a working zone.' },
+        { title: 'MOVEMENT', text: 'A fitted headset follows the head and favors the head joint; a stand mic has a working zone.' },
         { title: 'HEARING', text: 'The piccolo is loud at the player’s ear: manage rehearsal and show exposure, and keep monitor and in-ear levels comfortable.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. A small instrument does not need a louder channel.',
@@ -624,7 +624,7 @@ export const A07_LESSON: WindLesson = {
     items: [
       { id: 'self', label: 'the piccolo and its player', short: 'PICCOLO', note: 'Held like a flute, out to the right, the embouchure under the lower lip — right by the player’s right ear. Ringed in amber: the instrument this lesson mics.', prov: { kind: 'illustrative', reason: 'piccolo/GEOMETRY_PROPOSAL.md (drawing defaults)' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'jet', label: 'the air jet and a turning head', short: 'JET · HEAD', note: 'The breath blows out past the lips; the head turns with the music. No capsule in the jet, no boom where the head can strike it.', prov: { kind: 'illustrative', reason: 'the flute family’s jet cone (drawing default)' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['self'] },
-      { id: 'ear', label: 'the player’s right ear', short: 'THE EAR', note: 'The loud piccolo is centimetres from the player’s ear: hearing exposure matters for them most of all.', prov: { kind: 'illustrative', reason: 'the posture' }, tag: 'HEARING', scene: 'kit', planIds: ['self'] },
+      { id: 'ear', label: 'the player’s right ear', short: 'THE EAR', note: 'The loud piccolo is centimeters from the player’s ear: hearing exposure matters for them most of all.', prov: { kind: 'illustrative', reason: 'the posture' }, tag: 'HEARING', scene: 'kit', planIds: ['self'] },
       { id: 'stand', label: 'the music stand', short: 'MUSIC STAND', note: 'In front of the player. They must see the music and the conductor.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGHT LINE', scene: 'kit', planIds: ['stand.picc'] },
       { id: 'flutes', label: 'the flutes beside', short: 'FLUTES', note: 'The piccolo usually sits at the end of the flute row; a piccolo mic hears them too.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL', scene: 'kit', planIds: ['fl1', 'fl2'] },
       { id: 'behind', label: 'the clarinets behind', short: 'CLARINETS', note: 'Behind the front row — close to a mic behind the player’s head.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL', scene: 'kit', planIds: ['bcl', 'cl2', 'cl1'] },
@@ -632,7 +632,7 @@ export const A07_LESSON: WindLesson = {
       { id: 'side', label: 'another player’s wedge', short: 'SIDE WEDGE', note: 'Off to one side, facing another player.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience already hears the piccolo; the PA adds what the room needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage', planIds: ['audience', 'pa'] },
       { id: 'main', label: 'a main pair for the ensemble', short: 'MAIN PAIR', note: 'In an ensemble recording, hear the main pair first — it may carry the piccolo already.', prov: { kind: 'illustrative', reason: 'a generic main pair' }, tag: 'MAIN PAIR', scene: 'studio' },
-      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'No wedges on the floor; a good room carries a piccolo a metre away.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
+      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'No wedges on the floor; a good room carries a piccolo a meter away.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and a band can be loud. A close mic off the jet, its pattern aimed — or a fitted headset — helps; bring levels up deliberately and listen for piercing pickup.',
     studio: 'STUDIO: no wedges, a room that may sound good. In an ensemble the main pair may carry the piccolo; for a solo, a stand mic near head height off the jet, compared with behind the head and farther in front.',
@@ -654,7 +654,7 @@ export const A07_LESSON: WindLesson = {
     { text: 'The 330 mm length is sourced; the 17 mm cork offset is the flute’s, the joint split, the bore and the keys are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
     { text: 'The air jet, the hands, arms and head — illustrative; a 20 mm margin round the piccolo.', dims: [] },
     { text: 'Every distance is the flute’s, transferred; the headset’s 4–9 cm and its size and reach are drawing defaults.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
@@ -663,7 +663,7 @@ export const A07_LESSON: WindLesson = {
   wind: windExtra(SPEC, {
     soundSubject: 'A piccolo stood on end, keys toward you, its air column drawn open',
     breath: 'The jet blows out across the embouchure hole and past the lips: a capsule in it hears wind and pops. Keep the capsule off the jet; a windscreen helps after that.',
-    keys: 'Small keys close together: clicks are loud within a few centimetres; a farther view or behind the head hears them less.',
+    keys: 'Small keys close together: clicks are loud within a few centimeters; a farther view or behind the head hears them less.',
     directivity: 'Measured round a player in an anechoic (echoless) room: the lowest notes spread in much the same directions as the flute’s, and around 2 kHz the piccolo sends a fairly strong share to the front.',
     noteDefault: 9,
   }),

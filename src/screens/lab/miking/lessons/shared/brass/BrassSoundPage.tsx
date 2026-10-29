@@ -297,7 +297,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         rack: {
           render: (w, h) =>
             slide && slideP ? (
-              <SlideEnvelope w={w} h={h} P={slideP} position={pos} accessibilityLabel={`The ${hornWord} from the side, the slide at position ${pos}${pos > 1 ? `, about ${Math.round(SLIDE_POSITIONS[pos - 1] / 10)} centimetres out` : ', closed'}. The crook’s seven places are dashed along the slide’s path.`} />
+              <SlideEnvelope w={w} h={h} P={slideP} position={pos} accessibilityLabel={`The ${hornWord} from the side, the slide at position ${pos}${pos > 1 ? `, about ${Math.round(SLIDE_POSITIONS[pos - 1] / 10)} centimeters out` : ', closed'}. The crook’s seven places are dashed along the slide’s path.`} />
             ) : (
               <ValveTube w={w} h={h} P={P} semis={semis} pressed={pressed} accessibilityLabel={`The ${hornWord} from the side. ${pressed.length ? `Valves ${pressed.join(' and ')} pressed: their loops join the tube, ${semis} semitones lower.` : 'No valve pressed: the open tube.'} Below, the tube unwound.`} />
             ),

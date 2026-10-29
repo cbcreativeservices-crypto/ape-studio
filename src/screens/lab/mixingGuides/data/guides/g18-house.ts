@@ -52,7 +52,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The standard club setup is a DJ booth with two to four players and a mixer feeding the house system, with booth monitors beside the DJ. For live PA acts, the drum machine and sequencer sit centre, keys to one side, a vocalist out front on a handheld mic, and often a percussionist. Tracks are built in 8-, 16- and 32-bar blocks: a DJ-friendly intro of drums only, the bass entering, then hats and percussion, chords or vocals, a breakdown that strips out the kick, and a drop when the kick returns. Outros mirror intros so the next record can be mixed in. Over a set, the DJ’s blends are the real arrangement: two records may overlap for one to three minutes."
+      "text": "The standard club setup is a DJ booth with two to four players and a mixer feeding the house system, with booth monitors beside the DJ. For live PA acts, the drum machine and sequencer sit center, keys to one side, a vocalist out front on a handheld mic, and often a percussionist. Tracks are built in 8-, 16- and 32-bar blocks: a DJ-friendly intro of drums only, the bass entering, then hats and percussion, chords or vocals, a breakdown that strips out the kick, and a drop when the kick returns. Outros mirror intros so the next record can be mixed in. Over a set, the DJ’s blends are the real arrangement: two records may overlap for one to three minutes."
     }
   ],
   "dynamics": [
@@ -62,7 +62,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: kick, bass, clap/snare, lead vocal or main hook, hats and shakers, chords and pads, percussion and effects. Let the kick win the low end: in tech house, bass tends to peak 3–6 dB below the kick on a peak meter while reading about equal on a short-term loudness meter. Tune the kick to the track key (A1 at 55 Hz is common) and keep bass fundamentals around 40–80 Hz with harmonics feeding the low mids. Kick, bass, clap and lead vocal are dead centre, and everything below about 120 Hz should be mono. Hats, shakers and congas can be spread moderately; pads and reverbs go widest. Many club rigs are effectively mono, so nothing important should depend on panning."
+      "text": "Typical hierarchy, loudest to quietest: kick, bass, clap/snare, lead vocal or main hook, hats and shakers, chords and pads, percussion and effects. Let the kick win the low end: in tech house, bass tends to peak 3–6 dB below the kick on a peak meter while reading about equal on a short-term loudness meter. Tune the kick to the track key (A1 at 55 Hz is common) and keep bass fundamentals around 40–80 Hz with harmonics feeding the low mids. Kick, bass, clap and lead vocal are dead center, and everything below about 120 Hz should be mono. Hats, shakers and congas can be spread moderately; pads and reverbs go widest. Many club rigs are effectively mono, so nothing important should depend on panning."
     }
   ],
   "eq": {

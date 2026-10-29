@@ -234,10 +234,10 @@ export function weakEndSymptom(w: MW): Symptom {
   return {
     id: `${w.p}.s.end`,
     observation: 'The highest (or lowest) notes are weak',
-    firstChecks: 'Play the whole range: does the mic’s view favour one register? Change height, angle or the pair’s balance.',
+    firstChecks: 'Play the whole range: does the mic’s view favor one register? Change height, angle or the pair’s balance.',
     options: ['The range the mic covers: height, angle, the pair’s balance', 'Boost that end of the range with EQ until it matches the rest', `Ask the ${w.player} to play that end of the keyboard harder`],
     correct: 'The range the mic covers: height, angle, the pair’s balance',
-    explain: 'A single close point favours the bars nearest it. Play the real passage from end to end, then move or re-aim — or use a pair — before EQ.',
+    explain: 'A single close point favors the bars nearest it. Play the real passage from end to end, then move or re-aim — or use a pair — before EQ.',
     why: {
       'Boost that end of the range with EQ until it matches the rest': 'EQ can only partly give back notes the mic hears poorly: fix the coverage first.',
       [`Ask the ${w.player} to play that end of the keyboard harder`]: 'The player plays the music; move the mic to cover the part.',

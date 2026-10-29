@@ -7,7 +7,7 @@
  *          starting points' distances are "capsule to gong surface at rest"
  *          (the lesson's own definition)
  *   axis   the line straight out of the face's centre: the readout's
- *          "off the centre line"
+ *          "off the center line"
  *   swing  the face's free swing (fore and aft, and a little turn) + 100 mm:
  *          nothing goes in it — the gong must hang freely of everything
  */
@@ -175,14 +175,14 @@ export const GONG_MODEL: InstrumentModel = {
   name: 'gong in its frame (32 in tam-tam or 18 in bossed gong)',
   parts,
   regions: [
-    { id: 'r.face', partId: 'gg.cords', label: 'the face’s centre', anchor: C0, prov: GONG.tamtamD.prov, note: 'The face radiates from front and back as it rings.' },
+    { id: 'r.face', partId: 'gg.cords', label: 'the face’s center', anchor: C0, prov: GONG.tamtamD.prov, note: 'The face radiates from front and back as it rings.' },
     { id: 'r.upper', partId: 'gg.cords', label: 'the upper face', anchor: v3(0, CY - 150, 0), prov: GONG.tamtamD.prov, note: 'Another part of the face: every part of the gong reaches two mics at its own times.' },
   ],
   surfaces: [
     { id: 'face', partId: 'gg.cords', label: 'the face', point: FACE, normal: N },
     { id: 'boss', partId: 'gg.boss', label: 'the boss', point: v3(BOSS_H, CY, 0), normal: N, target: true, variants: ['bossed'] },
   ],
-  lines: [{ id: 'axis', label: 'the face’s centre line', point: C0, dir: N }],
+  lines: [{ id: 'axis', label: 'the face’s center line', point: C0, dir: N }],
   envelopes,
   variants: [
     { id: 'tamtam', label: 'TAM-TAM', blurb: 'A large orchestral tam-tam: no boss, a broad face. It swells after the stroke into a complex bloom rather than one clear note.' },

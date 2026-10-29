@@ -1109,7 +1109,7 @@ export function ProfileScreen() {
             <Text style={styles.rowHint}>Your certificates haven’t loaded yet.</Text>
           ) : (
             <Text style={styles.rowHint}>
-              No certificates started yet — enrol from Study, and your progress appears here.
+              No certificates started yet — enroll from Study, and your progress appears here.
             </Text>
           )}
 
@@ -1137,7 +1137,7 @@ export function ProfileScreen() {
             <Text style={styles.rowHint}>Your programs haven’t loaded yet.</Text>
           ) : (
             <Text style={styles.rowHint}>
-              No programs started yet — enrol from Study, and your progress appears here.
+              No programs started yet — enroll from Study, and your progress appears here.
             </Text>
           )}
 
@@ -1147,11 +1147,11 @@ export function ProfileScreen() {
               catalogue progress is fetched until one is opened. */}
           <Text style={styles.groupLabel}>EVERYTHING THE ACADEMY OFFERS</Text>
           {catalog.state === 'loading' ? (
-            <Text style={styles.rowHint}>Loading the catalogue…</Text>
+            <Text style={styles.rowHint}>Loading the catalog…</Text>
           ) : catalog.state === 'unavailable' ? (
             /* Not "there are none". A failed read is not an empty academy. */
             <Text style={styles.rowHint}>
-              Couldn’t load the catalogue — check your connection and try again.
+              Couldn’t load the catalog — check your connection and try again.
             </Text>
           ) : (
             <>
@@ -1428,7 +1428,7 @@ export function ProfileScreen() {
             without touching them. —— */}
         <Section title="AUDIO COMMUNITY DIRECTORY" summary="opt-in">
           <Text style={styles.sectionIntro}>
-            An optional professional listing: what you work in, what you specialise in, how
+            An optional professional listing: what you work in, what you specialize in, how
             you&apos;re involved, and what members may contact you about.
           </Text>
           <Pressable

@@ -605,7 +605,7 @@ function F10Setups(p: PageProps) {
       body: (
         <>
           <Card>
-            <Point title="PERMISSION AND PRIVACY">Get permission for the place and the use — especially where people’s speech may be heard and recognised. A spatial take can hear conversations nearby.</Point>
+            <Point title="PERMISSION AND PRIVACY">Get permission for the place and the use — especially where people’s speech may be heard and recognized. A spatial take can hear conversations nearby.</Point>
             <Point title="KEEP THE WAY CLEAR">Do not block a public route with a stand or a wide array unless the site has approved it and someone keeps the way safe. Do not leave stands unattended where people walk. Cables run out of the way and are secured.</Point>
             <Point title="STANDS, WIND AND WATER">Check the ground, weight or guy the stand in wind, strain-relieve the cables, cover every exposed capsule against wind — a windscreen is not waterproofing; follow the maker’s moisture limits.</Point>
             <Point title="POWER LINES">{SAFETY_WORDS.powerLine}</Point>
@@ -883,7 +883,7 @@ function F10Placement(p: PageProps) {
   const pieces = [
     { title: 'WHERE TO BEGIN', text: 'At the listener’s point: where a listener would be for the experience you are making — in the middle of the square here, clear of the footpath.', view: 'top' as ViewId },
     { title: 'THE HEIGHT', text: `The ears about ${fmtMFt(EAR_STANDING)} up for a standing listener, about ${fmtMFt(EAR_SEATED)} seated — on a stable stand.`, view: 'side' as ViewId },
-    { title: 'THE FRONT', text: 'The face (or the front mark, or the front Mid) toward the scene front: left and right labelled, the front written in the log.', view: 'top' as ViewId },
+    { title: 'THE FRONT', text: 'The face (or the front mark, or the front Mid) toward the scene front: left and right labeled, the front written in the log.', view: 'top' as ViewId },
     { title: 'CLEARANCE', text: 'Clear of the public footpath and of people, the stand weighted against wind, the cables secured — and nothing within 3 m (10 ft) of a power line, more for higher voltages or if unsure.', view: 'top' as ViewId },
     { title: 'THE DESTINATION', text: 'For a binaural head: headphones. Check the take on them before moving on — a pleasing headphone image is not proof of accurate direction for every listener.', view: 'top' as ViewId },
   ];
@@ -964,7 +964,7 @@ function F10Placement(p: PageProps) {
       },
       format: (v) => {
         const x = snap(v);
-        return axis === 'h' ? `${fmtMFt(x)} above the ground` : axis === 'x' ? (x >= 0 ? `${fmtM(x)} toward the scene front` : `${fmtM(-x)} back from the listener’s point`) : x === 0 ? 'on the centre line' : `${fmtM(Math.abs(x))} to the ${x < 0 ? 'left' : 'right'}`;
+        return axis === 'h' ? `${fmtMFt(x)} above the ground` : axis === 'x' ? (x >= 0 ? `${fmtM(x)} toward the scene front` : `${fmtM(-x)} back from the listener’s point`) : x === 0 ? 'on the center line' : `${fmtM(Math.abs(x))} to the ${x < 0 ? 'left' : 'right'}`;
       },
       formatShort: () => (axis === 'h' ? fmtM(h) : fmtM(axis === 'x' ? c.x : c.z)),
       chooser: { title: 'MOVE THE RIG', selectedId: axis, onSelect: (id) => setAxis(id as Axis), options: (['x', 'z', 'h'] as const).map((k) => ({ id: k, label: AXES[k].label, blurb: AXES[k].blurb })) },
@@ -975,7 +975,7 @@ function F10Placement(p: PageProps) {
       label: 'FRONT',
       value: (face + 90) / 180,
       onChange: (v) => setFace(Math.round((v * 180 - 90) / 5) * 5),
-      // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
+      // "left/right of center" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
       format: () => (face === 0 ? 'center: facing the scene front' : aimWords(-face)),
       formatShort: () => aimShort(-face),
       home: 0.5,
@@ -1281,7 +1281,7 @@ function useDrillStep(onInteractive: (id: string) => void, done: boolean): Mikin
         ) : (
           <Note tone="ok">{`All four in order, matched and linked, the output chosen (${s.format === 'fuma' ? 'FuMa' : 'ambiX'}), the LFE clear: a ${src.label} source lands ${where(got)}. Keep the raw tracks, and write the capsule order, the mounting, the gain and the convention in the log.`}</Note>
         )}
-        <Body>Never sum, pan, noise-reduce or normalise the four raw tracks one by one as if they were ordinary channels: they only mean something together, through the mic’s own converter.</Body>
+        <Body>Never sum, pan, noise-reduce or normalize the four raw tracks one by one as if they were ordinary channels: they only mean something together, through the mic’s own converter.</Body>
       </>
     ),
   };
@@ -1397,7 +1397,7 @@ function F10Channels(p: PageProps) {
             <Point title="KEEP IT OUT OF THE PA">An open spatial array near a PA hears the PA. Routed back into the same loudspeakers it can make a feedback path: keep it out of local reinforcement unless the routing and the margin before feedback have been worked out.</Point>
             <Point title="SEPARATE PATHS">The stream, the recorder and the PA are separate paths. Check the stream’s surround, stereo and mono versions, and its timing with the picture, before it goes out.</Point>
             <Point title="CLOSE MICS FOR WORDS">Use close mics for speech or instruments that must be clear; the spatial mic is the place around them.</Point>
-            <Point title="KEEP THE ORIGINALS">Keep the raw channels and a record of the channel map, gain, mounting, front, converter and output convention; store any render separately — never overwrite the source with an unlabelled render.</Point>
+            <Point title="KEEP THE ORIGINALS">Keep the raw channels and a record of the channel map, gain, mounting, front, converter and output convention; store any render separately — never overwrite the source with an unlabeled render.</Point>
           </Card>
           <Body>Then the checks.</Body>
           <ScenarioList items={lesson.scenarios.filter((q) => q.page === 'context')} answers={answers} onAnswered={onAnswered} />

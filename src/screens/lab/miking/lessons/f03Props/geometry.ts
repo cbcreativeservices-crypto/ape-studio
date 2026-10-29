@@ -45,7 +45,7 @@ const VARIANTS: Variant[] = [
   { id: 'paper', label: 'PAPER', blurb: 'A sheet of paper on a table: lifted, bent, folded, slid and set down.', phrase: 'with paper' },
   { id: 'door', label: 'DOOR', blurb: 'A door on a Foley stand: the handle, the latch, the hinge, the panel and the frame — and its swing.', phrase: 'with a door' },
   { id: 'chair', label: 'CHAIR', blurb: 'A wooden chair lifted, dragged and set down: the legs on the floor, the frame’s rattle.', phrase: 'with a chair' },
-  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theatre: keys handled at a fixed prop station beside the stage, the PA beside the stage and a wedge in front.', phrase: 'at a live station' },
+  { id: 'live', label: 'LIVE STAGE', blurb: 'A live theater: keys handled at a fixed prop station beside the stage, the PA beside the stage and a wedge in front.', phrase: 'at a live station' },
 ];
 
 function parts(): Part[] {
@@ -60,7 +60,7 @@ function parts(): Part[] {
     { id: 'f03.frame', label: 'frame and hinge', short: 'frame', role: 'The hinge creaks and the leaf closes into the frame: the final contact. Hinges and the latch edge are pinch points — hands and hardware clear.', prov: ill('the door’s frame on its stand (drawing default)'), variants: ['door'], solid: { kind: 'box', min: v3(-420, fl.door - 70, -90), max: v3(420, fl.door, DOOR.W + 90) } },
     { id: 'f03.chair', label: 'wooden chair', short: 'chair', role: 'Lifted, dragged and set down: the legs scrape and knock on the floor, the frame can rattle. Use an assistant for heavy furniture.', moving: true, prov: ill('a chair 450 × 450 mm, 900 mm high (drawing default)'), variants: ['chair'], solid: { kind: 'box', min: v3(-CHAIR.S - 20, FLOOR.chair - CHAIR.back, -CHAIR.S - 20), max: v3(30, FLOOR.chair, 30) } },
     { id: 'f03.room', label: 'the stage room', short: 'room', role: 'A farther mic hears the prop with the room — wanted to make the object and its space read as one event, unwanted when the scene is elsewhere.', prov: ill('a generic Foley stage room (drawing default)') },
-    { id: 'f03.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR.live).pa },
+    { id: 'f03.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theater layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR.live).pa },
     { id: 'f03.booth', label: 'the prop station’s front rail', short: 'station', role: 'A known object station beside the stage: the prop always in the same place for the mic.', prov: { kind: 'sourced', src: 'ENO-FOLEY', quote: 'A special booth is constructed stage left … so that the foley artist is visible to the audience' }, variants: ['live'], solid: boothSolids(FLOOR.live).rail },
   ];
 }

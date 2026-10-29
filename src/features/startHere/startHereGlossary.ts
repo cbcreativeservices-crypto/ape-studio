@@ -52,7 +52,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   },
   'listener (acoustics)': {
     term: 'Listener (acoustics)',
-    definition: 'In acoustics, the listener is the receiver at the end of the source-path-receiver chain: the person whose ears receive a sound, or a microphone placed to receive it, after the sound has travelled from a source through a medium. What reaches a listener is the direct sound plus reflections from the surroundings, so its level, frequency balance and timing at the listening point differ from those at the source. A microphone receives sound physically, but hearing - the perception of pitch, loudness and timbre - happens in the ear and brain, and differs from one person to another.',
+    definition: 'In acoustics, the listener is the receiver at the end of the source-path-receiver chain: the person whose ears receive a sound, or a microphone placed to receive it, after the sound has traveled from a source through a medium. What reaches a listener is the direct sound plus reflections from the surroundings, so its level, frequency balance and timing at the listening point differ from those at the source. A microphone receives sound physically, but hearing - the perception of pitch, loudness and timbre - happens in the ear and brain, and differs from one person to another.',
     plain_english: "The listener is whoever, or whatever, receives a sound: your ears, or a microphone. It is the last stop on a sound's journey from the source, through the medium, to the listener. A microphone receives sound, but it does not hear it the way a person does, and two people can hear the same sound differently.",
   },
   loudness: {
@@ -92,7 +92,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   },
   playback: {
     term: 'Playback',
-    definition: 'Playback is the reproduction of previously recorded or stored audio, and often video, so it can be heard or seen again through loudspeakers, headphones or displays. In live events, theatre and broadcast, playback also means running pre-recorded content during a show - music, video roll-ins, stings or recorded segments - which the playback source and operator must deliver on cue and at the correct level.',
+    definition: 'Playback is the reproduction of previously recorded or stored audio, and often video, so it can be heard or seen again through loudspeakers, headphones or displays. In live events, theater and broadcast, playback also means running pre-recorded content during a show - music, video roll-ins, stings or recorded segments - which the playback source and operator must deliver on cue and at the correct level.',
     plain_english: 'Playback is playing something that was recorded, so you can hear it again through speakers or headphones. At a show, it also means playing pre-recorded music or video at exactly the right moment.',
   },
   recording: {

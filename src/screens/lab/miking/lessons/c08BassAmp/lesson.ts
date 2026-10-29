@@ -62,7 +62,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalized).' },
     takeaway: 'Move the mic before reaching for EQ, check the DI on its own, and stop for anything electrical you are not sure of.',
   },
   practice: {
@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ba.mic.3',
     page: 'microphone',
-    prompt: 'A DI box needs 48 V phantom power to work. Is it still a direct source, labelled as its own channel?',
+    prompt: 'A DI box needs 48 V phantom power to work. Is it still a direct source, labeled as its own channel?',
     options: ['No, a box that needs phantom power counts as a mic', 'Yes — it carries the bass’s electrical signal, not air', 'No, it is a mic built into the box for the bass'],
     correct: 'Yes — it carries the bass’s electrical signal, not air',
     explain: 'Some DI boxes use phantom power to run their electronics. They still carry the instrument’s electrical signal — not the air from a speaker. Label it “bass DI”, not “bass mic”.',
@@ -251,7 +251,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Which of these hears the air from the cabinet?',
     options: ['A DI box between the bass and the head', 'A mic in front of one woofer', 'The head’s POST DI output'],
     correct: 'A mic in front of one woofer',
-    explain: 'Only a mic hears the speaker’s air. Both DI paths are electrical, taken before the speaker — separate sources, labelled as such.',
+    explain: 'Only a mic hears the speaker’s air. Both DI paths are electrical, taken before the speaker — separate sources, labeled as such.',
     why: {
       'A DI box between the bass and the head': 'That taps the bass’s electrical signal, before the head and the speaker.',
       'The head’s POST DI output': 'POST includes some of the head’s circuits — still electrical, never the speaker’s air.',
@@ -326,7 +326,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The DI arrives first; the mic hears the speaker after the sound crosses the air, shaped by the head and the cabinet on the way. Judge each alone and the blend in mono; move or rebalance, then try polarity both ways.',
     why: {
       'Turn the DI up until the lows come fully back again': 'More of one path does not undo a cancellation between them.',
-      'Boost the lows on the mic channel, then leave the blend as it is': 'EQ cannot fill a notch made by two paths cancelling.',
+      'Boost the lows on the mic channel, then leave the blend as it is': 'EQ cannot fill a notch made by two paths canceling.',
     },
   },
   {
@@ -494,7 +494,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic far from the woofer, or near the drums? Go close, use the pattern’s rejection, and lean on the DI as needed.',
     options: ['Go close, use the rejection, and lean on the DI as needed', 'Move the mic farther back so it hears more of the whole cabinet', 'Turn the bass amp up until it covers the drums'],
     correct: 'Go close, use the rejection, and lean on the DI as needed',
-    explain: 'Close and directional favours the woofer over the stage; the DI carries the dependable low end where the mic cannot.',
+    explain: 'Close and directional favors the woofer over the stage; the DI carries the dependable low end where the mic cannot.',
     why: {
       'Move the mic farther back so it hears more of the whole cabinet': 'Farther back it hears MORE stage, not less.',
       'Turn the bass amp up until it covers the drums': 'That raises everyone’s exposure and spills into every other mic.',
@@ -534,7 +534,7 @@ const orderTasks: OrderTask[] = [
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'Every mic and DI gets the power it needs (phantom, a battery, or none)', role: 'required', feedback: 'Say how each source is powered.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'The mic is at a suggested starting point on one woofer, measured from the grille', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
-const LABEL_REASON: SetupReason = { id: 'r.label', label: 'The DI and the mic are labelled as separate sources and checked in mono', role: 'required', feedback: 'Name each source for what it carries, and judge the blend in mono.' };
+const LABEL_REASON: SetupReason = { id: 'r.label', label: 'The DI and the mic are labeled as separate sources and checked in mono', role: 'required', feedback: 'Name each source for what it carries, and judge the blend in mono.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most bassists use', role: 'wrong', feedback: 'A brand is not part of passing.' };
 const BASS_REASON: SetupReason = { id: 'r.lows', label: 'It will give the most low end of any setup', role: 'wrong', feedback: 'No setup gives the most low end on every rig; it is not a passing reason.' };
 
@@ -551,21 +551,21 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'One mic in the middle of the grille, between the four woofers', ok: false, power: 'none', feedback: 'Between woofers the arrivals can cancel; and there is no DI for the low end.' },
     ],
     reasons: [DOC_REASON, LABEL_REASON, POWER_REASON, { id: 'r.spill', label: 'The DI carries no stage spill; the close mic rejects some', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
-    explain: 'More than one setup passes. What passes is the reasoning: separate, labelled sources, a sensible mic position on one woofer, power to match, a mono check.',
+    explain: 'More than one setup passes. What passes is the reasoning: separate, labeled sources, a sensible mic position on one woofer, power to match, a mono check.',
   },
   {
     id: 'ba.prac.setup2',
     page: 'practice',
     brief: 'BRIEF 2 · A studio with a good room; a fretless player wants the cabinet’s character. Three inputs; NO phantom power; the only DI box needs phantom.',
     setups: [
-      { id: 'a', label: 'The head’s own DI output, a dynamic close on one woofer, a second dynamic 60–100 cm back', ok: true, power: 'none', feedback: 'Three labelled sources, no phantom needed; the far mic only if the room helps, checked in mono.' },
+      { id: 'a', label: 'The head’s own DI output, a dynamic close on one woofer, a second dynamic 60–100 cm back', ok: true, power: 'none', feedback: 'Three labeled sources, no phantom needed; the far mic only if the room helps, checked in mono.' },
       { id: 'b', label: 'The head’s own DI output and a dynamic 10–45 cm from one woofer', ok: true, power: 'none', feedback: 'Room to breathe for the cabinet, and a direct path for consistency.' },
       { id: 'c', label: 'The DI box before the head, and a dynamic close in', ok: false, power: 'phantom', feedback: 'This DI box needs phantom power, and there is none.' },
       { id: 'd', label: 'A small condenser 60–100 cm back as the only source', ok: false, power: 'phantom', feedback: 'No phantom for the condenser — and a far mic alone gives little control.' },
       { id: 'e', label: 'A dynamic pressed against the grille on the horn', ok: false, power: 'none', feedback: 'Off the cloth; and the horn alone misses the body the player wants.' },
     ],
     reasons: [DOC_REASON, LABEL_REASON, POWER_REASON, { id: 'r.room', label: 'The room is good enough to be worth a farther mic', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, BASS_REASON],
-    explain: 'Two setups pass. What passes is the reasoning: sources that work without phantom, one woofer, labelled paths, a mono check.',
+    explain: 'Two setups pass. What passes is the reasoning: sources that work without phantom, one woofer, labeled paths, a mono check.',
   },
 ];
 
@@ -618,12 +618,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Close in, a mic toward the edge of a woofer tends to sound…',
-    options: ['warmer and smoother than at the center', 'brighter and more biting than at the centre', 'exactly like the centre at the same distance'],
+    options: ['warmer and smoother than at the center', 'brighter and more biting than at the center', 'exactly like the center at the same distance'],
     correct: 'warmer and smoother than at the center',
     explain: 'Toward the center tends to add bite; toward the edge tends to be warmer. Tendencies to check on the real cabinet.',
     why: {
-      'brighter and more biting than at the centre': 'It is the CENTER that tends to add bite.',
-      'exactly like the centre at the same distance': 'The spot on the cone changes the balance, even at the same distance.',
+      'brighter and more biting than at the center': 'It is the CENTER that tends to add bite.',
+      'exactly like the center at the same distance': 'The spot on the cone changes the balance, even at the same distance.',
     },
   },
   {
@@ -698,11 +698,11 @@ export const C08_LESSON: Lesson = {
       { id: 'amp', label: 'the bass head (the amplifier)', short: 'HEAD', note: 'Shapes and amplifies the signal; its settings are the player’s sound. It reaches the cabinet by a speaker cable — keep that connection as it is.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the bass cabinet', short: 'CABINET', note: 'Four 10 in woofers and a small horn. The woofers carry the notes; the horn adds the top end. Choose one woofer to mic.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
       { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of one woofer, the cabinet and the room. It reaches the desk after the sound crosses the air — later than a DI.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
-      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Each source on its own, labelled channel: “bass DI”, “bass amp DI”, “bass mic”. Gain is set for each.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
+      { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Each source on its own, labeled channel: “bass DI”, “bass amp DI”, “bass mic”. Gain is set for each.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
       { id: 'ampdi', label: 'the head’s own DI output', short: 'HEAD DI', note: 'A balanced output on the head, often with a PRE / POST switch and a pad. Which circuits PRE and POST include is in that head’s manual. Still electrical — not the cabinet’s air.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'wedge', label: 'the bassist’s wedge', short: 'WEDGE', note: 'A floor monitor downstage, facing back toward the player — behind a cabinet mic aimed at a woofer.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'The kick shares the bass’s range. A close, directional mic and the DI keep the two apart in the mix.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
-      { id: 'otherAmp', label: 'the guitar amp', short: 'GUITAR AMP', note: 'Another loud speaker on the backline. Aim the bass mic’s rejection toward the loudest neighbour where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'all' },
+      { id: 'otherAmp', label: 'the guitar amp', short: 'GUITAR AMP', note: 'Another loud speaker on the backline. Aim the bass mic’s rejection toward the loudest neighbor where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Low frequencies spread widely: the stage rig is heard in the room. The PA adds what the audience needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good studio room a farther mic can add size to the bass — once the close mic and the DI are stable.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],

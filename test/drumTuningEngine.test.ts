@@ -376,7 +376,7 @@ describe('the kit and the goals', () => {
     assert.equal(tomInterval(250, 100).kind, 'unbalanced', 'wider than 9 st');
     assert.equal(tomInterval(120, 140).kind, 'unbalanced', 'upside down');
     assert.equal(tomInterval(140, 160).kind, 'unbalanced', 'the Chapter 6 starting kit is outside DISTINCT');
-    assert.match(tomInterval(190, 130).message, /neighbouring toms/);
+    assert.match(tomInterval(190, 130).message, /neighboring toms/);
     assert.deepEqual(DRUMS.floor.usefulHz, [75, 130]);
     assert.ok(Math.abs(semitones(200, 100) - 12) < 1e-9);
   });

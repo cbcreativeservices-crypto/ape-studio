@@ -61,7 +61,7 @@ function KeyTray() {
       </View>
       <TrayNote>MATCH sets deck B’s tempo fader so its BPM reads like deck A’s (Screen 10 shows doing it by hand).</TrayNote>
       <Choices head="KEY SHIFT (semitones)" value={shift} items={Array.from({ length: KEY_SHIFT_MAX * 2 + 1 }, (_, i) => i - KEY_SHIFT_MAX).map((v) => ({ id: v, label: v > 0 ? `+${v}` : String(v) }))} onPick={(v) => setB(() => ({ keyShift: v as number }))} note="A shift moves the pitch only; the tempo stays where the fader is." />
-      <Choices head="TEMPO RANGE" value={range} items={[{ id: 8, label: '±8 %' }, { id: 16, label: '±16 %' }]} onPick={(v) => setB((d) => ({ tempoRange: v as number, pitch: Math.max(-(v as number), Math.min(v as number, d.pitch)) }))} note="A wider range moves further, but every millimetre of the fader is a bigger change." />
+      <Choices head="TEMPO RANGE" value={range} items={[{ id: 8, label: '±8 %' }, { id: 16, label: '±16 %' }]} onPick={(v) => setB((d) => ({ tempoRange: v as number, pitch: Math.max(-(v as number), Math.min(v as number, d.pitch)) }))} note="A wider range moves further, but every millimeter of the fader is a bigger change." />
     </View>
   );
 }
@@ -169,7 +169,7 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>You are looking at deck B’s pitch plotted against its tempo fader, a strip of the twelve semitones with each deck’s key marked where it SOUNDS, and deck B’s tempo column (the rest of the player dimmed) with its KEY LOCK and KEY − / + keys.</Look>
         <P>Played faster, a record or a track sounds higher: about one semitone for every 6 % of tempo. KEY LOCK keeps the pitch while the tempo moves, by stretching the sound in time; KEY SHIFT moves the pitch alone.</P>
-        <P>Glass Harbour (deck B) is in D minor at 126 BPM; Night Ferry (deck A) in A minor at 122.</P>
+        <P>Glass Harbor (deck B) is in D minor at 126 BPM; Night Ferry (deck A) in A minor at 122.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -177,7 +177,7 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
         <P>B PITCH reads −0.56 semitones: half a semitone flat. Against deck A’s bass and chords that sounds sour — OUT OF TUNE — though both keys on their own are fine.</P>
       </Step>
       <Step n={3}>
-        <P>Press KEY LOCK. The dot jumps to the blue line: the tempo stays at 122, the pitch goes back to D minor, and A minor and D minor are NEIGHBOURS — keys that share most of their notes.</P>
+        <P>Press KEY LOCK. The dot jumps to the blue line: the tempo stays at 122, the pitch goes back to D minor, and A minor and D minor are NEIGHBORS — keys that share most of their notes.</P>
         <P>Now open KEY, choose the ±16 % range and pull TEMPO B toward −14 %. Listen to deck B alone (DECKS → CH1 DOWN): the kicks soften and smear, and the sound gets phasey. That is the stretch working hard.</P>
         <Note>This lab’s key lock is a real, simple time-stretch. Better ones hide the artifacts further, but every stretch has some — small tempo changes stay cleanest.</Note>
       </Step>

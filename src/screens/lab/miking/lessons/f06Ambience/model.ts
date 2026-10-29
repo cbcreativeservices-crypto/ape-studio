@@ -3,7 +3,7 @@
  * §2 layer 1). Keys: foley_footsteps/SOURCES.md §0 (the Lab 6 register) and
  * field_ambience/SOURCES.md; geometry from field_ambience/
  * GEOMETRY_PROPOSAL.md §3. Distances are read from the water's edge
- * (woodland) or the kerb (plaza) to the mic (an array's centre); every
+ * (woodland) or the curb (plaza) to the mic (an array's centre); every
  * position and the 1.5 m height are DRAWING DEFAULTS — the cited guidance
  * gives no universal height, spacing or distance (F06 L82). The methods are
  * sourced:
@@ -113,7 +113,7 @@ export const F06_ZONES: DocumentedZone[] = [
     x1: 2000,
     start: 0,
     label: 'In the open square, off every path',
-    band: 'Start with one mic on a stand about 1.5 m up, in the open square about 7–11 m back from the kerb — off the sidewalk, the walkway and the café’s tables.',
+    band: 'Start with one mic on a stand about 1.5 m up, in the open square about 7–11 m back from the curb — off the sidewalk, the walkway and the café’s tables.',
     tendency: 'The traffic as a steady bed, the café and the footsteps nearer: the square as a whole. Note the traffic’s direction and any sirens or buses.',
     checks: ['Traffic, café and footsteps — the balance by ear', 'Speech that could be understood, and the permission it needs', 'The stand where nobody walks into it'],
     src: 'LESSON-F06',
@@ -129,7 +129,7 @@ export const F06_ZONES: DocumentedZone[] = [
     x1: 1600,
     start: 0,
     label: 'A stereo pair at the listening point',
-    band: 'For a stereo picture, start with the pair at the same spot — about 1.5 m up, 7.5–10.5 m back from the kerb, facing the scene — its geometry set and written down.',
+    band: 'For a stereo picture, start with the pair at the same spot — about 1.5 m up, 7.5–10.5 m back from the curb, facing the scene — its geometry set and written down.',
     tendency: 'The same balance as one mic, spread between the speakers: the traffic across the front, the café and the walkway placed left and right. Check the middle, the edges and the mono sum.',
     checks: ['The pair’s geometry — spacing and angle — written down', 'Left and right checked with a known sound', 'The mono sum at the start, middle and end'],
     src: 'DPA-STEREO',
@@ -144,7 +144,7 @@ export const F06_ZONES: DocumentedZone[] = [
     x1: -3500,
     start: -5000,
     label: 'A second position, nearer the facade',
-    band: 'For a comparison, try a second spot farther from the road — about 12.5–15.5 m back from the kerb, a few metres in front of the facade — and listen to what the wall adds.',
+    band: 'For a comparison, try a second spot farther from the road — about 12.5–15.5 m back from the curb, a few meters in front of the facade — and listen to what the wall adds.',
     tendency: 'Less traffic and more of the square, with the facade’s reflection behind: useful color, or not — compare it with the first position.',
     checks: ['What the wall’s reflection adds, by ear', 'The same height and mic as the first position', 'The walkway and the door kept clear'],
     src: 'LESSON-F06',
@@ -157,7 +157,7 @@ const pairs = (zone: string, c: Vec3, variant: 'woodland' | 'plaza'): SetupPairD
   arraySetup({ label: 'ORTF pair at the listening point (17 cm, 110°)', id: 'ortf', zone, c, bearing: 0, typeA: 'arrCard', variants: [variant], line: 'More side-to-side spread than a coincident pair, from both time and level differences — check the low end and transients in mono.' }),
   arraySetup({ label: 'X/Y pair at the listening point (90°)', id: 'xy', zone, c, bearing: 0, typeA: 'arrCard', variants: [variant], more: true, line: 'Compact and dependable in mono; width is not the same as depth — listen to what lands in the middle and at the edges.' }),
   arraySetup({ label: 'Spaced omnis, 60 cm apart', id: 'ab', zone, c, bearing: 0, typeA: 'arrOmni', params: { spacing: 600 }, variants: [variant], more: true, line: 'A broad, open sense of space and the low end of the place — time differences can comb in a mono sum, so compare each channel too. Wider spacing is common for ambience — check it in mono.' }),
-  arraySetup({ label: 'M/S pair at the listening point', id: 'ms', zone, c, bearing: 0, typeA: 'arrCard', typeB: 'arrFig8', variants: [variant], more: true, line: 'Width set later in the matrix; summed to mono the Side cancels and the Mid remains. Keep the raw Mid and Side labelled.' }),
+  arraySetup({ label: 'M/S pair at the listening point', id: 'ms', zone, c, bearing: 0, typeA: 'arrCard', typeB: 'arrFig8', variants: [variant], more: true, line: 'Width set later in the matrix; summed to mono the Side cancels and the Mid remains. Keep the raw Mid and Side labeled.' }),
 ];
 
 export const F06_PAIRS: SetupPairData[] = [...pairs('amb.wood.pair', F06_START.woodland, 'woodland'), ...pairs('amb.plaza.pair', F06_START.plaza, 'plaza')];

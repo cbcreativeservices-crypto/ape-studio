@@ -717,7 +717,7 @@ export function MyProfileView() {
         value={p.about}
         onChangeText={(t) => setP({ ...p, about: t })}
         onBlur={() => void persist(p)}
-        placeholder="e.g. FOH engineer, six years, clubs and theatre"
+        placeholder="e.g. FOH engineer, six years, clubs and theater"
         placeholderTextColor={colors.textMuted}
         multiline
         maxLength={LIMITS.about}

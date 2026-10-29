@@ -162,7 +162,7 @@ export const soundHole = (seat: Pick<Seat, 'p' | 'face'>, k: 'aguitar' | 'mandol
 /* ── building blocks ── */
 type SecDef = { id: string; label: string; short: string; family: Family; radiates: string };
 const SEC: Record<string, SecDef> = {
-  drums: { id: 'drums', label: 'drum kit', short: 'DRUMS', family: 'percussion', radiates: 'From every head and cymbal at once — loud, and spread across about two metres: the kit reaches every open mic on the stage.' },
+  drums: { id: 'drums', label: 'drum kit', short: 'DRUMS', family: 'percussion', radiates: 'From every head and cymbal at once — loud, and spread across about two meters: the kit reaches every open mic on the stage.' },
   gtr: { id: 'gtr', label: 'electric guitar', short: 'GUITAR', family: 'amplified', radiates: 'From its amp’s speaker, not the guitar: strongest straight out of the grille, the highs in the narrowest beam. Which way the amp faces decides who hears it.' },
   bass: { id: 'bass', label: 'electric bass', short: 'BASS', family: 'amplified', radiates: 'From the bass amp’s speakers — the low notes spread all round the stage — and, as a clean electrical copy, from its DI box.' },
   keys: { id: 'keys', label: 'keyboard', short: 'KEYS', family: 'keys', radiates: 'Nothing acoustic worth a mic: it leaves by its line output, through a DI box. On the stage it is heard from the wedges and the PA.' },

@@ -31,8 +31,8 @@ export const TOMS_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
+      { id: '2', label: 'OFF CENTER', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
       { id: '4', label: 'NEAR THE EDGE', mm: 4 * 25.4, blurb: '4 in (102 mm) from the center, about 2 in in from the edge of a 12 in head.' },
     ],
     strikeDefault: '2',
@@ -62,7 +62,7 @@ export const TOMS_COPY: LessonCopy = {
     leftHanded: 'Many left-handed players set the kit up mirrored — the floor tom on the left, the rack toms ordered the other way.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
-    stageIdle: 'Two floor monitors: the drummer’s own fill beside the throne, and another player’s wedge on the audience side. On a loud stage the cymbals are a tom mic’s loudest neighbours.',
+    stageIdle: 'Two floor monitors: the drummer’s own fill beside the throne, and another player’s wedge on the audience side. On a loud stage the cymbals are a tom mic’s loudest neighbors.',
     studioIdle: 'No monitors on the floor. The overheads — if they are up — may already carry the toms.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Hear the tom passages at full strength — fills, rim hits, the cymbals near them. Do the toms need their own channels, or do the overheads already carry them? Check the drums, mounts and heads work as intended: tuning and damping are the player’s (the Drum Tuning Lab covers them), and a mic cannot fix a rattle or a pitch that bends.' },
@@ -85,7 +85,7 @@ export const TOMS_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic on this drum',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every tom is different.',
-      separate: 'Distance from the rim, height above the head and the direction of the mic’s axis are separate variables: change one at a time. On a tilted tom, height is measured square to the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance from the rim, height above the head and the direction of the mic’s axis are separate variables: change one at a time. On a tilted tom, height is measured square to the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, clamp, gooseneck, stand and cable out of the sticks’ path across every tom, the cymbals’ swing, the holder, the floor tom’s legs and the player’s leg. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Toward the rim tends to bring a higher-pitched attack; toward the center a fuller low end — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances; “closer to the center” does not promise more bass every time.',
     },

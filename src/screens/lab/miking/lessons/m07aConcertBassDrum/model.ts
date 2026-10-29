@@ -31,7 +31,7 @@ export const CBD_DIMS = {
   /** "about 45 cm (1'6") away" from the skin, "looking diagonally downwards". */
   deccaDist: { mm: 450, prov: src('DECCA', 'looking diagonally downwards towards the skin from a distance of about 45 cm (1\'6") away') } as Dim,
   /** The diagonal: 45° above the head-centre horizontal — a drawing default. */
-  deccaElev: placeholder(45, 'the spot’s elevation above the head centre (the source says "diagonally downwards")'),
+  deccaElev: placeholder(45, 'the spot’s elevation above the head center (the source says "diagonally downwards")'),
   /** The stand (casters, pivots, uprights): words sourced, sizes drawing defaults. */
   standHalfZ: placeholder(R + 70, 'stand width (uprights either side of the shell)'),
   standHalfX: placeholder(300, 'stand footprint along the drum'),

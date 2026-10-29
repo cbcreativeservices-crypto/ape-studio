@@ -31,7 +31,7 @@ export type SlotDef = { id: SlotId; role: SlotRole; label: string; x: number; y:
  *  the stage-right wing. Mains stand outboard of the deck corners just below
  *  the lip (or fly above them), subs on the floor inboard of the mains,
  *  front fills on the apron face, delays on the cross-aisle, front of house
- *  two-thirds back on the centre line.
+ *  two-thirds back on the center line.
  *
  *  ⛔ STAGE LEFT IS THE PERFORMER'S LEFT — the plot's RIGHT (+x). House left
  *  and right are the audience's. Every label below says which. */
@@ -57,7 +57,7 @@ export const SLOTS: readonly SlotDef[] = [
   { id: 'mainC', role: 'main', label: 'Center cluster', x: 180, y: 110 },
   { id: 'mainR', role: 'main', label: 'Main · house right', x: 316, y: 122 },
   { id: 'subL', role: 'sub', label: 'Sub · house left', x: 80, y: 128 },
-  { id: 'subC', role: 'sub', label: 'Sub · centre', x: 180, y: 128 },
+  { id: 'subC', role: 'sub', label: 'Sub · center', x: 180, y: 128 },
   { id: 'subC2', role: 'sub', label: 'Sub · center, front box', x: 180, y: 156 },
   { id: 'subR', role: 'sub', label: 'Sub · house right', x: 280, y: 128 },
   { id: 'frontFillL', role: 'fill', label: 'Front fill · left', x: 140, y: 114 },

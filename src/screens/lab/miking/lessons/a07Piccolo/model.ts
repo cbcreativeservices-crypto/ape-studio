@@ -56,7 +56,7 @@ const BEHIND_Z: Omit<DocumentedZone, 'start'> = {
   aimAt: { surface: 'holes', r: 160, prov: ill('aimed at the finger holes: the mic’s axis meets their plane within 16 cm of them') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.head, BEHIND_DIR, 35, 190, 330),
-  tendency: 'Less of the direct air jet and another balance. Check the mic’s real pattern, the head’s movement and the neighbours.',
+  tendency: 'Less of the direct air jet and another balance. Check the mic’s real pattern, the head’s movement and the neighbors.',
   checks: ['The boom clear of a turning head', 'Balance as the player moves', 'Spill from the flutes beside'],
 };
 
@@ -95,7 +95,7 @@ const HEADSET_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 40, prov: ill('aimed at the embouchure hole: within 40°') },
   requires: { micTypeIds: ['wwHeadset'] },
   draw: draws(A.emb, HEADSET_DIR, 45, 40, 95),
-  tendency: 'Consistency as the player moves — but it favours the head joint: more air and attack. Test the whole register and the feedback margin.',
+  tendency: 'Consistency as the player moves — but it favors the head joint: more air and attack. Test the whole register and the feedback margin.',
   checks: ['The capsule out of the air jet', 'A headset the player agrees to wear', 'Feedback and piercing pickup at show level'],
 };
 

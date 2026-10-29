@@ -162,7 +162,7 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     return [
       // Each leader lands ON its part (clash sweep 2026-10-10: some pointed
       // at empty glass); the player cue is an arrow only.
-      // (on the head above the stick: below centre it sat on the stick)
+      // (on the head above the stick: below center it sat on the stick)
       { id: 'tom2', text: '12 IN', u: TOM2.c.x + 20, v: TOM2.c.z - 70, align: 'center', at: { u: TOM2.c.x + 20, v: TOM2.c.z - 70 } },
       { id: 'tom1', text: '10 IN', u: TOM1.c.x, v: TOM1.c.z + 30, align: 'center', at: { u: TOM1.c.x, v: TOM1.c.z + 30 } },
       { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: C2.c.x + 60, v: C2.c.z - 10, align: 'center', tone: 'muted', at: { u: C2.c.x + 60, v: C2.c.z + C2.d * 0.3 } },

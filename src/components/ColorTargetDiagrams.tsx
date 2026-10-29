@@ -103,7 +103,7 @@ export function LedAvgDiagram({ tint }: { tint: string | null }): ReactNode {
   return <LedMini levelPref={null} avgTint={tint} target="avg" />;
 }
 
-/** RTA BAR COLOUR: a 10-bar spectrum silhouette in the live tint. */
+/** RTA BAR COLOR: a 10-bar spectrum silhouette in the live tint. */
 export function RtaBarsDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   const heights = [10, 17, 26, 34, 38, 33, 25, 18, 12, 8];
@@ -121,7 +121,7 @@ export function RtaBarsDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   );
 }
 
-/** Waveform TRACE COLOUR: a decaying sine in the live tint over a dim midline. */
+/** Waveform TRACE COLOR: a decaying sine in the live tint over a dim midline. */
 export function WaveTraceDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   return (
@@ -140,7 +140,7 @@ export function WaveTraceDiagram({ tint, defaultTint }: DiagramTint): ReactNode 
   );
 }
 
-/** TUNER COLOUR: the in-tune needle, centre marker and glow in the live tint. */
+/** TUNER COLOR: the in-tune needle, centre marker and glow in the live tint. */
 export function TunerDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   return (

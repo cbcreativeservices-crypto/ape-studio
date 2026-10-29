@@ -53,7 +53,7 @@ test('Mastering playback/editing view: zero line behind the programme', () => {
 
 test('Tools hub live waveform tile: centre line is chrome UNDER the trace', () => {
   const src = read('src/screens/tools/hubPreviewsLive.tsx');
-  assert.doesNotMatch(src, /WAVE_CHROME_OVER/, 'the centre line must not be drawn over the waveform');
+  assert.doesNotMatch(src, /WAVE_CHROME_OVER/, 'the center line must not be drawn over the waveform');
   const under = slice(src, 'const WAVE_CHROME_UNDER', 'function buildEnvelope', 'WAVE_CHROME_UNDER');
   assert.match(under, /y1=\{512\} x2=\{1924\} y2=\{512\}/, 'the zero line lives in the under-chrome');
   const mini = slice(src, 'const HubWaveMini', 'HubWaveMini.displayName', 'HubWaveMini');

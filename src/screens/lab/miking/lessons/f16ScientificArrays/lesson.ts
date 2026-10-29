@@ -65,7 +65,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the clock, the channel map, the geometry and the band before the physics: most surprises are a drifting recorder, a swapped channel or a spacing too wide.',
   },
   practice: {
@@ -87,7 +87,7 @@ const scenarios: MikingScenario[] = [
     correct: 'They hear it at the same time',
     explain: 'Straight in front, the two paths are equal: the arrivals coincide. A difference appears only when the source moves off the center line.',
     why: {
-      'L hears it first, being on the left': 'Neither side is favoured: the paths are equal.',
+      'L hears it first, being on the left': 'Neither side is favored: the paths are equal.',
       'R hears it first, as it is wired second': 'The wiring order does not change when sound arrives — though a swapped channel map would mislabel it.',
     },
   },
@@ -167,11 +167,11 @@ const scenarios: MikingScenario[] = [
     id: 'ar.mic.2',
     page: 'microphone',
     prompt: 'Each element looks fine on its own. Why check them as a pair?',
-    options: ['Phase and time offsets matter', 'Their cable colours should match', 'A pair needs twice the gain'],
+    options: ['Phase and time offsets matter', 'Their cable colors should match', 'A pair needs twice the gain'],
     correct: 'Phase and time offsets matter',
     explain: 'Array phase and time offsets matter even when each element’s own response looks acceptable: check the matching and the channel map.',
     why: {
-      'Their cable colours should match': 'Looks are not the point: the timing and the phase are.',
+      'Their cable colors should match': 'Looks are not the point: the timing and the phase are.',
       'A pair needs twice the gain': 'The gain is set for headroom; matching is about phase and sensitivity.',
     },
   },
@@ -239,8 +239,8 @@ const scenarios: MikingScenario[] = [
     id: 'ar.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · After moving an element, what do you repeat first?',
-    options: ['The centre run', 'The side run only', 'Nothing yet'],
-    correct: 'The centre run',
+    options: ['The center run', 'The side run only', 'Nothing yet'],
+    correct: 'The center run',
     explain: 'Return to the center to check that the arrivals still coincide — the setup did not drift.',
     why: {
       'The side run only': 'The center run is the check that the geometry still holds.',
@@ -400,7 +400,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The channel map and timing, with a known source',
     options: ['The timing: one channel offset', 'The right mic, which is louder', 'The baseline, which is too short'],
     correct: 'The timing: one channel offset',
-    explain: 'An offset channel favours one side whatever the source; a swapped one reverses every order. Check the map and the timing with a known source.',
+    explain: 'An offset channel favors one side whatever the source; a swapped one reverses every order. Check the map and the timing with a known source.',
     why: {
       'The right mic, which is louder': 'Loudness does not move an arrival in time.',
       'The baseline, which is too short': 'A short baseline shrinks the difference; it does not fix its sign.',
@@ -561,11 +561,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'ar.q.4',
     covers: 'setting',
     prompt: 'What makes two elements a coherent pair?',
-    options: ['One synchronized clock', 'The same colour of cable', 'Two recorders at once'],
+    options: ['One synchronized clock', 'The same color of cable', 'Two recorders at once'],
     correct: 'One synchronized clock',
     explain: 'Both channels sampled on one clock; independent recorders drift.',
     why: {
-      'The same colour of cable': 'Cables do not set the timing.',
+      'The same color of cable': 'Cables do not set the timing.',
       'Two recorders at once': 'Two unlocked recorders are two clocks.',
     },
   },

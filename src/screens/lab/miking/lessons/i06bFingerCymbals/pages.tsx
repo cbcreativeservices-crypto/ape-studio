@@ -183,7 +183,7 @@ const SPEC: MetalSpec = {
       looking: () => `One cymbal face-on · ${Math.round(RA * 2) / 10} cm across · one vibration shape`,
       prompt: 'Step through SHAPE, then move the STROKE in toward the dome. Which shapes does a stroke near the edge drive?',
       strikeWord: 'STROKE',
-      subject: 'A 5.5 centimetre finger cymbal seen face-on',
+      subject: 'A 5.5 centimeter finger cymbal seen face-on',
       notes: () => [
         'A shape is set moving only as much as the plate moves where the edge lands. Near the edge, most shapes move a lot — the bright, piercing ring. The strap sits at the center, so this picture leaves out the shapes that would move the center: the strap damps them.',
         'This is a flat disc of even thickness. A real finger cymbal is domed and small, so its pitches are high and its numbers differ; thin and thick pairs differ too — compare real pairs by ear.',

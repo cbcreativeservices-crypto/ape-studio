@@ -64,7 +64,7 @@ const pages: LessonPages = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalized).' },
     takeaway: 'Check the physical cause first — clearance, the swing, aim, the pattern, gain and polarity — before reaching for tone controls.',
   },
   practice: {
@@ -172,7 +172,7 @@ const scenarios: MikingScenario[] = [
     explain: '“Above the ride” means away from the plate, along its straight-on line. On a tilted ride that is not straight up.',
     why: {
       'Straight up from the floor to the mic, like a stand height': 'The floor is not the reference. Measure from the ride, square to it.',
-      'From the floor tom’s head up to the mic': 'The floor tom is a neighbour, not the reference.',
+      'From the floor tom’s head up to the mic': 'The floor tom is a neighbor, not the reference.',
     },
   },
   {
@@ -295,7 +295,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each starting point is measured from the cymbal it names, square to it — on a tilted ride, not straight up.',
     why: {
       'The floor, measured straight up to the mic like a stand': 'The floor is not the reference. Measure from the ride.',
-      'The floor tom’s head, up past the ride': 'The floor tom is a neighbour, not the reference.',
+      'The floor tom’s head, up past the ride': 'The floor tom is a neighbor, not the reference.',
     },
   },
   {
@@ -333,7 +333,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A small condenser 15–30 cm over the bow on the far side, aimed at the bow', ok: true, power: 'phantom', feedback: 'A suggested starting point for the ride’s definition — with the power it needs.' },
       { id: 'b', label: 'A small condenser 8–15 cm under the ride, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stick’s way, its rejection toward the monitors.' },
       { id: 'c', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
-      { id: 'd', label: 'A mic a few centimetres from the edge on the player’s side', ok: false, power: 'none', feedback: 'That is the stick’s side, inside the swing. Start on the far side.' },
+      { id: 'd', label: 'A mic a few centimeters from the edge on the player’s side', ok: false, power: 'none', feedback: 'That is the stick’s side, inside the swing. Start on the far side.' },
       { id: 'e', label: 'A mic resting on the ride’s bell, so it cannot move', ok: false, power: 'none', feedback: 'Keep mics off the cymbal: it is a moving part, struck all song.' },
     ],
     reasons: [docReason(W), CLEAR_REASON, POWER_REASON, { id: 'r.iso', label: 'Close, and with the rear toward the floor, helps on a loud stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, nameReason(W)],
@@ -446,7 +446,7 @@ export const I01B_LESSON: CymbalLesson = {
     { title: 'WHAT IT IS', text: 'A large cymbal on a stand, often a boom, played for time: the stick’s tip on its bow and its bell, the shoulder of the stick crashing its edge. It sits on its sleeve between two felts, able to move.', src: 'ZIL-L11' },
     { title: 'WHERE YOU MEET IT', text: 'On nearly every drum kit, over the floor tom on the player’s right (a right-handed layout), on stage and in the studio.', src: 'ZIL-L11' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It keeps time — a clear ping over a wash — and gives bright accents on the bell. Ask the player how it should sit: defined, or washy, or left to the overheads.', src: 'ZIL-FAQ' },
-    { title: 'ITS SIZE', text: 'A 20 in (50.8 cm) ride is common and is drawn here, its edge plane about a metre above the floor.', src: 'ZIL-K' },
+    { title: 'ITS SIZE', text: 'A 20 in (50.8 cm) ride is common and is drawn here, its edge plane about a meter above the floor.', src: 'ZIL-K' },
   ],
   sound: {
     stages: RIDE_CYM.strike.stages,
@@ -457,7 +457,7 @@ export const I01B_LESSON: CymbalLesson = {
   setting: {
     items: [
       { id: 'ride', label: 'the ride', short: 'RIDE', note: 'Ringed in amber: the 20 in ride over the floor tom on the player’s right. The cymbal this lesson mics.', prov: { kind: 'sourced', src: 'ZIL-K', quote: '20" Ride' }, tag: 'THE CYMBAL', scene: 'all', planIds: ['ride'] },
-      { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'Right under the ride: the loudest neighbour a ride mic hears — and its mic hears plenty of ride.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['floor'] },
+      { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'Right under the ride: the loudest neighbor a ride mic hears — and its mic hears plenty of ride.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['floor'] },
       { id: 'crash', label: 'crash cymbal (18 in)', short: 'CRASH', note: 'Hangs beside and above the ride’s audience side and swings when struck: keep a ride mic and its boom clear of it.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['crash2'] },
       THRONE_ITEM('The player sits behind the kit; the right arm reaches out to the ride all song — the near side of the ride is the stick’s.'),
       ...stageItems('ride'),

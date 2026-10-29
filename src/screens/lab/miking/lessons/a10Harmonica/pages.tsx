@@ -69,7 +69,7 @@ function useHandChamber(_p: PageProps): MikingStep {
         <Card>
           <Point title={s.label}>{s.text}</Point>
         </Card>
-        <Note>The hands’ chamber is part of the player’s sound — compare open, partly and fully cupped phrases at matched level, and write down the hand position. Fully enclosing the harmonica and a dedicated harp mic is a recognised amplified technique; covering a directional vocal mic’s grille is not the same thing.</Note>
+        <Note>The hands’ chamber is part of the player’s sound — compare open, partly and fully cupped phrases at matched level, and write down the hand position. Fully enclosing the harmonica and a dedicated harp mic is a recognized amplified technique; covering a directional vocal mic’s grille is not the same thing.</Note>
         {state === 'mic' ? <Note tone="warn">A harp mic in the hands feeds an amp: the hands, the mic, the amp and its speaker are all part of the amplified sound. Start the mic’s own volume control low before you plug in.</Note> : null}
       </>
     ),
@@ -129,12 +129,12 @@ const AXES_ACOUSTIC: HandSpec['axes'] = {
 };
 const AXES_AMP: HandSpec['axes'] = {
   x: { label: 'TOWARD THE SPEAKER', short: 'FRONT', blurb: 'Toward or away from the grille (x).', fmt: (v) => `${fmtLen(Math.abs(v - G))} ${v >= G ? 'in front of' : 'behind'} the grille` },
-  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down across the cone (y).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} the speaker’s centre` },
-  z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Left or right across the cone (z).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'right' : 'left'} of the speaker’s centre` },
+  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down across the cone (y).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} the speaker’s center` },
+  z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Left or right across the cone (z).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'right' : 'left'} of the speaker’s center` },
 };
 
 const WORDS: HandSpec['words'] = {
-  placeBadge: 'Blue = suggested starting points · grey dashes = the hands, the player and the amp’s vents · pinch to zoom',
+  placeBadge: 'Blue = suggested starting points · gray dashes = the hands, the player and the amp’s vents · pinch to zoom',
   clearance: 'Clearance comes first: the mouth, the hands’ whole movement, any neck holder and a harmonica swap. On the amp, keep the mic off the grille and the air behind the amp clear. Cables out of walkways.',
   cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A stand mic facing the harmonica turns its back toward the audience side — where a floor wedge often sits. The harp amp, behind the player, sits in front of the mic and off to one side: no null reaches it.',
   sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: the front and the back of the cone each give their own delay.',
@@ -226,7 +226,7 @@ const workedAmp = (z: DocumentedZone) => [
   { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin on a harp amp — amplifier-speaker practice, a dependable first listen, not a rule.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm — on the REAL speaker behind the cloth, found first. The cabinet’s middle is not always the speaker’s.', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
-  { title: 'ACROSS THE CONE', text: 'At the edge of the dust cap — the ring where the dome meets the cone. From here: toward the centre for more bite, outward for a softer top end.', cell: 1 },
+  { title: 'ACROSS THE CONE', text: 'At the edge of the dust cap — the ring where the dome meets the cone. From here: toward the center for more bite, outward for a softer top end.', cell: 1 },
   { title: 'THE AIM', text: `Straight at the speaker — the lab counts anything within ±${z.aim?.maxOffAxis ?? 20}°. One change at a time: keep the distance while you move across.`, cell: 2 },
   { title: 'CLEARANCE', text: 'Off the grille, clear of the moving cone and of the air the amp needs behind it; the stand stable, the cable out of walkways.', cell: 3 },
 ];

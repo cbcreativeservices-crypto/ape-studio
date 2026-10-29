@@ -233,7 +233,7 @@ export const STAGE4_SCHEDULE: StageDef = {
                 },
                 {
                   value: "patching",
-                  label: "Patching and labelling"
+                  label: "Patching and labeling"
                 },
                 {
                   value: "system_check",
@@ -684,7 +684,7 @@ export const STAGE4_SCHEDULE: StageDef = {
       severity: "attention",
       kind: "unsafe",
       title: "A long day with no breaks",
-      detail: "People stop working well long before they stop working. Mistakes late in a day without breaks are the expensive ones: the unlabelled take, the un-backed-up drive, the cable pulled under load. Working-hours rules where you are may also require them.",
+      detail: "People stop working well long before they stop working. Mistakes late in a day without breaks are the expensive ones: the unlabeled take, the un-backed-up drive, the cable pulled under load. Working-hours rules where you are may also require them.",
       fixHint: "Add break blocks, and put them where the work allows rather than where the day ends up leaving space.",
       needsLogic: true,
       logicIntent: "Fire when hours_per_day or the sum of block durations exceeds a working span that ccode chooses, and day_schedule contains no break block."
@@ -740,7 +740,7 @@ export const STAGE4_SCHEDULE: StageDef = {
       kind: "missing",
       title: "No contingency in the budget",
       detail: "Something will cost more than quoted, or something unquoted will be needed on the day. Without a contingency line, the first surprise comes out of someone's fee, and it is usually the fee of whoever is closest to the problem.",
-      fixHint: "Add a contingency line. The size is a judgement for you and the client; the existence of it is not.",
+      fixHint: "Add a contingency line. The size is a judgment for you and the client; the existence of it is not.",
       needsLogic: true,
       logicIntent: "Fire when budget_lines has at least one row and no row has bl_category contingency, or the contingency row's amount is zero or empty. Do not suggest a percentage."
     },
@@ -857,7 +857,7 @@ export const STAGE4_SCHEDULE: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "An outdoor production with no backup date",
-      detail: "Weather cancels outdoor productions, and the cost of a cancelled day is the whole day: crew, hire, transport and talent. If no date is held, the choice on the morning is between losing the production and working in conditions that are unsafe for people and equipment.",
+      detail: "Weather cancels outdoor productions, and the cost of a canceled day is the whole day: crew, hire, transport and talent. If no date is held, the choice on the morning is between losing the production and working in conditions that are unsafe for people and equipment.",
       fixHint: "Hold a backup date with the venue, the crew and the talent, or record in writing that there is none and what a cancellation costs.",
       needsLogic: true,
       logicIntent: "Fire when outdoor is among the stage 1 location types and backup_date is empty."

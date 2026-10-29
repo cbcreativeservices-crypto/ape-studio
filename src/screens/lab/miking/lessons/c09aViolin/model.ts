@@ -49,8 +49,8 @@ const FRONT_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 25, prov: ill('aimed at the bridge and top: within 25° (the lab’s tolerance)') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.bridgeTop, FRONT, 35, 500, 1200),
-  tendency: 'The whole violin blended — strings, body and some room. More of the room and the neighbours comes with it. A modest place to begin; move it and listen.',
-  checks: ['The bow’s full sweep and the bow arm stay clear of the mic and stand', 'Quiet bow starts, string changes and the loudest passage', 'How much room and how many neighbours it hears'],
+  tendency: 'The whole violin blended — strings, body and some room. More of the room and the neighbors comes with it. A modest place to begin; move it and listen.',
+  checks: ['The bow’s full sweep and the bow arm stay clear of the mic and stand', 'Quiet bow starts, string changes and the loudest passage', 'How much room and how many neighbors it hears'],
 };
 
 const CLOSE_Z: Omit<DocumentedZone, 'start'> = {
