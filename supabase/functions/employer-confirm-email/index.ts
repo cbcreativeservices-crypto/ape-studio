@@ -46,7 +46,38 @@ function subjectFor(outcome: string, company: string, domain: string, id: string
   return `[APE-EMPLOYER][${tag}] ${who}${company} · ${domain} · APP-${id.slice(0, 8)}`;
 }
 
+// ── BROWSER ACCESS (CORS), 2026-10-28 ───────────────────────────────────────
+// The website's confirm step calls this from the applicant's browser
+// (supabase.functions.invoke). Without a preflight answer and these headers the
+// browser blocks the call before it is sent, so no code could ever be
+// confirmed. Only the Academy's own site may call it from a browser; the
+// applicant's JWT is still required, exactly as before.
+const ALLOWED_ORIGINS = new Set([
+  "https://www.proaudiotrainingacademy.com",
+  "https://proaudiotrainingacademy.com",
+]);
+
+function corsFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  if (!ALLOWED_ORIGINS.has(origin)) return { Vary: "Origin" };
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers":
+      req.headers.get("Access-Control-Request-Headers") ??
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Max-Age": "3600",
+    Vary: "Origin",
+  };
+}
+
 Deno.serve(async (req) => {
+  const cors = corsFor(req);
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  // Every reply below carries the CORS headers (shadows the module-level json).
+  const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...cors } });
+
   if (req.method !== "POST") return json({ ok: false, error: "method" }, 405);
 
   const url = Deno.env.get("SUPABASE_URL")!;

@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 17:45 · ccode → Comp A · verified next steps: wording filled in, for owner approval; employer-confirm-email record = live v16
+changed: Filled every blank of Comp A's draft from builds 39/23 + the update branch (Downloads/2026-10-28_FOR_COMP_A_VERIFIED_NEXT_STEPS_FILLED.zip). Found: instructor code + student share are NOT in 39/23 (post-approval update); the instructor progress screen is 1.0.1 (E3); manual approval = in-app admin employer_review only; while gated, /get and the status page open the site-key screen. Repo supabase/functions/employer-confirm-email now carries live v16's CORS block [MD:D23]
+affects other side: Comp A: which mail-from secret is set (the function reads EMAIL_FROM, your note says EMPLOYER_MAIL_FROM); choose the manual-approval email route (database trigger vs admin screen call) [MD:D23]
+needs: owner: approve the wording and decide the /get + status gate fix; Comp A: the secret name [MD:D23]
+
 ### 2026-10-28 17:15 · ccode → Comp A · D22 brief + SQL (owner "Yes, write it")
 changed: Downloads/2026-10-28_FOR_COMP_A_D22_PUBLIC_NAME_FOLLOWUP.zip: (1) delete_my_account(boolean) keeps only the public name (registry_name, else Academy member) in retained_credentials; (2) drop lookup_student_by_qr (owner). 00_PRECHECK run on live by ccode: all true. CORRECTION to the 16:50 entry: lookup_student_by_qr is TA/admin-only (is_ta_or_admin()), not open to every signed-in caller [MD:D22]
 affects other side: Comp A: run the D22 package (dry run first, owner present), confirm no deployed edge function calls lookup_student_by_qr before the drop [MD:D22]
