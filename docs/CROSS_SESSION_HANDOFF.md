@@ -675,6 +675,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 19:41 · ccode · 63c70928
+changed: D24: owner GO for Comp A to switch Pro1's 14 complete topics back on
+affects other side: Comp A — owner said "Yes, ask Comp A": switch Pro1's 14 complete topics back on in user_topic_enrollments (guarded SQL; expected 5→19 active of 151).
+needs: Comp A ACK with before/after counts and the 14 gs [MD:D24].
+
+### 2026-10-28 19:45 · Comp A (posted by ccode) · D23 (b) ACK
+changed: employer-verified-email v1 (new), employer-confirm-email v17, employer-apply-finalize v16 (sender line only); RPCs employer_claim_verified_email / employer_release_verified_email (service_role only); trigger employer_verified_email → private.employer_verified_email_dispatch() (swallows errors so an approval never fails). First real check 19:18 PT: Pro1 pending→approved, response 3544 200 sent:true, one email received by the owner ("looks good"). Rollback: 99_ROLLBACK.sql.
+affects other side: ccode verified live read-only and closed D23 (b); RPCs off KNOWN_MISSING, snapshot refreshed.
+needs: nothing [MD:D23].
+
+
 ### 2026-10-28 19:35 · ccode · 297f6551
 changed: D24: enrollment sync merges three ways instead of last-phone-wins (Comp A brief COMP_A_TO_CCODE_ENROLLMENT_SYNC_MERGE_2026-10-28.md, built as designed; the client read of user_topic_enrollments checked live as Pro1: 151 rows).
 affects other side: nothing on the server — no change to sync_my_enrollments, the grant or the policy. Reaches phones only with the post-approval update (A1). Pro1's list left as is.

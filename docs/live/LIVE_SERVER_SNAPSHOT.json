@@ -1,5 +1,5 @@
 {
- "taken_at": "2026-10-28T18:10:00-07:00",
+ "taken_at": "2026-10-28T19:45:00-07:00",
  "taken_by": "ccode, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions",
  "functions": [
   "_custom_list_attempt_payload",
@@ -71,6 +71,7 @@
   "employer_application_mine",
   "employer_apply",
   "employer_apply_remote_checks",
+  "employer_claim_verified_email",
   "employer_confirm_work_email",
   "employer_decide",
   "employer_domain_of",
@@ -80,6 +81,7 @@
   "employer_pending_list",
   "employer_profile_public",
   "employer_profiles_set_kind",
+  "employer_release_verified_email",
   "employer_review",
   "employer_revoke",
   "employer_set_interests",
@@ -177,6 +179,8 @@
   "community-push",
   "employer-apply-finalize",
   "employer-confirm-email",
+  "employer-issue-code",
+  "employer-verified-email",
   "lab-audio",
   "lab-audio-load",
   "lab-source-pull",
