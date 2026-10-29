@@ -383,17 +383,24 @@ export async function fetchTermTopicNames(glossaryId: string): Promise<string[]>
  *   flashcards — each card SEEN once (views>=1 OR known) = full credit
  *   other      — each question answered CORRECTLY once (correct>=1) = full credit
  * Derived from the SAME item_states grammar the server stores. No timer gate.
+ *
+ * `currentIds` (Comp A 2026-10-29, term placement Set B): item_states keeps a
+ * term after it moves to another topic, so counting every key inflated the %
+ * (on the server it could pass 100 and open the quiz early). When the caller
+ * knows the topic's CURRENT terms, only those earn credit.
  */
 export function studyDisplayPct(
   states: ItemStates,
   totalItems: number,
   methodKey: string,
   _requiredPasses = 1,
+  currentIds?: ReadonlySet<string>,
 ): number {
   if (totalItems <= 0) return 0;
   let credit = 0;
   for (const key of Object.keys(states)) {
     if (key.startsWith('_')) continue; // reserved keys (e.g. _batches)
+    if (currentIds && !currentIds.has(key)) continue; // left the topic
     const v = states[key];
     if (methodKey === 'flashcards') {
       credit += v.known || (v.views ?? 0) >= 1 ? 1 : 0;

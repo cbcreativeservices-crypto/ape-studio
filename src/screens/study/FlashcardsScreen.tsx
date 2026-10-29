@@ -1695,7 +1695,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     );
   }
 
-  const displayPct = studyDisplayPct(states, items.length, 'flashcards');
+  const displayPct = studyDisplayPct(states, items.length, 'flashcards', 1, new Set(items.map((i) => i.id)));
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" beside 399 / 400 (B-086).
   const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);

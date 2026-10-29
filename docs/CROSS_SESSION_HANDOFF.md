@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 09:01 · ccode · e2872e53
+changed: Flashcards full screen: let text scroll and swipes change cards
+affects other side: nothing (app-only gesture fix; ships with A2)
+needs: nothing. FYI D16: the 13 engineer WAVs are measured, NOT wired (their pages are silent); no lab_audio_assets rows needed yet
+
+
 ### 2026-10-29 08:30 · ccode · end of the 10-28/29 session (owner asleep)
 changed: one branch @ the commit carrying this entry. Tonight: D24 enrollment three-way merge (297f6551); D23 (b) verified + closed; R2 closed (employer-issue-code = 410 stub); D25 AP&E gone from app text; D10 lab-term texts; D11/D21; D20(b) privacy §10/§20; D27 UK->US sweep of on-screen app text (03e9eafb); D28 "We're updating our audio" notice (f5dc195a); D29 all 73 Labs-menu + Calculator tiles have the owner's art (1d3f40e6, 0fa70ac6, 7c873f92, 94845c93). Gate now prints the failure COUNT on its last line. PROTOCOL rules 27-30 (ape-studio canonical 417a0249, local by design; copy here).
 affects other side: Comp A has two open asks — the brief Downloads/2026-10-28_FOR_COMP_A_SPELLING_AND_AUDIO_NOTICE.zip (DB spelling REPORT only; create audio_replacement_pending() + list) and the live Phase glossary row ("notes" -> "frequencies").
@@ -8627,3 +8633,8 @@ needs: nothing. The hook auto-stamps a stub on my next NON-channel commit (this 
 changed: SDK inventory DELIVERED â€” docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md: NO analytics/crash/ads SDKs, no device/ad-ID collection; payments=expo-iap (NOT RevenueCat); expo-location NOT installed; auth email/password only (Apple 4.8 N/A); mic on-device, glossary dictation now forced on-device (requiresOnDeviceRecognition). Career-Finder confirmed CLOSED. NOT verified by me this session: the tile cache-control (immutable header + re-upload) item from the execution queue.
 affects other side: A can finalize the App Privacy + Data Safety forms from the SDK doc. Client extras this era (informational): glossary polish (dup count + SELECT removed, single Glossary Links toggle, squared purple Î£ calc-link, green count), Bass/waterfall/FX audit fixes, ape-dsp 16 KB page-alignment fix (for a future PRODUCTION Play submission), dev-client builds for both phones.
 needs: nothing blocking â€” say the word if you want me to verify the tile cache-control item.
+
+### 2026-10-29 ~11:00 · Comp A → ccode · term placement Set B APPLIED (logged by ccode)
+changed (server, Comp A, owner GO): 129 term moves (glossary_topics + quiz_questions.achievement_id + glossary.achievement_id); 134 secondary links removed (415 questions moved to the main topic); Dot Product main 3450→4610; links 32,015→31,881; student_method_progress.item_states cleaned + completion_pct recomputed for 29 rows / 33 learners (0 over 100); refresh_glossary_stats + refresh_academy_stats run. Rollback page; backups private._bkp_plc_b_*_20261029.
+ccode answer: App item 1 DONE: studyDisplayPct only credits the topic's CURRENT term ids (Flashcards/Fill-in/Matching pass them). Dashboard rows still pass a count only (no id list), so it relies on Comp A's item_states cleanup. App item 2 DONE: on invalid_event, sync.ts re-reads the topic's terms (paged) and re-sends the batch ONCE with only current-term events; it drops only if that is refused too, and keeps the batch if the term list can't be read. Both ship with A2.
+needs: [MD:D30] Comp A: the server change in record_study_progress / build_study_snapshot (owner GO). The "Also called" spec (glossary.also_called) — ccode builds the card/flashcard/detail line + search match and it must be LIVE before any duplicate is retired.

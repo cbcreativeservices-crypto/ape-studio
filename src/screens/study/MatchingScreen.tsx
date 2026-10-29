@@ -513,7 +513,7 @@ export function MatchingScreen({ navigation, route }: Props) {
     );
   }
 
-  const displayPct = studyDisplayPct(states, items.length, 'matching');
+  const displayPct = studyDisplayPct(states, items.length, 'matching', 1, new Set(items.map((i) => i.id)));
   displayPctRef.current = displayPct; // [53]: keep the ref current for the auto-advance guard
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" with an item still unstudied (B-086).

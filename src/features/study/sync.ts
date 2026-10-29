@@ -64,6 +64,29 @@ function isPermanentRejection(e: unknown): boolean {
   return /invalid_event|invalid_method|invalid_achievement|unknown_method|not_enrolled_permanently|malformed|constraint/i.test(msg);
 }
 
+/**
+ * The topic's CURRENT term ids, or null when they cannot be read (Comp A
+ * 2026-10-29, term placement Set B). Paged: the server caps a response at
+ * 1000 rows silently, and a short list would drop good events below.
+ */
+async function currentTopicTermIds(achievementId: string): Promise<Set<string> | null> {
+  const ids = new Set<string>();
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from('glossary_topics')
+      .select('glossary_id')
+      .eq('achievement_id', achievementId)
+      .order('glossary_id')
+      .range(from, from + PAGE - 1);
+    if (error) return null;
+    const rows = (data ?? []) as { glossary_id: string }[];
+    for (const r of rows) ids.add(r.glossary_id);
+    if (rows.length < PAGE) break;
+  }
+  return ids;
+}
+
 // ---- Study-progress bus (Booth 2026-07-15) ----
 // A study write lands on the server asynchronously (flush on stop() + the 30s
 // loop), but the Dashboard reloads the instant it regains focus — so it used to
@@ -192,6 +215,31 @@ export async function replayQueue(): Promise<void> {
 }
 let REPLAYING: Promise<void> | null = null;
 
+/** Cut a group's rows into chunks on ROW boundaries (see replayQueueOnce).
+ *  `keep`, when given, drops events for terms no longer in the topic. */
+function buildChunks(rows: StudyQueueRow[], keep?: ReadonlySet<string>): Chunk[] {
+  const chunks: Chunk[] = [];
+  let cur: Chunk | null = null;
+  let curCount = 0;
+  for (const r of rows) {
+    let ev: StudyEvent[];
+    try {
+      ev = JSON.parse(r.events_json) as StudyEvent[];
+    } catch {
+      ev = [];
+    }
+    if (keep) ev = ev.filter((x) => keep.has(x.item));
+    if (!cur || curCount + ev.length > MAX_EVENTS_PER_BATCH) {
+      cur = { items: [] };
+      chunks.push(cur);
+      curCount = 0;
+    }
+    cur.items.push({ row: r, ev });
+    curCount += ev.length;
+  }
+  return chunks;
+}
+
 async function replayQueueOnce(): Promise<void> {
   const rows = getQueuedBatches();
   if (rows.length === 0) return;
@@ -223,28 +271,10 @@ async function replayQueueOnce(): Promise<void> {
      * `addEvent`, so a chunk is at most one row over the limit in the worst
      * case — acceptable, and far better than an id we cannot reproduce.
      */
-    const chunks: Chunk[] = [];
-    let cur: Chunk | null = null;
-    let curCount = 0;
-    for (const r of g) {
-      let ev: StudyEvent[];
-      try {
-        ev = JSON.parse(r.events_json) as StudyEvent[];
-      } catch {
-        ev = [];
-      }
-      if (!cur || curCount + ev.length > MAX_EVENTS_PER_BATCH) {
-        cur = { items: [] };
-        chunks.push(cur);
-        curCount = 0;
-      }
-      cur.items.push({ row: r, ev });
-      curCount += ev.length;
-    }
-
-    try {
-      for (let i = 0; i < chunks.length; i++) {
-        const c = chunks[i];
+    const chunks = buildChunks(g);
+    const sendChunks = async (list: Chunk[]) => {
+      for (let i = 0; i < list.length; i++) {
+        const c = list[i];
         /**
          * ⛔ EACH CHUNK CARRIES ITS OWN ROWS' SECONDS.
          *
@@ -273,6 +303,10 @@ async function replayQueueOnce(): Promise<void> {
             ),
         );
       }
+    };
+
+    try {
+      await sendChunks(chunks);
       emitStudyProgress(); // queued progress landed — refresh any dashboards
     } catch (e) {
       if (isNetworkError(e)) return; // still offline — try next loop
@@ -282,7 +316,32 @@ async function replayQueueOnce(): Promise<void> {
         console.warn('[study-sync] keeping queued batch after a retryable error:', (e as Error).message);
         continue;
       }
-      // Poisoned batch (e.g. invalid_event): drop it rather than wedging the queue.
+      /**
+       * invalid_event (Comp A 2026-10-29): usually ONE event names a term that
+       * has since moved to another topic, and the server rejects the whole
+       * batch for it. Dropping the batch also threw away the learner's other,
+       * valid events and seconds. Retry ONCE with only the events whose term is
+       * still in the topic; drop only if that is refused as well.
+       */
+      if (/invalid_event/i.test((e as Error).message ?? '')) {
+        const keep = await currentTopicTermIds(achievement_id).catch(() => null);
+        const groupIds = new Set(g.map((r) => r.id));
+        const left = getQueuedBatches().filter((r) => groupIds.has(r.id));
+        if (keep && left.length > 0) {
+          try {
+            await sendChunks(buildChunks(left, keep));
+            emitStudyProgress();
+            continue;
+          } catch (e2) {
+            if (isNetworkError(e2)) return;
+            if (!isPermanentRejection(e2)) continue;
+            e = e2;
+          }
+        } else if (!keep) {
+          continue; // could not read the term list: keep the batch, try next loop
+        }
+      }
+      // Poisoned batch: drop it rather than wedging the queue.
       console.warn('[study-sync] dropping permanently rejected queued batch:', (e as Error).message);
       deleteQueuedBatches(g.map((r) => r.id));
     }

@@ -13,7 +13,7 @@ import type { CertificateSource } from "@/lib/certificate/render";
  * of src/features/credentials/certificateHtml.ts), loaded with import() only
  * once this list is on screen, so its ~520 KB of fonts and art never touch the
  * page for anyone else. Each certificate is drawn into a sandboxed iframe
- * (sandbox="": no scripts, opaque origin, no clicks) — the same HTML the app
+ * (no scripts, no forms, no popups, no clicks) — the same HTML the app
  * prints, scaled, so the website can never drift from the PDF.
  *
  * A row whose certificate cannot be drawn keeps its text and gets no thumbnail
@@ -22,6 +22,15 @@ import type { CertificateSource } from "@/lib/certificate/render";
 
 const SHEET_W = 1056;
 const SHEET_H = 816;
+
+/**
+ * "allow-same-origin" and nothing else (owner 2026-10-29, "fix the blank
+ * wait"). With sandbox="" the opaque-origin frame took 2–6 s on a phone to
+ * paint its embedded fonts, showing a blank cream sheet; same-origin paints in
+ * under 0.4 s (measured side by side). Still no allow-scripts, so the sheet can
+ * run nothing: same-origin only lets this page read the frame's fonts state.
+ */
+const SANDBOX = "allow-same-origin";
 
 type Props = {
   credentials: VerifiedCredential[];
@@ -147,7 +156,8 @@ export default function CertificateGallery({ credentials, holder, source }: Prop
 
       {open !== null && rendered?.[open] ? (
         <CertificateViewer
-          html={rendered[open]!}
+          sheets={sheetsAround(viewable, open, rendered)}
+          current={open}
           name={credentials[open].credential_name}
           position={viewable.indexOf(open)}
           count={viewable.length}
@@ -166,6 +176,19 @@ export default function CertificateGallery({ credentials, holder, source }: Prop
   );
 }
 
+/**
+ * The certificate on screen plus its neighbours (owner 2026-10-29, "fix the
+ * blank wait"): a full sheet takes 2–6 s to draw on a phone, so the previous
+ * and next ones are drawn hidden while the learner looks at this one, and
+ * Next/Previous then shows a sheet that is already finished.
+ */
+function sheetsAround(viewable: number[], open: number, rendered: (string | null)[]) {
+  const p = viewable.indexOf(open);
+  return [viewable[p - 1], open, viewable[p + 1]]
+    .filter((i): i is number => i !== undefined && !!rendered[i])
+    .map((i) => ({ index: i, html: rendered[i]! }));
+}
+
 function Thumbnail({ html, name }: { html: string; name: string }) {
   return (
     <span
@@ -175,7 +198,7 @@ function Thumbnail({ html, name }: { html: string; name: string }) {
     >
       <iframe
         srcDoc={html}
-        sandbox=""
+        sandbox={SANDBOX}
         title={`Certificate: ${name}`}
         aria-hidden
         tabIndex={-1}
@@ -188,7 +211,8 @@ function Thumbnail({ html, name }: { html: string; name: string }) {
 }
 
 function CertificateViewer({
-  html,
+  sheets,
+  current,
   name,
   position,
   count,
@@ -196,7 +220,8 @@ function CertificateViewer({
   onNext,
   onClose,
 }: {
-  html: string;
+  sheets: { index: number; html: string }[];
+  current: number;
   name: string;
   position: number;
   count: number;
@@ -207,6 +232,10 @@ function CertificateViewer({
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(0);
+  // Credential indexes whose sheet has finished drawing. Kept across
+  // Next/Previous: a sheet stays mounted (same key) while it is a neighbour.
+  const [loaded, setLoaded] = useState<ReadonlySet<number>>(() => new Set());
+  const currentLoaded = loaded.has(current);
 
   // Fit the sheet to the window, leaving room for the control bar.
   useEffect(() => {
@@ -280,17 +309,41 @@ function CertificateViewer({
         className="relative overflow-hidden rounded-sm bg-[#fbf9f4] shadow-2xl"
         style={{ width: Math.round(SHEET_W * scale), height: Math.round(SHEET_H * scale) }}
       >
-        {scale > 0 ? (
-          <iframe
-            srcDoc={html}
-            sandbox=""
-            title={`Certificate: ${name}`}
-            aria-hidden
-            tabIndex={-1}
-            className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
-            style={{ width: SHEET_W, height: SHEET_H, transform: `scale(${scale})` }}
-          />
+        {!currentLoaded ? (
+          <span className="absolute inset-0 flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[#7a6a4a]">
+            <span className="animate-pulse">Loading certificate…</span>
+          </span>
         ) : null}
+        {scale > 0
+          ? sheets.map((s) => (
+              <iframe
+                key={s.index}
+                srcDoc={s.html}
+                sandbox={SANDBOX}
+                title={`Certificate: ${name}`}
+                aria-hidden
+                tabIndex={-1}
+                onLoad={(e) => {
+                  const mark = () =>
+                    setLoaded((prev) => (prev.has(s.index) ? prev : new Set(prev).add(s.index)));
+                  // "load" comes before the embedded fonts are drawn; wait for
+                  // them so the label, never a blank sheet, fills the gap.
+                  const fonts = e.currentTarget.contentDocument?.fonts;
+                  if (fonts) fonts.ready.then(mark, mark);
+                  else mark();
+                }}
+                className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
+                style={{
+                  width: SHEET_W,
+                  height: SHEET_H,
+                  transform: `scale(${scale})`,
+                  // Neighbours draw out of sight; the current one appears only
+                  // once finished, so the label shows instead of a blank sheet.
+                  visibility: s.index === current && loaded.has(s.index) ? "visible" : "hidden",
+                }}
+              />
+            ))
+          : null}
       </div>
       <div className="mt-4 flex w-full max-w-md flex-wrap items-center justify-center gap-2">
         <button type="button" onClick={onPrevious} disabled={!hasPrevious} className={control}>
