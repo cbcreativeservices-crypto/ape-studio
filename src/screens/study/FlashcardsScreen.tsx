@@ -1939,7 +1939,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   hitSlop={10}
                   accessibilityRole="button"
                   accessibilityState={{ selected: starred.has(card.id) }}
-                  accessibilityLabel={starred.has(card.id) ? 'Remove from custom list' : 'Add to custom list'}
+                  accessibilityLabel={starred.has(card.id) ? 'Remove from My Custom List' : 'Add to My Custom List'}
                 >
                   <DeckIcon
                     color={starred.has(card.id) ? colors.customList : colors.textMuted}

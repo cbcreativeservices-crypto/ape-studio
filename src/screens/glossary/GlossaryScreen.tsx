@@ -937,7 +937,7 @@ const RECENT_UNREADABLE =
 const CUSTOM_EMPTY =
   'My Custom List is empty. Tap the three-card icon beside any term to add it. This button then shows just those terms.';
 const CUSTOM_UNREADABLE =
-  'Your custom list couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
+  'My Custom List couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
 const BOOKMARKS_UNREADABLE =
   'Your bookmarks couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
 /** The topic picker's face when its list could not be read (hunt 13, K2). */
@@ -3818,9 +3818,9 @@ ${COPY.glossaryFreeAllowance}`,
                 onPress={() => {
                   if (toggleTermList('starred', item.id) !== null) ackList('custom');
                 }}
-                hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
+                hint={starred.has(item.id) ? 'Removes from My Custom List' : 'Adds to My Custom List'}
                 selected={starred.has(item.id)}
-                accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
+                accessibilityLabel={starred.has(item.id) ? 'Remove from My Custom List' : 'Add to My Custom List'}
               >
                 <DeckIcon
                   color={starred.has(item.id) ? colors.customList : colors.textMuted}

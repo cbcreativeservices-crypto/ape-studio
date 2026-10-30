@@ -98,7 +98,7 @@
  },
  {
   "id": "theatre-worship-venues-and-show-control",
-  "name": "Theatre, Worship, Venues & Show Control",
+  "name": "Theater, Worship, Venues & Show Control",
   "field": "Venue, Stagecraft & Entertainment Systems",
   "subject": "Theatrical & Worship",
   "topicGs": [
@@ -109,7 +109,7 @@
    3730
   ],
   "settings": [
-   "Theatres",
+   "Theaters",
    "performing-arts centers",
    "houses of worship",
    "theme parks",
@@ -714,7 +714,7 @@
    3670
   ],
   "settings": [
-   "Theatres",
+   "Theaters",
    "arenas",
    "festivals",
    "touring productions",

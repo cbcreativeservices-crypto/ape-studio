@@ -2889,7 +2889,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 ))
               ) : (
                 <Text style={styles.clEmpty}>
-                  {/* “Add to custom list” is only the icon’s screen-reader label (D13). */}
+                  {/* “Add to My Custom List” is only the icon’s screen-reader label (D13). */}
                   No terms yet. Tap <DeckIcon color={colors.customList} size={15} /> beside a term in the Glossary, or on a
                   flashcard while you study any of your other topics, to build this list.
                 </Text>

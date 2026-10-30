@@ -324,8 +324,11 @@ def main():
         'enums': {'tier': TIER, 'relationship': RELATIONSHIP, 'orientation': ORIENTATION, 'titleClass': TITLE_CLASS, 'status': STATUS, 'workModel': WORK_MODEL, 'preparation': preps},
         'careers': careers,
     }
-    io.open(OUT_CAREERS, 'w', encoding='utf-8', newline='\n').write(json.dumps(out, ensure_ascii=False, separators=(',', ':')) + '\n')
-    io.open(OUT_FAMILIES, 'w', encoding='utf-8', newline='\n').write(json.dumps(list(families.values()), ensure_ascii=False, indent=1) + '\n')
+    # US spelling on screen (owner 2026-10-29, D27): the workbook and the overrides keep
+    # its UK 'Theatre' so their names still match; only the written output is respelled.
+    us = lambda text: text.replace('Theatre', 'Theater')
+    io.open(OUT_CAREERS, 'w', encoding='utf-8', newline='\n').write(us(json.dumps(out, ensure_ascii=False, separators=(',', ':')) + '\n'))
+    io.open(OUT_FAMILIES, 'w', encoding='utf-8', newline='\n').write(us(json.dumps(list(families.values()), ensure_ascii=False, indent=1) + '\n'))
     print(f'careers: {len(careers)}  families: {len(families)}  -> {os.path.relpath(OUT_CAREERS, ROOT)} ({os.path.getsize(OUT_CAREERS)//1024} KB), {os.path.relpath(OUT_FAMILIES, ROOT)}')
     print(f'topic links resolved: {sum(len(f["topicGs"]) for f in families.values())}; unresolved names dropped: {len(unresolved)}')
     for fam, t in unresolved: print(f'   {fam[:40]:40s} x {t}')

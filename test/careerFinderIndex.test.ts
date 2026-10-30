@@ -98,7 +98,7 @@ describe('index corrections (industry review 2026-09-04)', () => {
       ['Hearing, Audiology, Psychoacoustics & Accessibility', ['Audiologist', 'Hearing Instrument Specialist', 'Psychoacoustician']],
       ['Medical Ultrasound & Therapeutic Acoustics', ['Diagnostic Medical Sonographer', 'Ultrasound Transducer Engineer', 'Ultrasound Imaging Scientist']],
       ['Stagecraft, Rigging, Power & Production Support', ['Entertainment Rigger', 'Audio Stagehand']],
-      ['Theatre, Worship, Venues & Show Control', ['Theatrical Sound Designer', 'Theatre A1']],
+      ['Theater, Worship, Venues & Show Control', ['Theatrical Sound Designer', 'Theater A1']],
       ['Field Recording, Sound Libraries & Sonic Heritage', ['Wildlife Sound Recordist', 'Sound Library Producer', 'Sonic Heritage Specialist']],
     ];
     for (const [fam, titles] of check) {

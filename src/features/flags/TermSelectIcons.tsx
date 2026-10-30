@@ -204,9 +204,9 @@ export const TermSelectIcons = memo(function TermSelectIcons({
         )}
         on={isStarred}
         onColor={colors.customList}
-        label={isStarred ? 'Remove from custom list' : 'Add to custom list'}
+        label={isStarred ? 'Remove from My Custom List' : 'Add to My Custom List'}
         onPress={() => toggleTermList('starred', id)}
-        onLongPress={() => showHint(isStarred ? 'Removes from Custom list' : 'Adds to Custom list')}
+        onLongPress={() => showHint(isStarred ? 'Removes from My Custom List' : 'Adds to My Custom List')}
       />
       {hideKnown ? null : (
         <>
