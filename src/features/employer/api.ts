@@ -14,6 +14,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
 import { verifierKindOf, type VerifierKind } from './verifierKind.ts';
+import { employerPageToken } from './publicPage.ts';
 
 /**
  * The two admin WRITES are bounded (night bug pass 3, 2026-10-01). supabase-js
@@ -130,6 +131,29 @@ export async function myVerifierKind(): Promise<MyVerifierKind> {
     return typeof data === 'string' && data ? verifierKindOf(data) : 'none';
   } catch {
     return 'unknown';
+  }
+}
+
+/**
+ * My public page token, for the SHARE MY PUBLIC PAGE button (must-do H5,
+ * 2026-10-29).
+ *
+ * `my_employer_public_token()` is written for Comp A to create (brief
+ * Downloads/2026-10-29_FOR_COMP_A_H5_EMPLOYER_PUBLIC_TOKEN.md): the caller's
+ * employer_profiles.public_token when verified and not revoked, else null.
+ * Until it is live the call fails, and a failure, a null or anything that is
+ * not a uuid all answer null, which HIDES the button. Nothing here can show a
+ * share link that the website would not open.
+ */
+export async function myEmployerPublicToken(): Promise<string | null> {
+  try {
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'myEmployerPublicToken');
+    if (timedOut || !got.data.session) return null;
+    const { data, error } = await supabase.rpc('my_employer_public_token');
+    if (error) return null;
+    return employerPageToken(data);
+  } catch {
+    return null;
   }
 }
 

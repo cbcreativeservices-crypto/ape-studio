@@ -36,6 +36,7 @@ import {
 } from '../../features/employer/api';
 import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifierKind';
 import { InstructorCodeRow } from './InstructorCodeRow';
+import { PublicPageRow } from './PublicPageRow';
 import { colors, fonts } from '../../theme/tokens';
 
 const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
@@ -254,6 +255,10 @@ export function EmployerSection() {
       {/* A verified INSTRUCTOR's code for students (instructor_my_code).
           Never drawn for an employer: the server answers null for one anyway. */}
       {verified && verifierKind === 'instructor' ? <InstructorCodeRow /> : null}
+
+      {/* SHARE MY PUBLIC PAGE (must-do H5): the website's /e/<token> page.
+          Draws nothing until my_employer_public_token() answers a token. */}
+      {verified && verifierKind ? <PublicPageRow kind={verifierKind} /> : null}
 
       {verified && tax && interestsFailed ? (
         <Text style={styles.warn}>

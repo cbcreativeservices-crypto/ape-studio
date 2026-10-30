@@ -7,7 +7,7 @@
  * No email address appears anywhere in this screen, in either direction.
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AppState, FlatList, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -26,6 +26,7 @@ import {
   type ThreadMessage,
 } from '../../features/directory/api';
 import { VERIFIER_COPY } from '../../features/employer/verifierKind';
+import { employerPageUrl } from '../../features/employer/publicPage';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 import { markThreadSeen, threadUnread } from '../../features/directory/inboxCounts';
 import { markThreadRead } from '../../features/directory/inboxApi';
@@ -476,6 +477,7 @@ export function RequestsView({
  */
 function ThreadWho({ t }: { t: ContactThread }) {
   const verifier = t.otherKind === 'member' ? null : VERIFIER_COPY[t.otherKind];
+  const pageUrl = employerPageUrl(t.otherPageToken);
   return (
     <View style={st.whoWrap}>
       <View style={st.whoRow}>
@@ -490,6 +492,25 @@ function ThreadWho({ t }: { t: ContactThread }) {
         <Text style={st.whoSite} numberOfLines={1}>
           {t.otherWebsite}
         </Text>
+      ) : null}
+      {/* Their public page on the website (must-do H5, 2026-10-29), so the
+          person being asked can check who is asking. Drawn only for a
+          VERIFIED employer/instructor whose page token the server sent
+          (otherPageToken, never the community token). */}
+      {verifier && t.otherVerified && pageUrl ? (
+        <Pressable
+          onPress={() =>
+            void Linking.openURL(pageUrl).catch(() =>
+              notify('Couldn’t open the page', `Open this address in your browser: ${pageUrl}`),
+            )
+          }
+          hitSlop={6}
+          style={st.link}
+          accessibilityRole="link"
+          accessibilityLabel={`View the public page of ${t.otherDisplayName} on the website`}
+        >
+          <Text style={st.pageLinkText}>VIEW THEIR PAGE ›</Text>
+        </Pressable>
       ) : null}
     </View>
   );
@@ -965,6 +986,7 @@ const st = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 6 },
   link: { minHeight: 44, justifyContent: 'center' },
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.textMuted },
+  pageLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.amber },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
     // Tablet (owner 2026-09-29): the sheet rides centred at the card column

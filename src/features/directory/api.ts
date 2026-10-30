@@ -18,6 +18,7 @@ import { withDeadline } from '../../lib/boundedCall';
 import { LIMITS, readableError } from './rules';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
+import { employerPageToken } from '../employer/publicPage.ts';
 
 export { LIMITS, readableError };
 
@@ -538,6 +539,16 @@ export type ContactThread = {
   /** The employer's own site, so the claim is checkable by the person being
    *  asked rather than only by us. */
   otherWebsite: string | null;
+  /**
+   * The verified employer's or instructor's PUBLIC PAGE token (must-do H5,
+   * 2026-10-29): employer_profiles.public_token, for the website's /e/<token>.
+   * NOT `otherToken`, which is the community-profile token (null for an
+   * employer). Read from `other_page_token`, a column written for Comp A to
+   * add to contact_threads; until it is live it is absent, so this is null and
+   * no "view their page" link is drawn. Only ever set for a verified
+   * employer/instructor.
+   */
+  otherPageToken: string | null;
 };
 
 /** A list fetch that can FAIL loudly. Swallowing the error and returning []
@@ -568,6 +579,10 @@ export async function fetchContactThreads(): Promise<ListResult<ContactThread>> 
       otherKind: contactKindOf(r.other_kind),
       otherVerified: r.other_verified === true,
       otherWebsite: (r.other_website as string) ?? null,
+      otherPageToken:
+        contactKindOf(r.other_kind) !== 'member' && r.other_verified === true
+          ? employerPageToken(r.other_page_token)
+          : null,
     }));
     return { ok: true, rows };
   } catch {
