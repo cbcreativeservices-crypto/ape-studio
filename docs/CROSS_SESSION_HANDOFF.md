@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-30 10:44 · ccode · 8999790a
+changed: Docs: governance D118 (10-30 rulings), lessons 10-30, must-do header; owner paused
+affects other side: nothing (docs only: governance D118 records the 10-30 rulings: D31 r3 installed, D33 all Apply, D16 closed, R10 after launch, H1 retired, D32 app-only).
+needs: [MD:D33] Comp A's ACK once the 145 are applied. Owner PAUSED 2026-10-30 midday.
+
+
 ### 2026-10-30 10:29 · ccode · ec8841cf
 changed: D32: My Progress LABS reads the server's lab record (no server change); R10 after launch; H1 retired
 affects other side: the app now READS the learner's own student_lab_progress rows with labs(key) (RLS slp_read_own + labs_read, both live, checked 2026-10-30). Keep that table readable by its owner and keep the labs.key column grant; no new function.
