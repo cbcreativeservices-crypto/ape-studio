@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 21:23 · ccode · c7ae39ba
+changed: D31: install the owner's 5 chosen replacement images (rigging hoist, music production, mixing & mastering, commercial card) + A3c upload row
+affects other side: at approval-day uploads (A3c): weight-distribution.webp into the glossary-images bucket, file in Downloads/2026-10-29_glossary_weight-distribution.webp
+needs: nothing now [MD:A3c]
+
+
 ### 2026-10-29 19:58 · ccode · b6b73c7f
 changed: docs: D31 image review follow-ups
 affects other side: nothing (image review; swaps only with the owner's OK)
