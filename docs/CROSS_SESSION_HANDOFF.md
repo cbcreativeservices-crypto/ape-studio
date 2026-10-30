@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 19:52 · ccode · 991f4b5f
+changed: H5: public page for verified employers and instructors (/e/<token>)
+affects other side: website /e/<token> now calls employer_profile_public (left the server-only allow-list); the app calls my_employer_public_token() and reads contact_threads.other_page_token, neither live yet (both hidden until they are) [MD:H5]
+needs: Comp A to create my_employer_public_token() (Part 1) and add other_page_token to contact_threads() (Part 2), brief Downloads/2026-10-29_FOR_COMP_A_H5_EMPLOYER_PUBLIC_TOKEN.md; optional: employer_profile_public also requires verified_at [MD:H5]
+
+
+### 2026-10-29 19:42 · ccode · f383b5de
+changed: D11 My Custom List wording; D27 Career Finder Theater spelling; D26/D11/D27 statuses
+affects other side: nothing (app text only; the server has no Career Finder copy)
+needs: nothing [MD:D11] [MD:D27]
+
+
 ### 2026-10-29 19:21 · ccode · c261b674
 changed: docs: D26 done (Phase 63/63, intros, live topic descriptions)
 affects other side: nothing (status only; keep achievements.description as "headline, blank line, paragraph")
