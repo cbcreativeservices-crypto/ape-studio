@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 19:58 · ccode · b6b73c7f
+changed: docs: D31 image review follow-ups
+affects other side: nothing (image review; swaps only with the owner's OK)
+needs: nothing [MD:D31]
+
+
 ### 2026-10-29 19:52 · ccode · 991f4b5f
 changed: H5: public page for verified employers and instructors (/e/<token>)
 affects other side: website /e/<token> now calls employer_profile_public (left the server-only allow-list); the app calls my_employer_public_token() and reads contact_threads.other_page_token, neither live yet (both hidden until they are) [MD:H5]
