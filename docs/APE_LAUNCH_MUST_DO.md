@@ -8,7 +8,7 @@
 
 Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.md/.html`.
 
-**Last reconciled:** 2026-10-26, twice. The second pass came after finding the second memory store, `C:\Users\profe\.claude\projects\C--Users-profe\memory\`; its "pending after approval" and "launch reminders" notes are folded in here. Sources: the session transcript, both memory stores, and:
+**Last updated:** 2026-10-30 midday (owner paused: D31 round 3 installed, D16/H1 closed, D32 built, D33 with Comp A, R10 after launch). **Last full reconciliation:** 2026-10-26, twice. The second pass came after finding the second memory store, `C:\Users\profe\.claude\projects\C--Users-profe\memory\`; its "pending after approval" and "launch reminders" notes are folded in here. Sources: the session transcript, both memory stores, and:
 - `CROSS_SESSION_HANDOFF.md`;
 - the governance docs, D44–D101;
 - `SESSION_HANDOFF_2026-10-*`;

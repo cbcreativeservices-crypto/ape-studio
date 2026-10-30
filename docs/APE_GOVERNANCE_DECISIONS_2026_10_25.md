@@ -165,4 +165,13 @@ Downloads `2026-10-26_APE_1.0.1_PLAN`: Meta SDK + ATT, purchase events with the 
 - **Layout = 2×2:** TOPICS | LABS, CERTIFICATES | PROGRAMS, then a smaller share card (supersedes the 2026-10-26 order "share, certificates, programs, topics"). Fits one 375×812 screen. Tablet: four in a row (TabletGrid).
 - **"Trophy Case" retired:** the screen is **My Progress**, renamed everywhere a learner reads it (popup buttons SEE/VIEW IN MY PROGRESS, popup lines, help, intro, exam briefing). Tagline and intro kept.
 - **Tab titles match:** Study, Progress and Profile all use `AppHeader` (40 pt icon tile + 22 pt "Word **Accent**"); `TabIconTile` puts the tab's own bottom-bar icon in the tile.
-- Open: D32 (the tile reads only this phone's lab record; the server's `student_lab_progress` is never read back).
+- D32 was open at the time (the tile read only this phone's lab record). Closed in D118.
+
+## D118 · Launch-day line, 2026-10-30 rulings (owner)
+- **D31 images:** install only what is processed now. 28 slots went into the repo (9 topic tiles, 13 cert squares, 6 new prog squares; slot 11 = BXP). More images are PARKED until later. They reach phones with the A3/A3b uploads.
+- **D33 Round 5 glossary:** all 145 held items = APPLY (the owner finished Comp A's page; the decisions store was read by ccode). Comp A applies them.
+- **D16:** closed. The engineer has the corrections brief.
+- **R10:** the admin flags screen is built AFTER launch. The live filter and Comp A's daily digest email cover launch.
+- **H1:** the September first-run walkthrough is RETIRED, replaced by the onboarding intro video and the onboarding landing page. The code stays switched off.
+- **D32:** in the post-approval update. Built app-only: the learner's own `student_lab_progress` rows (live RLS slp_read_own + labs_read) are read on each sign-in and marked credited. No server change.
+

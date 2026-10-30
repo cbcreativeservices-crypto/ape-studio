@@ -954,3 +954,11 @@ process is running.
 - **One-line labels go through `fitValue`, never `numberOfLines={1}`** (RATCHET B in `test/patternP14_20261002`, allowlist 0). The gate caught three on the new tiles; names that can be long wrap to 2 lines instead.
 - **A screen redesign breaks the old screen's source-pin tests on purpose** (`progressShareCard_20261026` pinned the old order; `ipadPass_20261007` needs `<TabletGrid` in every menu). Update them to the owner's new ruling and cite it; `TabletGrid` is a Fragment on phones, so wrapping a phone layout in it costs nothing.
 - **Python heredocs on this machine read stdin as cp1252:** an em dash in a search string never matches the UTF-8 file. Use `PYTHONUTF8=1`, anchor on ASCII-only text, or use the Edit tool.
+
+## 2026-10-30 — launch line, D31/D32/D33
+
+- **Read the live grants before writing a server brief.** D32 looked like a Comp A job (an RPC to read lab progress). A read-only check showed `student_lab_progress` already allows its owner to SELECT, `labs` is readable, and the foreign key lets one PostgREST read return `labs(key)`. So it was an app-only change, with no brief and no wait.
+- **An owner's choices on a Comp A artifact page can be read directly** with ArtifactData (`list` on its `decisions` collection, `out_dir` to files). Count them before reporting "done"; the store also records who set each one (`by`).
+- **Image installs: prove ONE, look at it, then do the rest; then hand over a contact sheet** (Downloads/<date>_..._INSTALLED_N.png). Upload scripts send the whole folder, so new files (6 prog squares never in the repo) ride A3b automatically; re-run the md5 comparison right before uploading.
+- **The commit hook adds a handoff stub on every commit.** Fill it at once and commit the fill through the gate; an unfilled stub fails nothing, but the nightly run reports it.
+
