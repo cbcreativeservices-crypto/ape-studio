@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-30 09:28 · ccode · f86c2cd6
+changed: D31 round 3: install 28 approved replacement images (11 tiles, 13 cert, 6 new prog); D16 done; D33 owner decisions recorded
+affects other side: course-cards bucket gets 6 NEW prog-*-v3.webp files at the A3b upload (audio-networking-and-infrastructure, audio-standards-and-technical-compliance, concert-and-festival-production, game-and-interactive-audio, medical-and-clinical-acoustics, theater-venue-and-entertainment-audio); nothing changes live before approval.
+needs: [MD:D33] the owner finished the Round 5 page: 145 of 145 = APPLY (decisions store, read by ccode). Comp A builds the one guarded package from apply_values.json, applies on the owner's GO, and sends the ACK.
+
+
 ### 2026-10-30 00:19 · ccode · cf575263
 changed: My Progress: LABS tile, 2x2 layout, no totals, matched tab titles (D117)
 affects other side: nothing now (app only; rides the post-approval OTA). The app copy says "My Progress" instead of "Trophy Case" — any server/email/website copy that names the Trophy Case should follow.
