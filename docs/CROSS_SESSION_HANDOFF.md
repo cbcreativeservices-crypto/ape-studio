@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-30 00:19 · ccode · cf575263
+changed: My Progress: LABS tile, 2x2 layout, no totals, matched tab titles (D117)
+affects other side: nothing now (app only; rides the post-approval OTA). The app copy says "My Progress" instead of "Trophy Case" — any server/email/website copy that names the Trophy Case should follow.
+needs: later, for must-do D32: a signed-in read of the learner's completed lab keys from `student_lab_progress` (an RPC or an RLS select), so a new phone shows its labs. Owner's call on timing; nothing needed tonight.
+
+
 ### 2026-10-29 21:56 · ccode · 98913cc0
 changed: D31: point at the v3 prompt list (full specs + standards in every prompt)
 affects other side: nothing
