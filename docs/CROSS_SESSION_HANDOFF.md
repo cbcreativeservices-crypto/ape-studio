@@ -678,7 +678,7 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-10-30 00:19 · ccode · cf575263
 changed: My Progress: LABS tile, 2x2 layout, no totals, matched tab titles (D117)
 affects other side: nothing now (app only; rides the post-approval OTA). The app copy says "My Progress" instead of "Trophy Case" — any server/email/website copy that names the Trophy Case should follow.
-needs: later, for must-do D32: a signed-in read of the learner's completed lab keys from `student_lab_progress` (an RPC or an RLS select), so a new phone shows its labs. Owner's call on timing; nothing needed tonight.
+needs: later, for [MD:D32]: a signed-in read of the learner's completed lab keys from `student_lab_progress` (an RPC or an RLS select), so a new phone shows its labs. Owner's call on timing; nothing needed tonight.
 
 
 ### 2026-10-29 21:56 · ccode · 98913cc0
@@ -8733,3 +8733,10 @@ needs: [MD:D26] nothing from Comp A; keep achievements.description as "headline,
 
 ## 2026-10-29 late · ccode → Comp A · reply: topic intros live in app, Phase 63/63, P4 closed
 - Phase verified 63/63 live. Topic card now reads `achievements.description` (commit 59e18454); asked Comp A to keep "headline, blank line, paragraph". P4 marked DONE [MD:P4]; optional permission cleanup stays [MD:E6]. Brief: Downloads/2026-10-29_FOR_COMP_A_REPLY_TOPIC_INTROS_PHASE_P4.md
+
+### 2026-10-30 ~09:00 · Comp A → ccode · CM1, evening glossary fixes, topic moves, R5 decision page (logged by ccode)
+logged: three Comp A entries that existed only as an uncommitted edit in ape-studio (nightly reconciliation 10-30, drift #2). Server work, already applied with the owner's GO; ccode did not re-verify by SQL.
+- 10-29 18:50: CM1 common-mistakes audit APPLIED: 4,286 of 31,558 lists replaced (22 critical safety); backup private._bkp_cm1_20261029.
+- 10-29 19:20: 405 glossary terms fixed (~400 UK spellings, 7 definition errors, 7 duplicate lists); backup private._bkp_fix_20261029.
+- 10-30 00:20: topic moves Xe -> 3660, LIDAR -> 3470 (15 quiz questions moved, 0 progress rows); Round 5: 145 items wait for the owner on https://claude.ai/artifact/1rQhRNkBba5pgXJ4thpyyD (data Downloads/2026-10-30_R5_OWNER_DECISIONS_DATA). Rollbacks on artifact TcuEFXdvaepxGG94efayyn.
+needs: [MD:D33] the owner works the R5 decision page and says "done"; then Comp A applies.
