@@ -2,11 +2,14 @@
  * AppHeader — shared logo + wordmark tile header (design-reference dashboard
  * header), enlarged 30% per Booth 2026-07-08 (logo 36→47, wordmark 15→20,
  * eyebrow 8→10). Used on the Dashboard and Course Selection; `right` slot
- * carries per-screen controls (e.g. the Glossary chip).
+ * carries per-screen controls (e.g. the Glossary chip). Progress and Profile
+ * use it too, with their tab's icon in a `TabIconTile` (owner 2026-10-29:
+ * "match titles … all three screens are very different in the size").
  */
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BrandLogo } from './BrandLogo';
+import { NavIcon, type NavIconName } from './nav/NavIcon';
 import { colors, fonts } from '../theme/tokens';
 
 export function AppHeader({
@@ -57,7 +60,27 @@ export function AppHeader({
   );
 }
 
+/** A tab's own bottom-bar icon in a small tinted tile — the Dashboard's Study
+ *  tile (40 pt, icon ×1.52), for the other tab screens' titles. */
+export function TabIconTile({ icon, tint }: { icon: NavIconName; tint: string }) {
+  return (
+    <View style={[styles.tabTile, { borderColor: `${tint}8c`, backgroundColor: `${tint}14` }]}>
+      <View style={{ transform: [{ scale: 1.52 }] }}>
+        <NavIcon icon={icon} lit showLabel={false} />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  tabTile: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9,
+    borderWidth: 1,
+  },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   left: { flexDirection: 'row', alignItems: 'center', gap: 11, flexShrink: 1 },
   wordmark: { fontFamily: fonts.oswaldBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary },

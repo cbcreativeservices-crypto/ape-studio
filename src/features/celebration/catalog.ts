@@ -11,7 +11,7 @@
  */
 import type { CelebrationDef, CelebrationId } from './types';
 
-const VIEW_TROPHY = { label: 'VIEW IN TROPHY CASE', kind: 'trophy-case' } as const;
+const VIEW_TROPHY = { label: 'VIEW IN MY PROGRESS', kind: 'trophy-case' } as const;
 const DONE = { label: 'DONE', kind: 'dismiss' } as const;
 /**
  * ⚠ NOT OFFERED ANYWHERE (2026-09-17, pass 5).
@@ -159,12 +159,12 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     subject: '{topic_name}',
     stat: 'TOPIC QUIZ: {score} of {size}',
     body: [
-      'You passed the Topic Quiz and completed the entire topic. Your work paid off, and this achievement now has a place in your Trophy Case.',
+      'You passed the Topic Quiz and completed the entire topic. Your work paid off, and this achievement now has a place in My Progress.',
       'That’s one more area of professional audio you can confidently add to your record.',
     ],
     actions: [
       { label: 'VIEW RESULTS', kind: 'view-results', primary: true },
-      { label: 'SEE IN TROPHY CASE', kind: 'trophy-case' },
+      { label: 'SEE IN MY PROGRESS', kind: 'trophy-case' },
     ],
   },
 
@@ -176,11 +176,11 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     subject: '{topic_name}',
     body: [
       'Outstanding work. You answered every question correctly and completed the topic with a perfect score.',
-      'Your achievement is now displayed in your Trophy Case.',
+      'Your achievement is now displayed in My Progress.',
     ],
     actions: [
       { label: 'VIEW RESULTS', kind: 'view-results', primary: true },
-      { label: 'SEE IN TROPHY CASE', kind: 'trophy-case' },
+      { label: 'SEE IN MY PROGRESS', kind: 'trophy-case' },
     ],
   },
 
@@ -247,7 +247,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     title: '{certificate_name}',
     body: [
       'Excellent work. You have added another specialization certificate to your professional record.',
-      'Your new credential is now displayed in your Trophy Case and is available to view, share, and verify.',
+      'Your new credential is now displayed in My Progress and is available to view, share, and verify.',
     ],
     actions: [{ label: 'VIEW CERTIFICATE', kind: 'view-credential', primary: true }],
   },
@@ -272,7 +272,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     title: '{program_name}',
     body: [
       'Congratulations on another significant achievement.',
-      'You have added a comprehensive professional program credential to your record. Your Trophy Case now reflects achievement across multiple areas of professional audio.',
+      'You have added a comprehensive professional program credential to your record. My Progress now reflects achievement across multiple areas of professional audio.',
       'Your new credential is ready to view, share, and verify.',
     ],
     actions: [{ label: 'VIEW CREDENTIAL', kind: 'view-credential', primary: true }],
@@ -291,7 +291,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     title: '{credential_count} CREDENTIALS',
     body: [
       'Your completed work fulfilled the requirements for {credential_count} credentials.',
-      'Each new credential has been added to your Trophy Case and permanent credential record.',
+      'Each new credential has been added to My Progress and your permanent credential record.',
     ],
     actions: [{ label: 'VIEW CREDENTIALS', kind: 'view-credential', primary: true }],
   },
@@ -332,17 +332,19 @@ export const ALL_CELEBRATIONS: CelebrationDef[] = Object.values(CELEBRATIONS);
  * certificate.
  */
 export const TROPHY_CASE_EMPTY = {
-  title: 'TROPHY CASE',
+  // MY PROGRESS, not TROPHY CASE (owner 2026-10-29: "it is not relevant").
+  title: ['My', 'Progress'],
   tagline: 'YOUR WORK, RECOGNIZED.',
   intro:
     'Everything you accomplish across Pro Audio Training Academy is collected here—creating a lasting record of your progress, knowledge, and earned credentials.',
   topics: 'Your completed topics will appear here.',
+  labs: 'Your completed labs will appear here.',
   certificates: 'Your earned specialization certificates will appear here.',
   programs: 'Your completed professional program credentials will appear here.',
   shareHead: 'SHARE YOUR ACHIEVEMENTS',
   shareLead: 'Your first achievement will appear here.',
   shareHint:
-    'As your Trophy Case grows, you can share any accomplishment — your QR code, your verification link, or your printed certificate.',
+    'As your progress grows, you can share any accomplishment — your QR code, your verification link, or your printed certificate.',
 } as const;
 
 /**
@@ -354,7 +356,7 @@ export const TROPHY_CASE_EMPTY = {
  */
 export const CONFIRMATIONS = {
   progressSaved: 'Progress saved.',
-  trophyUpdated: 'Trophy Case updated.',
+  trophyUpdated: 'My Progress updated.',
   credentialAdded: 'Credential added to your record.',
   shareCopied: 'Share link copied.',
   certificateDownloaded: 'Certificate downloaded.',

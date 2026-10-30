@@ -66,6 +66,7 @@ import { useInFlightLatch } from '../../lib/latch';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
 import { cardColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
+import { AppHeader, TabIconTile } from '../../components/AppHeader';
 
 
 /**
@@ -793,7 +794,11 @@ export function ProfileScreen() {
   // One header for both faces below (so one Settings door).
   const headerRow = (
     <View style={styles.headerRow}>
-      <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
+      {/* The PROFILE tab's icon + title in the Study Dashboard's own header
+          (owner 2026-10-29: the three tab titles match). */}
+      <View style={styles.titleRow}>
+        <AppHeader title={['My', 'Profile']} logo={<TabIconTile icon="Profile" tint={colors.green} />} />
+      </View>
       <Pressable
         onPress={() => (navigation as any).navigate('Settings')}
         hitSlop={8}
@@ -2054,6 +2059,7 @@ const styles = StyleSheet.create({
 
   bioInput: { minHeight: 60, textAlignVertical: 'top', paddingTop: 10 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  titleRow: { flex: 1 },
   college: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.3, color: '#cfcfcf' },
   /**
    * +37% (owner 2026-09-22). Box 32 → 44 and glyph 15 → 20.5, scaled together

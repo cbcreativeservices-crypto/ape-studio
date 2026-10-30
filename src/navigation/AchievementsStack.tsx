@@ -4,6 +4,7 @@
  *   • Topics:  one flat, expandable Field→Subject list (Explore structure)
  *   • Certificates / Programs: earned-only lists (with a "next up" waiting slot)
  *   • Gallery: chronological "everything earned" wall
+ *   • Labs: the labs the learner has completed (owner 2026-10-29; no total)
  * Nested so the bottom tab bar stays visible on every screen (locked).
  * Re-tapping the Achievements tab pops back to the hub (TabBar behavior).
  */
@@ -17,6 +18,7 @@ import { TopicsScreen } from '../screens/achievements/TopicsScreen';
 import { GalleryScreen } from '../screens/achievements/GalleryScreen';
 import { CertificatesScreen } from '../screens/achievements/CertificatesScreen';
 import { ProgramsScreen } from '../screens/achievements/ProgramsScreen';
+import { LabsProgressScreen } from '../screens/achievements/LabsProgressScreen';
 import type { AchievementsStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<AchievementsStackParamList>();
@@ -47,6 +49,7 @@ export function AchievementsStack() {
       <Stack.Screen name="Gallery" component={GalleryScreen} />
       <Stack.Screen name="Certificates" component={CertificatesScreen} />
       <Stack.Screen name="Programs" component={ProgramsScreen} />
+      <Stack.Screen name="Labs" component={LabsProgressScreen} />
     </Stack.Navigator>
   );
 }

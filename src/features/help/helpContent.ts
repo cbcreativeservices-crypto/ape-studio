@@ -133,7 +133,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'study-quiz',
         q: 'What does passing a Topic Quiz do?',
-        a: 'It banks that topic in your Trophy Case and counts it toward every certificate that requires it.',
+        a: 'It banks that topic in My Progress and counts it toward every certificate that requires it.',
       },
       {
         id: 'study-labs',
@@ -143,7 +143,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'study-certs',
         q: 'Where are my certificates?',
-        a: 'Progress → Trophy Case → CERTIFICATES. An earned certificate can be downloaded and carries a verification QR code, so anyone you show it to can confirm it is real.',
+        a: 'My Progress → CERTIFICATES. An earned certificate can be downloaded and carries a verification QR code, so anyone you show it to can confirm it is real.',
       },
       {
         id: 'study-resume',

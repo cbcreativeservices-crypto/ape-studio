@@ -158,3 +158,11 @@ All on `ota-after-approval-39-23` (2e4cf973, 6578217a); they reach phones only w
 ## D116 · The 1.0.1 plan (D4, 2026-10-26)
 
 Downloads `2026-10-26_APE_1.0.1_PLAN`: Meta SDK + ATT, purchase events with the Analytics purpose first, the instructor view (UI only), location tag back, Fill-in/Matching review screens, camera `required=false`, the tuner phase-2 bench. The owner's decisions are marked inside.
+
+## D117 · My Progress: LABS tile, no totals, matched tab titles (owner 2026-10-29/30)
+- **LABS tile** beside TOPICS. "A lab" = a credit lab: the af_* Audio Fundamentals labs + the whole Training labs (tr_*). Miking / Mixing / Ear Training are credited lesson by lesson and are not rows. Data = the existing lab-credit store (`labCompletion`, `isLabDone`); nothing new is stored. Pure list: `src/features/lab/creditLabs.ts`; hook with the three faces: `completedLabs.ts`.
+- **No "out of" totals on Progress.** Owner: "not everyone is enrolled in all or intends to do all so then the 'out of' sound intimidating and defeating". LABS and TOPICS read "N COMPLETED"; tapping LABS opens only the learner's completed labs (`LabsProgressScreen`) plus BROWSE LABS.
+- **Layout = 2×2:** TOPICS | LABS, CERTIFICATES | PROGRAMS, then a smaller share card (supersedes the 2026-10-26 order "share, certificates, programs, topics"). Fits one 375×812 screen. Tablet: four in a row (TabletGrid).
+- **"Trophy Case" retired:** the screen is **My Progress**, renamed everywhere a learner reads it (popup buttons SEE/VIEW IN MY PROGRESS, popup lines, help, intro, exam briefing). Tagline and intro kept.
+- **Tab titles match:** Study, Progress and Profile all use `AppHeader` (40 pt icon tile + 22 pt "Word **Accent**"); `TabIconTile` puts the tab's own bottom-bar icon in the tile.
+- Open: D32 (the tile reads only this phone's lab record; the server's `student_lab_progress` is never read back).

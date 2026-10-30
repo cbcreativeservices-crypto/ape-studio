@@ -945,3 +945,12 @@ process is running.
 - **Preview servers:** from this session, `expo-dev` started `ape-studio` (wrong code) on 8081, the phone's Metro port. Use `workbench-web-8142`. Rule 30.
 - **A press-and-hold control (the 5-second "enable audio output") cannot be driven by synthetic web events** (RN's responder ignores them). Do not work around a safety control to reach a screen; prove the logic in tests and say what was not seen.
 - **Delivered art is pre-screened against the image rules before it goes in:** one lab image (#37 Phase) had big readable words; the owner supplied a replacement. Duplicate deliveries are checked by md5, not by name.
+
+## 2026-10-29/30 — My Progress LABS tile
+
+- **`preview_start {name}` reads the launch.json of the session's CURRENT folder.** Started from `C:\Users\profe`, `expo-dev` resolved to the HOME config (ape-studio on 8081, the phone's port), twice. Rule 30 holds: use `workbench-web-8142`; stop at once anything that lands on 8081.
+- **The lab-credit store (`labCompletion`) cannot load under plain node** (React, AsyncStorage, supabase). Keep the testable part pure in its own file (`creditLabs.ts`) and test that; the hook file only wires the store.
+- **`cat > file` with no heredoc waits on stdin forever.** A stray one in a compound command hung the shell to the 2-minute timeout. Feed `< /dev/null` to node probes run from the shell.
+- **One-line labels go through `fitValue`, never `numberOfLines={1}`** (RATCHET B in `test/patternP14_20261002`, allowlist 0). The gate caught three on the new tiles; names that can be long wrap to 2 lines instead.
+- **A screen redesign breaks the old screen's source-pin tests on purpose** (`progressShareCard_20261026` pinned the old order; `ipadPass_20261007` needs `<TabletGrid` in every menu). Update them to the owner's new ruling and cite it; `TabletGrid` is a Fragment on phones, so wrapping a phone layout in it costs nothing.
+- **Python heredocs on this machine read stdin as cp1252:** an em dash in a search string never matches the UTF-8 file. Use `PYTHONUTF8=1`, anchor on ASCII-only text, or use the Edit tool.

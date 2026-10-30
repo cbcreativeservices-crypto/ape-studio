@@ -24,17 +24,20 @@ const about = rd('src/components/AboutPanel.tsx');
 const app = rd('App.tsx');
 
 describe('Progress share card + real certificates (owner 2026-10-26)', () => {
-  it('order: share, certificates, programs, topics', () => {
+  // Order changed by the owner 2026-10-29 (the 2×2 redesign, approved in the
+  // browser): TOPICS | LABS, CERTIFICATES | PROGRAMS, then the share card.
+  it('order: topics, labs, certificates, programs, share', () => {
+    const topics = home.indexOf('name="TOPICS"');
+    const labs = home.indexOf('name="LABS"');
+    const certs = home.indexOf('name="CERTIFICATES"');
+    const progs = home.indexOf('name="PROGRAMS"');
     const share = home.indexOf('TROPHY_CASE_EMPTY.shareHead');
-    const certs = home.indexOf('>CERTIFICATES<');
-    const progs = home.indexOf('>PROGRAMS<');
-    const topics = home.indexOf('>TOPICS<');
-    assert.ok(share > 0 && share < certs && certs < progs && progs < topics);
+    assert.ok(topics > 0 && topics < labs && labs < certs && certs < progs && progs < share);
   });
 
   it('the share card is not a button and holds certificate, QR and link', () => {
-    const start = home.indexOf('SHARE YOUR ACHIEVEMENTS — first');
-    const end = home.indexOf('<TabletGrid', start);
+    const start = home.indexOf('SHARE YOUR ACHIEVEMENTS — under the tiles');
+    const end = home.indexOf('</ScrollView>', start);
     const card = home.slice(start, end);
     assert.match(card, /<View style=\{styles\.featured\}>/);
     assert.doesNotMatch(card, /navigation\.navigate/);

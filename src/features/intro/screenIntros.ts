@@ -275,10 +275,13 @@ export const SCREEN_INTROS: Record<
     // Ratified by the owner 2026-09-13 (plan §3; rewritten for Achievements
     // v3 — three categories, no trophy wall).
     placeholder: false,
-    title: 'Your Trophy Case',
+    // Title + the LABS line 2026-10-29 (owner: "Trophy Case" is not
+    // relevant; the LABS tile was added).
+    title: 'My Progress',
     body:
-      'Everything you earn lives in three collections.\n\n' +
+      'Everything you earn lives in four collections.\n\n' +
       'TOPICS — every topic quiz you pass is banked here.\n\n' +
+      'LABS — every lab you complete is listed here.\n\n' +
       'CERTIFICATES — complete a certificate’s required topics and labs, then pass its Final Exam to earn it.\n\n' +
       'PROGRAMS — a broad topic path across a whole discipline, earned the same way.\n\n' +
       'Tap any collection to see what you’ve earned and what’s still ahead.',

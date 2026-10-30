@@ -49,9 +49,9 @@ test('matching is case-insensitive across question AND answer text', () => {
   assert.ok(lower.length > 0, 'the seed term must match something');
   assert.deepEqual(upper, lower);
   assert.deepEqual(mixed, lower);
-  // An answer-only term: "Trophy Case" never appears in a question's text of
+  // An answer-only term: "My Progress" never appears in a question's text of
   // the tools category, but does in study answers — answers must be searched.
-  const answerHit = flat(filterHelp('trophy case'));
+  const answerHit = flat(filterHelp('my progress'));
   assert.ok(answerHit.includes('study-certs'), 'answer text is searchable');
 });
 

@@ -187,7 +187,7 @@ export function ExamBriefing({
            */
           <Text style={styles.body}>
             Pass this exam and the certificate is issued to your record straight away. It appears in
-            your Trophy Case and on your Profile, and you can download it as a PDF.
+            My Progress and on your Profile, and you can download it as a PDF.
           </Text>
         ) : (
           // 'unknown' — state the policy, claim nothing about this person.

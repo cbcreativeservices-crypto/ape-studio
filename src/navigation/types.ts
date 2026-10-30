@@ -48,6 +48,8 @@ export type AchievementsStackParamList = {
   Certificates: { openId?: string } | undefined;
   /** Earned program certificates. */
   Programs: undefined;
+  /** The labs the learner has completed (owner 2026-10-29) — no total. */
+  Labs: undefined;
 };
 
 /** S7 route params — the client-held question texts back the review list. */
