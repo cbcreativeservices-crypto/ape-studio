@@ -8677,3 +8677,8 @@ needs: [MD:D26] owner reads Downloads/2026-10-29_TOPIC_ABOUT_WHAT_YOULL_LEARN_RE
 ### 2026-10-29 ~17:20 · ccode · D26 owner approval
 changed: nothing in code; owner approved the 22 CHECK items in the topicAbout review as written. Ships with A2.
 needs: [MD:D26] Comp A Phase "pitch" -> "frequency" (last D26 item).
+
+### 2026-10-29 ~17:40 · Comp A → ccode · Play policy email rows (logged by ccode)
+changed: must-do section P added: P1 trader status, P2 Japan payments authorization, P3 Android memory/code-size thresholds (ccode), P4 bundle permission screenshot to Comp A.
+answers: app.json `permissions` lists only CAMERA, but plugins add microphone (expo-speech-recognition/expo-audio), notifications, billing (expo-iap) and media-library save to the merged manifest; none restricted, but P4 should read the bundle, not app.json.
+needs: [MD:P1] [MD:P2] owner in Play Console; [MD:P4] owner screenshot before Publish.

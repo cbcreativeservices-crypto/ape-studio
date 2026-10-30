@@ -154,6 +154,17 @@ The plan, in order with the owner's decisions marked: Downloads `2026-10-26_APE_
 | E4 | Location restore · Fill-in/Matching research links · Android camera `required=false` · Terms title | `APE_NEXT_BUILD_CHECKLIST.md` |
 | E5 | Native build queue (other memory store: `project_next_build_queue.md`) | read it before any build |
 
+## P. Google Play policy email (2026-10-29, via Comp A)
+
+Owner asked for these on the list (Comp A brief `COMP_A_TO_CCODE_PLAY_POLICY_ROWS_2026-10-29.md`). Comp A already checked the branch for local network, contacts, AppFunctions, location, all-files, accessibility, SMS/call log (none used) and the subscription rules (3 plans, no eligibility discounts, renewal + cancel disclosed on the paywall).
+
+| # | What | Who · due |
+|---|---|---|
+| P1 | OPEN — Declare **trader status** in Play Console (the LLC sells memberships, so it is a trader) | Owner · Nov 2026 |
+| P2 | OPEN — Check whether **Japan** is in the app's Play countries; if it is, complete the **Japan payments authorization**, or payouts are held worldwide | Owner · by 2026-12-01 |
+| P3 | OPEN — Check the Android build against Google's new **memory and code-size quality thresholds** | ccode · Feb 2027 |
+| P4 | OPEN — Screenshot of the uploaded bundle's final **Android permission list** to Comp A; Comp A confirms no restricted permission. ccode note: `app.json` `permissions` lists only CAMERA, but plugins add more to the merged manifest (microphone via expo-speech-recognition/expo-audio, notifications, billing via expo-iap, media-library save), so check the bundle's list, not app.json | Owner → Comp A · before Publish |
+
 ## H. Parked in the code, and live server functions nothing calls (found 2026-10-27)
 
 Added with the 2026-10-27 safeguard tests (`test/holdRegistry_20261027`, `test/liveServerMatch_20261027`): every hold in `src/` cites its row on this list as `[MD:<id>]`, and every live server function that no code calls is explained in `docs/live/SERVER_ONLY_ALLOWLIST.json`.
