@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 19:21 · ccode · c261b674
+changed: docs: D26 done (Phase 63/63, intros, live topic descriptions)
+affects other side: nothing (status only; keep achievements.description as "headline, blank line, paragraph")
+needs: nothing [MD:D26]
+
+
 ### 2026-10-29 11:21 · ccode · e6d412ce
 changed: Rack buttons: each cap keeps its own colours on web
 affects other side: nothing (app-only)
