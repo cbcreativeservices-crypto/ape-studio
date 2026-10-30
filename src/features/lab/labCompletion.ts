@@ -653,6 +653,49 @@ onSessionCarrySettled(() => {
     });
 });
 
+/**
+ * THE SERVER'S LAB RECORD COMES BACK (must-do D32, owner 2026-10-30). This
+ * store only knew labs credited from THIS device, so on a new phone or after
+ * a reinstall My Progress → LABS and every catalog tick lost them until each
+ * lab was reopened. Each time a signed-in account's device is settled, the
+ * learner's own `student_lab_progress` rows are read (RLS slp_read_own; the
+ * `labs` key comes through the lab_id foreign key) and every key the server
+ * holds is marked `sent`: credited, so isLabDone reads it and it is never
+ * re-sent. Only `sent` is added, never units, so a lab's own screen still
+ * starts as a fresh practice run. A failed read changes nothing and runs again
+ * on the next launch / sign-in.
+ */
+async function pullServerLabCredit(): Promise<void> {
+  if (!sessionIsSettledAccount()) return;
+  const gen = completionGen;
+  await hydrate();
+  if (gen !== completionGen) return;
+  try {
+    const { data, error } = await supabase.from('student_lab_progress').select('labs(key)');
+    // The account changed while the read was out: those rows are the departing account's.
+    if (gen !== completionGen || error || !Array.isArray(data)) return;
+    let added = false;
+    for (const row of data as { labs?: { key?: unknown } | { key?: unknown }[] | null }[]) {
+      const lab = Array.isArray(row.labs) ? row.labs[0] : row.labs;
+      const key = lab?.key;
+      if (typeof key === 'string' && isServerLabKey(key) && !sent.has(key)) {
+        sent.add(key);
+        added = true;
+      }
+    }
+    if (added) {
+      persist();
+      emit();
+    }
+  } catch {
+    // network error: read again on the next launch / sign-in
+  }
+}
+
+onSessionCarrySettled(() => {
+  void pullServerLabCredit();
+});
+
 /** Explicit "Mark reviewed" for the read-through / sandbox labs. */
 export function markLabReviewed(labKey: LabKey): void {
   markLabUnit(labKey, REVIEW_UNIT);

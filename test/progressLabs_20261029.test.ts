@@ -95,3 +95,26 @@ describe('Progress screen — faces and copy', () => {
     assert.match(s, /TROPHY_CASE_EMPTY\.labs/);
   });
 });
+
+describe('D32: the server lab record comes back (owner 2026-10-30)', () => {
+  const src = readFileSync(new URL('../src/features/lab/labCompletion.ts', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const fn = src.slice(src.indexOf('async function pullServerLabCredit'), src.indexOf('onSessionCarrySettled(() => {\n  void pullServerLabCredit'));
+
+  it('reads only for a settled signed-in account, through the own-rows table read', () => {
+    assert.match(fn, /if \(!sessionIsSettledAccount\(\)\) return;/);
+    assert.match(fn, /\.from\('student_lab_progress'\)\.select\('labs\(key\)'\)/);
+    assert.match(src, /onSessionCarrySettled\(\(\) => \{\n  void pullServerLabCredit\(\);\n\}\);/);
+  });
+
+  it('drops an answer that arrives after the account changed', () => {
+    assert.match(fn, /const gen = completionGen;/);
+    assert.match(fn, /if \(gen !== completionGen \|\| error \|\| !Array\.isArray\(data\)\) return;/);
+  });
+
+  it('adds server keys to `sent` only, never units (labs still open as practice)', () => {
+    assert.match(fn, /sent\.add\(key\)/);
+    assert.doesNotMatch(fn, /cleared\[/);
+    assert.doesNotMatch(fn, /recordUnit|markLabUnit|fireComplete/);
+    assert.match(fn, /isServerLabKey\(key\)/);
+  });
+});
