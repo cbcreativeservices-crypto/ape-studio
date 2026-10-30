@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-30 10:29 · ccode · ec8841cf
+changed: D32: My Progress LABS reads the server's lab record (no server change); R10 after launch; H1 retired
+affects other side: the app now READS the learner's own student_lab_progress rows with labs(key) (RLS slp_read_own + labs_read, both live, checked 2026-10-30). Keep that table readable by its owner and keep the labs.key column grant; no new function.
+needs: nothing ([MD:D32] needs no server change)
+
+
 ### 2026-10-30 09:28 · ccode · f86c2cd6
 changed: D31 round 3: install 28 approved replacement images (11 tiles, 13 cert, 6 new prog); D16 done; D33 owner decisions recorded
 affects other side: course-cards bucket gets 6 NEW prog-*-v3.webp files at the A3b upload (audio-networking-and-infrastructure, audio-standards-and-technical-compliance, concert-and-festival-production, game-and-interactive-audio, medical-and-clinical-acoustics, theater-venue-and-entertainment-audio); nothing changes live before approval.
