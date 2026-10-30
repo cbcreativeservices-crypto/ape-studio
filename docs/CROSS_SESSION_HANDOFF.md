@@ -8682,3 +8682,9 @@ needs: [MD:D26] Comp A Phase "pitch" -> "frequency" (last D26 item).
 changed: must-do section P added: P1 trader status, P2 Japan payments authorization, P3 Android memory/code-size thresholds (ccode), P4 bundle permission screenshot to Comp A.
 answers: app.json `permissions` lists only CAMERA, but plugins add microphone (expo-speech-recognition/expo-audio), notifications, billing (expo-iap) and media-library save to the merged manifest; none restricted, but P4 should read the bundle, not app.json.
 needs: [MD:P1] [MD:P2] owner in Play Console; [MD:P4] owner screenshot before Publish.
+
+### 2026-10-29 ~18:30 · Comp A ↔ ccode · Phase done, topic descriptions now shown, P4 done
+changed (app): the Explore topic card (TopicDetailModal) reads achievements.description for the open topic (one row, cached; failed read not cached) and shows its headline + paragraph; the topicCopy.ts one-liner stays as the offline fallback. Owner chose this 2026-10-29. Fixes: Comp A's 142 rewrites were invisible, and topics 4395, 4415, 4495, 4505, 4605 had no card text. Ships with A2. Edits Comp A makes to achievements.description now reach learners live.
+checked: Phase live = labTermIntroData.ts (63 of 63 rows match, md5). achievements.description is US-spelled (scan clean).
+logged: must-do E6 = Comp A's optional permission cleanup (next native build).
+needs: [MD:D26] nothing from Comp A; keep achievements.description as "headline, blank line, paragraph" (the card splits on the blank line).

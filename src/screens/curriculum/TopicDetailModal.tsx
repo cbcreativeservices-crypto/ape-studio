@@ -43,7 +43,7 @@
  * Now the card budget is measured from the scrim actually on screen and the
  * ScrollView gets its OWN explicit bound: budget − measured footer − border.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
@@ -52,6 +52,8 @@ import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { useMemberGate } from '../../features/commercial/useTier';
 import { isFreeEnrollGs } from '../../features/enrollment/enrollmentStore';
+import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
+import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import { REQUIRES_LABEL, type Career } from '../../data/careerRequirement';
 
@@ -81,6 +83,58 @@ const CARD_BORDER = 1;
 const FOOTER_SEED = 49;
 /** A second tick inside this window is a double tap, not a choice. */
 const ACK_REPEAT_MS = 700;
+
+/**
+ * The topic's intro from `achievements.description` (owner 2026-10-29: the card
+ * shows the live database text, which Comp A edits without an app update). It
+ * is "headline\r\n\r\nparagraph". Fetched for the open topic only (one row, not
+ * on the shared catalog load). A failed or offline read is not cached, and the
+ * card falls back to the app's own one-liner (topicCopy.ts).
+ */
+export type TopicIntro = { head: string | null; body: string };
+const introCache = new Map<number, TopicIntro | null>();
+
+export function splitTopicIntro(raw: string | null | undefined): TopicIntro | null {
+  const text = raw?.replace(/\r\n/g, '\n').trim();
+  if (!text) return null;
+  const parts = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (parts.length < 2) return { head: null, body: text };
+  return { head: parts[0], body: parts.slice(1).join('\n\n') };
+}
+
+function useTopicIntro(gs: number | null): TopicIntro | null {
+  const [intro, setIntro] = useState<TopicIntro | null>(() => (gs != null ? introCache.get(gs) ?? null : null));
+  useEffect(() => {
+    if (gs == null) return;
+    if (introCache.has(gs)) {
+      setIntro(introCache.get(gs) ?? null);
+      return;
+    }
+    setIntro(null);
+    let alive = true;
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('achievements')
+          .select('description')
+          .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+          .eq('global_sequence', gs)
+          .eq('is_active', true)
+          .maybeSingle();
+        if (error) return;
+        const value = splitTopicIntro((data as { description?: string | null } | null)?.description);
+        introCache.set(gs, value);
+        if (alive) setIntro(value);
+      } catch {
+        // Offline or timed out: keep the one-liner; try again on the next open.
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [gs]);
+  return intro;
+}
 
 /** The write-state map without one topic (its add was written, or superseded). */
 function withoutGs<V>(m: Record<number, V>, gs: number): Record<number, V> {
@@ -136,6 +190,7 @@ export function TopicDetailModal({
   // very case named above (hunt 5, 2026-10-03). Only a KNOWN non-member
   // (useMemberGate 'locked') is told the topic needs membership.
   const needsMembership = useMemberGate() === 'locked';
+  const intro = useTopicIntro(topic?.gs ?? null);
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const lastAckAt = useRef(0);
@@ -217,7 +272,14 @@ export function TopicDetailModal({
           </View>
         ) : null}
 
-        {t.description ? <Text style={styles.desc}>{t.description}</Text> : null}
+        {intro ? (
+          <View style={styles.introBlock}>
+            {intro.head ? <Text style={styles.introHead}>{intro.head}</Text> : null}
+            <Text style={styles.desc}>{intro.body}</Text>
+          </View>
+        ) : t.description ? (
+          <Text style={styles.desc}>{t.description}</Text>
+        ) : null}
 
         {t.roles.length ? (
           <View style={styles.rolesBlock}>
@@ -378,6 +440,9 @@ const styles = StyleSheet.create({
 
   // Per-topic description — left-aligned reading block.
   desc: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  // The live database intro: its headline above the paragraph.
+  introBlock: { gap: 8 },
+  introHead: { fontFamily: fonts.barlowSemiBold, fontSize: 17, lineHeight: 23, color: colors.textPrimary },
 
   // Where these skills apply — passive tags (NOT buttons): no border, soft
   // neutral fill, muted text, so nothing reads as tappable (owner 2026-09-15).
