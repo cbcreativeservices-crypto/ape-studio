@@ -164,7 +164,7 @@ Owner asked for these on the list (Comp A brief `COMP_A_TO_CCODE_PLAY_POLICY_ROW
 | P1 | OPEN — Declare **trader status** in Play Console (the LLC sells memberships, so it is a trader) | Owner · Nov 2026 |
 | P2 | OPEN — Check whether **Japan** is in the app's Play countries; if it is, complete the **Japan payments authorization**, or payouts are held worldwide | Owner · by 2026-12-01 |
 | P3 | OPEN — Check the Android build against Google's new **memory and code-size quality thresholds** | ccode · Feb 2027 |
-| P4 | OPEN — Screenshot of the uploaded bundle's final **Android permission list** to Comp A; Comp A confirms no restricted permission. ccode note: `app.json` `permissions` lists only CAMERA, but plugins add more to the merged manifest (microphone via expo-speech-recognition/expo-audio, notifications, billing via expo-iap, media-library save), so check the bundle's list, not app.json | Owner → Comp A · before Publish |
+| P4 | DONE 2026-10-29 (Comp A checked the uploaded bundle's 35 permissions: none restricted; optional cleanup → E6) — Screenshot of the uploaded bundle's final **Android permission list** to Comp A; Comp A confirms no restricted permission. ccode note: `app.json` `permissions` lists only CAMERA, but plugins add more to the merged manifest (microphone via expo-speech-recognition/expo-audio, notifications, billing via expo-iap, media-library save), so check the bundle's list, not app.json | Owner → Comp A · before Publish |
 
 ## H. Parked in the code, and live server functions nothing calls (found 2026-10-27)
 

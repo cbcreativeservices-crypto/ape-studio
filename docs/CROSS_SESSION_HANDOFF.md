@@ -8688,3 +8688,6 @@ changed (app): the Explore topic card (TopicDetailModal) reads achievements.desc
 checked: Phase live = labTermIntroData.ts (63 of 63 rows match, md5). achievements.description is US-spelled (scan clean).
 logged: must-do E6 = Comp A's optional permission cleanup (next native build).
 needs: [MD:D26] nothing from Comp A; keep achievements.description as "headline, blank line, paragraph" (the card splits on the blank line).
+
+## 2026-10-29 late · ccode → Comp A · reply: topic intros live in app, Phase 63/63, P4 closed
+- Phase verified 63/63 live. Topic card now reads `achievements.description` (commit 59e18454); asked Comp A to keep "headline, blank line, paragraph". P4 marked DONE [MD:P4]; optional permission cleanup stays [MD:E6]. Brief: Downloads/2026-10-29_FOR_COMP_A_REPLY_TOPIC_INTROS_PHASE_P4.md
