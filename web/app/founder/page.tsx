@@ -6,7 +6,8 @@ import { PageHero, Section, List, BrandLine, CTARow } from "@/components/content
  * Every fact here is from that CV or the owner's own words (incl. 2026-10-31 chat: first paid audio
  * job at 11, recording since 12, first paid gig at 13, composing/producing since 15, performed
  * across the US and worldwide, painter, professional photographer); nothing is inferred.
- * Owner rulings: Miramar tenure as "since 1999" (stays true every year); name the
+ * Owner rulings: title is Program Director and Lead Faculty (NOT coordinator, owner
+ * 2026-10-31, overrides the CV wording); Miramar tenure as "since 1999" (stays true every year); name the
  * partner organisations as worded on the CV, but not the individual contact.
  */
 export const metadata: Metadata = {
@@ -49,8 +50,8 @@ export default function Page() {
               San Diego Miramar College, faculty since 1999
             </li>
             <li>
-              <strong>Coordinator</strong> of the college’s Audio Production and
-              Engineering program
+              <strong>Program Director and Lead Faculty</strong> of the college’s
+              Audio Production and Engineering program
             </li>
             <li>
               <strong>Four decades</strong> in live sound, studio recording, and
@@ -86,7 +87,7 @@ export default function Page() {
         <p>
           Since 1999 he has taught at San Diego Miramar College, where he is
           Professor of Music and Audio Production and Engineering, and the
-          coordinator and lead faculty member of the Audio Production and
+          Program Director and Lead Faculty of the Audio Production and
           Engineering program. He teaches face-to-face and online, connecting
           music theory, performance, and listening to the science of sound and
           musical perception, often demonstrating at the piano in class.

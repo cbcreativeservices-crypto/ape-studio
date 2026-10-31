@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 10:50 · ccode · e8d132cf
+changed: Founder page: early start, worldwide performing, the interests that connect, the joy of teaching; D36 full resume (owner 2026-10-31)
+affects other side: nothing (website copy, not deployed)
+needs: nothing
+
+
 ### 2026-10-31 10:06 · ccode · c5b6c170
 changed: Verify catalog: collapsible, closed on every visit; a title link opens it (owner 2026-10-31)
 affects other side: nothing (website, not deployed)
