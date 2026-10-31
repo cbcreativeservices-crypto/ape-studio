@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { lookupRegistry, type RegistryOutcome } from "@/lib/verify";
 import CertificateGallery from "./CertificateGallery";
+import RegistrarAttestation from "./RegistrarAttestation";
+import CredentialCatalog from "./CredentialCatalog";
 
 /**
  * RegistryResult — the public page behind a member's QR token (users.qr_token).
@@ -117,6 +119,7 @@ export default function RegistryResult({ token }: { token: string }) {
               Verified credentials
             </p>
           </div>
+          <RegistrarAttestation className="mt-3" />
 
           <CertificateGallery
             credentials={credentials}
@@ -131,6 +134,8 @@ export default function RegistryResult({ token }: { token: string }) {
           </p>
         </div>
       )}
+
+      <CredentialCatalog />
 
       {/* The old wording — "no personal information beyond the name shown is
           disclosed" — stopped being true the moment work areas and an About-you

@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
-import { PageHero, Section, CTARow } from "@/components/content";
+import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
 
+/*
+ * Founder page (owner 2026-10-31). Short and authoritative: "say less, yet say
+ * more" — not a CV. AUDIO and teaching come first, then education and life
+ * experience; music is shown, but second.
+ * Facts come only from the owner's CV (Downloads/C_Booth_CV.pdf) and own words.
+ * Owner rulings: lead with "Channing", never "Cháno" (the title keeps the nickname
+ * in quotes); degrees always "Dual BA and MA"; Program Director and Lead Faculty
+ * (NEVER coordinator) of a state-certified program, "since 1999"; partners may be
+ * named, never an individual contact; do NOT name the groups he plays with.
+ * The full original resume is still to come (must-do D36).
+ */
 export const metadata: Metadata = {
   title: "Founder",
   description:
-    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy: audio educator, engineer, and professional salsa and Latin-jazz pianist with four decades in the field.",
+    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program; Dual BA and MA, Berklee College of Music.",
 };
 
 export default function Page() {
@@ -13,52 +24,60 @@ export default function Page() {
       <PageHero
         eyebrow="Founder &amp; Curriculum Director"
         title="Professor Channing “Cháno” Booth"
-        lede="Four decades in professional audio — behind the boards, in front of the mic, and in the classroom."
+        lede="Four decades in professional audio. Teaching it since 1999. A lifetime of experience, brought together in one place and opened to everyone."
       />
 
       <Section>
+        <p className="font-mono text-xs uppercase leading-relaxed tracking-[0.15em] text-text-muted">
+          Program Director &amp; Lead Faculty, Audio Production and Engineering · San Diego Miramar College · since 1999
+          <br />
+          Dual BA and MA · Berklee College of Music · Member, Audio Engineering Society
+        </p>
         <p>
-          Professor Channing “Cháno” Booth has spent his career at the meeting
-          point of teaching, engineering, and performance. He is the Founder and
-          Curriculum Director of Pro Audio Training Academy.
+          Channing Booth’s career in audio began at age 11, when he was hired to
+          run sound for a school production. In the four decades since, he has
+          done nearly every job the field
+          offers, from front of house and monitors to the studio, system design,
+          and installation. He has served as live sound engineer and audio
+          installation technician for Harvard University and the Boston Museum
+          of Science, and has engineered live sound for artists and presenters
+          from Bonnie Raitt to Bill Nye the Science Guy.
+        </p>
+        <p>
+          Since 1999 he has taught audio at San Diego Miramar College, as
+          Professor, Program Director and Lead Faculty of its state-certified
+          Audio Production and Engineering program. He built the program,
+          created several of its eight courses and edits and reviews the
+          curriculum of the rest, designed the
+          campus’s state-of-the-art studio and facility where he now teaches,
+          and keeps the program tied to the industry through partners such as
+          Yamaha Corporation of America.
+        </p>
+        <p>
+          He knows audio from the inside because he builds it: ribbon
+          microphones, guitar amplifiers, diffusers, and instruments of wood and
+          metal. He services everything from electronics to Hammond organs and
+          Rhodes pianos, and tunes and repairs pianos.
+        </p>
+        <p>
+          At Berklee he studied far beyond music: alongside his degrees he took
+          audio courses and spent long hours recording in the college’s studios.
+          A Berklee-trained musician and a lifelong polymath, he has performed
+          across the United States and around the world. His curiosity runs from physics and acoustics to
+          psychology, ethnomusicology, history, painting, and photography, and in
+          the Academy he found that all of it connects.
         </p>
       </Section>
 
-      <Section title="Teaching">
-        <p>
-          Professor Booth has taught Professional Audio at San Diego Miramar
-          College for 28 years. He earned his BA and MA at Berklee College of
-          Music.
-        </p>
-      </Section>
-
-      <Section title="Professional audio">
-        <p>
-          Across 40 years of live audio, studio recording, and production, he
-          has worked behind the boards in the control room and in front of the
-          mic. He has produced audio systems and events — front of house,
-          monitors, rigging, and more — and served as a live sound and
-          installation consultant and technician for Harvard University and the
-          Boston Museum of Science.
-        </p>
-      </Section>
-
-      <Section title="Performer">
-        <p>
-          The piano is his main talent. As a professional salsa and Latin-jazz pianist, Cháno has
-          performed in clubs, theaters, arenas, music festivals, and
-          international jazz festivals — a performing career that runs alongside
-          his work in engineering and education.
-        </p>
-      </Section>
+      <BrandLine>A life’s work in audio, built for everyone.</BrandLine>
 
       <Section title="Why the Academy">
         <p>
-          The Academy brings together the many worlds of audio — a glossary,
-          structured training, work-based learning and employment readiness, and
-          professional audio safety for everyone — into one system. For Cháno it
-          is a culmination of a life’s work, drawing the strands of a long career
-          into something he can offer broadly.
+          The Academy is his passion piece: everything he has learned in the
+          classroom, the studio, and on stage, in one place. Training of this
+          depth has usually been reserved for the few who can afford it. He built
+          the Academy so that anyone who wants to learn gets the chance, and no
+          one is priced out of a career, or the joy, that audio offers.
         </p>
         <blockquote className="border-l-2 border-amber pl-4 text-foreground">
           <p>

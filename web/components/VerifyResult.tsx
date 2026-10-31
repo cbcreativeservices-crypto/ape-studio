@@ -5,6 +5,8 @@ import Link from "next/link";
 import { verifyCode, type VerifyOutcome } from "@/lib/verify";
 import VerifyForm from "./VerifyForm";
 import CertificateGallery from "./CertificateGallery";
+import RegistrarAttestation from "./RegistrarAttestation";
+import CredentialCatalog from "./CredentialCatalog";
 
 export default function VerifyResult({ code }: { code: string }) {
   const [outcome, setOutcome] = useState<VerifyOutcome | null>(null);
@@ -73,6 +75,7 @@ export default function VerifyResult({ code }: { code: string }) {
         <p className="font-display text-2xl font-semibold text-foreground">
           {outcome.holder}
         </p>
+        <RegistrarAttestation className="mt-3" />
 
         <div className="mt-2">
           <CertificateGallery
@@ -82,6 +85,8 @@ export default function VerifyResult({ code }: { code: string }) {
           />
         </div>
       </div>
+
+      <CredentialCatalog />
 
       <p className="mt-6 text-xs text-text-muted">
         Credentials are issued by Pro Audio Training Academy and reflect the

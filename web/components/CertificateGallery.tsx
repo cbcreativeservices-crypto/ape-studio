@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { VerifiedCredential } from "@/lib/verify";
 import type { CertificateSource } from "@/lib/certificate/render";
+import { catalogAnchor } from "@/lib/catalog";
 
 /**
  * CertificateGallery — the credentials list on the two public pages, with a
@@ -41,6 +42,14 @@ type Props = {
 
 /** The server's no-name label, in the app's printed casing ("Academy Member",
  *  certificatePdf.ts). */
+/** The credential kind as the app names it (Level 1 / Level 2). */
+function credentialKindLabel(kind: string): string {
+  const k = kind.trim().toLowerCase();
+  if (k === "certificate") return "Specialization Certificate";
+  if (k === "program") return "Professional Certificate Program";
+  return kind;
+}
+
 function certificateName(label: string): string {
   return label.trim().toLowerCase() === "academy member" ? "Academy Member" : label;
 }
@@ -120,14 +129,24 @@ export default function CertificateGallery({ credentials, holder, source }: Prop
                 />
               ) : null}
               <div className="min-w-0 [overflow-wrap:anywhere]">
+                {/* The title opens this credential in the catalog below
+                    ("What our credentials include", owner 2026-10-31). */}
                 <p className="font-display text-lg font-semibold text-foreground">
-                  {c.credential_name}
+                  <a
+                    href={`#${catalogAnchor(c.credential_type, c.credential_name)}`}
+                    className="underline decoration-amber/40 underline-offset-4 hover:text-amber hover:decoration-amber"
+                    title="See what this credential includes"
+                  >
+                    {c.credential_name}
+                  </a>
                 </p>
                 <p className="mt-1 text-sm text-text-sub">
-                  <span className="uppercase tracking-wide text-text-muted">
-                    {c.credential_type}
-                  </span>
-                  {c.level_or_tier ? <> · {c.level_or_tier}</> : null}
+                  {/* The credential's proper name, not the raw database
+                      "certificate · L1" (owner 2026-10-31). Every certificate
+                      is Level 1 and every program Level 2, so the level code
+                      added nothing and read as jargon. Same names as the app
+                      (src/screens/awards/awardsData.ts). */}
+                  <span className="text-text-muted">{credentialKindLabel(c.credential_type)}</span>
                   {c.track ? <> · {c.track}</> : null}
                 </p>
                 {c.earned_at ? (

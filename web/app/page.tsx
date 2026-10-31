@@ -216,7 +216,7 @@ function HomeContent() {
             </div>
             <p className="mt-3 text-sm text-text-muted">
               Founded by Professor Channing “Cháno” Booth, who has taught
-              professional audio at San Diego Miramar College for 28 years and
+              professional audio at San Diego Miramar College since 1999 and
               spent four decades in the field.{" "}
               <Link href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">
                 About the founder

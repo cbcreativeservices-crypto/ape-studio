@@ -38,7 +38,7 @@ export default function Page() {
         <List
           items={[
             "Content is grounded in established technical references, recognized industry standards and best practices, manufacturer documentation, and decades of professional practice.",
-            "Review is led by the Academy’s Curriculum Director, who brings 28 years of teaching professional audio and four decades of industry experience.",
+            "Review is led by the Academy’s Curriculum Director, who has taught professional audio at the college level since 1999 and brings four decades of industry experience.",
             "Anyone can flag something that looks wrong or unclear through the feedback and suggestion links found throughout the app; when an issue is confirmed, it is corrected.",
             "Material is updated both as issues are found and through periodic review, as the field and best practices evolve.",
           ]}
