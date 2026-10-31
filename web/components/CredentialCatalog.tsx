@@ -16,6 +16,8 @@ export default function CredentialCatalog() {
   const [tab, setTab] = useState<CatalogKind>("certificate");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Set<string>>(new Set());
+  // Collapsed on every visit (owner 2026-10-31); a title link opens it.
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -32,6 +34,7 @@ export default function CredentialCatalog() {
       const anchor = decodeURIComponent(window.location.hash.replace(/^#/, ""));
       const entry = [...catalog.certificates, ...catalog.programs].find((e) => e.anchor === anchor);
       if (!entry) return;
+      setExpanded(true);
       setTab(entry.kind);
       setQuery("");
       setOpen((s) => new Set(s).add(entry.anchor));
@@ -76,10 +79,26 @@ export default function CredentialCatalog() {
 
   return (
     <section id="credential-catalog" className="mt-10 rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">For employers</p>
-      <h2 className="mt-2 font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
-        What our credentials include
-      </h2>
+      <button
+        type="button"
+        onClick={() => setExpanded((x) => !x)}
+        aria-expanded={expanded}
+        aria-controls="credential-catalog-body"
+        className="flex w-full items-start justify-between gap-4 text-left"
+      >
+        <span>
+          <span className="block font-mono text-xs uppercase tracking-[0.3em] text-amber">For employers</span>
+          <span className="mt-2 block font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
+            What our credentials include
+          </span>
+        </span>
+        <span aria-hidden className="mt-6 shrink-0 font-display text-2xl leading-none text-amber">
+          {expanded ? "−" : "+"}
+        </span>
+      </button>
+
+      {expanded ? (
+      <div id="credential-catalog-body">
       <div className="mt-3 max-w-prose space-y-3 text-sm leading-relaxed text-text-sub">
         <p>
           Every Academy credential is awarded only when its full requirements have been met. Each
@@ -194,6 +213,8 @@ export default function CredentialCatalog() {
           )}
         </>
       )}
+      </div>
+      ) : null}
     </section>
   );
 }

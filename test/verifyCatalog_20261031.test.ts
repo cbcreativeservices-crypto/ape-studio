@@ -38,3 +38,12 @@ describe('website verification catalog (owner 2026-10-31)', () => {
     assert.equal(web, appCore);
   });
 });
+
+describe('catalog starts collapsed (owner 2026-10-31)', () => {
+  it('expanded defaults to false; a title link opens it', () => {
+    const s = readFileSync(join(process.cwd(), 'web', 'components/CredentialCatalog.tsx'), 'utf8').replace(/\r\n/g, '\n');
+    assert.match(s, /useState\(false\)/);
+    assert.match(s, /setExpanded\(true\);\n\s+setTab\(entry\.kind\)/);
+    assert.match(s, /\{expanded \? \(/);
+  });
+});
