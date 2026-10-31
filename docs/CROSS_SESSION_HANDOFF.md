@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 11:37 · ccode · 5788ee37
+changed: Founder page: professional wording for the Harvard / Museum of Science roles (owner 2026-10-31)
+affects other side: nothing (website copy, not deployed)
+needs: nothing
+
+
 ### 2026-10-31 11:18 · ccode · 8656662e
 changed: Founder page: employed at Harvard and the Boston Museum of Science, not consulting (owner 2026-10-31)
 affects other side: nothing (website copy, not deployed)
