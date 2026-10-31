@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 11:12 · ccode · 85c0ccd2
+changed: Founder page: built the program and wrote all 8 courses, designed the studio; Berklee audio study (owner 2026-10-31)
+affects other side: nothing (website copy, not deployed)
+needs: nothing
+
+
 ### 2026-10-31 11:07 · ccode · 11c04e90
 changed: Founder page condensed again; no band names (owner 2026-10-31)
 affects other side: nothing (website copy, not deployed)

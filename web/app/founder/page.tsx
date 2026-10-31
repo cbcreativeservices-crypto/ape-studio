@@ -44,8 +44,9 @@ export default function Page() {
         <p>
           Since 1999 he has taught audio at San Diego Miramar College, as
           Professor, Program Director and Lead Faculty of its state-certified
-          Audio Production and Engineering program. He built the program and
-          wrote the curriculum for all eight of its courses, designed the
+          Audio Production and Engineering program. He built the program,
+          created several of its eight courses and edits and reviews the
+          curriculum of the rest, designed the
           campus’s state-of-the-art studio and facility where he now teaches,
           and keeps the program tied to the industry through partners such as
           Yamaha Corporation of America.
