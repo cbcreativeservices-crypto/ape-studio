@@ -41,6 +41,14 @@ type Props = {
 
 /** The server's no-name label, in the app's printed casing ("Academy Member",
  *  certificatePdf.ts). */
+/** The credential kind as the app names it (Level 1 / Level 2). */
+function credentialKindLabel(kind: string): string {
+  const k = kind.trim().toLowerCase();
+  if (k === "certificate") return "Specialization Certificate";
+  if (k === "program") return "Professional Certificate Program";
+  return kind;
+}
+
 function certificateName(label: string): string {
   return label.trim().toLowerCase() === "academy member" ? "Academy Member" : label;
 }
@@ -124,10 +132,12 @@ export default function CertificateGallery({ credentials, holder, source }: Prop
                   {c.credential_name}
                 </p>
                 <p className="mt-1 text-sm text-text-sub">
-                  <span className="uppercase tracking-wide text-text-muted">
-                    {c.credential_type}
-                  </span>
-                  {c.level_or_tier ? <> · {c.level_or_tier}</> : null}
+                  {/* The credential's proper name, not the raw database
+                      "certificate · L1" (owner 2026-10-31). Every certificate
+                      is Level 1 and every program Level 2, so the level code
+                      added nothing and read as jargon. Same names as the app
+                      (src/screens/awards/awardsData.ts). */}
+                  <span className="text-text-muted">{credentialKindLabel(c.credential_type)}</span>
                   {c.track ? <> · {c.track}</> : null}
                 </p>
                 {c.earned_at ? (
