@@ -38,9 +38,10 @@ export default function Page() {
           run sound for a school production. In the four decades since, he has
           done nearly every job the field
           offers, from front of house and monitors to the studio, system design,
-          and installation. Harvard University and the Boston Museum of Science
-          both employed him to run sound and install audio systems, and he has
-          run sound for everyone from Bonnie Raitt to Bill Nye the Science Guy.
+          and installation. He has served as live sound engineer and audio
+          installation technician for Harvard University and the Boston Museum
+          of Science, and has engineered live sound for artists and presenters
+          from Bonnie Raitt to Bill Nye the Science Guy.
         </p>
         <p>
           Since 1999 he has taught audio at San Diego Miramar College, as
