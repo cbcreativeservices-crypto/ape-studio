@@ -3,7 +3,9 @@ import { PageHero, Section, List, BrandLine, CTARow } from "@/components/content
 
 /*
  * Founder page — rewritten 2026-10-31 from the owner's CV (Downloads/C_Booth_CV.pdf).
- * Every fact here is from that CV or the owner's own words; nothing is inferred.
+ * Every fact here is from that CV or the owner's own words (incl. 2026-10-31 chat: first paid audio
+ * job at 11, recording since 12, first paid gig at 13, composing/producing since 15, performed
+ * across the US and worldwide, painter, professional photographer); nothing is inferred.
  * Owner rulings: Miramar tenure as "since 1999" (stays true every year); name the
  * partner organisations as worded on the CV, but not the individual contact.
  */
@@ -59,6 +61,16 @@ export default function Page() {
             </li>
           </ul>
         </div>
+      </Section>
+
+      <Section title="A lifetime in sound">
+        <p>
+          He started young and never stopped. He took his first paid audio job
+          at 11, running sound for a school program; he has been recording since
+          he was 12; he played his first paid gig, in a club, at 13; and he has
+          been composing and producing since 15. Everything since has been built
+          on that early start.
+        </p>
       </Section>
 
       <Section title="Education">
@@ -127,12 +139,13 @@ export default function Page() {
       <Section title="At the piano">
         <p>
           The piano is his first instrument and his main talent. A specialist
-          in jazz, Latin jazz, and salsa, he performs throughout Southern
-          California and Baja California, with about 150 public performances in
-          the past three years, as pianist with Afrotruko, a 13-piece salsa
-          ensemble, and with Perla Negra, a Cuban jazz piano trio. Over his
-          career he has played clubs, theaters, arenas, music festivals, and
-          international jazz festivals.
+          in jazz, Latin jazz, and salsa, he has performed across the United
+          States and around the world, in clubs, theaters, arenas, music
+          festivals, and international jazz festivals. Today he performs
+          throughout Southern California and Baja California, with about 150
+          public performances in the past three years, as pianist with
+          Afrotruko, a 13-piece salsa ensemble, and with Perla Negra, a Cuban
+          jazz piano trio.
         </p>
       </Section>
 
@@ -143,6 +156,22 @@ export default function Page() {
             "Certificate of Recognition, Empirical Labs Audio Educator Advisory Group (2024)",
           ]}
         />
+      </Section>
+
+      <Section title="Where it all connects">
+        <p>
+          His curiosity has never stopped at the edge of the mixing desk. He is
+          drawn to science, physics, and acoustics; to psychology, sociology,
+          and ethnomusicology; to history and the humanities; and to the visual,
+          tactile, and culinary arts. He has painted and has worked as a
+          professional photographer.
+        </p>
+        <p>
+          In building the Academy he found that all of it connects: the physics
+          of a vibrating string, the psychology of how we hear, the history and
+          culture a rhythm carries, and the craft of the people who capture and
+          shape it. The Academy brings those threads together in one place.
+        </p>
       </Section>
 
       <BrandLine>A life’s work in audio, built for everyone.</BrandLine>
@@ -158,6 +187,12 @@ export default function Page() {
           It is his passion piece. Training of this depth has usually been
           available only to the few who can afford a private audio school. The
           Academy exists to give that same depth to anyone who wants to learn.
+        </p>
+        <p>
+          He loves teaching and sharing what he knows, and nothing gives him
+          more satisfaction than seeing people who would not normally get a
+          chance get one, and succeed, instead of being priced out of the
+          careers, and the joy, that audio and music offer.
         </p>
         <blockquote className="border-l-2 border-amber pl-4 text-foreground">
           <p>
