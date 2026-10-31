@@ -38,8 +38,8 @@ export default function Page() {
           run sound for a school production. In the four decades since, he has
           done nearly every job the field
           offers, from front of house and monitors to the studio, system design,
-          and installation, including consulting for Harvard University and the
-          Boston Museum of Science.
+          and installation. Harvard University and the Boston Museum of Science
+          both employed him to run sound and install audio systems.
         </p>
         <p>
           Since 1999 he has taught audio at San Diego Miramar College, as
