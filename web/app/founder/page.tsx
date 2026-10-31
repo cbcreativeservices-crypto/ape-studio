@@ -2,27 +2,20 @@ import type { Metadata } from "next";
 import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
 
 /*
- * Founder page (owner 2026-10-31). A short story, not a CV: the owner's CV
- * (Downloads/C_Booth_CV.pdf) was written for work; this page "says less, yet says
- * more". AUDIO comes first — four decades in professional audio, teaching it since
- * 1999 and running a state-certified college program — then education and life
- * experience; music is shown, but second (owner: "for the app, it is my audio
- * teaching experience, my education, and my life experiences").
- * Facts come only from the CV and the owner's own words (first paid audio job at
- * 11, recording at 12, first paid gig at 13, composing/producing at 15, performed
- * across the US and worldwide, painter, professional photographer, state-certified
- * program; builds ribbon mics, guitar amps, skyline diffusers, a harmonograph; services
- * electronics to Hammond organs and Rhodes pianos; tunes/repairs pianos; makes instruments).
- * Owner rulings: lead with "Channing", never "Cháno" (the title keeps the nickname in
- * quotes); degrees always "Dual BA and MA" (owner's wording over the CV's B.M./M.M.);
- * title is Program Director and Lead Faculty (NOT
- * coordinator); Miramar as "since 1999"; partners may be named, never an
- * individual contact. The full original resume is still to come (must-do D36).
+ * Founder page (owner 2026-10-31). Short and authoritative: "say less, yet say
+ * more" — not a CV. AUDIO and teaching come first, then education and life
+ * experience; music is shown, but second.
+ * Facts come only from the owner's CV (Downloads/C_Booth_CV.pdf) and own words.
+ * Owner rulings: lead with "Channing", never "Cháno" (the title keeps the nickname
+ * in quotes); degrees always "Dual BA and MA"; Program Director and Lead Faculty
+ * (NEVER coordinator) of a state-certified program, "since 1999"; partners may be
+ * named, never an individual contact; do NOT name the groups he plays with.
+ * The full original resume is still to come (must-do D36).
  */
 export const metadata: Metadata = {
   title: "Founder",
   description:
-    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program, and Berklee-trained (Dual BA and MA).",
+    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program; Dual BA and MA, Berklee College of Music.",
 };
 
 export default function Page() {
@@ -38,68 +31,33 @@ export default function Page() {
         <p className="font-mono text-xs uppercase leading-relaxed tracking-[0.15em] text-text-muted">
           Program Director &amp; Lead Faculty, Audio Production and Engineering · San Diego Miramar College · since 1999
           <br />
-          Four decades in professional audio · Member, Audio Engineering Society
-          <br />
-          Berklee College of Music · Dual BA 1995 and MA 1997
+          Dual BA and MA · Berklee College of Music · Member, Audio Engineering Society
         </p>
         <p>
-          Channing Booth has worked in audio since he was a child: he ran sound for
-          pay at 11 and was recording at 12. Four decades on, he has done nearly
-          every job the field has to offer: front of house and monitors, the
-          recording studio and the control room, system design, rigging and
-          installation, and live sound and installation consulting for Harvard
-          University and the Boston Museum of Science.
-        </p>
-      </Section>
-
-      <Section title="Teaching audio since 1999">
-        <p>
-          For more than a quarter of a century he has taught audio at San Diego
-          Miramar College, where he is Professor, Program Director and Lead
-          Faculty of the college’s state-certified Audio Production and
-          Engineering program. He built and runs its recording studios and
-          labs, wrote its course in sound reinforcement systems, and keeps the
-          program tied to the working industry through its advisory board and
-          partners such as Yamaha Corporation of America. In 2024 he was
-          recognized by UC San Diego and by the Empirical Labs Audio Educator
-          Advisory Group.
+          Channing Booth has worked in audio since he ran sound for pay at 11.
+          In the four decades since, he has done nearly every job the field
+          offers, from front of house and monitors to the studio, system design,
+          and installation, including consulting for Harvard University and the
+          Boston Museum of Science.
         </p>
         <p>
-          Generations of students have learned the craft from him, and the
-          Academy carries the same teaching to anyone, anywhere.
+          Since 1999 he has taught audio at San Diego Miramar College, as
+          Professor, Program Director and Lead Faculty of its state-certified
+          Audio Production and Engineering program. He built and runs its studios
+          and labs, wrote its sound reinforcement course, and keeps it tied to the
+          industry through partners such as Yamaha Corporation of America.
         </p>
-      </Section>
-
-      <Section title="Hands on">
         <p>
-          He understands audio from the inside, because he builds it. He has
-          designed and built his own ribbon microphones, guitar amplifiers,
-          skyline diffusers, and a harmonograph; serviced everything from
-          electronics and loudspeakers to Hammond organs and Rhodes pianos;
-          tunes and repairs pianos; and has made drums, percussion, and string
-          instruments from wood, metal, and other materials.
+          He knows audio from the inside because he builds it: ribbon
+          microphones, guitar amplifiers, diffusers, and instruments of wood and
+          metal. He services everything from electronics to Hammond organs and
+          Rhodes pianos, and tunes and repairs pianos.
         </p>
-      </Section>
-
-      <Section title="The musician">
         <p>
-          His ear was trained at the piano. He earned a Dual BA (1995) and an
-          MA (1997) at Berklee College of Music, has
-          performed across the United States and around the world, and still
-          plays regularly with Afrotruko, a 13-piece salsa orchestra, and Perla
-          Negra, a Cuban jazz piano trio. Composing and producing since 15, he
-          knows what it is to be on both sides of the glass.
-        </p>
-      </Section>
-
-      <Section title="Where it all connects">
-        <p>
-          His curiosity has never stopped at the mixing desk: physics and
-          acoustics, psychology and ethnomusicology, history and the humanities,
-          painting, professional photography, and the culinary arts. In building
-          the Academy he found that it all connects: the physics of a vibrating
-          string, the way we hear, the culture a rhythm carries, and the craft of
-          the people who capture it.
+          A Berklee-trained pianist, he has performed across the United States
+          and around the world. His curiosity runs from physics and acoustics to
+          psychology, ethnomusicology, history, painting, and photography, and in
+          the Academy he found that all of it connects.
         </p>
       </Section>
 
@@ -108,11 +66,10 @@ export default function Page() {
       <Section title="Why the Academy">
         <p>
           The Academy is his passion piece: everything he has learned in the
-          classroom, the studio, on stage, and at the piano, in one place.
-          Training of this depth has usually been reserved for the few who can
-          afford a private school. He built the Academy so that anyone who wants
-          to learn gets the chance, and so that no one is priced out of a
-          career, or the joy, that audio offers.
+          classroom, the studio, and on stage, in one place. Training of this
+          depth has usually been reserved for the few who can afford it. He built
+          the Academy so that anyone who wants to learn gets the chance, and no
+          one is priced out of a career, or the joy, that audio offers.
         </p>
         <blockquote className="border-l-2 border-amber pl-4 text-foreground">
           <p>
