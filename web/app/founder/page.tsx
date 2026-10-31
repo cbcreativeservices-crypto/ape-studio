@@ -44,9 +44,11 @@ export default function Page() {
         <p>
           Since 1999 he has taught audio at San Diego Miramar College, as
           Professor, Program Director and Lead Faculty of its state-certified
-          Audio Production and Engineering program. He built and runs its studios
-          and labs, wrote its sound reinforcement course, and keeps it tied to the
-          industry through partners such as Yamaha Corporation of America.
+          Audio Production and Engineering program. He built the program and
+          wrote the curriculum for all eight of its courses, designed the
+          campus’s state-of-the-art studio and facility where he now teaches,
+          and keeps the program tied to the industry through partners such as
+          Yamaha Corporation of America.
         </p>
         <p>
           He knows audio from the inside because he builds it: ribbon
@@ -55,8 +57,10 @@ export default function Page() {
           Rhodes pianos, and tunes and repairs pianos.
         </p>
         <p>
-          A Berklee-trained pianist, he has performed across the United States
-          and around the world. His curiosity runs from physics and acoustics to
+          At Berklee he studied far beyond music: alongside his degrees he took
+          audio courses and spent long hours recording in the college’s studios.
+          A Berklee-trained musician and a lifelong polymath, he has performed
+          across the United States and around the world. His curiosity runs from physics and acoustics to
           psychology, ethnomusicology, history, painting, and photography, and in
           the Academy he found that all of it connects.
         </p>
