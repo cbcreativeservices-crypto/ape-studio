@@ -34,8 +34,9 @@ export default function Page() {
           Dual BA and MA · Berklee College of Music · Member, Audio Engineering Society
         </p>
         <p>
-          Channing Booth has worked in audio since he ran sound for pay at 11.
-          In the four decades since, he has done nearly every job the field
+          Channing Booth’s career in audio began at age 11, when he was hired to
+          run sound for a school production. In the four decades since, he has
+          done nearly every job the field
           offers, from front of house and monitors to the studio, system design,
           and installation, including consulting for Harvard University and the
           Boston Museum of Science.
