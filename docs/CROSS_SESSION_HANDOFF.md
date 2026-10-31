@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 10:57 · ccode · bb158370
+changed: Founder page condensed: a short story, audio and teaching first (owner 2026-10-31)
+affects other side: nothing (website copy, not deployed)
+needs: nothing
+
+
 ### 2026-10-31 10:50 · ccode · e8d132cf
 changed: Founder page: early start, worldwide performing, the interests that connect, the joy of teaching; D36 full resume (owner 2026-10-31)
 affects other side: nothing (website copy, not deployed)

@@ -11,14 +11,18 @@ import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
  * Facts come only from the CV and the owner's own words (first paid audio job at
  * 11, recording at 12, first paid gig at 13, composing/producing at 15, performed
  * across the US and worldwide, painter, professional photographer, state-certified
- * program). Owner rulings: title is Program Director and Lead Faculty (NOT
+ * program; builds ribbon mics, guitar amps, skyline diffusers, a harmonograph; services
+ * electronics to Hammond organs and Rhodes pianos; tunes/repairs pianos; makes instruments).
+ * Owner rulings: lead with "Channing", never "Cháno" (the title keeps the nickname in
+ * quotes); degrees always "Dual BA and MA" (owner's wording over the CV's B.M./M.M.);
+ * title is Program Director and Lead Faculty (NOT
  * coordinator); Miramar as "since 1999"; partners may be named, never an
  * individual contact. The full original resume is still to come (must-do D36).
  */
 export const metadata: Metadata = {
   title: "Founder",
   description:
-    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program, and Berklee-trained.",
+    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program, and Berklee-trained (Dual BA and MA).",
 };
 
 export default function Page() {
@@ -36,10 +40,10 @@ export default function Page() {
           <br />
           Four decades in professional audio · Member, Audio Engineering Society
           <br />
-          Berklee College of Music · B.M. 1995, M.M. 1997
+          Berklee College of Music · Dual BA 1995 and MA 1997
         </p>
         <p>
-          Cháno Booth has worked in audio since he was a child: he ran sound for
+          Channing Booth has worked in audio since he was a child: he ran sound for
           pay at 11 and was recording at 12. Four decades on, he has done nearly
           every job the field has to offer: front of house and monitors, the
           recording studio and the control room, system design, rigging and
@@ -66,10 +70,21 @@ export default function Page() {
         </p>
       </Section>
 
+      <Section title="Hands on">
+        <p>
+          He understands audio from the inside, because he builds it. He has
+          designed and built his own ribbon microphones, guitar amplifiers,
+          skyline diffusers, and a harmonograph; serviced everything from
+          electronics and loudspeakers to Hammond organs and Rhodes pianos;
+          tunes and repairs pianos; and has made drums, percussion, and string
+          instruments from wood, metal, and other materials.
+        </p>
+      </Section>
+
       <Section title="The musician">
         <p>
-          His ear was trained at the piano. He earned his Bachelor of Music at
-          Berklee College of Music in 1995 and his Master of Music in 1997, has
+          His ear was trained at the piano. He earned a Dual BA (1995) and an
+          MA (1997) at Berklee College of Music, has
           performed across the United States and around the world, and still
           plays regularly with Afrotruko, a 13-piece salsa orchestra, and Perla
           Negra, a Cuban jazz piano trio. Composing and producing since 15, he
