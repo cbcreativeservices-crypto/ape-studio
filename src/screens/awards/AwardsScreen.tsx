@@ -25,8 +25,7 @@ import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
-import { CompactBrandBar } from '../../components/CompactBrandBar';
-import { BrandLogo } from '../../components/BrandLogo';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
@@ -922,17 +921,14 @@ export function AwardsScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared compact header (extracted from this very screen,
-          2026-09-19). Logo, wordmark, HOME — and HOME's `popTo` rule now
-          lives inside the component rather than in a comment here, which is
-          what stops the next copy getting it wrong.
-
-          ⚠️ The two `BrandLogo size={30}` sub-views further down this file
-          are NOT this pattern and were deliberately left alone. */}
-      <CompactBrandBar />
+      {/* Owner 2026-10-31: the screen shows ITS OWN title at the top, not a
+          repeat of the app title and logo (the CompactBrandBar is gone). The
+          way out leads the title row, top-left: HOME when back lands on
+          Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
       {/* The whole title area (below the logo, above the page buttons) is still a
           return action (user request 2026-07-18). */}
       <View style={styles.header}>
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.backChevron} />
         <Pressable style={{ flex: 1 }} onPress={() => safeGoBack(navigation)} accessibilityRole="button" accessibilityLabel="Return">
           {/* Amber titles; now full sentence headlines (user request 2026-07-22)
               so they wrap / shrink to fit. */}
@@ -1099,12 +1095,6 @@ export function AwardsScreen({ navigation, route }: Props) {
           corrected in [18]/[18b]. */}
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
-          <View style={styles.brandRow}>
-            <BrandLogo size={30} />
-            <Text style={styles.brandWordmark}>
-              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
-            </Text>
-          </View>
           {/* ⚠️ 2026-09-20: deriving the count from COREQ_TOPIC_GS.length printed
               "the 4 core courses", while the intro block on this same page says
               "three required core topics and one training lab". 3081 is the
@@ -1186,12 +1176,6 @@ export function AwardsScreen({ navigation, route }: Props) {
       {/* LEVEL 2 — choose an established Program Path (TBD course sets). */}
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
-          <View style={styles.brandRow}>
-            <BrandLogo size={30} />
-            <Text style={styles.brandWordmark}>
-              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
-            </Text>
-          </View>
           {/* [18b] (2026-09-11): core count derived from COREQ_TOPIC_GS (twin of
               [18]) so it can't drift from the banner or the per-program total. */}
           <ChooserHeader
@@ -1273,12 +1257,6 @@ const styles = StyleSheet.create({
   enrollIntroCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, lineHeight: 20, color: colors.amber, width: 18 },
   enrollIntroLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, lineHeight: 20, color: colors.textSub },
   root: { flex: 1, backgroundColor: colors.screenBg },
-  /* ⚠️ STILL USED — by the two picker MODALS below, which carry a
-     BrandLogo size={30} and no HOME and are NOT the CompactBrandBar
-     pattern. The screen's own header moved to that component. */
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 6, paddingBottom: 8 },
-  brandWordmark: { flexShrink: 1, fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
-  brandAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingBottom: 8 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, lineHeight: 24 },
   // Category buttons (replaced the readout dots, user request 2026-07-18).

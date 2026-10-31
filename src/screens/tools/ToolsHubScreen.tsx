@@ -40,7 +40,8 @@ import ToolStripRt60 from '../../../assets/tool-strips/tool_05_rt60_reverb_decay
 import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_generator_strip.svg';
 import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
-import { CompactBrandBar } from '../../components/CompactBrandBar';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { safeGoBack } from '../../lib/safeGoBack';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
@@ -1090,7 +1091,16 @@ export function ToolsHubScreen({ navigation }: Props) {
             would be the first of the props that made the last three copies
             of this row drift apart. */}
         <View style={[styles.brandBarCap, hubCap]}>
-          <CompactBrandBar right={<HelpKey search="tool" />} />
+          {/* Owner 2026-10-31: the screen shows ITS OWN title at the top, not a
+            repeat of the app title and logo (the CompactBrandBar is gone). The
+            way out leads the title row, top-left: HOME when back lands on
+            Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
+          <View style={styles.titleBar}>
+            <HomeOrBackKey onPress={() => safeGoBack(navigation)} />
+            <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
+            <View style={{ flex: 1 }} />
+            <HelpKey search="tool" />
+          </View>
         </View>
 
         <ScrollView
@@ -1274,6 +1284,9 @@ const styles = StyleSheet.create({
   /* Was `header` plus its own brand type — all of it now lives in
      CompactBrandBar. Only the width cap is still this screen's business. */
   brandBarCap: { width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
+  /* Same row shape as Learning Labs and the Glossary: way out, title, help. */
+  titleBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 14, paddingBottom: 8 },
+  screenTitle: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   moduleTag: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,

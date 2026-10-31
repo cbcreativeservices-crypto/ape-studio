@@ -13,13 +13,12 @@
  * Fully data-driven from labCatalog.
  */
 import { useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
-import { CompactBrandBar } from '../../components/CompactBrandBar';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate } from '../../features/commercial/useTier';
@@ -191,10 +190,10 @@ export function EarLabScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared compact header (owner 2026-09-19), same as the tools hub.
-          This screen had no brand row at all before — it opened straight onto
-          a back arrow and a title. */}
-      <CompactBrandBar />
+      {/* Owner 2026-10-31: the screen shows ITS OWN title at the top, not a
+          repeat of the app title and logo (the CompactBrandBar is gone). The
+          way out leads the title row, top-left: HOME when back lands on
+          Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
 
       {/* ⛔ THE BACK CHEVRON STAYS HERE, unlike on the tools hub where it was
           removed with the same change. The difference is real: the hub is
@@ -203,9 +202,7 @@ export function EarLabScreen({ navigation, route }: Props) {
           Training), so HOME would skip the screen the user actually came
           from and there would be no way back to the other section. */}
       <View style={styles.header}>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
-        </Pressable>
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>{headerTitle}</Text>
           <Text style={styles.subtitle}>{headerSub}</Text>

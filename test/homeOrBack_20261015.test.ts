@@ -85,11 +85,19 @@ describe('screens opened from Home use the shared Home-or-back key', () => {
       assert.match(s, /<HomeOrBackKey\b/, `${p} lost the HomeOrBackKey`);
     });
   }
-  it('Learning Labs drops its ‹ when back is Home (CompactBrandBar carries HOME)', () => {
-    const s = read('screens/lab/AudioLearningScreen.tsx');
-    assert.match(s, /useBackLeadsHome\(\)/);
-    assert.match(s, /backIsHome \? null :/);
-  });
+  // 2026-10-31: the CompactBrandBar is gone; Learning Labs, the Fundamentals/
+  // Training menu, the Tools hub and Enrollments lead their own title row with
+  // the HomeOrBackKey (test/homeTopLeft_20261031).
+  for (const p of [
+    'screens/lab/AudioLearningScreen.tsx',
+    'screens/lab/EarLabScreen.tsx',
+    'screens/tools/ToolsHubScreen.tsx',
+    'screens/awards/AwardsScreen.tsx',
+  ]) {
+    it(`${p} leads its title row with the HomeOrBackKey`, () => {
+      assert.match(read(p), /<HomeOrBackKey\b/);
+    });
+  }
   it('the Home face is the Glossary HOME key and the press stays the caller’s back step', () => {
     const s = read('components/nav/HomeOrBackKey.tsx');
     assert.match(s, /<NavIcon icon="Home" lit \/>/);

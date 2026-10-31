@@ -1,28 +1,42 @@
 /**
- * Owner 2026-10-31: "top-left everywhere" — the HOME key sits top-left on
- * every screen. CompactBrandBar (Labs, Ear Lab, Tools hub, Awards/Enrollments)
- * used to put it on the right; it now leads the row, before the logo, and the
- * `right` slot is only the per-screen help key.
+ * Owner 2026-10-31:
+ *  1. "top-left everywhere" — the way out (HOME, or ‹ deeper in) is top-left.
+ *  2. Labs, Tools and the Enrollment dashboard show THEIR OWN title at the
+ *     top, not a repeat of the app title and logo. The CompactBrandBar
+ *     (logo · PRO AUDIO TRAINING ACADEMY · HOME) is deleted; each screen's
+ *     title row starts with the HomeOrBackKey.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 const read = (p: string) => readFileSync(join(process.cwd(), 'src', p), 'utf8').replace(/\r\n/g, '\n');
+const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\/.*$/gm, '');
 
-describe('HOME is top-left on every screen (owner 2026-10-31)', () => {
-  it('CompactBrandBar draws HOME before the logo and before the right slot', () => {
-    const s = read('components/CompactBrandBar.tsx');
-    const body = s.slice(s.indexOf('return ('));
-    const home = body.indexOf('<NavIcon icon="Home" lit />');
-    const logo = body.indexOf('<BrandLogo');
-    const right = body.indexOf('{right}');
-    assert.ok(home > 0, 'HOME key present');
-    assert.ok(home < logo, 'HOME comes before the logo');
-    assert.ok(home < right, 'HOME comes before the right slot');
-    assert.equal(body.split('icon="Home"').length - 1, 1, 'exactly one HOME key');
+const SCREENS: Array<[string, string]> = [
+  ['screens/lab/AudioLearningScreen.tsx', 'LEARNING LABS'],
+  ['screens/lab/EarLabScreen.tsx', '{headerTitle}'],
+  ['screens/tools/ToolsHubScreen.tsx', 'AUDIO TOOLS'],
+  ['screens/awards/AwardsScreen.tsx', '{pageHeadline(currentKey)}'],
+];
+
+describe('screen titles at the top, way out top-left (owner 2026-10-31)', () => {
+  it('the CompactBrandBar is gone', () => {
+    assert.equal(existsSync(join(process.cwd(), 'src/components/CompactBrandBar.tsx')), false);
   });
+  for (const [p, title] of SCREENS) {
+    it(`${p}: no app-title bar; HomeOrBackKey comes before the screen title`, () => {
+      const s = code(read(p));
+      assert.doesNotMatch(s, /<CompactBrandBar\b/);
+      assert.doesNotMatch(s, /PRO AUDIO <Text/);
+      const key = s.indexOf('<HomeOrBackKey');
+      assert.ok(key > 0, 'HomeOrBackKey present');
+      // The title follows the key in the same row (a few lines on).
+      const t = s.indexOf(title, key);
+      assert.ok(t > key && t - key < 900, `the way out leads the row that holds ${title}`);
+    });
+  }
   it('the Glossary HOME key still leads its header row', () => {
     const s = read('screens/glossary/GlossaryScreen.tsx');
     const header = s.slice(s.indexOf('<View style={styles.header}>'));

@@ -13,13 +13,11 @@
  */
 import { LabsIcon } from '../../components/LabsIcon';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
-import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
 import { useMemberGate } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
@@ -29,7 +27,7 @@ import { cardColumn, readingText } from '../../theme/readingColumn';
 import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
-import { useBackLeadsHome } from '../../components/nav/HomeOrBackKey';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
@@ -64,7 +62,6 @@ const TRAIN_DESC =
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const backIsHome = useBackLeadsHome();
   const gate = useMemberGate();
   // Until the first entitlement read lands, don't assert non-membership: a real
   // member would otherwise see the 🔒 / "PREVIEW" framing flash for a frame
@@ -86,18 +83,13 @@ export function AudioLearningScreen({ navigation }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared compact header (owner 2026-09-19), with its HOME key.
-          Owner rule 2026-10-14: no ‹ when the back step IS Home — opened from
-          Home's Labs card the bar's HOME is the way back (the Tools hub's
-          rule), so the arrow shows only when back leads somewhere deeper. */}
-      <CompactBrandBar />
+      {/* Owner 2026-10-31: the screen shows ITS OWN title at the top, not a
+          repeat of the app title and logo (the CompactBrandBar is gone). The
+          way out leads the title row, top-left: HOME when back lands on
+          Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
 
       <View style={styles.header}>
-        {backIsHome ? null : (
-          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
-          </Pressable>
-        )}
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon. */}
           <View style={styles.titleRow}>
