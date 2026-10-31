@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 08:55 · ccode · 82aad557
+changed: Lab menus: no repeated section heading when one section is shown (owner 2026-10-31)
+affects other side: nothing (app UI only; reaches phones with the next OTA)
+needs: nothing
+
+
 ### 2026-10-31 08:49 · ccode · 28b52e5e
 changed: Labs, Tools, Enrollments show their own title at the top (owner 2026-10-31)
 affects other side: nothing (app UI only; reaches phones with the next OTA)

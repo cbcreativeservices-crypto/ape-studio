@@ -204,7 +204,14 @@ export function EarLabScreen({ navigation, route }: Props) {
       <View style={styles.header}>
         <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>{headerTitle}</Text>
+          {/* ADVANCED in amber on the Training menu (owner 2026-10-31). */}
+          {section === 'training' ? (
+            <Text style={styles.title}>
+              <Text style={{ color: colors.amber }}>ADVANCED</Text> TRAINING LABS
+            </Text>
+          ) : (
+            <Text style={styles.title}>{headerTitle}</Text>
+          )}
           <Text style={styles.subtitle}>{headerSub}</Text>
         </View>
         {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
