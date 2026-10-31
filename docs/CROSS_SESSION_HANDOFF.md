@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 10:06 · ccode · c5b6c170
+changed: Verify catalog: collapsible, closed on every visit; a title link opens it (owner 2026-10-31)
+affects other side: nothing (website, not deployed)
+needs: nothing
+
+
 ### 2026-10-31 09:43 · ccode · a59133c7
 changed: Website verification: credential kind by name, not 'certificate · L1' (owner 2026-10-31)
 affects other side: nothing (website display only; reaches the live site with the D34 deploy GO)
