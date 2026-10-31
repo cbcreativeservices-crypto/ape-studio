@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-10-29T14:00:00-07:00",
-  "taken_by": "ccode, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions",
+  "taken_at": "2026-10-31T07:50:33-07:00",
+  "taken_by": "nightly reconciliation, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; no changes vs 2026-10-29",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
