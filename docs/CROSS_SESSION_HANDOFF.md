@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 16:31 · ccode · b6764801
+changed: Lab screen guides: Wave Physics pilot + Audio Fundamentals (D37), Refraction listener (D39), vetted fixes (D40)
+affects other side: no — app-only, no server change
+needs: nothing from Comp A
+
+
 ### 2026-10-31 11:37 · ccode · 5788ee37
 changed: Founder page: professional wording for the Harvard / Museum of Science roles (owner 2026-10-31)
 affects other side: nothing (website copy, not deployed)
