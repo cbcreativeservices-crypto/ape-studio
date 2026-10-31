@@ -224,10 +224,17 @@ export function EarLabScreen({ navigation, route }: Props) {
           const secLocked = sectionLocked(sec.key);
           return (
             <View key={sec.key} style={styles.section}>
-              <View style={styles.sectionHead}>
-                <Text style={styles.sectionTitle}>{sec.title}</Text>
-                <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : isMember ? '' : sec.note}</Text>
-              </View>
+              {/* One section on screen (the Fundamentals or the Training menu):
+                  the page title and its subtitle already say this — no repeat
+                  of the name and "Free to start / Members only" (owner
+                  2026-10-31: wasted height). The heading shows only when both
+                  sections share the page. */}
+              {shownSections.length > 1 ? (
+                <View style={styles.sectionHead}>
+                  <Text style={styles.sectionTitle}>{sec.title}</Text>
+                  <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : isMember ? '' : sec.note}</Text>
+                </View>
+              ) : null}
               {/* GLASS TILES (owner 2026-09-30: "convert the 2 lab menus … into
                   the panel tile animated button layout we are now using for the
                   audio tools and calculators … a subtitle now can be added. keep

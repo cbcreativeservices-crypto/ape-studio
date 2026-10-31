@@ -37,6 +37,13 @@ describe('screen titles at the top, way out top-left (owner 2026-10-31)', () => 
       assert.ok(t > key && t - key < 900, `the way out leads the row that holds ${title}`);
     });
   }
+  it('lab menus: no repeated section heading on a one-section page; Accuracy right of the title', () => {
+    const s = read('screens/lab/EarLabScreen.tsx');
+    assert.match(s, /shownSections\.length > 1 \? \(\s*<View style=\{styles\.sectionHead\}>/);
+    const header = s.slice(s.indexOf('<HomeOrBackKey'), s.indexOf('<ScrollView'));
+    assert.ok(header.indexOf('{headerSub}</Text>\n        </View>') > 0, 'title column closes before the chip');
+    assert.ok(header.indexOf('<AccuracyNote') > header.indexOf('{headerSub}'), 'Accuracy sits after (right of) the title column');
+  });
   it('the Glossary HOME key still leads its header row', () => {
     const s = read('screens/glossary/GlossaryScreen.tsx');
     const header = s.slice(s.indexOf('<View style={styles.header}>'));
