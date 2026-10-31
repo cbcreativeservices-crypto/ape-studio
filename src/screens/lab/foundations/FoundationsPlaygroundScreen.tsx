@@ -53,7 +53,13 @@ import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { levelColor } from '../../../features/tools/levelColor';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained".
+// The Playground is a CONCEPT sandbox: its views are drawn from the settings
+// and LEVEL is the generator's commanded level, not a measurement — so the
+// accuracy chip is gone and the ⓘ takes its spot. Own header (no LabHeader),
+// so the key, the hint anchor and the host are wired here by hand.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { PLAYGROUND_SCREEN_GUIDE } from './foundationsScreenGuides';
 import { LabChip } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
 import { useStageTextScale } from '../rack/stageAspect';
@@ -576,6 +582,8 @@ export function FoundationsPlaygroundScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -586,8 +594,9 @@ export function FoundationsPlaygroundScreen() {
               DELAY reach the audio but have no drawn twin (fix 2026-08-28). */}
           <Text style={styles.subtitle}>Drive the views, hear the change — experiment freely</Text>
         </View>
-        <AccuracyNote compact />
+        <ScreenGuideKey title="FOUNDATIONS PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
       </View>
+      </ScreenGuideHintAnchor>
 
       <RackUnit
         initialParam="freq"
@@ -752,6 +761,7 @@ export function FoundationsPlaygroundScreen() {
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
+      </ScreenGuideHost>
     </View>
   );
 }

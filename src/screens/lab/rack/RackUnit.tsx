@@ -40,6 +40,10 @@ import { StageAspectReport, type StageReport } from './stageAspect';
 import { READING_MAX_W, readingColumn } from '../../../theme/readingColumn';
 import { isTabletWindow } from '../../../theme/tablet';
 import { LabNextButton, useLabNavContext } from '../kit/LabNavBar';
+// Screen Guide (owner 2026-10-31): the guide keeps the area it is explaining
+// visible, so it MEASURES these three views when it shows a step. Register-only
+// refs — no layout change, nothing runs unless a guide asks.
+import { useGuideRegion } from '../../../features/lab/screenGuide/guideRegions';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -156,6 +160,12 @@ export function RackUnit({
   const [openTrayId, setOpenTrayId] = useState<string | null>(null);
   const [wellLocked, setWellLocked] = useState(false);
   const wellRef = useRef<ScrollView>(null);
+  const glassRef = useRef<View>(null);
+  const bezelRef = useRef<View>(null);
+  const dockRef = useRef<View>(null);
+  useGuideRegion('display', glassRef);
+  useGuideRegion('readouts', bezelRef);
+  useGuideRegion('dock', dockRef);
   const scrollWellTo = useCallback((y: number) => {
     wellRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
   }, []);
@@ -607,7 +617,7 @@ export function RackUnit({
         {/* Not rendered at all when collapsed — a zero-height canvas would
             still be mounted and still be drawing frames. */}
         {stageCollapsed ? null : (
-        <View style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
+        <View ref={glassRef} collapsable={false} style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
           {glassW > 0 ? (
             <StageAspectReport.Provider value={glassReport}>{stage.render(glassW, glassH - 2)}</StageAspectReport.Provider>
           ) : null}
@@ -628,7 +638,9 @@ export function RackUnit({
         </View>
         )}
         {stage.bezel?.length || stage.onGuide ? (
-          <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} />
+          <View ref={bezelRef} collapsable={false}>
+            <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} />
+          </View>
         ) : null}
         {stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
@@ -731,7 +743,7 @@ export function RackUnit({
       </View>
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
-      <View onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockFor(false)}</View>
+      <View ref={dockRef} collapsable={false} onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockFor(false)}</View>
 
       {/* Blank faceplate below the raised dock — calm, non-interactive. Gone
           while a tray is open: the dock drops to the bottom instead. */}

@@ -20,6 +20,8 @@ import { CONNECTOR_PAGES_D } from './pagesD';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import { loadPagedProgress } from '../../../features/lab/pagedProgress';
 import { CONNECTOR_SELECT_LAB_KEY, CONNECTOR_SELECT_PAGE_COUNT, CONNECTOR_SELECT_UNITS } from './units';
+// Screen Guide (owner 2026-10-31): one "this page, explained" guide per page.
+import { connectorSelectPageGuide } from './connectorSelectScreenGuides';
 
 const PAGES = [...CONNECTOR_PAGES_A, ...CONNECTOR_PAGES_B, ...CONNECTOR_PAGES_C, ...CONNECTOR_PAGES_D];
 
@@ -61,6 +63,13 @@ export function ConnectorSelectLabScreen() {
       pages={PAGES}
       onPageDone={onPageDone}
       creditLabKey={CONNECTOR_SELECT_LAB_KEY}
+      pageGuide={connectorSelectPageGuide}
+      // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only
+      // on live-mic tools and labs showing real-world measurement numbers.
+      // This is a CONCEPT lab (identification, selection, a simulated
+      // continuity tester — nothing measured), so the note leaves every page
+      // and the header ⓘ guide key stands in its place.
+      accuracy={false}
     />
   );
 }

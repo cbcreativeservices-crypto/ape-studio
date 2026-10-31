@@ -230,7 +230,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
             <TrayButton label="DIFFUSER (REAR WALL)" onPress={() => addKind('diffuser')} />
             <TrayButton label="FREESTANDING PANEL" onPress={() => addKind('gobo')} />
           </View>
-          <Caption>{`The recommended spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: nothing in the kit treats a desk top. Drag any item afterwards.`}</Caption>
+          <Caption>{`The suggested spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: nothing in the kit treats a desk top. Drag any item afterwards.`}</Caption>
         </View>
       ),
     },

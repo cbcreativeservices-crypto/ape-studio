@@ -81,6 +81,11 @@ export type PageDef = {
    *  and draws the in-flow NEXT / FINISH at the well's end (LabNavContext).
    *  The calibration note rides the header as the compact chip. */
   rack?: boolean;
+  /** ADDITIVE (owner 2026-10-31, Screen Guide): "this page, explained" — the
+   *  header draws the ⓘ key and the stepped guide opens over the page (its
+   *  steps measured away from the Rack Unit's display / dock on a `rack`
+   *  page). Wins over PagedLab's `pageGuide` for this page. Omitted = no key. */
+  guide?: ScreenGuide;
 };
 
 /**
@@ -112,8 +117,10 @@ import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
+// Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
+import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, pageGuide, accuracy = true }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -163,6 +170,17 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  (guests held for the sign-in hand-off, preview earns nothing, an unsent
    *  key is retried). Omitted = the lab reports no whole-lab key, as before. */
   labDoneKey?: string;
+  /** ADDITIVE (owner 2026-10-31, Screen Guide): the guide for page `index`
+   *  (undefined = no ⓘ on that page) — for a lab that keeps its guides in its
+   *  own content file instead of on each PageDef. `PageDef.guide` wins. The
+   *  appended check page and the what's-left screen never show a key unless
+   *  this returns one for the check's index. */
+  pageGuide?: (index: number) => ScreenGuide | undefined;
+  /** ADDITIVE (owner 2026-10-31): the AccuracyNote — the compact header chip
+   *  on a rack page, the in-flow note on a reading page. Default true
+   *  (unchanged). A CONCEPT lab with guides passes false so the ⓘ takes the
+   *  chip's spot; live-mic / real-measurement labs keep it. */
+  accuracy?: boolean;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -530,10 +548,22 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
+  // Screen Guide for this page (none on the what's-left screen).
+  const guide = ending ? undefined : def.guide ?? pageGuide?.(page);
+
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined} />
+        {/* Screen Guide host (opt-in): the overlay renders as this root's last
+            child; a page change closes an open guide. Regions = the page's
+            Rack Unit, when it has one. */}
+        <ScreenGuideHost resetKey={ending ? 'end' : String(page)} regions={!!def.rack && !ending}>
+        <LabHeader title={ending ? 'Where you are' : def.title}
+          subtitle={title}
+          right={accuracy && def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined}
+          guide={guide}
+          guideTitle={def.title.toUpperCase()}
+        />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {/* Before a guest begins (owner 2026-10-04): progress here is not
@@ -566,7 +596,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                   of them after the first sitting, never saw it again. The subtitle is
                   genuinely a first-page thing; the calibration note is a standing
                   statement about every page. */}
-              <AccuracyNote style={styles.accuracy} detail={accuracyDetail} />
+              {accuracy ? <AccuracyNote style={styles.accuracy} detail={accuracyDetail} /> : null}
               {holdPageBody ? null : (
                 <>
                   {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -580,6 +610,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             </ScrollLockProvider>
           </ScrollView>
         )}
+        </ScreenGuideHost>
       </View>
       {proNote ? <ProNoteIntro onOwed={setProNoteOwed} /> : null}
     </LabNavProvider>

@@ -40,6 +40,8 @@ import { READING_MAX_W } from '../../../theme/readingColumn';
 import { NAV, nextButtonLabel } from './labNav';
 import type { LabNav } from './useLabNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained".
+import { ScreenGuideHintAnchor, ScreenGuideKey, type ScreenGuide } from '../../../features/lab/screenGuide';
 
 export { useLabNav } from './useLabNav';
 export type { LabNav, LabNavOptions, LabNavSub, LabNavUnit } from './useLabNav';
@@ -76,6 +78,15 @@ export function claimLabLeave(): boolean {
  * blocked, never confirmed), title over subtitle, and an optional `right`
  * group (AccuracyNote, HelpKey, a play button). `onTitlePress`, `onTouchStart`
  * and `headerRef` exist for LabShell's TEMP touch probe only.
+ *
+ * SCREEN GUIDE (owner 2026-10-31, opt-in): pass `guide` and the header draws
+ * the ⓘ ScreenGuideKey as the LAST item of the right group (after `right`)
+ * and wraps itself in ScreenGuideHintAnchor (the one-time "tap ⓘ" callout).
+ * The screen must still wrap its root View's content in <ScreenGuideHost>
+ * (regions on a Rack Unit screen, `regions={false}` otherwise) so the steps
+ * sit away from the area they explain. A CONCEPT lab drops its AccuracyNote
+ * from `right` (the key takes that spot); a measurement lab keeps the chip
+ * and the key sits beside it. No `guide` = exactly the old header.
  */
 export function LabHeader({
   title,
@@ -84,6 +95,8 @@ export function LabHeader({
   onTitlePress,
   onTouchStart,
   headerRef,
+  guide,
+  guideTitle,
 }: {
   title: string;
   subtitle?: string;
@@ -91,13 +104,18 @@ export function LabHeader({
   onTitlePress?: () => void;
   onTouchStart?: (e: GestureResponderEvent) => void;
   headerRef?: Ref<View>;
+  /** Opt-in: this screen's "explained" guide — draws the ⓘ key. */
+  guide?: ScreenGuide;
+  /** The guide card's title; defaults to `title` in capitals. */
+  guideTitle?: string;
 }) {
   const navigation = useNavigation();
   const leave = () => {
     if (!claimLabLeave()) return;
     safeGoBack(navigation);
   };
-  return (
+  const key = guide ? <ScreenGuideKey title={guideTitle ?? title.toUpperCase()} guide={guide} /> : null;
+  const header = (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>
       <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave the lab">
         <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -112,9 +130,15 @@ export function LabHeader({
           </Text>
         ) : null}
       </Pressable>
-      {right ? <View style={styles.headerRight}>{right}</View> : null}
+      {right || key ? (
+        <View style={styles.headerRight}>
+          {right}
+          {key}
+        </View>
+      ) : null}
     </View>
   );
+  return guide ? <ScreenGuideHintAnchor>{header}</ScreenGuideHintAnchor> : header;
 }
 
 /** The strip + the CONTENTS dropdown. */

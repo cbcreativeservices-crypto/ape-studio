@@ -18,6 +18,8 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { GAIN_END_GUIDE, GAIN_HOME_GUIDE } from './gainScreenGuides';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -52,8 +54,21 @@ export function GainLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
-      <LabHeader title="GAIN STAGING LAB" subtitle="Keep the signal healthy at every stage of the chain." right={<AccuracyNote compact />} />
+      {/* Screen Guide (2026-10-31): the overlay renders as this root's last
+          child. No Rack Unit on the menu, so regions are off. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab.
+          The header ⓘ explains this screen (the what's-left view has its own
+          guide). The accuracy chip STAYS, with the ⓘ beside it: gain/level
+          readouts are one of the owner's own named examples of a lab that
+          keeps the chip (owner rule 2026-10-31) — mirrors Room Design. */}
+      <LabHeader
+        title="GAIN STAGING LAB"
+        subtitle="Keep the signal healthy at every stage of the chain."
+        right={<AccuracyNote compact />}
+        guide={ending ? GAIN_END_GUIDE : GAIN_HOME_GUIDE}
+        guideTitle={ending ? 'GAIN STAGING LAB — WHAT’S LEFT' : undefined}
+      />
       {ending ? (
         <LabEndScreen
           labTitle="Gain Staging Lab"
@@ -125,6 +140,7 @@ export function GainLabHomeScreen() {
         </Text>
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

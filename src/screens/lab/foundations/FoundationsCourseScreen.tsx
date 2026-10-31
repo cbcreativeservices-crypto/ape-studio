@@ -55,7 +55,12 @@ import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { levelColor } from '../../../features/tools/levelColor';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained".
+// Foundations is a CONCEPT lab (slowed models + drawings from the math, no
+// real-world measurement on any module), so the accuracy chip is gone and the
+// ⓘ takes its header spot.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { FOUNDATIONS_END_GUIDE, FOUNDATIONS_M7_COVER_GUIDE, FOUNDATIONS_SCREEN_GUIDES, type FoundationsStepKey } from './foundationsScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -2306,8 +2311,17 @@ export function FoundationsCourseScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab. */}
-      <LabHeader title="FOUNDATIONS OF SOUND" subtitle="Understanding What You’re Hearing" right={<AccuracyNote compact />} />
+      <ScreenGuideHost resetKey={ending ? 'end' : spoilerGated ? 'm7-cover' : s.key}>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
+          The ⓘ explains the screen in view: the module, Module 7's
+          predict-first cover (a guide that never gives the answer away), or
+          the what's-left screen. */}
+      <LabHeader
+        title="FOUNDATIONS OF SOUND"
+        subtitle="Understanding What You’re Hearing"
+        guide={ending ? FOUNDATIONS_END_GUIDE : spoilerGated ? FOUNDATIONS_M7_COVER_GUIDE : FOUNDATIONS_SCREEN_GUIDES[s.key as FoundationsStepKey]}
+        guideTitle={ending ? 'FOUNDATIONS OF SOUND · WHAT’S LEFT' : `${s.tag} · ${s.title}`}
+      />
 
       {/* The shared strip (owner-approved 2026-09-30):
               [⏮] [‹ PREV]   MODULE n / 14 ▾   [NEXT ›]
@@ -2375,6 +2389,7 @@ export function FoundationsCourseScreen() {
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

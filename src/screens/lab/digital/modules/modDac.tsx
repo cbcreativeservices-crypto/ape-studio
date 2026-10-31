@@ -146,9 +146,9 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       label: 'MODE',
       valueLabel: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD',
       options: [
-        { id: 'simple', label: 'SIMPLIFIED', blurb: 'Just the staircase and the smooth result — the story with nothing else on screen.' },
-        { id: 'standard', label: 'STANDARD', blurb: 'Adds the sample points and the reconstruction filter’s work — the honest middle view.' },
-        { id: 'xray', label: 'X-RAY', blurb: 'Everything exposed: samples, held steps, filter ringing — how the smooth wave is actually rebuilt.' },
+        { id: 'simple', label: 'SIMPLIFIED', blurb: 'The sample points, the smooth rebuilt wave and the original — the held ZOH steps are hidden.' },
+        { id: 'standard', label: 'STANDARD', blurb: 'Adds the ZOH steps — the held voltage inside the converter, before the filter smooths it into the output.' },
+        { id: 'xray', label: 'X-RAY', blurb: 'Adds the DAC CLOCK ticks (one per sample) and the RECON LPF inset — the filter that smooths the steps into the output wave.' },
       ],
       selectedId: mode,
       onSelect: (id) => {

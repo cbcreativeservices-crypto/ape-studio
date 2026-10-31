@@ -107,7 +107,9 @@ describe('head fix 2026-10-08 — one shared head-icon module', () => {
 /** Lone heads → the owner's icon (Skia HeadIcon / SVG HeadIconSvg / glyph). */
 const LONE: [string, RegExp][] = [
   ['src/screens/lab/micspeaker/viz.tsx', /<HeadIcon key=\{px\} view="above"/],
-  ['src/screens/lab/wave/vizWave.tsx', /<HeadIcon view="above"[\s\S]*<HeadIcon view="side"/],
+  // Owner 2026-10-31: Refraction's 150 m listener is a small STANDING PERSON now (BODY: appendStanding +
+  // StandingHead at the ×20 height scale) — the giant lone side head read as close listening. Only the plan's above icon stays lone.
+  ['src/screens/lab/wave/vizWave.tsx', /<HeadIcon view="above"/],
   ['src/screens/lab/BinauralLabScreen.tsx', /<HeadIconSvg view="above"/],
   ['src/screens/lab/roomdesign/RoomPlanView.tsx', /<HeadIconSvg view="above"/],
   ['src/screens/lab/soundsystems/art/gearArt.tsx', /<HeadIconSvg view="above"/],

@@ -12,8 +12,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { METER_END_GUIDE, METER_HOME_GUIDE } from './meterScreenGuides';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { METER_MODULES } from './modules/registry';
@@ -53,11 +54,18 @@ export function MeterLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      {/* No Rack Unit on the menu: regions off, so every guide step sits low. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab.
+          The header ⓘ explains this menu, or the what's-left screen when it is
+          swapped in (Screen Guide, owner 2026-10-31). A CONCEPT lab: every
+          display runs on built-in teaching signals (badged on each stage), no
+          live mic and no real-world measurement — so no accuracy chip (owner
+          rule 2026-10-31); the key takes its spot. */}
       <LabHeader
         title="VISUAL AUDIO ANALYSIS LAB"
         subtitle="Learn to READ the meters — not just open them"
-        right={<AccuracyNote compact detail="These displays are driven by built-in teaching signals, not your microphone — read them to learn what each meter shows. For accurate levels use a calibrated SPL meter or measurement mic." />}
+        guide={ending ? METER_END_GUIDE : METER_HOME_GUIDE}
       />
       {ending ? (
         <LabEndScreen
@@ -113,6 +121,7 @@ export function MeterLabHomeScreen() {
       </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

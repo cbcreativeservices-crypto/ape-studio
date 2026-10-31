@@ -12,7 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { DIGITAL_END_GUIDE, DIGITAL_HOME_GUIDE } from './digitalScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
@@ -70,11 +71,22 @@ export function DigitalLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child. No Rack Unit on the menu, so regions are off. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab.
+          The ⓘ explains this menu (or the what's-left screen). Digital Audio
+          is a CONCEPT lab — exact sampling/quantization math and disclosed
+          illustrative models, no live mic and no real-world measurement — so
+          the accuracy chip is not shown (owner decision 2, 2026-10-31).
+          Module 5's PEAK / SNR / HEADROOM are a disclosed model of an
+          imaginary converter, not a measurement of the learner's gear; the
+          home guide says which numbers are exact math and which are models. */}
       <LabHeader
         title="DIGITAL AUDIO SAMPLING & CONVERSION LAB"
         subtitle="Explore how analog sound becomes digital data — and how digital data becomes sound again."
-        right={<AccuracyNote compact />}
+        guide={ending ? DIGITAL_END_GUIDE : DIGITAL_HOME_GUIDE}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
       />
       {ending ? (
         <LabEndScreen
@@ -140,6 +152,7 @@ export function DigitalLabHomeScreen() {
       </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('digital')} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

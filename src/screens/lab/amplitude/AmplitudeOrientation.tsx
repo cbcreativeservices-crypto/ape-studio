@@ -3,8 +3,12 @@
  * orientation (owner spec 2026-08-12). ONE page, ONE source of truth, used two
  * ways:
  *
- *  - Path A: the START HERE step of Foundations of Sound renders
- *    <AmplitudeColorBody/> as its panel.
+ *  - Path A: the standalone lab, AmplitudeLabScreen (Labs menu → Audio
+ *    Fundamentals, first lab), renders <AmplitudeColorBody alsoReviewLab/>.
+ *    (It used to be the START HERE step of Foundations of Sound too; nothing
+ *    outside this file renders AmplitudeColorBody any more — audit 2026-10-31.
+ *    RootNavigator's "Foundations course … OPENS with the orientation" note is
+ *    stale on the same count: an owner call, flagged, not changed here.)
  *  - Path B: withAmplitudeOrientation() (wired ONCE in RootNavigator) renders
  *    <AmplitudeOrientationGatePage/> IN PLACE of any interactive audio lab /
  *    tool the learner opens before completing the orientation, then swaps to
@@ -56,7 +60,8 @@ import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { holdLabTermIntro } from '../../../features/intro/screenIntros';
 import { GlassButton } from '../../../components/GlassButton';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { AMPLITUDE_SCREEN_GUIDES } from './amplitudeScreenGuides';
 import { readingText } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ReviewLabEnd } from '../kit/ReviewLabEnd';
@@ -72,7 +77,7 @@ export const AMP_ORIENT_TITLE = 'UNDERSTANDING LEVEL & AMPLITUDE';
 export const AMP_ORIENT_TITLE2 = 'THE ACADEMY GLOBAL METHODOLOGY';
 export const AMP_ORIENT_SUBTITLE = 'Different displays. Same visual language.';
 
-/** Core explanation — also the START HERE step's paragraph text (Path A). */
+/** Core explanation — the page's paragraph text (once also Foundations' START HERE step). */
 export const AMP_ORIENT_PARAS: string[] = [
   'Throughout Pro Audio Training Academy, you will see the same color scale whenever level or amplitude is being visualized.',
   // ⚠️ The last sentence is a REASSURANCE, added 2026-09-19 at the owner's
@@ -1018,8 +1023,11 @@ export function AmplitudeColorBody({
 /**
  * Standalone lab — the FIRST entry in Audio Fundamentals (owner 2026-08-12).
  * Same body as the gate; opened voluntarily from the lab list. Pressing
- * UNDERSTOOD — CONTINUE here marks the orientation complete (Path A), so a
- * learner who reads it in the list is never gated later. NOT wrapped in the
+ * UNDERSTOOD — MARK REVIEWED here (after the ramp check) marks the orientation
+ * complete AND records the lab (Path A), so a learner who reads it in the list
+ * is never gated later. Once the orientation flag is set (here or at any gated
+ * screen) the page shows ✓ ORIENTATION COMPLETE, a plain MARK REVIEWED while
+ * the lab credit is missing, and TEST YOURSELF AGAIN ›. NOT wrapped in the
  * orientation gate (it IS the orientation).
  */
 export function AmplitudeLabScreen() {
@@ -1027,6 +1035,10 @@ export function AmplitudeLabScreen() {
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* The screen guide (owner 2026-10-31): no Rack Unit on this page, so
+          regions are off and every step sits as a bottom card. */}
+      <ScreenGuideHost regions={false} resetKey="lab">
+      <ScreenGuideHintAnchor>
       <View style={styles.gateHeader}>
         <Pressable
           onPress={() => safeGoBack(navigation)}
@@ -1038,16 +1050,17 @@ export function AmplitudeLabScreen() {
           <Text style={styles.gateBack} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Text style={styles.labHeaderKicker}>AUDIO FUNDAMENTALS</Text>
-        {/* ⛔ THE FIRST FREE LAB A NEW USER OPENS, and it was the one with no
-            note. Whatever standard this screen sets is the one they carry into
-            every other lab. */}
-        <AccuracyNote
-          compact
-          // The kicker is not flex:1, so push the chip to the trailing edge.
-          style={{ marginLeft: 'auto' }}
-          detail="This lab teaches how amplitude and level RELATE — the ramps and colors are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
-        />
+        {/* Accuracy-chip rule (owner 2026-10-31): the chip stays only on
+            live-mic tools and labs showing real-world measurement numbers.
+            This page is a CONCEPT lab — six still, illustrative drawings, no
+            input, its own LEARNING CONVENTION card + "not live measurements"
+            line — so the ⓘ guide key takes the chip's spot. The kicker is not
+            flex:1, so the key is pushed to the trailing edge. */}
+        <View style={styles.guideKeySlot}>
+          <ScreenGuideKey title={AMP_ORIENT_TITLE} guide={AMPLITUDE_SCREEN_GUIDES.lab} />
+        </View>
       </View>
+      </ScreenGuideHintAnchor>
       {/* + the bottom inset (emulator pass 2026-10-13): on Android's three-button
           bar the last key, UNDERSTOOD — CONTINUE, sat half under the bar. */}
       <ScrollView contentContainerStyle={[styles.gateScroll, { paddingBottom: 30 + insets.bottom }]}>
@@ -1072,6 +1085,7 @@ export function AmplitudeLabScreen() {
           offerReview={false}
         />
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }
@@ -1086,6 +1100,8 @@ export function AmplitudeOrientationGatePage() {
   useEffect(() => holdLabTermIntro(), []);
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false} resetKey="primer">
+      <ScreenGuideHintAnchor>
       <View style={styles.gateHeader}>
         <Pressable
           onPress={() => safeGoBack(navigation)}
@@ -1097,18 +1113,17 @@ export function AmplitudeOrientationGatePage() {
           <Text style={styles.gateBack} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Text style={styles.gateIntro}>{GATE_INTRO}</Text>
-        {/* The standing calibration note (bug hunt 2026-09-30): this gate
-            shows the same teaching as the lab page, which carries it. */}
-        <AccuracyNote
-          compact
-          detail="This lab teaches how amplitude and level RELATE — the ramps and colors are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
-        />
+        {/* Same teaching as the lab page, same chip decision (owner
+            2026-10-31): a concept page, so the ⓘ guide key, not the chip. */}
+        <ScreenGuideKey title={AMP_ORIENT_TITLE} guide={AMPLITUDE_SCREEN_GUIDES.primer} />
       </View>
+      </ScreenGuideHintAnchor>
       {/* + the bottom inset (toddler pass 2026-10-13): the gate's UNDERSTOOD —
           CONTINUE sat under Android's three-button bar, as the lab page's did. */}
       <ScrollView contentContainerStyle={[styles.gateScroll, { paddingBottom: 30 + insets.bottom }]}>
         <AmplitudeColorBody />
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }
@@ -1369,6 +1384,7 @@ const styles = StyleSheet.create({
   gateBackBtn: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   gateBack: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4 },
   labHeaderKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
+  guideKeySlot: { marginLeft: 'auto' },
   gateIntro: {
     flex: 1,
     fontFamily: fonts.barlowMedium,

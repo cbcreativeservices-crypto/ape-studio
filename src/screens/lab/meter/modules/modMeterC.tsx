@@ -426,7 +426,7 @@ const SCOPE_SIGNALS: { key: SignalKey; label: string; blurb: string }[] = [
   { key: 'sine', label: 'SINE', blurb: 'One frequency, no harmonics: a single smooth curve — the purest trace a scope can draw.' },
   { key: 'square', label: 'SQUARE', blurb: 'Flat shelves with near-vertical edges. Those fast edges ARE the high harmonics — the scope shows you why a square sounds bright.' },
   { key: 'triangle', label: 'TRIANGLE', blurb: 'Straight ramps meeting at points. Same odd harmonics as a square but fading fast — gentler corners, gentler sound.' },
-  { key: 'saw', label: 'SAW', blurb: 'A steady ramp up and an instant drop. Every harmonic present — the buzzy synth staple.' },
+  { key: 'saw', label: 'SAW', blurb: 'A steady ramp down, then an instant jump back up. Every harmonic present — the buzzy synth staple.' },
   { key: 'speech', label: 'SPEECH', blurb: 'Irregular bursts with true silence between them. No repeating shape to lock onto — this is what real signals look like raw.' },
   { key: 'music', label: 'MUSIC', blurb: 'A dense, ever-changing pile of everything at once. The scope shows activity, not notes — which is why other meters exist.' },
 ];
@@ -646,7 +646,10 @@ type DetectiveCase = {
   fix: CheckSpec;
 };
 
-const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.15, eqGains: {}, eqFilter: 'bell220q6', qRing: false, reverb: 'none' };
+// Damping 5 %: the 250 Hz ridge runs 1.6× its neighbours, past RIDGE_CALLOUT_RATIO,
+// so the plot really draws RINGS 251 — the answer "a ridge near 250 Hz that will
+// not decay" must be on screen (screen-guide audit 2026-10-31; at 15 % it was 1.45×).
+const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.05, eqGains: {}, eqFilter: 'bell220q6', qRing: false, reverb: 'none' };
 
 // -- Solved-question store (learning pass 2026-08-31) -----------------------
 // ape:* prefix means it is wiped on account switch with every other local

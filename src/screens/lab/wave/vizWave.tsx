@@ -56,8 +56,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
-import { HeadIcon, SIDE_CANON, aboveRotation, buildHeadIcon } from '../../../features/lab/headIcons';
-import { SIDE_NECK, headIconScale } from '../../../features/lab/headIconGeometry';
+import { HeadIcon, aboveRotation } from '../../../features/lab/headIcons';
 import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
@@ -3036,17 +3035,21 @@ export function GradientSceneView(p: {
     return path;
   }, [w, wind, ts]);
 
-  // The distant listener — the owner's SIDE head icon facing the source (head
-  // fix 2026-10-08: a lone head, never a bust). Its neck stands on the ground
-  // and its EAR sits at a standing 1.6 m on the SAME ×20 height scale as the
-  // rays, so a ray printed at ear height visibly reaches the head (proportion
-  // audit 2026-09-26). The ear's centre is 29.9 head units above the neck base.
-  const listenerHead = { x: x0px + GRAD_LISTENER_M * ppm, size: ((1.6 * ppmY) / 29.9) * SIDE_CANON.height };
-  // An OPAQUE silhouette under the icon (clash sweep 2026-10-10): the icon's
-  // own plate is 62 % dark, so the ray fan showed THROUGH the head. Rays now
-  // pass behind it — the head is a solid thing standing in the field.
-  const headS = headIconScale('side', listenerHead.size);
-  const headSil = useMemo(() => buildHeadIcon('side', headS).plate, [headS]);
+  // The distant listener — a SMALL STANDING PERSON 150 m out (owner
+  // 2026-10-31: the lone side head stood ~50 px tall, read as close listening,
+  // not a person far away). The house standing figure (appendStanding +
+  // StandingHead, as Diffraction's listener) drawn UNIFORMLY at the SAME ×20
+  // height scale as the rays: feet on the ground, head centred 1.63 m up, so
+  // a ray at a standing ear's 1.6 m visibly reaches the head, and the whole
+  // person stays in the one stated exaggeration (≈ 34 px tall at 390 px wide,
+  // a 2 m speaker pole beside it ≈ 39 px). True width would be < 1 px at
+  // 150 m; uniform ×20 keeps a readable whole person instead of a stretched one.
+  const listenerX = x0px + GRAD_LISTENER_M * ppm;
+  const listenerBody = useMemo(() => {
+    const path = Skia.Path.Make();
+    appendStanding(path, listenerX, groundY, ppmY);
+    return path;
+  }, [listenerX, groundY, ppmY]);
 
   // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
   // printed over a visibly bent ray fan whenever WIND alone did the bending.
@@ -3081,11 +3084,12 @@ export function GradientSceneView(p: {
         {/* Source: small PA on a pole, near the ground at left. */}
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
         <SideElevationSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
-        {/* The distant listener. */}
-        <Group transform={[{ translateX: listenerHead.x }, { translateY: groundY }, { translateX: -SIDE_NECK[0] * headS }, { translateY: -SIDE_NECK[1] * headS }]}>
-          <Path path={headSil} color="#0b0c10" />
-        </Group>
-        <HeadIcon view="side" anchor="neck" x={listenerHead.x} y={groundY} size={listenerHead.size} facing="left" plate minStroke={1.2 * ts} />
+        {/* The distant listener. An OPAQUE body fill first (clash sweep
+            2026-10-10): the LineBust plate is translucent, and the ray fan
+            must pass BEHIND the person, not show through it. */}
+        <Path path={listenerBody} color="#0b0c10" />
+        <LineBust path={listenerBody} stroke={LINE} sw={Math.max(1, 0.06 * ppmY)} />
+        <StandingHead x={listenerX} gy={groundY} u={ppmY} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}
@@ -3095,7 +3099,7 @@ export function GradientSceneView(p: {
         <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + 26 * ts, top: groundY - 14 * ts }]}>{botLabel}</RNText>
         {/* The one exaggeration, said on the picture. */}
         <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, right: 8 * ts, top: 10 * ts, color: '#c9a45a', backgroundColor: 'rgba(8,9,13,0.72)', paddingHorizontal: 3 * ts, borderRadius: 3 * ts, overflow: 'hidden' }]}>{`HEIGHT ×${GRAD_V_EXAG}`}</RNText>
-        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + GRAD_LISTENER_M * ppm - 20 * ts, top: groundY + 2 * ts, width: 40 * ts, textAlign: 'center' }]}>
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: listenerX - 20 * ts, top: groundY + 2 * ts, width: 40 * ts, textAlign: 'center' }]}>
           {`${GRAD_LISTENER_M} m`}
         </RNText>
         {Math.abs(wind) >= 0.04 ? (

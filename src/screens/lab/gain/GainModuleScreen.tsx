@@ -23,6 +23,8 @@ import { FreePlayModule, MultiStageModule, TroubleshootModule } from './modules/
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { GAIN_END_GUIDE, GAIN_SCREEN_GUIDES } from './gainScreenGuides';
 
 /** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
  *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
@@ -120,8 +122,22 @@ export function GainModuleScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
-      <LabHeader title={meta.title.toUpperCase()} subtitle="Gain Staging Lab" right={<AccuracyNote compact />} />
+      {/* Screen Guide (2026-10-31): the overlay renders as this root's last
+          child, its steps placed away from the display / dock they explain
+          (measured from the module's Rack Unit). A module change closes it. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : meta.id}>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). The ⓘ explains
+          THIS module (the what's-left view has its own guide). The accuracy
+          chip STAYS, with the ⓘ beside it: gain/level readouts are one of the
+          owner's own named examples of a lab that keeps the chip (owner rule
+          2026-10-31) — mirrors Room Design. */}
+      <LabHeader
+        title={meta.title.toUpperCase()}
+        subtitle="Gain Staging Lab"
+        right={<AccuracyNote compact />}
+        guide={ending ? GAIN_END_GUIDE : GAIN_SCREEN_GUIDES[meta.id]}
+        guideTitle={ending ? 'GAIN STAGING LAB — WHAT’S LEFT' : undefined}
+      />
       <LabNavBar nav={nav} />
       <GlossaryLinkProvider>
         {endScreen ?? (
@@ -150,6 +166,7 @@ export function GainModuleScreen() {
           </ScrollLockProvider>
         )}
       </GlossaryLinkProvider>
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

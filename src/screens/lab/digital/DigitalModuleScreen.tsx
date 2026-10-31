@@ -9,7 +9,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -17,6 +17,7 @@ import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { ScrollLockProvider } from '../LabShell';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+import { DIGITAL_END_GUIDE, DIGITAL_SCREEN_GUIDES } from './digitalScreenGuides';
 import { AnalogModule, SamplingModule } from './modules/modAnalog';
 import { QuantModule, BinaryModule } from './modules/modQuant';
 import { AdcModule, ProcessingModule } from './modules/modChain';
@@ -136,8 +137,27 @@ export function DigitalModuleScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
-      <LabHeader title={meta.title.toUpperCase()} subtitle="Digital Audio Sampling & Conversion Lab" right={<AccuracyNote compact />} />
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child, its steps placed away from the display / dock they
+          explain (measured from the module's Rack Unit). A module change
+          closes an open guide. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : meta.id}>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). The ⓘ explains
+          THIS module's screen (or the what's-left screen). Digital Audio is a
+          CONCEPT lab — exact sampling/quantization math and disclosed
+          illustrative models, no live mic and no real-world measurement — so
+          the accuracy chip is not shown (owner decision 2, 2026-10-31).
+          Module 5's PEAK / SNR / HEADROOM are the outputs of a disclosed model
+          of an imaginary converter (fixed −60 dB floor, badged ILLUSTRATIVE
+          MODEL), not a measurement of the learner's gear — so they are not
+          the "gain/level readouts" that keep the chip. On the what's-left
+          screen the guide card is titled for that screen, not the module. */}
+      <LabHeader
+        title={meta.title.toUpperCase()}
+        subtitle="Digital Audio Sampling & Conversion Lab"
+        guide={ending ? DIGITAL_END_GUIDE : DIGITAL_SCREEN_GUIDES[meta.id]}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
+      />
       <LabNavBar nav={nav} />
       {endScreen ?? (
         <ScrollLockProvider value={setScrollLocked}>
@@ -168,6 +188,7 @@ export function DigitalModuleScreen() {
         </ScrollLockProvider>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('digital')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

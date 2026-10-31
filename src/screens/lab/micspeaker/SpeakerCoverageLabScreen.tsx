@@ -27,6 +27,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the ⓘ "this screen, explained" key sits
+// BESIDE the accuracy chip — speaker coverage is one of the owner's own named
+// examples of a lab that keeps the chip (mirrors Room Design).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { SPEAKER_END_GUIDE, SPEAKER_SCREEN_GUIDES, type SpeakerSectionId } from './micSpeakerScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -196,7 +201,7 @@ function LessonRow({ onPress }: { onPress: () => void }) {
   );
 }
 
-const SECTIONS: { key: string; label: string; title: string; blurb: string }[] = [
+const SECTIONS: { key: SpeakerSectionId; label: string; title: string; blurb: string }[] = [
   { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach. Black seats get no useful sound: add SPKR 2 or FILLS. (Stage right is the performers’ right — the left of your screen.)' },
   { key: 'side', label: 'SIDE VIEW', title: 'HEIGHT & TILT', blurb: 'Raise, tilt, and shape the room — make the wedge land on every row.' },
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
@@ -622,7 +627,16 @@ export function SpeakerCoverageLabScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <LabHeader title="SPEAKER PLACEMENT & COVERAGE" subtitle="How loudspeakers distribute sound" right={<AccuracyNote compact />} />
+      {/* The guide overlay is the root's last child; a section change closes
+          an open guide. Regions only on the two Rack Unit sections. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : s.key} regions={!ending && rack !== null}>
+      <LabHeader
+        title="SPEAKER PLACEMENT & COVERAGE"
+        subtitle="How loudspeakers distribute sound"
+        right={<AccuracyNote compact />}
+        guide={ending ? SPEAKER_END_GUIDE : SPEAKER_SCREEN_GUIDES[s.key]}
+        guideTitle={ending ? 'SPEAKER PLACEMENT & COVERAGE' : s.title}
+      />
       <LabNavBar nav={nav} />
       {ending ? (
         <LabEndScreen
@@ -713,6 +727,7 @@ export function SpeakerCoverageLabScreen() {
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

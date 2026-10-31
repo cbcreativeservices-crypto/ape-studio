@@ -13,7 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { WAVE_HOME_GUIDE } from './waveScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
@@ -54,8 +55,18 @@ export function WaveLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* No Rack Unit here: the guide's steps sit low over the list. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
       {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
-      <LabHeader title="WAVE PHYSICS LABORATORY" subtitle="One room engine · fifteen experiments" right={<AccuracyNote compact />} />
+      {/* The header ⓘ explains this menu (Screen Guide pilot, owner
+          2026-10-31). A CONCEPT lab: no accuracy chip (owner decision 2). */}
+      <ScreenGuideHintAnchor>
+        <LabHeader
+          title="WAVE PHYSICS LABORATORY"
+          subtitle="One room engine · fifteen experiments"
+          right={<ScreenGuideKey title="WAVE PHYSICS LABORATORY" guide={WAVE_HOME_GUIDE} />}
+        />
+      </ScreenGuideHintAnchor>
       {ending ? (
         <LabEndScreen
           labTitle="Wave Physics Laboratory"
@@ -124,6 +135,7 @@ export function WaveLabHomeScreen() {
       </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

@@ -34,6 +34,8 @@ import { RackUnit, useRackLeaveFull } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
 import { fitValue } from '../../theme/legibility';
 import { LabHeader } from './kit/LabNavBar';
+// Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, type ScreenGuide } from '../../features/lab/screenGuide';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
@@ -56,7 +58,7 @@ export { ScrollLockProvider, useScrollLock };
  * placeholder: a lab only offers the tab once its understanding check is
  * authored, because passing it is what COMPLETES the lab (owner 2026-09-20).
  */
-type LabMode = 'learn' | 'explore' | 'check';
+export type LabMode = 'learn' | 'explore' | 'check';
 
 const BASE_MODES: { key: LabMode; label: string }[] = [
   { key: 'learn', label: 'LEARN' },
@@ -402,6 +404,9 @@ export function LabShell({
   headerAction,
   rack,
   checkEnd,
+  guide,
+  guideTitle,
+  accuracy = true,
   children,
 }: {
   labId: LabId;
@@ -416,6 +421,20 @@ export function LabShell({
   /** Compact control rendered top-right of the header (typically
    *  <HeaderPlayButton/> — owner 2026-07-29). */
   headerAction?: ReactNode;
+  /** SCREEN GUIDE opt-in (owner 2026-10-31): "this screen, explained". A
+   *  plain ScreenGuide explains the EXPLORE screen and its ⓘ shows on the
+   *  EXPLORE tab only (LEARN and CHECK are reading pages); a function picks
+   *  a guide per tab (undefined = no key on that tab). The shell wraps
+   *  itself in ScreenGuideHost (regions measured from the Rack Unit when
+   *  `rack` is set) and hangs the one-time hint under the header. Absent =
+   *  exactly the old header. */
+  guide?: ScreenGuide | ((mode: LabMode) => ScreenGuide | undefined);
+  /** The guide card's title; defaults to `title`. */
+  guideTitle?: string;
+  /** The compact AccuracyNote chip in the header. Default true (unchanged).
+   *  A CONCEPT lab with a guide passes false so the ⓘ takes the chip's spot;
+   *  live-mic / real-measurement labs keep it (owner 2026-10-31). */
+  accuracy?: boolean;
   /** RACK UNIT opt-in (APE_LAB_UX_PROPOSAL 2026-08-23): when present, Explore
    *  renders as a pinned instrument faceplate — stage + bezel readouts pinned
    *  on top, the dock (lane + value-buttons) pinned at the bottom, and the
@@ -448,6 +467,7 @@ export function LabShell({
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
   const modes = modesFor(labId);
+  const shownGuide = typeof guide === 'function' ? guide(mode) : mode === 'explore' ? guide : undefined;
   /**
    * Already passed on an earlier visit?
    *
@@ -594,6 +614,44 @@ export function LabShell({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labTermFirst]);
 
+  // The header, built once: wrapped in the Screen Guide hint anchor only when
+  // this lab passes a `guide` (no guide = exactly the old tree).
+  const header = (
+    <LabHeader
+      title={title}
+      subtitle={subtitle}
+      headerRef={headerRef}
+      onTouchStart={probeOn ? () => stamp('H') : undefined}
+      // TEMP touch probe: dev builds only (Comp A launch audit 2026-10-24,
+      // item 3: a triple-tap on the title opened debug text in STORE builds).
+      onTitlePress={__DEV__ ? titleTap : undefined}
+      right={
+        // Consistent per-screen help (Pillar C) — lands in the hub with lab
+        // answers surfaced.
+        <View
+          style={styles.headerRight}
+          ref={rightRef}
+          onTouchStart={
+            probeOn
+              ? () => {
+                  stamp('B');
+                  setProbe((p) => ({ ...p, down: p.down + 1 }));
+                }
+              : undefined
+          }
+          onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
+        >
+          <HelpKey search="lab" />
+          {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09).
+              A concept lab with a screen guide opts out (`accuracy={false}`). */}
+          {accuracy ? <AccuracyNote compact /> : null}
+          {shownGuide ? <ScreenGuideKey title={guideTitle ?? title} guide={shownGuide} /> : null}
+          {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
+        </View>
+      }
+    />
+  );
+
   return (
     <View
       style={[styles.root, { paddingTop: insets.top + 10 }]}
@@ -608,41 +666,15 @@ export function LabShell({
         return false;
       }}
     >
+      {/* Screen Guide host (opt-in `guide`): its overlay renders as this
+          root's last child; a tab switch closes an open guide. Regions only
+          when the Rack Unit is on screen. */}
+      <ScreenGuideHost resetKey={mode} regions={!!rack && mode === 'explore'}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): the same ‹ in
           every lab — LEAVE THE LAB, BACK_HIT_SLOP, double-tap latched. The
           probe hooks (title triple-tap, touch stamps, frame refs) ride its
           passthrough props until the TEMP probe is dropped. */}
-      <LabHeader
-        title={title}
-        subtitle={subtitle}
-        headerRef={headerRef}
-        onTouchStart={probeOn ? () => stamp('H') : undefined}
-        // TEMP touch probe: dev builds only (Comp A launch audit 2026-10-24,
-        // item 3: a triple-tap on the title opened debug text in STORE builds).
-        onTitlePress={__DEV__ ? titleTap : undefined}
-        right={
-          // Consistent per-screen help (Pillar C) — lands in the hub with lab
-          // answers surfaced.
-          <View
-            style={styles.headerRight}
-            ref={rightRef}
-            onTouchStart={
-              probeOn
-                ? () => {
-                    stamp('B');
-                    setProbe((p) => ({ ...p, down: p.down + 1 }));
-                  }
-                : undefined
-            }
-            onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
-          >
-            <HelpKey search="lab" />
-            {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
-            <AccuracyNote compact />
-            {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
-          </View>
-        }
-      />
+      {guide ? <ScreenGuideHintAnchor off={!shownGuide}>{header}</ScreenGuideHintAnchor> : header}
       {probeOn ? (
         <Text style={styles.probe} accessible={false}>
           PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up} · hit {probe.hits}
@@ -802,6 +834,7 @@ export function LabShell({
       ) : null}
 
       <GuidedLessonSheet visible={lessonOpen} lesson={lesson} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

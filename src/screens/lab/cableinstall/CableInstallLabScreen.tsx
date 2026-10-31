@@ -25,7 +25,13 @@ import { armSaveFailureReport, reportUnhandledSaveFailure } from '../../../featu
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../../components/GlassButton';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained" takes
+// the AccuracyNote's spot. This is a CONCEPT / decision lab — no live mic and
+// no real-world measurement readouts (its numbers are scenario-supplied specs,
+// said so in every SpecCard), so the chip goes; the code/safety boundary stays
+// in CI_GOVERN_NOTE on the intro and the per-stage scope notes.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { ciScreenGuide, type CiScreenKey } from './cableInstallScreenGuides';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
@@ -442,11 +448,38 @@ export function CableInstallLabScreen() {
    *  it gets the full height and no ScrollView of ours; its well appends the
    *  in-flow NEXT itself (RackUnit under LabNavProvider). */
   const rackStage = !!(mod && Body && mod.rack && !myth);
+  /** The screen the ⓘ explains: the myth card stands in for its stage; the
+   *  end screen and its field check each have their own guide. */
+  const guideKey: CiScreenKey = myth
+    ? 'myth'
+    : step === INTRO_STEP
+      ? 'home'
+      : step === COMPLETE_STEP
+        ? showFieldCheck
+          ? 'fieldCheck'
+          : 'complete'
+        : mod
+          ? mod.id
+          : 'home';
+  const guideTitle =
+    guideKey === 'myth'
+      ? 'RULE OR MYTH?'
+      : guideKey === 'complete'
+        ? 'END OF LAB — RESULTS'
+        : guideKey === 'fieldCheck'
+          ? 'CABLE INSTALLATION FIELD CHECK'
+          : mod && guideKey === mod.id
+            ? mod.title.toUpperCase()
+            : CI_TITLE.toUpperCase();
 
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <LabHeader title={CI_TITLE.toUpperCase()} subtitle={CI_SUBTITLE} right={<AccuracyNote compact />} />
+      {/* The guide overlay wraps the root's whole content (its overlay is the
+          root's last child); a screen change closes an open guide. Regions
+          only on the Rack Unit stage (Stage 11). */}
+      <ScreenGuideHost resetKey={guideKey} regions={rackStage}>
+      <LabHeader title={CI_TITLE.toUpperCase()} subtitle={CI_SUBTITLE} guide={ciScreenGuide(guideKey)} guideTitle={guideTitle} />
       <LabNavBar nav={nav} />
 
       {rackStage && mod && Body ? (
@@ -549,6 +582,7 @@ export function CableInstallLabScreen() {
       )}
 
       <SourceSheet sourceIds={sourceIds} onClose={() => setSourceIds(null)} />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

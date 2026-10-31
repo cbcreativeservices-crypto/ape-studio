@@ -38,7 +38,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
 import { levelColor, levelColorForDb, rampColors } from '../../../features/tools/levelColor';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): a CONCEPT lab — every number is an
+// illustrative model drawn from the equations, no live microphone — so the
+// header's accuracy chip gives its spot to the ⓘ "this screen, explained" key.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { MIC_END_GUIDE, MIC_SCREEN_GUIDES, type MicSectionId } from './micSpeakerScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -64,7 +68,7 @@ import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-ges
 const PATTERNS: { key: string; label: string; a: number; b: number; blurb: string }[] = [
   { key: 'omni', label: 'OMNI', a: 1, b: 0, blurb: 'Hears equally in every direction — no rejection anywhere. Natural sound, zero feedback protection.' },
   { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5, blurb: 'The heart shape: full sensitivity in front, dead at the REAR. The live-vocal standard — point the null at the monitor.' },
-  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~127° and a small rear lobe appears — aim monitors at the null, not the tail.' },
+  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~126° and a small rear lobe appears — aim monitors at the null, not the tail.' },
   { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — the best side rejection of the cardioid family, but it hears a fair amount from directly behind (only about 6 dB down).' },
   { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the pattern of most ribbon mics, and one half of mid-side.' },
 ];
@@ -1522,7 +1526,7 @@ function SpotTheMistake({ viz }: { viz: MsVizModule }) {
           <viz.MistakeIllustration width={200} kind={target.kind} />
           <CheckQuestion
             spec={{
-              question: `Round ${i + 1} of 3 — what is going wrong in this picture?`,
+              question: `Round ${i + 1} — what is going wrong in this picture?`,
               options: options.map((o) => clean(o.title)),
               correctIdx: 0,
               reveal: `${clean(target.title)} — ${target.note} (${ORIGIN[target.kind] ?? 'see the field guide'}.)`,
@@ -1539,7 +1543,7 @@ function SpotTheMistake({ viz }: { viz: MsVizModule }) {
 
 // `reading`: a plain-scroll page (no RackUnit), so the host's wellBottom draws
 // the in-flow NEXT / FINISH that a rack would append itself.
-const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element; reading?: boolean }[] = [
+const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element; reading?: boolean }[] = [
   { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
   { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone doesn’t hear equally in every direction — the pattern is its map of sensitivity.', Comp: PolarSection },
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
@@ -1650,7 +1654,16 @@ export function MicPrinciplesLabScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <LabHeader title="MICROPHONE PRINCIPLES" subtitle="How microphones capture sound" right={<AccuracyNote compact />} />
+      {/* The guide overlay is the root's last child; a section change closes
+          an open guide. Regions only where a Rack Unit draws them (the two
+          reading pages and the end screen have none). */}
+      <ScreenGuideHost resetKey={ending ? 'end' : s.key} regions={!ending && !s.reading}>
+      <LabHeader
+        title="MICROPHONE PRINCIPLES"
+        subtitle="How microphones capture sound"
+        guide={ending ? MIC_END_GUIDE : MIC_SCREEN_GUIDES[s.key]}
+        guideTitle={ending ? 'MICROPHONE PRINCIPLES' : s.title}
+      />
       <LabNavBar nav={nav} />
       {/* The RackUnit (or reading scroll) owns everything below the strip —
           it needs the full flex:1 vertical space. Keyed remount per section:
@@ -1680,6 +1693,7 @@ export function MicPrinciplesLabScreen() {
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

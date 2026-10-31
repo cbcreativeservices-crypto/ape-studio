@@ -8,8 +8,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { METER_END_GUIDE, METER_SCREEN_GUIDES } from './meterScreenGuides';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
@@ -139,11 +140,21 @@ export function MeterModuleScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
+      {/* The Screen Guide's overlay renders as this root's last child, so its
+          steps sit away from the display / dock they explain (measured from
+          the module's Rack Unit). A module change closes an open guide. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : meta.id}>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). The header ⓘ
+          explains THIS module's screen (Signal Detective = 'detective'), or
+          the what's-left screen after FINISH (Screen Guide, owner 2026-10-31).
+          A CONCEPT lab: built-in teaching signals (badged on every stage), no
+          live mic, no real-world measurement — so no accuracy chip (owner
+          rule 2026-10-31); the key takes its spot. */}
       <LabHeader
         title={meta.title.toUpperCase()}
         subtitle="Visual Audio Analysis Lab"
-        right={<AccuracyNote compact detail="These displays are driven by built-in teaching signals, not your microphone — read them to learn what each meter shows. For accurate levels use a calibrated SPL meter or measurement mic." />}
+        guide={ending ? METER_END_GUIDE : METER_SCREEN_GUIDES[meta.id]}
+        guideTitle={ending ? 'VISUAL AUDIO ANALYSIS LAB' : meta.title.toUpperCase()}
       />
       <LabNavBar nav={nav} />
       {endScreen ?? (
@@ -175,6 +186,7 @@ export function MeterModuleScreen() {
       </ScrollLockProvider>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

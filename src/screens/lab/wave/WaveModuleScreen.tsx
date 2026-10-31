@@ -9,7 +9,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -19,6 +19,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { ScrollLockProvider } from '../LabShell';
 import { LabPhotoLightbox } from '../labPhoto';
 import { WAVE_MODULES, type WaveModuleId } from './modules/registry';
+import { WAVE_SCREEN_GUIDES } from './waveScreenGuides';
 import {
   ReflectionModule, AbsorptionModule, DiffusionModule, RefractionModule,
   DiffractionModule, InterferenceModule, CombModule, StandingWaveModule,
@@ -157,8 +158,23 @@ export function WaveModuleScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* The Screen Guide's overlay renders as this root's last child, so its
+          steps can sit away from the display / dock they explain (measured
+          from the Rack Unit). A module change closes an open guide. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : meta.id}>
       {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
-      <LabHeader title={meta.title.toUpperCase()} subtitle="Wave Physics Laboratory" right={<AccuracyNote compact />} />
+      {/* The header ⓘ explains THIS module's screen (Screen Guide pilot,
+          owner 2026-10-31). Wave Physics is a CONCEPT lab — no live mic and
+          no real-world measurement numbers — so the accuracy chip is not
+          shown here (owner decision 2, 2026-10-31). The anchor hangs the
+          one-time "tap ⓘ" hint under the key. */}
+      <ScreenGuideHintAnchor>
+        <LabHeader
+          title={meta.title.toUpperCase()}
+          subtitle="Wave Physics Laboratory"
+          right={<ScreenGuideKey title={meta.title.toUpperCase()} guide={WAVE_SCREEN_GUIDES[meta.id]} />}
+        />
+      </ScreenGuideHintAnchor>
       <LabNavBar nav={nav} />
       {/* A module opened straight (a deep link) still reminds a guest first;
           from the hub it was already shown — one id for the whole lab. */}
@@ -200,6 +216,7 @@ export function WaveModuleScreen() {
         </ScrollLockProvider>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

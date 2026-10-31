@@ -27,7 +27,10 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { registerLabUnits, useLabClearedUnits, useLabCompletion, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained",
+// one guide per lesson step (cableScreenGuides.ts).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { CABLE_SCREEN_GUIDES } from './cableScreenGuides';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION, LESSON_UNITS } from './data/lessons';
 import { CableShellStateCtx, CableStepNavCtx } from './lessons/bits';
@@ -142,11 +145,22 @@ export function CableLabScreen() {
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
-            instrument for real measurement — this app teaches, and the phone's
-            mic and audio path are uncalibrated. Added 2026-09-17 after a
-            bug-hunt pass found this lab had no note at all. */}
-        <LabHeader title="CABLE & CONNECTOR FUNDAMENTALS" subtitle="Identify it. Understand it. Connect it safely." right={<AccuracyNote compact />} />
+        {/* Screen Guide host: the overlay is this root's last child; a lesson
+            change closes an open guide. No Rack Unit here (reading lessons),
+            so regions are off and every step sits in a bottom card. */}
+        <ScreenGuideHost regions={false} resetKey={s.id}>
+        {/* ACCURACY CHIP RULE (owner 2026-10-31): the "LEARN HERE — MEASURE
+            WITH THE RIGHT TOOL" chip stays only on live-mic tools and labs
+            that show real-world measurement numbers. This is a CONCEPT lab —
+            identification, construction, selection and safety; nothing is
+            measured (the tester is a labelled simulation) — so the chip is
+            gone and the ⓘ guide key takes its header spot. */}
+        <LabHeader
+          title="CABLE & CONNECTOR FUNDAMENTALS"
+          subtitle="Identify it. Understand it. Connect it safely."
+          guide={CABLE_SCREEN_GUIDES[s.id]}
+          guideTitle={s.title}
+        />
         <LabNavBar nav={nav} />
 
         <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
@@ -170,6 +184,7 @@ export function CableLabScreen() {
               the header ‹ leaves the lab). */}
           <LabNextButton nav={nav} />
         </ScrollView>
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

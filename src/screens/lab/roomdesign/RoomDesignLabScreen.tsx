@@ -49,6 +49,8 @@ import { ExploreModule } from './modules/modExplore';
 import { TreatmentModule } from './modules/modTreatment';
 import { ReviewModule } from './modules/modReview';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { ROOM_END_GUIDE, ROOM_SCREEN_GUIDES } from './roomdesignScreenGuides';
 
 const TITLE = 'ROOM DESIGN & MONITORING LAB';
 
@@ -185,7 +187,18 @@ export function RoomDesignLabScreen() {
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <LabHeader title={TITLE} subtitle={ending ? "What's left" : `${mod.num} · ${mod.title}`} right={<AccuracyNote compact detail="This lab models a room from the numbers you enter. It shows where problems are LIKELY, never what the room does — measure the real room with a calibrated analyzer and let the measurement have the last word." />} />
+        {/* Screen Guide (owner 2026-10-31): the ⓘ sits BESIDE the accuracy
+            chip — this lab prints real-room acoustics numbers (modes, RT60,
+            distances), so the chip stays. Regions only on the rack modules;
+            a module change (or FINISH) closes an open guide. */}
+        <ScreenGuideHost resetKey={ending ? 'end' : mod.id} regions={mod.rack && !ending}>
+        <LabHeader
+          title={TITLE}
+          subtitle={ending ? "What's left" : `${mod.num} · ${mod.title}`}
+          right={<AccuracyNote compact detail="This lab models a room from the numbers you enter. It shows where problems are LIKELY, never what the room does — measure the real room with a calibrated analyzer and let the measurement have the last word." />}
+          guide={ending ? ROOM_END_GUIDE : ROOM_SCREEN_GUIDES[mod.id]}
+          guideTitle={ending ? 'WHAT’S LEFT' : mod.title.toUpperCase()}
+        />
         <LabNavBar nav={nav} />
         {visitsUnreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
@@ -211,6 +224,7 @@ export function RoomDesignLabScreen() {
             {body(mod.id)}
           </ScrollView>
         )}
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

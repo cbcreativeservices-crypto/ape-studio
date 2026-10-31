@@ -2052,8 +2052,12 @@ export function DualDomainView({
   const MICX = w - 96;
   const NOWX = MICX;
   const PPX = (2 * Math.PI * DD_CYC) / w; // phase per px (same in both windows)
-  const maxOff = MICX - 16;
-  const off = cursor * maxOff;
+  const maxOff = MICX - 8; // probe stays ≥ 8 px in (both traces start at x ≤ 6)
+  // Same mapping as M7's PROBE lane readout (cursor 0.69 = exactly one period
+  // back), so the dock and both graphs print the same ms/m at any stage width.
+  // One period = w / DD_CYC px; the end of the lane is 1.449 periods = 0.659·w,
+  // under w − 104 for every w ≥ 305, so it never clamps (FitStage keeps w ≥ 320).
+  const off = Math.min(maxOff, (cursor / 0.69) * (w / DD_CYC));
   const probeX = MICX - off; // same spot, same x, both graphs
 
   // Honest numbers (REAL Hz, never the slowed visual clock).
