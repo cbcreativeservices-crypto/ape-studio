@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 09:43 · ccode · a59133c7
+changed: Website verification: credential kind by name, not 'certificate · L1' (owner 2026-10-31)
+affects other side: nothing (website display only; reaches the live site with the D34 deploy GO)
+needs: nothing
+
+
 ### 2026-10-31 09:36 · ccode · 9ae67aa8
 changed: Website verification: Registrar attestation above verified credentials (owner 2026-10-31)
 affects other side: nothing (website copy; reaches the live site only with the owner's deploy GO)

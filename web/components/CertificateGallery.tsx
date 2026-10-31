@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { VerifiedCredential } from "@/lib/verify";
 import type { CertificateSource } from "@/lib/certificate/render";
+import { catalogAnchor } from "@/lib/catalog";
 
 /**
  * CertificateGallery — the credentials list on the two public pages, with a
@@ -128,8 +129,16 @@ export default function CertificateGallery({ credentials, holder, source }: Prop
                 />
               ) : null}
               <div className="min-w-0 [overflow-wrap:anywhere]">
+                {/* The title opens this credential in the catalog below
+                    ("What our credentials include", owner 2026-10-31). */}
                 <p className="font-display text-lg font-semibold text-foreground">
-                  {c.credential_name}
+                  <a
+                    href={`#${catalogAnchor(c.credential_type, c.credential_name)}`}
+                    className="underline decoration-amber/40 underline-offset-4 hover:text-amber hover:decoration-amber"
+                    title="See what this credential includes"
+                  >
+                    {c.credential_name}
+                  </a>
                 </p>
                 <p className="mt-1 text-sm text-text-sub">
                   {/* The credential's proper name, not the raw database
