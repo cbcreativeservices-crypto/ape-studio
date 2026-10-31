@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import { PageHero, Section, List, BrandLine, CTARow } from "@/components/content";
+import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
 
 /*
- * Founder page — rewritten 2026-10-31 from the owner's CV (Downloads/C_Booth_CV.pdf).
- * Every fact here is from that CV or the owner's own words (incl. 2026-10-31 chat: first paid audio
- * job at 11, recording since 12, first paid gig at 13, composing/producing since 15, performed
- * across the US and worldwide, painter, professional photographer); nothing is inferred.
- * Owner rulings: title is Program Director and Lead Faculty (NOT coordinator, owner
- * 2026-10-31, overrides the CV wording); Miramar tenure as "since 1999" (stays true every year); name the
- * partner organisations as worded on the CV, but not the individual contact.
+ * Founder page (owner 2026-10-31). A short story, not a CV: the owner's CV
+ * (Downloads/C_Booth_CV.pdf) was written for work; this page "says less, yet says
+ * more". AUDIO comes first — four decades in professional audio, teaching it since
+ * 1999 and running a state-certified college program — then education and life
+ * experience; music is shown, but second (owner: "for the app, it is my audio
+ * teaching experience, my education, and my life experiences").
+ * Facts come only from the CV and the owner's own words (first paid audio job at
+ * 11, recording at 12, first paid gig at 13, composing/producing at 15, performed
+ * across the US and worldwide, painter, professional photographer, state-certified
+ * program). Owner rulings: title is Program Director and Lead Faculty (NOT
+ * coordinator); Miramar as "since 1999"; partners may be named, never an
+ * individual contact. The full original resume is still to come (must-do D36).
  */
 export const metadata: Metadata = {
   title: "Founder",
   description:
-    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Berklee-trained pianist and composer, Professor of Music and Audio Production and Engineering at San Diego Miramar College since 1999, and four decades in professional audio.",
+    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program, and Berklee-trained.",
 };
 
 export default function Page() {
@@ -22,156 +27,64 @@ export default function Page() {
       <PageHero
         eyebrow="Founder &amp; Curriculum Director"
         title="Professor Channing “Cháno” Booth"
-        lede="Berklee-trained musician, college professor of audio production and engineering since 1999, and four decades in professional audio. The Academy is his life’s work, brought together in one place and opened to everyone."
+        lede="Four decades in professional audio. Teaching it since 1999. A lifetime of experience, brought together in one place and opened to everyone."
       />
 
       <Section>
-        <p>
-          Professor Channing “Cháno” Booth has spent his career where music,
-          engineering, and teaching meet. He has run the stage and the studio,
-          led a college audio program, and performed at the piano for audiences
-          across Southern California and Baja California. Pro Audio Training
-          Academy is the work of that whole career, and he is its Founder and
-          Curriculum Director.
+        <p className="font-mono text-xs uppercase leading-relaxed tracking-[0.15em] text-text-muted">
+          Program Director &amp; Lead Faculty, Audio Production and Engineering · San Diego Miramar College · since 1999
+          <br />
+          Four decades in professional audio · Member, Audio Engineering Society
+          <br />
+          Berklee College of Music · B.M. 1995, M.M. 1997
         </p>
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-amber">At a glance</p>
-          <ul className="mt-3 space-y-2 text-sm text-text-sub">
-            <li>
-              <strong>Master of Music</strong>, Jazz Studies (Composition Emphasis):
-              Boston Conservatory / Berklee College of Music, 1997
-            </li>
-            <li>
-              <strong>Bachelor of Music</strong>, dual major in Piano Performance and
-              Jazz Composition: Berklee College of Music, 1995
-            </li>
-            <li>
-              <strong>Professor of Music and Audio Production and Engineering</strong>,
-              San Diego Miramar College, faculty since 1999
-            </li>
-            <li>
-              <strong>Program Director and Lead Faculty</strong> of the college’s
-              Audio Production and Engineering program
-            </li>
-            <li>
-              <strong>Four decades</strong> in live sound, studio recording, and
-              production
-            </li>
-            <li>
-              <strong>Member</strong>, Audio Engineering Society
-            </li>
-          </ul>
-        </div>
-      </Section>
-
-      <Section title="A lifetime in sound">
         <p>
-          He started young and never stopped. He took his first paid audio job
-          at 11, running sound for a school program; he has been recording since
-          he was 12; he played his first paid gig, in a club, at 13; and he has
-          been composing and producing since 15. Everything since has been built
-          on that early start.
+          Cháno Booth has worked in audio since he was a child: he ran sound for
+          pay at 11 and was recording at 12. Four decades on, he has done nearly
+          every job the field has to offer: front of house and monitors, the
+          recording studio and the control room, system design, rigging and
+          installation, and live sound and installation consulting for Harvard
+          University and the Boston Museum of Science.
         </p>
       </Section>
 
-      <Section title="Education">
+      <Section title="Teaching audio since 1999">
         <p>
-          Professor Booth earned his Bachelor of Music at Berklee College of Music
-          in 1995, with a dual major in Piano Performance and Jazz Composition,
-          and his Master of Music in Jazz Studies, with an emphasis in
-          composition, at Boston Conservatory / Berklee College of Music in 1997.
+          For more than a quarter of a century he has taught audio at San Diego
+          Miramar College, where he is Professor, Program Director and Lead
+          Faculty of the college’s state-certified Audio Production and
+          Engineering program. He built and runs its recording studios and
+          labs, wrote its course in sound reinforcement systems, and keeps the
+          program tied to the working industry through its advisory board and
+          partners such as Yamaha Corporation of America. In 2024 he was
+          recognized by UC San Diego and by the Empirical Labs Audio Educator
+          Advisory Group.
+        </p>
+        <p>
+          Generations of students have learned the craft from him, and the
+          Academy carries the same teaching to anyone, anywhere.
         </p>
       </Section>
 
-      <Section title="Teaching and program leadership">
+      <Section title="The musician">
         <p>
-          Since 1999 he has taught at San Diego Miramar College, where he is
-          Professor of Music and Audio Production and Engineering, and the
-          Program Director and Lead Faculty of the Audio Production and
-          Engineering program. He teaches face-to-face and online, connecting
-          music theory, performance, and listening to the science of sound and
-          musical perception, often demonstrating at the piano in class.
+          His ear was trained at the piano. He earned his Bachelor of Music at
+          Berklee College of Music in 1995 and his Master of Music in 1997, has
+          performed across the United States and around the world, and still
+          plays regularly with Afrotruko, a 13-piece salsa orchestra, and Perla
+          Negra, a Cuban jazz piano trio. Composing and producing since 15, he
+          knows what it is to be on both sides of the glass.
         </p>
-        <List
-          items={[
-            "Leads the Audio Production and Engineering program, with scheduling, studio operations, and a faculty team",
-            "Runs the program’s industry advisory board, bringing working professionals into curriculum decisions",
-            "Plans equipment acquisition, from technical evaluation and vendor coordination to budget and integration",
-            "Author of Audio 201: Sound Reinforcement Systems, first offered in Fall 2025",
-            "Writes the annual program reviews for the college’s music and audio programs, and has served on the Academic Senate",
-          ]}
-        />
-      </Section>
-
-      <Section title="Studios and facilities">
-        <p>
-          He is responsible for the college’s instructional recording studio and
-          audio laboratories: a recording complex with a control room and
-          multiple isolation booths, a 24-workstation computer music lab, and a
-          mixing and mastering suite. He designs the signal integration and
-          cabling, installs and maintains the equipment, and keeps the systems
-          running for every class that uses them.
-        </p>
-      </Section>
-
-      <Section title="Professional audio">
-        <p>
-          Across four decades of live sound, studio recording, and production,
-          he has worked behind the boards in the control room and in front of
-          the mic. He has produced audio systems and events, including front of
-          house, monitors, and rigging, and served as a live sound and
-          installation consultant and technician for Harvard University and the
-          Boston Museum of Science.
-        </p>
-      </Section>
-
-      <Section title="In the industry">
-        <List
-          items={[
-            "Industry collaboration with Yamaha Corporation of America",
-            "Professional relationships with Greene Music, Rarefied Recording, and Studio West",
-            "Member of the Audio Engineering Society; conference development committee member, moderator, and session facilitator for the AES DEI Conference, Breaking Barriers in Audio (2025)",
-            "About ten years of attendance at the NAMM Show",
-            "Faculty Association of California Community Colleges; affiliated with IATSE through events and professional networking",
-          ]}
-        />
-      </Section>
-
-      <Section title="At the piano">
-        <p>
-          The piano is his first instrument and his main talent. A specialist
-          in jazz, Latin jazz, and salsa, he has performed across the United
-          States and around the world, in clubs, theaters, arenas, music
-          festivals, and international jazz festivals. Today he performs
-          throughout Southern California and Baja California, with about 150
-          public performances in the past three years, as pianist with
-          Afrotruko, a 13-piece salsa ensemble, and with Perla Negra, a Cuban
-          jazz piano trio.
-        </p>
-      </Section>
-
-      <Section title="Recognition">
-        <List
-          items={[
-            "Certificate of Recognition, African and African-American Studies Research Center, University of California San Diego (2024)",
-            "Certificate of Recognition, Empirical Labs Audio Educator Advisory Group (2024)",
-          ]}
-        />
       </Section>
 
       <Section title="Where it all connects">
         <p>
-          His curiosity has never stopped at the edge of the mixing desk. He is
-          drawn to science, physics, and acoustics; to psychology, sociology,
-          and ethnomusicology; to history and the humanities; and to the visual,
-          tactile, and culinary arts. He has painted and has worked as a
-          professional photographer.
-        </p>
-        <p>
-          In building the Academy he found that all of it connects: the physics
-          of a vibrating string, the psychology of how we hear, the history and
-          culture a rhythm carries, and the craft of the people who capture and
-          shape it. The Academy brings those threads together in one place.
+          His curiosity has never stopped at the mixing desk: physics and
+          acoustics, psychology and ethnomusicology, history and the humanities,
+          painting, professional photography, and the culinary arts. In building
+          the Academy he found that it all connects: the physics of a vibrating
+          string, the way we hear, the culture a rhythm carries, and the craft of
+          the people who capture it.
         </p>
       </Section>
 
@@ -179,21 +92,12 @@ export default function Page() {
 
       <Section title="Why the Academy">
         <p>
-          Everything Professor Booth has learned on stage, in the studio, at the
-          piano, and in the classroom is in the Academy: the glossary, structured
-          training, hands-on labs, work-based learning and employment readiness,
-          and professional audio safety, brought together in one system.
-        </p>
-        <p>
-          It is his passion piece. Training of this depth has usually been
-          available only to the few who can afford a private audio school. The
-          Academy exists to give that same depth to anyone who wants to learn.
-        </p>
-        <p>
-          He loves teaching and sharing what he knows, and nothing gives him
-          more satisfaction than seeing people who would not normally get a
-          chance get one, and succeed, instead of being priced out of the
-          careers, and the joy, that audio and music offer.
+          The Academy is his passion piece: everything he has learned in the
+          classroom, the studio, on stage, and at the piano, in one place.
+          Training of this depth has usually been reserved for the few who can
+          afford a private school. He built the Academy so that anyone who wants
+          to learn gets the chance, and so that no one is priced out of a
+          career, or the joy, that audio offers.
         </p>
         <blockquote className="border-l-2 border-amber pl-4 text-foreground">
           <p>
