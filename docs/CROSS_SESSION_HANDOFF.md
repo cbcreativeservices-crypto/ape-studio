@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 07:51 · ccode · 1befcb08
+changed: nightly: live server snapshot 2026-10-31
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-10-30 10:44 · ccode · 8999790a
 changed: Docs: governance D118 (10-30 rulings), lessons 10-30, must-do header; owner paused
 affects other side: nothing (docs only: governance D118 records the 10-30 rulings: D31 r3 installed, D33 all Apply, D16 closed, R10 after launch, H1 retired, D32 app-only).
