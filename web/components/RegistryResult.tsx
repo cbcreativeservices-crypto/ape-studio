@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { lookupRegistry, type RegistryOutcome } from "@/lib/verify";
 import CertificateGallery from "./CertificateGallery";
+import RegistrarAttestation from "./RegistrarAttestation";
 
 /**
  * RegistryResult — the public page behind a member's QR token (users.qr_token).
@@ -117,6 +118,7 @@ export default function RegistryResult({ token }: { token: string }) {
               Verified credentials
             </p>
           </div>
+          <RegistrarAttestation className="mt-3" />
 
           <CertificateGallery
             credentials={credentials}
