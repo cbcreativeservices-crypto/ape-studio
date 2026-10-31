@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 07:54 · ccode · a19da2a3
+changed: Must-do D31: drop stale 'nothing installed yet' (round 3 installed in f86c2cd6)
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-31 07:51 · ccode · 1befcb08
 changed: nightly: live server snapshot 2026-10-31
 affects other side: none (snapshot only)

@@ -1,5 +1,7 @@
 /**
- * CompactBrandBar — logo · PRO AUDIO TRAINING ACADEMY · HOME.
+ * CompactBrandBar — HOME · logo · PRO AUDIO TRAINING ACADEMY · [help].
+ * (HOME moved from the right to the left 2026-10-31, owner: one side for
+ * the way out on every screen.)
  *
  * The small header from the Awards/Enrollments pages, extracted so other
  * screens can use it (owner 2026-09-19: "we need to use this smaller header
@@ -39,6 +41,13 @@ export function CompactBrandBar({ right }: { right?: ReactNode }) {
 
   return (
     <View style={s.row}>
+      {/* HOME is TOP-LEFT on every screen (owner 2026-10-31: "top-left
+          everywhere") — the same spot as the Glossary's HOME and the
+          HomeOrBackKey, so the way out never changes sides. `right` stays
+          free for the per-screen help key. */}
+      <Pressable onPress={home} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={s.homeBtn}>
+        <NavIcon icon="Home" lit />
+      </Pressable>
       {/* The logo is a second way home, as it is on every screen that has one. */}
       {/* The screen is titled "Academy"; the old label ("Back to course
           selection") sent a screen-reader user to a screen name that does not
@@ -51,18 +60,15 @@ export function CompactBrandBar({ right }: { right?: ReactNode }) {
       </Text>
       <View style={{ flex: 1 }} />
       {right}
-      <Pressable onPress={home} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={s.homeBtn}>
-        <NavIcon icon="Home" lit />
-      </Pressable>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 6, paddingBottom: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 6, paddingRight: 14, paddingBottom: 8 },
   /* shrink-to-fit is load-bearing: the wordmark has to survive a narrow phone
      with a help key beside it without wrapping to two lines. */
   wordmark: { flexShrink: 1, fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
   accent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
-  homeBtn: { padding: 4, marginRight: 8 },
+  homeBtn: { padding: 4, marginLeft: 8 },
 });
