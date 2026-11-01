@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-31 19:50 · ccode · 724a3cd3
+changed: Lab screen guides: what's-left end-screen guides for 10 labs (D41 g)
+affects other side: nothing — app-only, no server change
+needs: nothing
+
+
 ### 2026-10-31 19:09 · ccode · 8dbbf816
 changed: Lab screen guides: Advanced Training (D37), effect labs wired, vetted screen fixes; HOLDs on D41
 affects other side: nothing — app-only, no server change
