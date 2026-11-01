@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 11:22 · ccode · 3165f520
+changed: Must-do D41: owner ruled Ear Training level and Drum Tuning counts are scores (keep totals)
+affects other side: nothing — docs only
+needs: nothing
+
+
 ### 2026-11-01 11:08 · ccode · 918b112d
 changed: D41 (h)(i)(j): fix the follow-ups the bug checkers found, each independently checked
 affects other side: nothing — app-only, no server change
