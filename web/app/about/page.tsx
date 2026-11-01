@@ -73,7 +73,7 @@ export default function Page() {
           every day, so basic electrical and grounding awareness belongs in
           everyone’s foundation — with the emphasis on informed, responsible
           behavior and on recognizing when a situation needs a qualified
-          professional. Hearing protection is taught alongside them.
+          professional. Hearing protection is taught alongside both.
         </p>
       </Section>
 
