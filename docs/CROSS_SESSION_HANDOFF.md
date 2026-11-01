@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 11:25 · ccode · 0d168a78
+changed: Must-do D41: owner keeps the Ear Training compression drill quieter (no recalibration)
+affects other side: nothing — docs only
+needs: nothing
+
+
 ### 2026-11-01 11:22 · ccode · 3165f520
 changed: Must-do D41: owner ruled Ear Training level and Drum Tuning counts are scores (keep totals)
 affects other side: nothing — docs only
