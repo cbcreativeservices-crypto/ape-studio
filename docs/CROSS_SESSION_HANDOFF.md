@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 15:46 · ccode · 2da0362f
+changed: web: owner-approved mission, academy breadth, employer training + catalog wording (2026-11-01)
+affects other side: nothing (website copy only; Audio Fundamentals shown as required labs, not a topic; quizzes stated as 30 questions)
+needs: nothing. Not published: website deploy waits for the owner GO (copy onto audio-tools-engine).
+
+
 ### 2026-11-01 11:55 · ccode · 59475f84
 changed: Website About: clearer hearing-protection sentence
 affects other side: nothing — website copy only, not yet published
