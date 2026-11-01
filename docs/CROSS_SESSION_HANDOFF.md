@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 11:38 · ccode · ee43cd35
+changed: Calculators: 166 calculators everywhere (owner 2026-11-01)
+affects other side: nothing — app-only; keeps "166 calculators" consistent with ads and website
+needs: nothing
+
+
 ### 2026-11-01 11:25 · ccode · 0d168a78
 changed: Must-do D41: owner keeps the Ear Training compression drill quieter (no recalibration)
 affects other side: nothing — docs only
