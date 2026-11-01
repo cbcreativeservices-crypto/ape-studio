@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 11:08 · ccode · 918b112d
+changed: D41 (h)(i)(j): fix the follow-ups the bug checkers found, each independently checked
+affects other side: nothing — app-only, no server change
+needs: nothing
+
+
 ### 2026-11-01 09:44 · ccode · 3e2f3df1
 changed: nightly: live server snapshot 2026-11-01
 affects other side: none (snapshot only)
