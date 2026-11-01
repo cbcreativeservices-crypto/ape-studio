@@ -3,7 +3,9 @@
  *
  *  CH1  the chain / workflow / project import matches UNITS, not just the kind:
  *       a kg/m² never fills a µF, a dBV never fills a dBu, a dBV/Pa never fills
- *       a mV/Pa; same-unit and unnamed relative-dB chains still work;
+ *       a mV/Pa; same-unit and unnamed relative-dB values still pass the unit
+ *       rule (unitFits). Since D41 a computed answer must also MEAN the same
+ *       thing (chainFits) — see calcChainMeaning_20261101;
  *  CH2  a workflow import survives an upstream label that carries an input
  *       ("RECOMMENDED GAIN LEAVING 12 dB HEADROOM") — falls back by position;
  *  NF1  a result whose every number is NaN/∞ is an error, not a panel of "—"
@@ -37,7 +39,7 @@ registerHooks({
 });
 
 const { getWorkspace } = await import('../src/screens/lab/calc/registry.ts');
-const { chainFits, unitTags, isNonNegativeField } = await import('../src/screens/lab/calc/calcUnits.ts');
+const { chainFits, unitFits, unitTags, isNonNegativeField } = await import('../src/screens/lab/calc/calcUnits.ts');
 const read = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const ws = (id: string) => {
@@ -69,30 +71,42 @@ test('CH1 — unit tags read the result side of a label', () => {
 });
 
 test('CH1 — mismatched units never fill, matching ones still do', () => {
-  // The two cases named in the brief.
-  assert.equal(chainFits('REQUIRED PANEL MASS (kg/m²)', 'number', field('electronics', 'cap')), false);
-  assert.equal(chainFits('LEVEL (dBV)', 'db', field('level', 'dbu')), false);
-  assert.equal(chainFits('SENSITIVITY (dBV/Pa)', 'number', field('micgain', 'sens')), false);
-  assert.equal(chainFits('DIFFERENCE (LU)', 'number', field('loudnorm', 'measured')), false);
-  assert.equal(chainFits('Speakers', 'number', field('complexz', 'capuF')), false); // a project "Count"
-  // Same unit / unnamed still chain.
-  assert.equal(chainFits('SENSITIVITY (mV/Pa)', 'number', field('micgain', 'sens')), true);
-  assert.equal(chainFits('LEVEL (dBu)', 'db', field('level', 'dbu')), true);
-  assert.equal(chainFits('LEVEL (dBV)', 'db', field('level', 'dbx')), true);
-  assert.equal(chainFits('LEVEL CHANGE', 'db', field('level', 'dbAmp')), true);
-  assert.equal(chainFits('OUTPUT LEVEL (dBu)', 'db', field('micgain', 'target')), true); // unnamed field
-  assert.equal(chainFits('Q', 'number', field('qbw', 'q')), true);
-  assert.equal(chainFits('DELAY', 'time', field('latency', 'proc')), true);
-  assert.equal(chainFits('DELAY', 'time', field('wave', 'f')), false); // kinds still must match
+  // The unit rule (unitFits) — the two cases named in the brief.
+  assert.equal(unitFits('REQUIRED PANEL MASS (kg/m²)', 'number', field('electronics', 'cap')), false);
+  assert.equal(unitFits('LEVEL (dBV)', 'db', field('level', 'dbu')), false);
+  assert.equal(unitFits('SENSITIVITY (dBV/Pa)', 'number', field('micgain', 'sens')), false);
+  assert.equal(unitFits('DIFFERENCE (LU)', 'number', field('loudnorm', 'measured')), false);
+  assert.equal(unitFits('Speakers', 'number', field('complexz', 'capuF')), false); // a project "Count"
+  // Same unit / unnamed still pass the unit rule.
+  assert.equal(unitFits('SENSITIVITY (mV/Pa)', 'number', field('micgain', 'sens')), true);
+  assert.equal(unitFits('LEVEL (dBu)', 'db', field('level', 'dbu')), true);
+  assert.equal(unitFits('LEVEL (dBV)', 'db', field('level', 'dbx')), true);
+  assert.equal(unitFits('LEVEL CHANGE', 'db', field('level', 'dbAmp')), true);
+  assert.equal(unitFits('Q', 'number', field('qbw', 'q')), true);
+  assert.equal(unitFits('DELAY', 'time', field('wave', 'f')), false); // kinds still must match
+  // A computed answer also needs the same MEANING (D41) — and the unit guard
+  // still refuses under a matching meaning.
+  assert.equal(chainFits('SENSITIVITY (mV/Pa)', 'number', field('micgain', 'sens'), 'number:mic-sens'), true);
+  assert.equal(chainFits('SENSITIVITY (dBV/Pa)', 'number', field('micgain', 'sens'), 'number:mic-sens'), false);
+  assert.equal(chainFits('LEVEL (dBu)', 'db', field('level', 'dbu'), 'db:level'), true);
+  assert.equal(chainFits('LEVEL (dBV)', 'db', field('level', 'dbu'), 'db:level'), false);
+  assert.equal(chainFits('LEVEL (dBV)', 'db', field('level', 'dbx'), 'db:level'), true);
+  assert.equal(chainFits('LEVEL CHANGE', 'db', field('level', 'dbAmp'), 'db:change'), true);
+  assert.equal(chainFits('Q', 'number', field('qbw', 'q'), 'number:q-filter'), true);
+  // Pinned true before D41, and physically wrong: a mic's output level is not
+  // the preamp's target, a distance delay is not plugin processing latency.
+  assert.equal(chainFits('OUTPUT LEVEL (dBu)', 'db', field('micgain', 'target'), 'db:level'), false);
+  assert.equal(chainFits('DELAY', 'time', field('latency', 'proc'), 'time:delay'), false);
 });
 
 test('CH1 — every chain entry point uses chainFits', () => {
   const wsScreen = read('screens/lab/calc/CalcWorkspaceScreen.tsx');
-  assert.match(wsScreen, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f\);/);
+  assert.match(wsScreen, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\);/);
   const run = read('screens/lab/calc/CalcWorkflowRunScreen.tsx');
-  assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f\) && o\.chainable !== false/);
-  assert.match(run, /\.filter\(\(v\) => chainFits\(v\.label, v\.quantity, f\)\)/);
-  assert.match(run, /if \(o && chainFits\(o\.label, o\.quantity, f\)/);
+  assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.chainable !== false/);
+  // A saved project value carries no meaning tag: the kind + unit rule (D41).
+  assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\)\)/);
+  assert.match(run, /if \(o && chainFits\(o\.label, o\.quantity, f, o\.meaning\)/);
 });
 
 test('CH2 — a relabelled upstream output is found by position', () => {

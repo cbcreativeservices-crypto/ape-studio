@@ -232,10 +232,11 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(code('src/features/lab/guidedLessons/content.ts'), /band-limiting OFF/);
     assert.match(g.learn.changes[1], /FM, AM, noise and the band-limiting ON\/OFF tip are reading only: EXPLORE has only WAVE, F0 and SPKR \(LAB NOTES says so for FM and AM\)/);
   });
-  it('CHECK: partial answers do not survive leaving the tab, and the guide says so', () => {
+  it('D41 CHECK: right answers survive a tab switch (the check stays mounted), and the guide says so', () => {
     assert.match(code('src/components/LabUnderstandingCheck.tsx'), /const \[correct, setCorrect\] = useState<Set<string>>/);
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
     const t = textOf(GUIDES.check);
-    assert.doesNotMatch(t, /even if you come back later|nothing is lost/);
-    assert.match(t, /A right answer stays right while you stay on this tab/);
+    assert.doesNotMatch(t, /even if you come back later|nothing is lost|stay on this tab|start fresh/);
+    assert.match(t, /Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over/);
   });
 });

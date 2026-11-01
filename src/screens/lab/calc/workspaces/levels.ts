@@ -75,15 +75,15 @@ const WS_LEVEL: Workspace = {
     'convert it either.',
   glossary: ['Decibel', 'dBu', 'dBV', 'dBFS', 'Gain', 'Voltage'],
   fields: [
-    { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', signed: true, placeholder: '4', help: 'Level referenced to 0.7746 V RMS (√0.6 V, often rounded to 0.775 V) — the professional line-level scale.' },
-    { key: 'vFromDbu', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '1.228', help: 'RMS signal voltage to express on the dBu scale.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
-    { key: 'dbv', name: 'LEVEL (dBV)', quantity: 'db', signed: true, placeholder: '-10', help: 'Level referenced to 1 V RMS — the consumer line-level scale.' },
-    { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
-    { key: 'dbx', name: 'LEVEL (dBu or dBV)', quantity: 'db', signed: true, placeholder: '4', help: 'A level on either scale — the converter shows both readings of the same voltage.' },
-    { key: 'ampRatio', name: 'AMPLITUDE RATIO', quantity: 'ratio', nonNegative: true, placeholder: '2', help: 'Linear ratio of voltages, sound pressures, or gains (out ÷ in).', positive: true, warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
-    { key: 'powRatio', name: 'POWER RATIO', quantity: 'ratio', nonNegative: true, placeholder: '2', help: 'Linear ratio of powers or intensities (out ÷ in) — watts, not volts.', positive: true, warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
-    { key: 'dbAmp', name: 'LEVEL CHANGE', quantity: 'db', signed: true, placeholder: '6', help: 'Gain or attenuation in dB to convert back to an amplitude (voltage) ratio.' },
-    { key: 'dbPow', name: 'LEVEL CHANGE', quantity: 'db', signed: true, placeholder: '3', help: 'Gain or attenuation in dB to convert back to a power (wattage) ratio.' },
+    { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', meaning: 'db:level', signed: true, placeholder: '4', help: 'Level referenced to 0.7746 V RMS (√0.6 V, often rounded to 0.775 V) — the professional line-level scale.' },
+    { key: 'vFromDbu', name: 'VOLTAGE', quantity: 'voltage', meaning: 'voltage:rms', nonNegative: true, placeholder: '1.228', help: 'RMS signal voltage to express on the dBu scale.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
+    { key: 'dbv', name: 'LEVEL (dBV)', quantity: 'db', meaning: 'db:level', signed: true, placeholder: '-10', help: 'Level referenced to 1 V RMS — the consumer line-level scale.' },
+    { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', meaning: 'voltage:rms', nonNegative: true, placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
+    { key: 'dbx', name: 'LEVEL (dBu or dBV)', quantity: 'db', meaning: 'db:level', signed: true, placeholder: '4', help: 'A level on either scale — the converter shows both readings of the same voltage.' },
+    { key: 'ampRatio', name: 'AMPLITUDE RATIO', quantity: 'ratio', meaning: 'ratio:amplitude', nonNegative: true, placeholder: '2', help: 'Linear ratio of voltages, sound pressures, or gains (out ÷ in).', positive: true, warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
+    { key: 'powRatio', name: 'POWER RATIO', quantity: 'ratio', meaning: 'ratio:power', nonNegative: true, placeholder: '2', help: 'Linear ratio of powers or intensities (out ÷ in) — watts, not volts.', positive: true, warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
+    { key: 'dbAmp', name: 'LEVEL CHANGE', quantity: 'db', meaning: ['db:change', 'db:gain', 'db:loss'], signed: true, placeholder: '6', help: 'Gain or attenuation in dB to convert back to an amplitude (voltage) ratio.' },
+    { key: 'dbPow', name: 'LEVEL CHANGE', quantity: 'db', meaning: ['db:change', 'db:gain', 'db:loss'], signed: true, placeholder: '3', help: 'Gain or attenuation in dB to convert back to a power (wattage) ratio.' },
     { key: 'pct', name: 'PERCENT CHANGE', quantity: 'percent', signed: true, placeholder: '50', help: 'Change in an amplitude quantity: +50 means one and a half times the voltage, −50 means half the voltage.', warn: { test: (x) => x <= -100, msg: '−100% is already silence — amplitude cannot drop by more than 100%.' } },
   ],
   functions: [
@@ -100,7 +100,7 @@ const WS_LEVEL: Workspace = {
       compute: (v) => {
         const volts = DBU_REF_V * Math.pow(10, n(v.dbu) / 20);
         return [
-          { label: 'VOLTAGE (RMS)', value: volts, quantity: 'voltage' },
+          { label: 'VOLTAGE (RMS)', value: volts, quantity: 'voltage', meaning: 'voltage:rms' },
           { label: 'SAME LEVEL IN dBV', value: n(v.dbu) + DBU_DBV_OFFSET, quantity: 'db', chainable: false },
         ];
       },
@@ -122,7 +122,7 @@ const WS_LEVEL: Workspace = {
       explain:
         'Expresses an RMS voltage on the professional dBu scale (referenced to 0.7746 V). Voltage is an amplitude, so the multiplier is 20 — doubling the voltage is +6 dB.',
       keySymbols: ['·', 'log₁₀', '/'],
-      compute: (v) => [{ label: 'LEVEL (dBu)', value: 20 * log10(n(v.vFromDbu) / DBU_REF_V), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL (dBu)', value: 20 * log10(n(v.vFromDbu) / DBU_REF_V), quantity: 'db', meaning: 'db:level' }],
       steps: (v) => {
         const volts = n(v.vFromDbu);
         return [
@@ -144,7 +144,7 @@ const WS_LEVEL: Workspace = {
       compute: (v) => {
         const volts = Math.pow(10, n(v.dbv) / 20);
         return [
-          { label: 'VOLTAGE (RMS)', value: volts, quantity: 'voltage' },
+          { label: 'VOLTAGE (RMS)', value: volts, quantity: 'voltage', meaning: 'voltage:rms' },
           { label: 'SAME LEVEL IN dBu', value: n(v.dbv) - DBU_DBV_OFFSET, quantity: 'db', chainable: false },
         ];
       },
@@ -165,7 +165,7 @@ const WS_LEVEL: Workspace = {
       explain:
         'Expresses a voltage on the consumer dBV scale (referenced to 1 V), so the ratio is just the voltage itself. The 20 multiplier is because voltage is an amplitude quantity.',
       keySymbols: ['·', 'log₁₀', '/'],
-      compute: (v) => [{ label: 'LEVEL (dBV)', value: 20 * log10(n(v.vFromDbv)), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL (dBV)', value: 20 * log10(n(v.vFromDbv)), quantity: 'db', meaning: 'db:level' }],
       steps: (v) => {
         const volts = n(v.vFromDbv);
         return [
@@ -190,8 +190,8 @@ const WS_LEVEL: Workspace = {
       compute: (v) => {
         const x = n(v.dbx);
         return [
-          { label: 'IF THIS IS dBu → in dBV', value: x + DBU_DBV_OFFSET, quantity: 'db' },
-          { label: 'IF THIS IS dBV → in dBu', value: x - DBU_DBV_OFFSET, quantity: 'db' },
+          { label: 'IF THIS IS dBu → in dBV', value: x + DBU_DBV_OFFSET, quantity: 'db', meaning: 'db:level' },
+          { label: 'IF THIS IS dBV → in dBu', value: x - DBU_DBV_OFFSET, quantity: 'db', meaning: 'db:level' },
         ];
       },
       steps: (v) => {
@@ -215,7 +215,7 @@ const WS_LEVEL: Workspace = {
         'Amplitude quantities — voltage, sound pressure, fader gain — use the 20 multiplier. Power goes as amplitude squared, and squaring inside a log doubles it, which is the whole reason amplitudes use 20 where power uses 10. Doubling voltage is +6 dB.',
       keySymbols: ['·', 'log₁₀'],
       note: 'Amplitude quantities — voltage, sound pressure, fader gain — use the 20 multiplier.',
-      compute: (v) => [{ label: 'LEVEL CHANGE', value: 20 * log10(n(v.ampRatio)), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL CHANGE', value: 20 * log10(n(v.ampRatio)), quantity: 'db', meaning: 'db:change' }],
       steps: (v) => {
         const r = n(v.ampRatio);
         return [
@@ -235,7 +235,7 @@ const WS_LEVEL: Workspace = {
         'Power quantities — watts, acoustic intensity — use the 10 multiplier. Doubling power is +3 dB. It agrees with the amplitude formula because doubling voltage quadruples power: 20·log(2) equals 10·log(4).',
       keySymbols: ['·', 'log₁₀'],
       note: 'Power quantities — watts, acoustic intensity — use the 10 multiplier.',
-      compute: (v) => [{ label: 'LEVEL CHANGE', value: 10 * log10(n(v.powRatio)), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL CHANGE', value: 10 * log10(n(v.powRatio)), quantity: 'db', meaning: 'db:change' }],
       steps: (v) => {
         const r = n(v.powRatio);
         return [
@@ -258,7 +258,7 @@ const WS_LEVEL: Workspace = {
       compute: (v) => {
         const r = Math.pow(10, n(v.dbAmp) / 20);
         return [
-          { label: 'AMPLITUDE RATIO', value: r, quantity: 'ratio' },
+          { label: 'AMPLITUDE RATIO', value: r, quantity: 'ratio', meaning: 'ratio:amplitude' },
           { label: 'PERCENT OF ORIGINAL', value: r * 100, quantity: 'percent', chainable: false },
         ];
       },
@@ -284,7 +284,7 @@ const WS_LEVEL: Workspace = {
       compute: (v) => {
         const r = Math.pow(10, n(v.dbPow) / 10);
         return [
-          { label: 'POWER RATIO', value: r, quantity: 'ratio' },
+          { label: 'POWER RATIO', value: r, quantity: 'ratio', meaning: 'ratio:power' },
           { label: 'PERCENT OF ORIGINAL POWER', value: r * 100, quantity: 'percent', chainable: false },
         ];
       },
@@ -315,7 +315,7 @@ const WS_LEVEL: Workspace = {
         // beside LEVEL CHANGE "—". Said in words instead.
         if (!(p > -100)) return [{ label: 'NO dB LEVEL', text: pctNoLevel(p), refusal: true }];
         return [
-          { label: 'LEVEL CHANGE', value: 20 * log10(1 + p / 100), quantity: 'db' },
+          { label: 'LEVEL CHANGE', value: 20 * log10(1 + p / 100), quantity: 'db', meaning: 'db:change' },
           { label: 'RESULTING AMPLITUDE RATIO', value: 1 + p / 100, quantity: 'ratio', chainable: false },
         ];
       },
@@ -368,10 +368,10 @@ const WS_OHMS: Workspace = {
     'follow formal methods (IEC 60268-3 for amplifiers, IEC 60268-5 for loudspeakers). This tool teaches the basic sums; it does not replace those methods.',
   glossary: ['Power', 'Voltage', 'Current', 'Impedance', 'RMS', 'Amplifier', 'Loudspeaker'],
   fields: [
-    { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', nonNegative: true, placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
-    { key: 'z', name: 'IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'Load impedance (nominal) — treated as a plain resistance in this model.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be positive — 0 Ω is a short circuit.' } },
-    { key: 'p', name: 'POWER', quantity: 'power', placeholder: '100', help: 'Average power delivered to the load (often loosely called “RMS power”).', positive: true, warn: { test: (x) => x <= 0, msg: 'Power must be positive.' } },
-    { key: 'vpk', name: 'PEAK VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '40', help: 'The waveform’s crest voltage, as read on an oscilloscope.', positive: true, warn: { test: (x) => x <= 0, msg: 'Peak voltage must be positive.' } },
+    { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', meaning: 'voltage:rms', nonNegative: true, placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
+    { key: 'z', name: 'IMPEDANCE', quantity: 'impedance', meaning: ['impedance:load', 'impedance:resistor', 'impedance:primary'], placeholder: '8', help: 'Load impedance (nominal) — treated as a plain resistance in this model.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be positive — 0 Ω is a short circuit.' } },
+    { key: 'p', name: 'POWER', quantity: 'power', meaning: 'power', placeholder: '100', help: 'Average power delivered to the load (often loosely called “RMS power”).', positive: true, warn: { test: (x) => x <= 0, msg: 'Power must be positive.' } },
+    { key: 'vpk', name: 'PEAK VOLTAGE', quantity: 'voltage', meaning: 'voltage:peak', nonNegative: true, placeholder: '40', help: 'The waveform’s crest voltage, as read on an oscilloscope.', positive: true, warn: { test: (x) => x <= 0, msg: 'Peak voltage must be positive.' } },
   ],
   functions: [
     {
@@ -387,8 +387,8 @@ const WS_OHMS: Workspace = {
         const V = n(v.vrms);
         const Z = n(v.z);
         return [
-          { label: 'POWER', value: (V * V) / Z, quantity: 'power' },
-          { label: 'CURRENT', value: V / Z, quantity: 'current' },
+          { label: 'POWER', value: (V * V) / Z, quantity: 'power', meaning: 'power:electrical' },
+          { label: 'CURRENT', value: V / Z, quantity: 'current', meaning: 'current:load' },
         ];
       },
       steps: (v) => {
@@ -416,8 +416,8 @@ const WS_OHMS: Workspace = {
         const Z = n(v.z);
         const rms = pk / Math.SQRT2;
         return [
-          { label: 'AVERAGE POWER', value: (rms * rms) / Z, quantity: 'power' },
-          { label: 'VOLTAGE (RMS)', value: rms, quantity: 'voltage', chainable: false },
+          { label: 'AVERAGE POWER', value: (rms * rms) / Z, quantity: 'power', meaning: 'power:electrical' },
+          { label: 'VOLTAGE (RMS)', value: rms, quantity: 'voltage', meaning: 'voltage:rms', chainable: false },
           {
             label: 'IF YOU HAD SKIPPED THE CONVERSION',
             text: `Using the peak volts directly would read ${fmt((pk * pk) / Z)} W — exactly 2× too high, the classic amplifier-power mistake.`,
@@ -449,8 +449,8 @@ const WS_OHMS: Workspace = {
         const Z = n(v.z);
         const V = Math.sqrt(P * Z);
         return [
-          { label: 'VOLTAGE (RMS)', value: V, quantity: 'voltage' },
-          { label: 'CURRENT', value: Math.sqrt(P / Z), quantity: 'current' },
+          { label: 'VOLTAGE (RMS)', value: V, quantity: 'voltage', meaning: 'voltage:rms' },
+          { label: 'CURRENT', value: Math.sqrt(P / Z), quantity: 'current', meaning: 'current:load' },
         ];
       },
       steps: (v) => {
@@ -472,7 +472,7 @@ const WS_OHMS: Workspace = {
       explain:
         'Rearranges P = V·I for the current an amplifier and speaker cable must actually carry. Halving the load impedance at the same voltage doubles this current — the path to a thermal shutdown if the amp can’t supply it.',
       keySymbols: ['/'],
-      compute: (v) => [{ label: 'CURRENT', value: n(v.p) / n(v.vrms), quantity: 'current' }],
+      compute: (v) => [{ label: 'CURRENT', value: n(v.p) / n(v.vrms), quantity: 'current', meaning: 'current:load' }],
       steps: (v) => {
         const P = n(v.p);
         const V = n(v.vrms);
@@ -493,7 +493,7 @@ const WS_OHMS: Workspace = {
       keySymbols: ['x²', '/'],
       compute: (v) => {
         const V = n(v.vrms);
-        return [{ label: 'IMPEDANCE', value: (V * V) / n(v.p), quantity: 'impedance' }];
+        return [{ label: 'IMPEDANCE', value: (V * V) / n(v.p), quantity: 'impedance', meaning: 'impedance:load' }];
       },
       steps: (v) => {
         const V = n(v.vrms);
@@ -516,8 +516,8 @@ const WS_OHMS: Workspace = {
         const V = n(v.vrms);
         const pk = V * Math.SQRT2;
         return [
-          { label: 'PEAK VOLTAGE', value: pk, quantity: 'voltage' },
-          { label: 'PEAK-TO-PEAK VOLTAGE', value: 2 * pk, quantity: 'voltage' },
+          { label: 'PEAK VOLTAGE', value: pk, quantity: 'voltage', meaning: 'voltage:peak' },
+          { label: 'PEAK-TO-PEAK VOLTAGE', value: 2 * pk, quantity: 'voltage', meaning: 'voltage:pp' },
         ];
       },
       steps: (v) => {
@@ -542,8 +542,8 @@ const WS_OHMS: Workspace = {
       compute: (v) => {
         const pk = n(v.vpk);
         return [
-          { label: 'VOLTAGE (RMS)', value: pk / Math.SQRT2, quantity: 'voltage' },
-          { label: 'PEAK-TO-PEAK VOLTAGE', value: 2 * pk, quantity: 'voltage' },
+          { label: 'VOLTAGE (RMS)', value: pk / Math.SQRT2, quantity: 'voltage', meaning: 'voltage:rms' },
+          { label: 'PEAK-TO-PEAK VOLTAGE', value: 2 * pk, quantity: 'voltage', meaning: 'voltage:pp' },
         ];
       },
       steps: (v) => {
@@ -598,13 +598,13 @@ const WS_ELECTRONICS: Workspace = {
   glossary: ['Resistance', 'Impedance', 'Capacitor', 'Inductor', 'Voltage divider', 'Cutoff frequency', 'Reactance'],
   fields: [
     { key: 'rlist', name: 'RESISTORS (Ω, comma-separated)', quantity: 'list', nonNegative: true, placeholder: '8, 8, 16', help: 'The resistor (or speaker) values to combine, in ohms, separated by commas. Leave out thousands commas: write 1000, 4700.' },
-    { key: 'vin', name: 'INPUT VOLTAGE', quantity: 'voltage', signed: true, placeholder: '1', help: 'Voltage across the whole divider (top of R1 to bottom of R2).' },
-    { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
-    { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', positive: true, warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'vin', name: 'INPUT VOLTAGE', quantity: 'voltage', meaning: ['voltage:rms', 'voltage:peak', 'voltage:pp'], signed: true, placeholder: '1', help: 'Voltage across the whole divider (top of R1 to bottom of R2).' },
+    { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
+    { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', positive: true, warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
     { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the tool converts to farads internally (×10⁻⁶).', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
     { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the tool converts to henries internally (×10⁻³).', positive: true, warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
-    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', placeholder: '10000', help: 'The R of the RC network.', positive: true, warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
+    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The R of the RC network.', positive: true, warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
   ],
   functions: [
     {
@@ -618,7 +618,7 @@ const WS_ELECTRONICS: Workspace = {
       keySymbols: ['R', 'x₁'],
       compute: (v) => {
         const rs = arr(v.rlist);
-        return [{ label: 'TOTAL RESISTANCE', value: rs.reduce((a, b) => a + b, 0), quantity: 'impedance' }];
+        return [{ label: 'TOTAL RESISTANCE', value: rs.reduce((a, b) => a + b, 0), quantity: 'impedance', meaning: 'impedance:resistor' }];
       },
       steps: (v) => {
         const rs = arr(v.rlist);
@@ -642,7 +642,7 @@ const WS_ELECTRONICS: Workspace = {
       compute: (v) => {
         const rs = arr(v.rlist);
         const recip = rs.reduce((a, b) => a + 1 / b, 0);
-        return [{ label: 'TOTAL RESISTANCE', value: 1 / recip, quantity: 'impedance' }];
+        return [{ label: 'TOTAL RESISTANCE', value: 1 / recip, quantity: 'impedance', meaning: 'impedance:resistor' }];
       },
       steps: (v) => {
         const rs = arr(v.rlist);
@@ -767,7 +767,7 @@ const WS_ELECTRONICS: Workspace = {
       note: 'The −3 dB corner of a first-order RC filter (6 dB/octave slope). C entered in µF.',
       compute: (v) => {
         const C = n(v.cap) * 1e-6;
-        return [{ label: 'CUTOFF FREQUENCY (−3 dB)', value: 1 / (TWO_PI * n(v.r) * C), quantity: 'frequency' }];
+        return [{ label: 'CUTOFF FREQUENCY (−3 dB)', value: 1 / (TWO_PI * n(v.r) * C), quantity: 'frequency', meaning: 'frequency:point' }];
       },
       steps: (v) => {
         const R = n(v.r);
@@ -794,7 +794,7 @@ const WS_ELECTRONICS: Workspace = {
       compute: (v) => {
         const tau = n(v.r) * n(v.cap) * 1e-6;
         return [
-          { label: 'TIME CONSTANT τ', value: tau, quantity: 'time', unit: 'ms' },
+          { label: 'TIME CONSTANT τ', value: tau, quantity: 'time', meaning: 'time:tau', unit: 'ms' },
           { label: 'MEANING', text: 'In one τ the capacitor charges to 63.2% of the applied voltage (or discharges to 36.8%); it is ~99% settled after 5τ.' },
         ];
       },
@@ -853,13 +853,13 @@ const WS_QBW: Workspace = {
     'values from different products as approximations of each other, not equivalents.',
   glossary: ['Q factor', 'Bandwidth', 'Center frequency', 'Octave', 'Parametric EQ', 'Filter'],
   fields: [
-    { key: 'fc', name: 'CENTER FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency at the middle (geometric mean) of the band.', positive: true, warn: { test: (x) => x <= 0, msg: 'Center frequency must be positive.' } },
-    { key: 'q', name: 'Q', quantity: 'number', nonNegative: true, placeholder: '1.41', help: 'Quality factor: fc ÷ bandwidth. Higher Q = narrower band.', positive: true, warn: { test: (x) => x <= 0, msg: 'Q must be positive.' } },
-    { key: 'bw', name: 'BANDWIDTH', quantity: 'frequency', placeholder: '709', help: 'Width between the −3 dB edge frequencies.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bandwidth must be positive.' } },
-    { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', positive: true, warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
+    { key: 'fc', name: 'CENTER FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '1000', help: 'The frequency at the middle (geometric mean) of the band.', positive: true, warn: { test: (x) => x <= 0, msg: 'Center frequency must be positive.' } },
+    { key: 'q', name: 'Q', quantity: 'number', meaning: 'number:q-filter', nonNegative: true, placeholder: '1.41', help: 'Quality factor: fc ÷ bandwidth. Higher Q = narrower band.', positive: true, warn: { test: (x) => x <= 0, msg: 'Q must be positive.' } },
+    { key: 'bw', name: 'BANDWIDTH', quantity: 'frequency', meaning: 'frequency:bandwidth', placeholder: '709', help: 'Width between the −3 dB edge frequencies.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bandwidth must be positive.' } },
+    { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', meaning: 'number:octaves', nonNegative: true, placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', positive: true, warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
     { key: 'gain', name: 'GAIN', quantity: 'db', signed: true, placeholder: '9', help: 'Boost (+) or cut (−) at the center of the parametric bell.' },
-    { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
-    { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', meaning: 'frequency:point:edge-low', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', meaning: 'frequency:point:edge-high', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
   ],
   functions: [
     {
@@ -879,10 +879,10 @@ const WS_QBW: Workspace = {
         const fc = Math.sqrt(a * b);
         const bw = b - a;
         return [
-          { label: 'CENTER FREQUENCY (geometric)', value: fc, quantity: 'frequency' },
+          { label: 'CENTER FREQUENCY (geometric)', value: fc, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'ARITHMETIC AVERAGE (for contrast)', value: (a + b) / 2, quantity: 'frequency', chainable: false },
-          { label: 'WIDTH IN OCTAVES', value: log2(b / a), quantity: 'number', chainable: false },
-          { label: 'BANDWIDTH', value: bw, quantity: 'frequency', chainable: false },
+          { label: 'WIDTH IN OCTAVES', value: log2(b / a), quantity: 'number', meaning: 'number:octaves', chainable: false },
+          { label: 'BANDWIDTH', value: bw, quantity: 'frequency', meaning: 'frequency:bandwidth', chainable: false },
           // The same frequency twice is a band of no width (hunt 10, 2026-10-03):
           // Q = fc ÷ 0 printed "Q OF THIS BAND —" beside BANDWIDTH 0 Hz. Said in
           // words, as the comb's "no path difference" rows are.
@@ -918,10 +918,10 @@ const WS_QBW: Workspace = {
         const q = n(v.q);
         const { f1, f2 } = bandEdges(fc, q);
         return [
-          { label: 'BANDWIDTH', value: fc / q, quantity: 'frequency' },
-          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency' },
-          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency' },
-          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', chainable: false },
+          { label: 'BANDWIDTH', value: fc / q, quantity: 'frequency', meaning: 'frequency:bandwidth' },
+          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:point:edge-low' },
+          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:point:edge-high' },
+          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', meaning: 'number:octaves', chainable: false },
         ];
       },
       steps: (v) => {
@@ -951,9 +951,9 @@ const WS_QBW: Workspace = {
         const q = fc / n(v.bw);
         const { f1, f2 } = bandEdges(fc, q);
         return [
-          { label: 'Q', value: q, quantity: 'number' },
-          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', chainable: false },
-          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', chainable: false },
+          { label: 'Q', value: q, quantity: 'number', meaning: 'number:q-filter' },
+          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:point:edge-low', chainable: false },
+          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:point:edge-high', chainable: false },
         ];
       },
       steps: (v) => {
@@ -981,7 +981,7 @@ const WS_QBW: Workspace = {
         const q = n(v.q);
         const { f1, f2 } = bandEdges(1000, q); // any fc — the octave width depends only on Q
         return [
-          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number' },
+          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', meaning: 'number:octaves' },
           { label: 'EDGE RATIO f₂/f₁', value: f2 / f1, quantity: 'ratio', chainable: false },
         ];
       },
@@ -1014,7 +1014,7 @@ const WS_QBW: Workspace = {
       compute: (v) => {
         const N = n(v.noct);
         const pw = Math.pow(2, N);
-        return [{ label: 'Q', value: Math.sqrt(pw) / (pw - 1), quantity: 'number' }];
+        return [{ label: 'Q', value: Math.sqrt(pw) / (pw - 1), quantity: 'number', meaning: 'number:q-filter' }];
       },
       steps: (v) => {
         const N = n(v.noct);
@@ -1044,9 +1044,9 @@ const WS_QBW: Workspace = {
         const g = n(v.gain);
         const { f1, f2 } = bandEdges(fc, q);
         return [
-          { label: 'AFFECTED RANGE — LOWER f₁', value: f1, quantity: 'frequency' },
-          { label: 'AFFECTED RANGE — UPPER f₂', value: f2, quantity: 'frequency' },
-          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', chainable: false },
+          { label: 'AFFECTED RANGE — LOWER f₁', value: f1, quantity: 'frequency', meaning: 'frequency:point:reach-low' },
+          { label: 'AFFECTED RANGE — UPPER f₂', value: f2, quantity: 'frequency', meaning: 'frequency:point:reach-high' },
+          { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', meaning: 'number:octaves', chainable: false },
           {
             label: 'AUDIBLE REACH',
             // 0 dB of gain changes nothing (calc check A, 2026-10-03): it read "a 0 dB

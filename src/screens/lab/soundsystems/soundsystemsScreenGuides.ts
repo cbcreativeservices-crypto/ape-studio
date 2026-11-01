@@ -413,6 +413,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'At the start the preamp is starved and every later stage makes up for it, so their noise floors rise with the signal: VERDICT NOISY.',
       'Gain placed early lifts the signal above every later floor; a stage pushed past its clip line clips, and every stage after it inherits the distortion.',
+      'Clean but under 12 dB of headroom at any stage reads TIGHT, HEADROOM orange; at 12 dB HEADROOM is green: VERDICT OK.',
     ],
     teaches: [
       'Why the preamp does the work and the faders sit near unity, with headroom at every stage.',
@@ -420,7 +421,8 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'At the start VERDICT reads NOISY. Raise PREAMP to +40 dB: with the later stages still at +10, it reads CLIPPING.',
-      'Now return FADER, MAIN and PROC IN to 0: VERDICT OK, AT SPEAKER −8 dBu, ABOVE NOISE 78 dB.',
+      'Now return FADER, MAIN and PROC IN to 0: VERDICT TIGHT, HEADROOM 10 dB.',
+      'Lower PREAMP to +38 dB: VERDICT OK, HEADROOM 12 dB, AT SPEAKER −10 dBu, ABOVE NOISE 78 dB.',
     ],
   },
   'Coverage and aim': {

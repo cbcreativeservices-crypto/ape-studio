@@ -355,7 +355,12 @@ export function simulateLinearClass(cls: 'A' | 'B' | 'AB', drive: number, bias: 
       conductionDeg: 360,
       idleCurrent: iq,
       efficiencyPct: eff,
-      heat: clamp(0.55 + 0.2 * d, 0, 1), // idle dissipation dominates
+      // Device heat = supply power − power delivered to the load. A Class A
+      // stage draws the same supply power at every level, so its devices run
+      // HOTTEST with no signal and cool only slightly as output (which tracks
+      // `eff`) leaves for the speaker: 0.75 at idle, 0.67 at 80%, 0.63 at full
+      // — "hot" on the bezel at every level (D41 #31/#32, 2026-11-01).
+      heat: clamp(0.75 - 0.12 * (eff / 25), 0, 1),
       crossoverNotch: false,
     };
   }

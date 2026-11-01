@@ -618,13 +618,15 @@ export function unitTags(text: string): string[] {
   return out;
 }
 /**
- * May a chained / imported / project value (`label`, `quantity`) fill `field`?
- * The kinds must match (as before). On 'db', two NAMED references must agree
- * (dBV never fills dBu; an unnamed relative dB still fits either way). On
- * 'number', the unit tags must be identical — a kg/m² or a dBV/Pa never fills a
- * µF or a plain count, and a plain count never fills a named unit.
+ * The KIND + UNIT rule: may a value (`label`, `quantity`) fill `field` as far
+ * as its kind and unit go? The kinds must match. On 'db', two NAMED references
+ * must agree (dBV never fills dBu; an unnamed relative dB still fits either
+ * way). On 'number', the unit tags must be identical — a kg/m² or a dBV/Pa
+ * never fills a µF or a plain count, and a plain count never fills a named unit.
+ * Alone it is the offer rule only for a SAVED PROJECT value, whose meaning the
+ * learner gave it by name; a computed answer must also pass `chainFits`.
  */
-export function chainFits(label: string, quantity: QuantityKind, field: Pick<FieldDef, 'name' | 'quantity'>): boolean {
+export function unitFits(label: string, quantity: QuantityKind, field: Pick<FieldDef, 'name' | 'quantity'>): boolean {
   if (quantity !== field.quantity || quantity === 'list') return false;
   if (quantity !== 'db' && quantity !== 'number') return true;
   const a = unitTags(label);
@@ -632,6 +634,43 @@ export function chainFits(label: string, quantity: QuantityKind, field: Pick<Fie
   const shared = a.some((x) => b.includes(x));
   if (quantity === 'db') return a.length === 0 || b.length === 0 || shared;
   return (a.length === 0 && b.length === 0) || shared;
+}
+/**
+ * D41 (bugs #28/#30, owner-approved 2026-11-01): kinds where the kind alone
+ * says what a value means — every value of the kind is the same physical
+ * thing in this lab (a tempo is a tempo, a sample rate a sample rate). Only
+ * here may an UNTAGGED answer or input fall back to the kind + unit rule. Every
+ * other kind holds different things under one unit: a speaker-to-listener
+ * distance and a cable run, a voltage drop and a supply voltage, an SPL and a
+ * dBu level. Add a kind only when that is true of every field and answer.
+ */
+export const SAFE_UNTAGGED_KINDS: ReadonlySet<QuantityKind> = new Set<QuantityKind>(['bpm', 'samplerate', 'bitdepth', 'sensitivity']);
+/** Does the answer's `meaning` satisfy the input's accepted tag(s)? A tag
+ *  takes itself and its sub-tags: 'time:latency' takes 'time:latency:buffer';
+ *  'time:latency:processing' does not take 'time:latency:buffer'. */
+export function meaningMatches(meaning: string, accepts: string | readonly string[]): boolean {
+  const list: readonly string[] = typeof accepts === 'string' ? [accepts] : accepts;
+  return list.some((a) => meaning === a || meaning.startsWith(a + ':'));
+}
+/**
+ * May a computed answer (`label`, `quantity`, `meaning`) be offered as ⤵ USE
+ * on `field` — a later workflow step's input, or an input taking a SENT value?
+ * The kind and unit must fit (`unitFits`) AND the MEANING must match: where
+ * both carry a tag, the field's tag must take the answer's; where either has
+ * none, only a SAFE_UNTAGGED_KINDS kind falls back to the kind + unit rule.
+ * So a speaker-to-listener distance never fills a cable length, a voltage drop
+ * never fills a supply voltage, and an absorption total never fills a panel's
+ * area — each used to be offered, and each gave a confident wrong figure.
+ */
+export function chainFits(
+  label: string,
+  quantity: QuantityKind,
+  field: Pick<FieldDef, 'name' | 'quantity' | 'meaning'>,
+  meaning?: string,
+): boolean {
+  if (!unitFits(label, quantity, field)) return false;
+  if (meaning && field.meaning) return meaningMatches(meaning, field.meaning);
+  return SAFE_UNTAGGED_KINDS.has(quantity);
 }
 /** The first input of `fn` holding an impossible negative, or null. Lists are
  *  checked element by element (a −30 min interval used to REDUCE a noise dose). */

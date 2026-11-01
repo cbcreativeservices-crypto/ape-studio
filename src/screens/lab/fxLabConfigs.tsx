@@ -40,6 +40,7 @@ import {
   WaveshapeGraph,
   EchoTimelineGraph,
   DecayCurveGraph,
+  DECAY_SPAN_S,
   LissajousGraph,
   STEREO_TEST_LR_RAD,
   eqResponseDb,
@@ -465,7 +466,10 @@ const reverbConfig: FxLabConfig = {
     { k: 'PRE', paramId: P.preDelayMs },
     { k: 'MIX', paramId: P.reverbMix },
   ],
-  Hero: (v) => <DecayCurveGraph rt60={v[P.rt60]} preDelayMs={v[P.preDelayMs]} />,
+  // A FIXED 7.5 s window (D41 fix 2026-11-01), like the Delay graph's: a
+  // window of 1.25 × RT60 held the slope and its marker still for every RT60
+  // from 0.48 s to 6 s, so the RT60 fader moved nothing visible here.
+  Hero: (v) => <DecayCurveGraph rt60={v[P.rt60]} preDelayMs={v[P.preDelayMs]} spanS={DECAY_SPAN_S} />,
   anim: (v, src) => ({
     kind: 'reverb',
     rt60: v[P.rt60],
@@ -976,7 +980,13 @@ const compConfig: FxLabConfig = {
       // it. A lower threshold means more of the source sits above it, so the
       // reduction deepens and the meter has more to show.
       choices: [-50, -40, -30, -20, -10].map((t) => ({ label: `${t} dB`, value: t })),
-      initial: -30,
+      // −40, not −30 (D41 fix 2026-11-01). The CLICK 120 default is a 5 ms
+      // ping: at ATTACK 5 ms the engine's detector peaks at only −32.7 dBFS
+      // on it, so at −30 the live GR sat at 0.0 on first play — the opposite
+      // of what the click default above exists for. At −40 GR kicks ~5.5 dB
+      // on each hit and falls back to 0.0 (Effects.hpp DynamicsEffect,
+      // re-run sample by sample in test/screenGuide_compression_20261031).
+      initial: -40,
       // The teaching fader: ride the threshold through the −20 dBFS source and
       // watch measured GR appear on the bezel the moment you cross it.
       // The fader spans the chips, so its floor moves with them.
@@ -1107,6 +1117,13 @@ const gateConfig: FxLabConfig = {
     'CLICK source (90 BPM): the gate opens on each hit — tune Hold/Release until it stops chattering. The sound flows ' +
     'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
   sources: [srcClick(90), SRC_PINK],
+  // The gate's ATTACK is written, not inherited (D41 fix 2026-11-01). The
+  // engine default (Effects.hpp DynamicsEffect `attackMs_{10.0}`) is slower
+  // than the lab's 5 ms click: its detector peaked at only −37.6 dBFS, so at
+  // the default THRESH −35 the gate never opened (GR sat at |RANGE|) while the
+  // intro, the caption and the drawing all said it opens on every hit. At
+  // 1 ms the detector reaches ≈ −24.6 dBFS and the gate opens on each hit.
+  fixed: [{ paramId: P.attackMs, value: 1 }],
   params: [
     {
       label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
@@ -1161,16 +1178,12 @@ const gateConfig: FxLabConfig = {
     rangeDb: v[P.rangeDb],
     ceilingDb: -12,
     makeupDb: 0,
-    // The engine's gate attack is its DEFAULT: this lab exposes no ATTACK
-    // control and never writes param 3, so `attackMs_{10.0}` stands
-    // (Effects.hpp DynamicsEffect member default, currently :431; the `aA`
-    // line in DynamicsEffect::processStereo, currently :385, shows only the
-    // LIMITER is forced to 0.1). The
-    // comment that used to sit here asserted 1 ms "is the engine's behaviour",
-    // which was wrong by a factor of ten and confident enough to stop the next
-    // reader checking. The drawing depicts the engine; if 1 ms is wanted, the
-    // way to get it is to `fixed`-write it, not to draw it.
-    attackMs: 10,
+    // The gate attack the engine RUNS: this lab exposes no ATTACK control,
+    // but `fixed` above writes param 3 = 1 ms on every start (D41 fix
+    // 2026-11-01). Before that the engine's 10 ms default stood and the drawing
+    // said 10 to match it. Keep the two in lockstep: the drawing depicts the
+    // engine, so change the `fixed` value and this one together.
+    attackMs: 1,
     releaseMs: v[P.releaseMs],
     holdMs: v[P.holdMs],
     signal: dynSignalOf(src),

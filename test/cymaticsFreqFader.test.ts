@@ -29,6 +29,7 @@ const { MATERIALS } = await import('../src/features/cymatics/materials.ts');
 const { makeFreqFader } = await import('../src/features/cymatics/freqFader.ts');
 const { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } = await import('../src/features/cymatics/plateBezel.ts');
 const { formatHz } = await import('../src/features/cymatics/music.ts');
+const { nodesModeLists } = await import('../src/screens/lab/cymatics/modules/modeMath.ts');
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -161,14 +162,15 @@ test('the studio uses the compact bezel words, the weights, and opts into the ra
 test('Module 2 (modNodes): its FREQ lane lands on every resonance of its own plates', () => {
   for (const shape of ['square', 'circle'] as const) {
     const spec = { ...DEFAULT_PLATE, shape, exciter: shape === 'circle' ? { x: 0.85, y: 0.5 } : { x: 0.5, y: 0.5 } } as PlateSpec;
-    const modes = plateModes(spec, 14);
+    const modes = nodesModeLists(spec).all; // the one list module 2 reads (D41 #21)
     const Q = effectiveQ(spec.material, spec.damping);
     const fader = makeFreqFader(F_MIN, F_MAX, modes, Q);
     let atNew = 0;
     let atOld = 0;
     for (let i = 0; i <= LANE; i++) {
       if (readResonance(fader.hzAt(i / LANE), modes, Q).state === 'at') atNew++;
-      if (readResonance(Math.round(F_MIN * Math.pow(F_MAX / F_MIN, i / LANE) * 10) / 10, modes, Q).state === 'at') atOld++;
+      // The historical baseline: the old plain lane against the 14 modes it read then.
+      if (readResonance(Math.round(F_MIN * Math.pow(F_MAX / F_MIN, i / LANE) * 10) / 10, plateModes(spec, 14), Q).state === 'at') atOld++;
     }
     if (shape === 'square') assert.equal(atOld, 0, 'the regression this pins: the old lane never hit a mode on the square plate');
     assert.ok(atNew >= 20, `${shape}: warped lane AT on ${atNew} positions`);

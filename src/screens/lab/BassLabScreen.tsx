@@ -97,6 +97,21 @@ const FRET_FRACTIONS: Record<number, { frac: string; ratio: string }> = {
 const NUM_FRETS = 12;
 /** Fret n's distance from the nut, as a fraction of full string length L. */
 const fretPos = (n: number) => 1 - Math.pow(2, -n / 12);
+/** The bone nut's drawn width, in board units (the Rect at x = 0). */
+const NUT_W = 4.5;
+
+/**
+ * A tap at `fx` (0 = nut, 1 = bridge) picks the fret SPACE the finger is in,
+ * as on a real neck (D41 #10, owner 2026-11-01): anywhere after wire n−1 up
+ * to and on wire n is fret n — so a tap on an inlay dot picks that fret. On
+ * the nut or past it (the headstock, fx ≤ nutFx) is the OPEN string; past
+ * wire 12 (the dimmer frets drawn for the real neck) stays fret 12.
+ */
+function fretForTap(fx: number, nutFx: number): number {
+  if (!(fx > nutFx)) return 0;
+  for (let n = 1; n <= NUM_FRETS; n++) if (fx <= fretPos(n)) return n;
+  return NUM_FRETS;
+}
 
 const midiName = (m: number) => `${NOTE_NAMES[m % 12]}${Math.floor(m / 12) - 1}`;
 
@@ -379,7 +394,7 @@ export function BassLabScreen() {
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
-      exploreCaption="Tap the fretboard (or use the FRET fader / NODE choices) to choose a note — then read the fraction, watch the standing wave, and play it."
+      exploreCaption="Tap the fretboard — between two frets, or at a node (or use the FRET fader / NODE choices) — to choose a note — then read the fraction, watch the standing wave, and play it."
       // Screen Guide (2026-10-31): "this screen, explained" — LEARN, CHECK and
       // EXPLORE in the MODE showing (bassScreenGuides.ts). A CONCEPT lab (the
       // board is drawn from the equations, PLAY is a recording, no mic and no
@@ -661,7 +676,7 @@ const APath = Animated.createAnimatedComponent(Path);
 
 /** The tappable fretboard: 4 strings, frets 0–12 at true positions, fret
  *  markers, and the selected string's standing wave. Tap maps to the nearest
- *  string row + (fretted) nearest fret line / (harmonics) nearest node.
+ *  string row + (fretted) the fret SPACE tapped / (harmonics) nearest node.
  *  Sized by the RACK STAGE (width/height = the glass's inner size); strings
  *  center vertically in whatever height the stage hands down. */
 function Fretboard({
@@ -712,17 +727,8 @@ function Fretboard({
       const si = ROW_TO_STRING[row] ?? 0;
       const fx = Math.min(1, Math.max(0, x / w));
       if (mode === 'fretted') {
-        // Snap to the nearest fret line (0..12).
-        let best = 0;
-        let bestD = Infinity;
-        for (let n = 0; n <= NUM_FRETS; n++) {
-          const d = Math.abs(fx - fretPos(n));
-          if (d < bestD) {
-            bestD = d;
-            best = n;
-          }
-        }
-        onPick(si, best);
+        // The fret SPACE tapped (between wires n−1 and n = fret n), not the nearest wire.
+        onPick(si, fretForTap(fx, NUT_W / w));
       } else {
         // Snap to the nearest node fraction 1/n.
         let best: number = NODES[0].n;
@@ -1013,7 +1019,7 @@ function Fretboard({
               const y1 = stringTop - 18;
               const y2 = stringTop + 3 * STRING_GAP + 18;
               return n === 0 ? (
-                <Rect key={n} x={x} y={y1} width={4.5} height={y2 - y1} fill="url(#fbNut)" />
+                <Rect key={n} x={x} y={y1} width={NUT_W} height={y2 - y1} fill="url(#fbNut)" />
               ) : (
                 <Fragment key={n}>
                   <Line x1={x} y1={y1} x2={x} y2={y2} stroke={FRET_BASE} strokeWidth={3} />

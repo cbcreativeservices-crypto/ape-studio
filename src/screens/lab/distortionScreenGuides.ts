@@ -133,10 +133,10 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     control: [
       'Tap an answer. Right: CORRECT and a short explanation, and the card locks. Wrong: NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
       'There is no score and no limit on tries.',
-      'The tabs under the title go to LEARN or EXPLORE to look something up. Leaving this tab starts the questions fresh until the check is passed.',
+      'The tabs under the title go to LEARN or EXPLORE to look something up; answers already right stay right. Leaving the lab before the last one starts the check over.',
     ],
     changes: [
-      'Each right answer stays right while you are on this tab.',
+      'Each right answer stays right while you are in this lab.',
       'Every answer right: the lab is marked complete, and it counts toward each certificate and program that needs it.',
       'Each explanation ties back to something on EXPLORE you can see or hear.',
     ],

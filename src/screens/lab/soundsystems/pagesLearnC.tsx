@@ -18,7 +18,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { computeGainChain, gainVerdict, gainVerdictCopy, type GainSettings, type GainStageId } from '../../../features/soundsystems/operate';
+import { computeGainChain, gainVerdict, type GainSettings, type GainStageId } from '../../../features/soundsystems/operate';
 import { CALC_LINKS, combFirstNullHz, delayMs, speedOfSound } from '../../../features/soundsystems/loads';
 import { slotDef } from '../../../features/soundsystems/system';
 import { STATION_LABEL, STATION_ORDER, type Placed, type Station } from '../../../features/soundsystems/types';
@@ -31,7 +31,7 @@ import { FieldKey, PLOT_FS, PLOT_H, PLOT_W, PlotLabel, VenueView, type PlotBeam 
 import { PlanGlyph } from './art/planArt';
 import { ArrivalTimeline, FeedbackLoop } from './art/diagrams';
 import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
-import { gainBezel, gainStageParam } from './gainDock';
+import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_DB } from './gainDock';
 import { lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 
@@ -43,10 +43,12 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
   const [sawBad, setSawBad] = useState(false);
   const [sawOk, setSawOk] = useState(false);
   const chain = computeGainChain(settings);
-  const verdict = gainVerdict(chain);
+  // OK needs real headroom: the same HEADROOM_GOOD_DB that turns the HEADROOM
+  // readout green (D41 #24). Below it a clean chain reads TIGHT.
+  const verdict = gainReading(chain, gainVerdict(chain));
   if ((verdict === 'noisy' || verdict === 'clipping') && !sawBad) setSawBad(true);
   if (verdict === 'ok' && !sawOk) setSawOk(true);
-  const goals = [{ label: 'See a bad structure (hiss or clipping)', hit: sawBad }, { label: 'Reach a clean, low-hiss structure (VERDICT OK)', hit: sawOk }];
+  const goals = [{ label: 'See a bad structure (hiss or clipping)', hit: sawBad }, { label: `Reach a clean, low-hiss structure with ${HEADROOM_GOOD_DB} dB headroom (VERDICT OK)`, hit: sawOk }];
   const latched = useVisitGoals(ctx, goals);
   const params: DockParam[] = [gainStageParam(settings, setSettings, stage, setStage)];
   return (
@@ -60,12 +62,12 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
-      caption="The lane is the PREAMP. Ride it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the lane to land there)."
-      wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy'}>{gainVerdictCopy(verdict, chain)}</VerdictLine>}
+      caption="The lane is the PREAMP. Ride it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the lane to land there). Finish on the preamp: leave 12 dB of headroom, HEADROOM green."
+      wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy' || verdict === 'tight'}>{gainReadingCopy(verdict, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>GAIN STRUCTURE AND SIGNAL LEVELS</ChapterTag>
       <Body>The same vocal peak followed from the microphone to the loudspeaker, one meter per stage. Each meter has its clip line above and its noise floor rising from below. Right now the preamp is starved and every later stage is making up for it — read the gray haze.</Body>
-      <Prompt>Raise the preamp, bring the faders and trims back to unity, and watch the haze fall.</Prompt>
+      <Prompt>Raise the preamp, bring the faders and trims back to unity, and watch the haze fall. Then trim the preamp until every stage has at least 12 dB of headroom.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <ChainMeterKey />
       <KeyFact>Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity. On many consoles the nominal +4 dBu reads around −18 to −20 dBFS on the digital meters, and this lab’s console puts it at −18. The reference varies: EBU R68 aligns 0 dBu to −18 dBFS, SMPTE RP155 aligns +4 dBu to −20 dBFS — check your console’s own.</KeyFact>

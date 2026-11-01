@@ -344,13 +344,13 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
 // ── The what's-left end screen (with the understanding check) ──────────────
 export const MICSEL_END_GUIDE: ScreenGuide = {
   seeing: [
-    'LAB COMPLETE once every step is opened, the mic locker (marked Optional) included, or WHAT’S LEFT listing the rest. The lab counts for certificates only once the check is passed.',
+    'LAB COMPLETE once every step is opened, the mic locker (marked Optional) included, and the check is passed — its CHECK row is the last on the list. Until then, WHAT’S LEFT listing the rest.',
     'CHECK YOUR UNDERSTANDING: four questions on the whole lab — categories, lectern rumble, self-noise, and a label versus the specs.',
-    'REVIEW ▾ lists the lessons already opened.',
+    'REVIEW ▾ lists the lessons already opened, and the check once passed.',
   ],
   control: [
     'Tap an answer: CORRECT and why, or NOT QUITE — TRY ANOTHER with the reason; pick again straight away.',
-    'Tap a lesson row to jump to it. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
+    'Tap a lesson row to jump to it; the CHECK row stays here, as the check is on this screen. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
     'A lesson counts once it is opened — progress on this device, not a grade.',

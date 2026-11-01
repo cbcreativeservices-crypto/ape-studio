@@ -43,7 +43,7 @@ export const POSTPROD_START_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap a project type to start a project of that kind. It is saved on this phone, named after its type, and opens at once.',
-    'Once a project is open, this screen shows its readiness, THE EIGHT STAGES in three chapters, the EXERCISES and the Delivery Package.',
+    'Once a project is open, this screen shows its readiness, THE EIGHT STAGES in three chapters, the EXERCISES and the Delivery Package; + NEW PROJECT there starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
   changes: [
@@ -58,18 +58,18 @@ export const POSTPROD_START_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Tap Podcast or spoken word: the project opens at 0 / 100, Not Approved, and NEXT OUTSTANDING points at Project name in Stage 1 · Receive the Project.',
-    'Started a Music recording project instead? Stage 1’s delivery specification has no Frame rate question there.',
+    'Then tap + NEW PROJECT and pick Music recording: that project’s Stage 1 delivery specification has no Frame rate question.',
   ],
 };
 
 export const POSTPROD_HOME_GUIDE: ScreenGuide = {
   seeing: [
-    'Your project: its name, its type, DUPLICATE and DELETE. With several projects, chips above switch between them.',
+    'Your project: its name, its type, DUPLICATE and DELETE. Chips above switch projects; the last, + NEW PROJECT, starts another.',
     'PICK UP WHERE YOU LEFT OFF: the stage you last answered in. NEXT OUTSTANDING: the most pressing open item.',
     'PRODUCTION READINESS: the verdict, a score out of 100, a bar of required decisions. THE EIGHT STAGES under three CHAPTER headings, each with a dot, a % and its state.',
   ],
   control: [
-    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions; DELETE asks first, then removes it from this phone.',
+    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions; DELETE asks first, then removes it from this phone. + NEW PROJECT, then a type, starts another.',
     'Tap a stage, PICK UP WHERE YOU LEFT OFF or NEXT OUTSTANDING to open that stage — NEXT OUTSTANDING lands on the exact question.',
     'Tap a red blocker under PRODUCTION READINESS to accept it on the record: ACCEPT A CONDITION asks who and why, then RECORD IT.',
     'EXERCISES opens a broken practice project to repair. OPEN THE DELIVERY PACKAGE shows the whole project as one document.',
@@ -120,7 +120,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     seeing: stageSeeing(kicker(2), 'Protect the Originals, Media Inventory, Copy Verification, and Technical Compatibility'),
     control: CONTROL,
     changes: [
-      'Sources wiped or reused before the copy was proven is a blocker: the originals are the one thing that cannot be remade.',
+      'Sources wiped or reused before the copy was proven is a blocker; a file count alone never clears it.',
       'A file count is not verification: a checksum compares every byte; equal sizes catch a truncated file; a full playback catches what is audible.',
       'One copy is not a backup; mixed sample rates or duplicate filenames are flagged. Corrupted, truncated or missing files with no plan are a blocker.',
     ],
@@ -132,7 +132,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Set “Do the source cards or drives still hold the material” to No, the sources have been cleared: BLOCKED — “Sources were cleared before the copy was proven”.',
       'Now tick Checksums match under “Verification method” and pick Every file under “How much was verified”: the block clears.',
-      'Untick Checksums match and tick only File count matches: “Counting files is not verifying them” appears.',
+      'Untick Checksums match and tick only File count matches: BLOCKED returns, and “Counting files is not verifying them” appears.',
     ],
   },
 

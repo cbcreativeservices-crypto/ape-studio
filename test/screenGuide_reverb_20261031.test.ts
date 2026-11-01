@@ -263,7 +263,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
       assert.ok(dark > -RANGE && dark < -RANGE + 12, `RT60 ${rt} DARK at 990 ms: ${dark.toFixed(1)} dB`);
       assert.ok(nat > -RANGE + 18, `RT60 ${rt} NATURAL at 990 ms: ${nat.toFixed(1)} dB`);
     }
-    assert.match(REVERB, /Hero: \(v\) => <DecayCurveGraph rt60=\{v\[P\.rt60\]\} preDelayMs=\{v\[P\.preDelayMs\]\} \/>/);
+    assert.match(REVERB, /Hero: \(v\) => <DecayCurveGraph rt60=\{v\[P\.rt60\]\} preDelayMs=\{v\[P\.preDelayMs\]\} spanS=\{DECAY_SPAN_S\} \/>/);
     assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[2], /DARK 2k: the wash now nearly reaches the bottom by the 1 s mark\. DESIGNED RESPONSE stays put: it draws RT60 alone/);
   });
   it('LEARN 1: RT60 3.0 s → the marker reads "RT60 3.0 s" on the dashed −60 line (and the fader can land on 3.0)', () => {
@@ -287,18 +287,25 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(VIZ, /<SvgText x=\{rtX\} y=\{H - 2\} fill=\{AMBER\}[^>]*>\s*\{`RT60 \$\{fmt2sig\(rt60\)\} s`\}/);
     assert.match(REVERB_SCREEN_GUIDES.learn.tryThis[0], /slide RT60 to 3\.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labelled RT60 3\.0 s on the time axis below/);
   });
-  it('CHECK 2: the RT60 marker barely moves above 0.5 s — the axis stretches to 1.25 × RT60', () => {
-    assert.match(VIZ, /const spanS = Math\.max\(rt60 \* 1\.25, refRt60 \? refRt60 \* 1\.25 : 0, 0\.6\);/);
+  it('CHECK 2 (D41 fix 2026-11-01): a FIXED 7.5 s axis — the RT60 marker slides from near the left (0.40 s) to near the right (6.0 s)', () => {
+    assert.match(VIZ, /export const DECAY_SPAN_S = 7\.5;/);
+    assert.match(VIZ, /const spanS = fixedSpanS \?\? Math\.max\(rt60 \* 1\.25, refRt60 \? refRt60 \* 1\.25 : 0, 0\.6\);/);
     assert.match(VIZ, /const xAt = \(s: number\) => padL \+ \(s \/ spanS\) \* \(W - padL - 8\);/);
     assert.match(VIZ, /const rtX = xAt\(preDelayMs \/ 1000 \+ rt60\);/);
     assert.match(VIZ, /const tickStep = spanS > 4 \? 2 : spanS > 1\.5 \? 1 : 0\.5;/);
+    assert.match(REVERB, /spanS=\{DECAY_SPAN_S\}/);
+    // the window holds the whole drawn slope at the fader's top: PRE 60 ms + 6 s × 1.15
+    assert.ok(0.06 + 6 * 1.15 < 7.5);
     // the 320-wide card, padL 26: the marker's x at the default PRE 20 ms
-    const x = (rt: number, pre = 0.02) => 26 + ((pre + rt) / Math.max(rt * 1.25, 0.6)) * (320 - 26 - 8);
+    const x = (rt: number, pre = 0.02) => 26 + ((pre + rt) / 7.5) * (320 - 26 - 8);
+    assert.ok(x(0.4) < 26 + 30, `0.40 s at x ${x(0.4).toFixed(0)}`);
+    assert.ok(x(6) > 312 - 70, `6.0 s at x ${x(6).toFixed(0)}`);
     const xs = [0.5, 0.8, 1.5, 3, 6].map((r) => x(r));
-    assert.ok(Math.max(...xs) - Math.min(...xs) < 10, 'marker drift ' + xs.map((v) => v.toFixed(0)).join(','));
-    assert.ok(x(0.4) < x(0.5) - 30, 'below 0.48 s the axis stops shrinking and the marker does move');
-    assert.match(REVERB_SCREEN_GUIDES.check.tryThis[1], /Above about 0\.5 s the marker barely moves along the dashed −60 line while the time axis stretches: read its label, RT60 … s/);
-    assert.doesNotMatch(REVERB_SCREEN_GUIDES.check.tryThis[1], /only its place in time moves/);
+    for (let k = 1; k < xs.length; k++) assert.ok(xs[k] - xs[k - 1] > 10, 'the marker moves at every RT60 choice ' + xs.map((v) => v.toFixed(0)).join(','));
+    // the label stays on the card at both ends (≈ 6 px a glyph at 9 pt mono)
+    assert.ok(x(0.4) - ('RT60 0.40 s'.length * 6) / 2 > 0 && x(6) + ('RT60 6.0 s'.length * 6) / 2 < 320);
+    assert.match(REVERB_SCREEN_GUIDES.check.tryThis[1], /On its fixed time axis the marker slides along the dashed −60 line, near the left at 0\.40 s and near the right at 6\.0 s/);
+    assert.doesNotMatch(textOf(GUIDES.check), /barely moves|axis stretches/);
   });
   it('LEARN 2: PRE-DLY 0 ms → the caption opens "No pre-delay: the wash starts with the dry hit…" (no "0 ms … separates")', () => {
     assert.match(REVERB, /v\[P\.preDelayMs\] === 0\s*\? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail\. Then the tail falls 60 dB in \$\{v\[P\.rt60\]\} s\.`\s*: `\$\{v\[P\.preDelayMs\]\} ms pre-delay separates the dry hit from the wash/);
@@ -310,6 +317,54 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.equal(lib.revCol(50000, COL, 0, 1000, 20, decay(1.5, 5500), 1)[0], -200);
     assert.match(REVERB_SCREEN_GUIDES.explore.changes.join(' '), /MIX: at 100% WET only the wash is left/);
     assert.match(REVERB_SCREEN_GUIDES.explore.changes.join(' '), /about 31 ms the reverb needs for its first echo/);
+  });
+});
+
+/* ── OUT never draws signal that has not happened yet (D41 fix 2026-11-01) ──
+ * revOutPath is lifted the same way, with a stub Skia that records points. */
+type Pt = [number, number];
+function liftOut(): (kind: number, now: number, sk: number, P: number, TP: number, pre: number, dec: number, mix: number, x0: number, x1: number, msPerPx: number, top: number, base: number) => Pt[][] {
+  const m = ANIM_RAW.match(/function revOutPath\([\s\S]*?\n\}\n/);
+  assert.ok(m, 'fxAnim.revOutPath not found');
+  const src = m[0].replace(/\): SkPathT \{/, ') {').replace(/:\s*number/g, '');
+  const Skia = {
+    Path: {
+      Make: () => {
+        const subs: Pt[][] = [];
+        return {
+          subs,
+          moveTo: (x: number, y: number) => subs.push([[x, y]]),
+          lineTo: (x: number, y: number) => subs[subs.length - 1].push([x, y]),
+          close: () => {},
+        };
+      },
+    },
+  };
+  // eslint-disable-next-line @typescript-eslint/no-implied-eval
+  const f = new Function('Skia', 'revCol', 'REV_RANGE_DB', `${src}\nreturn revOutPath;`)(Skia, lib.revCol, RANGE) as (...a: number[]) => { subs: Pt[][] };
+  return (...a: number[]) => f(...a).subs;
+}
+describe('4b. OUT draws only what has already happened', () => {
+  const revOutPath = liftOut();
+  // the 320-wide flow at STAGE_FRAC 0.5: OUT runs 170 → 314 px over 1500 ms
+  const x0 = 170, x1 = 314, msPerPx = 1500 / (x1 - x0), top = 24, base = 160;
+  const msAt = (x: number) => (x - x0) * msPerPx;
+  const dec = decay(1.5, 5500);
+  const draw = (kind: number, e: number) => revOutPath(kind, 50000 + e, 0, 1000, 1000, 20, dec, 0.35, x0, x1, msPerPx, top, base);
+  it('the guard is in the drawing', () => {
+    assert.match(ANIM, /if \(old\) T -= TP;\s*if \(T > now\) \{\s*if \(kind === 0\) p\.lineTo\(xm, base\);\s*else started = false;\s*continue;\s*\}/);
+  });
+  it('100 ms after a click (CLICK 60): nothing past 1.1 s on OUT — no wash, no dim contour, no dry stroke', () => {
+    const e = 100;
+    for (const kind of [2, 3]) for (const sub of draw(kind, e)) for (const [x] of sub) assert.ok(msAt(x) <= 1000 + e + msPerPx, `kind ${kind} draws at ${msAt(x).toFixed(0)} ms`);
+    // the wet area sits on the baseline there
+    for (const sub of draw(0, e)) for (const [x, y] of sub) if (msAt(x) > 1000 + e + msPerPx && x < x1) assert.equal(y, base, `wash at ${msAt(x).toFixed(0)} ms`);
+    // …and the region was NOT empty before the fix: the new click's wash lives there (T = tTrig + x − 1000)
+    assert.ok(lib.revCol(50000 + 300, 7.6, 0, 1000, 20, dec, 0.35)[1] > -40);
+  });
+  it('600 ms after a click the whole window is past: the dim contour reaches the right end again', () => {
+    const xs = draw(3, 600).flat().map(([x]) => msAt(x));
+    assert.ok(Math.max(...xs) > 1450, `dim contour ends at ${Math.max(...xs).toFixed(0)} ms`);
   });
 });
 

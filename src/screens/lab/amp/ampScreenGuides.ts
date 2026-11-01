@@ -303,7 +303,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           STRIP,
         ],
         changes: [
-          'A: one device conducts all 360°; IDLE stays 100% with no signal: low efficiency.',
+          'A: one device conducts all 360°; with no signal IDLE stays 100%, HEAT hot: low efficiency.',
           'B: each device ideally conducts half the cycle (180°); CONDUCT. reads 165° as each needs a small turn-on voltage. That gap is the NOTCH. IDLE 0%, efficiency higher.',
           'AB: more AB BIAS overlaps the devices past zero: the notch closes, idle rises.',
           'C: pulses ring a tuned circuit into a sine, only near its tuned frequency.',

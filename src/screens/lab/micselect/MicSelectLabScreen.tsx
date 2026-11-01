@@ -72,6 +72,9 @@ import {
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import type { LabEndUnit } from '../kit/labEnd';
 
 const STEP_KEY = 'ape:micSelStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -1008,7 +1011,20 @@ export function MicSelectLabScreen() {
   const unEnd = useCallback(() => setEnding(false), []);
   const visited = useLabVisits('micselect');
   // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
-  const progressUnreadable = useLabVisitsUnreadable();
+  const visitsUnreadable = useLabVisitsUnreadable();
+  // THE CHECK IS A UNIT (D41 #8/#9, owner 2026-11-01): the understanding check
+  // is what completes this lab for certificates, so it is the end screen's last
+  // row (kind 'check', the PagedLab pattern) and LAB COMPLETE can never show
+  // above an unpassed check. Read from the banked record, never cleared by a
+  // practice run. The mic locker row is labelled Optional but still counts
+  // (owner ruling 2026-10-31), so it is NOT `optional: true`.
+  const bankedUnits = useLabClearedUnits('micselect');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('micselect');
+  // Either record unread = the end screen's note, never "all left" (D51).
+  const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
+  const endUnits = useMemo(() => micSelEndUnits(hasCheck), [hasCheck]);
+  const endCleared = useMemo(() => micSelEndCleared(visited, bankedUnits), [visited, bankedUnits]);
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30 pass 2 — the Tube lab's fix): the
     // provider boots at 'anonymous'-but-unresolved, so a cold-start guest's
@@ -1054,12 +1070,13 @@ export function MicSelectLabScreen() {
       {ending ? (
         <LabEndScreen
           labTitle="Microphone Selection Lab"
-          units={STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }))}
-          cleared={visited}
+          units={endUnits}
+          cleared={endCleared}
           unreadable={progressUnreadable}
           mode="progress"
           noun="lesson"
-          onJump={(id) => goTo(Math.max(0, STEPS.findIndex((st) => st.key === id)))}
+          // The CHECK row stays here: the check is drawn on this screen (extra).
+          onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goTo(Math.max(0, STEPS.findIndex((st) => st.key === id))); }}
           onPracticeAgain={() => goTo(0)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
@@ -1082,6 +1099,22 @@ export function MicSelectLabScreen() {
     </LabNavProvider>
     </MicPhotoLightbox>
   );
+}
+
+/** The end screen's units: every lesson in order (the mic locker labelled
+ *  Optional but still counted — owner 2026-10-31), then the understanding
+ *  check as a CHECK row when questions are authored for this lab. */
+export function micSelEndUnits(hasCheck: boolean): LabEndUnit[] {
+  const units: LabEndUnit[] = STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }));
+  if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
+  return units;
+}
+
+/** Lessons opened (device progress) plus the check once it is banked. */
+export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {
+  const out = new Set(visited);
+  if (banked.has(UNDERSTANDING_UNIT)) out.add(UNDERSTANDING_UNIT);
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -125,11 +125,19 @@ describe('1. every Phase screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(Waves|UAD|Universal Audio|SSL|Neve|API|Little Labs|IBP|Lexicon|Eventide|Boss|TC Electronic|RTW|Dorrough)\b/, `${id}: a gear maker/model name`);
     }
   });
-  it('no step asks the learner to read a phase angle off the flow display (its tone is not 440 Hz)', () => {
-    // fxAnim draws 12 ms as one whole cycle of its tone; the scope and the
-    // sine source are 440 Hz. The TRY THIS steps read CORRELATION and the
-    // sound — never the flow's R offset or a degree figure.
-    assert.match(FLOW, /const dxp = dlyG\.value \* \(lamPx \/ 12\);/);
+  it('the flow draws the 440 Hz tone the scope and the sound use (D41 fix 2026-11-01); no step reads an angle off it', () => {
+    // One drawn cycle (lamPx) = 1/440 s: DLY R turns R by 2π·440·τ, the same
+    // phase the scope's correlation and the engine's delay produce. (It used
+    // to be lamPx / 12 — 12 ms a cycle, an 83 Hz tone.)
+    assert.match(ANIM, /^const STEREO_TONE_HZ = 440;$/m);
+    assert.equal((FLOW.match(/const dxp = dlyG\.value \* 0\.001 \* STEREO_TONE_HZ \* lamPx;/g) ?? []).length, 2, 'both OUT traces');
+    assert.doesNotMatch(FLOW, /lamPx \/ 12/);
+    assert.match(FLOW, /const lamPx = w \/ 3\.0;/);
+    assert.match(FLOW, /const kc = \(PI2 \* 3\.0\) \/ w;/);
+    // …the same tone as the scope hero and its badge
+    assert.match(PH, /<LissajousGraph widthPct=\{100\} invertR=\{v\[PHASE_INV\] > 0\.5\} delayRms=\{v\[PHASE_DLY\]\} toneHz=\{440\} \/>/);
+    assert.match(PH, /heroBadge: 'LISSAJOUS \+ CORRELATION — ANALYTIC \(440 Hz model\)'/);
+    // The guide still reads CORRELATION and the sound — never a degree figure.
     // (180° is the polarity flip — true at every frequency, not read off the flow.)
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd).replace(/180°/g, ''), /\d\s*°|\bdegrees?\b/i, `${id}: an angle figure`);
     for (const [id, gd] of allGuides) assert.doesNotMatch(gd.tryThis.join(' '), /R trace (moves|slides|shifts)/i, `${id}: a TRY THIS reads the flow's R offset`);
@@ -272,7 +280,20 @@ describe('4. the numbers: what the scope prints, and what the engine plays', () 
       assert.ok(monoDb(1.1, false, fs) < -20, `MONO at 1.1 ms (${fs}): ${monoDb(1.1, false, fs).toFixed(1)} dB`);
       assert.ok(monoDb(1.1, true, fs) > -0.1, `flipped (${fs}): ${monoDb(1.1, true, fs).toFixed(2)} dB`);
     }
-    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /DLY R at 1\.1 ms: CORRELATION reads −0\.99 and the tone nearly vanishes/);
+    // the flow's MONO OUT trace, worked from its own law: R = sin(kc·(x − dxp) − pc),
+    // dxp = τ·0.001·440·lamPx, so a phase of 2π·440·τ; the folded trace (L+R)/2
+    // has height |cos(π·440·τ)| — about 5 % at 1.1 ms, full again when flipped
+    const lam = 1, kcl = (2 * Math.PI) / lam;
+    const traceH = (ms: number, inv: boolean) => {
+      const dxp = ms * 0.001 * 440 * lam;
+      let pk = 0;
+      for (let i = 0; i < 2000; i++) { const x = (i / 2000) * lam; const r = (inv ? -1 : 1) * Math.sin(kcl * (x - dxp)); pk = Math.max(pk, Math.abs((Math.sin(kcl * x) + r) / 2)); }
+      return pk;
+    };
+    assert.ok(traceH(1.1, false) < 0.06, `drawn MONO at 1.1 ms: ${traceH(1.1, false).toFixed(3)}`);
+    assert.ok(traceH(1.1, true) > 0.99, `drawn MONO flipped at 1.1 ms: ${traceH(1.1, true).toFixed(3)}`);
+    assert.ok(traceH(1000 / 440, false) > 0.999, 'one whole 440 Hz cycle (2.27 ms) lines up again, as the scope reads +1.00');
+    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /DLY R at 1\.1 ms: CORRELATION reads −0\.99; the tone and the OUT trace nearly vanish/);
     assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /\+0\.99, the tone is back — for this one frequency/);
   });
   it('EXPLORE TRY THIS 3: PINK NOISE in MONO with a delay combs; a flip moves the notches but cannot remove them', () => {

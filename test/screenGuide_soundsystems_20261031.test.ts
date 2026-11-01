@@ -376,9 +376,18 @@ describe('3. every TRY THIS number is what the page prints', () => {
     const hot = chain({ ...start, preamp: 40 });
     assert.equal(hot.verdict, 'CLIPPING');
     assert.ok(t.includes('Raise PREAMP to +40 dB: with the later stages still at +10, it reads CLIPPING.'));
-    const fixed = chain({ preamp: 40, fader: 0, main: 0, procIn: 0, procOut: 0 });
+    // D41 #24 (2026-11-01): LEARN's OK needs 12 dB headroom (gainReading in
+    // gainDock); below it a clean chain reads TIGHT. The shared verdict still
+    // says OK there, so the guide's numbers are checked against both.
+    const unity = chain({ preamp: 40, fader: 0, main: 0, procIn: 0, procOut: 0 });
+    assert.equal(unity.verdict, 'OK', 'the shared verdict alone');
+    assert.equal(unity.headroom, 10);
+    assert.ok(typeof unity.headroom === 'number' && unity.headroom < 12, 'so LEARN reads TIGHT');
+    assert.ok(t.includes(`Now return FADER, MAIN and PROC IN to 0: VERDICT TIGHT, HEADROOM ${unity.headroom} dB.`));
+    const fixed = chain({ preamp: 38, fader: 0, main: 0, procIn: 0, procOut: 0 });
     assert.equal(fixed.verdict, 'OK');
-    assert.ok(t.includes(`VERDICT OK, AT SPEAKER ${dbu(fixed.atSpeaker)}, ABOVE NOISE ${fixed.aboveNoise} dB.`));
+    assert.equal(fixed.headroom, 12, 'exactly the green cut-off');
+    assert.ok(t.includes(`Lower PREAMP to +38 dB: VERDICT OK, HEADROOM ${fixed.headroom} dB, AT SPEAKER ${dbu(fixed.atSpeaker)}, ABOVE NOISE ${fixed.aboveNoise} dB.`));
   });
   it('Establish gain structure (OPERATE)', () => {
     const t = tryOf(byId['Establish gain structure']);

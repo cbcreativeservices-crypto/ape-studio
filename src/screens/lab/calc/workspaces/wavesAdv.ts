@@ -37,11 +37,11 @@ const ALIGN: Workspace = {
     'time-of-flight part.',
   glossary: ['Phase', 'Delay', 'Comb Filtering', 'Crossover', 'Wavelength'],
   fields: [
-    { key: 'offset', name: 'PATH OFFSET', quantity: 'length', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
+    { key: 'offset', name: 'PATH OFFSET', quantity: 'length', meaning: 'length:pathdiff', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'delay', name: 'DELAY', quantity: 'time', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
+    { key: 'delay', name: 'DELAY', quantity: 'time', meaning: 'time:delay', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
   ],
   functions: [
     {
@@ -57,7 +57,7 @@ const ALIGN: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.offset) / c;
         return [
-          { label: 'DELAY TO ALIGN', value: d, quantity: 'time', unit: 'ms' },
+          { label: 'DELAY TO ALIGN', value: d, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'DELAY IN SAMPLES', value: d * n(v.sr), quantity: 'samples', chainable: false },
         ];
       },
@@ -85,7 +85,7 @@ const ALIGN: Workspace = {
         const wl = c / n(v.freq);
         const phase = snapWhole((360 * n(v.offset)) / wl) % 360;
         return [
-          { label: 'PHASE OFFSET', value: phase, quantity: 'angle' },
+          { label: 'PHASE OFFSET', value: phase, quantity: 'angle', meaning: 'angle:phase' },
           { label: 'OFFSET IN WAVELENGTHS', value: n(v.offset) / wl, quantity: 'number', chainable: false },
         ];
       },
@@ -128,7 +128,7 @@ const ALIGN: Workspace = {
       keySymbols: ['·', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        return [{ label: 'PATH DISTANCE', value: n(v.delay) * c, quantity: 'length' }];
+        return [{ label: 'PATH DISTANCE', value: n(v.delay) * c, quantity: 'length', meaning: 'length:pathdiff' }];
       },
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -170,8 +170,8 @@ const IMD: Workspace = {
     'frequencies, not their amplitudes.',
   glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'nonlinear distortion', 'Frequency'],
   fields: [
-    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', placeholder: '19000', help: 'First input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', placeholder: '20000', help: 'Second input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', meaning: 'frequency:point', placeholder: '19000', help: 'First input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', meaning: 'frequency:point', placeholder: '20000', help: 'Second input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -196,7 +196,7 @@ const IMD: Workspace = {
         const lo = Math.min(f1, f2);
         const hi = Math.max(f1, f2);
         return [
-          { label: '2ND-ORDER DIFFERENCE (f₂−f₁)', value: Math.abs(f2 - f1), quantity: 'frequency' },
+          { label: '2ND-ORDER DIFFERENCE (f₂−f₁)', value: Math.abs(f2 - f1), quantity: 'frequency', meaning: 'frequency:point' },
           { label: '2ND-ORDER SUM (f₁+f₂)', value: f1 + f2, quantity: 'frequency', chainable: false },
           { label: '3RD-ORDER LOWER (2·lower − higher)', value: Math.abs(2 * lo - hi), quantity: 'frequency', chainable: false },
           { label: '3RD-ORDER UPPER (2·higher − lower)', value: Math.abs(2 * hi - lo), quantity: 'frequency', chainable: false },

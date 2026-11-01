@@ -116,7 +116,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     control: [
       'Tap an option to answer. Scroll down for every card.',
       'A wrong answer costs nothing: pick again straight away. There is no score.',
-      'The tabs under the title go to EXPLORE or LEARN. Leaving this tab before the last right answer clears the cards.',
+      'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. Leaving the lab before the last right answer clears them.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',

@@ -1,8 +1,9 @@
 /**
  * Calculator bug pass 3 of 3 (2026-09-30 day) — regressions + re-audit.
  *
- *  RA1 re-audit of pass 2: chainFits never blocks a same-kind db/number value
- *      between the steps of ANY built-in workflow template;
+ *  RA1 re-audit of pass 2: the UNIT guard (unitFits) never blocks a same-kind
+ *      db/number value between the steps of ANY built-in workflow template
+ *      (whether the MEANING fits is D41's job — calcChainMeaning_20261101);
  *  RA2 re-audit of pass 2 (NaN-only → error): the compressor's "threshold for
  *      a target GR" at 1:1 now ANSWERS in words instead of ±∞ rows that the
  *      new rule turned into a bare "check for zeros" error;
@@ -35,7 +36,7 @@ registerHooks({
 });
 
 const { getWorkspace } = await import('../src/screens/lab/calc/registry.ts');
-const { chainFits, parseList, parseQuantity, unitsFor } = await import('../src/screens/lab/calc/calcUnits.ts');
+const { unitFits, parseList, parseQuantity, unitsFor } = await import('../src/screens/lab/calc/calcUnits.ts');
 const { WORKFLOW_TEMPLATES } = await import('../src/screens/lab/calc/workflowCatalog.ts');
 
 type Ws = NonNullable<ReturnType<typeof getWorkspace>>;
@@ -84,7 +85,7 @@ test('RA1 — no template chain between steps is blocked by the unit guard', () 
             checked++;
             // The only same-kind pairs a unit tag may refuse are named-unit
             // mismatches — none exist between template steps.
-            assert.ok(chainFits(o.label, o.quantity, field), `${t.id}: ${o.label} → ${field.name}`);
+            assert.ok(unitFits(o.label, o.quantity, field), `${t.id}: ${o.label} → ${field.name}`);
           }
         }
       }

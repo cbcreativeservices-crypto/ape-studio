@@ -106,7 +106,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [
-      'A right answer stays right while you stay on this tab. Leave before all are right and the questions start fresh, so look things up first.',
+      'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
       'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs taking twice.',
     ],
     teaches: [

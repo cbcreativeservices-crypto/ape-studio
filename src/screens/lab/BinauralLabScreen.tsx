@@ -45,8 +45,9 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { StageAspectReport } from './rack/stageAspect';
-import { binauralScreenGuide } from './binauralScreenGuides';
+import { BINAURAL_END_GUIDE, binauralScreenGuide } from './binauralScreenGuides';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -221,6 +222,8 @@ export function BinauralLabScreen() {
       // its spot to the ⓘ (accuracy chip rule, owner 2026-10-31).
       guide={binauralScreenGuide}
       accuracy={false}
+      // The what's-left screen under the CHECK (every lab ends on one; D41).
+      checkEnd={<LabCheckEnd labId="binaural" labTitle="Binaural Panner Lab" onOpen={stop} endGuide={BINAURAL_END_GUIDE} />}
       headerAction={
         <HeaderPlayButton
           playing={running}

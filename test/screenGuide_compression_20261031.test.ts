@@ -242,7 +242,11 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
       assert.equal(+run(click(120), -40, 4, 25, 120, speaker).mx.toFixed(1), 0, '25 ms PUNCH');
       assert.ok(run(click(120), -40, 4, 0.5, 120, speaker).mx > def.mx + 3, '0.5 ms FAST kicks deeper');
     });
-    it(`EXPLORE changes on ${route}: at the OPENING settings (CLICK 120, THRESH −30, ATTACK 5 ms) GR reads 0.0`, () => {
+    it(`OPENING settings (D41 fix) on ${route}: CLICK 120, THRESH −40, ATTACK 5 ms → GR moves on first play (~5.5 dB a hit)`, () => {
+      const open = run(click(120), -40, 4, 5, 120, speaker);
+      assert.equal(Math.round(open.mx), 5, `kick ${open.mx.toFixed(1)}`);
+      assert.ok(open.polls.some((p) => p > 0.5), 'a 50 ms poll catches it');
+      // the old opening (−30) never moved the meter — why the default changed
       assert.equal(+run(click(120), -30, 4, 5, 120, speaker).mx.toFixed(1), 0);
     });
   }
@@ -253,15 +257,16 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     const t = GUIDES.explore.tryThis;
     assert.match(t[0], /THRESH at −30 dB: GR holds at about 7 dB\. Ride THRESH up to −20 dB: GR falls to 0\.0/);
     assert.match(t[1], /2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9/);
-    assert.match(t[2], /CLICK 120, THRESH −40 dB: GR kicks on each hit, then falls to 0\.0\. ATTACK 25 ms PUNCH: GR stays 0\.0/);
+    assert.match(t[2], /CLICK 120, THRESH −40 dB \(the start\): GR kicks on each hit, then falls to 0\.0\. ATTACK 25 ms PUNCH: GR stays 0\.0/);
     assert.match(GUIDES.learn.tryThis[0], /12 × \(1 − 1\/4\) = 9 dB of gain reduction, so the output rises 3 dB/);
     // …the same kind of sum as the check's first question (8 dB over at 4:1 →
     // '2 dB'), with other numbers, so no guide step hands over that answer
     assert.match(CHECKS, /input rises 8 dB above the threshold[\s\S]*?correct: '2 dB'/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /8 ÷ 4|8 dB over at 4:1|8 dB over leaves 2/);
     assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB, step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB/);
-    assert.match(GUIDES.explore.changes.join(' '), /at the start GR reads 0\.0: at ATTACK 5 ms the sensed level of the short CLICK 120 never quite reaches THRESH −30 dB/);
-    assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -30,/);
+    assert.match(GUIDES.explore.changes.join(' '), /At the start \(CLICK 120, THRESH −40 dB, ATTACK 5 ms\) GR kicks about 5 dB on each hit, then falls back to 0\.0/);
+    assert.doesNotMatch(textOf(GUIDES.explore), /at the start GR reads 0\.0/);
+    assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -40,/);
     assert.match(COMP, /sources: \[srcClick\(120\)/);
     assert.match(GUIDES.check.tryThis[1], /SINE 440 Hz at THRESH −10 dB: GR reads 0\.0/);
   });

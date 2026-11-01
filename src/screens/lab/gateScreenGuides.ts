@@ -14,25 +14,28 @@
  * Every name is the on-screen name (fxLabConfigs gateConfig, FxLabScreen,
  * fxAnim DynamicsFlow, fxViz). Every GR number in TRY THIS was worked out from
  * the engine (Effects.hpp DynamicsEffect GateMode: a peak detector — the gate
- * attack is the engine default 10 ms, the lab never writes it; the gate gain
+ * attack is 1 ms, written by gateConfig `fixed` (D41 fix 2026-11-01; the
+ * engine's own 10 ms default was too slow for the 5 ms click); the gate gain
  * opens at that rate above the threshold, holds for HOLD, then closes toward
  * the RANGE floor at the RELEASE rate, and RELEASE also sets how fast the
  * detector falls) on the lab's CLICK 90 at −20 dBFS peak, on BOTH routes
  * (headphones, and the phone speaker's 150 Hz high-pass), re-run sample by
  * sample in the test:
- *   THRESH −50, RLS 100 ms           → GR swings from near 0 to ~36 and back;
+ *   THRESH −35 (the default), RLS 100 → the detector peaks ≈ −24.6 dBFS, the
+ *     gate opens on every hit: GR 0.0 for ~140 ms, then up to ~36.6 between
+ *     hits; the hit itself comes out ≈ −23.5 dBFS (the 1 ms opening ramp);
+ *   THRESH −20                       → never opens (−24.6 < −20): GR = |RANGE|;
+ *   THRESH −50, RLS 100 ms           → GR swings from 0.0 to ~29 and back;
  *   THRESH −50, RLS 20 ms CHATTER    → shut for most of each gap: GR reaches
  *     exactly |RANGE| — 20.0 / 40.0 / 70.0 — before the next hit;
  *   THRESH −50, RLS 500 ms           → GR 0.0 throughout (never closes: the
- *     detector falls at RLS speed too, bottoms near −47.4 dB > −50, so the
+ *     detector falls at RLS speed too, bottoms near −35.8 dB > −50, so the
  *     close branch never runs — the guide gives THAT reason);
- *   THRESH −50, HOLD 100 vs 0 (RLS 20) → GR < 1 dB for ~110 ms vs ~10 ms per hit.
- * ⚠️ No TRY THIS uses the default THRESH −35 dB on the CLICK: with the engine's
- * 10 ms gate attack the detector peaks at only −37.6 dBFS on the 5 ms click,
- * so at −35 the gate never opens (GR sits at |RANGE|) — the opposite of the
- * screen's caption and drawing. Listed for the auditors as a suspected
- * screen-code issue; EXPLORE changes says it plainly so the opening state is
- * not left unexplained, and the CLICK drawing is called a model.
+ *   THRESH −50, HOLD 100 vs 0 (RLS 20) → GR < 1 dB for ~160 ms vs ~60 ms per hit.
+ * Before the D41 fix the engine's 10 ms attack let the detector reach only
+ * −37.6 dBFS on the click, so at the default −35 the gate never opened while
+ * the intro, caption and drawing said it did; the drawing now uses the same
+ * 1 ms (gateConfig anim attackMs). The CLICK drawing is still called a model.
  * PINK NOISE is route-dependent (the speaker's high-pass drops its level about
  * 3 dB, enough to flip the gate at −35) — so no step quotes a number on it.
  * Change a label, a default or the source level → update this file;
@@ -66,7 +69,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     changes: [
       'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 = 40 dB quieter).',
       'HOLD keeps it open a set time after the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at the line with a fast RLS flickers: chatter.',
-      'Opening takes a moment: at the starting THRESH −35 dB the short click never registers, so the gate stays shut.',
+      'Each click opens it at the starting THRESH −35 dB; at −20 dB the short click never does.',
     ],
     teaches: [
       'Downward expansion: the gate works the other side of the threshold from the compressor — quiet sound turned down, loud sound let through.',

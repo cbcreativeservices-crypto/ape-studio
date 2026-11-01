@@ -42,7 +42,7 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap a project type to start a project of that kind. It is saved on this phone, named after its type, and opens at once.',
-    'Once a project is open, this screen shows its readiness, THE SIX STAGES, the EXERCISES and the Production Packet.',
+    'Once a project is open, this screen shows its readiness, THE SIX STAGES, the EXERCISES and the Production Packet; + NEW PROJECT there starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
   changes: [
@@ -57,18 +57,18 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Tap Music recording: the project opens at 0 / 100, Not Ready for Production, and NEXT OUTSTANDING points at Project name in Stage 1 · Define the Project.',
-    'Started a Live performance or event project instead? Stage 1 asks “Inputs from the stage” where a music project asks “Simultaneous sources to record”.',
+    'Then tap + NEW PROJECT and pick Live performance or event: its Stage 1 asks “Inputs from the stage” where the music project asks “Simultaneous sources to record”.',
   ],
 };
 
 export const PREPROD_HOME_GUIDE: ScreenGuide = {
   seeing: [
-    'Your project: its name, its type, DUPLICATE and DELETE. With several projects, chips above switch between them.',
+    'Your project: its name, its type, DUPLICATE and DELETE. Chips above switch projects; the last, + NEW PROJECT, starts another.',
     'PICK UP WHERE YOU LEFT OFF: the stage you last answered in. NEXT OUTSTANDING: the most pressing open item.',
     'PRODUCTION READINESS: the verdict, a score out of 100 and a bar of required decisions. THE SIX STAGES: each with a dot, a % and its state.',
   ],
   control: [
-    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions; DELETE asks first, then removes it from this phone.',
+    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions; DELETE asks first, then removes it from this phone. + NEW PROJECT, then a type, starts another.',
     'Tap a stage, PICK UP WHERE YOU LEFT OFF or NEXT OUTSTANDING to open that stage — NEXT OUTSTANDING lands on the exact question.',
     'Tap a red blocker under PRODUCTION READINESS to accept it on the record: ACCEPT A CONDITION asks who and why, then RECORD IT.',
     'EXERCISES opens a broken practice plan to repair. OPEN THE PRODUCTION PACKET shows the whole plan as one document.',

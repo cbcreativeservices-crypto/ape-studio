@@ -1054,7 +1054,8 @@ function revCol(tMid: number, colMs: number, sk: number, P: number, pre: number,
 /** The reverb hero's OUT side for one frame — a TRIGGERED SWEEP: x is the
  *  time since the trigger (a click reaching the stage), left → right like a
  *  decay analyser or a DAW, so the decay FALLS to the right. The sweep head
- *  writes at true speed; right of it the previous sweep persists, dimmer.
+ *  writes at true speed; right of it the previous sweep persists, dimmer —
+ *  except where that would be signal that has not happened yet (blank).
  *  kind 0 = the wet area (closed, from the baseline), 1 = this sweep's top
  *  contour, 2 = the dry part, 3 = the previous sweep's top contour,
  *  4 = the sweep head. */
@@ -1094,6 +1095,17 @@ function revOutPath(
     let T = tTrig + (xm - outX0) * msPerPx;
     const old = T > now;
     if (old) T -= TP;
+    // Not yet happened (D41 fix 2026-11-01): the window (1.5 s) is longer
+    // than the re-trigger period (1 s on CLICK 60), so for the first ~0.5 s
+    // after a click the previous sweep's columns past 1 s map to signal time
+    // AFTER now — they drew the new click's wash before it existed. A sweep
+    // only shows what has already happened: those columns stay blank and
+    // refill as the trace reaches them, like a real analyser.
+    if (T > now) {
+      if (kind === 0) p.lineTo(xm, base);
+      else started = false;
+      continue;
+    }
     const v = revCol(T, colMs, sk, P, pre, dec, mix);
     const db = kind === 2 ? v[0] : v[1];
     const hgt = Math.max(0, Math.min(1, (db + REV_RANGE_DB) / REV_RANGE_DB)) * (base - top);
@@ -2157,6 +2169,14 @@ function DistFlow({
  *  hard pan, |M + 2S|·√2 ≈ 1.9 — still fits inside the panel (0.46 h), so
  *  the drawing never clips what the DSP does not clip. */
 const STEREO_A = 0.24;
+/** The tone the stereo flow draws, in Hz: the phase lab's SINE 440 and its
+ *  scope (fxLabConfigs phaseConfig `LissajousGraph … toneHz={440}`, badge
+ *  "440 Hz model"). One drawn cycle (lamPx) is 1/440 s ≈ 2.27 ms, so DLY R
+ *  turns R by the same 2π·440·τ the audio and the scope do (D41 fix
+ *  2026-11-01: the flow drew 12 ms as one cycle — an 83 Hz tone — so at
+ *  1.1 ms in MONO its OUT trace stayed near full while the tone dropped
+ *  ~23 dB). With PINK NOISE the drawn tone is the 440 Hz part of the noise. */
+const STEREO_TONE_HZ = 440;
 // Dual traces: L (amber) and R (blue). Past the stage, polarity/phase-delay/
 // width/pan act on the M/S decomposition — mono-fold glides both traces onto
 // the same (L+R)/2 line, so INVERT + MONO visibly cancels to a flatline.
@@ -2243,7 +2263,7 @@ function StereoFlow({
     const wd = widthG.value;
     const pg = foldG.value;
     const sgn = 1 - 2 * invG.value; // glides through 0 → visible morph to Ø
-    const dxp = dlyG.value * (lamPx / 12);
+    const dxp = dlyG.value * 0.001 * STEREO_TONE_HZ * lamPx; // ms → cycles of the 440 Hz tone → px
     // Constant-power pan, exactly processStereo's law (×√2 so centre = unity).
     const gL = Math.cos(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
     const gR = Math.sin(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
@@ -2271,7 +2291,7 @@ function StereoFlow({
     const wd = widthG.value;
     const pg = foldG.value;
     const sgn = 1 - 2 * invG.value;
-    const dxp = dlyG.value * (lamPx / 12);
+    const dxp = dlyG.value * 0.001 * STEREO_TONE_HZ * lamPx; // ms → cycles of the 440 Hz tone → px
     // Constant-power pan, exactly processStereo's law (×√2 so centre = unity).
     const gL = Math.cos(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
     const gR = Math.sin(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;

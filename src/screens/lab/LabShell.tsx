@@ -77,6 +77,26 @@ function modesFor(labId: string): { key: LabMode; label: string }[] {
   return hasUnderstandingCheck(labId) ? [...BASE_MODES, { key: 'check' as const, label: 'CHECK' }] : BASE_MODES;
 }
 
+/**
+ * A stable number per guide OBJECT (D41 #11, owner-approved 2026-11-01). The
+ * guide host's resetKey follows the guide on screen, not only the tab: a lab
+ * whose EXPLORE guide follows an in-screen MODE (Harmonic MODEL / REAL
+ * SIGNAL, Bass fretted / harmonics) closes an open guide when that mode
+ * swaps the screen under it. Every guide function returns fixed guide
+ * objects, so a re-render never changes the number.
+ */
+const guideIds = new WeakMap<ScreenGuide, number>();
+let nextGuideId = 1;
+export function guideIdOf(g: ScreenGuide | undefined): number {
+  if (!g) return 0;
+  let id = guideIds.get(g);
+  if (id === undefined) {
+    id = nextGuideId++;
+    guideIds.set(g, id);
+  }
+  return id;
+}
+
 /** Fixed per-mode tab color (owner 2026-07-31): LEARN green · EXPLORE amber. */
 export const MODE_COLORS: Record<LabMode, string> = {
   learn: colors.green,
@@ -467,6 +487,7 @@ export function LabShell({
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
   const modes = modesFor(labId);
+  const hasCheck = modes.some((m) => m.key === 'check');
   const shownGuide = typeof guide === 'function' ? guide(mode) : mode === 'explore' ? guide : undefined;
   /**
    * Already passed on an earlier visit?
@@ -667,9 +688,10 @@ export function LabShell({
       }}
     >
       {/* Screen Guide host (opt-in `guide`): its overlay renders as this
-          root's last child; a tab switch closes an open guide. Regions only
-          when the Rack Unit is on screen. */}
-      <ScreenGuideHost resetKey={mode} regions={!!rack && mode === 'explore'}>
+          root's last child; a tab switch, or an in-screen MODE that swaps
+          the guide (guideIdOf), closes an open guide. Regions only when the
+          Rack Unit is on screen. */}
+      <ScreenGuideHost resetKey={`${mode}:${guideIdOf(shownGuide)}`} regions={!!rack && mode === 'explore'}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): the same ‹ in
           every lab — LEAVE THE LAB, BACK_HIT_SLOP, double-tap latched. The
           probe hooks (title triple-tap, touch stamps, frame refs) ride its
@@ -724,9 +746,15 @@ export function LabShell({
         // so the bound lane, open tray, and well scroll survive a tab hop
         // (review 2026-08-23).
         <>
-          {mode === 'check' ? (
+          {hasCheck ? (
+            // CHECK stays MOUNTED across tab hops (hidden, not unmounted; D41
+            // #13, owner-approved 2026-11-01), like the RackUnit below: the
+            // answers already right survive a trip to LEARN or EXPLORE. Only
+            // the pass is saved (as before); leaving the lab starts an
+            // unfinished check over.
             // LEARN and CHECK are pure reading: the tablet reading column
             // (owner 2026-09-29, tablet pass). No-op on a phone.
+            <View style={mode === 'check' ? styles.rackFill : styles.rackHidden}>
             <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
                 <LabUnderstandingCheck
@@ -745,6 +773,7 @@ export function LabShell({
                 {checkEnd ?? null}
               </View>
             </ScrollView>
+            </View>
           ) : null}
           {mode === 'learn' ? (
             <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>

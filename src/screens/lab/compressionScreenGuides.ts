@@ -22,11 +22,13 @@
  *   SINE 440, THRESH −30, 4:1, 5/120 ms   → GR 7.0 (6.9 speaker)  "about 7"
  *   … THRESH −20 and above               → GR 0.0
  *   RATIO 2:1 / 8:1 / 20:1 at −30         → 4.7 / 8.1 / 8.8       "5 / 8 / 9"
- *   CLICK 120, THRESH −40, ATTACK 5 ms    → kicks to ~5 dB, back to 0.0
+ *   CLICK 120, THRESH −40 (the opening setting, D41 fix 2026-11-01),
+ *     ATTACK 5 ms                         → kicks to ~5.5 dB, back to 0.0
  *   … ATTACK 25 ms PUNCH                  → 0.0 (the 5 ms click is over before
  *                                            the detector reaches −40)
- *   CLICK 120 at the opening THRESH −30 / ATTACK 5 ms → 0.0 (the detector
- *     peaks at −32.7 dBFS) — explained in EXPLORE changes, not hidden.
+ *   CLICK 120 at THRESH −30 / ATTACK 5 ms → 0.0 (the detector peaks at
+ *     −32.7 dBFS) — why the lab no longer opens at −30: GR never moved on
+ *     first play.
  * The CLICK drawing is fxAnim's DRUM-HIT MODEL (a 90 ms decaying hit), so at
  * ATTACK 25 ms the picture clamps the tail (~12 dB) while GR reads 0.0 — the
  * guide says the drawing is a model and GR measures the real click.
@@ -61,7 +63,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     changes: [
       'Only level over the threshold is turned down: each RATIO dB over comes out as 1 dB (4:1 turns 12 dB over into 3).',
-      'ATTACK sets how fast it clamps, RELEASE how fast it lets go. So at the start GR reads 0.0: at ATTACK 5 ms the sensed level of the short CLICK 120 never quite reaches THRESH −30 dB.',
+      'ATTACK sets how fast it clamps, RELEASE how fast it lets go. At the start (CLICK 120, THRESH −40 dB, ATTACK 5 ms) GR kicks about 5 dB on each hit, then falls back to 0.0.',
       'MAKEUP raises the output afterwards; GR stays the same.',
       'Every SOURCE peaks near −20 dBFS.',
     ],
@@ -73,7 +75,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     tryThis: [
       'SOURCE → SINE 440 Hz, tap ▶, THRESH at −30 dB: GR holds at about 7 dB. Ride THRESH up to −20 dB: GR falls to 0.0 — the tone no longer crosses.',
       'Back at −30 dB, step RATIO: 2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9 — never past the 10 dB the tone peaks over.',
-      'CLICK 120, THRESH −40 dB: GR kicks on each hit, then falls to 0.0. ATTACK 25 ms PUNCH: GR stays 0.0 — the 5 ms click ends before the clamp builds (the longer drawn hit still clamps).',
+      'CLICK 120, THRESH −40 dB (the start): GR kicks on each hit, then falls to 0.0. ATTACK 25 ms PUNCH: GR stays 0.0 — the 5 ms click ends before the clamp builds (the longer drawn hit still clamps).',
     ],
   },
 

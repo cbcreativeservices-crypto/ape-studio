@@ -328,7 +328,7 @@ export const STAGE2_MEDIA: StageDef = {
       detail: "The cards or drives have been reused or wiped, and the copy has not been verified. If anything did not come across, there is nothing left to go back to.",
       fixHint: "Verify what you have immediately, in full. If a file is bad, stop and find out whether any other copy exists anywhere before doing anything else.",
       needsLogic: true,
-      logicIntent: "Fire when source_still_intact is partly or no, AND verification is absent or partial — that is, verify_method is empty or contains only none, or verify_coverage is none or sample."
+      logicIntent: "Fire when source_still_intact is partly or no, AND verification is absent or partial — that is, verify_method contains none of checksum, file_size, app_verify or playback (a file count alone proves names, not bytes), or verify_coverage is not all."
     },
     {
       ruleId: "media-no-verification",

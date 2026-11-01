@@ -826,12 +826,20 @@ export function EchoTimelineGraph({
 }
 
 // ────────────────────────────────────────────────────── DecayCurveGraph ──
+/** The Reverb lab's fixed decay window, in seconds (D41 fix 2026-11-01): the
+ *  RT60 fader's top (6 s) plus the 60 ms pre-delay and the slope's 15 % run
+ *  past −60 dB (6.96 s) fit inside it. Same reason as the Delay graph's fixed
+ *  ECHO_SPAN_MS: a window of 1.25 × RT60 kept the slope and the marker at the
+ *  same place for every RT60 from 0.48 s to 6 s — the fader moved nothing. */
+export const DECAY_SPAN_S = 7.5;
+
 /** Reverb: level vs time — pre-delay gap, then the straight −60 dB/RT60 slope
  *  on a dB axis (why RT60 is a TIME: where the line crosses −60). */
 export function DecayCurveGraph({
   rt60,
   preDelayMs,
   refRt60,
+  spanS: fixedSpanS,
   width,
   height,
   textScale = 1,
@@ -841,6 +849,11 @@ export function DecayCurveGraph({
   preDelayMs: number;
   /** Optional dim comparison slope (e.g. the previous setting). */
   refRt60?: number;
+  /** A FIXED time window in seconds (the Reverb lab: DECAY_SPAN_S), so the
+   *  slope and its marker move with RT60. Omitted = the window follows RT60
+   *  (max(1.25 × RT60, 1.25 × refRt60, 0.6 s) — the Wave Physics stages,
+   *  which compare against `refRt60`). */
+  spanS?: number;
   /** Real px box — for a lab stage (Reverb, 2026-09-26). Omitted = the
    *  320×150 card graphic scaled to the parent width. */
   width?: number;
@@ -858,7 +871,7 @@ export function DecayCurveGraph({
   const H = height ?? 150;
   const fs = 9 * textScale;
   const padL = 26 * textScale, padB = 14 * textScale;
-  const spanS = Math.max(rt60 * 1.25, refRt60 ? refRt60 * 1.25 : 0, 0.6);
+  const spanS = fixedSpanS ?? Math.max(rt60 * 1.25, refRt60 ? refRt60 * 1.25 : 0, 0.6);
   const xAt = (s: number) => padL + (s / spanS) * (W - padL - 8);
   const yAt = (db: number) => 8 + (-db / 70) * (H - 8 - padB);
   const slope = (r: number) => {

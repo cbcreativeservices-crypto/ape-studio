@@ -535,7 +535,9 @@ console.log('— M6 Stereo: images measure as declared (correlation / channel ba
       else if (label === 'Right') pass = st.balDb < -6;
       else if (label.startsWith('Centered')) pass = st.corr > 0.99 && Math.abs(st.balDb) < 1;
       else if (label === 'Out of phase') pass = st.corr < -0.99;
-      else if (label === 'Wide') pass = side(t.clips[0].buf) > -6 && st.corr < 0.9;
+      // D41 #25/#27: wide but positively correlated, mid ≥ side — a cloud,
+      // never the out-of-phase lean (it measured −0.6…−0.9 before).
+      else if (label === 'Wide') pass = side(t.clips[0].buf) > -6 && side(t.clips[0].buf) <= 0 && st.corr >= 0.2 && st.corr <= 0.5;
       else if (label === 'Narrow') pass = side(t.clips[0].buf) < -11 && st.corr > 0.8;
       if (pass) good++;
       else console.log(`    seed ${seed} L${level} ${label}: corr ${st.corr.toFixed(2)} bal ${st.balDb.toFixed(1)} side ${side(t.clips[0].buf).toFixed(1)}`);
@@ -543,7 +545,9 @@ console.log('— M6 Stereo: images measure as declared (correlation / channel ba
     const t4 = M6_STEREO.makeTrial(4, seed + 91);
     total++;
     const wider = side(t4.clips[0].buf) > side(t4.clips[1].buf) ? 0 : 1;
-    if (wider === t4.correct) good++;
+    const c4 = [stats(t4.clips[0].buf).corr, stats(t4.clips[1].buf).corr];
+    // Both clips positive; the narrower one clearly more correlated.
+    if (wider === t4.correct && Math.min(...c4) >= 0.2 && c4[1 - wider] - c4[wider] >= 0.2) good++;
     else console.log(`    seed ${seed} L4: side A ${side(t4.clips[0].buf).toFixed(1)} B ${side(t4.clips[1].buf).toFixed(1)}, said ${t4.correct}`);
   }
   ok(`stereo trials honest (${good}/${total})`, good === total && total > 0);
@@ -597,8 +601,22 @@ console.log('— M5 Defects: tonal signatures + time-domain events measure as de
   const rfLine = rfBuf ? bandDb(rfBuf, 217, 0.06) - bandDb(rfBuf, 325, 0.06) : -99;
   ok('RF emulation pulses at 217 Hz (line ≥ 10 dB over the gap)', rfLine > 10, `${rfLine.toFixed(1)} dB`);
   // Buried level check: at L4 the defect must actually sit well below the bed.
-  const t4 = M5_DEFECTS.makeTrial(4, 123457);
-  ok('L4 clips still presented at −20 dBFS', Math.abs(rmsDb(mono(t4.clips[0].buf)) + 20) < 1);
+  // D41 #26: L3–L4 clips — Click included — stay at −20 dBFS RMS (the peak
+  // cap lives on the defect, never on the bed) and never pass −1 dBFS peak.
+  let lvlOk = 0, lvlN = 0, sawClick = false;
+  for (const level of [3, 4]) {
+    for (let k = 0; k < 40; k++) {
+      const t = M5_DEFECTS.makeTrial(level, 123457 + k * 7919);
+      const b = mono(t.clips[0].buf);
+      let pk = 0;
+      for (const v of b) pk = Math.max(pk, Math.abs(v));
+      if (t.answers[t.correct].label === 'Click') sawClick = true;
+      lvlN++;
+      if (Math.abs(rmsDb(b) + 20) < 1 && pk <= 0.8913) lvlOk++;
+      else console.log(`    L${level} seed ${123457 + k * 7919} ${t.answers[t.correct].label}: ${rmsDb(b).toFixed(1)} dBFS RMS, peak ${pk.toFixed(2)}`);
+    }
+  }
+  ok(`L3–L4 clips presented at −20 dBFS, peak ≤ −1 dBFS (${lvlOk}/${lvlN}, Click sampled)`, lvlOk === lvlN && sawClick);
 }
 
 console.log('— M11 Pitch: the declared higher note is higher; intervals are the declared ratio —');

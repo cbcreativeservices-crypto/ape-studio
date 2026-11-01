@@ -261,7 +261,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.match(s, /<LabShell[\s\S]*?guide=\{modularScreenGuide\}/);
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /typeof guide === 'function' \? guide\(mode\)/);
-    assert.match(shell, /<ScreenGuideHost resetKey=\{mode\} regions=\{!!rack && mode === 'explore'\}>/);
+    assert.match(shell, /<ScreenGuideHost resetKey=\{`\$\{mode\}:\$\{guideIdOf\(shownGuide\)\}`\} regions=\{!!rack && mode === 'explore'\}>/);
   });
   it('a CONCEPT lab: no live mic, no real-world measurement — the chip gives its spot to the ⓘ', () => {
     assert.match(s, /<LabShell[\s\S]*?accuracy=\{false\}/);

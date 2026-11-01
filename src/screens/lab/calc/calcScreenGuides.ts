@@ -63,15 +63,16 @@ export type CalcSendTarget = 'other' | 'here' | null;
 
 /** Where ⤵ USE would offer a value SENT from `fn`: the screen's own offer rule
  *  (chainFits, as CalcWorkspaceScreen's INPUTS use it) run over every
- *  calculator's inputs, this calculation's own excepted. */
-export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, quantity: QuantityKind): CalcSendTarget {
+ *  calculator's inputs, this calculation's own excepted. `meaning` is the
+ *  answer's own tag (D41): an input takes it only when the meaning matches. */
+export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, quantity: QuantityKind, meaning?: string): CalcSendTarget {
   let here = false;
   for (const w of WORKSPACES) {
     for (const g of w.functions) {
       if (w.id === ws.id && g.key === fn.key) continue;
       for (const k of g.inputs) {
         const f = w.fields.find((x) => x.key === k);
-        if (!f || !chainFits(label, quantity, f)) continue;
+        if (!f || !chainFits(label, quantity, f, meaning)) continue;
         if (w.id !== ws.id) return 'other';
         here = true;
       }
@@ -292,11 +293,11 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each step is one of the lab’s own calculators — the same formula as on its own page, never a copy.',
-      'While running, an answer is offered to a later step only for an input of the same kind (a distance, never a voltage). Same kind is not always the same thing: check before you tap ⤵ USE.',
+      'While running, an answer is offered to a later step only where it means the same thing: an RT60 fills an RT60, but a voltage drop never fills a supply voltage.',
       'Templates are read-only, so changes always happen on your own copy.',
     ],
     teaches: [
-      'How real design jobs chain calculations: RT60 → critical distance → direct-to-reverberant ratio (Room Acoustics Survey) is one job, not three.',
+      'How real design jobs chain calculations: RT60, then critical distance and the direct-to-reverberant ratio (Room Acoustics Survey) is one job, not three.',
       'A template’s steps show one sensible order to work in.',
     ],
     tryThis: [
@@ -319,7 +320,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     changes: [
       'Step order is run order: a step can use the answers of the steps before it, so put the step that produces a value before the one that needs it.',
-      'Steps offer only values of the same kind — a power never fills a voltage — but the same kind is not always the same thing, so check each ⤵ USE when you run it.',
+      'A step offers only answers that mean the same thing as its input — a power fills a power, but an RT60 never fills a target RT60 — so some inputs offer nothing and you type them.',
     ],
     teaches: [
       'How to break a job into a sequence of calculations, each feeding the next.',
@@ -340,14 +341,14 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     control: [
       'Type values as in any calculator: ⇄ switches a unit, ⓘ explains an input, a tap on an answer number changes its unit.',
-      '⤵ USE … (STEP n) fills an input with an earlier step’s answer of the same kind. Typing over it marks it Manually overridden; ⟲ RESTORE IMPORT brings it back.',
+      '⤵ USE … (STEP n) fills an input with an earlier step’s answer that means the same thing. Typing over it marks it Manually overridden; ⟲ RESTORE IMPORT brings it back.',
       '⛭ USE A SAVED PROJECT (when you have one) attaches a project, so its values offer ⤵ USE … (PROJECT) on inputs of the same kind.',
       '‹ PREVIOUS and CONTINUE › move between steps (FINISH ✓ on the last); tap a step button to jump. SAVE, where shown, keeps your progress.',
     ],
     changes: [
       'Each step computes exactly as its calculator does on its own page.',
       'Change a value a later step used, and that later result recalculates; a ↻ note says how many changed.',
-      'An answer is offered only to an input of the same kind — a distance never fills a time. Same kind is not always the same thing: a voltage drop is not a supply voltage, so check before you tap ⤵ USE.',
+      'An answer is offered only where it means the same thing: a distance never fills a time, and a voltage drop never fills a supply voltage. Where nothing earlier fits, type the value.',
     ],
     teaches: [
       'How one answer becomes the next calculation’s input — the way a real system is designed, step by step.',

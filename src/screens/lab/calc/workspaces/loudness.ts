@@ -108,7 +108,7 @@ const LOUDNORM: Workspace = {
         const newTP = n(v.truePeak) + gain;
         const over = newTP - n(v.ceiling);
         return [
-          { label: 'GAIN CHANGE', value: gain, quantity: 'db' },
+          { label: 'GAIN CHANGE', value: gain, quantity: 'db', meaning: 'db:gain' },
           { label: 'RESULTING TRUE PEAK (dBTP)', value: newTP, quantity: 'number', chainable: false },
           { label: over > 0 ? 'OVER CEILING BY' : 'HEADROOM TO CEILING', value: Math.abs(over), quantity: 'db', chainable: false },
         ];

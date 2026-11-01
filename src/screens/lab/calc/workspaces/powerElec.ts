@@ -81,9 +81,9 @@ const TRANSFORMER: Workspace = {
     'transformers add insertion loss, limited bandwidth, and saturation the ideal ignores.',
   glossary: ['Audio transformer', 'Impedance', 'Voltage', 'Turns ratio', 'Current'],
   fields: [
-    { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'Impedance seen at the primary (input) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Primary turns ÷ secondary turns.', positive: true, warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
+    { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', meaning: 'impedance:primary', placeholder: '600', help: 'Impedance seen at the primary (input) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', meaning: 'impedance:load', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', meaning: 'number:turns', nonNegative: true, placeholder: '2', help: 'Primary turns ÷ secondary turns.', positive: true, warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
   ],
   functions: [
     {
@@ -98,7 +98,7 @@ const TRANSFORMER: Workspace = {
       compute: (v) => {
         const N = Math.sqrt(n(v.zp) / n(v.zs));
         return [
-          { label: 'TURNS RATIO (N:1)', value: N, quantity: 'number' },
+          { label: 'TURNS RATIO (N:1)', value: N, quantity: 'number', meaning: 'number:turns' },
           { label: 'VOLTAGE RATIO', value: N, quantity: 'number', chainable: false },
           { label: 'CURRENT RATIO (secondary:primary)', value: N, quantity: 'number', chainable: false },
           { label: 'IMPEDANCE RATIO', value: N * N, quantity: 'number', chainable: false },
@@ -125,7 +125,7 @@ const TRANSFORMER: Workspace = {
       compute: (v) => {
         const zp = n(v.turns) * n(v.turns) * n(v.zs);
         return [
-          { label: 'REFLECTED PRIMARY IMPEDANCE', value: zp, quantity: 'impedance' },
+          { label: 'REFLECTED PRIMARY IMPEDANCE', value: zp, quantity: 'impedance', meaning: 'impedance:primary' },
           { label: 'VOLTAGE RATIO', value: n(v.turns), quantity: 'number', chainable: false },
         ];
       },
@@ -192,8 +192,8 @@ const PADS: Workspace = {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
         return [
-          { label: 'SERIES ARMS R1 = R2', value: (Z * (K - 1)) / (K + 1), quantity: 'impedance' },
-          { label: 'SHUNT R3', value: (Z * 2 * K) / (K * K - 1), quantity: 'impedance' },
+          { label: 'SERIES ARMS R1 = R2', value: (Z * (K - 1)) / (K + 1), quantity: 'impedance', meaning: 'impedance:resistor' },
+          { label: 'SHUNT R3', value: (Z * 2 * K) / (K * K - 1), quantity: 'impedance', meaning: 'impedance:resistor' },
           { label: 'MULTIPLIER K', value: K, quantity: 'number', chainable: false },
         ];
       },
@@ -223,8 +223,8 @@ const PADS: Workspace = {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
         return [
-          { label: 'SERIES R', value: (Z * (K * K - 1)) / (2 * K), quantity: 'impedance' },
-          { label: 'EACH SHUNT R (×2)', value: (Z * (K + 1)) / (K - 1), quantity: 'impedance' },
+          { label: 'SERIES R', value: (Z * (K * K - 1)) / (2 * K), quantity: 'impedance', meaning: 'impedance:resistor' },
+          { label: 'EACH SHUNT R (×2)', value: (Z * (K + 1)) / (K - 1), quantity: 'impedance', meaning: 'impedance:resistor' },
           { label: 'MULTIPLIER K', value: K, quantity: 'number', chainable: false },
         ];
       },
@@ -276,7 +276,7 @@ const VDROP: Workspace = {
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
-    { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', positive: true, warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
+    { key: 'current', name: 'CURRENT', quantity: 'current', meaning: 'current:load', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', positive: true, warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
     { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
     { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', nonNegative: true, placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', positive: true, warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
     { key: 'condTemp', name: 'CONDUCTOR TEMPERATURE', quantity: 'temperature', signed: true, range: CU_TEMP_RANGE, placeholder: '75', help: 'How hot the copper runs. For a cable carrying its full load use the insulation’s rated temperature — 75 °C is the NEC Chapter 9 Table 8 basis. Use 20 °C only for a cool, lightly loaded run. Copper resistance rises 0.393% per °C.' },
@@ -465,7 +465,7 @@ const RACK: Workspace = {
         const W = n(v.watts);
         const btu = W * BTU_PER_HR_PER_W;
         return [
-          { label: 'MAINS CURRENT', value: W / n(v.mains), quantity: 'current' },
+          { label: 'MAINS CURRENT', value: W / n(v.mains), quantity: 'current', meaning: 'current:load' },
           { label: 'HEAT OUTPUT (BTU/hr)', value: btu, quantity: 'number', chainable: false },
           { label: 'COOLING AIRFLOW (CFM)', value: btu / (1.08 * n(v.dTempF)), quantity: 'number', chainable: false },
         ];
@@ -493,7 +493,7 @@ const RACK: Workspace = {
       compute: (v) => {
         const full = n(v.breaker) * n(v.mains);
         return [
-          { label: 'SAFE CONTINUOUS POWER (80%)', value: 0.8 * full, quantity: 'power' },
+          { label: 'SAFE CONTINUOUS POWER (80%)', value: 0.8 * full, quantity: 'power', meaning: 'power:circuit' },
           { label: 'ABSOLUTE MAX POWER', value: full, quantity: 'power', chainable: false },
           { label: 'SAFE CONTINUOUS CURRENT', value: 0.8 * n(v.breaker), quantity: 'current', chainable: false },
         ];
@@ -538,10 +538,10 @@ const COMPLEXZ: Workspace = {
     'Enter L in mH and C in µF.',
   glossary: ['Impedance', 'Reactance', 'Resonance', 'Capacitor', 'Inductor', 'Resistance'],
   fields: [
-    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', placeholder: '8', help: 'Series resistance in ohms.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
+    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '8', help: 'Series resistance in ohms.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'indmH', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Inductance in millihenries.', warn: { test: (x) => x < 0, msg: 'Inductance cannot be negative.' } },
     { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Capacitance in microfarads.', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -606,7 +606,7 @@ const COMPLEXZ: Workspace = {
         const C = n(v.capuF) / 1e6;
         const f0 = 1 / (2 * Math.PI * Math.sqrt(L * C));
         return [
-          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
+          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'ANGULAR FREQUENCY ω₀ (rad/s)', value: 2 * Math.PI * f0, quantity: 'number', chainable: false },
         ];
       },

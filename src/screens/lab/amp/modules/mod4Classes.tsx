@@ -42,7 +42,7 @@ export const CLASS_FACTS: Record<AmpClass, ClassFacts> = {
     conduction: '360°',
     idle: 'High — substantial current flows with no signal',
     efficiency: 'Theoretical max 25% (series-fed) / 50% (transformer-coupled); far lower in practice',
-    heat: 'High, and present at idle',
+    heat: 'High — highest at idle',
     limitation: 'Efficiency and heat',
     use: 'Small-signal stages, some studio and hi-fi power stages, educational circuits',
     audio: 'Yes',
@@ -268,7 +268,7 @@ export function Mod4Classes() {
                 </View>
                 <Body>
                   {cls === 'A' && !signalOn
-                    ? 'Signal off, amplifier on: the device still sits at its operating point, so idle current — and heat — carry on exactly as before. That standing dissipation is the price of full-cycle conduction.'
+                    ? 'Signal off, amplifier on: the device still sits at its operating point, so idle current carries on exactly as before — and the heat does not fall. It even rises a little: the supply pays the same, and none of that power now leaves for the speaker. That standing dissipation is the price of full-cycle conduction.'
                     : cls === 'A'
                       ? 'Full-cycle conduction: no handoff, so no crossover notch is inherent to the concept. The device is always partly on, which is why efficiency stays low and heat stays high.'
                       : cls === 'B'

@@ -85,7 +85,7 @@ const STEREOMIC: Workspace = {
     { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s center line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off center.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -109,14 +109,14 @@ const STEREOMIC: Workspace = {
         // zero spacing printed FIRST MONO COMB NULL "—" and "c/(2·path) = — Hz".
         if (path === 0) {
           return [
-            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', unit: 'cm' },
-            { label: 'ARRIVAL DELAY Δt', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', meaning: 'length:pathdiff', unit: 'cm' },
+            { label: 'ARRIVAL DELAY Δt', value: 0, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
             { label: 'MONO COMB FILTERING', text: NO_ARRIVAL_DIFFERENCE, refusal: true },
           ];
         }
         return [
-          { label: 'PATH DIFFERENCE', value: path, quantity: 'length', unit: 'cm' },
-          { label: 'ARRIVAL DELAY Δt', value: path / c, quantity: 'time', unit: 'ms' },
+          { label: 'PATH DIFFERENCE', value: path, quantity: 'length', meaning: 'length:pathdiff', unit: 'cm' },
+          { label: 'ARRIVAL DELAY Δt', value: path / c, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'FIRST MONO COMB NULL', value: c / (2 * path), quantity: 'frequency', chainable: false },
         ];
       },
@@ -187,9 +187,9 @@ const MICSENS: Workspace = {
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
-    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, ...MIC_SENS_FIELD('SENSITIVITY (mV/Pa)'), placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, ...MIC_SENS_DBV_FIELD, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
-    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
+    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', meaning: 'number:mic-sens', nonNegative: true, ...MIC_SENS_FIELD('SENSITIVITY (mV/Pa)'), placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', meaning: 'number:mic-sens', signed: true, ...MIC_SENS_DBV_FIELD, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
+    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
   ],
   functions: [
     {
@@ -203,7 +203,7 @@ const MICSENS: Workspace = {
         'Mic sensitivity is quoted two ways; this converts millivolts-per-pascal into decibels relative to 1 V/Pa. Because it is a voltage ratio it uses twenty times the base-ten log, and dividing by 1000 turns millivolts into volts before comparing to the 1 V reference.',
       keySymbols: ['·', 'log₁₀', '÷'],
       compute: (v) => {
-        return [{ label: 'SENSITIVITY (dBV/Pa)', value: 20 * Math.log10(n(v.mvpa) / 1000), quantity: 'number' }];
+        return [{ label: 'SENSITIVITY (dBV/Pa)', value: 20 * Math.log10(n(v.mvpa) / 1000), quantity: 'number', meaning: 'number:mic-sens' }];
       },
       steps: (v) => [
         `dBV/Pa = 20·log₁₀(${fmt(n(v.mvpa))} mV ÷ 1000) = ${fmt(20 * Math.log10(n(v.mvpa) / 1000))} dBV/Pa.`,
@@ -229,7 +229,7 @@ const MICSENS: Workspace = {
           : 'That sensitivity is too far below 1 V/Pa to turn into mV/Pa — no microphone comes near it. Check the spec sheet value.';
       },
       compute: (v) => {
-        return [{ label: 'SENSITIVITY (mV/Pa)', value: 1000 * Math.pow(10, n(v.dbvpa) / 20), quantity: 'number' }];
+        return [{ label: 'SENSITIVITY (mV/Pa)', value: 1000 * Math.pow(10, n(v.dbvpa) / 20), quantity: 'number', meaning: 'number:mic-sens' }];
       },
       steps: (v) => [
         `mV/Pa = 1000 · 10^(${fmt(n(v.dbvpa))} ÷ 20) = ${fmt(1000 * Math.pow(10, n(v.dbvpa) / 20))} mV/Pa.`,
@@ -250,7 +250,7 @@ const MICSENS: Workspace = {
         const p = P_REF_PA * Math.pow(10, n(v.spl) / 20); // Pa
         const vout = sens * p;
         return [
-          { label: 'OUTPUT VOLTAGE', value: vout, quantity: 'voltage', unit: 'mv' },
+          { label: 'OUTPUT VOLTAGE', value: vout, quantity: 'voltage', meaning: 'voltage:rms', unit: 'mv' },
           { label: 'OUTPUT LEVEL (dBu)', value: 20 * Math.log10(vout / DBU_REF_V), quantity: 'number', chainable: false },
           { label: 'OUTPUT LEVEL (dBV)', value: 20 * Math.log10(vout), quantity: 'number', chainable: false },
         ];

@@ -109,7 +109,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
-      'The tabs under the title go to LEARN or EXPLORE at any time. Leave before the last one is right and the questions start fresh when you come back.',
+      'The tabs under the title go to LEARN or EXPLORE at any time; answers already right stay right. Leaving the lab before the last one starts the check over.',
     ],
     changes: [
       'Each question is about something EXPLORE shows: how many notches 8 stages make, what an all-pass stage changes, whether a phaser is a delay, and what RES does.',

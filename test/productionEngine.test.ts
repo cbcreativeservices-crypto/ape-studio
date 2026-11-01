@@ -1783,6 +1783,18 @@ describe('Post-Production — the rules that carry the spec’s warnings', () =>
     assert.ok(ids.includes('media-sources-cleared-early'));
   });
 
+  it('a file count over every file does not prove the copy, so cleared sources still block (D41 #19)', () => {
+    const base = { 'media.source_still_intact': 'no', 'media.verify_coverage': 'all' };
+    assert.ok(fire('media', { ...base, 'media.verify_method': ['file_count'] }).includes('media-sources-cleared-early'));
+    assert.ok(fire('media', { ...base, 'media.source_still_intact': 'partly', 'media.verify_method': ['file_count'] }).includes('media-sources-cleared-early'));
+    // Any method that proves bytes, over every file, clears it.
+    for (const m of ['checksum', 'file_size', 'app_verify', 'playback']) {
+      assert.ok(!fire('media', { ...base, 'media.verify_method': ['file_count', m] }).includes('media-sources-cleared-early'), m);
+    }
+    // Sources still intact: nothing was lost yet, so no blocker either way.
+    assert.ok(!fire('media', { ...base, 'media.source_still_intact': 'yes', 'media.verify_method': ['file_count'] }).includes('media-sources-cleared-early'));
+  });
+
   it('counting files is not verifying them', () => {
     assert.ok(
       fire('media', { 'media.verify_method': ['file_count'], 'media.verify_coverage': 'all' }).includes(

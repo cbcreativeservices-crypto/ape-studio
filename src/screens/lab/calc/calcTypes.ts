@@ -59,6 +59,14 @@ export type FieldDef = {
    *  RATE must be above 0."), never a result card of "— ms" or "0 Ω" beside a
    *  "must be greater than zero" warning. A string is the full sentence. */
   positive?: true | string;
+  /** D41 — what this input MEANS, beyond its kind: the answers it may take
+   *  from an earlier workflow step or SEND → (calcUnits `chainFits`). A
+   *  listener distance is 'length:path', a cable run is not; an RT60 is
+   *  'time:rt60', a buffer latency is not. A tag also takes its own sub-tags
+   *  ('time:latency' takes 'time:latency:buffer'); a list takes any of them.
+   *  An input with no tag takes nothing on a kind outside SAFE_UNTAGGED_KINDS —
+   *  a missing ⤵ USE costs a tap, a wrong one costs a confident wrong answer. */
+  meaning?: string | readonly string[];
 };
 
 export type OutputVal =
@@ -70,6 +78,9 @@ export type OutputVal =
       unit?: string;
       /** Offer "SEND →" into the calculation chain (default true). */
       chainable?: boolean;
+      /** D41 — what this answer MEANS (see FieldDef `meaning`). It is offered
+       *  as ⤵ USE only to an input whose tag takes it. */
+      meaning?: string;
     }
   | {
       label: string;

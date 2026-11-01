@@ -267,7 +267,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     tryThis: [
       'On a Left trial read corr: 1.00, the same as Centered. Correlation shows how alike the sides are, not where the sound sits.',
       'At level 3 compare Centered (mono) with Out of phase: corr goes from 1.00 to −1.00 and the line turns from upright to flat.',
-      'Narrow hugs the vertical line: its corr reads about 0.9.',
+      'Narrow hugs the vertical line: its corr reads about 0.9. Wide spreads into a cloud, yet its corr stays positive, about 0.3.',
     ],
   },
 

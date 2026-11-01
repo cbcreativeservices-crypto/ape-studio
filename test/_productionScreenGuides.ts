@@ -286,7 +286,7 @@ export function runProductionGuideSuite(opts: {
     it('the stage, home, exercise and packet screens really carry the names the guides use', () => {
       const names = [
         'WHY THIS MATTERS', 'SEE THEM ↓', 'WHAT THIS PLAN IS STILL MISSING', '+ ADD ROW', 'Not applicable to this project', 'UNDO', 'SAVE',
-        "WHAT'S LEFT IN THE WHOLE PLAN", 'START A PROJECT', 'DUPLICATE', 'DELETE', 'PICK UP WHERE YOU LEFT OFF', 'NEXT OUTSTANDING',
+        "WHAT'S LEFT IN THE WHOLE PLAN", 'START A PROJECT', '+ NEW PROJECT', 'DUPLICATE', 'DELETE', 'PICK UP WHERE YOU LEFT OFF', 'NEXT OUTSTANDING',
         'PRODUCTION READINESS', 'EXERCISES', 'ACCEPT A CONDITION', 'RECORD IT', 'PROCEEDING WITH ACCEPTED CONDITIONS', 'ONE THING BLOCKS THIS PROJECT',
         'OPEN THE PLAN AND FIX IT', 'REVIEW YOUR WORK', 'READ THE REASONING', 'READ THE DEBRIEF', 'START AGAIN', 'SOLVED', ' · EXERCISE',
         "WHAT'S LEFT", 'SHARE AS PDF', 'MUST BE RESOLVED BEFORE PROCEEDING', 'ACCEPTED CONDITIONS', "'Revision'", "'Revision date'", "'Prepared by'",

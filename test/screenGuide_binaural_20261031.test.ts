@@ -152,9 +152,11 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(GUIDES.check.seeing.join(' '), /four questions: what ITD is, the head shadow, why headphones, and why no up or down/);
     assert.match(CHECK, /at most roughly 0\.7 ms/);
   });
-  it('the CHECK tab unmounts on a tab switch, so the guide says unfinished answers clear', () => {
-    assert.match(code('src/screens/lab/LabShell.tsx'), /\{mode === 'check' \? \(\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
-    assert.match(GUIDES.check.control.join(' '), /Leaving this tab before every answer is right clears the answers/);
+  it('D41: the CHECK tab stays mounted across a tab switch, so the guide says right answers stay right', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
+    assert.match(GUIDES.check.control.join(' '), /Answers already right stay right if you switch to LEARN or EXPLORE and come back/);
+    assert.doesNotMatch(textOf(GUIDES.check), /clears the answers/);
+    assert.match(GUIDES.check.control.join(' '), /FINISH · SEE WHAT’S LEFT › opens Where you are/);
   });
 });
 
@@ -251,11 +253,11 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
 
 describe('5. wiring and the accuracy-chip decision', () => {
   it('LabShell gets the per-tab guide function from binauralScreenGuides', () => {
-    assert.match(S, /import \{ binauralScreenGuide \} from '\.\/binauralScreenGuides';/);
+    assert.match(S, /import \{ BINAURAL_END_GUIDE, binauralScreenGuide \} from '\.\/binauralScreenGuides';/);
     assert.match(S, /<LabShell[\s\S]*?guide=\{binauralScreenGuide\}/);
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /typeof guide === 'function' \? guide\(mode\)/);
-    assert.match(shell, /<ScreenGuideHost resetKey=\{mode\} regions=\{!!rack && mode === 'explore'\}>/);
+    assert.match(shell, /<ScreenGuideHost resetKey=\{`\$\{mode\}:\$\{guideIdOf\(shownGuide\)\}`\} regions=\{!!rack && mode === 'explore'\}>/);
     assert.match(S, /rack=\{\{/);
   });
   it('a CONCEPT lab: a synthesized head model, no live mic, no real-world measurement — the chip gives its spot to the ⓘ', () => {

@@ -89,6 +89,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'power',
       name: 'AMPLIFIER POWER',
       quantity: 'power',
+      meaning: ['power:electrical', 'power:amp'],
       placeholder: '500',
       help: 'Continuous power delivered to the speaker (not peak marketing watts).',
     },
@@ -96,6 +97,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'dist',
       name: 'LISTENING DISTANCE',
       quantity: 'length',
+      meaning: 'length:path',
       placeholder: '10',
       help: 'Speaker to listener. Sensitivity is referenced to 1 m, so distance loss is 20·log10(d/1).',
       warn: { test: (x) => x < 1, msg: 'Inside 1 m the point-source model (and the 1 m reference) breaks down.' },
@@ -104,6 +106,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'target',
       name: 'TARGET SPL',
       quantity: 'spl',
+      meaning: 'spl:target',
       signed: true,
       ...SPL_FIELD_RANGE,
       placeholder: '105',
@@ -156,8 +159,8 @@ const WS_SPEAKERPOWER: Workspace = {
         const hr = n(v.headroom);
         const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const one = sens + 10 * Math.log10(p) - 20 * Math.log10(d) - hr;
-        const out = [
-          { label: 'PREDICTED SPL (one speaker, after headroom)', value: one, quantity: 'spl' as const },
+        const out: OutputVal[] = [
+          { label: 'PREDICTED SPL (one speaker, after headroom)', value: one, quantity: 'spl' as const, meaning: 'spl:level' },
           { label: 'SPL AT 1 m (after headroom, before distance loss)', value: sens + 10 * Math.log10(p) - hr, quantity: 'spl' as const, chainable: false },
         ];
         if (N > 1) {
@@ -165,6 +168,7 @@ const WS_SPEAKERPOWER: Workspace = {
             label: `WITH ${N} SPEAKERS (multiple uncorrelated sources, +10·log10(N))`,
             value: one + 10 * Math.log10(N),
             quantity: 'spl' as const,
+            meaning: 'spl:level',
           });
         }
         return out;
@@ -226,7 +230,7 @@ const WS_SPEAKERPOWER: Workspace = {
           // speaker's share is real — then it is said in words, not printed.
           p > AMP_MAX_POWER_W
             ? { label: 'REQUIRED POWER (one speaker)', text: ONE_AMP_CANNOT }
-            : { label: 'REQUIRED POWER (one speaker)', value: p, quantity: 'power' as const },
+            : { label: 'REQUIRED POWER (one speaker)', value: p, quantity: 'power' as const, meaning: 'power:amp' },
           { label: 'dB ABOVE THE 1 W REFERENCE', value: dBover, quantity: 'db' as const, chainable: false },
         ];
         if (N > 1) {
@@ -234,6 +238,7 @@ const WS_SPEAKERPOWER: Workspace = {
             label: `POWER PER SPEAKER (${N} uncorrelated speakers sharing the target)`,
             value: p / N,
             quantity: 'power' as const,
+            meaning: 'power:amp',
           });
         }
         return out;
@@ -285,7 +290,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const d = n(v.dist);
         const max = sens + 10 * Math.log10(p) - 20 * Math.log10(d);
         return [
-          { label: 'MAX SPL AT THE LISTENER', value: max, quantity: 'spl' },
+          { label: 'MAX SPL AT THE LISTENER', value: max, quantity: 'spl', meaning: 'spl:level' },
           { label: 'MAX SPL AT 1 m', value: sens + 10 * Math.log10(p), quantity: 'spl', chainable: false },
           {
             label: 'REALITY CHECK',
@@ -379,7 +384,7 @@ const WS_IMPEDANCE: Workspace = {
         const ztot = 1 / zs.reduce((s, z) => s + 1 / z, 0);
         const shares = zs.map((z) => (ztot / z) * 100);
         const out: ReturnType<Workspace['functions'][number]['compute']> = [
-          { label: 'TOTAL PARALLEL IMPEDANCE', value: ztot, quantity: 'impedance' },
+          { label: 'TOTAL PARALLEL IMPEDANCE', value: ztot, quantity: 'impedance', meaning: 'impedance:load' },
           {
             label: 'POWER SHARE PER SPEAKER',
             text: zs.map((z, i) => `${fmt(z)} Ω → ${fmt(shares[i] ?? 0, 3)}%`).join(' · '),
@@ -423,7 +428,7 @@ const WS_IMPEDANCE: Workspace = {
         if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").', refusal: true }];
         const ztot = zs.reduce((s, z) => s + z, 0);
         return [
-          { label: 'TOTAL SERIES IMPEDANCE', value: ztot, quantity: 'impedance' },
+          { label: 'TOTAL SERIES IMPEDANCE', value: ztot, quantity: 'impedance', meaning: 'impedance:load' },
           {
             label: 'NOTE',
             text: 'In series the same current flows through every speaker — power divides in proportion to each impedance, and one open voice coil silences the whole string.',
@@ -462,7 +467,7 @@ const WS_IMPEDANCE: Workspace = {
         const pairB = (z3 * z4) / (z3 + z4);
         const ztot = pairA + pairB;
         const out: ReturnType<Workspace['functions'][number]['compute']> = [
-          { label: 'TOTAL IMPEDANCE', value: ztot, quantity: 'impedance' },
+          { label: 'TOTAL IMPEDANCE', value: ztot, quantity: 'impedance', meaning: 'impedance:load' },
           { label: 'PAIR A (Z1 ∥ Z2)', value: pairA, quantity: 'impedance', chainable: false },
           { label: 'PAIR B (Z3 ∥ Z4)', value: pairB, quantity: 'impedance', chainable: false },
         ];
@@ -568,6 +573,7 @@ const WS_CABLE: Workspace = {
       key: 'z',
       name: 'LOAD IMPEDANCE',
       quantity: 'impedance',
+      meaning: ['impedance:load', 'impedance:primary'],
       positive: 'LOAD IMPEDANCE must be above 0 Ω — a 0 Ω load is a short circuit.',
       placeholder: '8',
       help: 'Nominal impedance of the speaker (or combined load) at the far end.',
@@ -576,6 +582,7 @@ const WS_CABLE: Workspace = {
       key: 'pamp',
       name: 'AMPLIFIER POWER',
       quantity: 'power',
+      meaning: ['power:electrical', 'power:amp'],
       placeholder: '500',
       help: 'Power the amplifier delivers into the total (cable + speaker) load.',
     },
@@ -611,7 +618,7 @@ const WS_CABLE: Workspace = {
         const lostPct = (1 - frac) * 100;
         return [
           { label: `LOOP RESISTANCE (${g} AWG)`, value: rloop, quantity: 'impedance' },
-          { label: 'LEVEL LOSS', value: lossDb, quantity: 'db' },
+          { label: 'LEVEL LOSS', value: lossDb, quantity: 'db', meaning: 'db:loss' },
           { label: 'POWER LOST IN THE CABLE', value: lostPct, quantity: 'percent', chainable: false },
           { label: 'WATTS HEATING THE CABLE', value: (p * lostPct) / 100, quantity: 'power', chainable: false },
           {
@@ -708,7 +715,7 @@ const WS_CABLE: Workspace = {
         const rloop = 2 * L * ohmPerM(rec);
         return [
           { label: 'SUGGESTED GAUGE', text: `${rec} AWG — the thinnest listed gauge meeting the ${fmt(dB)} dB budget.` },
-          { label: 'ITS LOSS ON THIS RUN', value: 20 * Math.log10(z / (z + rloop)), quantity: 'db' },
+          { label: 'ITS LOSS ON THIS RUN', value: 20 * Math.log10(z / (z + rloop)), quantity: 'db', meaning: 'db:loss' },
         ];
       },
       table: (v) => {
@@ -862,7 +869,7 @@ const WS_CV70: Workspace = {
         const recommended = load * Math.pow(10, hr / 10);
         const remaining = prated - load;
         return [
-          { label: `SYSTEM LOAD (${taps.length} speaker${taps.length === 1 ? '' : 's'})`, value: load, quantity: 'power' },
+          { label: `SYSTEM LOAD (${taps.length} speaker${taps.length === 1 ? '' : 's'})`, value: load, quantity: 'power', meaning: 'power:load' },
           { label: `SUGGESTED AMP ≥ (with ${fmt(hr)} dB headroom)`, value: recommended, quantity: 'power', chainable: false },
           // An overloaded amp has no capacity left, not a NEGATIVE capacity
           // (calc check A, 2026-10-03): 330 W of taps on a 250 W amp read
@@ -871,7 +878,7 @@ const WS_CV70: Workspace = {
             ? { label: 'REMAINING AMP CAPACITY', value: remaining, quantity: 'power', chainable: false }
             : { label: 'OVER THE AMP RATING BY', value: -remaining, quantity: 'power', chainable: false },
           { label: 'AMP USED', value: (load / prated) * 100, quantity: 'percent', chainable: false },
-          { label: 'LINE CURRENT', value: load / vline, quantity: 'current' },
+          { label: 'LINE CURRENT', value: load / vline, quantity: 'current', meaning: 'current:load' },
           ...(prated < recommended
             ? [
                 {

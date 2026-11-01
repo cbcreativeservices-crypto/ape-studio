@@ -37,14 +37,15 @@ export const WS_WAVE: Workspace = {
     'domain of ISO 3382, not this teaching tool.',
   glossary: ['Frequency', 'Wavelength', 'Period', 'Sound Wave', 'Speed of sound', 'Standing wave'],
   fields: [
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', positive: 'FREQUENCY must be above 0 — a 0 Hz tone has no cycles, so it has no period or wavelength.', placeholder: '100', help: 'Cycles per second of the tone or band of interest.' },
-    { key: 't', name: 'PERIOD', quantity: 'time', defaultUnit: 'ms', positive: true, placeholder: '10', help: 'Time for ONE complete cycle.' },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', positive: 'FREQUENCY must be above 0 — a 0 Hz tone has no cycles, so it has no period or wavelength.', placeholder: '100', help: 'Cycles per second of the tone or band of interest.' },
+    { key: 't', name: 'PERIOD', quantity: 'time', meaning: 'time:period', defaultUnit: 'ms', positive: true, placeholder: '10', help: 'Time for ONE complete cycle.' },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
-    { key: 'dist', name: 'DISTANCE', quantity: 'length', positive: true, placeholder: '3.43', help: 'A physical distance — boundary gap, driver spacing, room dimension.' },
+    { key: 'dist', name: 'DISTANCE', quantity: 'length', meaning: ['length:boundary', 'length:pathdiff', 'length:wavelength'], positive: true, placeholder: '3.43', help: 'A physical distance — boundary gap, driver spacing, room dimension.' },
     {
       key: 'fKnown',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      meaning: 'frequency:point',
       positive: 'FREQUENCY must be above 0 — at 0 Hz nothing cycles, so there are no cycles to count.',
       placeholder: '1000',
       help: 'The frequency whose cycles you are counting over the distance.',
@@ -63,7 +64,7 @@ export const WS_WAVE: Workspace = {
       compute: (v) => {
         const f = n(v.f);
         return [
-          { label: 'PERIOD', value: 1 / f, quantity: 'time', unit: 'ms' },
+          { label: 'PERIOD', value: 1 / f, quantity: 'time', meaning: 'time:period', unit: 'ms' },
           { label: 'CYCLES PER SECOND', value: f, quantity: 'number', chainable: false },
         ];
       },
@@ -88,7 +89,7 @@ export const WS_WAVE: Workspace = {
       compute: (v) => {
         const f = 1 / n(v.t);
         return [
-          { label: 'FREQUENCY', value: f, quantity: 'frequency' },
+          { label: 'FREQUENCY', value: f, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'ANGULAR FREQUENCY ω (rad/s)', value: 2 * Math.PI * f, quantity: 'number', chainable: false },
         ];
       },
@@ -144,9 +145,9 @@ export const WS_WAVE: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const l = c / n(v.f);
         return [
-          { label: 'WAVELENGTH λ', value: l, quantity: 'length' },
-          { label: 'HALF WAVE λ/2', value: l / 2, quantity: 'length' },
-          { label: 'QUARTER WAVE λ/4', value: l / 4, quantity: 'length' },
+          { label: 'WAVELENGTH λ', value: l, quantity: 'length', meaning: 'length:wavelength' },
+          { label: 'HALF WAVE λ/2', value: l / 2, quantity: 'length', meaning: 'length:wavelength' },
+          { label: 'QUARTER WAVE λ/4', value: l / 4, quantity: 'length', meaning: 'length:wavelength' },
           { label: 'EIGHTH WAVE λ/8', value: l / 8, quantity: 'length', chainable: false },
         ];
       },
@@ -175,9 +176,9 @@ export const WS_WAVE: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.dist);
         return [
-          { label: 'FULL-WAVE FREQUENCY', value: c / d, quantity: 'frequency' },
-          { label: 'HALF-WAVE FREQUENCY (room-mode f₁ for this dimension)', value: c / (2 * d), quantity: 'frequency' },
-          { label: 'QUARTER-WAVE FREQUENCY (boundary cancel region)', value: c / (4 * d), quantity: 'frequency' },
+          { label: 'FULL-WAVE FREQUENCY', value: c / d, quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'HALF-WAVE FREQUENCY (room-mode f₁ for this dimension)', value: c / (2 * d), quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'QUARTER-WAVE FREQUENCY (boundary cancel region)', value: c / (4 * d), quantity: 'frequency', meaning: 'frequency:point' },
         ];
       },
       steps: (v) => {
@@ -209,7 +210,7 @@ export const WS_WAVE: Workspace = {
         return [
           { label: 'CYCLES IN THE DISTANCE', value: cycles, quantity: 'number', chainable: false },
           { label: 'TOTAL PHASE ROTATION', value: cycles * 360, quantity: 'angle', chainable: false },
-          { label: 'RESIDUAL PHASE OFFSET', value: frac * 360, quantity: 'angle' },
+          { label: 'RESIDUAL PHASE OFFSET', value: frac * 360, quantity: 'angle', meaning: 'angle:phase' },
         ];
       },
       steps: (v) => {

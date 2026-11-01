@@ -42,7 +42,8 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
-import { fmScreenGuide } from './fmScreenGuides';
+import { LabCheckEnd } from './kit/LabCheckEnd';
+import { FM_END_GUIDE, fmScreenGuide } from './fmScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -246,6 +247,8 @@ export function FmLabScreen() {
       // microphone, no real-world measurement — so no accuracy chip; the ⓘ
       // takes its spot.
       accuracy={false}
+      // The what's-left screen under the CHECK (every lab ends on one; D41).
+      checkEnd={<LabCheckEnd labId="fm" labTitle="FM Synth Lab" onOpen={stop} endGuide={FM_END_GUIDE} />}
       // PLUCK/BELL decay the voice's index after each strike (Generator.hpp
       // fmSample: I = index × e^(−t/τ)) while the graph draws the fader's
       // index — so on those envelopes it is the spectrum AT THE STRIKE.

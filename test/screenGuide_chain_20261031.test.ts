@@ -281,7 +281,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     // the shell draws the key + hint and hosts the overlay (regions in rack EXPLORE)
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /typeof guide === 'function' \? guide\(mode\)/);
-    assert.match(shell, /<ScreenGuideHost resetKey=\{mode\} regions=\{!!rack && mode === 'explore'\}>/);
+    assert.match(shell, /<ScreenGuideHost resetKey=\{`\$\{mode\}:\$\{guideIdOf\(shownGuide\)\}`\} regions=\{!!rack && mode === 'explore'\}>/);
     assert.match(s, /rack=\{\{/);
   });
   it('a CONCEPT lab: no live mic, no real-world measurement — the chip gives its spot to the ⓘ', () => {

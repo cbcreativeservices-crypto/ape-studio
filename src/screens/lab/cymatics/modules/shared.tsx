@@ -8,10 +8,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../../theme/tokens';
 import { rampColors } from '../../../../features/tools/levelColor';
-import { effectiveQ, modeResponse, plateModes, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { effectiveQ, plateModes, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { PlateViewMode } from '../vizPlate';
 import { useStageTextScale } from '../../rack/stageAspect';
+import { responseBands } from './modeMath';
 
 /**
  * FULL SCREEN (house rule D35, 2026-09-30) for a stage drawn with
@@ -111,19 +112,12 @@ export function excitableModes(spec: PlateSpec, count = 14): PlateMode[] {
 }
 
 /** A response-vs-frequency strip: bars coloured by the house level ramp, the
- *  drive frequency marked. Plain Views — no Skia needed. */
+ *  drive frequency marked. Each bar is its band's PEAK response
+ *  (responseBands, modeMath.ts), so every resonance stands as a full bar.
+ *  Plain Views — no Skia needed. */
 export function ResponseStrip({ width, modes, Q, hz, fMin, fMax }: { width: number; modes: PlateMode[]; Q: number; hz: number; fMin: number; fMax: number }) {
   const bars = 40;
-  const vals = useMemo(() => {
-    const out: number[] = [];
-    for (let i = 0; i < bars; i++) {
-      const f = fMin * Math.pow(fMax / fMin, (i + 0.5) / bars);
-      let best = 0;
-      for (const m of modes) best = Math.max(best, (modeResponse(f, m.hz, Q) * m.drive) / (Q * Math.max(m.drive, 1e-6)));
-      out.push(Math.min(1, best));
-    }
-    return out;
-  }, [modes, Q, fMin, fMax]);
+  const vals = useMemo(() => responseBands(modes, Q, fMin, fMax, bars), [modes, Q, fMin, fMax]);
   const mark = Math.max(0, Math.min(1, Math.log(hz / fMin) / Math.log(fMax / fMin)));
   const bw = (width - 4) / bars;
   return (

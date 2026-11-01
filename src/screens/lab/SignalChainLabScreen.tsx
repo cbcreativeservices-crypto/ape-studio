@@ -105,6 +105,8 @@ const DEFAULTS: Record<number, FxOp[]> = {
     { fx: FX.gate, param: P.thresholdDb, value: -35 },
     { fx: FX.gate, param: P.rangeDb, value: -70 },
     { fx: FX.gate, param: P.releaseMs, value: 100 },
+    // Same 1 ms attack the Gate lab writes (D41 #15): at the engine's built-in 10 ms a short click never opens a −35 dB gate, and params persist across labs.
+    { fx: FX.gate, param: P.attackMs, value: 1 },
   ],
   [FX.dist]: [
     { fx: FX.dist, param: P.distType, value: 1 },

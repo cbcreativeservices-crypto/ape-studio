@@ -168,9 +168,9 @@ const LINEARRAY: Workspace = {
     { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Center-to-center distance between array elements.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
-    { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', placeholder: '4', help: 'Distance where the reference SPL was measured.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', placeholder: '16', help: 'Distance to evaluate the SPL at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
+    { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '4', help: 'Distance where the reference SPL was measured.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '16', help: 'Distance to evaluate the SPL at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -187,8 +187,8 @@ const LINEARRAY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const L = n(v.arrayLen);
         return [
-          { label: 'DIRECTIVITY ONSET (L = λ)', value: c / L, quantity: 'frequency' },
-          { label: 'TIGHT CONTROL ABOVE (L = 2λ)', value: (2 * c) / L, quantity: 'frequency' },
+          { label: 'DIRECTIVITY ONSET (L = λ)', value: c / L, quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'TIGHT CONTROL ABOVE (L = 2λ)', value: (2 * c) / L, quantity: 'frequency', meaning: 'frequency:point' },
         ];
       },
       steps: (v) => {
@@ -212,7 +212,7 @@ const LINEARRAY: Workspace = {
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         return [
-          { label: 'ALIASING (LOBING) FREQUENCY', value: c / n(v.spacing), quantity: 'frequency' },
+          { label: 'ALIASING (LOBING) FREQUENCY', value: c / n(v.spacing), quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'HALF-WAVELENGTH LIMIT (cleanest)', value: c / (2 * n(v.spacing)), quantity: 'frequency', chainable: false },
         ];
       },
@@ -246,8 +246,8 @@ const LINEARRAY: Workspace = {
         const point = n(v.splRef) - 20 * Math.log10(ratio);
         const line = n(v.splRef) - 10 * Math.log10(ratio);
         return [
-          { label: 'SPL — POINT SOURCE', value: point, quantity: 'spl' },
-          { label: 'SPL — LINE SOURCE (near field)', value: line, quantity: 'spl' },
+          { label: 'SPL — POINT SOURCE', value: point, quantity: 'spl', meaning: 'spl:level' },
+          { label: 'SPL — LINE SOURCE (near field)', value: line, quantity: 'spl', meaning: 'spl:level' },
           { label: 'LINE-SOURCE ADVANTAGE', value: line - point, quantity: 'db', chainable: false },
         ];
       },
@@ -297,8 +297,8 @@ const DRIVER: Workspace = {
   fields: [
     { key: 'sd', name: 'CONE AREA (Sd)', quantity: 'area', defaultUnit: 'm2', placeholder: '0.05', help: 'Effective radiating area of the cone.', positive: true, warn: { test: (x) => x <= 0, msg: 'Area must be greater than zero.' } },
     { key: 'xmax', name: 'PEAK EXCURSION (Xmax)', quantity: 'length', defaultUnit: 'mm', placeholder: '5', help: 'One-way peak linear cone travel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Excursion must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '40', help: 'The frequency to evaluate output at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '1', help: 'Listening distance (half-space).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '40', help: 'The frequency to evaluate output at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'dist', name: 'DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '1', help: 'Listening distance (half-space).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', positive: true, warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
     { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
     { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air with the same compliance as the suspension.', positive: true, warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
@@ -331,7 +331,7 @@ const DRIVER: Workspace = {
         const p = (RHO0 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
         const spl = 20 * Math.log10(p / P_REF_PA);
         return [
-          { label: 'MAX SPL AT DISTANCE', value: spl, quantity: 'spl' },
+          { label: 'MAX SPL AT DISTANCE', value: spl, quantity: 'spl', meaning: 'spl:level' },
           { label: 'PEAK VOLUME DISPLACEMENT (Vd) — cm³', value: n(v.sd) * n(v.xmax) * 1e6, quantity: 'number', chainable: false },
         ];
       },
@@ -360,7 +360,7 @@ const DRIVER: Workspace = {
       compute: (v) => {
         const k = Math.sqrt(1 + n(v.vas) / n(v.vb));
         return [
-          { label: 'SYSTEM RESONANCE fc', value: n(v.fs) * k, quantity: 'frequency' },
+          { label: 'SYSTEM RESONANCE fc', value: n(v.fs) * k, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'SYSTEM Q (Qtc)', value: n(v.qts) * k, quantity: 'number' },
           { label: 'VAS / VB RATIO', value: n(v.vas) / n(v.vb), quantity: 'number', chainable: false },
         ];

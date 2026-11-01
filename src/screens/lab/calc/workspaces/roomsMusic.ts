@@ -113,6 +113,7 @@ const WS_BPM: Workspace = {
       key: 'interval',
       name: 'MEASURED INTERVAL',
       quantity: 'time',
+      meaning: 'time:beat',
       defaultUnit: 'ms',
       positive: true,
       placeholder: '500',
@@ -142,9 +143,9 @@ const WS_BPM: Workspace = {
       compute: (v) => {
         const beatMs = 60000 / n(v.bpm);
         return [
-          { label: 'ONE BEAT (QUARTER NOTE)', value: beatMs / 1000, quantity: 'time', unit: 'ms' },
-          { label: 'DOTTED 8TH', value: (beatMs * 0.5 * 1.5) / 1000, quantity: 'time', unit: 'ms' },
-          { label: '8TH-NOTE TRIPLET', value: (beatMs * 0.5 * 2) / 3 / 1000, quantity: 'time', unit: 'ms' },
+          { label: 'ONE BEAT (QUARTER NOTE)', value: beatMs / 1000, quantity: 'time', meaning: 'time:beat', unit: 'ms' },
+          { label: 'DOTTED 8TH', value: (beatMs * 0.5 * 1.5) / 1000, quantity: 'time', meaning: 'time:note', unit: 'ms' },
+          { label: '8TH-NOTE TRIPLET', value: (beatMs * 0.5 * 2) / 3 / 1000, quantity: 'time', meaning: 'time:note', unit: 'ms' },
           { label: 'ONE BAR OF 4/4', value: (beatMs * 4) / 1000, quantity: 'time', unit: 'ms', chainable: false },
         ];
       },
@@ -240,9 +241,9 @@ const WS_BPM: Workspace = {
       compute: (v) => {
         const beatMs = 60000 / n(v.bpm);
         return [
-          { label: '1/64 NOTE', value: beatMs / 16 / 1000, quantity: 'time', unit: 'ms' },
-          { label: '1/32 NOTE', value: beatMs / 8 / 1000, quantity: 'time', unit: 'ms' },
-          { label: '1/16 NOTE', value: beatMs / 4 / 1000, quantity: 'time', unit: 'ms' },
+          { label: '1/64 NOTE', value: beatMs / 16 / 1000, quantity: 'time', meaning: 'time:note', unit: 'ms' },
+          { label: '1/32 NOTE', value: beatMs / 8 / 1000, quantity: 'time', meaning: 'time:note', unit: 'ms' },
+          { label: '1/16 NOTE', value: beatMs / 4 / 1000, quantity: 'time', meaning: 'time:note', unit: 'ms' },
         ];
       },
       steps: (v) => {
@@ -298,6 +299,7 @@ const WS_PITCH: Workspace = {
       key: 'f',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      meaning: 'frequency:point',
       positive: 'FREQUENCY must be above 0 Hz — a 0 Hz tone has no pitch.',
       placeholder: '452',
       help: 'The measured or intended frequency of the tone.',
@@ -317,6 +319,7 @@ const WS_PITCH: Workspace = {
       key: 'cents',
       name: 'EXTRA CENTS',
       quantity: 'cents',
+      meaning: 'cents:offset',
       signed: true,
       placeholder: '0',
       help: 'Fine-tune offset added to the semitone shift (100 cents = 1 semitone). Enter 0 for none.',
@@ -325,6 +328,7 @@ const WS_PITCH: Workspace = {
       key: 'f2',
       name: 'SECOND FREQUENCY',
       quantity: 'frequency',
+      meaning: 'frequency:point',
       positive: 'SECOND FREQUENCY must be above 0 Hz — a 0 Hz tone has no pitch.',
       placeholder: '678',
       help: 'The other tone of the interval you are measuring.',
@@ -389,8 +393,8 @@ const WS_PITCH: Workspace = {
                 ? 'In tune (within half a cent).'
                 : `${fmt(Math.abs(cents), 3)} cents ${cents > 0 ? 'sharp' : 'flat'} of ${noteName(r)}.`,
           },
-          { label: 'CENTS OFF', value: cents, quantity: 'cents' },
-          { label: `EXACT ${noteName(r)}`, value: exact, quantity: 'frequency' },
+          { label: 'CENTS OFF', value: cents, quantity: 'cents', meaning: 'cents:offset' },
+          { label: `EXACT ${noteName(r)}`, value: exact, quantity: 'frequency', meaning: 'frequency:point' },
           {
             label: 'ADJACENT NOTES',
             text: `${noteName(r - 1)} = ${fmt(below)} Hz below · ${noteName(r + 1)} = ${fmt(above)} Hz above.`,
@@ -425,7 +429,7 @@ const WS_PITCH: Workspace = {
         const ref = n(v.ref);
         const f = ref * Math.pow(2, (m - 69) / 12);
         return [
-          { label: 'FREQUENCY', value: f, quantity: 'frequency' },
+          { label: 'FREQUENCY', value: f, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'NOTE', text: `MIDI ${fmt(m)} = ${noteName(m)} at A4 = ${fmt(ref)} Hz.` },
         ];
       },
@@ -594,6 +598,7 @@ const WS_FILESIZE: Workspace = {
       key: 'dur',
       name: 'DURATION',
       quantity: 'time',
+      meaning: 'time:duration',
       defaultUnit: 'min',
       placeholder: '60',
       help: 'How long the recording runs.',
@@ -663,7 +668,7 @@ const WS_FILESIZE: Workspace = {
         const rate = pcmBytesPerSec(n(v.sr), n(v.bits), n(v.ch));
         const secs = n(v.storage) / rate;
         return [
-          { label: 'RECORDING TIME', value: secs, quantity: 'time', unit: 'min' },
+          { label: 'RECORDING TIME', value: secs, quantity: 'time', meaning: 'time:duration', unit: 'min' },
           { label: 'IN HOURS', text: `${fmt(secs / 3600)} hours (${fmt(secs / 60)} minutes).` },
         ];
       },
@@ -842,7 +847,7 @@ const WS_ROOMMODES: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.dist);
         return [
-          { label: 'FUNDAMENTAL (n = 1)', value: c / (2 * d), quantity: 'frequency' },
+          { label: 'FUNDAMENTAL (n = 1)', value: c / (2 * d), quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'SECOND ORDER (n = 2)', value: c / d, quantity: 'frequency', chainable: false },
           { label: 'THIRD ORDER (n = 3)', value: (3 * c) / (2 * d), quantity: 'frequency', chainable: false },
         ];
@@ -921,6 +926,7 @@ const WS_SABINE: Workspace = {
       key: 'absA',
       name: 'TOTAL ABSORPTION A',
       quantity: 'area',
+      meaning: 'area:absorption',
       placeholder: '54',
       help: 'total equivalent absorption, m² sabins',
     },
@@ -964,7 +970,7 @@ const WS_SABINE: Workspace = {
         'Sabine’s equation: RT60 is set by a room’s volume and its total absorption. A bigger room decays longer; more absorption decays shorter. The 0.161 is the metric Sabine constant. It assumes a diffuse field and average absorption below about 0.3 — dead rooms need the Eyring form instead.',
       keySymbols: ['·', '/'],
       compute: (v) => [
-        { label: 'RT60', value: (SABINE_K * n(v.vol)) / n(v.absA), quantity: 'time', unit: 's' },
+        { label: 'RT60', value: (SABINE_K * n(v.vol)) / n(v.absA), quantity: 'time', meaning: 'time:rt60', unit: 's' },
       ],
       steps: (v) => {
         const V = n(v.vol);
@@ -1021,8 +1027,8 @@ const WS_SABINE: Workspace = {
                 },
               ]
             : []),
-          { label: 'TOTAL ABSORPTION A', value: A, quantity: 'area' },
-          { label: 'RT60', value: (SABINE_K * n(v.vol)) / A, quantity: 'time', unit: 's' },
+          { label: 'TOTAL ABSORPTION A', value: A, quantity: 'area', meaning: 'area:absorption' },
+          { label: 'RT60', value: (SABINE_K * n(v.vol)) / A, quantity: 'time', meaning: 'time:rt60', unit: 's' },
         ];
       },
       steps: (v) => {
@@ -1135,6 +1141,7 @@ const WS_TREATMENT: Workspace = {
       key: 'rtCur',
       name: 'CURRENT RT60',
       quantity: 'time',
+      meaning: 'time:rt60',
       defaultUnit: 's',
       placeholder: '1.2',
       help: 'The decay time the room has now (measured, or estimated from a clap test).',
@@ -1200,7 +1207,7 @@ const WS_TREATMENT: Workspace = {
           { label: 'ABSORPTION TO ADD ΔA', value: surplus ? 0 : dA, quantity: 'area' },
           ...(surplus ? [{ label: 'ALREADY ENOUGH ABSORPTION', text: surplusText(V, aTgt, aCur, n(v.rtTgt)) }] : []),
           { label: 'PANELS NEEDED', value: panels, quantity: 'number', chainable: false },
-          { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANEL${panels === 1 ? '' : 'S'}`, value: predicted, quantity: 'time', unit: 's' },
+          { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANEL${panels === 1 ? '' : 'S'}`, value: predicted, quantity: 'time', meaning: 'time:rt60', unit: 's' },
         ];
       },
       steps: (v) => {

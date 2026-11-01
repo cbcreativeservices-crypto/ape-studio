@@ -8,9 +8,9 @@
  * different readouts and dock keys, so it gets two guides:
  *   fretted   — bezel NOTE / FREQ / INTERVAL / LENGTH, the FRET fader;
  *   harmonics — bezel NOTE / FREQ / INTERVAL / NODE, the NODE key.
- * The guide opened is the one for the MODE showing when ⓘ is tapped (the
- * host keeps that guide while it is open, so a TRY THIS step that switches
- * MODE does not swap the text under the learner).
+ * The guide opened is the one for the MODE showing when ⓘ is tapped; a MODE
+ * switch closes an open guide (D41 #11), so the learner never reads one
+ * mode's steps over the other mode's screen.
  *
  * Every name is the on-screen name in BassLabScreen.tsx (bezel keys, dock
  * labels and options, the label strip under the board, LAB NOTES headings),
@@ -46,7 +46,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'Readouts: NOTE, FREQ, INTERVAL (above the open string) and LENGTH (the share of the string still vibrating).',
     ],
     control: [
-      'Tap the fretboard: the nearest string and fret become the note. The lesson uses frets 0–12; the dimmer frets past 12 are drawn for the real neck.',
+      'Tap the fretboard: the nearest string, and the space up to wire n is fret n, so an inlay dot picks its own fret; the nut or headstock is OPEN. A tap past fret 12 picks fret 12.',
       '▶ in the header plays a recording of a real bass at that note (if one can’t load, the string model plays instead and the screen says so). While ■ shows, every new pick plays; ■ stops.',
       'MODE key: FRETTED or NATURAL HARMONICS. STRING key: E · 41 Hz, A · 55 Hz, D · 73 Hz or G · 98 Hz.',
       'FRET fader: OPEN, then frets 1 to 12, one step per fret.',
@@ -137,10 +137,10 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an answer. Right: CORRECT and why. Wrong: NOT QUITE — TRY ANOTHER, with the reason; pick again straight away.',
-      'A wrong pick costs nothing and there is no score. Switching tabs starts the questions over, so test an idea on EXPLORE first.',
+      'A wrong pick costs nothing and there is no score. Test an idea on EXPLORE and come back: answers already right stay right until you leave the lab.',
     ],
     changes: [
-      'A right answer stays right while you stay on this tab; a wrong one costs nothing.',
+      'A right answer stays right, even across a switch to LEARN or EXPLORE; a wrong one costs nothing.',
       'Once every answer is right the lab is marked complete, and later visits show the check as passed.',
     ],
     teaches: [

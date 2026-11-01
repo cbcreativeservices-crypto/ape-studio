@@ -191,12 +191,14 @@ describe('3. each guide quotes the screen’s real names', () => {
     // …and never combines MONO CHECK with PAN L/R (the flow folds after the pan, the engine before).
     for (const [id, gd] of allGuides) for (const line of gd.tryThis) assert.ok(!(/MONO CHECK/.test(line) && /PAN to [LR]\b/.test(line)), `${id}: combines fold and pan`);
   });
-  it('the CHECK guide names the four questions the check asks; unfinished answers clear on a tab switch', () => {
+  it('the CHECK guide names the four questions the check asks; right answers survive a tab switch (D41)', () => {
     for (const id of ["id: 'width-is-side'", "id: 'mono-fold'", "id: 'bass-mono'", "id: 'correlation-negative'"]) assert.ok(CHECK.includes(id), id);
     assert.equal((CHECK.match(/^\s{4}id: '/gm) ?? []).length, 4);
     assert.match(GUIDES.check.seeing.join(' '), /four questions: what WIDTH changes, a fold to mono at 200%, why bass goes mono, and a correlation near −1/);
-    assert.match(code('src/screens/lab/LabShell.tsx'), /\{mode === 'check' \? \(\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
-    assert.match(GUIDES.check.control.join(' '), /Leaving this tab before every answer is right clears the answers/);
+    // D41: the CHECK stays mounted across a tab switch; right answers stay right.
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
+    assert.match(GUIDES.check.control.join(' '), /Answers already right stay right if you switch to LEARN or EXPLORE and come back/);
+    assert.match(GUIDES.check.control.join(' '), /FINISH · SEE WHAT’S LEFT › opens Where you are/);
   });
   it('the Phase lab draws the same goniometer (the "shares its goniometer" claim)', () => {
     const phase = CONFIGS.slice(CONFIGS.indexOf('const phaseConfig'), CONFIGS.indexOf('export const PhaseLabScreen'));

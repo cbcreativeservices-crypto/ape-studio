@@ -10,7 +10,8 @@
  *             LAB NOTES (two CHECK YOURSELF questions);
  *   learn   — the reading page (the guided lesson in full);
  *   check   — LabShell's CHECK tab (the four FM questions in
- *             understandingChecks.ts), which grants the lab's credit.
+ *             understandingChecks.ts), which grants the lab's credit, ending
+ *             on FINISH · SEE WHAT'S LEFT › (FM_END_GUIDE).
  *
  * Every name is the on-screen name in FmLabScreen.tsx (bezel keys, dock
  * labels, tray options, the legend under the graph, the axis tags). Every
@@ -114,7 +115,8 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
       'A right answer locks in, and its explanation stays to read.',
-      'The tabs under the title go back to LEARN or EXPLORE to look something up. Leaving before all four are right starts the questions fresh.',
+      'The tabs under the title go back to LEARN or EXPLORE to look something up; answers already right stay right when you come back. Leaving the lab before the last one starts the check over.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [
       'Each explanation gives the reason, right or wrong — the teaching moment either way.',
@@ -130,6 +132,37 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'Unsure about index 0? On EXPLORE, drag INDEX to 0 and look at what is left on the display.',
     ],
   },
+};
+
+
+/** The what's-left screen (LabShell's LabCheckEnd, passed as `checkEnd`):
+ *  FINISH · SEE WHAT'S LEFT › under the CHECK opens it as a full-screen layer
+ *  over FmLabScreen. Every line is true of kit/LabEndScreen in "credit" mode
+ *  with the lab's one unit, the understanding check: the row and PRACTICE
+ *  AGAIN close the layer (nothing is cleared), DONE · BACK TO LABS leaves. */
+export const FM_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'Under Where you are, the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once the check is passed; YOUR PROGRESS if your saved progress could not be read.',
+    'One row, CHECK · Understanding check, while it is still to do. Once passed it folds into a ✓ CREDITED line (✓ DONE when you are not signed in); REVIEW ▾ shows it.',
+    'The line under the title says what is left and whether your work is saved.',
+  ],
+  control: [
+    '‹ BACK TO THE LAB, or the check’s row, closes this screen and returns to the lab exactly as you left it.',
+    'PRACTICE AGAIN FROM THE START also returns to the lab; it clears nothing.',
+    'DONE · BACK TO LABS leaves the lab.',
+  ],
+  changes: [
+    'The check counts once every answer is right. Signed in, it is credited to your account once and never has to be taken twice.',
+    'Signed out, the line under the title says whether signing in can still keep it. Practicing again never removes credit.',
+  ],
+  teaches: [
+    'Whether this lab is complete, and what is still left to finish it.',
+    'The lab can always be opened again for practice; nothing earned is taken away.',
+  ],
+  tryThis: [
+    'If the check is still listed, tap its row: you are back on the CHECK tab. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
+    'Once it is passed, tap ‹ BACK TO THE LAB and on EXPLORE set RATIO 1.41 ✳ and strike: practice never removes the credit.',
+  ],
 };
 
 /** The guide for a LabShell tab — LabShell's per-tab `guide` function. */

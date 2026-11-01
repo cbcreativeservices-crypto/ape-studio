@@ -9,7 +9,8 @@
  *             faders, the OBJ and SRC trays, LAB NOTES (🎧 HEADPHONES
  *             REQUIRED, THE TWO CUES, THE MIX, HONESTLY, two CHECK YOURSELF);
  *   learn   — the reading page (the guided lesson 'binaural' in full);
- *   check   — CHECK YOUR UNDERSTANDING (understandingChecks.ts BINAURAL).
+ *   check   — CHECK YOUR UNDERSTANDING (understandingChecks.ts BINAURAL),
+ *             ending on FINISH · SEE WHAT'S LEFT › (BINAURAL_END_GUIDE).
  *
  * Every name is the on-screen name in BinauralLabScreen.tsx, LabShell.tsx,
  * RackUnit.tsx and LabUnderstandingCheck.tsx.
@@ -105,7 +106,8 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     control: [
       'Tap a choice. A wrong one shows its explanation in amber — pick another straight away; nothing is lost and there is no score.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
-      'Leaving this tab before every answer is right clears the answers — just answer them again.',
+      'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [
       'Every answer shows its explanation, right or wrong, so each question teaches.',
@@ -122,6 +124,37 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'Also before starting: watch THE TWO CUES in LAB NOTES while AZ goes from 0° to +60°: far-ear level 0.0 → −6.9 dB — the level half of the head-shadow cue.',
     ],
   },
+};
+
+
+/** The what's-left screen (LabShell's LabCheckEnd, passed as `checkEnd`):
+ *  FINISH · SEE WHAT'S LEFT › under the CHECK opens it as a full-screen layer
+ *  over BinauralLabScreen. Every line is true of kit/LabEndScreen in "credit" mode
+ *  with the lab's one unit, the understanding check: the row and PRACTICE
+ *  AGAIN close the layer (nothing is cleared), DONE · BACK TO LABS leaves. */
+export const BINAURAL_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'Under Where you are, the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once the check is passed; YOUR PROGRESS if your saved progress could not be read.',
+    'One row, CHECK · Understanding check, while it is still to do. Once passed it folds into a ✓ CREDITED line (✓ DONE when you are not signed in); REVIEW ▾ shows it.',
+    'The line under the title says what is left and whether your work is saved.',
+  ],
+  control: [
+    '‹ BACK TO THE LAB, or the check’s row, closes this screen and returns to the lab exactly as you left it.',
+    'PRACTICE AGAIN FROM THE START also returns to the lab; it clears nothing.',
+    'DONE · BACK TO LABS leaves the lab.',
+  ],
+  changes: [
+    'The check counts once every answer is right. Signed in, it is credited to your account once and never has to be taken twice.',
+    'Signed out, the line under the title says whether signing in can still keep it. Practicing again never removes credit.',
+  ],
+  teaches: [
+    'Whether this lab is complete, and what is still left to finish it.',
+    'The lab can always be opened again for practice; nothing earned is taken away.',
+  ],
+  tryThis: [
+    'If the check is still listed, tap its row: you are back on the CHECK tab. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
+    'Once it is passed, tap ‹ BACK TO THE LAB and on EXPLORE slide AZ to +90° again: practice never removes the credit.',
+  ],
 };
 
 /** The guide for a LabShell tab — LabShell's per-tab `guide` function. */

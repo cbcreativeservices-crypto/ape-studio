@@ -288,11 +288,11 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
 describe('5. wiring + the accuracy-chip decision', () => {
   const s = code(SCREEN);
   it('LabShell gets the per-tab guide function from fmScreenGuides', () => {
-    assert.match(s, /import \{ fmScreenGuide \} from '\.\/fmScreenGuides';/);
+    assert.match(s, /import \{ FM_END_GUIDE, fmScreenGuide \} from '\.\/fmScreenGuides';/);
     assert.match(s, /<LabShell[\s\S]*?guide=\{fmScreenGuide\}/);
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /typeof guide === 'function' \? guide\(mode\)/);
-    assert.match(shell, /<ScreenGuideHost resetKey=\{mode\} regions=\{!!rack && mode === 'explore'\}>/);
+    assert.match(shell, /<ScreenGuideHost resetKey=\{`\$\{mode\}:\$\{guideIdOf\(shownGuide\)\}`\} regions=\{!!rack && mode === 'explore'\}>/);
     assert.match(s, /rack=\{\{/);
   });
   it('a CONCEPT lab: no live mic, no real-world measurement — the chip gives its spot to the ⓘ', () => {

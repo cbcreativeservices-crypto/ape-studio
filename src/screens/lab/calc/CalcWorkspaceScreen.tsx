@@ -144,7 +144,7 @@ export function CalcWorkspaceScreen() {
       next: next === at4 ? null : next,
       at5Next: at5Next === at5 ? null : at5Next,
       sendable,
-      sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity) : null,
+      sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) : null,
       steps: r.steps.length > 0,
     };
   }, [ws, fn, fields]);
@@ -484,7 +484,7 @@ export function CalcWorkspaceScreen() {
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}
-                            onPress={() => setChainValue({ label: o.label, quantity: o.quantity, baseValue: o.value, fromWorkspace: ws.name })}
+                            onPress={() => setChainValue({ label: o.label, quantity: o.quantity, meaning: o.meaning, baseValue: o.value, fromWorkspace: ws.name })}
                           >
                             <Text style={styles.sendText}>SEND →</Text>
                           </Pressable>
@@ -585,8 +585,9 @@ export function CalcWorkspaceScreen() {
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
             // Unit-aware, not kind-only (bug pass 2): a kg/m² never fills a µF,
-            // a dBV never fills a dBu.
-            const canChain = chain && chainFits(chain.label, chain.quantity, f);
+            // a dBV never fills a dBu. Meaning-aware too (D41): a voltage drop
+            // never fills a supply voltage.
+            const canChain = chain && chainFits(chain.label, chain.quantity, f, chain.meaning);
             // Chain USE rides the shared FieldRow's footer slot. Only rendered
             // while a chain value is armed (footer stays undefined otherwise so
             // the row's memo keeps skipping re-renders).

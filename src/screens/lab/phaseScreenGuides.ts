@@ -26,10 +26,13 @@
  * it returns to within 0.1 dB. PINK NOISE in MONO with a delay combs; a flip
  * moves the notches (odd multiples of 1/2τ → multiples of 1/τ) but cannot
  * remove them.
- * ⚠️ The TRY THIS steps read the CORRELATION number and the SOUND, never the
- * flow display's R offset: the flow draws its tone so that 12 ms is one full
- * cycle (fxAnim StereoFlow dxp = delay × λ/12), not the 440 Hz the scope and
- * the sine source use — reported to the auditors as a suspected screen issue.
+ * The flow display draws the same 440 Hz tone (fxAnim StereoFlow
+ * STEREO_TONE_HZ: one drawn cycle = 1/440 s ≈ 2.27 ms; D41 fix 2026-11-01 —
+ * it used to draw 12 ms as one cycle, an 83 Hz tone that contradicted the
+ * scope and the sound). So at DLY R 1.1 ms in MONO its OUT trace shrinks to
+ * |cos(π·440·τ)| ≈ 5 % of full height, as the tone nearly vanishes. The TRY
+ * THIS steps still quote CORRELATION and the sound, never an angle read off
+ * the flow.
  * test/screenGuide_phase_20261031.test.ts pins the names and re-runs every
  * number. Change a label, a default or the scope tone → update this file.
  *
@@ -80,7 +83,7 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Play SINE 440 Hz and set POL to INVERTED Ø: CORRELATION (LAB NOTES, under DESIGNED RESPONSE) reads −1.00, ANTI-PHASE. Now FOLD to MONO (L+R): silence, and the OUT trace goes flat.',
-      'POL NORMAL, FOLD MONO, DLY R at 1.1 ms: CORRELATION reads −0.99 and the tone nearly vanishes. POL to INVERTED Ø: +0.99, the tone is back — for this one frequency.',
+      'POL NORMAL, FOLD MONO, DLY R at 1.1 ms: CORRELATION reads −0.99; the tone and the OUT trace nearly vanish. POL to INVERTED Ø: +0.99, the tone is back — for this one frequency.',
       'Keep MONO and 1.1 ms, pick PINK NOISE: hollow and combed. Flip POL: the notches move but stay — no flip fixes a delay at every frequency. With POL on NORMAL, DLY R to 0 ms clears it.',
     ],
   },
@@ -124,10 +127,10 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: CORRECT and a short explanation, and the card locks. Wrong: NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
       'There is no score and no limit on tries.',
-      'The tabs under the title go to LEARN or EXPLORE to look something up. Leaving this tab starts the questions fresh until the check is passed.',
+      'The tabs under the title go to LEARN or EXPLORE to look something up; answers already right stay right. Leaving the lab before the last one starts the check over.',
     ],
     changes: [
-      'Each right answer stays right while you are on this tab.',
+      'Each right answer stays right while you are in this lab.',
       'Every answer right: the lab is marked complete, and it counts toward each certificate and program that needs it.',
       'Each explanation ties back to something on EXPLORE you can see or hear.',
     ],

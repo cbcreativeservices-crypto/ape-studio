@@ -128,10 +128,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     const q = code('src/features/lab/understandingChecks.ts').match(/const BASS: readonly Q\[\] = \[([\s\S]*?)\n\];/)?.[1] ?? '';
     for (const id of ['twelfth-fret', 'seventh-fret', 'fret-spacing', 'node-harmonic']) assert.match(q, new RegExp(`id: '${id}'`));
     assert.match(G.check.seeing[0], /four questions on this lab — the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓/);
-    // CHECK unmounts when the tab changes (only a pass is banked) — the guide
-    // says so rather than promising answers survive a trip to EXPLORE.
-    assert.match(code('src/screens/lab/LabShell.tsx'), /\{mode === 'check' \? \(/);
-    assert.match(G.check.control.join(' '), /Switching tabs starts the questions over/);
+    // D41: CHECK stays mounted across a tab switch (only a pass is banked) —
+    // right answers survive a trip to EXPLORE; leaving the lab starts over.
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
+    assert.match(G.check.control.join(' '), /answers already right stay right until you leave the lab/);
   });
 });
 
@@ -246,7 +246,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.match(s, /<LabShell[\s\S]*?guide=\{\(tab\) => bassScreenGuide\(tab, mode\)\}/);
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /typeof guide === 'function' \? guide\(mode\)/);
-    assert.match(shell, /<ScreenGuideHost resetKey=\{mode\} regions=\{!!rack && mode === 'explore'\}>/);
+    assert.match(shell, /<ScreenGuideHost resetKey=\{`\$\{mode\}:\$\{guideIdOf\(shownGuide\)\}`\} regions=\{!!rack && mode === 'explore'\}>/);
   });
   it('a CONCEPT lab: no live mic, no real-world measurement — the chip gives its spot to the ⓘ', () => {
     assert.match(s, /<LabShell[\s\S]*?accuracy=\{false\}/);
@@ -284,5 +284,50 @@ describe('6. guide fixes vetted against the screen (2026-10-31 review round)', (
     const open = [28, 33, 38, 43];
     for (let i = 0; i < 3; i++) assert.equal(open[i] + 5, open[i + 1]);
     assert.match(G.fretted.tryThis[2], /tuned in fourths \(E, A, D, G\), so fret 5 on E, A or D matches the next string open/);
+  });
+});
+
+describe('D41 #10: a FRETTED tap picks the fret SPACE, not the nearest wire', () => {
+  const src = code('src/screens/lab/BassLabScreen.tsx');
+  // Lift the screen's own fretForTap + fretPos out of the source and run them.
+  const fnSrc = src.match(/function fretForTap\(fx: number, nutFx: number\): number \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(fnSrc, 'fretForTap is in the screen');
+  const js = fnSrc!.replace(/: number/g, '');
+  const fretPos = (n: number) => 1 - Math.pow(2, -n / 12);
+  const fretForTap = new Function('fretPos', 'NUM_FRETS', `${js}; return fretForTap;`)(fretPos, 12) as (fx: number, nutFx: number) => number;
+  const NUT = 4.5 / 300; // a 300-unit board
+
+  it('the tap handler uses it (no nearest-wire snap left)', () => {
+    assert.match(src, /onPick\(si, fretForTap\(fx, NUT_W \/ w\)\);/);
+    assert.doesNotMatch(src, /Math\.abs\(fx - fretPos\(n\)\)/);
+    assert.match(src, /const NUT_W = 4\.5;/);
+    assert.match(src, /width=\{NUT_W\}/);
+  });
+  it('each inlay dot (drawn halfway between wires n−1 and n) picks fret n', () => {
+    for (const n of [3, 5, 7, 9, 12]) assert.equal(fretForTap((fretPos(n - 1) + fretPos(n)) / 2, NUT), n, `dot ${n}`);
+  });
+  it('every fret space, both halves, picks its own fret; a tap on wire n is fret n', () => {
+    for (let n = 1; n <= 12; n++) {
+      const a = Math.max(fretPos(n - 1), NUT);
+      const b = fretPos(n);
+      assert.equal(fretForTap(a + (b - a) * 0.05, NUT), n, `near wire ${n - 1}`);
+      assert.equal(fretForTap(a + (b - a) * 0.95, NUT), n, `near wire ${n}`);
+      assert.equal(fretForTap(b, NUT), n, `on wire ${n}`);
+    }
+  });
+  it('the nut and the headstock (fx ≤ 0, clamped) are the OPEN string, fret 0', () => {
+    assert.equal(fretForTap(0, NUT), 0);
+    assert.equal(fretForTap(NUT, NUT), 0);
+    assert.equal(fretForTap(NUT * 1.01, NUT), 1);
+  });
+  it('past wire 12 (the dimmer frets) and at the bridge stays fret 12, the highest', () => {
+    assert.equal(fretForTap(fretPos(12) + 1e-6, NUT), 12);
+    assert.equal(fretForTap(fretPos(16), NUT), 12);
+    assert.equal(fretForTap(1, NUT), 12);
+  });
+  it('the guide and caption describe the fret space, not the nearest fret', () => {
+    assert.match(G.fretted.control[0], /the space up to wire n is fret n, so an inlay dot picks its own fret; the nut or headstock is OPEN/);
+    assert.doesNotMatch(G.fretted.control[0], /nearest string and fret/);
+    assert.match(src, /exploreCaption="Tap the fretboard — between two frets, or at a node/);
   });
 });

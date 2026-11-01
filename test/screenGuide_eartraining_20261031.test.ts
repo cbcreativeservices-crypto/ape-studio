@@ -543,7 +543,9 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
     assert.ok(GUIDES.polarity.changes[0].includes('its level is not matched'));
   });
   it('EQ: clips are RMS-matched (present → normalizeRms), so the guide says “matched in level”, not “never louder”', () => {
-    assert.match(code('src/features/ear/modules/common.ts'), /return fadeEdges\(normalizeRms\(x, targetDb\), fadeMs\);/);
+    // D41 #26 added an opt-in peak ceiling; with none (every EQ clip), present() is still pure RMS matching.
+    assert.match(code('src/features/ear/modules/common.ts'), /const out = fadeEdges\(normalizeRms\(x, targetDb\), fadeMs\);\n  if \(peakCeiling === undefined\) return out;/);
+    assert.doesNotMatch(code('src/features/ear/modules/tone.ts'), /present\([^)]*PEAK_CEILING/);
     assert.doesNotMatch(textOf(GUIDES.eq), /never simply louder/);
   });
   it('Reverb: the Reverb lab’s controls are RT60, pre-delay, HF damping and mix — no size', () => {

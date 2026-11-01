@@ -79,8 +79,8 @@ const WS_COMPRESSOR: Workspace = {
     'the moment-to-moment gain reduction during a transient.',
   glossary: ['Dynamic range compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [
-    { key: 'thr', name: 'THRESHOLD', quantity: 'db', signed: true, ...compLevel('THRESHOLD'), placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
-    { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
+    { key: 'thr', name: 'THRESHOLD', quantity: 'db', meaning: 'db:comp-threshold', signed: true, ...compLevel('THRESHOLD'), placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
+    { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', meaning: 'number:comp-ratio', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
     { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', signed: true, ...compLevel('INPUT LEVEL'), placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
     { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', signed: true, ...compLevel('TARGET OUTPUT'), placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
     { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', nonNegative: true, placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
@@ -165,7 +165,7 @@ const WS_COMPRESSOR: Workspace = {
         }
         const ratio = above / outAbove;
         return [
-          { label: 'REQUIRED RATIO (n:1)', value: ratio, quantity: 'number' },
+          { label: 'REQUIRED RATIO (n:1)', value: ratio, quantity: 'number', meaning: 'number:comp-ratio' },
           { label: 'GAIN REDUCTION IT GIVES', value: inp - out, quantity: 'db', chainable: false },
         ];
       },
@@ -220,7 +220,7 @@ const WS_COMPRESSOR: Workspace = {
         const above = (gr * r) / (r - 1);
         const thr = inp - above;
         return [
-          { label: 'SET THRESHOLD TO', value: thr, quantity: 'db' },
+          { label: 'SET THRESHOLD TO', value: thr, quantity: 'db', meaning: 'db:comp-threshold' },
           { label: 'INPUT WILL SIT ABOVE IT BY', value: above, quantity: 'db', chainable: false },
         ];
       },

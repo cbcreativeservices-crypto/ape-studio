@@ -79,7 +79,7 @@ const CLOCKDRIFT: Workspace = {
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     // 0 ppm is a real answer ("never slips"), so no zero warning (audit R2).
     { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks (0 = locked to the same clock).' },
-    { key: 'dur', name: 'DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
+    { key: 'dur', name: 'DURATION', quantity: 'time', meaning: 'time:duration', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
     { key: 'maxSlip', name: 'SLIP BUDGET', quantity: 'samples', placeholder: '1', help: 'How many samples of slip you can tolerate before it matters.', positive: true, warn: { test: (x) => x <= 0, msg: 'Slip budget must be greater than zero.' } },
   ],
   functions: [
@@ -97,8 +97,8 @@ const CLOCKDRIFT: Workspace = {
         const drift = n(v.ppm) * 1e-6;
         const slip = n(v.sr) * drift * n(v.dur);
         return [
-          { label: 'SAMPLES SLIPPED', value: slip, quantity: 'samples' },
-          { label: 'TIME ERROR', value: drift * n(v.dur), quantity: 'time' },
+          { label: 'SAMPLES SLIPPED', value: slip, quantity: 'samples', meaning: 'samples:slip' },
+          { label: 'TIME ERROR', value: drift * n(v.dur), quantity: 'time', meaning: 'time:drift' },
           drift === 0
             ? { label: 'TIME PER 1-SAMPLE SLIP', text: `Never. ${NEVER_SLIPS}` }
             : { label: 'TIME PER 1-SAMPLE SLIP', value: 1 / (n(v.sr) * drift), quantity: 'time', chainable: false },
@@ -128,7 +128,7 @@ const CLOCKDRIFT: Workspace = {
       compute: (v) => {
         const drift = n(v.ppm) * 1e-6;
         if (drift === 0) return [{ label: 'TIME TO REACH SLIP BUDGET', text: BUDGET_NEVER_USED }];
-        return [{ label: 'TIME TO REACH SLIP BUDGET', value: n(v.maxSlip) / (n(v.sr) * drift), quantity: 'time' }];
+        return [{ label: 'TIME TO REACH SLIP BUDGET', value: n(v.maxSlip) / (n(v.sr) * drift), quantity: 'time', meaning: 'time:duration' }];
       },
       steps: (v) => {
         const drift = n(v.ppm) * 1e-6;
@@ -266,7 +266,7 @@ const TIMECODE: Workspace = {
     'factor. Drop-frame label mechanics are described, not renumbered here.',
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
-    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
+    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', meaning: 'number:frames', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
     { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
     { key: 'hours', name: 'HOURS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Hours component of the timecode.' },
     { key: 'mins', name: 'MINUTES', quantity: 'number', nonNegative: true, placeholder: '6', help: 'Minutes component of the timecode.' },
@@ -287,7 +287,7 @@ const TIMECODE: Workspace = {
       compute: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
-          { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
+          { label: 'TOTAL TIME', value: totS, quantity: 'time', meaning: 'time:duration', unit: 's' },
           { label: 'WHOLE SECONDS', value: Math.floor(snapWhole(totS)), quantity: 'time', unit: 's', chainable: false },
         ];
       },
@@ -336,8 +336,8 @@ const TIMECODE: Workspace = {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
         const frames = Math.round(totS * Math.round(n(v.fps)));
         return [
-          { label: 'TOTAL FRAMES', value: frames, quantity: 'number' },
-          { label: 'REAL ELAPSED TIME', value: frames / n(v.fps), quantity: 'time', unit: 's' },
+          { label: 'TOTAL FRAMES', value: frames, quantity: 'number', meaning: 'number:frames' },
+          { label: 'REAL ELAPSED TIME', value: frames / n(v.fps), quantity: 'time', meaning: 'time:duration', unit: 's' },
         ];
       },
       steps: (v) => {
@@ -364,7 +364,7 @@ const TIMECODE: Workspace = {
       compute: (v) => {
         const off = n(v.dur) / 1000;
         return [
-          { label: 'PULLDOWN OFFSET', value: off, quantity: 'time' },
+          { label: 'PULLDOWN OFFSET', value: off, quantity: 'time', meaning: 'time:drift' },
           { label: 'OFFSET PER HOUR', value: 3600 / 1000, quantity: 'time', chainable: false },
         ];
       },
@@ -412,7 +412,7 @@ const FIRLEN: Workspace = {
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', positive: true, warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
     { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
-    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
+    { key: 'taps', name: 'TAP COUNT', quantity: 'number', meaning: 'number:taps', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
   ],
   functions: [
     {
@@ -434,8 +434,8 @@ const FIRLEN: Workspace = {
         if (!(N >= 1)) throw new Error('a filter needs at least one tap');
         const latS = (N - 1) / 2;
         return [
-          { label: 'FILTER TAPS (N)', value: N, quantity: 'number' },
-          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', unit: 'ms' },
+          { label: 'FILTER TAPS (N)', value: N, quantity: 'number', meaning: 'number:taps' },
+          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
         ];
       },
@@ -465,7 +465,7 @@ const FIRLEN: Workspace = {
         if (!(n(v.taps) >= 1)) throw new Error('a filter needs at least one tap');
         const latS = (n(v.taps) - 1) / 2;
         return [
-          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', unit: 'ms' },
+          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
         ];
       },
@@ -562,7 +562,7 @@ const CONVOLUTION: Workspace = {
       keySymbols: ['÷'],
       compute: (v) => {
         return [
-          { label: 'BLOCK LATENCY', value: n(v.block) / n(v.sr), quantity: 'time', unit: 'ms' },
+          { label: 'BLOCK LATENCY', value: n(v.block) / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'ROUND-TRIP (2× BLOCK)', value: (n(v.block) / n(v.sr)) * 2, quantity: 'time', unit: 'ms', chainable: false },
         ];
       },
@@ -614,7 +614,7 @@ const BITDEPTH: Workspace = {
     'as the physics limit, not a spec you will measure.',
   glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
   fields: [
-    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, integer: true, positive: 'BIT DEPTH must be at least 1 bit (common values: 16, 24, 32).', placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
+    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', meaning: 'number:bits', nonNegative: true, integer: true, positive: 'BIT DEPTH must be at least 1 bit (common values: 16, 24, 32).', placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
     { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', nonNegative: true, placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', positive: true, warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
   ],
   functions: [
@@ -666,7 +666,7 @@ const BITDEPTH: Workspace = {
         const exact = dr / DB_PER_BIT;
         const need = Math.ceil(snapWhole(exact));
         return [
-          { label: 'BITS NEEDED (rounded up)', value: need, quantity: 'number' },
+          { label: 'BITS NEEDED (rounded up)', value: need, quantity: 'number', meaning: 'number:bits' },
           { label: 'EXACT (unrounded)', value: exact, quantity: 'number', chainable: false },
           { label: 'RANGE THOSE BITS ACTUALLY GIVE', value: DB_PER_BIT * need, quantity: 'db', chainable: false },
         ];

@@ -36,7 +36,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { refusalRows, type CalcFunction, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
-import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits';
+import { chainFits, fmt, fmtCarried, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -323,9 +323,11 @@ export function CalcWorkflowRunScreen() {
             if (isNum(at) && at.chainable !== false) o = at;
           }
           // Finite only: fmt(NaN) is "—", which the field then flagged as the
-          // user's own unreadable typing. chainFits: the same unit rule as the
-          // offer below — a relabelled output must still fit this field.
-          if (o && chainFits(o.label, o.quantity, f) && o.quantity === f.quantity && Number.isFinite(o.value)) {
+          // user's own unreadable typing. chainFits: the same unit AND meaning
+          // rule as the offer below — a relabelled output must still fit this
+          // field, and a saved run's import that no longer means the same
+          // thing (D41) reads honestly empty instead of a wrong figure.
+          if (o && chainFits(o.label, o.quantity, f, o.meaning) && o.quantity === f.quantity && Number.isFinite(o.value)) {
             const units = unitsFor(f.quantity, f.unitIds);
             const u = units[unitSel[f.key] % units.length];
             effRaw[f.key] = fmtCarried(u.fromBase(o.value), f.quantity);
@@ -782,7 +784,8 @@ export function CalcWorkflowRunScreen() {
         // MILLISECOND share a quantity with DISTANCE but are the wrong physical
         // thing to chain into it — they produced a silently bogus downstream result.
         // chainFits (bug pass 2): the unit must fit too — a kg/m² never fills a µF.
-        if ('value' in o && chainFits(o.label, o.quantity, f) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
+        // And the MEANING (D41): an absorption total never fills a panel's area.
+        if ('value' in o && chainFits(o.label, o.quantity, f, o.meaning) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
                       });
                     }
                   }
@@ -808,10 +811,13 @@ export function CalcWorkflowRunScreen() {
                             </Pressable>
                           ))
                         : null}
-                      {/* Compatible values from the attached project (Phase 4). */}
+                      {/* Compatible values from the attached project (Phase 4).
+                          Kind + unit only (D41): a project value carries no
+                          meaning tag — the learner named it, and the button
+                          shows that name. */}
                       {!isImport && attachedProject && f.quantity !== 'list'
                         ? attachedProject.values
-                            .filter((v) => chainFits(v.label, v.quantity, f))
+                            .filter((v) => unitFits(v.label, v.quantity, f))
                             .slice(0, 4)
                             .map((v) => (
                               <Pressable

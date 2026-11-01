@@ -26,6 +26,30 @@ function presentStereo(s: Stereo, targetDb = -20): Stereo {
   return { l: scale(s.l), r: scale(s.r) };
 }
 
+/**
+ * Set the side level against the mid, in dB of energy (D41 #25/#27). The
+ * decorrelated bed already carries MORE side than mid (corr ≈ −0.2), so a
+ * fixed width factor above 1 pushed "Wide" to corr −0.6…−0.9 — the out-of-
+ * phase warning shape. Measuring the bed and solving for the factor makes the
+ * result the same on every seed: with M and S uncorrelated,
+ * corr = (1 − 10^(sideDb/10)) / (1 + 10^(sideDb/10)), so −3 dB → +0.33,
+ * −4 dB → +0.43, −7.5 dB → +0.70, −8 dB → +0.73.
+ */
+function sideAt(s: Stereo, sideDb: number): Stereo {
+  let em = 0, es = 0;
+  for (let i = 0; i < s.l.length; i++) {
+    em += ((s.l[i] + s.r[i]) / 2) ** 2;
+    es += ((s.l[i] - s.r[i]) / 2) ** 2;
+  }
+  return width(s, Math.sqrt((Math.pow(10, sideDb / 10) * em) / Math.max(es, 1e-12)));
+}
+
+/** "Wide": side 3 dB under the mid — a broad cloud, still mono-safe (corr ≈ +0.33). */
+export const WIDE_SIDE_DB = -3;
+/** Level-4 "Which clip is wider?" pairs, [wider, narrower] side dB. The ~4 dB
+ *  gaps match the old factor pairs' difficulty; every clip stays positive. */
+export const WIDER_PAIRS_SIDE_DB: ReadonlyArray<readonly [number, number]> = [[-3, -7.5], [-4, -8]];
+
 /** Pink burst + tone mix (spec's M6 source). */
 function scene(rng: Rng): Mono {
   const seconds = 1.4;
@@ -55,8 +79,8 @@ const VARIANTS: M6Variant[] = [
   },
   {
     key: 'wide', label: 'Wide',
-    truth: 'Decorrelated side content boosted (~+6 dB side) — the image spills outward.',
-    make: (m) => width(decorrelate(m), 2.2),
+    truth: 'Decorrelated side content raised to about 3 dB under the mid — the image spills outward, yet the sides still agree more than they differ (corr about +0.3), so it stays mono-safe.',
+    make: (m) => sideAt(decorrelate(m), WIDE_SIDE_DB),
   },
   {
     key: 'narrow', label: 'Narrow',
@@ -89,10 +113,10 @@ export const M6_STEREO: EarModule = {
     const m = scene(rng);
     if (level >= 4) {
       const base = decorrelate(m);
-      const widths = rng() < 0.5 ? [1.5, 0.9] : [1.25, 0.8];
+      const sides = rng() < 0.5 ? WIDER_PAIRS_SIDE_DB[0] : WIDER_PAIRS_SIDE_DB[1];
       const wideFirst = rng() < 0.5;
-      const a = presentStereo(width(base, wideFirst ? widths[0] : widths[1]));
-      const b = presentStereo(width(base, wideFirst ? widths[1] : widths[0]));
+      const a = presentStereo(sideAt(base, wideFirst ? sides[0] : sides[1]));
+      const b = presentStereo(sideAt(base, wideFirst ? sides[1] : sides[0]));
       return {
         clips: [
           { label: 'A', buf: a },
@@ -105,7 +129,7 @@ export const M6_STEREO: EarModule = {
         seeIt: {
           kind: 'gonio',
           clips: [0, 1],
-          caption: 'The goniometer: taller-than-wide = mono-ish, ball-shaped = wide. Correlation is the number engineers watch.',
+          caption: 'Thin upright line = mono-ish, broader cloud = wider. Correlation is the number engineers watch: wide but positive is healthy.',
         },
       };
     }

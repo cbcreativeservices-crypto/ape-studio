@@ -59,6 +59,8 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
+import { STEREO_END_GUIDE } from './stereoScreenGuides';
 import type { ScreenGuide } from '../../features/lab/screenGuide';
 import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
@@ -681,6 +683,13 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       exploreCaption={config.exploreCaption}
       guide={config.guide}
       accuracy={config.accuracy ?? true}
+      // The what's-left screen under the CHECK (every lab ends on one; D41):
+      // Stereo Imaging for now; the other effect labs are a separate change.
+      checkEnd={
+        config.labId === 'stereo' ? (
+          <LabCheckEnd labId="stereo" labTitle="Stereo Imaging Lab" onOpen={stop} endGuide={STEREO_END_GUIDE} />
+        ) : undefined
+      }
       headerAction={
         <HeaderPlayButton
           playing={running}

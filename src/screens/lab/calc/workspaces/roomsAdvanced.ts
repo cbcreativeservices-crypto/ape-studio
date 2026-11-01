@@ -101,7 +101,7 @@ const EYRING: Workspace = {
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
     { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', positive: true, warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
-    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
+    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', meaning: 'number:abs-avg', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
     { key: 'rtTarget', name: 'TARGET RT60', quantity: 'time', defaultUnit: 's', placeholder: '0.3', help: 'A reverberation time you want to design toward.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
   ],
   functions: [
@@ -128,7 +128,7 @@ const EYRING: Workspace = {
         const sabine = (SABINE_K * V) / (S * a);
         const eyring = (SABINE_K * V) / (-S * Math.log(1 - a));
         return [
-          { label: 'RT60 (EYRING)', value: eyring, quantity: 'time', unit: 's' },
+          { label: 'RT60 (EYRING)', value: eyring, quantity: 'time', meaning: 'time:rt60', unit: 's' },
           { label: 'RT60 (SABINE)', value: sabine, quantity: 'time', unit: 's', chainable: false },
           // Over-estimate RELATIVE TO EYRING (bug pass 3, 2026-09-30): this was
           // (S − E)/S — how much SHORTER Eyring is (15.9 % for the placeholder
@@ -178,7 +178,7 @@ const EYRING: Workspace = {
         const a = 1 - Math.exp((-SABINE_K * V) / (S * rt));
         const sabines = S * a; // total absorption in sabins (metric)
         return [
-          { label: 'REQUIRED AVERAGE ABSORPTION ā', value: a, quantity: 'number' },
+          { label: 'REQUIRED AVERAGE ABSORPTION ā', value: a, quantity: 'number', meaning: 'number:abs-avg' },
           { label: 'SUM OF AREA × α NEEDED (S·ā)', value: sabines, quantity: 'area', unit: 'm2', chainable: false },
         ];
       },
@@ -257,7 +257,7 @@ const DIFFUSER: Workspace = {
         return [
           { label: 'DEEPEST WELL', value: maxDepth, quantity: 'length', unit: 'cm' },
           { label: 'LOW DIFFUSION EDGE', value: n(v.f0), quantity: 'frequency', chainable: false },
-          { label: 'HIGH DIFFUSION EDGE', value: hi, quantity: 'frequency' },
+          { label: 'HIGH DIFFUSION EDGE', value: hi, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'TOTAL PANEL WIDTH (one period)', value: N * n(v.w), quantity: 'length', unit: 'cm', chainable: false },
         ];
       },
@@ -343,7 +343,7 @@ const ABSORBER: Workspace = {
       compute: (v) => {
         const f0 = PANEL_K / Math.sqrt(n(v.mass) * n(v.gap));
         return [
-          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
+          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency', meaning: 'frequency:point' },
           // A BAND, not f₀ again (bug pass 2, 2026-09-30): this row printed the
           // resonance a second time under a label promising a range.
           { label: 'USEFUL BAND (≈ ±½ oct)', text: `${fmt(f0 / Math.SQRT2)}–${fmt(f0 * Math.SQRT2)} Hz` },
@@ -375,7 +375,7 @@ const ABSORBER: Workspace = {
         const D = n(v.hole);
         const f0 = (c / (2 * Math.PI)) * Math.sqrt(P / (d * (t + 0.8 * D)));
         return [
-          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
+          { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'EFFECTIVE NECK LENGTH', value: t + 0.8 * D, quantity: 'length', unit: 'mm', chainable: false },
         ];
       },
@@ -430,8 +430,8 @@ const TRANSMISSION: Workspace = {
     'performance is measured (ASTM E90 / STC, ISO 10140), not computed here.',
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square meter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', meaning: 'number:panel-mass', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square meter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', positive: true, warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
   ],
   functions: [
@@ -499,7 +499,7 @@ const TRANSMISSION: Workspace = {
         const f = n(v.f);
         const m = Math.pow(10, (tl + 47) / 20) / f;
         return [
-          { label: 'REQUIRED PANEL MASS (kg/m²)', value: m, quantity: 'number' },
+          { label: 'REQUIRED PANEL MASS (kg/m²)', value: m, quantity: 'number', meaning: 'number:panel-mass' },
           { label: 'MASS IN lb/ft²', value: m * 0.204816, quantity: 'number', chainable: false },
         ];
       },

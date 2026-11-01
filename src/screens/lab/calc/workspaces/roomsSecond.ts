@@ -49,9 +49,9 @@ const CRITICAL_DISTANCE: Workspace = {
   glossary: ['Critical distance', 'Reverberation Time', 'RT60', 'Directivity', 'Q factor', 'Reverberation'],
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '300', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
-    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.8', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
+    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', meaning: 'time:rt60', defaultUnit: 's', placeholder: '0.8', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
     { key: 'q', name: 'DIRECTIVITY (Q)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Source directivity factor: omni ≈ 1, cardioid ≈ 3, horn ≈ 10+.', positive: true, warn: { test: (x) => x <= 0, msg: 'Directivity Q must be greater than zero.' } },
-    { key: 'r', name: 'LISTENING DISTANCE', quantity: 'length', placeholder: '3', help: 'How far the listener or mic is from the source.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'r', name: 'LISTENING DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '3', help: 'How far the listener or mic is from the source.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -140,7 +140,7 @@ const SCHROEDER: Workspace = {
   glossary: ['Room Mode', 'Standing wave', 'Reverberation Time', 'RT60', 'Modal density'],
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '50', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
-    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.4', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
+    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', meaning: 'time:rt60', defaultUnit: 's', placeholder: '0.4', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
     { key: 'fs', name: 'TARGET SCHROEDER FREQUENCY', quantity: 'frequency', placeholder: '200', help: 'A Schroeder frequency you want to design toward.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
@@ -157,7 +157,7 @@ const SCHROEDER: Workspace = {
       compute: (v) => {
         const fs = 2000 * Math.sqrt(n(v.rt60) / n(v.vol));
         return [
-          { label: 'SCHROEDER FREQUENCY', value: fs, quantity: 'frequency' },
+          { label: 'SCHROEDER FREQUENCY', value: fs, quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'MODAL REGION (below)', value: fs, quantity: 'frequency', chainable: false },
         ];
       },
@@ -226,7 +226,7 @@ const BOUNDARY: Workspace = {
     'reinforcement = c/(2d).',
   glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Phase', 'Standing wave', 'Wavelength'],
   fields: [
-    { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', meaning: 'length:boundary', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'fNull', name: 'TARGET NULL FREQUENCY', quantity: 'frequency', placeholder: '150', help: 'A cancellation frequency you want to place (or avoid).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
@@ -245,8 +245,8 @@ const BOUNDARY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.d);
         return [
-          { label: 'FIRST CANCELLATION', value: c / (4 * d), quantity: 'frequency' },
-          { label: 'FIRST REINFORCEMENT', value: c / (2 * d), quantity: 'frequency' },
+          { label: 'FIRST CANCELLATION', value: c / (4 * d), quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'FIRST REINFORCEMENT', value: c / (2 * d), quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'SECOND CANCELLATION', value: (3 * c) / (4 * d), quantity: 'frequency', chainable: false },
           { label: 'SECOND REINFORCEMENT', value: (2 * c) / (2 * d), quantity: 'frequency', chainable: false },
         ];
@@ -275,7 +275,7 @@ const BOUNDARY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = c / (4 * n(v.fNull));
         return [
-          { label: 'BOUNDARY DISTANCE', value: d, quantity: 'length' },
+          { label: 'BOUNDARY DISTANCE', value: d, quantity: 'length', meaning: 'length:boundary' },
           { label: 'DISTANCE IN INCHES', value: d, quantity: 'length', unit: 'in', chainable: false },
         ];
       },
@@ -328,8 +328,8 @@ const REFLECTION: Workspace = {
     'difference. Assumes the reflection is a clean single copy; real surfaces filter and scatter it.',
   glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Delay', 'Phase'],
   fields: [
-    { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', meaning: 'length:path', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', meaning: 'length:path', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'fNull', name: 'TARGET FIRST-NULL FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'A first-notch frequency you want the geometry to produce.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
@@ -355,16 +355,16 @@ const REFLECTION: Workspace = {
         // Equal paths: the copy arrives in step — no comb, not a "—" null.
         if (dd === 0) {
           return [
-            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length' },
-            { label: 'ARRIVAL DELAY', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', meaning: 'length:pathdiff' },
+            { label: 'ARRIVAL DELAY', value: 0, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
             { label: 'COMB FILTERING', text: NO_PATH_DIFFERENCE, refusal: true },
           ];
         }
         return [
-          { label: 'PATH DIFFERENCE', value: dd, quantity: 'length' },
-          { label: 'ARRIVAL DELAY', value: dt, quantity: 'time', unit: 'ms' },
+          { label: 'PATH DIFFERENCE', value: dd, quantity: 'length', meaning: 'length:pathdiff' },
+          { label: 'ARRIVAL DELAY', value: dt, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'COMB SPACING (teeth)', value: c / dd, quantity: 'frequency', chainable: false },
-          { label: 'FIRST NULL', value: c / (2 * dd), quantity: 'frequency' },
+          { label: 'FIRST NULL', value: c / (2 * dd), quantity: 'frequency', meaning: 'frequency:point' },
         ];
       },
       steps: (v) => {
@@ -395,8 +395,8 @@ const REFLECTION: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const dd = c / (2 * n(v.fNull));
         return [
-          { label: 'PATH DIFFERENCE', value: dd, quantity: 'length' },
-          { label: 'ARRIVAL DELAY', value: dd / c, quantity: 'time', unit: 'ms', chainable: false },
+          { label: 'PATH DIFFERENCE', value: dd, quantity: 'length', meaning: 'length:pathdiff' },
+          { label: 'ARRIVAL DELAY', value: dd / c, quantity: 'time', meaning: 'time:delay', unit: 'ms', chainable: false },
         ];
       },
       steps: (v) => {

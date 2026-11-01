@@ -10,7 +10,7 @@
  * glass, so cause and effect are one gesture apart.
  */
 import { colors } from '../../../theme/tokens';
-import { GAIN_STAGES, type GainNode, type GainSettings, type GainStageId, type GainVerdict } from '../../../features/soundsystems/operate';
+import { GAIN_STAGES, gainVerdictCopy, type GainNode, type GainSettings, type GainStageId, type GainVerdict } from '../../../features/soundsystems/operate';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { lanePos, laneVal } from './rackLayout';
@@ -56,15 +56,41 @@ export function gainStageParam(settings: GainSettings, setSettings: (fn: (s: Gai
   };
 }
 
+/** Headroom, at the stage with the least, at which the HEADROOM readout turns
+ *  from orange to green. One number for the colour, the LEARN verdict and the
+ *  goals on both gain pages (D41 #24, 2026-11-01). */
+export const HEADROOM_GOOD_DB = 12;
+
+/** The least headroom anywhere in the chain, dB. */
+export function leastHeadroomDb(chain: GainNode[]): number {
+  return Math.min(...chain.map((n) => n.headroomDb));
+}
+
+/** LEARN's reading: the shared verdict, except that a clean, quiet chain with
+ *  less than HEADROOM_GOOD_DB at some stage reads TIGHT, not OK — the OK copy
+ *  promises "headroom at every stage", and the HEADROOM readout is orange. */
+export type GainReading = GainVerdict | 'tight';
+
+export function gainReading(chain: GainNode[], verdict: GainVerdict): GainReading {
+  return verdict === 'ok' && leastHeadroomDb(chain) < HEADROOM_GOOD_DB ? 'tight' : verdict;
+}
+
+export function gainReadingCopy(r: GainReading, chain: GainNode[]): string {
+  if (r !== 'tight') return gainVerdictCopy(r, chain);
+  const least = leastHeadroomDb(chain);
+  const at = chain.reduce((a, n) => (n.headroomDb < a.headroomDb ? n : a), chain[0]);
+  return `Clean and low in hiss, but too little headroom: the ${at.label.toLowerCase()} is only ${Math.round(least)} dB below its clip line, and a louder moment than this peak would clip it. Leave at least ${HEADROOM_GOOD_DB} dB at every stage — take a few dB off the gain that put it there, usually the preamp.`;
+}
+
 /** The chain's four bezel readouts. */
-export function gainBezel(chain: GainNode[], verdict: GainVerdict, extra?: BezelItem): BezelItem[] {
+export function gainBezel(chain: GainNode[], verdict: GainReading, extra?: BezelItem): BezelItem[] {
   const last = chain[chain.length - 1];
-  const least = Math.round(Math.min(...chain.map((n) => n.headroomDb)));
+  const least = Math.round(leastHeadroomDb(chain));
   const vTint = verdict === 'ok' ? colors.green : verdict === 'clipping' ? colors.red : colors.orange;
   return [
     { k: 'AT SPEAKER', v: `${Math.round(last.levelDbu)} dBu`, tint: levelColorForDb(last.levelDbu, -40, 20), flex: 1.1 },
     extra ?? { k: 'ABOVE NOISE', v: `${Math.round(last.snrDb)} dB`, tint: last.snrDb < 70 ? colors.orange : colors.green, flex: 1.1 },
-    { k: 'HEADROOM', v: chain.some((n) => n.clipped) ? 'CLIP' : `${least} dB`, tint: chain.some((n) => n.clipped) ? colors.red : least >= 12 ? colors.green : colors.orange },
+    { k: 'HEADROOM', v: chain.some((n) => n.clipped) ? 'CLIP' : `${least} dB`, tint: chain.some((n) => n.clipped) ? colors.red : leastHeadroomDb(chain) >= HEADROOM_GOOD_DB ? colors.green : colors.orange },
     { k: 'VERDICT', v: verdict.toUpperCase(), tint: vTint },
   ];
 }

@@ -4,8 +4,8 @@
  * (e.g. mic sensitivity → mic voltage → required preamp gain → headroom).
  *
  * In-memory only, one value at a time: press "SEND →" on a result, then any
- * input field of the SAME quantity kind (in any workspace) offers a one-tap
- * "USE <label>" fill. Deliberately no persistence — a chain is a working
+ * input field that takes it — the same kind AND the same meaning (D41,
+ * calcUnits `chainFits`), in any workspace — offers a one-tap "USE <label>" fill. Deliberately no persistence — a chain is a working
  * gesture, not saved state.
  */
 import { useEffect, useState } from 'react';
@@ -14,6 +14,9 @@ import type { QuantityKind } from './calcUnits';
 export type ChainValue = {
   label: string;
   quantity: QuantityKind;
+  /** What the sent answer means (OutputVal `meaning`, D41) — an input offers
+   *  ⤵ USE only when its own tag takes it (calcUnits `chainFits`). */
+  meaning?: string;
   /** In the quantity's BASE unit. */
   baseValue: number;
   fromWorkspace: string;

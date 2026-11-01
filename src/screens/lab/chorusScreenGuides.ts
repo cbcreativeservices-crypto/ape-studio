@@ -106,7 +106,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
-      'The tabs under the title go to LEARN or EXPLORE at any time. Leave before the last one is right and the questions start fresh when you come back.',
+      'The tabs under the title go to LEARN or EXPLORE at any time; answers already right stay right. Leaving the lab before the last one starts the check over.',
     ],
     changes: [
       'Each question is about something EXPLORE shows: what makes the shimmer, why 100% wet turns into vibrato, how chorus’s delay compares with a flanger’s, and what a fast RATE sounds like.',

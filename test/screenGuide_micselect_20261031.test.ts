@@ -365,13 +365,34 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     assert.match(s, /\{!variant && \(correctPick \|\| acceptedPick\) \? \(/);
     assert.match(G.challenge.changes.join(' '), /On the original brief, once the pick is defensible, a reasoning line/);
   });
-  it('LAB COMPLETE = every page opened; the check is what counts for certificates', () => {
-    assert.match(s, /cleared=\{visited\}/);
+  it('LAB COMPLETE = every page opened AND the check passed (D41 #8/#9: the check is a CHECK unit)', () => {
+    assert.match(s, /cleared=\{endCleared\}/);
+    assert.match(s, /units=\{endUnits\}/);
+    assert.match(s, /id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check'/);
+    assert.match(s, /if \(banked\.has\(UNDERSTANDING_UNIT\)\) out\.add\(UNDERSTANDING_UNIT\);/);
+    // The CHECK row stays on the end screen (the check is drawn there), never back to Lesson 1.
+    assert.match(s, /onJump=\{\(id\) => \{ if \(id !== UNDERSTANDING_UNIT\) goTo\(/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'MicSelectLab', key: 'tr_mic_select', completion: 'understanding'/);
-    assert.match(END.seeing[0], /LAB COMPLETE once every step is opened, the mic locker \(marked Optional\) included/);
-    assert.match(END.seeing[0], /only once the check is passed/);
+    assert.match(END.seeing[0], /LAB COMPLETE once every step is opened, the mic locker \(marked Optional\) included, and the check is passed/);
+    assert.match(END.seeing[0], /CHECK row/);
   });
-  it('the locker row is labelled Optional but still counts toward LAB COMPLETE (making it truly optional is an owner call, D41)', () => {
+  it('the shared kit never shows LAB COMPLETE above an unpassed check (re-derived with labEnd)', async () => {
+    const { whatsLeft, endTitle, endLead } = await import('../src/screens/lab/kit/labEnd.ts');
+    const keys = [...s.matchAll(/^\s{4}key: '([a-z]+)',$/gm)].map((m) => m[1]);
+    assert.ok(keys.includes('locker') && keys.length === 11, `STEPS keys: ${keys.join(',')}`);
+    const units = [
+      ...keys.map((k) => ({ id: k, label: k, ...(k === 'locker' ? { detail: 'Optional' } : null) })),
+      { id: 'understanding', label: 'Check your understanding', kind: 'check' as const },
+    ];
+    const allOpened = new Set(keys);
+    const w = whatsLeft(units, allOpened);
+    assert.equal(endTitle(w), "WHAT'S LEFT");
+    assert.match(endLead(w, { mode: 'progress', noun: 'lesson', guest: false }), /^Only the check is left/);
+    assert.equal(endTitle(whatsLeft(units, new Set([...keys, 'understanding']))), 'LAB COMPLETE');
+    // The locker still counts (owner ruling 2026-10-31).
+    assert.equal(endTitle(whatsLeft(units, new Set([...keys.filter((k) => k !== 'locker'), 'understanding']))), "WHAT'S LEFT");
+  });
+  it('the locker row is labelled Optional but still counts toward LAB COMPLETE (owner ruling 2026-10-31)', () => {
     assert.match(s, /detail: st\.tag === 'OPTIONAL' \? 'Optional' : undefined/);
     assert.doesNotMatch(s, /optional: st\.tag === 'OPTIONAL'/);
   });

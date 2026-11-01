@@ -328,16 +328,18 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.equal(sq[0].nodalLines, 2);
     assert.equal(`3 · ${MU.formatHz(sq[2].hz)} · ${sq[2].label}`, '3 · 501 Hz · (4,0) + (0,4)');
     assert.equal(sq[2].nodalLines, 4);
-    assert.equal(res({ ...P0 }, Math.round(sq[2].hz * 10) / 10, 14).state, 'at', 'landing on mode 3 reads AT, so LINES shows');
+    assert.equal(res({ ...P0 }, Math.round(sq[2].hz * 10) / 10, 24).state, 'at', 'landing on mode 3 reads AT, so LINES shows');
     const discSpec = { ...P0, shape: 'circle', exciter: { x: 0.85, y: 0.5 } };
     const disc = PM.plateModes(discSpec, 24).filter((m: { drive: number }) => m.drive > 0.05);
     const land = Math.round(disc[0].hz * 10) / 10;
     assert.equal(MU.formatHz(land), '89.8 Hz');
     assert.equal(disc[0].label, '2 diameters · 0 circles');
-    assert.equal(res(discSpec, land, 14).state, 'at');
-    // The tray is excitableModes(spec, 24).slice(0, 8): the centre-driven square
-    // has only 7 excitable modes in 24, the edge-driven disc more than 8.
-    assert.match(code('src/screens/lab/cymatics/modules/modNodes.tsx'), /excitableModes\(spec, 24\)\.slice\(0, 8\)/);
+    assert.equal(res(discSpec, land, 24).state, 'at');
+    // The tray is the first 8 excitable modes of ONE 24-mode list that the read,
+    // field and FREQ warp share (D41 #21): the centre-driven square has only 7
+    // excitable modes in 24, the edge-driven disc more than 8.
+    assert.match(code('src/screens/lab/cymatics/modules/modNodes.tsx'), /const \{ all: allModes, tray: modes \} = useMemo\(\(\) => nodesModeLists\(spec\), \[spec\]\);/);
+    assert.match(code('src/screens/lab/cymatics/modules/modeMath.ts'), /export const NODES_MODE_COUNT = 24;/);
     assert.equal(PM.plateModes({ ...P0, exciter: { x: 0.5, y: 0.5 } }, 24).filter((m: { drive: number }) => m.drive > 0.05).length, 7);
     assert.ok(disc.length >= 8);
     const t = textOf(MODS.nodes);

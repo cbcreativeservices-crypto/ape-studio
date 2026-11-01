@@ -191,7 +191,11 @@ registerRuleLogic({
   'media-sources-cleared-early': (ctx) => {
     const intact = str(ctx.get('media', 'source_still_intact'));
     if (intact !== 'partly' && intact !== 'no') return false;
-    return !verified(ctx) || str(ctx.get('media', 'verify_coverage')) !== 'all';
+    // Proof means bytes, not names (D41, bug #19): "File count matches" alone
+    // is the names-only check the attention rule below calls out, so it never
+    // clears this blocker — only a REAL_VERIFICATION method over every file.
+    const methods = many(ctx.get('media', 'verify_method'));
+    return !REAL_VERIFICATION.some((m) => methods.includes(m)) || str(ctx.get('media', 'verify_coverage')) !== 'all';
   },
 
   'media-no-verification': (ctx) => !verified(ctx),

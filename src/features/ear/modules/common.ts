@@ -37,9 +37,30 @@ export const ISO_HALVES: number[] = ISO_THIRDS.filter((_, i) => i % 2 === 0);
 export const hzLabel = (hz: number): string =>
   hz >= 1000 ? `${(hz / 1000).toString().replace(/\.0$/, '')} kHz` : `${hz} Hz`;
 
-/** Standard presentation loudness: −20 dBFS RMS + edge fades (spec §1/§5). */
-export function present(x: Mono, targetDb = -20, fadeMs = 8): Mono {
-  return fadeEdges(normalizeRms(x, targetDb), fadeMs);
+/** −1 dBFS — the peak ceiling impulsive clips are held under (D41 #26). */
+export const PEAK_CEILING = Math.pow(10, -1 / 20);
+
+/**
+ * Standard presentation loudness: −20 dBFS RMS + edge fades (spec §1/§5).
+ *
+ * `peakCeiling` (opt-in, D41 #26): a nearly silent buffer — one click in
+ * 1.6 s of silence — needs ~+31 dB to reach −20 dBFS RMS, which puts its
+ * peak at up to 28× full scale; encodeWav then clamps it to ±1, so it neither
+ * plays at the stated level nor draws inside its lane. With a ceiling, the
+ * gain is the RMS gain capped so the peak lands at the ceiling. A clip whose
+ * peak is already at or under the ceiling is returned exactly as before.
+ * Opt-in because the A/B modules loudness-match pairs by RMS: capping one
+ * clip of a pair alone would make the pair unequal in level.
+ */
+export function present(x: Mono, targetDb = -20, fadeMs = 8, peakCeiling?: number): Mono {
+  const out = fadeEdges(normalizeRms(x, targetDb), fadeMs);
+  if (peakCeiling === undefined) return out;
+  let peak = 0;
+  for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
+  if (peak <= peakCeiling) return out;
+  const g = peakCeiling / peak;
+  for (let i = 0; i < out.length; i++) out[i] *= g;
+  return out;
 }
 
 /**

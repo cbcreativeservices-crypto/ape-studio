@@ -106,7 +106,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
   intro: {
     seeing: [
       'A reading page with three live figures: PRESSURE WAVE (air molecules bunching and spreading), SAND ON THE PLATE, and PHASE VIEW.',
-      'Above the sand plate: two chips, At resonance · 104 Hz and Off resonance · 80.9 Hz. Under it: a RESPONSE vs FREQUENCY · CALCULATED strip whose white line marks the drive.',
+      'Above the sand plate: two chips, At resonance · 104 Hz and Off resonance · 80.9 Hz. Under it: a RESPONSE vs FREQUENCY · CALCULATED strip — each tall bar is a resonance; the white line marks the drive.',
       'It ends with BEFORE YOU GO ON — A QUESTION.',
     ],
     control: [

@@ -215,6 +215,10 @@ export function ProductionLabScreen() {
    *  created TWO projects. A ref, not state — the second tap arrives before
    *  React re-renders. */
   const startingRef = useRef(false);
+  /** + NEW PROJECT is open (D41, bugs #18/#20): with a project already open,
+   *  START A PROJECT is not on screen, and DUPLICATE keeps the type — so this
+   *  is the only way to begin a project of ANOTHER type without deleting one. */
+  const [choosingType, setChoosingType] = useState(false);
   const start = useCallback(
     async (pathway: PathwayId) => {
       if (startingRef.current) return;
@@ -238,6 +242,9 @@ export function ProductionLabScreen() {
           );
           return;
         }
+        // A kept (failed) rename draft belongs to the project it was typed on.
+        setNameDraft(null);
+        setChoosingType(false);
         await reload();
         setOpenId(p.id);
       } finally {
@@ -284,6 +291,21 @@ export function ProductionLabScreen() {
 
   /** The guide for what this screen is showing right now. */
   const guide = productionHomeGuide(lab, project !== null);
+
+  /** The three project types — START A PROJECT and + NEW PROJECT both list
+   *  them, and both create through the one guarded `start`. */
+  const pathwayRows = LAUNCH_PATHWAYS.map((p) => (
+    <Pressable
+      key={p}
+      style={styles.pathway}
+      onPress={() => void start(p)}
+      accessibilityRole="button"
+      accessibilityLabel={`Start a ${PATHWAY_LABEL[p]} project`}
+    >
+      <Text style={styles.pathwayName}>{PATHWAY_LABEL[p]}</Text>
+      <Text style={styles.pathwayGo}>›</Text>
+    </Pressable>
+  ));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -332,41 +354,52 @@ export function ProductionLabScreen() {
               What you are making changes the questions, the documents and the problems you will hit. The planning
               process underneath stays the same.
             </Text>
-            {LAUNCH_PATHWAYS.map((p) => (
-              <Pressable
-                key={p}
-                style={styles.pathway}
-                onPress={() => void start(p)}
-                accessibilityRole="button"
-                accessibilityLabel={`Start a ${PATHWAY_LABEL[p]} project`}
-              >
-                <Text style={styles.pathwayName}>{PATHWAY_LABEL[p]}</Text>
-                <Text style={styles.pathwayGo}>›</Text>
-              </Pressable>
-            ))}
+            {pathwayRows}
           </View>
         ) : (
           <>
-            {projects.length > 1 ? (
-              <View style={styles.switcher}>
-                {projects.map((p) => (
-                  <Pressable
-                    key={p.id}
-                    style={[styles.switchChip, p.id === openId && styles.switchChipOn]}
-                    onPress={() => {
-                      // A kept (failed) rename draft belongs to THIS project,
-                      // never the next one (2026-09-30).
-                      setNameDraft(null);
-                      setOpenId(p.id);
-                    }}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: p.id === openId }}
-                  >
-                    <Text style={[styles.switchText, p.id === openId && styles.switchTextOn]} numberOfLines={1}>
-                      {p.name}
-                    </Text>
-                  </Pressable>
-                ))}
+            {/* The chips switch projects; + NEW PROJECT, always last, opens the
+                three types under them (D41, bugs #18/#20). */}
+            <View style={styles.switcher}>
+              {projects.length > 1
+                ? projects.map((p) => (
+                    <Pressable
+                      key={p.id}
+                      style={[styles.switchChip, p.id === openId && styles.switchChipOn]}
+                      onPress={() => {
+                        // A kept (failed) rename draft belongs to THIS project,
+                        // never the next one (2026-09-30).
+                        setNameDraft(null);
+                        setChoosingType(false);
+                        setOpenId(p.id);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: p.id === openId }}
+                    >
+                      <Text style={[styles.switchText, p.id === openId && styles.switchTextOn]} numberOfLines={1}>
+                        {p.name}
+                      </Text>
+                    </Pressable>
+                  ))
+                : null}
+              <Pressable
+                style={[styles.switchChip, choosingType && styles.switchChipOn]}
+                onPress={() => setChoosingType((v) => !v)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="New project: choose a project type"
+                accessibilityState={{ expanded: choosingType }}
+              >
+                <Text style={[styles.switchText, choosingType && styles.switchTextOn]}>+ NEW PROJECT</Text>
+              </Pressable>
+            </View>
+            {choosingType ? (
+              <View style={styles.startBlock}>
+                <Text style={styles.sectionIntro}>
+                  Pick a type for the new project. What you are making changes the questions; this project stays saved
+                  and its chip switches back to it.
+                </Text>
+                {pathwayRows}
               </View>
             ) : null}
 

@@ -9,9 +9,9 @@
  *      FxLabScreen, fxAnim, fxViz, the lesson, the check);
  *   4. the TRY THIS numbers follow from the engine (Effects.hpp DynamicsEffect
  *      GateMode) on the lab's CLICK 90 — re-run sample by sample, both routes —
- *      and the guide keeps clear of the default THRESH −35 dB on the click,
- *      where the engine's gate never opens (a suspected screen-code issue,
- *      pinned here so a fix shows up);
+ *      and the default THRESH −35 dB now opens on every hit (D41 fix
+ *      2026-11-01: the lab writes the gate attack, 1 ms; at the engine's own
+ *      10 ms default the click never opened it);
  *   5. wiring (TODO until the shared FxLabScreen pass-through lands) + chip.
  */
 import assert from 'node:assert/strict';
@@ -150,10 +150,12 @@ const highpass = (f0: number) => {
   let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
   return (x: number) => { const y = c.b0 * x + c.b1 * x1 + c.b2 * x2 - c.a1 * y1 - c.a2 * y2; x2 = x1; x1 = x; y2 = y1; y1 = y; return y; };
 };
-/** The engine's gate: attack = its 10 ms default (the lab never writes it). */
-const gate = (thr: number, rangeDb: number, holdMs: number, relMs: number) => {
+/** The gate attack the lab writes (gateConfig `fixed`, param 3). */
+const ATTACK_MS = 1;
+/** The engine's gate, at the lab's written attack. */
+const gate = (thr: number, rangeDb: number, holdMs: number, relMs: number, attMs = ATTACK_MS) => {
   let env = 0, g = 1, holdLeft = 0;
-  const aA = onePole(10), aR = onePole(relMs), holdN = Math.floor(holdMs * 0.001 * FS), floor = 10 ** (rangeDb / 20);
+  const aA = onePole(attMs), aR = onePole(relMs), holdN = Math.floor(holdMs * 0.001 * FS), floor = 10 ** (rangeDb / 20);
   return (x: number) => {
     const ax = Math.abs(x);
     env += (ax > env ? aA : aR) * (ax - env);
@@ -167,11 +169,11 @@ const click = (bpm: number) => (i: number) => {
   const t = (i / FS) % (60 / bpm);
   return t < 0.005 ? 0.1 * 0.5 * (1 - Math.cos((2 * Math.PI * t) / 0.005)) * Math.sin(2 * Math.PI * 1000 * t) : 0;
 };
-/** The engine's DETECTOR alone (attack 10 ms, release = RLS): its lowest
+/** The engine's DETECTOR alone (the lab's attack, release = RLS): its lowest
  *  level between hits, and whether the gate's close branch ever runs. */
 const detector = (thr: number, holdMs: number, relMs: number, speaker: boolean) => {
   const hp = speaker ? highpass(150) : (x: number) => x;
-  const aA = onePole(10), aR = onePole(relMs), holdN = Math.floor(holdMs * 0.001 * FS), src = click(90);
+  const aA = onePole(ATTACK_MS), aR = onePole(relMs), holdN = Math.floor(holdMs * 0.001 * FS), src = click(90);
   let env = 0, holdLeft = 0, minDb = Infinity, closing = 0;
   for (let i = 0; i < FS * 4; i++) {
     const ax = Math.abs(hp(src(i)));
@@ -190,9 +192,9 @@ const openMsPerHit = (hold: number, rel: number, speaker: boolean) => {
   for (let i = 0; i < FS * 4; i++) { const gr = d(hp(src(i))); if (i >= FS * 2) { n++; if (gr < 1) open++; } }
   return (open / n) * (60000 / 90);
 };
-const run = (thr: number, range: number, hold: number, rel: number, speaker: boolean) => {
+const run = (thr: number, range: number, hold: number, rel: number, speaker: boolean, attMs = ATTACK_MS) => {
   const hp = speaker ? highpass(150) : (x: number) => x;
-  const d = gate(thr, range, hold, rel);
+  const d = gate(thr, range, hold, rel, attMs);
   const src = click(90);
   let mn = Infinity, mx = -Infinity;
   for (let i = 0; i < FS * 4; i++) {
@@ -203,16 +205,20 @@ const run = (thr: number, range: number, hold: number, rel: number, speaker: boo
 };
 
 describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
-  it('the inputs: CLICK 90 at −20 dBFS, the defaults (−35, −40, 10 ms, 100 ms), the engine’s gate, its 10 ms attack', () => {
+  it('the inputs: CLICK 90 at −20 dBFS, the defaults (−35, −40, 10 ms, 100 ms), the engine’s gate, the 1 ms attack the lab writes', () => {
     const fx = code('modules/ape-dsp/ios/core/Effects.hpp');
     assert.match(code('src/screens/lab/FxLabScreen.tsx'), /const GEN_LEVEL_DB = -20;/);
     assert.match(GATE, /sources: \[srcClick\(90\), SRC_PINK\]/);
     assert.match(GATE, /choices: \[-50, -35, -20\][\s\S]*?initial: -35,/);
     assert.match(GATE, /label: 'HOLD'[\s\S]*?initial: 10,/);
     assert.match(GATE, /label: 'RELEASE', short: 'RLS'[\s\S]*?initial: 100,/);
-    // the lab never writes param 3 (attack): no ATTACK param, no `fixed`
-    assert.doesNotMatch(GATE, /P\.attackMs|fixed:/);
-    assert.match(fx, /attackMs_\{10\.0\}/);
+    // the lab WRITES param 3 (attack) = 1 ms on every start (no ATTACK control),
+    // and the drawing uses the same value
+    assert.match(GATE, /fixed: \[\{ paramId: P\.attackMs, value: 1 \}\],/);
+    assert.match(GATE, /attackMs: 1,/);
+    assert.match(code('src/screens/lab/FxLabScreen.tsx'), /for \(const f of config\.fixed \?\? \[\]\) ApeDsp\.fxSet\(config\.fxId, f\.paramId, f\.value\);/);
+    assert.match(fx, /case 3: attackMs_\.store\(fx::clampd\(v, 0\.05, 500\.0\)\); break;/);
+    assert.match(fx, /const double aA = fx::onePole\(mode_ == LimiterMode \? 0\.1 : attackMs_\.load\(\), fs_\);/);
     assert.match(fx, /if \(envDb > thr\) \{\s*holdLeft_ = holdSamples;\s*gGate_ \+= aA \* \(1\.0 - gGate_\);/);
     assert.match(fx, /gGate_ \+= aR \* \(floorG - gGate_\);/);
   });
@@ -221,7 +227,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     it(`EXPLORE 1 on ${route}: THRESH −50, RLS 100 → GR down to 0.0 on each hit, back up between`, () => {
       const r = run(-50, -40, 10, 100, speaker);
       assert.equal(r.mn, 0);
-      assert.ok(r.mx > 30, `between hits ${r.mx}`);
+      assert.ok(r.mx > 25, `between hits ${r.mx}`);
     });
     it(`EXPLORE 2 + LEARN 2 + CHECK 1 on ${route}: THRESH −50, RLS 20 → between hits GR reaches 20.0 / 40.0 / 70.0`, () => {
       assert.deepEqual([-20, -40, -70].map((r) => run(-50, r, 10, 20, speaker).mx), [20, 40, 70]);
@@ -237,16 +243,22 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     });
     it(`CHECK 2 on ${route}: HOLD 100 ms keeps GR at 0.0 far longer after each hit than HOLD 0 (RLS 20)`, () => {
       const h0 = openMsPerHit(0, 20, speaker), h100 = openMsPerHit(100, 20, speaker);
-      assert.ok(h0 < 25 && h100 > 100, `open ${h0.toFixed(0)} ms vs ${h100.toFixed(0)} ms per hit`);
+      assert.ok(h100 > h0 + 90 && h100 > 140, `open ${h0.toFixed(0)} ms vs ${h100.toFixed(0)} ms per hit`);
     });
-    it(`(suspected screen issue) on ${route}: at the default THRESH −35 the click never opens the gate — GR sits at |RANGE|`, () => {
+    it(`DEFAULT (D41 fix) on ${route}: THRESH −35, RLS 100 → the click opens the gate on every hit; THRESH −20 never does`, () => {
       for (const range of [-20, -40, -70]) {
         const r = run(-35, range, 10, 100, speaker);
-        assert.deepEqual([r.mn, r.mx], [-range, -range], `RANGE ${range}`);
+        assert.equal(r.mn, 0, `RANGE ${range}: opens to GR 0.0`);
+        assert.ok(r.mx > -range * 0.5, `RANGE ${range}: closes again between hits (${r.mx})`);
+        const shut = run(-20, range, 10, 100, speaker);
+        assert.deepEqual([shut.mn, shut.mx], [-range, -range], `THRESH −20, RANGE ${range}`);
       }
+      // the old fault, pinned so it cannot come back: at the engine's own 10 ms the default never opened
+      const old = run(-35, -40, 10, 100, speaker, 10);
+      assert.deepEqual([old.mn, old.mx], [40, 40]);
     });
   }
-  it('the guide states exactly those readings — and no step uses THRESH −35 dB on the click', () => {
+  it('the guide states exactly those readings', () => {
     const t = GUIDES.explore.tryThis;
     assert.match(t[0], /CLICK 90 and pull THRESH down to −50 dB: GR drops toward 0 on each hit and climbs back/);
     assert.match(t[1], /−50 dB, set RLS to 20 ms CHATTER and step RANGE: between hits GR reaches 20\.0, 40\.0, then 70\.0 dB/);
@@ -254,13 +266,16 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.doesNotMatch(t[2], /closes so slowly/);
     assert.match(t[1], /clean hit, so this shows depth, not chatter/);
     assert.match(GUIDES.explore.changes.join(' '), /RLS sets how fast it then closes, and how fast its sensed level falls/);
-    // the opening state is explained, not hidden (pinned by the −35 run above)
-    assert.match(GUIDES.explore.changes.join(' '), /at the starting THRESH −35 dB the short click never registers, so the gate stays shut/);
+    // the opening state (pinned by the DEFAULT run above)
+    assert.match(GUIDES.explore.changes.join(' '), /Each click opens it at the starting THRESH −35 dB; at −20 dB the short click never does/);
+    for (const gd of allGuides.map(([, g]) => g)) for (const k of Object.keys(gd)) assert.doesNotMatch(gd[k].join(' '), /never registers/);
+    // the screen's own copy says the same
+    assert.match(GATE, /you hear it open on every hit/);
+    assert.match(GATE, /the gate opens on each hit/);
     assert.match(GUIDES.learn.tryThis[0], /at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0\.0/);
     assert.match(GUIDES.check.tryThis[1], /compare HOLD 0 ms and 100 ms: at 100 ms GR rests at 0\.0 a moment after each hit/);
     assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 SILENCE, 20\.0 at −20 GENTLE/);
     assert.match(GUIDES.check.tryThis[0], /THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 GENTLE: GR tops out at 20\.0 dB/);
-    for (const gd of allGuides.map(([, g]) => g)) for (const line of gd.tryThis) assert.doesNotMatch(line, /−35/);
     // and no number is quoted on PINK NOISE (route-dependent)
     for (const gd of allGuides.map(([, g]) => g)) for (const line of gd.tryThis) assert.doesNotMatch(line, /PINK NOISE/);
   });

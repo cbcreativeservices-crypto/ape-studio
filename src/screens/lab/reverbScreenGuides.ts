@@ -33,10 +33,15 @@
  *   - RT60 ≈ 1.5 s with DARK 2k → ~8 dB above the floor at the 1 s mark
  *     (NATURAL: ~24 dB); DESIGNED RESPONSE ignores damping (it draws RT60);
  *   - DESIGNED RESPONSE's marker: a dot on the dashed −60 line, its label
- *     "RT60 {fmt2sig(rt60)} s" (two decimals below 1 s, as the fader and bezel) on the time axis below it. The axis spans
- *     max(1.25 × RT60, 0.6 s), so above RT60 0.48 s the dot barely moves
- *     ((PRE + RT60) ÷ 1.25·RT60 ≈ 0.80–0.83 of the width at PRE 20 ms) and
- *     the axis stretches; the caption opens "No pre-delay: the wash starts with the dry hit…" at 0 ms.
+ *     "RT60 {fmt2sig(rt60)} s" (two decimals below 1 s, as the fader and bezel) on the time axis below it. The axis is a
+ *     FIXED 7.5 s (fxViz DECAY_SPAN_S, D41 fix 2026-11-01; it used to stretch
+ *     to 1.25 × RT60, which held the dot still above 0.48 s), so the dot
+ *     slides with RT60: at PRE 20 ms it sits at x ≈ 42 of the 320-wide card
+ *     at 0.40 s, ≈ 84 at 1.5 s and ≈ 256 at 6.0 s (the plot runs 26 → 312);
+ *     the caption opens "No pre-delay: the wash starts with the dry hit…" at 0 ms.
+ *   - OUT's previous sweep (the dimmer line) is drawn only where it is signal
+ *     that has already happened: for ~0.5 s after each click the part past
+ *     the 1 s mark is blank, then refills (D41 fix 2026-11-01).
  * Change a label, a default or a range → update this file; the test pins the
  * names and the numbers.
  *
@@ -121,7 +126,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     control: [
       'Tap an option to answer. Scroll down for every card.',
       'A wrong answer costs nothing: pick again straight away. There is no score.',
-      'The tabs under the title go to EXPLORE or LEARN. Leaving this tab before the last right answer clears the cards.',
+      'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. Leaving the lab before the last right answer clears them.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
@@ -135,7 +140,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the grey click and the amber wash on OUT.',
-      'Also on EXPLORE: slide RT60 and watch DESIGNED RESPONSE. Above about 0.5 s the marker barely moves along the dashed −60 line while the time axis stretches: read its label, RT60 … s.',
+      'Also on EXPLORE: slide RT60 and watch DESIGNED RESPONSE. On its fixed time axis the marker slides along the dashed −60 line, near the left at 0.40 s and near the right at 6.0 s.',
     ],
   },
 };

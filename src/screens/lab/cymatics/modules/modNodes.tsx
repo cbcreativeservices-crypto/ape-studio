@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz, formatHzPrecise, nearestNote } from '../../../../features/cymatics/music';
 import { makeFreqFader } from '../../../../features/cymatics/freqFader';
 import { bezelModeLabel } from '../../../../features/cymatics/plateBezel';
@@ -19,7 +19,8 @@ import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import { useDriveTone } from '../useDriveTone';
 import { CymaticsRackLayout } from './rackLayout';
-import { P, excitableModes } from './shared';
+import { P } from './shared';
+import { nodesModeLists } from './modeMath';
 import { RES_TINT } from '../../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../../features/audio/startLevel';
 
@@ -38,8 +39,9 @@ const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[
 export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const [shape, setShape] = useState<PlateSpec['shape']>('square');
   const spec = useMemo<PlateSpec>(() => ({ ...DEFAULT_PLATE, shape, exciter: shape === 'circle' ? { x: 0.85, y: 0.5 } : { x: 0.5, y: 0.5 } }), [shape]);
-  const modes = useMemo(() => excitableModes(spec, 24).slice(0, 8), [spec]);
-  const allModes = useMemo(() => plateModes(spec, 14), [spec]);
+  // ONE list (D41 #21): the tray, the resonance read, the field and the FREQ
+  // warp all read the same modes, so every tray entry lands AT RESONANCE.
+  const { all: allModes, tray: modes } = useMemo(() => nodesModeLists(spec), [spec]);
   const Q = useMemo(() => effectiveQ(spec.material, spec.damping), [spec]);
   // Warped around each mode, as on the Plate Studio (freqFader.ts; slider
   // pass 2026-10-14): the plain log lane stepped over every resonance — 0 of
@@ -57,8 +59,8 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   // When the shape changes the modes move: land on the first one again.
   const pickShape = (s: PlateSpec['shape']) => {
     setShape(s);
-    const ex = excitableModes({ ...DEFAULT_PLATE, shape: s, exciter: s === 'circle' ? { x: 0.85, y: 0.5 } : { x: 0.5, y: 0.5 } }, 24);
-    if (ex[0]) land(ex[0].hz);
+    const { tray } = nodesModeLists({ ...DEFAULT_PLATE, shape: s, exciter: s === 'circle' ? { x: 0.85, y: 0.5 } : { x: 0.5, y: 0.5 } });
+    if (tray[0]) land(tray[0].hz);
   };
 
   const params: DockParam[] = [

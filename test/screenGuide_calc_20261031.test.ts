@@ -99,7 +99,7 @@ function exampleFor(ws: any, fn: any): Ex | null {
     next: next === at4 ? null : next,
     at5Next: at5Next === at5 ? null : at5Next,
     sendable,
-    sendTo: sendable ? G.calcSendTarget(ws, fn, o.label, o.quantity) : null,
+    sendTo: sendable ? G.calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) : null,
     steps: r.steps.length > 0,
   };
 }
@@ -357,16 +357,31 @@ describe('4. every TRY THIS number is what the screen prints', () => {
       const hits = (WORKSPACES as any[]).flatMap((w) =>
         w.functions
           .filter((g: any) => !(w.id === b.ws.id && g.key === b.fn.key))
-          .flatMap((g: any) => g.inputs.map((k: string) => w.fields.find((f: any) => f.key === k)).filter((f: any) => f && U.chainFits(o.label, o.quantity, f)).map(() => w.id)),
+          .flatMap((g: any) => g.inputs.map((k: string) => w.fields.find((f: any) => f.key === k)).filter((f: any) => f && U.chainFits(o.label, o.quantity, f, o.meaning)).map(() => w.id)),
       );
       return hits.some((id: string) => id !== b.ws.id) ? 'other' : hits.length ? 'here' : null;
     };
     const sendable = BUILT.filter((b) => b.ex?.sendable);
     for (const b of sendable) assert.equal(b.ex!.sendTo, target(b), b.id);
-    // The ten the audit named: three nowhere, seven this calculator only.
+    // The audit named ten (three nowhere, seven this calculator only). Since
+    // D41 an input takes an answer only when it MEANS the same thing, so more
+    // answers have no taker: a cable's loop resistance is no load, a voltage
+    // drop no supply voltage, an absorption total no panel area.
     const pick = (t: string | null) => sendable.filter((b) => b.ex!.sendTo === t).map((b) => b.id).sort();
-    assert.deepEqual(pick(null), ['loudtp/loudnessDelta', 'netaudio/bandwidth', 'wave/speed']);
-    assert.deepEqual(pick('here'), ['bpm/bpmFromInterval', 'filesize/multitrack', 'filesize/size', 'level/dbToAmp', 'level/dbToPow', 'micsens/mvToDb', 'pitch/freqToNote']);
+    assert.deepEqual(pick(null), [
+      'bitdepth/fromBits', 'bpm/lfoSync', 'cable/loss', 'cable/maxlen', 'complexz/impedance', 'compressor/outFromRatio',
+      'critdist/dc', 'critdist/drr', 'diffuser/qrd', 'driver/portLength', 'electronics/divider', 'electronics/xc',
+      'electronics/xl', 'fft/resFromSize', 'fft/tradeoff', 'filesize/multitrack', 'filesize/size', 'loudtp/loudnessDelta',
+      'micgain/maxspl', 'netaudio/bandwidth', 'pitch/interval', 'pitch/transpose', 'rflink/pathLoss', 'sabine/neededA',
+      'schroeder/volForFs', 'stereomic/threeToOne', 'transloss/massTL', 'treatment/panels', 'vdrop/drop', 'wave/speed',
+    ]);
+    assert.deepEqual(pick('here'), [
+      'bitdepth/bitsFromRange', 'bpm/bpmFromInterval', 'compressor/ratioForOut', 'compressor/thrForGr', 'eyring/absForRt',
+      'firlen/sizeTaps', 'level/ampToDb', 'level/dbToAmp', 'level/dbToPow', 'level/dbuDbv', 'level/pctToDb', 'level/powToDb',
+      'level/vToDbu', 'level/vToDbv', 'micsens/mvToDb', 'phase/phaseFromDist', 'phase/phaseFromTime', 'pitch/freqToNote',
+      'qbw/bwFromQ', 'qbw/octFromQ', 'qbw/qFromBw', 'qbw/qFromOct', 'sabine/rtFromSurfaces', 'timecode/toFrames',
+      'transformer/ratioFromZ', 'transloss/massForTL', 'wave/wavelength',
+    ]);
     for (const b of sendable.filter((x) => x.ex!.sendTo === null)) assert.doesNotMatch(b.gd.tryThis.join(' '), /SEND →/, b.id);
     const lvl = BUILT.find((b) => b.id === 'level/dbToAmp')!;
     assert.ok(lvl.gd.tryThis.includes('Tap SEND → beside AMPLITUDE RATIO, then pick another calculation under WHAT ARE YOU CALCULATING?: an input offers ⤵ USE AMPLITUDE RATIO.'));
@@ -466,7 +481,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     const f2 = ws.functions.find((f: any) => f.key === 'iFromPV');
     const fields2 = f2.inputs.map((k: string) => ws.fields.find((f: any) => f.key === k));
     assert.deepEqual(fields2.map((f: any) => f.name), ['POWER', 'VOLTAGE (RMS)']);
-    assert.ok(U.chainFits(power.label, power.quantity, fields2[0]), 'POWER fits step 2’s POWER');
+    assert.ok(U.chainFits(power.label, power.quantity, fields2[0], power.meaning), 'POWER fits step 2’s POWER');
     assert.match(code('src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), /effRaw\[f\.key\] = fmtCarried\(u\.fromBase\(o\.value\), f\.quantity\);/);
     const pu = U.unitsFor(fields2[0].quantity, fields2[0].unitIds)[Panel.defaultUnitIdx(fields2[0])];
     const carried = U.fmtCarried(pu.fromBase(power.value), fields2[0].quantity);
@@ -534,13 +549,16 @@ describe('4. every TRY THIS number is what the screen prints', () => {
       const ws = getWorkspace(st.workspaceId) as any;
       const fn = ws.functions.find((f: any) => f.key === st.fnKey);
       const fields = fn.inputs.map((k: string) => ws.fields.find((f: any) => f.key === k));
-      for (const f of fields) for (const [k, o] of outs) if ('value' in o && o.chainable !== false && U.chainFits(o.label, o.quantity, f)) links.push(`${o.label}@${k + 1}>${f.name}@${i + 1}`);
+      for (const f of fields) for (const [k, o] of outs) if ('value' in o && o.chainable !== false && U.chainFits(o.label, o.quantity, f, o.meaning)) links.push(`${o.label}@${k + 1}>${f.name}@${i + 1}`);
       const r = Panel.runCompute(fn, Panel.buildValues(fields, Object.fromEntries(fields.map((f: any) => [f.key, f.placeholder])), {}), fields);
       for (const o of r.outputs) outs.push([i, o]);
     });
     assert.ok(links.includes('RT60@1>REVERBERATION TIME (RT60)@2'), links.join('; '));
-    assert.ok(links.includes('CRITICAL DISTANCE Dc@2>LISTENING DISTANCE@3'), links.join('; '));
-    assert.match(textOf(STATIC.workflows), /RT60 → critical distance → direct-to-reverberant ratio \(Room Acoustics Survey\)/);
+    // D41: Dc is a property of the room, not where the listener sits — fed in
+    // as LISTENING DISTANCE it always read 0 dB. It is no longer offered.
+    assert.ok(!links.includes('CRITICAL DISTANCE Dc@2>LISTENING DISTANCE@3'), links.join('; '));
+    assert.deepEqual(links, ['RT60@1>REVERBERATION TIME (RT60)@2', 'RT60@1>REVERBERATION TIME (RT60)@3']);
+    assert.match(textOf(STATIC.workflows), /RT60, then critical distance and the direct-to-reverberant ratio \(Room Acoustics Survey\)/);
     assert.ok(STATIC.workflows.tryThis.join(' ').includes('step 2 offers ⤵ USE RT60 (STEP 1)'));
     assert.doesNotMatch(textOf(STATIC.workflows), /speed of sound → distance delay/i);
   });
@@ -603,10 +621,10 @@ describe('5. wiring and the accuracy-chip decision', () => {
     assert.match(W, /const o = r\.outputs\.find\(\(x\): x is Extract<OutputVal, \{ value: number \}> => 'value' in x && Number\.isFinite\(x\.value\)\);/);
     assert.match(W, /const at4 = formatOutput\(o, 4, 0\);\s*const next = formatOutput\(o, 4, 1\);/);
     assert.match(W, /const at5 = formatOutput\(o, 5, 0\);\s*const at5Next = formatOutput\(o, 5, 1\);\s*const sendable = o\.chainable !== false;/);
-    assert.match(W, /next: next === at4 \? null : next,\s*at5Next: at5Next === at5 \? null : at5Next,\s*sendable,\s*sendTo: ws && sendable \? calcSendTarget\(ws, fn, o\.label, o\.quantity\) : null,\s*steps: r\.steps\.length > 0,/);
+    assert.match(W, /next: next === at4 \? null : next,\s*at5Next: at5Next === at5 \? null : at5Next,\s*sendable,\s*sendTo: ws && sendable \? calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) : null,\s*steps: r\.steps\.length > 0,/);
     assert.match(W, /calcWorkspaceGuide\(ws, fn, guideExample, capped\)/);
     // calcSendTarget is the screen's ⤵ USE rule: chainFits on each input.
-    assert.match(W, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f\);/);
+    assert.match(W, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\);/);
     // The answer itself uses the same formatter (formatOut → formatOutput), and SEND → the same chainable rule.
     assert.match(W, /return formatOutput\(o, sig, \(outUnit\[o\.label\] \?\? 0\) \+ extraIdx\);/);
     assert.match(W, /o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);

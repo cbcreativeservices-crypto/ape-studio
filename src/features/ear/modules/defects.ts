@@ -10,7 +10,7 @@ import {
   rmsDb, gainDb, type Mono,
 } from '../earDsp';
 import type { EarModule } from '../earTypes';
-import { rngFor, pickInt, drumPattern, present, type Rng } from './common';
+import { rngFor, pickInt, drumPattern, present, PEAK_CEILING, type Rng } from './common';
 
 /** Program bed: chord pad + soft drum pulse — a rendered surrogate. */
 function bed(rng: Rng): Mono {
@@ -37,9 +37,36 @@ type Defect = {
   core?: boolean; // in the L1 six
 };
 
-/** Add `sig` under `b` at mixDb relative to the bed's RMS. */
+/** The level every defect clip is presented at (dBFS RMS). */
+const PRESENT_DB = -20;
+
+const peakOf = (x: Mono): number => {
+  let m = 0;
+  for (let i = 0; i < x.length; i++) m = Math.max(m, Math.abs(x[i]));
+  return m;
+};
+
+/**
+ * Add `sig` under `b` at mixDb relative to the bed's RMS.
+ *
+ * D41 #26: a sparse defect (a 1–3-sample click, a pop, crackle) set by its RMS
+ * over the whole clip has a huge peak — +15…+19 dBFS once the mix is presented
+ * at −20 dBFS. Capping the finished mix would turn the BED down with it, and a
+ * quiet trial would give the answer away. So the defect's own gain is capped
+ * here: after present() lifts the bed to −20 dBFS RMS, bed peak + defect peak
+ * stays at or under −1 dBFS. The bed keeps its level; the click lands just
+ * under full scale, where encodeWav used to clamp it anyway. The floor (a
+ * quarter of the bed's peak) keeps a defect audible over an unusually peaky
+ * bed; present()'s own ceiling is the safety net for that rare case.
+ */
 function addUnder(b: Mono, sig: Mono, mixDb: number): Mono {
-  const g = Math.pow(10, (rmsDb(b) + mixDb - rmsDb(sig)) / 20);
+  let g = Math.pow(10, (rmsDb(b) + mixDb - rmsDb(sig)) / 20);
+  const toPresent = Math.pow(10, (PRESENT_DB - rmsDb(b)) / 20);
+  const bedPeak = peakOf(b), sigPeak = peakOf(sig);
+  if (sigPeak > 0) {
+    const room = Math.max(PEAK_CEILING / toPresent - bedPeak, 0.25 * bedPeak);
+    g = Math.min(g, room / sigPeak);
+  }
   const out = Float32Array.from(b);
   for (let i = 0; i < out.length && i < sig.length; i++) out[i] += sig[i] * g;
   return out;
@@ -170,8 +197,14 @@ export const M5_DEFECTS: EarModule = {
     const deck = level <= 1 ? DEFECTS.filter((d) => d.core) : DEFECTS;
     const idx = pickInt(rng, deck.length);
     const d = deck[idx];
+    // −20 dBFS RMS, but never past −1 dBFS peak: a lone click or a sparse
+    // crackle would otherwise be raised far over full scale and clamp (D41 #26).
+    // At L3–L4 addUnder() already keeps the defect's peak in range, so this
+    // ceiling is only a safety net there and must not turn the bed down.
     const buf =
-      level <= 2 ? present(d.solo(rng)) : present(d.onBed(bed(rng), rng, level === 3 ? -20 : -32));
+      level <= 2
+        ? present(d.solo(rng), PRESENT_DB, 8, PEAK_CEILING)
+        : present(d.onBed(bed(rng), rng, level === 3 ? -20 : -32), PRESENT_DB, 8, PEAK_CEILING);
     const near =
       level <= 2 && d.confusableWith
         ? d.confusableWith.map((k) => deck.findIndex((x) => x.key === k)).filter((i) => i >= 0)

@@ -229,6 +229,8 @@ describe('amplifier-class models (educational)', () => {
     assert.ok(idle.heat > 0.4); // heat does NOT come from output power alone
     const driven = simulateLinearClass('A', 1, 0);
     assert.equal(driven.crossoverNotch, false);
+    // device heat = supply − load: hottest at idle (D41 #31/#32)
+    for (const d of [0.25, 0.5, 0.8, 1]) assert.ok(idle.heat >= simulateLinearClass('A', d, 0).heat, `idle vs ${d}`);
     for (let i = 0; i < WAVE_N; i++) assert.ok(driven.iPos[i] >= 0);
   });
   it('Class B has a crossover notch AT zero crossing, low idle current', () => {

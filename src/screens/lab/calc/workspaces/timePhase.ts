@@ -56,6 +56,7 @@ const WS_DISTDELAY: Workspace = {
       key: 'dist',
       name: 'DISTANCE',
       quantity: 'length',
+      meaning: 'length:path',
       placeholder: '30',
       help: 'The one-way path the sound travels — speaker to listener, source to mic.',
     },
@@ -72,6 +73,7 @@ const WS_DISTDELAY: Workspace = {
       key: 'delay',
       name: 'DELAY TIME',
       quantity: 'time',
+      meaning: ['time:delay', 'time:latency'],
       defaultUnit: 'ms',
       placeholder: '87.4',
       help: 'A time offset — delay-line setting, measured arrival difference, reported latency.',
@@ -80,6 +82,7 @@ const WS_DISTDELAY: Workspace = {
       key: 'smp',
       name: 'SAMPLES',
       quantity: 'samples',
+      meaning: 'samples',
       placeholder: '4196',
       help: 'A count of samples — plugin delay report, DSP delay setting, region offset.',
     },
@@ -108,7 +111,7 @@ const WS_DISTDELAY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const t = n(v.dist) / c;
         return [
-          { label: 'DELAY', value: t, quantity: 'time', unit: 'ms' },
+          { label: 'DELAY', value: t, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'DELAY (µs)', value: t, quantity: 'time', unit: 'us', chainable: false },
           { label: 'SPEED OF SOUND USED', value: c, quantity: 'speed', chainable: false },
         ];
@@ -152,7 +155,7 @@ const WS_DISTDELAY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = c * n(v.delay);
         return [
-          { label: 'DISTANCE', value: d, quantity: 'length' },
+          { label: 'DISTANCE', value: d, quantity: 'length', meaning: 'length:path' },
           { label: 'DISTANCE (ft)', value: d, quantity: 'length', unit: 'ft', chainable: false },
           { label: 'SPEED OF SOUND USED', value: c, quantity: 'speed', chainable: false },
         ];
@@ -179,9 +182,9 @@ const WS_DISTDELAY: Workspace = {
         const t = n(v.smp) / n(v.sr);
         const c = speedOfSoundAir(n(v.temp));
         return [
-          { label: 'TIME', value: t, quantity: 'time', unit: 'ms' },
+          { label: 'TIME', value: t, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'TIME (µs)', value: t, quantity: 'time', unit: 'us', chainable: false },
-          { label: 'EQUIVALENT DISTANCE IN AIR', value: t * c, quantity: 'length' },
+          { label: 'EQUIVALENT DISTANCE IN AIR', value: t * c, quantity: 'length', meaning: 'length:path' },
         ];
       },
       steps: (v) => {
@@ -207,7 +210,7 @@ const WS_DISTDELAY: Workspace = {
       compute: (v) => {
         const N = denoise(n(v.delay) * n(v.sr));
         return [
-          { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
+          { label: 'EXACT SAMPLES', value: N, quantity: 'samples', meaning: 'samples:delay' },
           { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples (error ${fmt(((Math.round(N) - N) / n(v.sr)) * 1e6)} µs)` },
           { label: 'ROUNDED DOWN / UP', text: `${fmtInt(Math.floor(N))} / ${fmtInt(Math.ceil(N))} samples` },
         ];
@@ -281,6 +284,7 @@ const WS_PHASE: Workspace = {
       key: 'f',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      meaning: 'frequency:point',
       positive: 'FREQUENCY must be above 0 — at 0 Hz there is no cycle, so a delay has no phase angle.',
       placeholder: '1000',
       help: 'The frequency at which the phase relationship is evaluated.',
@@ -289,6 +293,7 @@ const WS_PHASE: Workspace = {
       key: 'dt',
       name: 'TIME OFFSET Δt',
       quantity: 'time',
+      meaning: ['time:delay', 'time:latency:roundtrip', 'time:latency:processing'],
       defaultUnit: 'ms',
       placeholder: '0.5',
       help: 'The arrival-time difference between the two signals.',
@@ -297,6 +302,7 @@ const WS_PHASE: Workspace = {
       key: 'phi',
       name: 'PHASE ANGLE',
       quantity: 'angle',
+      meaning: 'angle:phase',
       signed: true,
       placeholder: '90',
       help: 'Phase offset in degrees at the chosen frequency.',
@@ -305,6 +311,7 @@ const WS_PHASE: Workspace = {
       key: 'pathDiff',
       name: 'PATH DIFFERENCE',
       quantity: 'length',
+      meaning: 'length:pathdiff',
       placeholder: '0.17',
       help: 'How much farther one arrival travels than the other.',
     },
@@ -332,7 +339,7 @@ const WS_PHASE: Workspace = {
         const total = 360 * denoise(n(v.f) * n(v.dt));
         const cycles = Math.floor(snapWhole(total / 360));
         return [
-          { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle' },
+          { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle', meaning: 'angle:phase' },
           { label: 'FULL CYCLES LATE', value: cycles, quantity: 'number', chainable: false },
           { label: 'TOTAL PHASE ROTATION', value: total, quantity: 'angle', chainable: false },
         ];
@@ -364,7 +371,7 @@ const WS_PHASE: Workspace = {
         const dt = wrap360(n(v.phi)) / (360 * n(v.f));
         const cycle = 1 / n(v.f);
         return [
-          { label: 'SMALLEST TIME OFFSET', value: dt, quantity: 'time', unit: 'ms' },
+          { label: 'SMALLEST TIME OFFSET', value: dt, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'ALSO CONSISTENT', text: `${fmt((dt + cycle) * 1000)} ms, ${fmt((dt + 2 * cycle) * 1000)} ms … (add ${fmt(cycle * 1000)} ms per hidden cycle)` },
           { label: 'ONE FULL CYCLE AT THIS f', value: cycle, quantity: 'time', unit: 'ms', chainable: false },
         ];
@@ -396,8 +403,8 @@ const WS_PHASE: Workspace = {
         const dt = n(v.pathDiff) / c;
         const total = 360 * n(v.f) * dt;
         return [
-          { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle' },
-          { label: 'TIME OFFSET', value: dt, quantity: 'time', unit: 'ms' },
+          { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle', meaning: 'angle:phase' },
+          { label: 'TIME OFFSET', value: dt, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'TOTAL PHASE ROTATION', value: total, quantity: 'angle', chainable: false },
         ];
       },
@@ -426,9 +433,9 @@ const WS_PHASE: Workspace = {
       compute: (v) => {
         const dt = n(v.dt);
         return [
-          { label: 'FIRST 90° FREQUENCY', value: 1 / (4 * dt), quantity: 'frequency' },
-          { label: 'FIRST 180° FREQUENCY (first cancel)', value: 1 / (2 * dt), quantity: 'frequency' },
-          { label: 'FIRST 360° FREQUENCY (first re-sum)', value: 1 / dt, quantity: 'frequency' },
+          { label: 'FIRST 90° FREQUENCY', value: 1 / (4 * dt), quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'FIRST 180° FREQUENCY (first cancel)', value: 1 / (2 * dt), quantity: 'frequency', meaning: 'frequency:point' },
+          { label: 'FIRST 360° FREQUENCY (first re-sum)', value: 1 / dt, quantity: 'frequency', meaning: 'frequency:point' },
         ];
       },
       steps: (v) => {
@@ -490,6 +497,7 @@ const WS_COMB: Workspace = {
       key: 'dt',
       name: 'TIME DELAY Δt',
       quantity: 'time',
+      meaning: ['time:delay', 'time:latency:roundtrip', 'time:latency:processing'],
       defaultUnit: 'ms',
       placeholder: '0.5',
       help: 'How far behind the direct sound the second arrival lands.',
@@ -498,6 +506,7 @@ const WS_COMB: Workspace = {
       key: 'pathDiff',
       name: 'PATH-LENGTH DIFFERENCE',
       quantity: 'length',
+      meaning: 'length:pathdiff',
       placeholder: '0.17',
       help: 'Extra distance the second arrival travels (reflected path minus direct path).',
     },
@@ -528,7 +537,7 @@ const WS_COMB: Workspace = {
         // path difference, never the generic "check for zeros" error.
         if (dt === 0) return [{ label: 'COMB FILTERING', text: NO_COMB_NO_DELAY, refusal: true }];
         return [
-          { label: 'FIRST NULL', value: 1 / (2 * dt), quantity: 'frequency' },
+          { label: 'FIRST NULL', value: 1 / (2 * dt), quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'NULL/NULL SPACING', value: 1 / dt, quantity: 'frequency' },
           { label: 'FIRST PEAK ABOVE 0 Hz', value: 1 / dt, quantity: 'frequency', chainable: false },
         ];
@@ -573,15 +582,15 @@ const WS_COMB: Workspace = {
         // as "—" beside a confident 0 ms delay, and a table of "— kHz" rows.
         if (n(v.pathDiff) === 0) {
           return [
-            { label: 'EQUIVALENT DELAY', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'EQUIVALENT DELAY', value: 0, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
             { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', chainable: false },
             { label: 'COMB FILTERING', text: NO_COMB_SAME_PATH, refusal: true },
           ];
         }
         return [
-          { label: 'EQUIVALENT DELAY', value: dt, quantity: 'time', unit: 'ms' },
+          { label: 'EQUIVALENT DELAY', value: dt, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
           { label: 'PATH DIFFERENCE', value: n(v.pathDiff), quantity: 'length', chainable: false },
-          { label: 'FIRST NULL', value: 1 / (2 * dt), quantity: 'frequency' },
+          { label: 'FIRST NULL', value: 1 / (2 * dt), quantity: 'frequency', meaning: 'frequency:point' },
           { label: 'NULL/NULL SPACING', value: 1 / dt, quantity: 'frequency' },
         ];
       },
@@ -690,6 +699,7 @@ const WS_LATENCY: Workspace = {
       key: 'proc',
       name: 'EXTRA PROCESSING',
       quantity: 'time',
+      meaning: 'time:latency:processing',
       defaultUnit: 'ms',
       placeholder: '1.5',
       help: 'Converters + plugin/DSP latency in the monitor path (0 if none).',
@@ -698,6 +708,7 @@ const WS_LATENCY: Workspace = {
       key: 'smp',
       name: 'SAMPLES',
       quantity: 'samples',
+      meaning: 'samples',
       placeholder: '328',
       help: 'A sample count to convert to time.',
     },
@@ -705,6 +716,7 @@ const WS_LATENCY: Workspace = {
       key: 't',
       name: 'TIME',
       quantity: 'time',
+      meaning: 'time',
       defaultUnit: 'ms',
       placeholder: '6.8',
       help: 'A time to convert to samples.',
@@ -723,7 +735,7 @@ const WS_LATENCY: Workspace = {
       compute: (v) => {
         const t = n(v.buf) / n(v.sr);
         return [
-          { label: 'BUFFER LATENCY', value: t, quantity: 'time', unit: 'ms' },
+          { label: 'BUFFER LATENCY', value: t, quantity: 'time', meaning: 'time:latency:buffer', unit: 'ms' },
           { label: 'BUFFERS PER SECOND', value: 1 / t, quantity: 'number', chainable: false },
         ];
       },
@@ -752,7 +764,7 @@ const WS_LATENCY: Workspace = {
         const tout = n(v.outBuf) / sr;
         const rt = tin + tout + n(v.proc);
         return [
-          { label: 'ROUND-TRIP LATENCY', value: rt, quantity: 'time', unit: 'ms' },
+          { label: 'ROUND-TRIP LATENCY', value: rt, quantity: 'time', meaning: 'time:latency:roundtrip', unit: 'ms' },
           { label: 'ROUND-TRIP IN SAMPLES', value: rt * sr, quantity: 'samples', chainable: false },
           // Calc accuracy audit (2026-10-04): this read "ONE-WAY (INPUT SIDE)"
           // = input buffer + HALF the processing time — a 50/50 split of the
@@ -784,7 +796,7 @@ const WS_LATENCY: Workspace = {
         'A plain sample-count-to-milliseconds conversion — reading a plugin’s reported delay, a region offset, or a loopback measurement as a time.',
       keySymbols: ['/'],
       compute: (v) => [
-        { label: 'TIME', value: n(v.smp) / n(v.sr), quantity: 'time', unit: 'ms' },
+        { label: 'TIME', value: n(v.smp) / n(v.sr), quantity: 'time', meaning: 'time:latency', unit: 'ms' },
       ],
       steps: (v) => [
         `t = ${fmtCount(n(v.smp))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.smp) / n(v.sr)) * 1000)} ms.`,
@@ -802,7 +814,7 @@ const WS_LATENCY: Workspace = {
       compute: (v) => {
         const N = denoise(n(v.t) * n(v.sr));
         return [
-          { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
+          { label: 'EXACT SAMPLES', value: N, quantity: 'samples', meaning: 'samples:latency' },
           { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples` }, // fmtInt: NaN/∞ read as — (bug hunt 2026-09-29)
         ];
       },
@@ -875,6 +887,7 @@ const WS_FFT: Workspace = {
       key: 'fInterest',
       name: 'FREQUENCY OF INTEREST',
       quantity: 'frequency',
+      meaning: 'frequency:point',
       placeholder: '100',
       help: 'A frequency whose cycles you want to count inside the analysis window.',
     },
@@ -905,7 +918,7 @@ const WS_FFT: Workspace = {
         if (!(N > 0) || !(sr > 0)) throw new Error('FFT size and sample rate must be greater than zero');
         return [
           { label: 'BIN SPACING', value: sr / N, quantity: 'frequency' },
-          { label: 'WINDOW DURATION', value: N / sr, quantity: 'time', unit: 'ms' },
+          { label: 'WINDOW DURATION', value: N / sr, quantity: 'time', meaning: 'time:window', unit: 'ms' },
           { label: 'CYCLES OF YOUR FREQUENCY IN THE WINDOW', value: (n(v.fInterest) * N) / sr, quantity: 'number', chainable: false },
         ];
       },
@@ -951,7 +964,7 @@ const WS_FFT: Workspace = {
           { label: 'MINIMUM FFT SIZE', value: Math.ceil(snapWhole(N)), quantity: 'samples', chainable: false },
           { label: 'NEXT POWER OF TWO', text: `${fmtInt(pow2)} points` },
           { label: 'ACTUAL RESOLUTION AT THAT SIZE', value: sr / pow2, quantity: 'frequency' },
-          { label: 'WINDOW AT THAT SIZE', value: pow2 / sr, quantity: 'time', unit: 'ms' },
+          { label: 'WINDOW AT THAT SIZE', value: pow2 / sr, quantity: 'time', meaning: 'time:window', unit: 'ms' },
         ];
       },
       steps: (v) => {
@@ -988,7 +1001,7 @@ const WS_FFT: Workspace = {
         const T = N / sr;
         return [
           { label: 'BIN SPACING', value: df, quantity: 'frequency' },
-          { label: 'WINDOW DURATION', value: T, quantity: 'time', unit: 'ms' },
+          { label: 'WINDOW DURATION', value: T, quantity: 'time', meaning: 'time:window', unit: 'ms' },
           {
             label: 'THE TRADE',
             text:

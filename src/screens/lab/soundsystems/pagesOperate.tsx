@@ -13,7 +13,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt } from '../tuning/components/primitives';
-import { computeGainChain, firstSequenceError, gainVerdict, gainVerdictCopy, isSequenceCorrect, POWER_DOWN, POWER_UP, type GainSettings, type GainStageId, type PowerStep } from '../../../features/soundsystems/operate';
+import { computeGainChain, firstSequenceError, gainVerdict, isSequenceCorrect, POWER_DOWN, POWER_UP, type GainSettings, type GainStageId, type PowerStep } from '../../../features/soundsystems/operate';
 import { markOperateDone } from '../../../features/soundsystems/progress';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import type { DockParam } from '../rack/rackTypes';
@@ -22,7 +22,7 @@ import { ChainMeterKey, ChainMeterStage } from './art/ChainMeter';
 import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { FeedbackLoop, StageboxStrip, type LineReading } from './art/diagrams';
 import { dbFader, fmtDb } from './consoleDock';
-import { gainBezel, gainStageParam } from './gainDock';
+import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_DB } from './gainDock';
 import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { usePageMemory } from './pageMemory';
@@ -326,10 +326,12 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
   const [stage, setStage] = useState<GainStageId>('preamp');
   const chain = computeGainChain(settings);
   const verdict = gainVerdict(chain);
-  const headroomOk = chain.every((n) => n.headroomDb >= 12);
+  const headroomOk = chain.every((n) => n.headroomDb >= HEADROOM_GOOD_DB);
   const done = verdict === 'ok' && headroomOk;
+  // The screen reads TIGHT below the headroom line, as in LEARN (D41 #24); credit is unchanged.
+  const reading = gainReading(chain, verdict);
   useOperateCredit('gain', done, ctx);
-  const goals = [{ label: 'No stage clipping', hit: !chain.some((n) => n.clipped) }, { label: 'At least 12 dB headroom at every stage', hit: headroomOk }, { label: 'Verdict OK — unity through the middle', hit: verdict === 'ok' }];
+  const goals = [{ label: 'No stage clipping', hit: !chain.some((n) => n.clipped) }, { label: 'At least 12 dB headroom at every stage', hit: headroomOk }, { label: 'Verdict OK — unity through the middle', hit: reading === 'ok' }];
   const latched = useVisitGoals(ctx, goals);
   const params: DockParam[] = [gainStageParam(settings, setSettings, stage, setStage)];
   return (
@@ -339,12 +341,12 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
         badge: 'GAIN CHAIN — ILLUSTRATIVE MODEL · teaching values, not a specification',
         initialParam: 'stage',
         hideDragTag: true,
-        bezel: gainBezel(chain, verdict),
+        bezel: gainBezel(chain, reading),
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
       caption="The lane is the PREAMP: ride it down until its bracket shows headroom. Then tap the key, pick each later stage, return it to unity (double-tap), and attenuate the AMP so it is the last thing to clip."
-      wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy'}>{gainVerdictCopy(verdict, chain)}</VerdictLine>}
+      wellTop={<VerdictLine ok={reading === 'ok'} warn={reading === 'quiet' || reading === 'noisy' || reading === 'tight'}>{gainReadingCopy(reading, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>OPERATE · ESTABLISH GAIN STRUCTURE</ChapterTag>
       <Body>The opposite fault from the LEARN chapter: the preamp is cranked and every later stage is pulling it back down. The first CLIP indicator is lit at the preamp, and every meter after it carries the ↑ — the distortion is inherited.</Body>

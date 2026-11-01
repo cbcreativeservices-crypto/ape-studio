@@ -72,15 +72,15 @@ describe('dynamics follower — which constant drives which edge', () => {
   });
 
   test('the gate lab DEFAULT still opens — the 2026-09-11 regression', () => {
-    // ⚠️ ATTACK IS 10, NOT 1. This test was written pinned to 1 ms, and the very
-    // next commit changed the gate's drawn attack to 10 to match the engine's
-    // own default (Effects.hpp:421). Pinned to the retired value it still
-    // passed, while no longer guarding the thing its name promises — exactly
-    // the "test restates the implementation" trap it was written to avoid.
-    // Release 100 ms is the lab's default chip.
+    // ATTACK IS 1 ms (D41 fix 2026-11-01): the gate lab now WRITES param 3 =
+    // 1 ms (gateConfig `fixed`) and draws the same value. Before, it inherited
+    // the engine's 10 ms default, which let the 5 ms click reach only
+    // −37.6 dBFS in the detector, so the real gate never opened at −35. The
+    // source pin below checks both the drawn and the written value, so this
+    // test cannot drift from the config again. Release 100 ms is the default chip.
     // 60 ms at this helper's 1 ms step: 40*exp(-6) = 0.10 dB. (The lab's own
     // step is ~8 ms, so on screen it is open within a few pixels of the hit.)
-    const open = settle(40, 0, 'gate', 10, 100, 60);
+    const open = settle(40, 0, 'gate', 1, 100, 60);
     assert.ok(open < 0.5, `at the lab's default the gate must open on the hit; got ${open.toFixed(2)} dB`);
   });
 
@@ -88,7 +88,8 @@ describe('dynamics follower — which constant drives which edge', () => {
     const here2 = dirname(fileURLToPath(import.meta.url));
     const cfg = readFileSync(join(here2, '..', 'src', 'screens', 'lab', 'fxLabConfigs.tsx'), 'utf8');
     const gate = cfg.slice(cfg.indexOf("mode: 'gate'"));
-    assert.match(gate.slice(0, 1200), /attackMs: 10,/, 'the gate anim must draw the engine default of 10 ms');
+    assert.match(gate.slice(0, 1200), /attackMs: 1,/, 'the gate anim must draw the 1 ms attack the lab writes');
+    assert.match(cfg, /fixed: \[\{ paramId: P\.attackMs, value: 1 \}\],/, 'the gate lab writes that 1 ms to the engine');
   });
 
   test('a COMPRESSOR is the other way round: gr RISING is its attack', () => {

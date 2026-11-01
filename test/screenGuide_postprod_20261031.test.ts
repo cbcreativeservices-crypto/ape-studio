@@ -94,7 +94,8 @@ runProductionGuideSuite({
       guide: 'media', at: 2,
       steps: [
         { set: { 'media.source_still_intact': 'no', 'media.verify_method': ['checksum'], 'media.verify_coverage': 'all' }, stage: 'media', out: ['Counting files is not verifying them'] },
-        { set: { 'media.verify_method': ['file_count'] }, stage: 'media', in: ['Counting files is not verifying them'] },
+        // D41 bug #19: a file count alone is not proof, so the cleared-sources blocker returns.
+        { set: { 'media.verify_method': ['file_count'] }, stage: 'media', in: ['Counting files is not verifying them', 'Sources were cleared before the copy was proven'], blocked: true },
       ],
       options: [['media', 'verify_method', 'checksum'], ['media', 'verify_method', 'file_count']],
       says: ['Counting files is not verifying them'],

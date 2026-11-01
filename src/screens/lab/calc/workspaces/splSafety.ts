@@ -214,11 +214,11 @@ const WS_SPL_DIST: Workspace = {
     'never as a venue prediction.',
   glossary: ['Sound Pressure Level', 'Decibel', 'Inverse Square Law', 'Free field', 'Critical distance'],
   fields: [
-    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'The measured or specified level at the reference distance.' },
-    { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', positive: true, warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
-    { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', placeholder: '8', help: 'The distance where you want to know (or set) the level.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'The measured or specified level at the reference distance.' },
+    { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', meaning: 'length:path', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', positive: true, warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
+    { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', meaning: 'length:path', placeholder: '8', help: 'The distance where you want to know (or set) the level.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'rate', name: 'FALLOFF PER DOUBLING', quantity: 'db', nonNegative: true, placeholder: '4.5', help: 'dB lost each time distance doubles: 6 = point source, 3 = ideal line source, real arrays land between.' },
-    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
+    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', meaning: 'spl:target', signed: true, ...SPL_FIELD_RANGE, placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
   ],
   functions: [
     {
@@ -236,7 +236,7 @@ const WS_SPL_DIST: Workspace = {
       compute: (v) => {
         const drop = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
-          { label: 'LEVEL AT d₂', value: n(v.l1) - drop, quantity: 'spl' },
+          { label: 'LEVEL AT d₂', value: n(v.l1) - drop, quantity: 'spl', meaning: 'spl:level' },
           { label: 'CHANGE', value: -drop, quantity: 'db', chainable: false },
         ];
       },
@@ -265,7 +265,7 @@ const WS_SPL_DIST: Workspace = {
       compute: (v) => {
         const drop = 10 * Math.log10(n(v.d2) / n(v.d1));
         return [
-          { label: 'LEVEL AT d₂ (idealized line source)', value: n(v.l1) - drop, quantity: 'spl' },
+          { label: 'LEVEL AT d₂ (idealized line source)', value: n(v.l1) - drop, quantity: 'spl', meaning: 'spl:level' },
           { label: 'CHANGE', value: -drop, quantity: 'db', chainable: false },
         ];
       },
@@ -293,7 +293,7 @@ const WS_SPL_DIST: Workspace = {
       compute: (v) => {
         const drop = n(v.rate) * Math.log2(n(v.d2) / n(v.d1));
         return [
-          { label: 'LEVEL AT d₂', value: n(v.l1) - drop, quantity: 'spl' },
+          { label: 'LEVEL AT d₂', value: n(v.l1) - drop, quantity: 'spl', meaning: 'spl:level' },
           { label: 'CHANGE', value: -drop, quantity: 'db', chainable: false },
         ];
       },
@@ -327,7 +327,7 @@ const WS_SPL_DIST: Workspace = {
       compute: (v) => {
         const gain = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
-          { label: 'REQUIRED LEVEL AT d₁', value: n(v.lTarget) + gain, quantity: 'spl' },
+          { label: 'REQUIRED LEVEL AT d₁', value: n(v.lTarget) + gain, quantity: 'spl', meaning: 'spl:target' },
           { label: 'DISTANCE LOSS TO COVER', value: gain, quantity: 'db', chainable: false },
         ];
       },
@@ -375,11 +375,11 @@ const WS_SPL_ADD: Workspace = {
   glossary: ['Sound Pressure Level', 'Decibel', 'Incoherent Summation', 'Phase', 'Correlation'],
   fields: [
     { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', signed: true, placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
-    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
+    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
     { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', nonNegative: true, integer: true, placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
     { key: 'delta', name: 'TARGET INCREASE', quantity: 'db', nonNegative: true, placeholder: '6', help: 'How many dB louder than ONE source you want the combined total to be.' },
-    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'Level of the first source at the listening position.' },
-    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '84', help: 'Level of the second source at the listening position.' },
+    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'Level of the first source at the listening position.' },
+    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '84', help: 'Level of the second source at the listening position.' },
   ],
   functions: [
     {
@@ -401,7 +401,7 @@ const WS_SPL_ADD: Workspace = {
         const tot = dbSum(ls);
         const loudest = Math.max(...ls);
         return [
-          { label: 'COMBINED LEVEL', value: tot, quantity: 'spl' },
+          { label: 'COMBINED LEVEL', value: tot, quantity: 'spl', meaning: 'spl:level' },
           {
             label: 'INCREASE OVER LOUDEST',
             text: `The sum sits ${fmt(tot - loudest)} dB above the loudest single source (${fmt(loudest)} dB SPL).`,
@@ -446,7 +446,7 @@ const WS_SPL_ADD: Workspace = {
       compute: (v) => {
         const gain = 10 * Math.log10(n(v.count));
         return [
-          { label: 'COMBINED LEVEL', value: n(v.lvl) + gain, quantity: 'spl' },
+          { label: 'COMBINED LEVEL', value: n(v.lvl) + gain, quantity: 'spl', meaning: 'spl:level' },
           { label: 'GAIN OVER ONE SOURCE', value: gain, quantity: 'db', chainable: false },
         ];
       },
@@ -520,7 +520,7 @@ const WS_SPL_ADD: Workspace = {
             ? `The quieter source is ${fmt(diff)} dB down — it adds only ${fmt(tot - Math.max(la, lb))} dB (<0.5 dB). The louder source dominates; muting the quiet one barely moves the meter.`
             : `The sources are within ${fmt(diff)} dB of each other, so both matter: the quieter one adds ${fmt(tot - Math.max(la, lb))} dB to the louder.`;
         return [
-          { label: 'COMBINED LEVEL', value: tot, quantity: 'spl' },
+          { label: 'COMBINED LEVEL', value: tot, quantity: 'spl', meaning: 'spl:level' },
           { label: 'VERDICT', text: verdict },
         ];
       },
@@ -574,7 +574,7 @@ const WS_DOSE: Workspace = {
   glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure/Dose', 'Exchange rate'],
   fields: [
     // dBA, not dB SPL (audit R2, 2026-10-23): the criterion is A-weighted.
-    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', unitIds: ['dba'], defaultUnit: 'dba', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
+    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', meaning: 'spl:level', unitIds: ['dba'], defaultUnit: 'dba', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
     { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', signed: true, placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },
     { key: 'doseMins', name: 'INTERVAL DURATIONS', quantity: 'list', nonNegative: true, placeholder: '240, 90, 30', help: 'Duration of each interval in MINUTES, comma-separated — same order as the levels.' },
   ],
@@ -603,7 +603,7 @@ const WS_DOSE: Workspace = {
         return [
           // Where NIOSH stops, said as OSHA's edges are (calc follow-up 2026-10-03).
           ...nioshEdgeWarnings([n(v.lex)], [1]),
-          { label: 'ALLOWABLE TIME (85 dBA / 3 dB / 8 h)', value: T * 60, quantity: 'time', unit: 'min' },
+          { label: 'ALLOWABLE TIME (85 dBA / 3 dB / 8 h)', value: T * 60, quantity: 'time', meaning: 'time:exposure', unit: 'min' },
           {
             label: 'CRITERION',
             text: 'Computed under: 85 dBA criterion · 3 dB exchange rate · 8 h reference. Every 3 dB above 85 halves the time.',
@@ -644,7 +644,7 @@ const WS_DOSE: Workspace = {
         return [
           // The same honesty as the dose (owner ruling 2026-10-03): one level.
           ...oshaEdgeWarnings([n(v.lex)], [1]),
-          { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', value: T * 60, quantity: 'time', unit: 'min' },
+          { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', value: T * 60, quantity: 'time', meaning: 'time:exposure', unit: 'min' },
           ...(n(v.lex) < OSHA_PEL_THRESHOLD ? [{ label: 'WHICH DOSE', text: OSHA_ACTION_ONLY_TEXT }] : []),
           {
             label: 'CRITERION',
@@ -865,7 +865,7 @@ const WS_DOSE: Workspace = {
         if (!(tt > 0)) return [...check, { label: 'NO TIME TO AVERAGE', text: LEQ_NO_TIME, refusal: true }];
         return [
           ...check,
-          { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl', unit: 'dba' },
+          { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl', meaning: 'spl:level', unit: 'dba' },
           { label: 'TOTAL DURATION', value: tt * 60, quantity: 'time', unit: 'min', chainable: false },
         ];
       },
@@ -920,8 +920,8 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, ...MIC_SENS_FIELD('MIC SENSITIVITY (mV/Pa)'), placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Most dynamics ≈ 1–3 mV/Pa; most condensers ≈ 5–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', meaning: 'number:mic-sens', nonNegative: true, ...MIC_SENS_FIELD('MIC SENSITIVITY (mV/Pa)'), placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Most dynamics ≈ 1–3 mV/Pa; most condensers ≈ 5–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
     // to the recommended gain — peaks then clipped 12 dB past the target.
@@ -944,9 +944,9 @@ const WS_MIC_GAIN: Workspace = {
         const p = paFromSpl(n(v.spl));
         const volts = (n(v.sens) / 1000) * p;
         return [
-          { label: 'OUTPUT VOLTAGE', value: volts, quantity: 'voltage', unit: 'mv' },
+          { label: 'OUTPUT VOLTAGE', value: volts, quantity: 'voltage', meaning: 'voltage:rms', unit: 'mv' },
           { label: 'OUTPUT LEVEL (dBV)', value: 20 * Math.log10(volts), quantity: 'db', chainable: false },
-          { label: 'OUTPUT LEVEL (dBu)', value: 20 * Math.log10(volts / V_REF_DBU), quantity: 'db' },
+          { label: 'OUTPUT LEVEL (dBu)', value: 20 * Math.log10(volts / V_REF_DBU), quantity: 'db', meaning: 'db:level' },
         ];
       },
       steps: (v) => {
@@ -982,10 +982,10 @@ const WS_MIC_GAIN: Workspace = {
         if (pad) return [{ label: 'NEEDS A PAD, NOT GAIN', text: pad, refusal: true }];
         const padForHeadroom = headroomNeedsPad(required, n(v.headroom));
         return [
-          { label: 'GAIN TO HIT TARGET (dB)', value: required, quantity: 'db' },
+          { label: 'GAIN TO HIT TARGET (dB)', value: required, quantity: 'db', meaning: 'db:gain' },
           padForHeadroom
             ? { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, text: padForHeadroom }
-            : { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db' },
+            : { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db', meaning: 'db:gain' },
           {
             label: 'EXPECTED LEVELS',
             text: `Mic output ≈ ${fmt(micDbu)} dBu. At the recommended gain the average lands at ${fmt(n(v.target) - n(v.headroom))} dBu; peaks ${fmt(n(v.headroom))} dB above the entered SPL just reach the ${fmt(n(v.target))} dBu target.`,
@@ -1108,7 +1108,7 @@ const WS_LIMITER: Workspace = {
       compute: (v) => {
         const volts = Math.sqrt(n(v.pwr) * n(v.z));
         return [
-          { label: 'MAX CONTINUOUS VOLTAGE', value: volts, quantity: 'voltage' },
+          { label: 'MAX CONTINUOUS VOLTAGE', value: volts, quantity: 'voltage', meaning: 'voltage:rms' },
           { label: 'AS A LEVEL (dBu)', value: 20 * Math.log10(volts / V_REF_DBU), quantity: 'db', chainable: false },
         ];
       },
@@ -1142,7 +1142,7 @@ const WS_LIMITER: Workspace = {
         const thr = spkDbu - n(v.ampGain) - n(v.margin);
         const thrV = V_REF_DBU * Math.pow(10, thr / 20);
         return [
-          { label: 'THRESHOLD (dBu)', value: thr, quantity: 'db' },
+          { label: 'THRESHOLD (dBu)', value: thr, quantity: 'db', meaning: 'db:level' },
           { label: 'THRESHOLD (dBV)', value: 20 * Math.log10(thrV), quantity: 'db', chainable: false },
           { label: 'THRESHOLD VOLTAGE', value: thrV, quantity: 'voltage', chainable: false },
           {
