@@ -71,18 +71,14 @@ export default function Page() {
 
       <Section title="The whole field of sound">
         <p>
-          The curriculum and glossary are built for everyone who works seriously
-          with sound — not only recording, production and live sound, but
-          broadcast, bioacoustics and nature recording, acoustics and
-          measurement, audio forensics, acoustic imaging, transducer design,
-          electronics, repair, consumer audio, vacuum tubes and emerging
-          technologies. Safety, grounding and electrical awareness, and
-          workplace skills are required for every credential; hearing
-          protection is taught alongside them.
+          The curriculum and glossary go well beyond recording and live sound.
+          They reach into broadcast, nature and wildlife recording, acoustics
+          and measurement, scientific research, audio forensics, electronics
+          and repair, consumer audio, vacuum tubes and emerging technologies.
         </p>
         <p>
-          That breadth is intentional: people working with sound in very
-          different settings should recognize that their work belongs here.
+          That breadth is intentional. Wherever you work with sound, your work
+          belongs here.
         </p>
       </Section>
 
