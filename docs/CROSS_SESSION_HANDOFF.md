@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 11:55 · ccode · 59475f84
+changed: Website About: clearer hearing-protection sentence
+affects other side: nothing — website copy only, not yet published
+needs: nothing
+
+
 ### 2026-11-01 11:54 · ccode · d2d57e5a
 changed: Website: Academy mission + what training means for employers (owner brief 2026-11-01)
 affects other side: nothing — website copy only, not yet published
