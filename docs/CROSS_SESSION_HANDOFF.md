@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 09:44 · ccode · 3e2f3df1
+changed: nightly: live server snapshot 2026-11-01
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-11-01 01:31 · ccode · 727b7510
 changed: Docs: D41 lessons + AGENTS rule (engine params persist; native fix != OTA; shell change -> guide ratchet)
 affects other side: nothing — docs/rules only, no app or server change
