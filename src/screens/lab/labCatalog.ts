@@ -582,13 +582,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     // Count the CALCULATIONS (functions), not the workspaces (fix 2026-08-31: the row
     // said "55 Calculators" over 163 ratified functions — 166 as of
     // 2026-10-26, per Comp A; the number shown is always computed). Labelled
-    // "Calculations" (2026-10-31) so it no longer shares the word with the
-    // Calculator Lab home tiles, which count calculators (workspaces). A getter, so the
+    // "Calculators": 166 calculators is the owner's term everywhere (app, ads,
+    // website; owner 2026-11-01), and the Calculator Lab home tiles total it too. A getter, so the
     // calc registry loads when the count is first shown, not at app start.
     get count() {
       return calcFunctionCount();
     },
-    countLabel: (n) => `${n} Calculations`,
+    countLabel: (n) => `${n} Calculators`,
     hubBlurb: 'SPL, dB, speaker power, delay, wavelength, room modes, cable loss, Ohm’s law, digital audio, coverage — chained.',
   },
 ];
@@ -645,7 +645,7 @@ export function categoryEntries(cat: LabCategory): LabLeaf[] {
   return categoryLabRows(cat);
 }
 
-/** The card's count label, e.g. "5 Labs" / "166 Calculations". */
+/** The card's count label, e.g. "5 Labs" / "166 Calculators". */
 export function categoryCountLabel(cat: LabCategory): string {
   const n = categoryCount(cat);
   return (cat.countLabel ?? labsPlural)(n);

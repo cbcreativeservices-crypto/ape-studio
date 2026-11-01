@@ -5,8 +5,8 @@
  * Screens the learner reaches, one guide each:
  *   home            CalcLabScreen — the ten category tiles, workflows, chain
  *   workspace       CalcWorkspaceScreen — BUILT per calculator and per
- *                   calculation (calcWorkspaceGuide below): 56 calculators ×
- *                   166 calculations share one screen, so the guide quotes that
+ *                   calculation (calcWorkspaceGuide below): 56 calculator pages ×
+ *                   166 calculators share one screen, so the guide quotes that
  *                   calculator's own on-screen names (its FUNCTION, its INPUTS,
  *                   its FORMULA) from the registry data, and its TRY THIS
  *                   numbers come from the screen's own compute path (see
@@ -227,13 +227,13 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'π KEY (top right) opens the SYMBOL KEY; the ✓ opens VERIFIED CALCULATION — how each result is computed.',
     ],
     control: [
-      'Tap a category tile: its calculators open in a popup. Tap one to open it; ✕ or a tap outside closes the popup.',
+      'Tap a category tile: its calculators open in a popup, grouped by job. Tap one to open it; ✕ or a tap outside closes the popup.',
       '▸ CUSTOM CALCULATOR WORKFLOWS opens ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your recent workflow (RECENT · TAP TO RUN).',
       '⛓ CHAIN ACTIVE: ✕ CLEAR drops the result you sent.',
       'π KEY: the Greek letters and maths symbols the calculators use.',
     ],
     changes: [
-      'Most calculators solve one job several ways: inside it, WHAT ARE YOU CALCULATING? picks the direction, and its inputs change to match.',
+      'Calculators that solve one job several ways share a page: WHAT ARE YOU CALCULATING? picks the one you need, and the inputs change to match.',
       'A result can be SENT into another calculator — sensitivity → voltage → gain → headroom — so one answer feeds the next.',
       'A workflow runs several calculators in order and carries the answers forward for you.',
     ],

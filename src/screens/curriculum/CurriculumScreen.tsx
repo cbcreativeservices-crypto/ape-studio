@@ -63,7 +63,7 @@ const CURRICULUM_INTRO_TITLE = 'Explore the Academy Curriculum';const CURRICULUM
   'Progress is built one topic at a time. Every subject below expands to show its topics, term coverage, and where those skills apply in a professional audio career.';
 
 /** Overview-sentence counts (owner 2026-09-15). CALC_COUNT = individual
- *  calculators (workspace functions), matching the calc-lab row's own count;
+ *  calculators (workspace functions), the same 166 the Calculator Lab home tiles total;
  *  LAB_COUNT = every other lab (totalLabCount includes the calculators hub, so
  *  subtract them to avoid double-counting the two in the same sentence). */
 const CALC_COUNT = WORKSPACES.reduce((a, w) => a + w.functions.length, 0);

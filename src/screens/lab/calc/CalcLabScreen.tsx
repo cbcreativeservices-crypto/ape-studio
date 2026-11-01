@@ -281,7 +281,9 @@ export function CalcLabScreen() {
         <GlassPanel style={tablet ? undefined : styles.panelPhone}>
         <View style={styles.catGrid}>
           {SECTION_META.map((sec) => {
-            const count = WORKSPACES.filter((w) => w.section === sec.id).length;
+            // Counts CALCULATORS (each function = one calculator; all tiles total the
+            // 166 the app and its ads quote; owner 2026-11-01), not calculator pages.
+            const count = WORKSPACES.filter((w) => w.section === sec.id).reduce((n, w) => n + w.functions.length, 0);
             if (count === 0) return null;
             return (
               // The Audio Tools hub's glass hardware (owner 2026-09-30): black

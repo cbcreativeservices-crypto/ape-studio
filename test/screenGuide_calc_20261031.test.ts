@@ -568,7 +568,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.ok(STATIC.home.teaches.join(' ').includes('its own card on Home (OPEN CALCULATORS)'));
     assert.doesNotMatch(textOf(STATIC.home), /Advanced Training Labs/);
     assert.deepEqual((WORKSPACES as any[]).filter((w) => w.functions.length === 1).map((w) => w.id).sort(), ['diffuser', 'imd', 'loudnorm', 'treatment']);
-    assert.ok(STATIC.home.changes[0].startsWith('Most calculators solve one job several ways'));
+    assert.ok(STATIC.home.changes[0].startsWith('Calculators that solve one job several ways share a page'));
   });
   it('symbols: ‹ returns to the calculator page (its FORMULA KEY closes before the symbol key opens)', () => {
     assert.match(code('src/screens/lab/calc/CalcWorkspaceScreen.tsx'), /onOpenFullKey=\{\(\) => \{\s*setKeyOpen\(false\);\s*navigation\.navigate\('CalcSymbolsKey'\);/);
@@ -639,5 +639,17 @@ describe('5. wiring and the accuracy-chip decision', () => {
     for (const n of ['CalcSymbolsKeyScreen', 'CalcWorkflowsScreen', 'CalcWorkflowEditScreen', 'CalcProjectsScreen']) {
       assert.doesNotMatch(code(`src/screens/lab/calc/${n}.tsx`), /AccuracyNote/, `${n} never had the chip`);
     }
+  });
+});
+
+describe('owner 2026-11-01: "166 calculators" everywhere', () => {
+  it('the ten home tiles total every calculator (each function), the same count the catalog shows', async () => {
+    const S = readFileSync(join(process.cwd(), 'src/screens/lab/calc/CalcLabScreen.tsx'), 'utf8').replace(/\r\n/g, '\n');
+    assert.match(S, /w\.section === sec\.id\)\.reduce\(\(n, w\) => n \+ w\.functions\.length, 0\)/);
+    const total = (WORKSPACES as any[]).reduce((n, w) => n + w.functions.length, 0);
+    assert.ok(total >= 166, String(total));
+    const C = readFileSync(join(process.cwd(), 'src/screens/lab/labCatalog.ts'), 'utf8').replace(/\r\n/g, '\n');
+    assert.match(C, /countLabel: \(n\) => `\$\{n\} Calculators`/);
+    assert.doesNotMatch(C, /\} Calculations`/);
   });
 });
