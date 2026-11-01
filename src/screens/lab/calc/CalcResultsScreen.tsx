@@ -26,6 +26,10 @@ import { ReportCard } from './ReportCard';
 import { cardColumn } from '../../../theme/readingColumn';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained". The ✓
+// VERIFIED chip stays.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -96,6 +100,8 @@ export function CalcResultsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -105,7 +111,9 @@ export function CalcResultsScreen() {
           <Text style={styles.subtitle}>Completed workflow runs — stored, never recalculated</Text>
         </View>
         <AccuracyNote compact variant="calc" />
+        <ScreenGuideKey title="SAVED RESULTS" guide={CALC_SCREEN_GUIDES.results} />
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* A FlatList, not ScrollView + map (perf decisions 2026-10-04): the saved
           list has no upper bound, and only the cards on screen are built. The
@@ -164,6 +172,7 @@ export function CalcResultsScreen() {
           );
         }}
       />
+      </ScreenGuideHost>
     </View>
   );
 }

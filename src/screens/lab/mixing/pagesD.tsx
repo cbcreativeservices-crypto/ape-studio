@@ -234,7 +234,7 @@ type FinalStep = { id: string; name: string; blurb: string; verified: boolean };
 const FINAL_STEPS: FinalStep[] = [
   { id: 'organize', name: '1 · Organize', blurb: 'Session prepped: named, ordered, cleaned, headroom left, untouched version saved. (On your honor — the app cannot see your session.)', verified: false },
   { id: 'static', name: '2 · Static mix', blurb: 'Shape at least five tracks on the console below — anchor, balance, pan.', verified: true },
-  { id: 'masking', name: '3 · Fix one masking fight', blurb: 'Clear a collision with a high-pass or an EQ cut on the console (level counts too — tap done if you solved it with faders).', verified: true },
+  { id: 'masking', name: '3 · Fix one masking fight', blurb: 'Clear one collision with level, pan or MUTE on the console below (in your own session, a high-pass or an EQ cut often does this job). Tap when done.', verified: true },
   { id: 'comp', name: '4 · One compressor', blurb: 'The lead’s compressor is wired into YOUR MIX — hear it land.', verified: true },
   { id: 'verb', name: '5 · One shared reverb', blurb: 'The shared room rides YOUR MIX’s sends — hear the glue.', verified: true },
   { id: 'auto', name: '6 · Automate the lead', blurb: 'The verse→chorus ride is in YOUR MIX — hear the movement.', verified: true },

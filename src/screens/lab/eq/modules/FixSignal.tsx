@@ -187,7 +187,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
         size: 'M', // the story is half the lesson — leave the well room
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend + honesty, verbatim from the pre-rack panel head.
-        badge: 'SIGNAL (amber) vs REFERENCE (dim) · SYNTHETIC',
+        badge: 'SIGNAL (bold) vs REFERENCE (dim) · SYNTHETIC',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>

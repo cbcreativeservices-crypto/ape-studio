@@ -17,7 +17,7 @@
  *  2. MEMBERS-ONLY GATE. withMembershipPreview → labCatalog → calc/registry
  *     pulled every calculator workspace in. The gate needs only routes, names
  *     and sections (labMembership); the one thing that needed the registry —
- *     the Calculator Laboratory's "N Calculators" row count — is now a getter
+ *     the Calculator Laboratory's "N Calculations" row count — is now a getter
  *     that `require`s the registry on first read.
  *
  * eagerGraph (static, non-type imports from App.tsx): 338 modules / 3978 KB
@@ -482,7 +482,7 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
   // instruments: +1 for Miking Lab 6's family tile (Foley, Field & Scientific; Lab 6 group 4, 2026-10-08).
   visualization: '2 Labs', instruments: '8 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
-  calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
+  calculators: '166 Calculations', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
 const TOTAL_AT_HEAD = 228; // was 217 before the ampacity calculator; +1 Miking Labs 1-4 (2026-10-04/05); +1 Mixing Guides (2026-10-07, preview state); +1 Miking Lab 5: Voice & Ensemble (2026-10-07); +1 Miking Lab 6: Foley, Field & Scientific (2026-10-08); +1 DJ Systems Lab (2026-10-18)
 /** Lab 6 group 1 (2026-10-08): a Miking lab is listed once it has a ready lesson, so the

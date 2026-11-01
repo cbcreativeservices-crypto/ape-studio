@@ -12,7 +12,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { DEV_NOTE } from '../labCatalog';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this hub. A CONCEPT
+// lab — the de-esser is a modelled phrase, nothing plays and nothing is
+// measured — so the accuracy chip gives its spot to the ⓘ (accuracy chip
+// rule, owner 2026-10-31).
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { SMART_PROCESSORS_HOME_GUIDE } from './smartProcessorsScreenGuides';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
@@ -46,6 +51,9 @@ export function SmartProcessorsLabScreen() {
   const navigation = useNavigation<Nav>();
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      {/* No Rack Unit here: the guide's steps sit low over the list. */}
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -54,8 +62,9 @@ export function SmartProcessorsLabScreen() {
           <Text style={styles.kicker}>TRAINING LAB · DYNAMICS</Text>
           <Text style={styles.title}>Smart Processors Lab</Text>
         </View>
-        <AccuracyNote compact detail="The processors here are TEACHING MODELS of how detectors, thresholds and gain computers behave — not emulations of any particular unit, and anything they play goes through your phone’s UNCALIBRATED output. Learn the shape of the behavior here; set real thresholds on real metering." />
+        <ScreenGuideKey title="SMART PROCESSORS LAB" guide={SMART_PROCESSORS_HOME_GUIDE} />
       </View>
+      </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.lead}>Ordinary processors do what their knobs say. Smart processors listen first, decide, then act — and every one of them is built from the same few ideas: a detector, a threshold, a gain computer, and a choice of what to change.</Text>
         {FAMILY.map((f) => (
@@ -84,6 +93,7 @@ export function SmartProcessorsLabScreen() {
         {/* Certificate credit (owner 2026-10-13): renders only once questions are authored. */}
         <LabUnderstandingBlock labId="smart-processors" labTitle="Smart Processors Lab" />
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }

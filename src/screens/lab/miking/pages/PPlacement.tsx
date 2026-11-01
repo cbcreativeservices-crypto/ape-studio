@@ -283,7 +283,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          {fromNow ? <Body>{`START FROM · ${roleWords(fromNow).toLowerCase()}: ${fromNow.title}${fromNow.mics.length > 1 ? ' (its first mic)' : ''}. Choose another in START FROM.`}</Body> : null}
+          {fromNow ? <Body>{`START FROM · ${roleWords(fromNow).toLowerCase()}: ${fromNow.title}${fromNow.mics.length > 1 ? ' (its first mic)' : ''}. Choose another in START.`}</Body> : null}
           <Landing looking={`${t.short} · ${variantShort}`} prompt="Move the mic from its starting setup: drag it (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and listen for what changes." />
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}

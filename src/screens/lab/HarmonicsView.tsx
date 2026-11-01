@@ -1010,6 +1010,9 @@ export type HarmonicRackParts = {
   };
   headerAction: ReactNode;
   renderWell: (api: LabShellExploreApi) => ReactNode;
+  /** The MODE key's current screen (Screen Guide 2026-10-31): ANALYTIC MODEL
+   *  and REAL SIGNAL are different screens, each with its own guide. */
+  view: ViewMode;
 };
 
 export function HarmonicsView({
@@ -1750,7 +1753,7 @@ export function HarmonicsView({
       valueLabel: view === 'model' ? 'MODEL' : 'LIVE',
       options: [
         { id: 'model', label: 'ANALYTIC MODEL', blurb: 'The textbook recipe, drawn from the math — perfectly clean, nothing measured.' },
-        { id: 'live', label: 'REAL SIGNAL', blurb: 'The actual generated audio, analyzed live — the same recipe with the real world attached.' },
+        { id: 'live', label: 'REAL SIGNAL', blurb: 'The microphone, analyzed live, while the phone plays just the fundamental as a pure sine (once the feedback override is on). Harmonics above it were added on the way, by the speaker or mic.' },
       ],
       selectedId: view,
       onSelect: (id) => pickView(id as ViewMode),
@@ -1901,7 +1904,7 @@ export function HarmonicsView({
           <Text style={styles.sectionHead}>GROUPS & OVERLAYS</Text>
           <View style={styles.chipRow}>
             <Chip label="ODD/EVEN" selected={oddEvenHl} onPress={() => setOddEvenHl((v) => !v)} onLongPress={() => openLesson('wave_shape')} />
-            <Chip label="ENVELOPE" selected={showEnvelope} onPress={() => setShowEnvelope((v) => !v)} onLongPress={() => openLesson('amplitude')} />
+            <Chip label="ENVELOPE" selected={showEnvelope} onPress={() => setShowEnvelope((v) => !v)} onLongPress={() => openLesson('slope')} />
             <Chip label="SPACING" selected={showSpacing} onPress={() => setShowSpacing((v) => !v)} onLongPress={() => openLesson('frequency')} />
           </View>
           {oddEvenHl ? (
@@ -2146,7 +2149,7 @@ export function HarmonicsView({
     </>
   );
 
-  return children({ rack, headerAction, renderWell });
+  return children({ rack, headerAction, renderWell, view });
 }
 
 const styles = StyleSheet.create({

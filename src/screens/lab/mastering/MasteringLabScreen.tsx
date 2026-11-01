@@ -49,6 +49,9 @@ import { releaseProgramme } from './useMasterPlayback';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
+// Screen Guide (owner 2026-10-31): "this step, explained" — one guide per step.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { masteringStepGuide } from './masteringScreenGuides';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 export const MASTERING_LAB_TITLE = 'Mastering Lab';
@@ -510,13 +513,27 @@ export function MasteringLabScreen() {
     );
   }
 
+  // The guide for the step on screen (none on the what's-left screen). A rack
+  // step measures the Rack Unit's display and dock so each guide step sits
+  // beside the area it explains; a reading step uses the bottom card.
+  const stepGuide = endState ? undefined : masteringStepGuide(mod.id, stepIdx);
+
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* Screen Guide host: the overlay is this root's last child; a step,
+            module or end-screen change closes an open guide. */}
+        <ScreenGuideHost resetKey={endState ? 'end' : `${mod.id}:${stepIdx}`} regions={!!stepGuide?.rack}>
+        {/* ACCURACY CHIP RULE (owner 2026-10-31): the chip STAYS — this lab
+            shows real-world measurement numbers (LUFS / true-peak / PLR
+            estimates of offline renders, monitoring SPL against the NIOSH
+            daily limit). The ⓘ sits beside it. */}
         <LabHeader
           title={endState ? MASTERING_LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
           subtitle={endState ? 'What’s left' : `${MASTERING_LAB_TITLE}: ${SUBTITLE}${done ? ' · credited' : ''}`}
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
+          guide={stepGuide?.guide}
+          guideTitle={stepGuide?.title.toUpperCase()}
         />
         <LabNavBar nav={nav} />
         {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
@@ -535,6 +552,7 @@ export function MasteringLabScreen() {
             </StepHostContext.Provider>
           </View>
         )}
+        </ScreenGuideHost>
       </View>
       {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
       <ProNoteIntro />

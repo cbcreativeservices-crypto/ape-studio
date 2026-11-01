@@ -29,6 +29,11 @@ import { PATHWAY_LABEL } from '../../../features/production/types';
 import { labDef, stageForActivity } from '../../../features/production/labs';
 import { hiddenKeys } from '../../../features/production/schema';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this exercise. A
+// Production lab KEEPS its "practice" AccuracyNote (the planning-scope
+// chip, owner rule 2026-10-31); the key sits after it.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, type ScreenGuide } from '../../../features/lab/screenGuide';
+import { productionActivityGuide } from './productionScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionActivity'>;
@@ -144,10 +149,13 @@ export function ProductionActivityScreen() {
   }
 
   const done = result?.passed === true;
+  const guide = productionActivityGuide(lab, activityId);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-      <Header onBack={() => safeGoBack(navigation)} title={activity.title} kicker={`STAGE ${stage.num} · EXERCISE`} />
+      {/* No Rack Unit: regions off, every guide step sits low. */}
+      <ScreenGuideHost regions={false} resetKey={activityId}>
+      <Header onBack={() => safeGoBack(navigation)} title={activity.title} kicker={`STAGE ${stage.num} · EXERCISE`} guide={guide} />
 
       <ScrollView
         contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 34 }]}
@@ -260,12 +268,14 @@ export function ProductionActivityScreen() {
           <Text style={styles.restartText}>START AGAIN</Text>
         </Pressable>
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }
 
-function Header({ onBack, title, kicker }: { onBack: () => void; title: string; kicker?: string }) {
+function Header({ onBack, title, kicker, guide }: { onBack: () => void; title: string; kicker?: string; guide?: ScreenGuide }) {
   return (
+    <ScreenGuideHintAnchor off={!guide}>
     <View style={styles.header}>
       <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -277,7 +287,9 @@ function Header({ onBack, title, kicker }: { onBack: () => void; title: string; 
         </Text>
       </View>
       <AccuracyNote variant="practice" compact />
+      {guide ? <ScreenGuideKey title={title.toUpperCase()} guide={guide} /> : null}
     </View>
+    </ScreenGuideHintAnchor>
   );
 }
 

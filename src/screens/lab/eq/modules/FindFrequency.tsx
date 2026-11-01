@@ -10,7 +10,7 @@
  *
  * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): this module renders the RackUnit
  * frame itself. The signal-vs-reference plot PINS on the stage (the hunt IS
- * watching the amber curve settle onto the reference while you ride a lane);
+ * watching the bold curve settle onto the reference while you ride a lane);
  * FREQ/GAIN/Q are dock faders (FREQ pre-bound — the hunt starts with WHERE);
  * LEVEL is an options tray with NEW SIGNAL as its in-tray reset; CHECK is a
  * key. Game state reads on the bezel (LVL · BAND — tap to switch at level 5 ·
@@ -18,7 +18,7 @@
  *
  * VISUAL + BY-EAR TRAINER — the spectrum is synthetic and labeled as such; on
  * builds with the FX engine, EqAuditionBar plays the hidden coloration live. Match the dim
- * reference: your correction is perfect when the amber curve sits back on it.
+ * reference: your correction is perfect when the bold curve sits back on it.
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -244,7 +244,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         size: 'L',
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend + honesty, verbatim from the pre-rack panel head.
-        badge: 'SIGNAL (amber) vs REFERENCE (dim) · SYNTHETIC',
+        badge: 'SIGNAL (bold) vs REFERENCE (dim) · SYNTHETIC',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
@@ -256,7 +256,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
       <View style={styles.well}>
         <Text style={styles.brief}>{LEVEL_BRIEF[level]}</Text>
         <Text style={styles.body}>
-          Something is wrong with this signal. Ride the FREQ / GAIN / Q lanes to match the amber
+          Something is wrong with this signal. Ride the FREQ / GAIN / Q lanes to match the bold
           spectrum back onto the dim reference — then CHECK.
           {bands.length > 1 ? ' Tap the BAND key to switch bands.' : ''}
         </Text>

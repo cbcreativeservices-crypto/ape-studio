@@ -63,6 +63,10 @@ export function Mod3Bias() {
 
   const taskSolved = !pp.crossoverNotch && pp.idleCurrent <= 0.08;
   const tooHot = pp.idleCurrent > 0.08;
+  // IDLE shows one decimal so the readout agrees with the 0.08 test above:
+  // at BIAS 84% idle is 8.064%, which a whole-number readout showed as "8%"
+  // beside OVERBIAS (BIAS snaps to 1% steps, so 8.0% is always within the limit).
+  const idlePct = (pp.idleCurrent * 100).toFixed(1);
 
   // The live region tags: under the display on the page (in the well).
   const singleRead = (
@@ -77,7 +81,7 @@ export function Mod3Bias() {
         : tooHot
           ? 'CLEAN — BUT INTO THE EXCESSIVE-HEAT REGION'
           : 'CROSSOVER NOTCH PRESENT'}
-      {` · idle ${Math.round(pp.idleCurrent * 100)}%`}
+      {` · idle ${idlePct}%`}
     </Text>
   );
   // The zoom figure's control for ITS full-screen dock — the same bias the
@@ -111,7 +115,7 @@ export function Mod3Bias() {
     output: pp.out,
     supplyFlow: 0.5 + pp.idleCurrent * 3,
     heat: pp.heat,
-    a11ySummary: `Push-pull bias ${Math.round(ppBias * 100)} percent. ${pp.crossoverNotch ? 'A crossover notch is visible at zero crossing.' : 'The handoff is clean.'} Idle current ${Math.round(pp.idleCurrent * 100)} percent relative; heat ${Math.round(pp.heat * 100)} percent relative.`,
+    a11ySummary: `Push-pull bias ${Math.round(ppBias * 100)} percent. ${pp.crossoverNotch ? 'A crossover notch is visible at zero crossing.' : 'The handoff is clean.'} Idle current ${idlePct} percent relative; heat ${Math.round(pp.heat * 100)} percent relative.`,
   };
 
   return (
@@ -214,7 +218,7 @@ export function Mod3Bias() {
               // OVERBIAS, not HOT: the handoff IS clean there — the stage is
               // over-biased, and the HEAT cell beside it already says hot.
               { k: 'HANDOFF', v: taskSolved ? 'CLEAN' : tooHot ? 'OVERBIAS' : 'NOTCH', tint: taskSolved ? colors.green : tooHot ? colors.gold : colors.red },
-              { k: 'IDLE', v: `${Math.round(pp.idleCurrent * 100)}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos },
+              { k: 'IDLE', v: `${idlePct}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos },
               ...rigStatusBezel(ppPic, ['supply', 'heat']),
             ],
             params: [faderParam({ id: 'ppbias', label: 'BIAS', value: ppBias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setPpBias })],
@@ -241,9 +245,9 @@ export function Mod3Bias() {
                 {ppRead}
                 <Body>
                   {taskSolved
-                    ? `Just enough overlap: both devices conduct around zero, the notch is gone, and idle current stays at ${Math.round(pp.idleCurrent * 100)}% relative. This is the Class AB sweet spot.`
+                    ? `Just enough overlap: both devices conduct around zero, the notch is gone, and idle current stays at ${idlePct}% relative. This is the Class AB sweet spot.`
                     : tooHot
-                      ? `The notch is gone, but idle current is ${Math.round(pp.idleCurrent * 100)}% relative — extra overlap now buys nothing except heat. Back the bias down until it just clears.`
+                      ? `The notch is gone, but idle current is ${idlePct}% relative — extra overlap now buys nothing except heat. Back the bias down until it just clears.`
                       : 'Insufficient bias: each device waits for the signal to climb past its threshold, so the region around zero belongs to nobody. That gap is crossover distortion — audible at LOW levels, where it is a large fraction of the signal.'}
                 </Body>
               </Card>

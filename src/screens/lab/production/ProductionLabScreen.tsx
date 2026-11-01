@@ -46,6 +46,11 @@ import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this screen — START A PROJECT, or the open project. A
+// Production lab KEEPS its "practice" AccuracyNote (the planning-scope
+// chip, owner rule 2026-10-31); the key sits after it.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { productionHomeGuide } from './productionScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionLab'>;
@@ -277,8 +282,15 @@ export function ProductionLabScreen() {
   // The packet (and its PDF share) has its own screen now (2026-10-04, design
   // review #5): ProductionPacketScreen renders the document in-app.
 
+  /** The guide for what this screen is showing right now. */
+  const guide = productionHomeGuide(lab, project !== null);
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      {/* No Rack Unit here: regions off, every guide step sits low. Opening or
+          closing a project swaps the screen's content, so it closes the guide. */}
+      <ScreenGuideHost regions={false} resetKey={project ? 'project' : 'start'}>
+      <ScreenGuideHintAnchor off={!guide}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -288,7 +300,9 @@ export function ProductionLabScreen() {
           <Text style={styles.title}>{def.title}</Text>
         </View>
         <AccuracyNote variant="practice" compact />
+        {guide ? <ScreenGuideKey title={def.title.toUpperCase()} guide={guide} /> : null}
       </View>
+      </ScreenGuideHintAnchor>
 
       <ScrollView
         contentContainerStyle={[styles.body, cardColumn, { paddingBottom: insets.bottom + 34 }]}
@@ -562,6 +576,7 @@ export function ProductionLabScreen() {
         onCancel={() => setAccepting(null)}
         onAccept={acceptCondition}
       />
+      </ScreenGuideHost>
     </View>
   );
 }

@@ -18,7 +18,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
-import { ECHO_SPAN_MS, RESPONSE_SAMPLES, bandwidthOctFromQ, responseSampleFreqs } from './sliderMaps';
+import { ECHO_SPAN_MS, RESPONSE_SAMPLES, bandwidthOctFromQ, fmt2sig, responseSampleFreqs } from './sliderMaps';
 
 const FS = 48000; // display-eval sample rate (matches the engine default)
 const PI = Math.PI;
@@ -911,7 +911,7 @@ export function DecayCurveGraph({
         </SvgText>
       ))}
       <SvgText x={rtX} y={H - 2} fill={AMBER} fontSize={fs} fontFamily={MONO} textAnchor="middle">
-        {`RT60 ${rt60.toFixed(1)} s`}
+        {`RT60 ${fmt2sig(rt60)} s`}
       </SvgText>
     </Svg>
   );

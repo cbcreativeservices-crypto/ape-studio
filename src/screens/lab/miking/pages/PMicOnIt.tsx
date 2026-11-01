@@ -22,7 +22,7 @@ import { isModelled, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { MIC_TYPES, micType } from '../data/micTypes';
-import { plainLines } from './PMicrophone';
+import { plainLines, powerOf } from './PMicrophone';
 import { micWords, useSetups } from './PSetups';
 import type { PageProps } from './pageTypes';
 
@@ -90,7 +90,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
   const bezel: BezelItem[] = [
     { k: 'TYPE', v: t.short, flex: 1.3 },
     { k: 'PATTERN', v: isModelled(pat) ? pat.toUpperCase() : 'NOT DRAWN', flex: 1.2 },
-    { k: 'POWER', v: t.transducer === 'condenser' ? 'PHANTOM' : 'NONE', flex: 1 },
+    { k: 'POWER', v: powerOf(t).word, flex: 1 },
     { k: 'MOUNT', v: t.mount.toUpperCase(), flex: 0.9 },
   ];
   const steps: MikingStep[] = [

@@ -2,7 +2,7 @@
  * MultiBand — EQ Lab lesson 9 (owner spec 2026-08-07): a realistic multi-band
  * parametric — HPF | LOW | LMF | HMF | HIGH | LPF — with the spec's key
  * visual: every enabled band's OWN curve (ghosts) plus the resulting COMBINED
- * response (amber). Filters interact; the composite is the point.
+ * response (bold, coloured by its biggest boost). Filters interact; the composite is the point.
  *
  * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): renders the RackUnit frame
  * itself. The node-drag graph is a SPATIAL EDITOR, so it owns the PINNED
@@ -373,7 +373,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: bypass
           ? 'BYPASSED — output flat · dim = the would-be composite'
-          : 'BANDS (dim) + COMBINED (amber)',
+          : 'BANDS (thin, coloured) + COMBINED (bold)',
         bezel: [
           { k: 'BAND', v: selMeta.label, tint: selMeta.color },
           { k: 'FREQ', v: fmtHz(selF) },
@@ -438,8 +438,8 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
     >
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
-          Real EQs run several filters at once — and the filters INTERACT. The dim curves are each
-          band alone; the amber curve is what they produce TOGETHER. Drag a node right on the glass:
+          Real EQs run several filters at once — and the filters INTERACT. The thin coloured curves are each
+          band alone; the bold curve is what they produce TOGETHER. Drag a node right on the glass:
           sideways = frequency, up/down = gain. The BAND tray picks (and switches on) a band; its
           FREQ, GAIN and Q ride the fader.
         </GlossaryText>

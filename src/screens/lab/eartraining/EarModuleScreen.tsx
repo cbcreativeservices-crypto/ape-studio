@@ -38,7 +38,13 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { SeeItView } from './SeeItView';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { cardColumn } from '../../../theme/readingColumn';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the ⓘ "this screen, explained" key, one
+// guide per module (the what's-left guide while FINISH is open). The chip rule
+// keeps AccuracyNote for live-mic tools and real-world measurements only; these
+// drills play clips the app renders, so the ⓘ takes the chip's spot and the
+// playback honesty it carried lives in EAR_HOME_GUIDE.teaches.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { EAR_END_GUIDE, EAR_SCREEN_GUIDES } from './earTrainingScreenGuides';
 import { useLabClipBuffer } from '../../../features/lab/useLabClipBuffer';
 import {
   EAR_SOURCES, earSourceById, programFromClip, resolveEarSource, type EarSourceId,
@@ -567,19 +573,20 @@ export function EarModuleScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : mod.id}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the
           module back to the hub, which IS the menu — so no strip here, and
           NEXT › below means a lab move only; the drill's own button reads
-          NEXT TRIAL › / NEXT ROUND ›.
-          ⛔ THE NOTE MATTERS MOST HERE. This is the screen that actually
-          SOUNDS the signals, through the phone's uncalibrated path and the
-          user's own headphones. */}
+          NEXT TRIAL › / NEXT ROUND ›. The ⓘ guide key sits after the
+          accuracy pill (the uncalibrated-playback note moved into the
+          guide under the chip rule, owner 2026-10-31). */}
       <LabHeader
         title={mod.title.toUpperCase()}
         subtitle={`Level ${level}/${mod.levels} · ${mod.levelNames[level - 1] ?? ''}`}
+        guide={ending ? EAR_END_GUIDE : EAR_SCREEN_GUIDES[mod.id]}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
         right={
           <>
-            <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which color what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
             <View
               style={styles.statPill}
               accessible
@@ -805,6 +812,7 @@ export function EarModuleScreen() {
         )}
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

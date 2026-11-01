@@ -263,7 +263,7 @@ export const PROJECT_TRACKS: readonly ProjectTrack[] = [
   },
   {
     id: 'p4', title: 'Harbour Lights', seconds: 258, lufsEstimate: -15.1, truePeakDb: -2.0, note: 'Slightly dull and narrow next to the other three; otherwise balanced.',
-    issue: { id: 'e4', moduleId: 'project', prompt: '"Harbor Lights" reads dull and a little narrow against its neighbors. Which path?', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Program-wide tone and width between tracks of a set is what mastering unifies — gently, with a mono check and a matched-level bypass.' },
+    issue: { id: 'e4', moduleId: 'project', prompt: '"Harbour Lights" reads dull and a little narrow against its neighbors. Which path?', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Program-wide tone and width between tracks of a set is what mastering unifies — gently, with a mono check and a matched-level bypass.' },
   },
 ];
 
@@ -271,7 +271,7 @@ export const PROJECT_TRACKS: readonly ProjectTrack[] = [
 export const PROJECT_CHECKS: readonly { id: string; label: string; needed: boolean; why: string }[] = [
   { id: 'c1', label: 'Listen to all four in the delivered order before touching anything', needed: true, why: 'Listening first is the workflow. Notes before processing.' },
   { id: 'c2', label: 'Match playback level before every A/B', needed: true, why: 'Every tonal and dynamic decision is judged at matched level.' },
-  { id: 'c3', label: 'Mono fold check on "Harbor Lights" before and after widening', needed: true, why: 'Widening without a mono check is how a phone speaker finds the hole.' },
+  { id: 'c3', label: 'Mono fold check on "Harbour Lights" before and after widening', needed: true, why: 'Widening without a mono check is how a phone speaker finds the hole.' },
   { id: 'c4', label: 'Set every track, including "Tide Table", to the same integrated loudness number', needed: false, why: 'The client asked for "Tide Table" to stay quiet. Consistency is a decision, not a number applied blindly.' },
   { id: 'c5', label: 'Headphone and small-speaker translation pass on the sequence', needed: true, why: 'Translation checks after decisions in the room.' },
   { id: 'c6', label: 'Add a limiter to "Tide Table" so it competes with the other three', needed: false, why: 'That erases the one thing the client protected.' },

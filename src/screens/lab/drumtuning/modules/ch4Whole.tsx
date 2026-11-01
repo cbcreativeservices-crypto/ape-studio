@@ -14,7 +14,7 @@ import { colors } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { optionsParam, pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
-import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, fmtHz, noteName } from '../kit';
+import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, noteName } from '../kit';
 import { DRUM_KEY_TERMS, RELATIONSHIPS, RELATIONSHIP_CAVEAT, WHOLE_SCENARIOS, type RelationshipId } from '../drumContent';
 import { DRUMS, PITCH_CLAMP, bendCents, strikePartials, weightedCents, type StrikeParams } from '../drumEngine';
 import { ANAT_ASPECT, AnatomyStage } from '../stagesDrum';
@@ -175,7 +175,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
                 </Card>
               )}
               <WhyCard title="WHY · what you are hearing">
-                <Body>SUSTAIN is the T60 measured from this render — the time the note takes to fall 60 dB. LATE SOUND is where the main note sits at 0.9 s against the batter's own pitch (clamped at ±{PITCH_CLAMP} ¢): above it with the resonant head high, at it when equal, below it with the resonant head low — in this model. The drum sounds TWO main notes, not one: a lower one where the heads move together through the air (a weak radiator — it sings) and a higher one where they squeeze it (a strong radiator — it dies fast); the glass label shows both. The strike's own glide (Chapter 1) rides on top. Switch VIEW to PITCH to watch it.</Body>
+                <Body>SUSTAIN is the T60 estimated from this render — the time the note takes to fall 60 dB, worked out from its first 40 dB. LATE SOUND is where the main note sits at 0.9 s against the batter's own pitch (clamped at ±{PITCH_CLAMP} ¢): above it with the resonant head high, at it when equal, below it with the resonant head low — in this model. The drum sounds TWO main notes, not one: a lower one where the heads move together through the air (a weak radiator — it sings) and a higher one where they squeeze it (a strong radiator — it dies fast); the glass label shows both. The strike's own glide (Chapter 1) rides on top. Switch VIEW to PITCH to watch it.</Body>
               </WhyCard>
             </>
           ),
@@ -218,7 +218,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
                 <Body>• Resonant higher, equal, batter higher — each is a sound, not a mistake and not a rule.</Body>
               </Card>
               <KeyTerms terms={DRUM_KEY_TERMS.whole} />
-              <Body>{`TRY NEXT: set the batter to ${batterHz} Hz and move RESO slowly from 3 st below to 3 st above, striking as you go — the bend of a hard hit alone on this tom is about ${fmtHz(bendCents(1, headAtHz(DRUM, batterHz, 'batter').tension))} cents; hear what the relationship adds.`}</Body>
+              <Body>{`TRY NEXT: set the batter to ${batterHz} Hz and move RESO slowly from 3 st below to 3 st above, striking as you go — the bend of a hard hit alone on this tom is about ${Math.round(bendCents(1, headAtHz(DRUM, batterHz, 'batter').tension))} cents; hear what the relationship adds.`}</Body>
             </>
           ),
         },

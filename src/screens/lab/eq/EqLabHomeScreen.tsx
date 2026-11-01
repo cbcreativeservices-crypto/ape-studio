@@ -12,7 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { EQ_END_GUIDE, EQ_HOME_GUIDE } from './eqScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
@@ -56,11 +57,20 @@ export function EqLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child. No Rack Unit on the menu, so regions are off. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab.
+          The ⓘ explains this menu (or the what's-left screen). The menu shows
+          no measurement, so the accuracy chip is not shown here (owner rule
+          2026-10-31); it stays on the two modules that read the live phone
+          microphone (Seeing Frequency, Live Spectrum + EQ — EqModuleScreen),
+          and the home guide says which modules use the mic. */}
       <LabHeader
         title="EQ LAB"
         subtitle="See, hear, manipulate, and diagnose frequency content."
-        right={<AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />}
+        guide={ending ? EQ_END_GUIDE : EQ_HOME_GUIDE}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
       />
       {ending ? (
         <LabEndScreen
@@ -129,6 +139,7 @@ export function EqLabHomeScreen() {
         </Text>
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

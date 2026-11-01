@@ -117,7 +117,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
   return (
     <View style={styles.root}>
       <GlossaryText style={styles.body}>
-        This signal has an EXCESSIVE 250 Hz region (amber vs the dim healthy reference). Goal:
+        This signal has an EXCESSIVE 250 Hz region (bold line vs the dim healthy reference). Goal:
         reduce it. Try both strategies and compare what else changes.
       </GlossaryText>
 
@@ -134,7 +134,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="THE PROBLEM"
-          badge="SYNTHETIC SPECTRUM · dim = healthy reference · amber = the signal"
+          badge="SYNTHETIC SPECTRUM · dim = healthy reference · bold = the signal"
           render={(w, h) => (
             <ResponseCurveGraph
               curves={curves}

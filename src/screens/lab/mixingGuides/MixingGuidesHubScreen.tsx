@@ -35,6 +35,9 @@ import { filterGuides, readCountLine } from './guideSearch';
 import { useGuidesHydrated, useGuidesRead, useGuidesUnreadable } from './readProgress';
 import { GuideWorldMap, ShowMapButton } from './GuideWorldMap';
 import { WORLD_ASPECT } from './data/worldMap';
+// Screen Guide (owner 2026-10-31): the hub's "this screen, explained".
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { MIXING_GUIDES_HUB_GUIDE } from './mixingGuidesScreenGuides';
 
 const TOUCH = Platform.OS !== 'web';
 export function MixingGuidesHubScreen() {
@@ -144,7 +147,11 @@ export function MixingGuidesHubScreen() {
   }, []);
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <LabHeader title="MIXING GUIDES" subtitle={`${total} music styles — what the audience expects, and where to start the mix`} />
+      {/* Screen Guide host (no Rack Unit: bottom-card steps). ACCURACY CHIP
+          RULE (owner 2026-10-31): the menu shows no measurement, so it has
+          no chip; the ⓘ is the header's only key. */}
+      <ScreenGuideHost regions={false} resetKey="hub">
+      <LabHeader title="MIXING GUIDES" subtitle={`${total} music styles — what the audience expects, and where to start the mix`} guide={MIXING_GUIDES_HUB_GUIDE} />
       {mapHidden ? (
         <ShowMapButton onShow={() => setMapHidden(false)} />
       ) : (
@@ -214,6 +221,7 @@ export function MixingGuidesHubScreen() {
         </View>
       </ScrollView>
       </View>
+      </ScreenGuideHost>
       {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
       <ProNoteIntro />
     </View>

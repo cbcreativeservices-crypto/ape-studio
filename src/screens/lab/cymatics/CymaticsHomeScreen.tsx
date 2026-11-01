@@ -11,8 +11,9 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { CYMATICS_END_GUIDE, CYMATICS_HOME_GUIDE } from './cymaticsScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } from '../../../features/cymatics/plateModes';
@@ -122,11 +123,19 @@ export function CymaticsHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child. No Rack Unit on the home, so regions are off. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'home'}>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab.
+          The ⓘ explains this home (or the what's-left screen). Cymatics is a
+          CONCEPT lab — every pattern is a labelled simulation, no live mic and
+          no real-world measurement — so the accuracy chip is not shown (owner
+          rule 2026-10-31) and the ⓘ takes its spot. */}
       <LabHeader
         title="CYMATICS LAB: SOUND MADE VISIBLE"
         subtitle="Chladni plates, liquids, membranes, resonance, frequency and harmonic relationships."
-        right={<AccuracyNote compact />}
+        guide={ending ? CYMATICS_END_GUIDE : CYMATICS_HOME_GUIDE}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
       />
       {ending ? (
         <LabEndScreen
@@ -135,6 +144,7 @@ export function CymaticsHomeScreen() {
           cleared={visited}
           unreadable={visitsUnreadable}
           mode="progress"
+          completeTitle="ALL MODULES OPENED"
           onJump={(id) => open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id)}
           onPracticeAgain={() => open(CYMATICS_MODULES[0].id)}
           onDone={() => safeGoBack(navigation)}
@@ -213,6 +223,7 @@ export function CymaticsHomeScreen() {
       </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

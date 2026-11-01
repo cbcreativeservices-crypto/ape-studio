@@ -200,11 +200,11 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Set WEDGE TAP to PRE and FX TAP to POST, then ride the VOX FADER down to −20 or below and watch which bus moves."
+      caption="Set WEDGE TAP to PRE and FX TAP to POST, then ride the VOX FADER down to −10 or below and watch which bus moves."
     >
       <ChapterTag n={4}>PRE-FADER AND POST-FADER SENDS</ChapterTag>
       <Body>The vocal channel with its two sends, both currently tapped the WRONG way round: the wedge follows the house fader, the reverb ignores it.</Body>
-      <Prompt>Tap PRE under each send to set it right, then step the fader down to −20 or below and watch which bus moves.</Prompt>
+      <Prompt>Tap PRE under each send to set it right, then step the fader down to −10 or below and watch which bus moves.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE TWO SENDS</Eyebrow>

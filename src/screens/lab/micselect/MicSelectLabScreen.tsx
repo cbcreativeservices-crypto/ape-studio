@@ -30,7 +30,9 @@ import { colors, fonts } from '../../../theme/tokens';
 import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
 import { PolarStage } from './polarStage';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (2026-10-31): "this screen, explained" per step + the end screen.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { micSelScreenGuide } from './micSelectScreenGuides';
 import {
   CHALLENGE_BASE,
   CHALLENGE_FACTORS,
@@ -382,7 +384,17 @@ function CurvesStep() {
           </Canvas>
         ) : null}
         <Text style={[styles.axisText, { left: 10, bottom: 4 }]}>20 Hz</Text>
-        <Text style={[styles.axisText, { alignSelf: 'center', bottom: 4 }]}>1 kHz</Text>
+        {/* 1 kHz on the log 20 Hz → 20 kHz axis sits at x = log10(1000/20)/3 ≈ 0.566, not the centre (632 Hz) */}
+        {w > 0 ? (
+          <Text
+            style={[
+              styles.axisText,
+              { left: 10 + (Math.log10(1000 / 20) / 3) * (w - 20) - 20, width: 40, textAlign: 'center', bottom: 4 },
+            ]}
+          >
+            1 kHz
+          </Text>
+        ) : null}
         <Text style={[styles.axisText, { right: 10, bottom: 4 }]}>20 kHz</Text>
         <Text style={[styles.axisText, { left: 10, top: 4 }]}>{c.name}</Text>
       </View>
@@ -607,7 +619,7 @@ function JobsStep() {
           correctIdx: 0,
           reveal:
             'Marketing labels describe common use, not capability. The spec sheet decides: max SPL, pattern, response. Plenty of "vocal" mics are studio staples on cabs — read the numbers, not the box.',
-          wrongHint: 'The matrix above scores mics by SPEC — notice how often a mic works outside its label.',
+          wrongHint: 'The card above rates CHARACTERISTICS, not labels — which characteristics does a loud cab need?',
         }}
       />
       <LessonBanner text={JOBS_LESSON} />
@@ -1025,12 +1037,17 @@ export function MicSelectLabScreen() {
     <MicPhotoLightbox>
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* This lab builds its own stepped shell rather than LabShell, so the
-          standing note has to be placed by hand. */}
+      {/* The guide overlay is the root's last child; a step change closes an
+          open guide. No Rack Unit here, so no regions. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : s.key} regions={false}>
+      {/* A CONCEPT lab (teaching models, no live mic, no measured numbers):
+          the ⓘ takes the accuracy chip's spot (owner rule 2026-10-31); the
+          "teaching models, not measurements" point lives in the guides. */}
       <LabHeader
         title="MICROPHONE SELECTION LAB"
         subtitle="Types, Characteristics & Applications"
-        right={<AccuracyNote compact detail="The patterns, curves and comparisons here are TEACHING MODELS of how microphone types behave — they are not measurements of any specific microphone. Every real mic differs from its own published chart; trust the manufacturer's data and your own ears in the room." />}
+        guide={micSelScreenGuide(s.key, ending)}
+        guideTitle={ending ? 'MICROPHONE SELECTION LAB' : s.title}
       />
       <LabNavBar nav={nav} />
 
@@ -1060,6 +1077,7 @@ export function MicSelectLabScreen() {
         <LabNextButton nav={nav} />
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
     </MicPhotoLightbox>

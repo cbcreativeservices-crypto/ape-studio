@@ -11,7 +11,7 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/component
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, MiniConsole, countTouched, useFocalChoice, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
-import { SESSION_TRACKS, SUBTRACTIVE_MOVES, TRACK_IDS, panRisk, track, type TrackId } from './engine/mixModel.ts';
+import { FOCAL_CHOICES, SESSION_TRACKS, SUBTRACTIVE_MOVES, TRACK_IDS, panRisk, track, type TrackId } from './engine/mixModel.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { MixMapArt } from './begArt';
 import { AUTO_BASE } from './pagesD';
@@ -23,6 +23,8 @@ const ANCHOR_FOR_FOCAL: Record<string, TrackId> = { vocal: 'lead', groove: 'kick
 function PageStaticMix({ ctx }: { ctx: PageCtx }) {
   const [focal] = useFocalChoice();
   const suggested = ANCHOR_FOR_FOCAL[focal ?? 'vocal'] ?? 'lead';
+  // Show the on-screen name the learner tapped on page 1, not the stored id.
+  const focalName = focal ? (FOCAL_CHOICES.find((f) => f.id === focal)?.name ?? focal) : null;
   const [anchor, setAnchor] = useState<TrackId | null>(null);
   const [mix, setMix] = useState<MixSettings>({});
   const touched = countTouched(mix, TRACK_IDS);
@@ -52,7 +54,7 @@ function PageStaticMix({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>STEP 2 — COMMIT TO AN ANCHOR</Eyebrow>
         <Body>
-          Your focal point was {focal ? `“${focal}”` : 'not chosen yet (page 1)'} — that suggests {track(suggested).name} as the anchor, but the commitment is yours.
+          Your focal point was {focalName ? `“${focalName}”` : 'not chosen yet (page 1)'} — that suggests {track(suggested).name} as the anchor, but the commitment is yours.
         </Body>
         <Row>
           {SESSION_TRACKS.map((t) => (

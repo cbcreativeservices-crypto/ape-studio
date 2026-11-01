@@ -256,7 +256,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
         <Do>Open DECKS and play both. Press SYNC B and listen as the CROWD: the tempos match, yet each of B’s kicks lands between A’s kicks — sync lined up the GRIDS, and B’s grid was wrong.</Do>
       </Step>
       <Step n={3}>
-        <P>Open GRID and move B’s grid until its lines sit on the kicks (◀ ½ BEAT). The readout strip says ON THE KICK when it is right. Press SYNC B again: now the real beats lock.</P>
+        <P>Open GRID and move B’s grid until its lines sit on the kicks (◀ ½ BEAT). The GRID readout says RIGHT when it is right. Press SYNC B again: now the real beats lock.</P>
         <Note>Different programs and players edit grids differently, and some sync by tempo only. The idea is the same everywhere: trust your ears first, then the grid.</Note>
       </Step>
       <Step n={4}>

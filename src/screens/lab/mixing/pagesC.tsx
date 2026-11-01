@@ -73,7 +73,7 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
         />
         {pick === 'eq' || pick === 'hp' ? (
           <EqPlot
-            a11y={pick === 'eq' ? 'The guitar insert EQ: a 6 dB cut at 2.6 kilohertz, inside the lead’s range, shaded.' : 'The guitar insert high-pass at 350 hertz, below the lead’s range, shaded.'}
+            a11y={pick === 'eq' ? 'The guitar insert EQ: a 6 dB cut at 2.6 kilohertz, inside the lead’s range, shaded.' : 'The guitar insert high-pass at 350 hertz, rolling off the guitar’s low end near the bottom of the lead’s range, shaded.'}
             curves={[{ label: pick === 'eq' ? 'GTR EQ' : 'GTR HPF', color: TRACK_COLOR.gtr, bands: pick === 'eq' ? [{ hz: 2600, gainDb: -6, q: 1.2 }] : [{ hpHz: 350 }], bold: true }]}
             band={{ lo: 200, hi: 3000, label: 'WHERE THE LEAD PLAYS' }}
             h={170}

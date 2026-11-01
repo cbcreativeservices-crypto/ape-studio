@@ -317,7 +317,7 @@ export function StageboxStrip({ inputs, title = 'STAGEBOX INPUT LEDs', lower = '
   const n = inputs.length;
   const gap = (W - 40) / n;
   return (
-    <Frame h={H} a11y={`${title} over ${lower}. ${inputs.map((r) => `${r.short}: ${r.revealed ? `stagebox LED ${r.led ? 'lit' : 'dark'}, channel meter ${r.meter ? 'moving' : 'flat'}` : 'not checked yet'}`).join('. ')}`}>
+    <Frame h={H} a11y={`${title} over ${lower}. ${inputs.map((r) => `${r.short}: ${r.revealed ? (title === 'STAGEBOX INPUT LEDs' ? `stagebox LED ${r.led ? 'lit' : 'dark'}, channel meter ${r.meter ? 'moving' : 'flat'}` : `${title.toLowerCase()}: ${r.led ? 'yes' : 'no'}; ${lower.toLowerCase()}: ${r.meter ? 'yes' : 'no'}`) : 'not checked yet'}`).join('. ')}`}>
       <Rect x={12} y={17} width={W - 24} height={40} rx={3} fill="#1a1d24" stroke="#000" strokeWidth={0.8} />
       <SvgText x={16} y={13} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={0.8}>{title}</SvgText>
       <SvgText x={16} y={69} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={0.8}>{lower}</SvgText>

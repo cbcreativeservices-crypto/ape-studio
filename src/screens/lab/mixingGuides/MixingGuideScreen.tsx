@@ -51,6 +51,10 @@ import {
   type TableKey,
 } from './data/types';
 import { markGuideRead, setGuidesSaveBlocked, useGuidesRead, useGuidesUnreadable } from './readProgress';
+// Screen Guide (owner 2026-10-31): the reader's "this screen, explained" —
+// ONE guide for the shared template (never one style's content).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { MIXING_GUIDE_READER_GUIDE } from './mixingGuidesScreenGuides';
 
 const ACCURACY_DETAIL =
   'The SPL and loudness figures are typical ranges, for learning. Always follow venue limits and local rules, and measure with a calibrated SPL meter and certified loudness metering.';
@@ -129,10 +133,17 @@ export function MixingGuideScreen() {
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* Screen Guide host: no Rack Unit here (a reading page), so every
+            step sits in a bottom card; the end screen closes an open guide. */}
+        <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'guide'}>
+        {/* ACCURACY CHIP RULE (owner 2026-10-31): the chip STAYS — each guide
+            prints real-world level figures (live SPL at FOH, studio /
+            streaming loudness). The ⓘ sits beside it; none on the end screen. */}
         <LabHeader
           title={ending ? 'MIXING GUIDES' : entry.title.toUpperCase()}
           subtitle={ending ? 'What’s left' : `Mixing guide ${entry.num} of ${MIXING_GUIDE_INDEX.length}${isRead ? ' · read' : ''}`}
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
+          guide={ending ? undefined : MIXING_GUIDE_READER_GUIDE}
         />
         <LabNavBar nav={nav} />
         {ending ? (
@@ -202,6 +213,7 @@ export function MixingGuideScreen() {
             )}
           </ScrollView>
         )}
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

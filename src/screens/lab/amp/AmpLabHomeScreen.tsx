@@ -9,7 +9,6 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
@@ -19,6 +18,9 @@ import { isAmpProgressUnreadable, resetAmpProgress, setAmpSaveBlocked, updateAmp
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains the menu (and the what's-left view).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { AMP_END_GUIDE, AMP_HOME_GUIDE } from './ampScreenGuides';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { BUILT_MODULE_IDS } from './modules';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -131,12 +133,21 @@ export function AmpLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* Screen Guide (owner 2026-10-31): no Rack Unit on the menu, so no
+          regions — the steps sit in a bottom card. */}
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
-          Standing rule: every lab steers the user to a dedicated CALIBRATED
-          instrument for real measurement — this app teaches, and the phone's
-          mic and audio path are uncalibrated. Added 2026-09-17 after a
-          bug-hunt pass found this lab had no note at all. */}
-      <LabHeader title="AMPLIFIER PRINCIPLES LAB" subtitle="From transistors and transformers to amplifier classes" right={<AccuracyNote compact />} />
+          The ⓘ explains the menu, or the what's-left view. The Amplifier
+          Principles Lab is a CONCEPT lab — conceptual models with labeled
+          teaching numbers, no live input, no real-world measurement — so the
+          accuracy chip is gone and the ⓘ takes its spot (owner rule
+          2026-10-31). The menu keeps its own lethal-voltage safety note. */}
+      <LabHeader
+        title="AMPLIFIER PRINCIPLES LAB"
+        subtitle="From transistors and transformers to amplifier classes"
+        guide={ending ? AMP_END_GUIDE : AMP_HOME_GUIDE}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
+      />
       {ending ? (
         <LabEndScreen
           labTitle="Amplifier Principles Lab"
@@ -219,6 +230,7 @@ export function AmpLabHomeScreen() {
         </Pressable>
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

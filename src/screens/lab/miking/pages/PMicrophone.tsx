@@ -27,11 +27,27 @@ import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
 import { copyOf, DRUM_WORDS, type FamilyWords } from '../engine/model/copy.ts';
 
+/**
+ * The POWER readout word and the card's plain power line, read from the type's
+ * own `power` field — never from the transducer alone (2026-10-31: a
+ * battery sound level meter and measurement capsules on their own supply were
+ * shown as PHANTOM). PHANTOM only when phantom is the one way it is powered.
+ */
+export function powerOf(m: MicType): { word: 'PHANTOM' | 'NONE' | 'BATTERY' | 'OWN SUPPLY' | 'VARIES'; line: string } {
+  const p = m.power.trim();
+  if (/^none\b/i.test(p)) return { word: 'NONE', line: 'Power: none needed' };
+  const alternative = /(,|—|\()\s*or\b|\bor (the maker|its own|power|a wireless)/i.test(p);
+  if (/^phantom power\b/i.test(p) && !alternative) return { word: 'PHANTOM', line: 'Power: needs phantom power from the desk' };
+  if (/^its own batter/i.test(p)) return { word: 'BATTERY', line: `Power: ${p}` };
+  if (/^its own approved supply/i.test(p)) return { word: 'OWN SUPPLY', line: `Power: ${p}` };
+  return { word: 'VARIES', line: `Power: ${p}` };
+}
+
 /** Three plain lines per mic type: what the choice needs (review M3). */
 export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip' | 'mount'> = DRUM_WORDS): { power: string; mount: string; pattern: string } {
   const p = m.patterns[0].id;
   return {
-    power: m.transducer === 'condenser' ? 'Power: needs phantom power from the desk' : 'Power: none needed',
+    power: powerOf(m).line,
     mount:
       words.mount?.[m.mount] ??
       (m.mount === 'boom'

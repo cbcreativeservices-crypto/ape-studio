@@ -210,8 +210,8 @@ export function PagePopFilter({ ctx }: { ctx: PageCtx }) {
       <Lead>A "P" is two things at once: a small sound, and a gust of air. The microphone hears both — the gust as a huge low thump.</Lead>
       {toggle}
       <PopFilterDiagram withFilter={withFilter} controls={toggle} />
-      <TraceChart wave={wave} durMs={PLOSIVE_DUR_MS} title={withFilter ? '"PA" AT THE CAPSULE · WITH A POP FILTER' : '"PA" AT THE CAPSULE · NO FILTER'} a11y={withFilter ? 'Waveform of "pa", 200 milliseconds: silence while the lips are closed, a short click as they part, a breathy rush, then the vowel, with only a faint slow ripple where the air arrives.' : 'Waveform of "pa", 200 milliseconds: the same click as the lips part, then a huge slow swing — the air jet — reaching nearly full scale and swamping the breath and the start of the vowel.'} controls={toggle} />
-      <Notice>The click when the lips part (at 20 ms) is identical in both traces. The filter all but removes the slow swing, not the consonant — and notice how close to full scale the bare swing gets.</Notice>
+      <TraceChart wave={wave} durMs={PLOSIVE_DUR_MS} title={withFilter ? '"PA" AT THE CAPSULE · WITH A POP FILTER' : '"PA" AT THE CAPSULE · NO FILTER'} a11y={withFilter ? 'Waveform of "pa", 200 milliseconds: silence while the lips are closed, a short click as they part, a breathy rush, then the vowel, with only a faint slow ripple where the air arrives.' : 'Waveform of "pa", 200 milliseconds: the same click as the lips part, then a huge slow swing — the air jet — reaching the dashed full-scale line and swamping the breath and the start of the vowel.'} controls={toggle} />
+      <Notice>The click when the lips part (at 20 ms) is identical in both traces. The filter all but removes the slow swing, not the consonant — and notice that the bare swing reaches the dashed full-scale line, the loudest a recorder takes, so it would overload the recording.</Notice>
       <Card>
         <Eyebrow>WHY THE MESH WORKS</Eyebrow>
         <Body>Sound is a tiny pressure ripple that passes through a fine mesh almost untouched. The plosive gust is a stream of moving air; the mesh breaks the stream into turbulence and spreads it out, so the jet never arrives at the capsule as one push. The consonant stays, the thump mostly goes.</Body>
@@ -237,7 +237,7 @@ export function PageSibilance({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Say a long "sss". No pitch, just hiss — air squeezed through a narrow gap and broken up on the edge of the teeth. That turbulence is sibilance.</Lead>
       {toggle}
-      <SpectrumBars hz={sp.hz} db={sp.db} ghostDb={show === 's' ? ah.db : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GRAY' : 'VOWEL "AH" · ENERGY MOSTLY BELOW 1.5 kHz'} a11y={show === 's' ? 'Spectrum of an S: almost nothing below 2 kilohertz, most energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of the vowel AH: harmonics of the voice with peaks near 700 hertz and 1.1 kilohertz; above 4 kilohertz it falls below the bottom of the scale.'} controls={toggle} />
+      <SpectrumBars hz={sp.hz} db={sp.db} ghostDb={show === 's' ? ah.db : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GRAY' : 'VOWEL "AH" · ENERGY MOSTLY BELOW 1.5 kHz'} a11y={show === 's' ? 'Spectrum of an S: little below 1 kilohertz, rising steadily to most of its energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of the vowel AH: harmonics of the voice with peaks near 700 hertz and 1.1 kilohertz; above 4 kilohertz it falls below the bottom of the scale.'} controls={toggle} />
       <Notice>Flip between the two: the vowel and the S barely overlap. That gap is what a de-esser exploits — and what a presence boost accidentally targets.</Notice>
       <Card>
         <Eyebrow>WHY IT EXISTS</Eyebrow>
@@ -433,8 +433,8 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   }, [n]);
   return (
     <View style={{ gap: 12 }}>
-      <Lead>Seven checks, one per idea, in a fresh order each visit. Wrong picks explain themselves — read the note, then try again.</Lead>
-      {/* The count is THIS visit's (the cards reshuffle and start fresh each
+      <Lead>Seven checks, one per idea; the answers come in a fresh order each visit. Wrong picks explain themselves — read the note, then try again.</Lead>
+      {/* The count is THIS visit's (the answer chips reshuffle and start fresh each
           visit); the page mark is saved. So a page completed earlier reads
           "0 of 7 correct this visit · page complete" — practice, nothing lost. */}
       <Text style={styles.foot} accessibilityLiveRegion="polite">{n} of {FINAL_CHECKS.length} correct this visit{ctx.isDone ? ' · page complete' : ` · ${PASS_MARK} completes the page`}</Text>

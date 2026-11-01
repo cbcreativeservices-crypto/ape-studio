@@ -40,6 +40,9 @@ import { useGuestWording } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the header ⓘ + "this screen, explained".
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { SS_HUB_GUIDE } from './soundsystemsScreenGuides';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -141,6 +144,9 @@ export function SoundSystemsLabScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* Screen Guide host (no Rack Unit here, so no regions). */}
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -151,7 +157,9 @@ export function SoundSystemsLabScreen() {
         </View>
         <HelpKey search="lab" />
         <AccuracyNote compact />
+        <ScreenGuideKey title="SOUND SYSTEMS LAB" guide={SS_HUB_GUIDE} />
       </View>
+      </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>
         <Text style={styles.lead}>
           Begin with an empty venue. Finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system. Five modes, in any order — LEARN teaches, the other four make you do it.
@@ -240,6 +248,7 @@ export function SoundSystemsLabScreen() {
           <Text style={styles.resetText}>START OVER (PRACTICE)</Text>
         </Pressable>
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }

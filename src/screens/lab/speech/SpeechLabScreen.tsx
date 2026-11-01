@@ -6,6 +6,8 @@
 import { PagedLab, type PageDef } from '../kit/PagedLab';
 import { PageAnatomy, PageConsonants, PageProduction, PageVoicing, PageVowels } from './speechPagesA';
 import { PageDistance, PagePopFilter, PageProblems, PageSibilance, PageSpeechChecks, PageVoices } from './speechPagesB';
+// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
+import { speechPageGuide } from './speechScreenGuides';
 
 const PAGES: PageDef[] = [
   { title: 'The Speech System', short: 'Anatomy', Component: PageAnatomy },
@@ -26,5 +28,20 @@ const PAGES: PageDef[] = [
 ];
 
 export function SpeechLabScreen() {
-  return <PagedLab labId="speech" title="Speech & Voice Lab" subtitle="How human speech works — from breath to the microphone." pages={PAGES} />;
+  return (
+    <PagedLab
+      labId="speech"
+      title="Speech & Voice Lab"
+      subtitle="How human speech works — from breath to the microphone."
+      pages={PAGES}
+      // Screen Guide (owner 2026-10-31): the ⓘ on every page and on the
+      // appended understanding check (none on the what's-left screen).
+      pageGuide={speechPageGuide}
+      // A CONCEPT lab (owner chip rule 2026-10-31): no live microphone and no
+      // real-world measurement — its numbers are typical teaching values the
+      // pages label "illustrative" themselves — so no accuracy note; the ⓘ
+      // takes its spot.
+      accuracy={false}
+    />
+  );
 }

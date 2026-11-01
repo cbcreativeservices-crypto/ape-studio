@@ -68,6 +68,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -480,6 +481,11 @@ function MembraneStudio() {
     <>
       <LabShell
         labId="cymatics"
+        // Screen Guide (owner 2026-10-31): the ⓘ explains EXPLORE, LEARN and CHECK.
+        // A CONCEPT lab — every pattern a labelled simulation, no live mic, no
+        // real-world measurement — so the accuracy chip gives way to the ⓘ.
+        guide={cymaticsStudioGuide('membrane')}
+        accuracy={false}
         title="MEMBRANE & LOUDSPEAKER STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
@@ -586,8 +592,10 @@ function MembraneStudio() {
               {head.label}, Ø {spec.diameterMm} mm at {(spec.tensionNpm / 1000).toFixed(1)} kN/m: fundamental (0,1) at {formatHz(f01)} · {nearestNote(f01).label}.
             </Text>
             <Text style={styles.body}>
-              Mode ratios to {ratioBase ? ratioBase.label.split(' · ')[0] : '—'}:{' '}
-              {ratioBase ? modes.filter((m) => m.s === 1 || m.n === 0).slice(0, 6).map((m) => (m.hz / ratioBase.hz).toFixed(2)).join(' : ') : '—'}
+              {spec.kettle ? 'Principal (n,1) mode ratios' : 'Mode ratios'} to {ratioBase ? ratioBase.label.split(' · ')[0] : '—'}:{' '}
+              {/* Kettle on: only the principal (n,1) series — the near-harmonic set the
+                  sentence names; the (0,n) ring modes (bowl-damped) would break the list. */}
+              {ratioBase ? (spec.kettle ? modes.filter((m) => m.s === 1 && m.n >= 1).slice(0, 4) : modes.filter((m) => m.s === 1 || m.n === 0).slice(0, 6)).map((m) => (m.hz / ratioBase.hz).toFixed(2)).join(' : ') : '—'}
               {spec.kettle ? ' — near 1 : 1.5 : 2 : 2.5, close to a harmonic series, so the ear hears a clear pitch.' : ' — not 1 : 2 : 3 : 4. A bare membrane is inharmonic.'}
             </Text>
             <Text style={styles.readK}>

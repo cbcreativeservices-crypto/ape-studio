@@ -409,8 +409,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Oscillators', blurb: 'Sine/square/saw, FM, AM, band-limiting.', route: 'OscillatorLab' },
-      { name: 'Noise', blurb: 'White → violet colors, floor, SNR, masking.', route: 'NoiseLab' },
+      { name: 'Oscillators', blurb: 'Sine, square, saw, triangle, pulse: shape and harmonic recipe.', route: 'OscillatorLab' },
+      { name: 'Noise', blurb: 'White → violet colors, slopes, energy per octave.', route: 'NoiseLab' },
       { name: 'Harmonics', blurb: 'Additive synthesis, spectrum, Fourier.', route: 'HarmonicLab' },
       { name: 'FM Synthesis', blurb: 'Carrier + modulator: ratio, index, and sidebands.', route: 'FmLab' },
       { name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.', route: 'ModularLab' },
@@ -579,14 +579,16 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     alwaysFree: true,
     kind: 'hub',
     route: 'CalcLab',
-    // Count the CALCULATORS, not the workspaces (fix 2026-08-31: the row
+    // Count the CALCULATIONS (functions), not the workspaces (fix 2026-08-31: the row
     // said "55 Calculators" over 163 ratified functions — 166 as of
-    // 2026-10-26, per Comp A; the number shown is always computed). A getter, so the
+    // 2026-10-26, per Comp A; the number shown is always computed). Labelled
+    // "Calculations" (2026-10-31) so it no longer shares the word with the
+    // Calculator Lab home tiles, which count calculators (workspaces). A getter, so the
     // calc registry loads when the count is first shown, not at app start.
     get count() {
       return calcFunctionCount();
     },
-    countLabel: (n) => `${n} Calculators`,
+    countLabel: (n) => `${n} Calculations`,
     hubBlurb: 'SPL, dB, speaker power, delay, wavelength, room modes, cable loss, Ohm’s law, digital audio, coverage — chained.',
   },
 ];
@@ -643,7 +645,7 @@ export function categoryEntries(cat: LabCategory): LabLeaf[] {
   return categoryLabRows(cat);
 }
 
-/** The card's count label, e.g. "5 Labs" / "25 Calculators". */
+/** The card's count label, e.g. "5 Labs" / "166 Calculations". */
 export function categoryCountLabel(cat: LabCategory): string {
   const n = categoryCount(cat);
   return (cat.countLabel ?? labsPlural)(n);

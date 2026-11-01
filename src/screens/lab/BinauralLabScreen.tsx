@@ -46,6 +46,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { StageAspectReport } from './rack/stageAspect';
+import { binauralScreenGuide } from './binauralScreenGuides';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -214,6 +215,12 @@ export function BinauralLabScreen() {
       subtitle="ITD · ILD · Head Shadow · Localization"
       intro={INTRO}
       exploreCaption="Drag a sound object around the head — angle sets the time/level cues, radius sets distance. Use headphones."
+      // Screen Guide (2026-10-31): "this screen, explained" on each tab. A
+      // CONCEPT lab — a simplified, synthesized head model on headphones, no
+      // microphone and no real-world measurement — so the accuracy chip gives
+      // its spot to the ⓘ (accuracy chip rule, owner 2026-10-31).
+      guide={binauralScreenGuide}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -237,8 +244,8 @@ export function BinauralLabScreen() {
               tint: SRC_COLORS[selected],
               helpKey: 'objects',
             },
-            { k: 'AZ', v: `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`, flex: 1.5, helpKey: 'display' },
-            { k: 'DIST', v: `${sel.dist.toFixed(1)} m`, helpKey: 'display' },
+            { k: 'AZ', v: `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`, flex: 1.5, helpKey: 'azimuth' },
+            { k: 'DIST', v: `${sel.dist.toFixed(1)} m`, helpKey: 'distance' },
             { k: 'ITD', v: `${itdUs(sel.azDeg).toFixed(0)} µs`, helpKey: 'display' },
           ],
           render: (w, h) => (
@@ -268,7 +275,7 @@ export function BinauralLabScreen() {
             format: () => `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`,
             formatShort: () => `${azSign}${sel.azDeg.toFixed(0)}°`,
             tint: SRC_COLORS[selected],
-            helpKey: 'display',
+            helpKey: 'azimuth',
           },
           {
             kind: 'fader',
@@ -281,7 +288,7 @@ export function BinauralLabScreen() {
               }),
             format: () => `${sel.dist.toFixed(1)} m`,
             tint: SRC_COLORS[selected],
-            helpKey: 'display',
+            helpKey: 'distance',
           },
           {
             kind: 'group',
@@ -338,8 +345,8 @@ export function BinauralLabScreen() {
                 <Text style={styles.caption}>
                   {sel.type === BIN_SRC.sine
                     ? sel.freq <= 440
-                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. Below ~1.5 kHz the head casts almost no shadow, so ITD does the work, and it does it well. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalizing: the image sits inside your head rather than out in the room.'
-                      : 'A higher tone gives the head shadow something to work with — level difference starts carrying the location.'
+                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. In real hearing, below ~1.5 kHz the head casts almost no shadow, so timing (ITD) does most of the work, and it does it well. This simplified model still applies its level drop (to −8 dB at the side) at every frequency, so here a low tone carries a level cue too. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalizing: the image sits inside your head rather than out in the room.'
+                      : 'A higher tone gives the head shadow more to work with — the far ear is darkened more, so level difference carries more of the location.'
                     : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
                 </Text>
                 {sel.type === BIN_SRC.sine ? (

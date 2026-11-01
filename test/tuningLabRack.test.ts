@@ -85,9 +85,12 @@ describe('the wrapper is the Rack Unit with full screen on', () => {
     assert.doesNotMatch(layout, /bottomInset=/);
   });
 
-  test('the badge defaults to an honesty badge and the well carries the accuracy note', () => {
+  test('the badge defaults to an honesty badge; the accuracy note gave way to the screen guide', () => {
     assert.match(layout, /badge: rack\.badge \?\? BADGE_EXACT/);
-    assert.match(layout, /<AccuracyNote/);
+    // ACCURACY CHIP RULE (owner 2026-10-31): a calculated, synthesized-tone
+    // concept lab carries the header ⓘ guide, not the accuracy note
+    // (test/screenGuide_tuning_20261031.test.ts pins the wiring).
+    assert.doesNotMatch(layout, /<AccuracyNote/);
   });
 });
 

@@ -59,6 +59,7 @@ import { gridPreloadOrder } from '../../features/lab/labPreloadPlan';
 import { labProbe } from '../../features/lab/labProbe';
 import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import { bassScreenGuide } from './bassScreenGuides';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -379,6 +380,12 @@ export function BassLabScreen() {
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
       exploreCaption="Tap the fretboard (or use the FRET fader / NODE choices) to choose a note — then read the fraction, watch the standing wave, and play it."
+      // Screen Guide (2026-10-31): "this screen, explained" — LEARN, CHECK and
+      // EXPLORE in the MODE showing (bassScreenGuides.ts). A CONCEPT lab (the
+      // board is drawn from the equations, PLAY is a recording, no mic and no
+      // measurement), so the accuracy chip gives its spot to the ⓘ.
+      guide={(tab) => bassScreenGuide(tab, mode)}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -560,7 +567,11 @@ export function BassLabScreen() {
         ) : null}
         {soundHz < SPEAKER_HPF_HZ ? (
           <Text style={styles.advisory}>
-            {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): a ${soundHz.toFixed(0)} Hz fundamental is attenuated ${speakerGuardDb(soundHz).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`}
+            {/* The guard filter is on the string model only — the recording
+                plays unfiltered, so its line names no filter and no dB. */}
+            {source === 'model'
+              ? `Speaker high-pass (${SPEAKER_HPF_HZ} Hz) on the string model: its ${soundHz.toFixed(0)} Hz fundamental is reduced by ${Math.abs(speakerGuardDb(soundHz)).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`
+              : `A phone speaker barely reproduces a ${soundHz.toFixed(0)} Hz fundamental — you mostly hear its harmonics. Use headphones for the true low end.`}
           </Text>
         ) : null}
         {genError ? <Text style={styles.error}>{genError}</Text> : null}

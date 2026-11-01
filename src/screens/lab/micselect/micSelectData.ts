@@ -835,5 +835,5 @@ export const LOCKER_MICS: LockerMic[] = [
 export const LOCKER_SLOTS = 6;
 
 export const LOCKER_LESSON =
-  'Versatility is a characteristic too. If a third large-diaphragm condenser covers nothing new, ' +
+  'Versatility is a characteristic too. If a second large-diaphragm condenser covers nothing new, ' +
   'a small-diaphragm pair might suddenly cover several missing jobs — that is systems thinking.';

@@ -24,6 +24,9 @@ import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatal
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained".
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -253,6 +256,8 @@ export function CalcWorkflowEditScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -264,7 +269,9 @@ export function CalcWorkflowEditScreen() {
         <Pressable style={styles.saveBtn} onPress={() => void onSave()} accessibilityRole="button" accessibilityLabel="Save workflow">
           <Text style={styles.saveBtnText}>SAVE</Text>
         </Pressable>
+        <ScreenGuideKey title={editingId ? 'EDIT WORKFLOW' : 'NEW WORKFLOW'} guide={CALC_SCREEN_GUIDES.workflowEdit} />
       </View>
+      </ScreenGuideHintAnchor>
 
       {load !== 'loaded' ? (
         <View style={[styles.scroll, cardColumn]}>
@@ -362,6 +369,7 @@ export function CalcWorkflowEditScreen() {
         ) : null}
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

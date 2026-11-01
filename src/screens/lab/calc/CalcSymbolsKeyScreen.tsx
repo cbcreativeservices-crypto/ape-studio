@@ -21,6 +21,9 @@ import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup'
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained".
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 export function CalcSymbolsKeyScreen() {
   const insets = useSafeAreaInsets();
@@ -32,6 +35,8 @@ export function CalcSymbolsKeyScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -43,7 +48,10 @@ export function CalcSymbolsKeyScreen() {
           <Text style={styles.title}>SYMBOL KEY</Text>
           <Text style={styles.subtitle}>Greek letters & math symbols used in the calculators</Text>
         </View>
+        <View style={{ flex: 1 }} />
+        <ScreenGuideKey title="SYMBOL KEY" guide={CALC_SCREEN_GUIDES.symbols} />
       </View>
+      </ScreenGuideHintAnchor>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 34 + insets.bottom }]}>
         {empty ? (
@@ -78,6 +86,7 @@ export function CalcSymbolsKeyScreen() {
         )}
       </ScrollView>
       <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
+      </ScreenGuideHost>
     </View>
   );
 }

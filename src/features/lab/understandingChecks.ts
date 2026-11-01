@@ -384,13 +384,13 @@ const FLANGER: readonly Q[] = [
     id: 'feedback',
     prompt: 'What happens as you push flanger FEEDBACK toward its maximum?',
     options: [
-      'The notches deepen and the peaks ring, building toward a metallic scream',
+      'The peaks between the notches grow taller and narrower and ring, building toward a metallic scream',
       'The sweep gets faster',
       'The effect gets quieter and disappears',
       'The notches spread evenly further apart',
     ],
-    correct: 'The notches deepen and the peaks ring, building toward a metallic scream',
-    explanation: 'Feedback re-circulates the delayed copy and sharpens the comb. Speed belongs to RATE, and spacing belongs to the delay time.',
+    correct: 'The peaks between the notches grow taller and narrower and ring, building toward a metallic scream',
+    explanation: 'Feedback re-circulates the delayed copy, lifting tall, narrow peaks between the notches so the comb rings. Speed belongs to RATE, and spacing belongs to the delay time.',
   },
   {
     id: 'sine-test',
@@ -476,7 +476,7 @@ const DISTORTION: readonly Q[] = [
   },
   {
     id: 'oversampling',
-    prompt: 'What do you hear when OVERSAMPLING is switched OFF?',
+    prompt: 'What can get into the sound when OVERSAMPLING is switched OFF?',
     options: [
       'Aliasing — harmonics above the Nyquist limit fold back as harsh, out-of-tune tones',
       'A cleaner, smoother distortion',
@@ -488,15 +488,15 @@ const DISTORTION: readonly Q[] = [
   },
   {
     id: 'parallel',
-    prompt: 'Why set MIX to about 50% (parallel distortion)?',
+    prompt: 'What is parallel distortion (MIX at 50% PARALLEL) for?',
     options: [
-      'To add grit while keeping the clean signal’s body and clarity underneath',
-      'To make the distortion react faster',
-      'To remove aliasing',
-      'To double the number of harmonics',
+      'Blending a distorted copy with the clean signal, so grit can be added while the clean signal keeps its body',
+      'Making the distortion react faster',
+      'Removing aliasing',
+      'Doubling the number of harmonics',
     ],
-    correct: 'To add grit while keeping the clean signal’s body and clarity underneath',
-    explanation: 'DRIVE decides how bent — how harmonic-rich — the distorted signal is. MIX blends it with the clean signal, so you can add character without losing the dry body.',
+    correct: 'Blending a distorted copy with the clean signal, so grit can be added while the clean signal keeps its body',
+    explanation: 'That works once the distorted copy is turned down to sit under the clean one. On EXPLORE the clean copy is the undriven −20 dBFS input, about 20 dB under the clipped one at DRIVE +24 dB, so 50% PARALLEL sounds about 5 dB quieter and nearly as gritty.',
   },
 ];
 
@@ -587,7 +587,7 @@ const OSCILLATOR: readonly Q[] = [
   },
   {
     id: 'band-limit',
-    prompt: 'This lab leaves out any harmonic at or above the Nyquist frequency (half the sample rate). Why?',
+    prompt: 'This lab would leave out any harmonic at or above the Nyquist frequency (half the sample rate). Why?',
     options: [
       'Those harmonics would fold back as aliasing — unrelated, out-of-tune tones',
       'They are too quiet to matter',
@@ -966,7 +966,7 @@ const HARMONOGRAPH: readonly Q[] = [
       'It doubles in size',
     ],
     correct: 'It slowly rotates (precesses) — that drift is beating made visible',
-    explanation: 'A near-miss ratio slides in and out of alignment. You see it as a slowly turning figure and hear it as beating.',
+    explanation: 'A near-miss ratio slides in and out of alignment. You see it as a slowly turning figure; played as two tones, the same drift is beating. On EXPLORE, ▶ sounds the detune in LATERAL only — in ROTARY it moves the silent platform.',
   },
   {
     id: 'damping',
@@ -1094,7 +1094,7 @@ const FM: readonly Q[] = [
   },
   {
     id: 'non-integer',
-    prompt: 'You set a non-integer ratio such as 1.41. How does the tone change?',
+    prompt: 'You set the ratio to 1.41 ✳ (about √2). How does the tone change?',
     options: [
       'The sidebands land between harmonics — a bell-like, metallic tone with an unclear pitch',
       'It becomes a pure sine',

@@ -40,12 +40,12 @@ type M6Variant = { key: string; label: string; truth: string; make: (m: Mono, rn
 const VARIANTS: M6Variant[] = [
   {
     key: 'left', label: 'Left',
-    truth: 'Panned hard left (constant-power) — nearly nothing in the right ear.',
+    truth: 'Panned far left (constant-power) — the right ear still gets the sound, about 18 dB quieter.',
     make: (m) => pan(m, -0.85),
   },
   {
     key: 'right', label: 'Right',
-    truth: 'Panned hard right — the mirror image.',
+    truth: 'Panned far right — the mirror image.',
     make: (m) => pan(m, 0.85),
   },
   {

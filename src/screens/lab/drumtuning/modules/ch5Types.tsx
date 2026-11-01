@@ -204,7 +204,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <Landing looking="the bass drum side on, pedal on the right; the beater swings in when you strike." prompt="Set FRONT and PILLOW, ▶ STRIKE." />
               <DrumStatus playing={kick.playing} pending={kick.pending} failed={kick.failed} rendering={kick.status === 'rendering'} idle="stopped · set FRONT and PILLOW, then ▶ STRIKE" label="the bass drum" />
               <Card>
-                <Point title="Front head and pillow">FRONT decides how much the two heads couple: closed is the longest note, a port lets some of the air out (and a microphone in), no front head is the shortest note — the batter alone. PILLOW shortens the decay and takes the overtones first; SUSTAIN is measured from each render.</Point>
+                <Point title="Front head and pillow">FRONT decides how much the two heads couple: closed is the longest note, a port lets some of the air out (and a microphone in), no front head is the shortest note — the batter alone. PILLOW shortens the decay and takes the overtones first; SUSTAIN is estimated from each render.</Point>
                 <Point title="Beater, low end, pitch">A harder stroke is louder, with more click and a deeper bend. A felt beater gives a thump, plastic or wood a click — this model plays the click. A lower batter gives more low end but a slower, flappier response under fast playing.</Point>
               </Card>
               <WhyCard title="MORE · muffling and internal contact">

@@ -28,6 +28,11 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { productionProjectComplete } from '../../../features/production/complete';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this stage. A
+// Production lab KEEPS its "practice" AccuracyNote (the planning-scope
+// chip, owner rule 2026-10-31); the key sits after it.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { productionStageGuide } from './productionScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
@@ -278,6 +283,9 @@ export function ProductionStageScreen() {
     [project, stageId, lab],
   );
 
+  /** This stage's guide; none for a stage this lab does not have. */
+  const guide = productionStageGuide(lab, stageId);
+
   return (
     <KeyboardAvoidingView
       style={styles.root}
@@ -287,6 +295,9 @@ export function ProductionStageScreen() {
       // iOS keyboard (bug hunt 2026-09-30).
       keyboardVerticalOffset={0}
     >
+      {/* No Rack Unit: regions off, every guide step sits low. */}
+      <ScreenGuideHost regions={false} resetKey={stageId}>
+      <ScreenGuideHintAnchor off={!guide}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -304,7 +315,9 @@ export function ProductionStageScreen() {
             "—" until the project is read, and if it cannot be. */}
         <StageSignalBadge stage={report} />
         <AccuracyNote variant="practice" compact />
+        {guide && authored ? <ScreenGuideKey title={authored.title.toUpperCase()} guide={guide} /> : null}
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* A FAILED WRITE IS NEVER SILENT (2026-09-17). The field updates
           optimistically so typing feels immediate, which means the only thing
@@ -489,6 +502,7 @@ export function ProductionStageScreen() {
           </Pressable>
         </ScrollView>
       )}
+      </ScreenGuideHost>
     </KeyboardAvoidingView>
   );
 }

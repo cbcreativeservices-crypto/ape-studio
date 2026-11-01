@@ -243,6 +243,8 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
   const mark = (id: string, m: 'ok' | 'fault') => setMarks((s) => ({ ...s, [id]: m }));
   const check = (id: string) => setChecked((s) => new Set(s).add(id));
   const it = ALL_LINES.find((x) => x.id === sel)!;
+  // An output's two readings are the upper strip's: processor signal present, and plays the right feed.
+  const isOut = LINE_OUTPUTS.some((o) => o.id === sel);
   const probed = checked.has(sel);
   const m = marks[sel];
   const right = m && (m === 'ok') === it.healthy;
@@ -256,7 +258,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
       onSelect: setSel,
       name: (x) => `${marks[x.id] && (marks[x.id] === 'ok') === x.healthy ? '✓ ' : checked.has(x.id) ? '◐ ' : ''}${x.name}`,
       short: (x) => x.short,
-      blurb: (x) => (checked.has(x.id) ? x.reads : 'Not probed yet. Tap PROBE to read the stagebox LED and the console meter.'),
+      blurb: (x) => (checked.has(x.id) ? x.reads : LINE_OUTPUTS.some((o) => o.id === x.id) ? 'Not probed yet. Tap PROBE to check for output signal and whether the box plays its own feed.' : 'Not probed yet. Tap PROBE to read the stagebox LED and the console meter.'),
     }),
     ...(!probed ? [{ kind: 'action', id: 'probe', label: 'PROBE', onPress: () => check(sel), tint: colors.cyanBright } as DockParam] : []),
     ...(probed && !right
@@ -275,8 +277,8 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
         hideDragTag: true,
         bezel: [
           { k: 'LINE', v: it.short, tint: colors.cyanBright, flex: 1.2 },
-          { k: 'STAGEBOX LED', v: probed ? (it.led ? 'LIT' : 'DARK') : '?', tint: probed ? (it.led ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
-          { k: 'CH METER', v: probed ? (it.meter ? 'MOVING' : 'FLAT') : '?', tint: probed ? (it.meter ? colors.greenBright : colors.orange) : undefined, flex: 1.1 },
+          { k: isOut ? 'PROC OUT' : 'STAGEBOX LED', v: probed ? (it.led ? (isOut ? 'SIGNAL' : 'LIT') : (isOut ? 'NONE' : 'DARK')) : '?', tint: probed ? (it.led ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
+          { k: isOut ? 'RIGHT FEED' : 'CH METER', v: probed ? (it.meter ? (isOut ? 'YES' : 'MOVING') : (isOut ? 'NO' : 'FLAT')) : '?', tint: probed ? (it.meter ? colors.greenBright : colors.orange) : undefined, flex: 1.1 },
           { k: 'MARKED', v: `${correct}/${ALL_LINES.length}`, tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
@@ -304,7 +306,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={9}>OPERATE · LINE CHECK</ChapterTag>
-      <Body>Outputs first — the PA has to be proven before there is anything to line-check into — then every input. Each probe reveals two readings: the stagebox LED (did the signal arrive at the stage?) and the console meter (did it arrive at its channel?).</Body>
+      <Body>Outputs first — the PA has to be proven before there is anything to line-check into — then every input. Each probe reveals two readings. On an output: is there signal at the processor output, and does the box play its own feed? On an input: the stagebox LED (did the signal arrive at the stage?) and the console meter (did it arrive at its channel?).</Body>
       <Prompt>Probe each one, read both readings, and mark it honestly — three of these are faults.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <VerdictLine ok={done} warn={!done}>{done ? 'Line check complete: one mis-patched wedge, one mis-patched input and one dead cable found before the band arrived.' : `${correct} of ${ALL_LINES.length} marked correctly.`}</VerdictLine>
@@ -312,7 +314,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
       <LineCheckList items={LINE_OUTPUTS} marks={marks} checked={checked} onCheck={check} onMark={mark} selectedId={sel} onSelect={setSel} />
       <Eyebrow>INPUTS — DOES EACH SOURCE ARRIVE AT ITS CHANNEL?</Eyebrow>
       <LineCheckList items={LINE_INPUTS} marks={marks} checked={checked} onCheck={check} onMark={mark} selectedId={sel} onSelect={setSel} />
-      <KeyFact>A line check is a test of the SYSTEM, one path at a time, with the routing already verified (amplifiers off) before the first output was powered. LED lit but meter flat = the patch. LED dark = the cable or the source. Both moving but the wrong box plays = the output patch. It is the cheapest hour of the day.</KeyFact>
+      <KeyFact>A line check is a test of the SYSTEM, one path at a time, with the routing already verified (amplifiers off) before the first output was powered. LED lit but meter flat = the patch. LED dark = the cable or the source. On an output, signal present but the wrong feed plays = the output patch. It is the cheapest hour of the day.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }
@@ -448,7 +450,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={13}>OPERATE · RING-OUT, THEN SOUNDCHECK</ChapterTag>
-      <Body>Four wedges, each drawn with its microphone’s pattern. Three sit off to the side, inside the live angle. The ring-out comes BEFORE the band plays: bring each send up to what its performer will need, without a ring.</Body>
+      <Body>Four wedges, one for each performer. The stage draws the one you pick under WEDGE, with its microphone’s pattern; all four are listed below and on the readout strip. Three start off to the side, inside the live angle. The ring-out comes BEFORE the band plays: bring each send up to what its performer will need, without a ring.</Body>
       <Prompt>Reposition first, notch only the frequency that rings, and only then level. Every wedge to −6 dB or louder.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">

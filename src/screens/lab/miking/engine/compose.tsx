@@ -71,6 +71,7 @@ export function ComposedPage({ parts, props }: { parts: readonly PagePart[]; pro
           step: k === active ? local : 0,
           setStep: (i) => setLocal(i, k),
           onSteps: reporters[k],
+          onStepInfo: host?.onStepInfo,
           head: k === 0 ? host?.head : null,
           tail: k === lastShown ? host?.tail : null,
           readWrap: host?.readWrap ?? ((b) => b),

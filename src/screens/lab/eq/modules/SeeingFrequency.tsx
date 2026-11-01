@@ -18,8 +18,9 @@
  * locally per house rule):
  *  - bars = REAL native band frame only; Q2 gray slots for unresolvable bands;
  *  - the HPF curve is a DESIGNED RESPONSE — ANALYTIC overlay (fxViz grammar,
- *    amber): the analyzer keeps showing the room UNFILTERED — the curve shows
- *    what a low-cut WOULD remove, and says so;
+ *    amber), drawn over the bars, which are redrawn with the same 12 dB/oct
+ *    roll-off applied (display preview, owner 2026-08-07) — the mic signal
+ *    itself is never filtered; the copy calls it a preview, not a measurement;
  *  - phone-mic caveat stated unobtrusively (spec ruling);
  *  - never teach "visible LF ⇒ remove it" — remove UNWANTED energy while
  *    preserving useful content (spec ruling).
@@ -388,8 +389,9 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
         )}
 
         <Text style={styles.caption}>
-          The amber curve is the filter’s designed response — the analyzer keeps showing your room
-          unfiltered, so you can see exactly what a low-cut at each frequency would remove.
+          The bars are redrawn as if your room’s sound had passed the low-cut, and the amber curve
+          is the filter’s designed shape. Nothing in the room changes; this is a preview, not a
+          measurement after filtering.
         </Text>
 
         <Text style={styles.body}>
@@ -409,8 +411,8 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
             ],
             correctIdx: 0,
             reveal:
-              'The analyzer keeps showing the room UNFILTERED while the amber curve overlays the filter’s designed shape — so you can see exactly what a cut at each frequency would take away before you take it.',
-            wrongHint: 'Read the caption above the curve — designed, not measured.',
+              'The amber curve is the filter’s designed shape, worked out from its maths. The bars below it are redrawn as if that filter were in place, so you can see what it would take away before you take it.',
+            wrongHint: 'Read the caption under the display — designed, not measured.',
           }}
         />
 

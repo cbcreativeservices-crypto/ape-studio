@@ -22,6 +22,8 @@ import { MIXING_PAGES_A } from './pagesA';
 import { MIXING_PAGES_B } from './pagesB';
 import { MIXING_PAGES_C } from './pagesC';
 import { MIXING_PAGES_D } from './pagesD';
+// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
+import { beginningMixingPageGuide } from './beginningMixingScreenGuides';
 
 const PAGES = [...MIXING_PAGES_A, ...MIXING_PAGES_B, ...MIXING_PAGES_C, ...MIXING_PAGES_D];
 
@@ -41,5 +43,11 @@ export function BeginningMixingLabScreen() {
   // shows; it was 7.1 s before classicWave became a wavetable, which is why
   // this was not wired until now.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  // ACCURACY CHIP RULE (owner 2026-10-31): kept (PagedLab's default) — the lab
+  // shows real level readouts: Gain Staging's measured peak/RMS meters on the
+  // rendered mixes, every comparison matched by measured RMS, all heard through
+  // an uncalibrated phone output. The note sits at the top of each reading page
+  // (PagedLab draws the header chip only on rack pages, and this lab has none);
+  // the ⓘ has the header to itself.
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

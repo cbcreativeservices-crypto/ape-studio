@@ -62,6 +62,8 @@ import { DJ_GOALS, DJ_PAGE_NO, DJ_PAGES } from './pages';
 import { DJ_LAB_ID, isOptionalNo } from './pages/registry';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { leftLine } from './booth/goalStore';
+// Screen Guide (owner 2026-10-31): each screen's "explained" guide, by its title.
+import { DJ_SCREEN_GUIDES } from './djScreenGuides';
 
 export { DJ_LAB_ID };
 export const DJ_LAB_TITLE = 'DJ Systems Lab';
@@ -82,6 +84,9 @@ const leftDetail = (i: number): string | undefined => {
 
 /** Screens 16–18 (by outline number) are optional equipment paths. */
 const optionalPage = (i: number): boolean => i < DJ_PAGES.length && isOptionalNo(DJ_PAGE_NO[i] ?? -1);
+
+/** Screen Guide for screen `i` — keyed by the screen's title (djScreenGuides). */
+const pageGuide = (i: number) => (DJ_PAGES[i] ? DJ_SCREEN_GUIDES[DJ_PAGES[i].title] : undefined);
 
 export function DJSystemsLabScreen() {
   // Leaving the lab releases the synthesised tracks' clip banks and the deck
@@ -104,6 +109,7 @@ export function DJSystemsLabScreen() {
       accuracyDetail={DJ_ACCURACY_DETAIL}
       optionalPage={optionalPage}
       labDoneKey={trainingKeyFor('DJSystemsLab')}
+      pageGuide={pageGuide}
     />
   );
 }

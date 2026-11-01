@@ -17,7 +17,7 @@ import { rngFor, pickInt, choice, shuffled, drumPattern, pluckPattern, present, 
 const DELAYS = [500, 250, 100, 50]; // ms, ladder order L1→L4
 const DELAY_CHIPS = [50, 100, 250, 500];
 
-/** Dry pluck + one echo at −6 dB; ≥250 ms trials add a second repeat (fb 0.3). */
+/** Dry pluck + one echo at −6 dB; ≥250 ms trials add a 0.15 tap at 2×delay (no feedback), giving repeats at d, 2d, 3d (−6, −16.5, −22.5 dB). */
 function withEcho(x: Mono, delayMs: number): Mono {
   let y = mixDelayed(x, delayMs, 0.5);
   if (delayMs >= 250) y = mixDelayed(y, delayMs * 2, 0.15);
@@ -28,7 +28,7 @@ function withEcho(x: Mono, delayMs: number): Mono {
 // NEW COPY
 const echoDesc = (delayMs: number): string =>
   delayMs >= 250
-    ? `Two repeats, ${delayMs} ms apart — the first 6 dB down, the second fainter.`
+    ? `Three repeats, ${delayMs} ms apart — the first 6 dB down, then about 16 and 22 dB down.`
     : `One echo, ${delayMs} ms behind each pluck, 6 dB down.`;
 
 export const M8_DELAY: EarModule = {
@@ -242,7 +242,13 @@ export const M12_POLARITY: EarModule = {
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],
-          caption: 'The flipped sum’s low-frequency hole is unmistakable once you see it.',
+          // L1 flipped sum is exact digital silence; SeeItView normalizes each
+          // trace to its own peak, so it draws as a flat full-width line, not
+          // a hole — the caption must say so (verified 2026-10-31).
+          caption:
+            level === 1
+              ? `Clip ${inFirst ? 'B' : 'A'} cancelled to total silence, so its trace is a meaningless flat line, not sound. At levels 2–3 the cancellation is partial and shows as a low-frequency hole.`
+              : 'The flipped sum’s low-frequency hole is unmistakable once you see it.',
         },
       };
     }

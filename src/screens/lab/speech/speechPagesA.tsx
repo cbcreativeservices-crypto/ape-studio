@@ -207,6 +207,10 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
       {VOWELS.map((o) => <Btn key={o.id} label={`${o.letter} · ${o.sound.split(' ')[0]}`} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.letter}, ${o.sound}`} />)}
     </Row>
   );
+  // Same thresholds as the drawing above (vowelViz.tsx), so the card never contradicts it (EH = mid / half open).
+  const tongue = v.height > 0.6 ? 'high' : v.height > 0.3 ? 'mid' : 'low';
+  const jawOpen = 1 - v.height;
+  const jaw = jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed';
   return (
     <View style={{ gap: 12 }}>
       <Lead>A vowel is mostly a tongue position. Where the tongue sits sets the mouth’s resonant peaks — the formants — which boost the harmonics near them, and that is what you hear as A, E, I, O or U.</Lead>
@@ -216,7 +220,7 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
       <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} controls={<View style={{ gap: 8 }}>{formantRead}{picker}</View>} />
       <Card>
         {formantRead}
-        <Body>{v.height > 0.6 ? 'Tongue high, jaw nearly closed → a low first formant.' : 'Tongue low, jaw open → a high first formant.'} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : v.id === 'i' ? 'Spread lips shorten the tract a little, nudging the formants up.' : 'Unrounded lips leave the tract at its natural length.'}</Body>
+        <Body>{`Tongue ${tongue}, jaw ${jaw} → a ${tongue === 'high' ? 'low' : tongue === 'mid' ? 'middle' : 'high'} first formant.`} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : v.id === 'i' ? 'Spread lips shorten the tract a little, nudging the formants up.' : 'Unrounded lips leave the tract at its natural length.'}</Body>
       </Card>
       <Notice>Step from I (EE) to A (AH): the tongue drops, F1 climbs and F2 falls — the two gold peaks move toward each other.</Notice>
     </View>

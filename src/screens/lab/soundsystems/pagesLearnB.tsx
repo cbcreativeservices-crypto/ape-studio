@@ -707,8 +707,11 @@ function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 
   const band = (x: number) => Math.min(100, Math.max(1, (x / AMP_MAX_W) * 100));
   const tint = match === 'ok' ? colors.green : match === 'under' ? colors.red : colors.gold;
   const glyph = Math.round(Math.min(64, Math.max(36, h * 0.32)));
+  // 'ok' reaches a little past the program rating (the limiter allowance in
+  // ampMatch); the words must say so, because the drawn band stops at program.
+  const justOver = match === 'ok' && amp > CABINET.program;
   return (
-    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}`}>
+    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${justOver ? 'just over the band, fine with the limiter set' : match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}`}>
       <View style={styles.bandRow}>
         <View style={styles.bandEnd}>
           <GearGlyph kind="amp" size={glyph} label="Amplifier" legends={false} />
@@ -724,7 +727,7 @@ function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 
             <Text style={[styles.bandText, { color: colors.green }]}>{CABINET.continuous}–{CABINET.program} W · THE BAND</Text>
             <Text style={styles.bandText}>{AMP_MAX_W} W</Text>
           </View>
-          <Text style={[styles.bandVerdict, { color: tint }]}>{match === 'ok' ? '● IN THE BAND' : match === 'under' ? '△ UNDERPOWERED — CLIPS FIRST' : '△ OVERSIZED — HEADROOM IS YOURS TO KEEP'}</Text>
+          <Text style={[styles.bandVerdict, { color: tint }]}>{justOver ? '● JUST OVER — OK WITH THE LIMITER SET' : match === 'ok' ? '● IN THE BAND' : match === 'under' ? '△ UNDERPOWERED — CLIPS FIRST' : '△ OVERSIZED — HEADROOM IS YOURS TO KEEP'}</Text>
         </View>
         <View style={styles.bandEnd}>
           <GearGlyph kind="passiveSpeaker" size={glyph} label="Cabinet" legends={false} />
@@ -777,7 +780,7 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         initialParam: 'amp',
         hideDragTag: true,
         bezel: [
-          { k: 'MATCH', v: match === 'ok' ? 'IN BAND' : match === 'under' ? 'UNDER' : 'OVER', tint },
+          { k: 'MATCH', v: match === 'ok' ? (amp > CABINET.program ? 'JUST OVER' : 'IN BAND') : match === 'under' ? 'UNDER' : 'OVER', tint },
           { k: 'CONTINUOUS', v: `${CABINET.continuous} W`, flex: 1.1 },
           { k: 'PROGRAM', v: `${CABINET.program} W` },
           { k: `SPL @ ${dist} m`, v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },

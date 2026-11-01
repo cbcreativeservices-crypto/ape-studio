@@ -115,6 +115,9 @@ export function ampMatchCopy(v: MatchVerdict, ampW: number, contW: number, progW
     case 'over':
       return `${ampW} W is well above the cabinet’s ${progW} W program rating. It can deliver more than the voice coils will dissipate; run it with the processor’s limiter set for the cabinet, or choose a smaller amplifier.`;
     default:
+      if (ampW > progW) {
+        return `${ampW} W is just above the cabinet’s ${progW} W program rating — still inside the common allowance, but only with the processor’s limiter set for the cabinet so the extra power never reaches the voice coils.`;
+      }
       return `${ampW} W sits between the cabinet’s ${contW} W continuous and ${progW} W program ratings — the usual professional guideline. Clean headroom without an easy way to cook the drivers.`;
   }
 }

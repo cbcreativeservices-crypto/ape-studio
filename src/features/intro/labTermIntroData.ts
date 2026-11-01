@@ -516,7 +516,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Amplifier Principles Lab",
     term: "Amplifier",
     plainEnglish:
-      "An amplifier takes a weak signal from a mic, instrument, or line source, and boosts it to a level that can drive speakers or recording gear. Common types are mic preamps (very quiet boosts), line amps (to boost or buffer line-level signals), and power amps (to drive speakers). A good amp adds almost no color - it just makes the signal bigger.",
+      "An amplifier takes a weak signal from a mic, instrument, or line source, and boosts it to a level that can drive speakers or recording gear. Common types are mic preamps (very quiet boosts), line amps (to boost or buffer line-level signals), and power amps (to drive speakers). A good amp adds almost no color - it delivers a larger copy of the signal, with the energy coming from its power supply.",
     glossaryId: "a3eb56c6-2f33-41af-ba4c-382a3a6350c8",
   },
   EarTrainingLab: {

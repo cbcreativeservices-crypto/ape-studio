@@ -27,7 +27,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
-import { faderUnlessFew } from '../engine/rack/fewStops.ts';
+import { faderUnlessFew, fewStops } from '../engine/rack/fewStops.ts';
 import type { MicPattern, SettingItem, ViewId } from '../engine/model/types.ts';
 import { copyOf } from '../engine/model/copy.ts';
 import { coreSetups, roleWords, startingSetups, type StartingSetup } from '../engine/setups.ts';
@@ -277,7 +277,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
       },
       well: (
         <>
-          <Landing looking={sel ? `${roleWords(sel)} · ${variantShort}` : variantShort} prompt="Step through SETUP. Each one is drawn where the mic goes: the mic and its stand, where it points (amber) and its distance (white)." />
+          <Landing looking={sel ? `${roleWords(sel)} · ${variantShort}` : variantShort} prompt={`${fewStops(setups.length) ? 'Pick each setup by name in SETUPS.' : 'Step through SETUP, or pick one by name in SETUPS.'} Each one is drawn where the mic goes: the mic and its stand, where it points (amber) and its distance (white).`} />
           {sel ? <SetupCard s={sel} where={where} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
           <Body>{`Looked at: ${seenCore} of ${core.length} setup${core.length === 1 ? '' : 's'}${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
         </>

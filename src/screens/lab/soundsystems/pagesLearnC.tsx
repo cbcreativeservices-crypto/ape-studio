@@ -46,7 +46,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
   const verdict = gainVerdict(chain);
   if ((verdict === 'noisy' || verdict === 'clipping') && !sawBad) setSawBad(true);
   if (verdict === 'ok' && !sawOk) setSawOk(true);
-  const goals = [{ label: 'See a bad structure (hiss or clipping)', hit: sawBad }, { label: 'Set unity with headroom at every stage', hit: sawOk }];
+  const goals = [{ label: 'See a bad structure (hiss or clipping)', hit: sawBad }, { label: 'Reach a clean, low-hiss structure (VERDICT OK)', hit: sawOk }];
   const latched = useVisitGoals(ctx, goals);
   const params: DockParam[] = [gainStageParam(settings, setSettings, stage, setStage)];
   return (

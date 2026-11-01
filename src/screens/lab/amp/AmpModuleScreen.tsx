@@ -29,6 +29,9 @@ import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AmpStepHostContext, type AmpStepHost } from './steps';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains each step's screen.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { AMP_END_GUIDE, ampStepGuide } from './ampScreenGuides';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -264,6 +267,17 @@ export function AmpModuleScreen() {
   // `onSteps` alone.
   const host: AmpStepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap };
 
+  // The guide for THIS step (each step is its own screen: a rig, a diagram or
+  // a document). Keyed by step index in the module's own order — the test
+  // pins each guide's key/kind to the module's step list.
+  const stepGuide = ampStepGuide(mod.id, stepIdx);
+  const stepTitle = stepTitles[stepIdx];
+  const guideTitle = endState
+    ? 'WHAT’S LEFT'
+    : stepCount > 1 && stepTitle
+      ? `${mod.title.toUpperCase()} · ${stepTitle.toUpperCase()}`
+      : mod.title.toUpperCase();
+
   let end: ReactNode = null;
   if (endState) {
     // The same builder as the hub's SEE WHAT'S LEFT (features/amp/ampEnd).
@@ -286,15 +300,28 @@ export function AmpModuleScreen() {
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        {/* The shared header: ‹ leaves the lab. The lab HOME carries the
-            accuracy note too; a module opened from a deep link or resumed from
-            the dashboard never passes through it. */}
+        {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+            last child. A RACK step's guide places its steps away from the
+            display / dock it explains (measured from the step's Rack Unit); a
+            READ step and the what's-left screen have no rack, so no regions.
+            A step or module change closes an open guide. */}
+        <ScreenGuideHost resetKey={endState ? 'end' : `${mod.id}:${stepIdx}`} regions={!endState && stepGuide?.kind === 'rack'}>
+        {/* The shared header: ‹ goes back one screen. The ⓘ explains THIS
+            step's screen (or the what's-left screen). The modules print
+            numbers a learner could carry to a real rack (Module 6's volts,
+            amps and watts; Module 7's gain-structure meters, speaker-load Ω
+            and power figures), so the accuracy chip STAYS on every module
+            screen and the ⓘ sits beside it (owner rule 2026-10-31: level
+            readouts and calculators keep the chip). The lab HOME shows no
+            numbers, so it carries the ⓘ alone. */}
         <LabHeader
           title={endState ? LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
           subtitle={endState ? 'What’s left' : `Module ${mod.num} of ${AMP_MODULES.length}${done ? ' · completed' : ''}`}
           right={
             <AccuracyNote compact detail="This lab MODELS amplifier behavior on your phone — the numbers and curves are teaching tools, not bench measurements. For real amplifier work use proper test gear." />
           }
+          guide={endState ? AMP_END_GUIDE : stepGuide?.guide}
+          guideTitle={guideTitle}
         />
         <LabNavBar nav={nav} />
         {end ?? (
@@ -308,6 +335,7 @@ export function AmpModuleScreen() {
             )}
           </View>
         )}
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

@@ -30,8 +30,10 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains each module's screen.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { TUBE_END_GUIDE, TUBE_SCREEN_GUIDES, type TubeSectionId } from './tubeScreenGuides';
 import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
@@ -79,7 +81,7 @@ const PHYSICS: Partial<Record<TubePart, string>> = {
   plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.',
   grid: 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.',
   screen: 'NO SCREEN GRID — the electrons crawl the whole way across. The screen grid’s + charge is the accelerator.',
-  suppressor: 'NO SUPPRESSOR — electrons strike the plate hard enough to knock SECONDARY ELECTRONS loose (shown in red). They escape backward toward the screen grid, robbing plate current.',
+  suppressor: 'NO SUPPRESSOR — electrons strike the plate hard enough to knock SECONDARY ELECTRONS loose (shown in red in ⚡ E-VIEW). They escape backward toward the screen grid, robbing plate current.',
 };
 
 const FLOW_STAGES: { until: number; text: string }[] = [
@@ -88,8 +90,8 @@ const FLOW_STAGES: { until: number; text: string }[] = [
   // Stage 4 fires at the SAME heat the meter/viz start conducting (fix
   // 2026-08-31: the caption said "electrons begin streaming" while PLATE I
   // read 0% and the drawn cloud stood still).
-  { until: 0.7, text: '3 · The hot cathode boils off electrons — an invisible cloud (space charge) forms around it.' },
-  { until: 0.85, text: '4 · The positive plate attracts the cloud — electrons begin streaming across the vacuum.' },
+  { until: 0.7, text: '3 · The hot cathode starts boiling off electrons — the plate collects a trickle too small to read.' },
+  { until: 0.85, text: '4 · Emission climbs steeply — the stream to the positive plate grows big enough to read.' },
   { until: 1.01, text: '5 · Steady current flows, cathode → plate. The tube is alive and ready to amplify.' },
 ];
 
@@ -302,7 +304,7 @@ function InsideSection(p: SectionProps) {
         <Text style={styles.caption}>
           {sel
             ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
-            : 'Open PARTS and tap a part to REMOVE it — then watch what the electrons do without it: every piece is there for a reason, and the drawing shows you why. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
+            : 'Open PARTS and tap a part to REMOVE it — then turn on ⚡ E-VIEW and watch what the electrons do without it: every piece is there for a reason, and the drawing shows you why. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
         </Text>
       </SectionWell>
     </RackUnit>
@@ -588,7 +590,7 @@ const TYPES: {
     newShort: 'G2 SCREEN',
     adds: 'THE SCREEN GRID (purple, glowing) — a second, POSITIVE grid between control grid and plate.',
     strength: 'It shields the control grid from the plate and accelerates the stream — much higher gain and speed.',
-    weakness: 'New problem, drawn in red: electrons hit the plate hard enough to knock SECONDARY electrons loose, and the positive screen steals them — current lost.',
+    weakness: 'New problem, drawn in red in ⚡ E-VIEW: electrons hit the plate hard enough to knock SECONDARY electrons loose, and the positive screen steals them — current lost.',
   },
   {
     kind: 'pentode',
@@ -597,7 +599,7 @@ const TYPES: {
     newPart: 'suppressor',
     newShort: 'G3 SUPPR',
     adds: 'THE SUPPRESSOR GRID (gold, glowing) — a third grid right beside the plate.',
-    strength: 'It turns the secondary electrons around (watch the red dots die at it now). High gain, high power, well-behaved — the classic output tube (EL34, EL84).',
+    strength: 'It turns the secondary electrons around (turn on ⚡ E-VIEW and watch the red dots die at it). High gain, high power, well-behaved — the classic output tube (EL34, EL84).',
     weakness: 'Cost and complexity — five elements in the bottle. For clean low-level warmth, the simple triode still rules the preamp.',
   },
 ];
@@ -636,7 +638,7 @@ function TypesSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the TYPE tray and E-VIEW inside
-        badge: "ILLUSTRATIVE — the newest grid GLOWS in its ink · red dots = secondary emission (the tetrode's problem, the pentode's fix)",
+        badge: "ILLUSTRATIVE — the newest grid GLOWS in its ink · in ⚡ E-VIEW, red dots = secondary emission (the tetrode's problem, the pentode's fix)",
         onGuide: () => p.help('tube_types'),
         bezel: [
           { k: 'TYPE', v: t.label, helpKey: 'tube_types' },
@@ -841,9 +843,9 @@ function VersusViz({ viz, width, height, running }: { viz: TubeVizModule; width:
 // The Tube Reference library left this list (rack conversion 2026-08-23): it
 // navigates from the dock's TUBE REF action key — it is not a stage section.
 
-const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
+const SECTIONS: { key: TubeSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
   { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — open PARTS and tap each piece to learn its job.', Comp: InsideSection },
-  { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Ride the warm-up lane and watch heat become a cloud, and the cloud become current.', Comp: FlowSection },
+  { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Ride the warm-up lane and watch heat become electrons, and electrons become current.', Comp: FlowSection },
   { key: 'grid', label: 'GRID', title: 'THE CONTROL GRID', blurb: 'The heart of amplification: a whisper of voltage gating a river of current.', Comp: GridSection },
   { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Your signal never touches the big current — it drives the GRID (blue). The grid is a valve: its tiny wiggle opens and chokes the tube’s much larger cathode→plate stream, and that gated stream leaves the PLATE (amber) as a big, flipped copy of the input.', Comp: AmplifySection },
   { key: 'highv', label: 'HIGH V', title: 'WHY TUBES NEED HIGH VOLTAGE', blurb: 'Weak attraction, weak current — why tube circuits live at hundreds of volts.', Comp: HighVoltSection },
@@ -922,14 +924,23 @@ export function VacuumTubeLabScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child, its steps placed away from the display / dock they
+          explain (measured from the module's Rack Unit; none on the
+          what's-left screen). A module change closes an open guide. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : s.key} regions={!ending}>
+      {/* The ⓘ explains THIS module's screen (or the what's-left screen).
+          Vacuum Tube Fundamentals is a CONCEPT lab — every drawing is badged
+          an illustrative model, no live input, no real-world measurement — so
+          the accuracy chip is gone and the ⓘ takes its spot (owner rule
+          2026-10-31). The lethal-voltage warning it carried stays in the
+          HIGH V and BIAS wells, in those modules' guides, and on the Tube
+          Reference screens, which keep their chip (real data-sheet ratings). */}
       <LabHeader
         title="VACUUM TUBE FUNDAMENTALS"
         subtitle="Amplification by controlling electron flow"
-        right={
-          /* Same detail string as the Tube Reference screens — this is the
-             lab that teaches the procedure, so it needs it more, not less. */
-          <AccuracyNote compact detail="This lab is a STUDY MODEL, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages that persist in the filter capacitors after power-down. Work from the manufacturer's own datasheet, and have service, measurement and biasing done by a qualified technician." />
-        }
+        guide={ending ? TUBE_END_GUIDE : TUBE_SCREEN_GUIDES[s.key]}
+        guideTitle={ending ? 'WHAT’S LEFT' : s.title}
       />
       <LabNavBar nav={nav} />
       {/* One RackUnit per section, key-remounted so each section owns its
@@ -961,6 +972,7 @@ export function VacuumTubeLabScreen() {
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

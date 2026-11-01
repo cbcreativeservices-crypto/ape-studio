@@ -186,7 +186,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
           <Text style={P.h}>READ IT</Text>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with a bright, full heat map: this plate has a mode at the locked frequency. BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>If B goes dark, the frequency did not change — the plate did. That is the lab’s central discovery, and you just made it.</Text></View>
-          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Damping is the exception worth noticing: it does not move the resonance, it blurs and weakens it. Steel is the other: three times stiffer and three times denser, so it lands almost where aluminum does.</Text></View>
+          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Damping is the exception worth noticing: it does not move the resonance, it blurs and weakens it. Steel is the near miss: about three times stiffer and three times denser, so its modes land only about 1% below aluminum’s — yet a resonance this sharp is still missed, and B goes dark.</Text></View>
         </>
       ) : (
         <Pressable

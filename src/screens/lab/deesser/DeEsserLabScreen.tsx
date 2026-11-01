@@ -27,6 +27,9 @@ import {
   BandSpectrum, Caption, DETECTOR_H, DetectorTrace, EQVS_H, EqVsStrips, FRAME_H, FrameStrip, PathDiagram, SPECTRUM_H, Title, VIZ_W,
 } from './deEsserViz';
 import { pathHeight, pathOrder } from './pathLayout';
+// Screen Guide (owner 2026-10-31): one guide per page, kept in the lab's own
+// content file (pageGuide).
+import { deEsserPageGuide } from './smartProcessorsScreenGuides';
 
 /** Every drawing is a 340-unit viewBox drawn at the page width (h = w / aspect)
  *  inside ExpandableFigure, whose FULL SCREEN button sits under it and whose
@@ -591,7 +594,22 @@ export function DeEsserLabScreen() {
   // A fresh rack every time the lab is opened: settings persist across pages,
   // not across visits (the initializer runs before any page mounts).
   useState(() => { rack = { ...LAB_DEFAULTS }; return true; });
-  return <PagedLab labId="deesser" title="De-Esser & Sibilance Control" subtitle="A compressor that listens only to the hiss — Smart Processors, V1." pages={PAGES} />;
+  return (
+    <PagedLab
+      labId="deesser"
+      title="De-Esser & Sibilance Control"
+      subtitle="A compressor that listens only to the hiss — Smart Processors, V1."
+      pages={PAGES}
+      pageGuide={deEsserPageGuide}
+      // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only
+      // on live-mic tools and labs showing real-world measurement numbers.
+      // This is a CONCEPT lab — every display is computed from a modelled
+      // phrase, nothing plays, and each figure already carries its own
+      // "conceptual, not a calibrated meter" badge — so the note leaves every
+      // page and the header ⓘ guide key stands in its place.
+      accuracy={false}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

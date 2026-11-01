@@ -30,6 +30,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
+import { harmonicScreenGuide } from './harmonicScreenGuides';
 import { LabShell } from './LabShell';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import type { RootStackParamList } from '../../navigation/types';
@@ -53,13 +54,18 @@ export function HarmonicLabScreen(_props: Props) {
 
   return (
     <HarmonicsView>
-      {({ rack, headerAction, renderWell }) => (
+      {({ rack, headerAction, renderWell, view }) => (
         <LabShell
           labId="harmonic"
           title="HARMONIC LAB"
           subtitle="Additive Synthesis · Spectrum · Distortion"
           intro={INTRO}
           exploreCaption="Ride the F0 fader, A/B presets from the dock, and drag the stems below — the display and audio follow live."
+          // Screen Guide (2026-10-31): one guide per tab, EXPLORE chosen by
+          // the MODE key (ANALYTIC MODEL / REAL SIGNAL). The AccuracyNote chip
+          // STAYS (default `accuracy`): REAL SIGNAL opens the live microphone
+          // and prints measured dBFS (MAX) — the owner's live-mic rule.
+          guide={(mode) => harmonicScreenGuide(mode, view)}
           headerAction={headerAction}
           rack={rack}
         >

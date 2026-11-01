@@ -52,6 +52,9 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { getLabPreview } from '../../../features/lab/labPreviewStore';
 import { setSoundSystemsSaveBlocked } from '../../../features/soundsystems/progress';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the header ⓘ + the stepped "this screen,
+// explained" overlay. The guides live in soundsystemsScreenGuides.ts.
+import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
 function useOsReduceMotion(): boolean {
   const [rm, setRm] = useState(false);
@@ -66,12 +69,17 @@ function useOsReduceMotion(): boolean {
   return rm;
 }
 
-export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
+export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuide, endGuide }: {
   labId: string;
   title: string;
   subtitle: string;
   pages: SsPageDef[];
   onPageDone?: (index: number) => void;
+  /** Screen Guide (owner 2026-10-31): the guide for page `index` — the
+   *  appended check page included (index === pages.length). Undefined = no ⓘ. */
+  pageGuide?: (index: number) => ScreenGuide | undefined;
+  /** Screen Guide for the what's-left screen FINISH opens. */
+  endGuide?: ScreenGuide;
 }) {
   // The understanding check is appended exactly as kit/PagedLab appends it:
   // opt-in by data, self-marking, the lab's credit unit.
@@ -300,13 +308,24 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
+  // Screen Guide for what is on screen now: this page, or the what's-left screen.
+  const guide = ending ? endGuide : pageGuide?.(page);
+
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+        {/* Screen Guide host: the overlay renders as this root's last child; a
+            page change closes an open guide. Regions = the page's Rack Unit. */}
+        <ScreenGuideHost resetKey={ending ? 'end' : String(page)} regions={rack && !ending}>
         {/* The standing calibration note rides every page. A rack page has no
             scroll of its own to carry the full chip, so it wears the compact
             one on the header, the Cymatics host's placement. */}
-        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={rack && !ending ? <AccuracyNote compact /> : undefined} />
+        <LabHeader title={ending ? 'Where you are' : def.title}
+          subtitle={title}
+          right={rack && !ending ? <AccuracyNote compact /> : undefined}
+          guide={guide}
+          guideTitle={ending ? 'WHERE YOU ARE' : def.title.toUpperCase()}
+        />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
@@ -344,6 +363,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
             </ScrollLockProvider>
           </ScrollView>
         )}
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

@@ -264,7 +264,10 @@ describe('S3 — FX', () => {
 
   it('R7-FX-05: correlation −1 is claimed only with no delay', () => {
     assert.match(FX, /v\[PHASE_INV\] > 0\.5 && v\[PHASE_DLY\] > 0\n\s+\? `Flipped AND delayed/);
-    assert.match(FX, /correlation is no longer a clean −1/);
+    // 2026-10-31: "no longer a clean −1" contradicted the 440 Hz meter (−1.00
+    // at DLY R 2.3 ms inverted); the caption now names no value.
+    assert.doesNotMatch(FX, /correlation is no longer a clean −1/);
+    assert.match(FX, /on this 440 Hz tone the CORRELATION now depends on the delay/);
   });
 
   it('R7-FX-06: the limiter caption does not say NEVER', () => {
@@ -285,7 +288,10 @@ describe('S3 — FX', () => {
 
   it('R7-FX-09: MIX toward dry does not claim "the loudness holds"', () => {
     assert.doesNotMatch(FX, /the loudness holds/);
-    assert.match(FX, /the clean body comes back and the grit sits underneath it/);
+    // 2026-10-31 (two verifiers, Effects.hpp:512): the dry is the UN-driven −20 dBFS input,
+    // ~20 dB under the clipped wet, so the hint must not promise "the clean body comes back".
+    assert.doesNotMatch(FX, /the clean body comes back|without losing the dry body/);
+    assert.match(FX, /the wave gets smaller, but DRIVE still decides the grit/);
   });
 
   it('R7-FX-10: no promised quantization visual', () => {

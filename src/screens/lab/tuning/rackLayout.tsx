@@ -13,9 +13,9 @@
  *          silk-screened under it. FULL SCREEN is on for every stage: the
  *          drawings are SVG (text scales with the viewBox) or scale their own
  *          text by useStageTextScale (the elevator), so everything zooms.
- *   WELL   the only scroller: the standing accuracy note, the chapter
- *          objective, `wellTop` (a live secondary figure the dock also
- *          drives), the first-move caption, then ONE collapsible LAB NOTES
+ *   WELL   the only scroller: the chapter objective, `wellTop` (a live
+ *          secondary figure the dock also drives), the first-move caption,
+ *          then ONE collapsible LAB NOTES
  *          with the prose, the derivations, the step-by-step cards and the
  *          understanding check.
  *   DOCK   the shared ParamLane PRE-BOUND to the chapter's teaching parameter
@@ -33,7 +33,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import { CollapsibleSection } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
@@ -55,12 +54,11 @@ export { flipFader, lanePos, laneVal } from '../soundsystems/rackLayout';
  */
 export const snapNear = (value: number, target: number, window = 0.25): number => (Math.abs(value - target) < window ? target : value);
 
-/** The accuracy caveat every chapter carries (the host used to print it at the
- *  top of its scroll). This lab PLAYS synthesized tones — it never uses the
- *  microphone — and what the learner hears passes through an uncalibrated
- *  output and speaker or headphones. */
-export const TUNING_ACCURACY_DETAIL =
-  "The tones here are synthesized exactly, but you hear them through this phone's uncalibrated output and your speaker or headphones. Use a dedicated tuner or a calibrated reference for work that has to be right.";
+/* No accuracy note in the well (ACCURACY CHIP RULE, owner 2026-10-31): the
+ * note stays only on live-mic tools and real-world measurement labs. Every
+ * number here is CALCULATED from exact ratios (the badge says so) and every
+ * tone is synthesized, so this concept lab carries the header ⓘ guide
+ * instead (TuningLabScreen + tuningScreenGuides.ts). */
 
 /** Honesty badges. Every number on a tuning display is computed from exact
  *  ratios — nothing here is measured. */
@@ -120,7 +118,6 @@ export function TuningRackLayout({
       initialParam={rack.initialParam}
     >
       <View style={styles.panel}>
-        <AccuracyNote style={styles.accuracy} detail={TUNING_ACCURACY_DETAIL} />
         {ctx.objective ? (
           <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${ctx.objective}`}>
             <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
@@ -209,7 +206,6 @@ export function playKey(player: TuningPlayer, id: string, label: string, make: (
 
 const styles = StyleSheet.create({
   panel: { gap: 8 },
-  accuracy: { alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },

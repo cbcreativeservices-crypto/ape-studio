@@ -60,6 +60,12 @@ import { PSetting } from './pages/PSetting';
 import { lessonArt } from './data/lessonArtLoader';
 import type { LessonArt } from './engine/scene/sceneTypes.ts';
 import type { PageProps } from './pages/pageTypes';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains the step on screen.
+// The calibration chip STAYS beside it: every lesson prints real-world
+// distances (measured as its ‘about these starting points’ note says) and
+// carries the owner's one starting-points note behind it (LESSON_JOURNEY §12).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { enginePageOf, MIKING_END_GUIDE, mikingFoundationsGuide, mikingScreenGuide, stepInfoKey, type MikingStepInfo } from './mikingScreenGuides';
 import { PInstrument } from './pages/PInstrument';
 import { PMicrophone } from './pages/PMicrophone';
 import { PMicOnIt } from './pages/PMicOnIt';
@@ -227,6 +233,9 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   const [pageIdx, setPageIdx] = useState(() => (dev ? PAGE_IDS.indexOf(dev) : 0));
   const [step, setStepRaw] = useState(() => Number(devParam('step') ?? 0) || 0);
   const [stepTitles, setStepTitles] = useState<string[]>([]);
+  // The step on screen, as its page reports it (engine/steps.tsx).
+  const [stepInfo, setStepInfo] = useState<MikingStepInfo | null>(null);
+  const onStepInfo = useCallback((i: MikingStepInfo) => setStepInfo((prev) => (stepInfoKey(prev) === stepInfoKey(i) ? prev : i)), []);
   const [ending, setEnding] = useState(false);
   const [runId, setRunId] = useState(0);
   const [variant, setVariant] = useState<VariantId>(() => {
@@ -256,6 +265,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
       setPageIdx(PAGE_IDS.indexOf(p));
       setStepRaw(atStep);
       setStepTitles([]);
+      setStepInfo(null);
       void recordPlace(lesson.id, p, atStep);
     },
     [lesson.id],
@@ -407,7 +417,28 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     here: page,
   };
   const gated = pageGate(page, met, quickPassed) === 'foundations';
-  const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail: gated ? null : tail, readWrap, hidden: ending };
+  const host: StepHost = { step: stepIdx, setStep, onSteps, onStepInfo, head, tail: gated ? null : tail, readWrap, hidden: ending };
+  // SCREEN GUIDE for what is on screen: the what's-left screen, the
+  // Foundations card, or this module's step (mikingScreenGuides.ts).
+  const prevTitle = pageIdx > 0 ? pageOf(lesson, PAGE_IDS[pageIdx - 1]).title : null;
+  const nextTitle = pageIdx < PAGE_IDS.length - 1 ? pageOf(lesson, PAGE_IDS[pageIdx + 1]).title : null;
+  const guide = ending
+    ? MIKING_END_GUIDE
+    : gated
+      ? mikingFoundationsGuide({ pageNum: pageIdx + 1, pageTitle: content.title, prevTitle, nextTitle })
+      : mikingScreenGuide({
+          page,
+          pageNum: pageIdx + 1,
+          pageTitle: content.title,
+          goal: content.goal,
+          prevTitle,
+          nextTitle,
+          step: stepInfo,
+          first: stepIdx === 0,
+          last: stepIdx === stepCount - 1,
+          credited: done,
+          enginePage: enginePageOf(page, Object.keys(art.pages ?? {})),
+        });
   // PAGE_COMPONENTS (above): a lesson's own page for an id (the kit-level
   // lessons, the speaker module, the hand drums), else the shared page.
   const Page = gated ? FoundationsPage : PAGE_COMPONENTS[page];
@@ -415,10 +446,14 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* The guide overlay is the root's last child; a module or step change
+            closes an open guide. Regions only on a Rack Unit step. */}
+        <ScreenGuideHost resetKey={ending ? 'end' : `${page}:${stepIdx}`} regions={!ending && !gated && stepInfo?.layout === 'rack'}>
         <LabHeader
           title={ending ? lesson.title.toUpperCase() : content.title.toUpperCase()}
           subtitle={ending ? 'What’s left' : `${lesson.title}: ${lesson.subtitle}${done ? ' · credited' : ''}`}
           right={<AccuracyNote compact detail={lesson.accuracyDetail} />}
+          guide={guide}
         />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
@@ -459,6 +494,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
             />
           </StepHostContext.Provider>
         </View>
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

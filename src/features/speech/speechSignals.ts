@@ -134,7 +134,7 @@ export const PLOSIVE_VOT_MS = 55;
  * the BURST (a ~3 ms broadband click when the lips part), aspiration (breathy
  * noise through the upper formants), then the voiced vowel. Without a pop
  * filter the AIR JET — moving air, far slower than sound — lands ~30 ms after
- * the burst as a huge low-frequency pressure swing (~45 ms, near full scale),
+ * the burst as a huge low-frequency pressure swing (~45 ms; summed with the vowel it reaches full scale and clips),
  * with the undershoot a capsule's low-frequency roll-off gives it. The filter
  * spreads the jet into a weak, slow residue (~8 %); the burst, aspiration and
  * vowel are sample-for-sample the same.

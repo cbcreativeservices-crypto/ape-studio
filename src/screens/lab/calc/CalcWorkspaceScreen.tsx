@@ -37,6 +37,11 @@ import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcUsage } from '.
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained", built for
+// THIS calculator and calculation (calcScreenGuides.ts); the ✓ VERIFIED chip
+// stays (calculators keep AccuracyNote variant "calc") and the key sits beside it.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, useGuideRegion } from '../../../features/lab/screenGuide';
+import { calcSendTarget, calcWorkspaceGuide, calcWorkspaceGuideTitle, type CalcGuideExample } from './calcScreenGuides';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -115,6 +120,48 @@ export function CalcWorkspaceScreen() {
   // Compute once per (function, values) — NOT on every keystroke's re-render.
   const { outputs, steps, table, computeError, negativeField, inputError, refused } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
 
+  // Screen Guide: its TRY THIS numbers are what THIS screen prints when every
+  // input holds its grey example value (the placeholder) — the same
+  // buildValues / runCompute / formatOutput as the answer above, at the
+  // starting 4 SIG FIGS. Only the guide reads it; nothing on screen changes.
+  const guideExample = useMemo<CalcGuideExample | null>(() => {
+    if (!fn) return null;
+    const exRaw: Record<string, string> = {};
+    for (const f of fields) exRaw[f.key] = f.placeholder ?? '';
+    const r = runCompute(fn, buildValues(fields, exRaw, {}), fields);
+    if (r.computeError || r.refused) return null;
+    const o = r.outputs.find((x): x is Extract<OutputVal, { value: number }> => 'value' in x && Number.isFinite(x.value));
+    if (!o) return null;
+    const at4 = formatOutput(o, 4, 0);
+    const next = formatOutput(o, 4, 1);
+    const at5 = formatOutput(o, 5, 0);
+    const at5Next = formatOutput(o, 5, 1);
+    const sendable = o.chainable !== false;
+    return {
+      label: o.label,
+      at4,
+      at5,
+      next: next === at4 ? null : next,
+      at5Next: at5Next === at5 ? null : at5Next,
+      sendable,
+      sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity) : null,
+      steps: r.steps.length > 0,
+    };
+  }, [ws, fn, fields]);
+  // The pinned answer stage is this screen's display: the guide's reading
+  // steps keep it bright and sit below it.
+  const stageRef = useRef<View | null>(null);
+  useGuideRegion('display', stageRef);
+  // This page has no bezel strip and no dock. Pushed over a lab page (a
+  // Sound Systems page's Σ calculator link), that page's Rack Unit stays
+  // mounted underneath with its 'readouts' and 'dock' registered: these
+  // never-attached refs sit on top of them, so the guide measures nothing
+  // there instead of the covered page's strip and dock.
+  const noReadoutsRef = useRef<View | null>(null);
+  const noDockRef = useRef<View | null>(null);
+  useGuideRegion('readouts', noReadoutsRef);
+  useGuideRegion('dock', noDockRef);
+
   // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
   // allowance set to 5 by the owner 2026-09-01, see calcUsage.CALC_WEEKLY_LIMIT).
@@ -127,6 +174,9 @@ export function CalcWorkspaceScreen() {
   // returns the moment onboarding ends. Both hooks run every render.
   const onboardingSampling = useSamplingActive();
   const capped = (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
+  // The guide's CALCULATE lines are for capped readers only (members never
+  // read weekly-allowance copy).
+  const guide = useMemo(() => (ws && fn ? calcWorkspaceGuide(ws, fn, guideExample, capped) : null), [ws, fn, guideExample, capped]);
   // `resolved` REQUIRED here (entitlement roll-out 2026-09-11): the provider
   // boots at 'anonymous', so without it every user — signed-in members included
   // — opened a calculator to "Create a free account (or sign in) to run
@@ -311,6 +361,8 @@ export function CalcWorkspaceScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost resetKey={ws.id}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -320,14 +372,16 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
         <AccuracyNote compact variant="calc" detail={ws.accuracyDetail} />
+        {guide ? <ScreenGuideKey title={calcWorkspaceGuideTitle(ws)} guide={guide} /> : null}
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* ── PINNED RESULT STAGE (calc rack, owner 2026-08-23) ────────────────
           The answer IS the instrument's display: a recessed graphite frame +
           smoked glass, pinned above the scroll so it never leaves the screen
           while you work the inputs below and updates live as you type. Bezel
           under the glass: function · sig-figs (tap-cycles) · formula key. */}
-      <View style={styles.stageWrap}>
+      <View style={styles.stageWrap} ref={stageRef} collapsable={false}>
         <LinearGradient colors={['#5a5d64', '#3a3c42', '#232429']} locations={[0, 0.42, 1]} style={styles.stageOuter}>
           <View style={styles.stageGlass}>
             <LinearGradient
@@ -591,6 +645,7 @@ export function CalcWorkspaceScreen() {
           navigation.navigate('CalcSymbolsKey');
         }}
       />
+      </ScreenGuideHost>
     </View>
   );
 }

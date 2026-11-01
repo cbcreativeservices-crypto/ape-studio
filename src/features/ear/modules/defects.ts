@@ -94,7 +94,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'buzz', label: 'Buzz',
-    truth: 'Buzz — mains-rate like hum, but sixty harmonics deep: energy right up past 3 kHz. Edgy where hum is smooth.',
+    truth: 'Buzz — mains-rate like hum, but sixty harmonics deep: energy right up to 3 kHz (50 Hz mains) or 3.6 kHz (60 Hz). Edgy where hum is smooth.',
     solo: (rng) => buzz(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, buzz(b.length / SR, mains(rng)), mix),
   },

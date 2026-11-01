@@ -50,7 +50,7 @@ export const MODEL_BADGE = 'MODEL · illustration, not a measurement';
 /** Stages that draw the rendered hit: real offline synthesis of the model
  *  (membrane modes, coupled heads, bend, damping), measured from the
  *  buffer, heard through an uncalibrated phone output. */
-export const RENDER_BADGE = 'SYNTHESIZED · additive membrane model rendered offline, envelope and T60 measured from the buffer, uncalibrated output';
+export const RENDER_BADGE = 'SYNTHESIZED · additive membrane model rendered offline, envelope measured and T60 estimated from the buffer, uncalibrated output';
 export const VIB_BADGE = 'MODEL · the mode shape the sound was built from (Bessel J_n · cos nθ), strobed; fades with the measured envelope';
 
 /** One strike, rendered offline whenever its parameters change. */

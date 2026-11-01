@@ -85,7 +85,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
     }
     // The beginner's imagined line — dim REFERENCE, never amber.
     list.push({ at: (f: number) => sliderCurveDb(OCT_CENTERS, gains, f), emphasis: 'ref' });
-    // The truth — the amber main trace.
+    // The truth — the bold main trace (level-ramp colour in MAGNITUDE, amber in PHASE).
     list.push({ at: (f: number) => graphicActualDb(OCT_CENTERS, gains, Q_1OCT, f), emphasis: 'main' });
     return list;
   }, [gains, showIndividual]);
@@ -189,7 +189,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         <GlossaryText style={styles.body}>
           Your eye connects the slider caps into a smooth line. But every band is a real filter with
           finite bandwidth — their responses overlap and COMBINE. Set the innocent-looking preset and
-          compare the line you imagined (dim) with what the filters actually do (amber).
+          compare the line you imagined (dim) with what the filters actually do (bold).
         </GlossaryText>
 
         <Text style={styles.caption}>
@@ -209,7 +209,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           <Text style={styles.challengeHead}>CHALLENGE — FLAT → SMOOTH → JAGGED</Text>
           <Text style={styles.caption}>
             Reset the board, then build what LOOKS like a beautiful smooth +6 dB rise from 125 Hz to
-            1 kHz using only the sliders. Now look at the amber curve — and the phase view. Then try
+            1 kHz using only the sliders. Now look at the bold curve — and the phase view. Then try
             the same target with one parametric band in the Parametric Controls module: where, how
             much, how wide. That’s the precision argument in one move.
           </Text>

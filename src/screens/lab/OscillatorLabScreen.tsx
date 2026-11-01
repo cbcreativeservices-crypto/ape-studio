@@ -15,7 +15,8 @@
  *  - engine v3 (additive): every wave sounds as REAL band-limited additive
  *    audio — the canonical 12-harmonic recipe (harmonicModel.buildPreset)
  *    through GEN_MODES.additive. Band-limited BY CONSTRUCTION (the core omits
- *    harmonics at/above Nyquist), which is itself the anti-aliasing lesson.
+ *    harmonics at/above Nyquist). In this lab nothing reaches Nyquist
+ *    (12 × 880 Hz = 10,560 Hz < 22,050 Hz), so the caption states it as a concept.
  *  - engine v2: sine only (the additive mode doesn't exist) — non-sine waves
  *    stay visual with an honest note, never a fabricated stand-in.
  *  - FM / AM need NEW native DSP (not in the engine) — stated plainly, no
@@ -64,6 +65,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { oscillatorScreenGuide } from './oscillatorScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
 import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
@@ -245,9 +247,14 @@ export function OscillatorLabScreen() {
     <LabShell
       labId="oscillator"
       title="OSCILLATOR LAB"
-      subtitle="Waveforms · Spectra · Band-limiting"
+      subtitle="Waveforms · Spectra · Harmonic recipes"
       intro={INTRO}
       exploreCaption="Pick a waveform and fundamental — the shape, the harmonic recipe, and the sound stay in lockstep."
+      // Screen Guide (2026-10-31): one guide per tab. A CONCEPT lab — no mic,
+      // no real-world measurement (the display is the analytic model) — so
+      // the AccuracyNote chip gives its spot to the ⓘ.
+      guide={oscillatorScreenGuide}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -364,7 +371,7 @@ export function OscillatorLabScreen() {
           <>
             <Text style={styles.caption}>
               {additiveReady
-                ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction — harmonics at/above Nyquist are omitted, never aliased (that omission is the anti-aliasing lesson).`
+                ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction: any harmonic at or above Nyquist would be left out, never aliased. Here every harmonic stays well below it — the highest is 12 × 880 Hz = 10,560 Hz, and Nyquist is at least 22,050 Hz.`
                 : __DEV__
                   ? `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`
                   : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual. Update the app to hear them.`}

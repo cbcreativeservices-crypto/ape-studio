@@ -99,7 +99,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
   // The stored progress could NOT BE READ (hunt 8, 2026-10-03; owner "do 2",
   // D51): the completion summary below drew the empty stand-in as the
-  // learner's record — every module ○, "CONCEPTS MASTERED · 0" and "Nothing
+  // learner's record — every module ○, "RIGHT ON THE FIRST PICK · 0" (then labelled as mastered) and "Nothing
   // flagged — every module check you answered was right". Kept as a flag
   // because the submit path copies the state (the copy is not the marked one).
   const [unreadable, setUnreadable] = useState(false);
@@ -388,7 +388,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                     </Pressable>
                   ) : (
                     <>
-                      <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
+                      <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can tell these faults apart by their waveform shape.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
                       <Pressable style={styles.nextBtn} onPress={() => { diagScoredRef.current = -1; setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
                         <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
                       </Pressable>
@@ -607,7 +607,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                 ))}
                 {unreadable ? null : (
                 <>
-                <Text style={styles.sumLabel}>CONCEPTS MASTERED · {summary.mastered.length}</Text>
+                <Text style={styles.sumLabel}>RIGHT ON THE FIRST PICK · {summary.mastered.length}</Text>
                 {summary.mastered.slice(0, 6).map((q) => (
                   <Text key={q} style={styles.sumSmall}>✓ {q}</Text>
                 ))}

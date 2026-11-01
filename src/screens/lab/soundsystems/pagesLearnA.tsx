@@ -306,7 +306,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride TYPE through the ten systems and read each plan — where the boxes stand and what the floor gets. Six are chosen by the venue; four are ways any of them can be built out."
+      caption="Ride TYPE through the ten systems and read each plan — where the boxes stand and what the floor gets. Eight are chosen by the venue; two are ways any of them can be built out."
     >
       <ChapterTag n={2}>PA SYSTEM TYPES</ChapterTag>
       <Body>{`${t.name} — plan view, stage at the top.`}</Body>
@@ -333,7 +333,7 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={2}>WHEN EACH DESIGN IS APPROPRIATE</ChapterTag>
-      <Lead>Eight venues. Choose the system each one calls for — and read why the runner-up would have been carried in for nothing.</Lead>
+      <Lead>Eight venues. Choose the system each one calls for — and read why that system fits.</Lead>
       <GoalChips goals={goals} latched={latched} />
       {VENUE_CASES.map((v, i) => {
         const names = SYSTEM_TYPES.map((t) => t.name);

@@ -31,7 +31,7 @@ export const ISO_THIRDS = [
 
 /** Octave centres (M1 L1 — every third entry of the 25). */
 export const ISO_OCTAVES: number[] = ISO_THIRDS.filter((_, i) => i % 3 === 0);
-/** Half-octave ladder step (M1 L2). */
+/** Every other third-octave centre — 2/3-octave steps, 13 chips (M1 L2). */
 export const ISO_HALVES: number[] = ISO_THIRDS.filter((_, i) => i % 2 === 0);
 
 export const hzLabel = (hz: number): string =>

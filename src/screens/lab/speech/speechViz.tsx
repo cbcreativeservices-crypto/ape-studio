@@ -261,7 +261,7 @@ function VocalFoldsSvg({ voiced, reduceMotion, w, h }: { voiced: boolean; reduce
       <Line x1={T.x0} y1={T.base} x2={T.x0 + T.w} y2={T.base} stroke="rgba(255,255,255,0.14)" strokeWidth={0.6} />
       <APath animatedProps={trace} d={r0.trace} fill="none" stroke={`url(#${id('ramp')})`} strokeWidth={1.6} strokeLinejoin="round" />
       <SvgText x={T.x0 + T.w / 2} y={96} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{note}</SvgText>
-      <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'mouth hiss → noise, no pitch'}</SvgText>
+      <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'mouth noise → no pitch'}</SvgText>
     </Svg>
   );
 }

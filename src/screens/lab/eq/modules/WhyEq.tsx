@@ -30,7 +30,7 @@ const REGIONS = [
   { key: 'HIGH', f: 6000 },
 ] as const;
 
-/** Wide, musical bell for the region demo (Q≈0.8 ≈ 1.8 octaves). */
+/** Wide, musical bell for the region demo (Q 0.8 ≈ 1.7 octaves). */
 const REGION_Q = 0.8;
 const GAIN_RANGE = 12; // ±12 dB — enough to see balance change dramatically
 /** The response graph's shape: fxViz's 320-unit width over a 140 px plot + its

@@ -13,8 +13,9 @@
  * capture, exactly as before.
  *
  * Honesty grammar matches Seeing Frequency: REAL bands only, Q2 gray slots,
- * and the EQ curve is a DESIGNED RESPONSE — ANALYTIC overlay; the analyzer
- * itself stays unfiltered (COMBINED shapes the bars — owner 2026-08-07).
+ * and the EQ curve is a DESIGNED RESPONSE — ANALYTIC overlay. The mic input is
+ * never filtered, but COMBINED redraws the bars as if EQ'd (owner 2026-08-07),
+ * so the badge follows VIEW (2026-10-31).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -416,9 +417,15 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
       stage={{
         size: 'L', // the spectrum IS the lesson — everything together
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
-        badge: designed
-          ? 'AMBER = DESIGNED RESPONSE — ANALYTIC · THE ANALYZER STAYS UNFILTERED'
-          : 'dBFS · UNCALIBRATED APPROXIMATE',
+        // The badge follows VIEW (2026-10-31): COMBINED redraws the bars as if
+        // EQ'd (line ~249), EQ ONLY hides the bars, SPECTRUM ONLY hides the
+        // curve — so "amber" is named only where the curve is drawn.
+        badge:
+          designed && mode === 'combined'
+            ? 'AMBER = DESIGNED RESPONSE — ANALYTIC · BARS SHOWN AS IF EQ’D — MIC INPUT UNFILTERED'
+            : designed && mode === 'eq'
+              ? 'AMBER = DESIGNED RESPONSE — ANALYTIC'
+              : 'dBFS · UNCALIBRATED APPROXIMATE',
         bezel: [
           { k: 'VIEW', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
           { k: 'LOW CUT', v: hpfHz != null ? `${hpfHz}Hz·${slope}` : 'OFF' },

@@ -165,7 +165,8 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
     ? [
         { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: wedge.glyph === 'none' ? wedge.short.toLowerCase() : X.targetWord, flex: 1 },
         pickupCell,
-        { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
+        // An omni has no null (nullAngles → []): say NONE, as PMicrophone does.
+        { k: 'NULL', v: !nulls.length ? 'NONE' : tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
         { k: 'REJECTION', v: inNull && !shield ? 'IN NULL' : 'NO', tint: inNull && !shield ? '#5bff85' : undefined, flex: 1.15 },
       ]
     : [
@@ -225,6 +226,12 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
           {tried ? (
             pattern === 'cardioid' ? (
               <Note tone="ok">{X.cardioidReveal}</Note>
+            ) : !nulls.length ? (
+              // Omni: no null at all, so the generic "rejects most at …" line would print NaN.
+              <Note tone="ok">{`What you just saw: an omni hears every direction about equally (${fmtDb(gainDb(pattern, 180))} straight behind, the same as in front) — it has no null to aim, so turning it rejects nothing. Distance and placement do that work.`}</Note>
+            ) : pattern === 'figure8' ? (
+              // Figure-8: the null is at the SIDES (90°) and the rear lobe is full pickup.
+              <Note tone="ok">{`What you just saw: a figure-8 rejects most at its sides (≈ ${Math.round(nulls[0])}° off the front axis), and its rear hears as much as its front (${fmtDb(gainDb(pattern, 180))} there). Its rear is not a rejection zone.`}</Note>
             ) : (
               <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and has a pickup lobe directly behind (${fmtDb(gainDb(pattern, 180))} there). The rear is not a universal rejection zone.`}</Note>
             )

@@ -45,6 +45,7 @@ import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import { autotuneScreenGuide } from './autotuneScreenGuides';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -268,6 +269,13 @@ export function AutotuneLabScreen() {
       subtitle="Pitch Correction · Cents Grid · Retune Speed"
       intro={INTRO}
       exploreCaption="Set the correction amount and retune speed, then play the out-of-tune melody and watch each note pull onto its gridline."
+      // Screen Guide (2026-10-31): the ⓘ explains the tab on screen (EXPLORE
+      // rack, LEARN reading page, CHECK questions). A CONCEPT lab — the singer
+      // is the app's own tone generator and every number is the lab's exact
+      // retune curve, nothing read from a mic or a real voice — so the accuracy
+      // chip gives its spot to the ⓘ (accuracy chip rule, owner 2026-10-31).
+      guide={autotuneScreenGuide}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={playing}

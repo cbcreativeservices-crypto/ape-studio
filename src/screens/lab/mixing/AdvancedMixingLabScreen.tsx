@@ -22,6 +22,8 @@ import { MIXING_ADV_PAGES_A } from './pagesAdvA';
 import { MIXING_ADV_PAGES_B } from './pagesAdvB';
 import { MIXING_ADV_PAGES_C } from './pagesAdvC';
 import { MIXING_ADV_PAGES_D } from './pagesAdvD';
+// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
+import { advancedMixingPageGuide } from './advancedMixingScreenGuides';
 
 const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES_C, ...MIXING_ADV_PAGES_D];
 
@@ -38,5 +40,11 @@ export function AdvancedMixingLabScreen() {
   // one: the two labs share a single stems cache, so neither may drop it while
   // the other is still on screen. See retainSessionStems in audio/mixAudio.ts.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  // ACCURACY CHIP RULE (owner 2026-10-31): kept (PagedLab's default) — the lab
+  // shows real-world measurement numbers: LUFS and true-peak estimates
+  // (BS.1770-style), peak / RMS / crest readouts, null-test residues and RT60
+  // decays. The note sits at the top of each reading page (PagedLab draws the
+  // header chip only on rack pages, and this lab has none); the ⓘ has the
+  // header to itself.
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

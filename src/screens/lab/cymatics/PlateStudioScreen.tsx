@@ -49,6 +49,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { cymaticsStudioGuide } from './cymaticsScreenGuides';
 import { makeFreqFader } from '../../../features/cymatics/freqFader';
 import { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } from '../../../features/cymatics/plateBezel';
 
@@ -328,7 +329,7 @@ function PlateStudio() {
             setFreq(Math.round(m.hz * 10) / 10);
           }
         },
-        // Land on the nearest resonance — moved here from a tappable RES bezel
+        // Land on the next resonance up (readResonance's `next`) — moved here from a tappable RES bezel
         // cell (owner rule 2026-10-10: the bezel is read-only; controls dock).
         onReset: res.state !== 'at' && res.next ? { label: `LAND ON ${res.next.label} · ${formatHz(res.next.hz)}`, onPress: () => land(res.next!.hz) } : undefined,
       },
@@ -552,7 +553,7 @@ function PlateStudio() {
     { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
     { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
     { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
-    // Read-only (owner rule 2026-10-10). Landing on the nearest mode is the
+    // Read-only (owner rule 2026-10-10). Landing on the next mode up is the
     // FREQ key's tray button now.
     { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res },
   ];
@@ -589,6 +590,11 @@ function PlateStudio() {
     <>
       <LabShell
         labId="cymatics"
+        // Screen Guide (owner 2026-10-31): the ⓘ explains EXPLORE, LEARN and CHECK.
+        // A CONCEPT lab — every pattern a labelled simulation, no live mic, no
+        // real-world measurement — so the accuracy chip gives way to the ⓘ.
+        guide={cymaticsStudioGuide('plate')}
+        accuracy={false}
         title="CHLADNI PLATE STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns snap in only near the plate’s own resonances — and which resonances those are depends on the whole plate, not on the frequency alone."
@@ -698,7 +704,7 @@ function PlateStudio() {
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
                   ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate just moves as a whole and forms no figure.`
-                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Next mode up: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
           </Text>
           <View style={styles.rowBetween}>
             <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>

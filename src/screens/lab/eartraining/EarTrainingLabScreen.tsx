@@ -13,7 +13,12 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EAR_MODULES } from '../../../features/ear/modules/registry';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the ⓘ "this screen, explained" key. A
+// CONCEPT lab under the chip rule (no live mic, no real-world measurement —
+// every clip is rendered by the app), so AccuracyNote gave its spot to the ⓘ;
+// the playback honesty it carried lives in EAR_HOME_GUIDE.teaches.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { EAR_END_GUIDE, EAR_HOME_GUIDE } from './earTrainingScreenGuides';
 import {
   isEarProgressUnreadable, loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
@@ -82,12 +87,14 @@ export function EarTrainingLabScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false} resetKey={ending ? 'end' : 'list'}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
           The hub IS the menu — no strip here. */}
       <LabHeader
         title="EAR TRAINING LAB"
         subtitle="Hear a change · then see it measured"
-        right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which color it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
+        guide={ending ? EAR_END_GUIDE : EAR_HOME_GUIDE}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
       />
       {ending ? (
         <LabEndScreen
@@ -152,6 +159,7 @@ export function EarTrainingLabScreen() {
         <LabEndLink onPress={() => setEnding(true)} />
       </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

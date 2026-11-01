@@ -74,7 +74,7 @@ const tpl = (id: string, name: string, description: string, steps: WorkflowStep[
 });
 
 export const WORKFLOW_TEMPLATES: Workflow[] = [
-  tpl('delay-speaker', 'Delay Speaker Setup', 'Speed of sound → distance delay → device latency.', [
+  tpl('delay-speaker', 'Delay Speaker Setup', 'Speed of sound, then distance delay, then device latency.', [
     { workspaceId: 'wave', fnKey: 'speed', note: 'Get the speed of sound for today’s temperature.' },
     { workspaceId: 'distdelay', fnKey: 'distToDelay', note: 'Turn the distance to the delay speaker into milliseconds.' },
     { workspaceId: 'latency', fnKey: 'bufLatency', note: 'Account for the processor’s own buffer latency.' },

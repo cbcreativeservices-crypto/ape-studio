@@ -23,8 +23,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { CARD_MAX_W, WIDE_MAX_W, cardColumn, wideColumn } from '../../../theme/readingColumn';
 import { gridColumns, isTabletWindow } from '../../../theme/tablet';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CYMATICS_GALLERY_GUIDES } from './cymaticsScreenGuides';
 import { formatHz } from '../../../features/cymatics/music';
 import { ART_N } from '../../../features/cymatics/figure';
 import { patternGeometry, patternReadout, type PatternGeometry } from '../../../features/cymatics/patternField';
@@ -373,6 +374,11 @@ export function GalleryScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child; a mode change closes an open guide. Regions only on the
+          ART board (the one mode drawn on a Rack Unit). */}
+      <ScreenGuideHost resetKey={mode} regions={mode === 'art'}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={back} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -385,8 +391,12 @@ export function GalleryScreen() {
             {subtitle}
           </Text>
         </View>
-        <AccuracyNote compact />
+        {/* The ⓘ explains THIS mode's screen. The gallery shows saved
+            simulations — no live mic, no real-world measurement — so the
+            accuracy chip gives way to the ⓘ (owner rule 2026-10-31). */}
+        <ScreenGuideKey title={mode === 'art' ? 'ART STUDIO' : mode === 'compare' ? 'COMPARE' : 'PATTERN GALLERY'} guide={CYMATICS_GALLERY_GUIDES[mode]} />
       </View>
+      </ScreenGuideHintAnchor>
 
       {mode === 'art' && current && currentGeom ? (
         <GalleryArt
@@ -560,6 +570,7 @@ export function GalleryScreen() {
         </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
   );
 }

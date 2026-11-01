@@ -157,7 +157,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       formatShort: () => `Q${sel.q.toFixed(1)}`,
     },
     { kind: 'action', id: 'score', label: showScore ? 'HIDE' : 'SCORE', onPress: () => setShowScore((v) => !v) },
-    // Level 5 gives two bands: the BAND key steps which one the faders edit
+    // A two-bell target (makeTarget picks 1 or 2 at random) gives two bands: the BAND key steps which one the faders edit
     // (was a tap on the BAND bezel cell — owner rule 2026-10-10: the bezel is
     // read-only; controls dock).
     ...(bands.length > 1

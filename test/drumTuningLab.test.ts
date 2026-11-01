@@ -147,11 +147,14 @@ describe('wording rules', () => {
     assert.match(all, /tuning to an exact note is OPTIONAL/);
     assert.match(all, /size, construction|Size, construction/);
   });
-  it('devices help consistency; the ear decides; the accuracy note says so', () => {
+  it('devices help consistency; the ear decides; the screen guide says so', () => {
     assert.match(all, /CONSISTENCY/);
     assert.match(all, /final judgment still comes from listening/i);
-    assert.match(read(`${DIR}/DrumTuningLabScreen.tsx`), /Learn the method here; trust your ears and a real drum/);
-    assert.match(strip(read(`${DIR}/DrumTuningLabScreen.tsx`)), /<AccuracyNote compact detail=\{ACCURACY_DETAIL\} \/>/);
+    // ACCURACY CHIP RULE (owner 2026-10-31): a modelled-drum concept lab drops
+    // the header AccuracyNote; its honesty line moved into the ⓘ screen guide
+    // (drumScreenGuides.ts) — test/screenGuide_drumtuning_20261031.test.ts.
+    assert.doesNotMatch(strip(read(`${DIR}/DrumTuningLabScreen.tsx`)), /<AccuracyNote\b/);
+    assert.match(read(`${DIR}/drumScreenGuides.ts`), /learn the method here, then trust your ears on a real drum/);
   });
   it('members see no upsell; nothing promised for later', () => {
     assert.doesNotMatch(all, /coming soon|upgrade to|go premium|for free\b/i);

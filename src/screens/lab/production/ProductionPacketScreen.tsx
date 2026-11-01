@@ -52,6 +52,11 @@ import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject } from '../../../features/production/types';
 import { PATHWAY_LABEL } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains the packet. A
+// Production lab KEEPS its "practice" AccuracyNote (the planning-scope
+// chip, owner rule 2026-10-31); the key sits after it.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { productionPacketGuide } from './productionScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionPacket'>;
@@ -144,9 +149,13 @@ export function ProductionPacketScreen() {
 
   const labWord = (def?.title ?? 'Production').replace(/^Audio /, '').toUpperCase();
   const stale = loadState === 'unreadable' && project !== null;
+  const guide = productionPacketGuide(lab);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      {/* Document layout, no Rack Unit: regions off, every guide step sits low. */}
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor off={!guide}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -158,7 +167,9 @@ export function ProductionPacketScreen() {
           </Text>
         </View>
         <AccuracyNote variant="practice" compact />
+        {guide && def ? <ScreenGuideKey title={def.packetName.toUpperCase()} guide={guide} /> : null}
       </View>
+      </ScreenGuideHintAnchor>
 
       {!project || !built ? (
         <View style={styles.empty}>
@@ -326,6 +337,7 @@ export function ProductionPacketScreen() {
           </View>
         </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

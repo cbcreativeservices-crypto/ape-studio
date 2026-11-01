@@ -54,6 +54,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { noiseScreenGuide } from './noiseScreenGuides';
 import { StageAspectReport } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -235,9 +236,15 @@ export function NoiseLabScreen() {
     <LabShell
       labId="noise"
       title="NOISE LAB"
-      subtitle="Colors · Slopes · Floor & Masking"
+      subtitle="Colors · Slopes · Energy per octave"
       intro={INTRO}
       exploreCaption="Pick a color — switch colors WHILE it plays to hear the slope change."
+      // Screen Guide (2026-10-31): one guide per tab. A CONCEPT lab — no mic;
+      // the chart is the idealized slopes and OUT is the generator's digital
+      // send level, not a real-world measurement — so the AccuracyNote chip
+      // gives its spot to the ⓘ.
+      guide={noiseScreenGuide}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -339,7 +346,7 @@ export function NoiseLabScreen() {
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {speakerView
-            ? `The ${selected.label.toLowerCase()} line is that noise AFTER the speaker high-pass; the ideal straight slopes stay dim behind it, and the amber marker sits at the ${SPEAKER_HPF_HZ} Hz corner. Below it the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
+            ? `The ${selected.label.toLowerCase()} line is that noise AFTER the speaker high-pass; the ideal straight slopes stay dim behind it, and the amber marker sits at the ${SPEAKER_HPF_HZ} Hz corner. Below it the filter cuts about 12 dB per octave, so the line falls away to the left — far less of that low energy reaches the driver.`
             : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
                 selected.slope > 0 ? '+' : ''
               }${selected.slope} dB per octave (anchored at 1 kHz). ${COLOR_CHARACTER[color]} The shimmering trace is a stylized live-noise hint around the exact slope.`}

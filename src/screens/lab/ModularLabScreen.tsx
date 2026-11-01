@@ -51,6 +51,7 @@ import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 import { ModularSpectrum } from './modular/ModularSpectrum';
+import { modularScreenGuide } from './modular/modularScreenGuides';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -157,7 +158,7 @@ const PATCH_IDEAS: { key: string; label: string; why: string; patch: Patch }[] =
   {
     key: 'vibrato',
     label: 'VIBRATO LEAD',
-    why: 'LFO → pitch at low depth: the singing wobble — the SAME LFO that wobbles the filter, just re-routed.',
+    why: 'LFO → pitch: a deliberately wide vibrato, about 3½ semitones up and down six times a second (far wider than a singer’s, so it is easy to hear) — the SAME LFO that wobbles the filter, just re-routed.',
     patch: { ...DEFAULT_PATCH, shape: 2, cutoff: 8000, lfoRate: 6, lfoDepth: 0.5, lfoDest: 1 },
   },
   {
@@ -342,6 +343,14 @@ export function ModularLabScreen() {
       title="MODULAR SYNTH LAB"
       subtitle="VCO · VCF · VCA · LFO · Envelope · Sequencer"
       intro={INTRO}
+      // Screen Guide (owner 2026-10-31): the ⓘ on every tab, per tab.
+      guide={modularScreenGuide}
+      // A CONCEPT lab (owner rule 2026-10-31): its readouts are patch states
+      // and a spectrum computed from the patch — no live microphone, no
+      // real-world measurement (the spectrum's caption keeps its own "measure
+      // real gear with a calibrated analyzer" line) — so no accuracy chip;
+      // the ⓘ takes its spot.
+      accuracy={false}
       exploreCaption="Route the modulators and watch the patch cables move — the case is patched exactly like the sound you hear."
       checkEnd={<ModularLabEnd onOpen={stop} />}
       headerAction={
@@ -679,7 +688,7 @@ export function ModularLabScreen() {
           correctIdx: 0,
           reveal:
             'ENV → CUTOFF sweeps the filter open at the attack and closes it through the decay — brightness that follows the note\u2019s shape. That one routing is most of what people mean by "synth bass".',
-          wrongHint: 'Enable ENV→CUT in the MOD tray and strike a note.',
+          wrongHint: 'In MOD pick PLUCK and ENV→VCF +100%, turn SEQ ON, then press ▶. Or tap the ACID BASS patch idea.',
         }}
       />
 

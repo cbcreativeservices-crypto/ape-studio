@@ -40,6 +40,10 @@ import { PAGE_IDS } from './engine/model/types.ts';
 import { creditedCount } from './engine/progress/creditMap.ts';
 import { lessonProgress, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this menu. A menu
+// prints no measurement, so there is no calibration chip here.
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { mikingHubGuide } from './mikingScreenGuides';
 
 export function MikingHubScreen() {
   const insets = useSafeAreaInsets();
@@ -63,9 +67,11 @@ export function MikingHubScreen() {
   const known = hydrated && !unreadable;
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false}>
       <LabHeader
         title={one ? one.family.toUpperCase() : 'MIKING LABS'}
         subtitle={one ? one.name : 'Place microphones on drawn instruments — silent; tendencies in words'}
+        guide={mikingHubGuide(one)}
       />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {unreadable ? <ProgressUnreadableNote /> : null}
@@ -101,6 +107,7 @@ export function MikingHubScreen() {
         ))}
         <Text style={styles.note}>After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the player stopped.</Text>
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }

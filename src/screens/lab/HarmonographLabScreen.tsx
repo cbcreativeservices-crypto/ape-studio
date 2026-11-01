@@ -40,6 +40,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
 import { HarmonographViewer } from './HarmonographViewer';
+import { harmonographScreenGuide } from './harmonographScreenGuides';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -154,7 +155,25 @@ export function HarmonographLabScreen() {
     RATIOS.find((r) => b > 0 && Math.abs(a / b - r.n1 / r.n2) <= (r.n1 / r.n2) * 0.02);
   const matched = matchRatio(n1, n2);
   // Figure "closes" on a clean small-integer ratio (scale-independent).
-  const isExact = matched != null && detune === 0;
+  // DETUNE only acts where the machine applies it: OSC 2 in LATERAL, the platform
+  // in ROTARY (HarmonographMachine motion(): det rides on azr). With PLAT OFF in
+  // ROTARY it changes nothing on paper, so no label may claim it is detuned.
+  const detuneActs = detune !== 0 && (!rotary || n3 > 0);
+  // "Closes" needs more than a NAME: the 2% window above lets a fader land up
+  // to ~34 cents off (1.5 : 1.02 Hz still reads 3:2) while the machine draws the
+  // raw n1:n2 and precesses. Only a ratio within 0.1% repeats (a RATIO chip sets
+  // it exactly). In ROTARY with PLAT on, the platform is a third pendulum, so
+  // PLAT : OSC 2 must sit on a simple ratio too (default 1.0 : 1.0 does).
+  const nearRatio = (x: number, r: number) => Math.abs(x - r) <= r * 1e-3;
+  const ratioExact = matched != null && nearRatio(n1 / n2, matched.n1 / matched.n2);
+  const platSimple =
+    !rotary ||
+    n3 <= 0 ||
+    [1, 2, 3, 4, 5].some((q) => {
+      const p = Math.round((n3 / n2) * q);
+      return p >= 1 && nearRatio(n3 / n2, p / q);
+    });
+  const isExact = ratioExact && platSimple && !detuneActs;
   // PLAY renders the MATCHED ratio as harmonics of BASE_F0 (the pendulums are
   // below hearing) — a clean ratio + locked detune is what can sound honestly.
   // Owner 2026-10-09 ("no one can hear the harmonograph"): on a STEREO engine
@@ -201,10 +220,10 @@ export function HarmonographLabScreen() {
 
   /** The FIGURE as sound (stereo engines, owner 2026-10-09). The pendulums
    *  swing below hearing (0.5–10 Hz), so BOTH are raised by ONE factor until
-   *  the lower tone sits at AUDIO_LOW_HZ. The ratio is exact — detune included
-   *  (it acts on OSC 2 in LATERAL mode, on the platform in ROTARY, as in the
-   *  machine) — so a detuned pair BEATS: the drift the rose shows as
-   *  precession, heard as a slow wah-wah. */
+   *  the lower tone sits at AUDIO_LOW_HZ. The ratio is exact. Detune reaches the
+   *  sound only in LATERAL (it acts on OSC 2); in ROTARY it moves the platform,
+   *  which has no audio channel, so PLAY sounds the exact OSC 1 : OSC 2 ratio
+   *  (default 330 : 220 Hz) and the precession you see is silent. */
   const soundPair = useCallback((a: number, b: number, d: number, rot: boolean) => {
     const f1 = a * BASE_F0;
     const f2 = b * BASE_F0 * (rot ? 1 : 1 + d);
@@ -400,6 +419,12 @@ export function HarmonographLabScreen() {
       subtitle="Frequency Ratios · Intervals · Beating"
       intro={INTRO}
       exploreCaption="Lock a ratio and watch the figure — then detune slightly and watch it precess: that drift is beating."
+      // Screen Guide (owner 2026-10-31): the ⓘ explains EXPLORE, LEARN and CHECK.
+      // A CONCEPT lab — a drawing from the equations, no live mic, no real-world
+      // measurement (the -20 dBFS output is labelled uncalibrated) — so the
+      // accuracy chip gives way to the ⓘ.
+      guide={harmonographScreenGuide}
+      accuracy={false}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -524,7 +549,7 @@ export function HarmonographLabScreen() {
             kind: 'group',
             id: 'tune',
             label: 'TUNE',
-            valueLabel: `${matched?.label ?? 'CUST'}${detune !== 0 ? `·+${detune * 100}%` : ''}`,
+            valueLabel: `${matched?.label ?? 'CUST'}${detuneActs ? `·+${detune * 100}%` : ''}`,
             helpKey: 'ratio_lock',
             render: () => (
               <View style={{ gap: 10 }}>
@@ -623,9 +648,13 @@ export function HarmonographLabScreen() {
         <Text style={styles.caption}>
           {isExact
             ? `A clean ${ratio.label} ratio (${ratio.interval.toLowerCase()}) — the pendulums repeat together and the figure closes.`
-            : detune !== 0
+            : detuneActs
               ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession is the picture of beating.`
-              : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}
+              : ratioExact && !platSimple
+                ? `A clean ${ratio.label} ratio between the arms, but PLAT is only a complex ratio of OSC 2 — the figure takes many swings to repeat, so it does not close within one drawing.`
+                : matched
+                  ? `Near ${ratio.label} (${ratio.interval.toLowerCase()}) but not exact — the figure slowly precesses and never quite closes. Tap the ${ratio.label} chip in TUNE to set it exactly.`
+                  : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}
         </Text>
       </View>
 

@@ -18,6 +18,8 @@
 import { createContext, Fragment, useContext, useEffect, type ReactNode } from 'react';
 import { ScrollView } from 'react-native';
 import { MikingRack, type MikingRackSpec } from './rack/MikingRack';
+// Screen Guide (owner 2026-10-31): the step on screen, in its on-screen words.
+import { stepInfoKey, stepInfoOf, type MikingStepInfo } from '../mikingScreenGuides';
 
 export type StepKind = 'WATCH' | 'LEARN' | 'TRY' | 'COMPARE' | 'PLACE' | 'LIVE' | 'PAIR' | 'POLARITY' | 'CHECK' | 'PRACTICE' | 'READ';
 
@@ -30,6 +32,11 @@ export type StepHost = {
   step: number;
   setStep: (i: number) => void;
   onSteps: (titles: string[]) => void;
+  /** Screen Guide (owner 2026-10-31, additive): the step ON SCREEN — its
+   *  strip label, layout, bezel keys and dock keys — reported when what it
+   *  shows changes, so the header's ⓘ explains exactly this step. Only an
+   *  active part reports. Absent = nothing reported. */
+  onStepInfo?: (info: MikingStepInfo) => void;
   head?: ReactNode;
   tail?: ReactNode;
   readWrap: (body: ReactNode) => ReactNode;
@@ -59,8 +66,16 @@ export function PageSteps({ steps: all }: { steps: MikingStep[] }) {
     onSteps?.(titleKey ? titleKey.split('\u0001') : []);
   }, [onSteps, titleKey]);
   const n = steps.length;
+  const i = Math.min(Math.max(0, host?.step ?? 0), Math.max(0, n - 1));
+  // Screen Guide: report the step on screen (an inactive part stays quiet).
+  const shown = !host?.inactive && n > 0 ? stepInfoOf(steps[i]) : null;
+  const shownKey = stepInfoKey(shown);
+  const onStepInfo = host?.onStepInfo;
+  useEffect(() => {
+    if (shown) onStepInfo?.(shown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by what the step shows
+  }, [onStepInfo, shownKey]);
   if (host?.inactive || n === 0) return null;
-  const i = Math.min(Math.max(0, host?.step ?? 0), n - 1);
   const s = steps[i];
   const head = i === 0 ? host?.head : null;
   const tail = i === n - 1 ? host?.tail : null;

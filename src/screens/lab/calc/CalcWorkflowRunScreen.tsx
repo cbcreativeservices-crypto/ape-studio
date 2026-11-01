@@ -51,6 +51,10 @@ import * as shareImage from './shareImage';
 import { cardColumn } from '../../../theme/readingColumn';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained" — one
+// guide for a step, one for the finished report. The ✓ VERIFIED chip stays.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -661,6 +665,8 @@ export function CalcWorkflowRunScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false} resetKey={idx < n ? `step${idx}` : 'results'}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -672,7 +678,12 @@ export function CalcWorkflowRunScreen() {
           </Text>
         </View>
         <AccuracyNote compact variant="calc" />
+        <ScreenGuideKey
+          title={workflow.name.toUpperCase()}
+          guide={idx < n ? CALC_SCREEN_GUIDES.workflowRun : CALC_SCREEN_GUIDES.workflowResults}
+        />
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* Vertical step list — the guided sequence at a glance. */}
       <View style={styles.stepStrip}>
@@ -953,6 +964,7 @@ export function CalcWorkflowRunScreen() {
           )}
         </View>
       ) : null}
+      </ScreenGuideHost>
     </View>
   );
 }

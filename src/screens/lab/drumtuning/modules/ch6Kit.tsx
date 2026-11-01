@@ -229,7 +229,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
               <DrumStatus playing={rack.playing || floor.playing || both.playing} pending={rack.pending || floor.pending || both.pending} failed={rack.failed || floor.failed || both.failed} rendering={rack.status === 'rendering' || floor.status === 'rendering' || both.status === 'rendering'} idle="stopped · ride RACK and FLOOR, then ▶ BOTH" label={both.playing || both.pending ? 'rack then floor' : rack.playing || rack.pending ? 'the rack tom' : 'the floor tom'} />
               <Feedback tone={verdict.kind === 'distinct' ? 'ok' : 'warn'}>{verdict.message}</Feedback>
               <Card>
-                <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighboring toms with both drums in their bands. TOO CLOSE: under that. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>
+                <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighboring toms with both drums in their bands. CLOSE: under that, so the two toms sit too close together. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>
                 <Point title="Credit">Reach DISTINCT and hear ▶ BOTH. With two toms placed, a third sits between or above; the snare and kick are tuned for their own jobs (Chapter 5).</Point>
               </Card>
             </>

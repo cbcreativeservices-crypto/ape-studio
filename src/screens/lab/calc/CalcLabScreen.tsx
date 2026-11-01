@@ -29,6 +29,10 @@ import { calcTileArt } from '../labTileArt';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained". The ✓
+// VERIFIED chip stays (calculators keep AccuracyNote variant "calc").
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -133,6 +137,8 @@ export function CalcLabScreen() {
       // ignores it inside imageStyle, so the art sat as a narrow strip on a
       // wide landscape iPad in the preview. The prop works on every platform.
       resizeMode="cover">
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         {/* HOME key when opened from Home (OPEN CALCULATORS), ‹ when deeper
             (owner rule 2026-10-14). */}
@@ -160,7 +166,9 @@ export function CalcLabScreen() {
           <Text style={styles.keyBtnGlyph}>π</Text>
           <Text style={styles.keyBtnText}>KEY</Text>
         </Pressable>
+        <ScreenGuideKey title="AUDIO CALCULATOR LABORATORY" guide={CALC_SCREEN_GUIDES.home} />
       </View>
+      </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
@@ -354,6 +362,7 @@ export function CalcLabScreen() {
           ) : null}
         </View>
       ) : null}
+      </ScreenGuideHost>
     </ImageBackground>
   );
 }

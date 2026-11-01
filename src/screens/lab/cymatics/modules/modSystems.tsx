@@ -134,7 +134,9 @@ function LevitationDemo({ w: boxW, h: boxH, running }: { w: number; h: number; r
     for (let i = 0; i <= 120; i++) {
       const u = i / 120;
       const y = top + u * (bot - top);
-      const x = w / 2 + Math.sin(n * Math.PI * u) * Math.cos(phase) * 26;
+      // Pressure: cos, so the horn face and the rigid reflector are pressure ANTINODES
+      // and the n pressure nodes sit at u = 0.1, 0.3, … 0.9 (2026-10-31 fact fix).
+      const x = w / 2 + Math.cos(n * Math.PI * u) * Math.cos(phase) * 26;
       s += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
     }
     return s;
@@ -158,8 +160,8 @@ function LevitationDemo({ w: boxW, h: boxH, running }: { w: number; h: number; r
       <Rect x={w / 2 - 40} y={bot} width={80} height={12} rx={2} fill="url(#metal)" stroke="#8a8f99" />
       <Line x1={w / 2} y1={top} x2={w / 2} y2={bot} stroke={MIDLINE_BLUE} strokeWidth={1} />
       <Path d={d} stroke="url(#levg)" strokeWidth={2} fill="none" />
-      {Array.from({ length: n - 1 }, (_, k) => k + 1).map((k) => (
-        <Circle key={k} cx={w / 2} cy={top + (k / n) * (bot - top)} r={4.5} fill="#efe2b8" stroke="#8a7a50" />
+      {Array.from({ length: n }, (_, k) => k + 1).map((k) => (
+        <Circle key={k} cx={w / 2} cy={top + ((2 * k - 1) / (2 * n)) * (bot - top)} r={4.5} fill="#efe2b8" stroke="#8a7a50" />
       ))}
     </Svg>
   );
@@ -430,7 +432,7 @@ const SYSTEMS: {
   { id: 'water', title: 'A water surface', short: 'Water', vibrates: 'the free surface of a liquid, driven vertically', pattern: 'Faraday standing waves at HALF the drive frequency once a threshold is passed', family: 'container modes or a bulk lattice — the Liquid Studio', harmonic: false, label: 'CALCULATED / APPROXIMATED — in the Liquid Studio', modeLabel: 'Faraday f/2', nodesLabel: '7', link: { label: 'Open the Liquid Studio ›', dock: 'LIQUID ›', go: (nav) => goToCymatics(nav, 'CymaticsLiquidStudio', {}) } },
   { id: 'speaker', title: 'A loudspeaker with particles on it', short: 'Spkr', vibrates: 'a stiff cone meant to move as one piston — and, above breakup, the cone flexing in modes', pattern: 'grains on a cone dance in the antinodes and gather where the cone is still; below breakup that is nowhere', family: 'piston, then bell-like circumferential modes — the Membrane & Loudspeaker Studio', harmonic: false, label: 'ILLUSTRATIVE / CALCULATED — in the Loudspeaker view', modeLabel: 'breakup', nodesLabel: 'rim·mid·apex', link: { label: 'Open the Loudspeaker ›', dock: 'SPEAKER ›', go: (nav) => goToCymatics(nav, 'CymaticsMembraneStudio', { preset: 'speaker-breakup' }) } },
   { id: 'bells', title: 'Bells, gongs and cymbals', short: 'Bells', vibrates: 'a curved shell — plate-like modes wrapped around a curve', pattern: 'nodal meridians and circles; a bell’s hum, prime, tierce, quint and nominal are its lowest modes', family: 'inharmonic; a bell founder tunes a bell’s main partials to set intervals (octaves, a fifth, a minor third) — try the bell plate and the ring in the Plate Studio', harmonic: false, label: 'APPROXIMATED — bell plate and ring in the Plate Studio', modeLabel: '(2,0) hum', nodesLabel: '4 meridians', link: { label: 'Open the Plate Studio ›', dock: 'PLATES ›', go: (nav) => goToCymatics(nav, 'CymaticsPlateStudio', {}) } },
-  { id: 'levitation', title: 'Acoustic levitation', short: 'Levit', vibrates: 'the air between a transducer and a reflector, as a standing wave', pattern: 'small beads hang at the pressure nodes, a half-wavelength apart', family: 'a one-dimensional standing wave — the same nodes as the pipe', harmonic: null, label: 'ILLUSTRATIVE — a 40 kHz standing wave, beads at the nodes', modeLabel: '5 nodes', nodesLabel: '4 beads' },
+  { id: 'levitation', title: 'Acoustic levitation', short: 'Levit', vibrates: 'the air between a transducer and a reflector, as a standing wave', pattern: 'small beads hang at the pressure nodes, a half-wavelength apart', family: 'a one-dimensional standing wave — the same half-wave spacing as the pipe', harmonic: null, label: 'ILLUSTRATIVE — a 40 kHz standing wave, beads at the nodes', modeLabel: '5 nodes', nodesLabel: '5 beads' },
 ];
 
 export function SystemsModule({ focused, help }: CymaticsModuleProps) {

@@ -2,7 +2,7 @@
  * TubeReferenceScreen — the Tube Reference library browse screen
  * (spec: docs/APE_TUBE_REFERENCE_SPEC_2026_08_09.md, owner decisions 2026-08-09).
  *
- * 30 owner-produced full-screen tube spec cards, grouped by family with a
+ * 40 owner-produced full-screen tube spec cards, grouped by family with a
  * search box (matches short name, alternates incl. CV numbers, base, role).
  * ALL MEMBER-GATED (owner): Academy entitlement unlocks the cards; everyone
  * else sees the list (so the value is visible) but rows prompt the paywall —
@@ -23,6 +23,9 @@ import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { Image } from 'expo-image';
 import { TUBE_FAMILY_META, fetchTubePageUri, searchTubes, type TubeRef } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ explains this screen.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { TUBE_REFERENCE_GUIDE } from './tubeScreenGuides';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -84,6 +87,10 @@ export function TubeReferenceScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* Screen Guide (owner 2026-10-31): no Rack Unit here, so no regions —
+          the steps sit in a bottom card. */}
+      <ScreenGuideHost regions={false} resetKey="tubeRef">
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -96,7 +103,11 @@ export function TubeReferenceScreen() {
             high-voltage circuit from. VacuumTubeLabScreen carries the note;
             the reference library that shows the actual figures did not. */}
         <AccuracyNote compact detail="These cards are a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
+        {/* The chip STAYS (owner rule 2026-10-31: real-world numbers — these
+            cards carry published data-sheet ratings); the ⓘ sits beside it. */}
+        <ScreenGuideKey title="TUBE REFERENCE" guide={TUBE_REFERENCE_GUIDE} />
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* Search — matches short name, alternates (ECC83, GZ34, CV5220…), base, role. */}
       <View style={styles.searchWrap}>
@@ -184,6 +195,7 @@ export function TubeReferenceScreen() {
           unplugged: only a qualified technician should work inside one.
         </Text>
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }

@@ -209,10 +209,10 @@ export function Ch13Apply({ ctx }: ChapterProps) {
         correct={1}
         explain={`The Pythagorean comma: (3/2)¹² ÷ 2⁷ = ${PYTHAGOREAN_COMMA.exactLabel} ≈ ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents.`}
         wrong={[
-          'The syntonic comma (81/80) is the gap between a Pythagorean third and a Just third — a different mismatch, from Chapter 8.',
+          'The syntonic comma (81/80) is the gap between a Pythagorean third and a Just third — a different mismatch, from Spot the Difference.',
           undefined,
           'The wolf is where MEANTONE parks its leftover: about 36 ¢ wider than a pure fifth. Twelve PURE fifths miss by a comma, not by 36 ¢.',
-          'Chapter 6: 3¹² and 2¹⁹ are different whole numbers. Nothing was rounded, and the gap is far more than a cent.',
+          'The Circle Does Not Close: 3¹² and 2¹⁹ are different whole numbers. Nothing was rounded, and the gap is far more than a cent.',
         ]}
         onCorrect={() => mark(2)}
       />

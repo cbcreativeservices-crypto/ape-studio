@@ -31,6 +31,7 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/component
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
 import { CHART_HONESTY, EnvelopeChart } from './EnvelopeChart';
+import { envelopePageGuide } from './envelopeScreenGuides';
 import { envLogMs, envToLog, fmtEnvMs } from '../../../features/lab/sliderMaps';
 
 /** Preset handed from the gallery to the explorer (module-local, consumed once on arrival). */
@@ -135,7 +136,7 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
         {explorerRead}
         {/* NEW COPY — live worked example for rise time */}
         <Body>{adsr.attackMs <= 0
-          ? 'An attack of 0 ms is an ideal instant step — no real source manages it, and there is nothing left to measure a rise time on. Nudge ATTACK up and watch the gold markers appear.'
+          ? 'An attack of 0 ms is an ideal instant step — no real source manages it, and there is nothing left to measure a rise time on: both gold markers sit on the straight-up edge at the left. Raise ATTACK and watch them spread apart along the climb.'
           : `Rise time (${rise.toFixed(1)} ms) is shorter than the attack (${fmtMs(adsr.attackMs)}) because it skips the first and last 10 % of the climb${snap ? ' — and a snap attack does most of its climbing early, so its rise time is shorter still' : ''}.`}</Body>
         <Body>{adsr.attackMs < 15 ? 'A fast attack like this IS a transient: the onset is over before the ear can follow it.' : adsr.attackMs < 120 ? 'A medium attack — the onset is audible as a shape, not a click.' : 'A slow attack has no real transient; the sound swells in.'} {adsr.sustain === 0 ? 'With zero sustain the sound is percussive: it can only decay.' : 'With sustain above zero the sound holds as long as energy keeps coming.'}</Body>
       </Card>
@@ -249,7 +250,7 @@ function PageTransients({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>The transient is the onset — the first few milliseconds. It carries more information than its size suggests.</Lead>
-      <Prompt>Step through the three onsets and watch the rise-time readout jump from about a millisecond to hundreds. Same peak level each time — only the onset changes.</Prompt>{/* NEW COPY */}
+      <Prompt>Step through the three onsets and watch the rise-time readout jump from about a millisecond to hundreds. Same peak each time; the onset is the big change, though each also settles to a different level.</Prompt>{/* NEW COPY */}
       {onsets}
       <EnvelopeChart adsr={t.adsr} showRise sweep reduceMotion={ctx.reduceMotion} title={`${t.name.toUpperCase()} · TEACHING SHAPE`} fullTitle="TRANSIENT" controls={onsets} readout={riseRead} />
       <Card>
@@ -377,9 +378,9 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
       {shapes}
-      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
+      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the chart’s full scale (the top of the envelope)" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
       <Card>
-        <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO ITS PEAK</Eyebrow>
+        <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO FULL SCALE</Eyebrow>
         {crestRead}
         <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it high; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>
@@ -414,7 +415,7 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>WAVE PROPAGATION · THE WAVE PHYSICS LAB</Eyebrow>
         <Body>How sound travels through a medium and meets the environment: speed of sound, distance, reflection, absorption, diffraction, refraction, coverage.</Body>
       </Card>
-      <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one meter or twenty — what changes with distance and the room is propagation, and that is the next lab’s subject.</Body>
+      <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one meter or twenty — what changes with distance and the room is propagation, the Wave Physics Laboratory’s subject, in Audio Fundamentals.</Body>
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
       {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
     </View>
@@ -499,7 +500,21 @@ const PAGES: PageDef[] = [
 ];
 
 export function EnvelopeLabScreen() {
-  return <PagedLab labId="envelope" title="Sound Envelope & Transients Lab" subtitle="How a sound evolves over time — at its source." pages={PAGES} />;
+  return (
+    <PagedLab
+      labId="envelope"
+      title="Sound Envelope & Transients Lab"
+      subtitle="How a sound evolves over time — at its source."
+      pages={PAGES}
+      // Screen Guide (owner 2026-10-31): the ⓘ on every page, the appended
+      // check included (none on the what's-left screen).
+      pageGuide={envelopePageGuide}
+      // A CONCEPT lab (owner rule 2026-10-31): visual only, nothing is
+      // measured — every chart carries its own ILLUSTRATIVE MODEL badge — so
+      // no accuracy note; the ⓘ takes its spot.
+      accuracy={false}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

@@ -153,7 +153,7 @@ export const M10_COMPRESSION: EarModule = {
         seeIt: {
           kind: 'wave',
           clips: [0, 1],
-          caption: 'Peak envelopes overlaid — compression shaves the hits and lifts the space between them.',
+          caption: 'Peak envelopes, one lane each — compression shaves the hits and lifts the space between them.',
         },
       };
     }

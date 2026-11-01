@@ -16,8 +16,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { CYMATICS_END_GUIDE, CYMATICS_SCREEN_GUIDES } from './cymaticsScreenGuides';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ScrollLockProvider } from '../LabShell';
 import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
@@ -125,6 +126,7 @@ export function CymaticsModuleScreen() {
       cleared={visited}
       unreadable={progressUnreadable}
       mode="progress"
+      completeTitle="ALL MODULES OPENED"
       onJump={(id) => goToModule(CYMATICS_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}
       onDone={() => safeGoBack(navigation)}
@@ -135,8 +137,23 @@ export function CymaticsModuleScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
-      <LabHeader title={meta.title.toUpperCase()} subtitle="Cymatics Lab: Sound Made Visible" right={<AccuracyNote compact />} />
+      {/* Screen Guide (owner 2026-10-31): the overlay renders as this root's
+          last child, its steps placed away from the display / dock they
+          explain — measured from the module's Rack Unit, so regions only on a
+          rack module (the reading pages and the what's-left screen have
+          none). A module change closes an open guide. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : meta.id} regions={!ending && RACK_MODULES.has(meta.id)}>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). The ⓘ explains
+          THIS module's screen (or the what's-left screen). Cymatics is a
+          CONCEPT lab — every pattern a labelled simulation, no live mic, no
+          real-world measurement — so the accuracy chip is not shown (owner
+          rule 2026-10-31) and the ⓘ takes its spot. */}
+      <LabHeader
+        title={meta.title.toUpperCase()}
+        subtitle="Cymatics Lab: Sound Made Visible"
+        guide={ending ? CYMATICS_END_GUIDE : CYMATICS_SCREEN_GUIDES[meta.id]}
+        guideTitle={ending ? 'WHAT’S LEFT' : undefined}
+      />
       <LabNavBar nav={nav} />
       {endScreen ?? (
         <ScrollLockProvider value={setScrollLocked}>
@@ -161,6 +178,7 @@ export function CymaticsModuleScreen() {
         </ScrollLockProvider>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );

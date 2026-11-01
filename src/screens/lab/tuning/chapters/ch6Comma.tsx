@@ -94,7 +94,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
             <Text style={styles.pathSub}>= 128</Text>
           </View>
         </View>
-        <Body>After twelve fifths, B♯ should represent the same pitch class as C seven octaves higher. The seven ÷2 reductions you made in Chapter 5 are those seven octaves.</Body>
+        <Body>After twelve fifths, B♯ should represent the same pitch class as C seven octaves higher. The seven ÷2 reductions you made in Build With Pure Fifths are those seven octaves.</Body>
       </Card>
 
       <EquationStage

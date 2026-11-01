@@ -12,6 +12,7 @@ import { Text, View } from 'react-native';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz, formatHzPrecise, nearestNote } from '../../../../features/cymatics/music';
 import { makeFreqFader } from '../../../../features/cymatics/freqFader';
+import { bezelModeLabel } from '../../../../features/cymatics/plateBezel';
 import type { DockParam } from '../../rack/rackTypes';
 import type { PlateViewMode } from '../vizPlate';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
@@ -80,7 +81,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
           const m = modes.find((x) => x.id === id);
           if (m) land(m.hz);
         },
-        // Land on the nearest mode — was a tap on the RES bezel cell (owner
+        // Land on the next mode up (readResonance's `next`) — was a tap on the RES bezel cell (owner
         // rule 2026-10-10: the bezel is read-only; controls dock).
         onReset: res.state !== 'at' && res.next ? { label: `LAND ON ${res.next.label} · ${formatHz(res.next.hz)}`, onPress: () => land(res.next!.hz) } : undefined,
       },
@@ -124,7 +125,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
         initialParam: 'freq',
         hideDragTag: true,
         bezel: [
-          { k: 'MODE', v: res.state === 'at' && res.dominant ? res.dominant.label : '—', helpKey: 'modes', flex: 1.5 },
+          { k: 'MODE', v: res.state === 'at' && res.dominant ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: 1.5 },
           { k: 'DRIVE', v: formatHz(hz), helpKey: 'frequency' },
           { k: 'LINES', v: res.state === 'at' && res.dominant ? `${res.dominant.nodalLines}` : '—', helpKey: 'modes', flex: 0.8 },
           {
@@ -164,7 +165,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
           ),
         params,
       }}
-      caption="Ride FREQ onto a mode and watch the figure snap in; ride away and watch it dissolve. Or open FREQ and tap LAND ON to land on the nearest one."
+      caption="Ride FREQ onto a mode and watch the figure snap in; ride away and watch it dissolve. Or open FREQ and tap LAND ON to land on the next mode up."
     >
       <Text style={P.body}>
         Each stable Chladni figure is one <Text style={P.strong}>normal mode</Text> of the plate. Nodal lines are where the plate does not move; the

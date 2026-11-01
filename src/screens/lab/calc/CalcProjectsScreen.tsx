@@ -28,6 +28,10 @@ import { workflowGeneration, workflowListUnreadable, workflowStore } from './wor
 import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained" — one
+// guide for the list, one for the editor.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -294,6 +298,8 @@ export function CalcProjectsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false} resetKey={editing ? 'edit' : 'list'}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable
           onPress={() => (editing ? closeEditor() : safeGoBack(navigation))}
@@ -316,7 +322,12 @@ export function CalcProjectsScreen() {
             <Text style={styles.saveBtnText}>＋ NEW</Text>
           </Pressable>
         )}
+        <ScreenGuideKey
+          title={editing ? (editing.id ? 'EDIT PROJECT' : 'NEW PROJECT') : 'SAVED PROJECTS'}
+          guide={editing ? CALC_SCREEN_GUIDES.projectEdit : CALC_SCREEN_GUIDES.projects}
+        />
       </View>
+      </ScreenGuideHintAnchor>
 
       {!editing ? (
         // A FlatList, not ScrollView + map (perf decisions 2026-10-04): the
@@ -461,6 +472,7 @@ export function CalcProjectsScreen() {
           </>
         </ScrollView>
       )}
+      </ScreenGuideHost>
     </View>
   );
 }

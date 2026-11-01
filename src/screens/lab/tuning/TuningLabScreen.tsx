@@ -14,7 +14,10 @@ import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, V
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained",
+// one guide per chapter plus the what's-left screen (tuningScreenGuides.ts).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { TUNING_END_GUIDE, TUNING_SCREEN_GUIDES } from './tuningScreenGuides';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
@@ -297,9 +300,22 @@ export function TuningLabScreen() {
   return (
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      {/* Screen Guide host: the overlay is this root's last child; a chapter
+          change (or FINISH) closes an open guide. Regions on the rack
+          chapters only (the reading chapter and the end screen have no Rack
+          Unit, so their steps sit in a bottom card).
+          ACCURACY CHIP RULE (owner 2026-10-31): the "LEARN HERE — MEASURE
+          WITH THE RIGHT TOOL" note stays only on live-mic tools and labs that
+          show real-world measurement numbers. This is a CONCEPT lab — every
+          tone is synthesized from exact ratios and every number is CALCULATED,
+          nothing measured — so the note is gone from the reading chapter and
+          the rack well, and the ⓘ sits in the header. */}
+      <ScreenGuideHost resetKey={ending ? 'end' : String(chapter)} regions={rack && !ending}>
       <LabHeader
         title="TUNING & TEMPERAMENT LAB"
         subtitle={ending ? "What's left" : def.title}
+        guide={ending ? TUNING_END_GUIDE : TUNING_SCREEN_GUIDES[def.index]}
+        guideTitle={ending ? 'WHAT’S LEFT' : def.title.toUpperCase()}
         right={
           /* Two-segment toggle: both states are visible, so the learner can see
              what tapping will do (the old single label only named the current state). */
@@ -336,11 +352,6 @@ export function TuningLabScreen() {
         </View>
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 24 }]}>
-        {/* This lab PLAYS synthesized tones — it never uses the microphone
-            (the note said it did until 2026-09-30, factually wrong). What the
-            learner hears passes through an uncalibrated output and speaker or
-            headphones, so the caveat is still the substance. */}
-        <AccuracyNote style={styles.accuracyNote} detail="The tones here are synthesized exactly, but you hear them through this phone's uncalibrated output and your speaker or headphones. Use a dedicated tuner or a calibrated reference for work that has to be right." />
         {def.objective ? (
           <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
             <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
@@ -367,6 +378,7 @@ export function TuningLabScreen() {
           </Pressable>
         </View>
       )}
+      </ScreenGuideHost>
     </View>
     </LabNavProvider>
   );
@@ -385,7 +397,6 @@ const styles = StyleSheet.create({
   rackFill: { flex: 1 },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
   creditKept: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
-  accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },

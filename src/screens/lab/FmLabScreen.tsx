@@ -7,8 +7,13 @@
  * HERO (lockstep rule): the sideband spectrum is computed from the SAME math
  * the native voice implements — amplitudes J_k(I) at fc ± k·fm (Bessel
  * functions, evaluated exactly here in JS) — so the graph IS the audio's
- * spectrum, not an illustration. Carson bandwidth vs Nyquist is displayed
- * honestly (extreme settings can alias; the graph marks it).
+ * spectrum, not an illustration (on PLUCK/BELL: the spectrum at the strike —
+ * the voice's index then decays, the graph keeps the fader's index). CAVEAT
+ * (2026-10-31, DFT-verified): each component is drawn on its own, but a
+ * folded one merges with the stick it lands on (default 220/2/2: 220 Hz is
+ * J0 + J1 ≈ 0.80, 660 Hz is J1 − J2 ≈ 0.22), so the copy never says "exact
+ * spectrum"; summing them is a picture change held for the owner. Carson
+ * bandwidth vs Nyquist is displayed honestly (extreme settings can alias; the graph marks it).
  *
  * AUDIO: engineVersion ≥ 7 (GEN_MODES.fm through the existing generator
  * lifecycle — gate → genSet → genStart; STRIKE retriggers the index-decay
@@ -37,6 +42,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { fmScreenGuide } from './fmScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -233,7 +239,21 @@ export function FmLabScreen() {
       title="FM SYNTH LAB"
       subtitle="Carrier · Modulator · Ratio · Index · Sidebands"
       intro={INTRO}
-      exploreCaption="Pick a ratio and index, watch the Bessel sidebands, then strike the voice — the graph is the exact spectrum of what you hear."
+      // Screen Guide (owner 2026-10-31): the ⓘ on every tab, per tab.
+      guide={fmScreenGuide}
+      // A CONCEPT lab (owner rule 2026-10-31): its readouts are synthesis
+      // settings and the computed Bessel spectrum of its own voice — no live
+      // microphone, no real-world measurement — so no accuracy chip; the ⓘ
+      // takes its spot.
+      accuracy={false}
+      // PLUCK/BELL decay the voice's index after each strike (Generator.hpp
+      // fmSample: I = index × e^(−t/τ)) while the graph draws the fader's
+      // index — so on those envelopes it is the spectrum AT THE STRIKE.
+      exploreCaption={
+        env.decaySec > 0
+          ? 'Pick a ratio and index, watch the Bessel sidebands, then strike the voice — the sticks show each sideband at the strike; PLUCK and BELL then let the index fall, so the sound dulls toward the carrier.'
+          : 'Pick a ratio and index, watch the Bessel sidebands, then strike the voice — each stick is one sideband; a dashed one merges with the stick it lands on.'
+      }
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -248,7 +268,10 @@ export function FmLabScreen() {
         stage: {
           size: 'L', // the spectrum IS the lab (lockstep hero) — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
-          badge: 'SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS',
+          badge:
+            env.decaySec > 0
+              ? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k(I) · AT THE STRIKE'
+              : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k(I) · EACH AT FC ± k·FM',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier' },

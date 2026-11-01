@@ -1,7 +1,8 @@
 /**
  * Module 8 — Guided Experiments (spec §5). The list is a MENU, not the
  * activity: the steps, the prediction and the tick-offs live in the studio
- * that the experiment opens, pinned above the notes, with PREV / NEXT so the
+ * that the experiment opens, pinned above the notes, with ‹ EXPERIMENT /
+ * EXPERIMENT › so the
  * whole series runs inside the instrument (owner 2026-09-17 — the old flow
  * made you leave, hunt for the steps, leave again, once per experiment).
  * START THE SERIES opens #1; the cards below are for jumping in anywhere.
@@ -33,12 +34,12 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
         Seventeen structured activities — ten on the Chladni plate, four in the liquid dish, three on the drumhead and loudspeaker. Each one opens the studio already set up,
-        with its prediction and its steps at the top of the studio’s well where you tick them off as you work. PREV and NEXT there carry you through the series, so you run
+        with its prediction and its steps at the top of the studio’s well where you tick them off as you work. ‹ EXPERIMENT and EXPERIMENT › there carry you through the series, so you run
         all seventeen without coming back to this list.
       </Text>
       <Pressable style={styles.startBtn} onPress={() => open(EXPERIMENTS[0])} accessibilityRole="button" accessibilityLabel={`Start the series with experiment 1, ${EXPERIMENTS[0].title}`}>
         <Text style={styles.startText}>START THE SERIES ›</Text>
-        <Text style={styles.startSub}>Opens #1 · {EXPERIMENTS[0].title} — then NEXT in the studio</Text>
+        <Text style={styles.startSub}>Opens #1 · {EXPERIMENTS[0].title} — then EXPERIMENT › in the studio</Text>
       </Pressable>
       <Text style={P.caption}>Or jump in anywhere:</Text>
       {EXPERIMENTS.map((e) => (

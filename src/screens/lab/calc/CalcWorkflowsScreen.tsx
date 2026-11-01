@@ -31,6 +31,9 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (2026-10-31): the header ⓘ "this screen, explained".
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -290,6 +293,8 @@ export function CalcWorkflowsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <ScreenGuideHost regions={false}>
+      <ScreenGuideHintAnchor>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
@@ -301,7 +306,9 @@ export function CalcWorkflowsScreen() {
         <Pressable style={styles.newBtn} onPress={onNew} accessibilityRole="button" accessibilityLabel="New workflow">
           <Text style={styles.newBtnText}>＋ NEW</Text>
         </Pressable>
+        <ScreenGuideKey title="CALCULATOR WORKFLOWS" guide={CALC_SCREEN_GUIDES.workflows} />
       </View>
+      </ScreenGuideHintAnchor>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         {dropNote ? <Text style={styles.warnText}>⚠ {dropNote}</Text> : null}
@@ -335,6 +342,7 @@ export function CalcWorkflowsScreen() {
           {WORKFLOW_TEMPLATES.map((w) => renderRow({ w, template: true }))}
         </TabletGrid>
       </ScrollView>
+      </ScreenGuideHost>
     </View>
   );
 }

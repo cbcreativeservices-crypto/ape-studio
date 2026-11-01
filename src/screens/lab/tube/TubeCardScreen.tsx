@@ -45,6 +45,9 @@ import { Image } from 'expo-image';
 import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageCached, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// Screen Guide (owner 2026-10-31): the bar's ⓘ explains the card viewer.
+import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
+import { TUBE_CARD_GUIDE } from './tubeScreenGuides';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 const MAX_SCALE = 4;
@@ -460,6 +463,10 @@ export function TubeCardScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom }]}>
+      {/* Screen Guide (owner 2026-10-31): no Rack Unit, so no regions; a tube
+          change keeps the same screen, so the guide stays open across it. */}
+      <ScreenGuideHost regions={false} resetKey="tubeCard">
+      <ScreenGuideHintAnchor>
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">
@@ -474,6 +481,9 @@ export function TubeCardScreen() {
         {/* Same reason as the list screen — this is where the ratings are
             actually read. */}
         <AccuracyNote compact detail="This card is a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
+        {/* The chip STAYS (real data-sheet ratings, owner rule 2026-10-31);
+            the ⓘ sits beside it. */}
+        <ScreenGuideKey title="TUBE REFERENCE CARD" guide={TUBE_CARD_GUIDE} />
         <Pressable
           onPress={() => goTo(idx - 1)}
           disabled={idx === 0}
@@ -495,6 +505,7 @@ export function TubeCardScreen() {
           <Text style={styles.stepArrow}>›</Text>
         </Pressable>
       </View>
+      </ScreenGuideHintAnchor>
 
       {/* Page toggle — each tube has two pages (owner 2026-08-17). Its own
           fixed row above the image, never over it (same rule as the nav bar).
@@ -589,6 +600,7 @@ export function TubeCardScreen() {
           </View>
         ) : null}
       </View>
+      </ScreenGuideHost>
     </View>
   );
 }

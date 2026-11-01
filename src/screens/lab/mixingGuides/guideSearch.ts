@@ -2,8 +2,8 @@
  * The hub's quick filter (pure, node-tested): a style matches when every word
  * typed appears in its title, its "mix priority" line or its origin, ignoring
  * case, accents and punctuation — "hip hop" finds "Hip-Hop / Rap", "variete"
- * finds "French Variété / Chanson", "brazil" finds Sertanejo, Brazilian Funk
- * and MPB.
+ * finds "French Variété / Chanson", "brazil" finds Latin Pop (its origin
+ * mentions Brazilian pop), Sertanejo, Brazilian Funk and MPB.
  */
 import type { MixingGuideEntry } from './data/index';
 

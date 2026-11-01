@@ -35,7 +35,10 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
-import { AccuracyNote } from '../../../components/AccuracyNote';
+// Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained",
+// one guide per chapter step plus the what's-left screen (drumScreenGuides.ts).
+import { ScreenGuideHost } from '../../../features/lab/screenGuide';
+import { DRUM_END_GUIDE, drumScreenGuide } from './drumScreenGuides';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useGuestWording } from '../../../features/commercial/useTier';
@@ -56,8 +59,14 @@ import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 export const DRUM_LAB_TITLE = 'Drum Tuning Lab';
 const SUBTITLE = 'Prepare, tune, listen, troubleshoot';
 
-const ACCURACY_DETAIL =
-  'This lab MODELS a drum on your phone. Every sound is SYNTHESIZED from membrane physics (Bessel-zero mode ratios, a lug-by-lug tension map, two heads coupled through the air, an amplitude-dependent pitch bend) and heard through an UNCALIBRATED output; the drawings are models and the readouts are measured from those renders. Learn the method here; trust your ears and a real drum.';
+/* ACCURACY CHIP RULE (owner 2026-10-31): the header AccuracyNote stays only
+ * on live-mic tools and labs that show real-world measurement numbers. This
+ * lab MODELS a drum — every sound is synthesized from membrane physics and
+ * heard through an uncalibrated output; the readouts are measured from those
+ * renders, never from a real drum — so it is a concept/practice lab: the chip
+ * is gone and the ⓘ screen guide takes its spot. Each stage keeps its own
+ * honesty badge (MODEL / SYNTHESIZED, modules/shared.tsx), and the guides say
+ * "learn the method here, then trust your ears on a real drum". */
 
 export function DrumTuningLabScreen() {
   const insets = useSafeAreaInsets();
@@ -484,10 +493,17 @@ export function DrumTuningLabScreen() {
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* Screen Guide host: the overlay is this root's last child; a step or
+            chapter change (or FINISH) closes an open guide. Regions while a
+            chapter is on screen (a reading step mounts no Rack Unit, so its
+            steps fall back to a bottom card); none under the what's-left
+            screen, where the hidden chapter's rack stays mounted. */}
+        <ScreenGuideHost resetKey={endState ? 'end' : `${mod.id}:${stepIdx}`} regions={!endState}>
         <LabHeader
           title={endState ? DRUM_LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
           subtitle={endState ? 'What’s left' : `${DRUM_LAB_TITLE}: ${SUBTITLE}${done ? ' · credited' : ''}`}
-          right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
+          guide={endState ? DRUM_END_GUIDE : drumScreenGuide(mod.id, stepIdx)}
+          guideTitle={endState ? 'WHAT’S LEFT' : (stepTitles[stepIdx] ?? mod.title).toUpperCase()}
         />
         <LabNavBar nav={nav} />
         {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
@@ -504,6 +520,7 @@ export function DrumTuningLabScreen() {
             <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} notesUnreadable={progressUnreadable} guest={resolved && guest} preview={preview} account={wording.account} />
           </StepHostContext.Provider>
         </View>
+        </ScreenGuideHost>
       </View>
     </LabNavProvider>
   );

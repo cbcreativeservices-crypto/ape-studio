@@ -146,8 +146,10 @@ export type FxAnimModel =
        *  noise → a level that jitters. Omitted ⇒ hits at 120 BPM. */
       signal?: DynSignal;
     }
-  | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number }
-  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean; monoIn?: boolean };
+  // srcIsNoise (2026-10-31): the source is noise. The drawing stays a sine
+  // (label only), so the IN note must not call the noise a sine / a tone.
+  | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number; srcIsNoise?: boolean }
+  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean; monoIn?: boolean; srcIsNoise?: boolean };
 
 function stageLabel(model: FxAnimModel): string {
   switch (model.kind) {
@@ -1995,8 +1997,10 @@ function DynamicsFlow({
 // Round 3 (lab-art grading 2026-10-16: "the hard-clipped square is drawn
 // TALLER than the input sine — implies clipping raises peak level"): the old
 // flow normalised the shaped wave to its own peak (shape-only). Now both
-// sides share ONE true level scale — the dashed lines are the ±0 dBFS
-// ceiling the shaper cannot pass, the input is the lab's real −20 dBFS sine,
+// sides share ONE true level scale — the dashed lines are ±0 dBFS, which
+// HARD and SOFT never pass (the DC-blocked TUBE wave reaches up to about 8 %
+// past on its lower side, ≈ +0.65 dB at DRIVE +30, and is drawn as the DSP
+// makes it, unclamped), the input is the lab's real −20 dBFS sine,
 // and a dashed ghost shows the DRIVEN wave before the ceiling, so the learner
 // sees exactly what drive pushes into the clipper and what the clipper cuts.
 const DIST_TAB_N = 96;
@@ -2026,6 +2030,7 @@ function DistFlow({
   type,
   driveDb,
   mix,
+  srcIsNoise = false,
 }: {
   w: number;
   h: number;
@@ -2034,6 +2039,8 @@ function DistFlow({
   type: 'hard' | 'soft' | 'tube';
   driveDb: number;
   mix: number;
+  /** PINK NOISE is playing: the trace is still the −20 dBFS sine model. */
+  srcIsNoise?: boolean;
 }) {
   const stageX = w * STAGE_FRAC;
   const carrier = usePhaseClock(active, 0.5);
@@ -2123,7 +2130,10 @@ function DistFlow({
       w={w}
       h={h}
       label={label}
-      note="IN = −20 dBFS sine"
+      // A clipped sine is NOT one part of clipped noise (noise also makes
+      // intermodulation), so the noise note says only what is drawn. Same
+      // length as the sine note: it must clear the legend at the right.
+      note={srcIsNoise ? 'NOISE · SINE DRAWN' : 'IN = −20 dBFS sine'}
       noteColor={DIM}
       legend={[
         { label: 'DRIVEN (before clip)', color: DIM },
@@ -2162,6 +2172,7 @@ function StereoFlow({
   delayRms,
   monoFold,
   monoIn = false,
+  srcIsNoise = false,
 }: {
   w: number;
   h: number;
@@ -2170,6 +2181,10 @@ function StereoFlow({
   flavor: 'phase' | 'width';
   /** Width lab's MONO comparison source (engine 10): L = R going in. */
   monoIn?: boolean;
+  /** Phase lab with PINK NOISE: the drawn tone is one part of the noise
+   *  (polarity, delay and the mono sum are linear, so one part is a fair
+   *  model — the Chorus scope's "PART OF THE NOISE" idiom). */
+  srcIsNoise?: boolean;
   widthPct: number;
   pan: number;
   invertR: boolean;
@@ -2284,7 +2299,7 @@ function StereoFlow({
       w={w}
       h={h}
       label={label}
-      note={stereoIn ? 'STEREO TEST TONE · L ≠ R' : 'SAME TONE IN L AND R'}
+      note={stereoIn ? 'STEREO TEST TONE · L ≠ R' : flavor === 'phase' && srcIsNoise ? 'PART OF THE NOISE · L = R' : 'SAME TONE IN L AND R'}
       noteColor={colors.textSub}
       legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
     >
@@ -2411,7 +2426,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
         />
       );
     case 'distortion':
-      return <DistFlow w={w} h={h} active={active} label={label} type={model.type} driveDb={model.driveDb} mix={model.mix} />;
+      return <DistFlow w={w} h={h} active={active} label={label} type={model.type} driveDb={model.driveDb} mix={model.mix} srcIsNoise={model.srcIsNoise} />;
     case 'stereo':
       return (
         <StereoFlow
@@ -2426,6 +2441,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           delayRms={model.delayRms}
           monoFold={model.monoFold}
           monoIn={model.monoIn}
+          srcIsNoise={model.srcIsNoise}
         />
       );
   }

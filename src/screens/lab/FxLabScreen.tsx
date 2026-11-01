@@ -58,7 +58,8 @@ import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { HeaderPlayButton, LabChip, LabShell } from './LabShell';
+import { HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
+import type { ScreenGuide } from '../../features/lab/screenGuide';
 import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
@@ -177,7 +178,8 @@ export type FxSourceSpec = {
   blurb?: string;
   /** The level the ENGINE'S DETECTOR settles at for this source, when it
    *  settles at all. Only a steady tone has one: the detector is a one-pole
-   *  peak follower (Effects.hpp:382), so a click or a noise source never
+   *  peak follower (Effects.hpp DynamicsEffect::processStereo "Peak
+   *  detector" lines, currently :393-396), so a click or a noise source never
    *  reaches its own peak — it under-reads by 7-13 dB depending on attack.
    *  A dynamics hero may mark the operating point ONLY where this is set;
    *  marking a transient source's peak draws an operating point the processor
@@ -200,6 +202,10 @@ function genParamsFor(src: FxSourceSpec): GenParams {
 
 export type FxLabConfig = {
   labId: LabId;
+  /** Screen Guide (owner 2026-10-31): the ⓘ per tab (explore / learn / check). */
+  guide?: (mode: LabMode) => ScreenGuide | undefined;
+  /** false = a concept lab: the ⓘ takes the accuracy chip's spot (chip rule, D37). */
+  accuracy?: boolean;
   /** fx::Id of this lab's node. */
   fxId: number;
   title: string;
@@ -673,6 +679,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       subtitle={config.subtitle}
       intro={config.intro}
       exploreCaption={config.exploreCaption}
+      guide={config.guide}
+      accuracy={config.accuracy ?? true}
       headerAction={
         <HeaderPlayButton
           playing={running}
