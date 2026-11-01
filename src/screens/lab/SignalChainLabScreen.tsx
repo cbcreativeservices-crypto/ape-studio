@@ -87,19 +87,36 @@ const MODULES: ChainUnit[] = [
 type FxOp = { fx: number; param: number; value: number };
 
 /** Teaching-default params per module (pushed whenever a scenario arms it —
- *  each module's full controls live in its own lab). */
+ *  each module's full controls live in its own lab).
+ *
+ *  ⚠️ EVERY param another lab or screen can change is written here (D41 J3,
+ *  2026-11-01). Engine params PERSIST across labs (EffectChain::reset only
+ *  disables nodes), so an unwritten param is whatever the last lab left: the
+ *  Phase lab's DELAY R / INVERTED Ø / MONO-FOLD, the Playground's PAN, the
+ *  EQ Lab's extra bands, the Flanger's FEEDBACK all leaked into FULL CHAIN.
+ *  Values = each lab's initial value, which is also the engine's default.
+ *  test/screenGuide_chain_20261031.test.ts §6 fails if a lab writes a param
+ *  this table does not. */
 const DEFAULTS: Record<number, FxOp[]> = {
   [FX.eq]: [
     { fx: FX.eq, param: P.eqBand(0, 'type'), value: EQ_BAND_TYPES.lowShelf },
     { fx: FX.eq, param: P.eqBand(0, 'freq'), value: 150 },
     { fx: FX.eq, param: P.eqBand(0, 'q'), value: 0.7 },
     { fx: FX.eq, param: P.eqBand(0, 'gain'), value: 9 },
+    // Bands 1–5 off: the EQ audition modules push up to six live bands.
+    { fx: FX.eq, param: P.eqBand(1, 'type'), value: EQ_BAND_TYPES.off },
+    { fx: FX.eq, param: P.eqBand(2, 'type'), value: EQ_BAND_TYPES.off },
+    { fx: FX.eq, param: P.eqBand(3, 'type'), value: EQ_BAND_TYPES.off },
+    { fx: FX.eq, param: P.eqBand(4, 'type'), value: EQ_BAND_TYPES.off },
+    { fx: FX.eq, param: P.eqBand(5, 'type'), value: EQ_BAND_TYPES.off },
   ],
   [FX.comp]: [
     { fx: FX.comp, param: P.thresholdDb, value: -30 },
     { fx: FX.comp, param: P.ratio, value: 4 },
     { fx: FX.comp, param: P.attackMs, value: 5 },
     { fx: FX.comp, param: P.releaseMs, value: 120 },
+    // Engine params persist across labs (D41 J3): the Compression lab's MAKEUP +6 dB would otherwise ride into the chain and hand LIMIT 6 dB more to catch.
+    { fx: FX.comp, param: P.makeupDb, value: 0 },
   ],
   [FX.gate]: [
     { fx: FX.gate, param: P.thresholdDb, value: -35 },
@@ -107,28 +124,46 @@ const DEFAULTS: Record<number, FxOp[]> = {
     { fx: FX.gate, param: P.releaseMs, value: 100 },
     // Same 1 ms attack the Gate lab writes (D41 #15): at the engine's built-in 10 ms a short click never opens a −35 dB gate, and params persist across labs.
     { fx: FX.gate, param: P.attackMs, value: 1 },
+    // HOLD written too (D41 J3): unwritten, the gate kept whatever HOLD the Gate lab last set (0/10/100 ms) and its GR peak swung 38–47 dB. 10 ms = the Gate lab's default and the engine's own.
+    { fx: FX.gate, param: P.holdMs, value: 10 },
   ],
   [FX.dist]: [
     { fx: FX.dist, param: P.distType, value: 1 },
     { fx: FX.dist, param: P.driveDb, value: 12 },
     { fx: FX.dist, param: P.distMix, value: 1 },
+    { fx: FX.dist, param: P.oversample, value: 1 },
   ],
   [FX.mod]: [
     { fx: FX.mod, param: P.modMode, value: 0 },
     { fx: FX.mod, param: P.rateHz, value: 0.25 },
     { fx: FX.mod, param: P.depth, value: 0.5 },
     { fx: FX.mod, param: P.modMix, value: 0.5 },
+    // The Flanger / Phaser labs leave FEEDBACK (up to RESONANCE) and the voice delay behind.
+    { fx: FX.mod, param: P.modFeedback, value: 0 },
+    { fx: FX.mod, param: P.centerMs, value: 20 },
   ],
   [FX.delay]: [
     { fx: FX.delay, param: P.timeMs, value: 375 },
     { fx: FX.delay, param: P.delayFeedback, value: 0.4 },
     { fx: FX.delay, param: P.delayMix, value: 0.5 },
+    { fx: FX.delay, param: P.pingpong, value: 0 },
+    { fx: FX.delay, param: P.dampHz, value: 6000 },
   ],
   [FX.reverb]: [
     { fx: FX.reverb, param: P.rt60, value: 1.5 },
     { fx: FX.reverb, param: P.reverbMix, value: 0.5 },
+    { fx: FX.reverb, param: P.preDelayMs, value: 20 },
+    { fx: FX.reverb, param: P.reverbDampHz, value: 5500 },
   ],
-  [FX.stereo]: [{ fx: FX.stereo, param: P.widthPct, value: 150 }],
+  [FX.stereo]: [
+    { fx: FX.stereo, param: P.widthPct, value: 150 },
+    // The Stereo + Phase labs and the Playground's PAN would otherwise ride into FULL CHAIN.
+    { fx: FX.stereo, param: P.pan, value: 0 },
+    { fx: FX.stereo, param: P.monoFold, value: 0 },
+    { fx: FX.stereo, param: P.invertR, value: 0 },
+    { fx: FX.stereo, param: P.delayRms, value: 0 },
+    { fx: FX.stereo, param: P.bassMonoHz, value: 0 },
+  ],
   [FX.limiter]: [
     { fx: FX.limiter, param: P.ceilingDb, value: -25 },
     { fx: FX.limiter, param: P.releaseMs, value: 120 },
@@ -165,7 +200,7 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
 ];
 
 const SOURCES: { label: string; short: string; gen: GenParams; srcKey: string; blurb: string }[] = [
-  { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click', blurb: 'A dry click at 90 BPM — sharp and separate, so every echo, tail and pump the chain adds is exposed.' },
+  { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click', blurb: 'A dry click at 90 BPM — sharp and separate, so every echo and tail the chain adds is exposed.' },
   { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, srcKey: 'pink', blurb: 'Steady broadband noise — perfect for HEARING tone changes (EQ, damping) but it hides echoes.' },
   { label: 'SINE 220', short: 'SINE', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine', blurb: 'One pure tone. Any new frequencies you hear were ADDED by the chain — distortion has nowhere to hide.' },
 ];

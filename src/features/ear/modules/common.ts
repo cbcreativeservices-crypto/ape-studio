@@ -64,6 +64,51 @@ export function present(x: Mono, targetDb = -20, fadeMs = 8, peakCeiling?: numbe
 }
 
 /**
+ * Present a MATCHED set (D41 J1): every clip is RMS-normalised to the target
+ * exactly as present() does, then the WHOLE set takes ONE shared gain so its
+ * loudest peak lands at or under the ceiling. The clips stay level-matched to
+ * each other (capping one clip alone would give the answer away), and none is
+ * hard-clamped by encodeWav. A peaky set (heavily compressed drums) plays
+ * below the target: matched beats −20 dBFS.
+ *
+ * A one-clip "which setting?" trial does NOT use this: it plays at a fixed,
+ * answer-independent level per module and level (derived offline, see
+ * ONE_CLIP_DB in time.ts and M10_ONE_CLIP_DB in dynamics.ts), with
+ * present()'s ceiling as a turn-down-only guard.
+ */
+export function presentMatched(
+  xs: readonly Mono[],
+  targetDb = -20,
+  fadeMs = 8,
+  peakCeiling = PEAK_CEILING,
+): Mono[] {
+  const outs = xs.map((x) => present(x, targetDb, fadeMs));
+  let peak = 0;
+  for (const o of outs) for (let i = 0; i < o.length; i++) peak = Math.max(peak, Math.abs(o[i]));
+  if (peak <= peakCeiling) return outs;
+  const g = peakCeiling / peak;
+  for (const o of outs) for (let i = 0; i < o.length; i++) o[i] *= g;
+  return outs;
+}
+
+/**
+ * A one-clip trial's clip at a FIXED, answer-independent level (D41 J1).
+ * Fades FIRST, then sets the RMS, so every answer lands on exactly
+ * `rmsTargetDb` (present() fades after normalising, and an 8 ms fade over a
+ * drum hit shaves up to ~0.3 dB that differs by answer). `peakCeiling` is a
+ * guard that only ever turns DOWN; callers pick a target that keeps it idle.
+ */
+export function presentFixed(x: Mono, rmsTargetDb: number, fadeMs = 8, peakCeiling = PEAK_CEILING): Mono {
+  const out = normalizeRms(fadeEdges(Float32Array.from(x), fadeMs), rmsTargetDb);
+  let peak = 0;
+  for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
+  if (peak <= peakCeiling) return out;
+  const g = peakCeiling / peak;
+  for (let i = 0; i < out.length; i++) out[i] *= g;
+  return out;
+}
+
+/**
  * M1 low-frequency makeup: +6 dB at 63 Hz tapering (log-f) to 0 at 250 Hz —
  * an equal-loudness APPROXIMATION, documented in feedback copy, never claimed
  * calibrated (spec §5).

@@ -106,13 +106,15 @@ test('CH1 — every chain entry point uses chainFits', () => {
   assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.chainable !== false/);
   // A saved project value carries no meaning tag: the kind + unit rule (D41).
   assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\)\)/);
-  assert.match(run, /if \(o && chainFits\(o\.label, o\.quantity, f, o\.meaning\)/);
+  // The live import's own check moved to calcUnits.liveImport (D41 J5c).
+  assert.match(read('screens/lab/calc/calcUnits.ts'), /return \{ o, fits: chainFits\(o\.label, o\.quantity, f, o\.meaning\)/);
+  assert.match(run, /const li = liveImport\(out, b\.source, f\);/);
 });
 
 test('CH2 — a relabelled upstream output is found by position', () => {
   const run = read('screens/lab/calc/CalcWorkflowRunScreen.tsx');
   assert.match(run, /source: \{ kind: 'prior-step', stepIndex: fromStep, outputLabel, outputIndex \}/);
-  assert.match(run, /if \(!o && srcRef\.outputIndex != null\)/);
+  assert.match(read('screens/lab/calc/calcUnits.ts'), /if \(!o && src\.outputIndex != null\)/);
   // The case: the label embeds the headroom input, the position does not move.
   const g = fn('micgain', 'gain');
   const a = g.compute({ sens: 2, spl: 94, target: 4, headroom: 12 });

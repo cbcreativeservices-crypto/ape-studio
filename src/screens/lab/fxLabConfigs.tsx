@@ -102,9 +102,11 @@ const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`,
 
 /** What a dynamics hero draws coming IN, from the selected source (fix pass
  *  2026-10-16): the click's real tempo, a sine's steady level, or noise. */
-function dynSignalOf(src?: FxSourceSpec): DynSignal {
+/** `ping`: draw a CLICK as the real 5 ms ping, not the drum-hit model (the
+ *  compressor, D41 J4 — see fxAnim DynSignal). */
+function dynSignalOf(src?: FxSourceSpec, ping = false): DynSignal {
   const g = src?.gen;
-  if (g?.mode === GEN_MODES.click) return { kind: 'hits', periodMs: 60000 / (g.clickBpm ?? 120) };
+  if (g?.mode === GEN_MODES.click) return { kind: 'hits', periodMs: 60000 / (g.clickBpm ?? 120), ...(ping ? { ping: true } : null) };
   if (g?.mode === GEN_MODES.sine) return { kind: 'steady' };
   return { kind: 'noise' };
 }
@@ -960,7 +962,7 @@ const compConfig: FxLabConfig = {
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
     'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +
-    'through COMP, so each hit’s sharp start leads and its tail trails behind; the dotted outline is the hit untouched.',
+    'through COMP; each CLICK is a 5 ms spike, and the dotted outline is the hit untouched.',
   // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
   // threshold produces CONSTANT gain reduction, so the GR meter lights and then
   // sits perfectly still — correct behaviour that reads as a broken meter, and
@@ -1063,7 +1065,14 @@ const compConfig: FxLabConfig = {
     attackMs: v[P.attackMs],
     releaseMs: v[P.releaseMs],
     holdMs: 0, // a compressor has no hold
-    signal: dynSignalOf(src),
+    // The REAL click (D41 J4, 2026-11-01): with the 90 ms drum-hit model the
+    // drawing clamped ~14 dB of GR while the live meter kicked ~5.5 dB on the
+    // same settings. Drawn as the generator's 5 ms ping, the drawing runs the
+    // engine's detector on the engine's input: its GR peak now equals the
+    // meter's. What is DRAWN is the output, though, and at ATTACK 5 ms the
+    // spike only drops ~1 dB (GR peaks as the click ends, after its loudest
+    // moment) — the guide says so in words.
+    signal: dynSignalOf(src, true),
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>

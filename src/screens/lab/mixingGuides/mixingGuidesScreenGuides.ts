@@ -106,7 +106,7 @@ export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
   ],
   changes: [
     'A guide counts as read when you leave it with NEXT › or FINISH › (in the strip or at its foot), or tap MARK AS READ. Opening it, ‹ PREV, ⏮, list jumps, WHAT’S LEFT › and the ‹ at the top do not count.',
-    'A read guide moves from the list to the ✓ DONE line. A members-only preview records nothing.',
+    'A read guide moves to the ✓ DONE line. A members-only preview records nothing and says so.',
     'If your record cannot be read, the title reads YOUR PROGRESS, a note says why, and every guide still opens.',
   ],
   teaches: [

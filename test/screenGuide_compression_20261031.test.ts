@@ -128,7 +128,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the well
       'LAB NOTES', 'GAIN REDUCTION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       // the stage badge + the CLICK drawing's note (fxAnim)
-      'TEACHING MODEL', 'DRUM-HIT MODEL',
+      // the CLICK is drawn as the real 5 ms ping since D41 J4 (was 'DRUM-HIT MODEL')
+      'TEACHING MODEL', '5 ms CLICK',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Threshold', 'Ratio', 'Attack', 'Release', 'Makeup gain', 'CLICK 120', '0.5 ms FAST', '25 ms PUNCH'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'THRESH'],
@@ -264,7 +265,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.match(CHECKS, /input rises 8 dB above the threshold[\s\S]*?correct: '2 dB'/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /8 ÷ 4|8 dB over at 4:1|8 dB over leaves 2/);
     assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB, step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB/);
-    assert.match(GUIDES.explore.changes.join(' '), /At the start \(CLICK 120, THRESH −40 dB, ATTACK 5 ms\) GR kicks about 5 dB on each hit, then falls back to 0\.0/);
+    assert.match(GUIDES.explore.changes.join(' '), /At the start \(CLICK 120, THRESH −40 dB, ATTACK 5 ms\) GR kicks about 3–5 dB on each hit, then falls back to 0\.0/);
     assert.doesNotMatch(textOf(GUIDES.explore), /at the start GR reads 0\.0/);
     assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -40,/);
     assert.match(COMP, /sources: \[srcClick\(120\)/);
@@ -296,5 +297,126 @@ describe('5. wiring + the accuracy-chip decision', () => {
     const calls = new Set([...fxs.matchAll(/ApeDsp\.(\w+)/g)].map((m) => m[1]));
     for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|stereoSpreadAvailable)$/, `ApeDsp.${c} — not a generator/effects call`);
     assert.doesNotMatch(fxs, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
+  });
+});
+
+// ── D41 J4 (2026-11-01): the drawing runs the REAL click ─────────────────────
+// The compressor drawing used fxAnim's 90 ms DRUM-HIT MODEL as its input, so at
+// the opening settings its detector clamped ~14 dB while the live GR meter
+// kicked ~5.5 dB. It now walks the generator's 5 ms ping on the engine's
+// 48 kHz grid. This mirror copies the DynamicsFlow ping walk (columns, pre-roll,
+// silence between pings) and checks it against the engine re-run above.
+describe('6. the compressor drawing and the GR meter run the same click (D41 J4)', () => {
+  const ANIM = code('src/screens/lab/fxAnim.tsx');
+  it('source pins: the compressor asks for the ping; the gate and limiter keep the drum model', () => {
+    assert.match(COMP, /signal: dynSignalOf\(src, true\),/);
+    const gate = CFG.slice(CFG.indexOf('const gateConfig'), CFG.indexOf('export const GateLabScreen'));
+    const lim = CFG.slice(CFG.indexOf('const limiterConfig'), CFG.indexOf('export const LimiterLabScreen'));
+    assert.match(gate, /signal: dynSignalOf\(src\),/);
+    assert.match(lim, /signal: dynSignalOf\(src\),/);
+    assert.match(ANIM, /const ping = sigKind === 0 && signal\?\.kind === 'hits' && signal\.ping === true && mode !== 'gate';/);
+    // the ping = Generator.hpp GenMode::Click at −20 dBFS, on the 48 kHz grid
+    assert.match(ANIM, /const PING_MS = 5;/);
+    assert.match(ANIM, /const PING_DT = 1000 \/ 48000;/);
+    assert.match(ANIM, /const PING_PEAK = Math\.pow\(10, DYN_PEAK_DB \/ 20\);/);
+    assert.match(ANIM, /const DYN_PEAK_DB = -20;/);
+    assert.match(ANIM, /const win = 0\.5 \* \(1 - Math\.cos\(\(2 \* Math\.PI \* u\) \/ PING_MS\)\);\s*return PING_PEAK \* win \* Math\.abs\(Math\.sin\(2 \* Math\.PI \* u\)\);/);
+    // the walk: the engine's per-sample coefficients, its detector and law, silence between pings
+    assert.match(ANIM, /const aAtkP = 1 - Math\.exp\(-PING_DT \/ atk\);\s*const aRelP = 1 - Math\.exp\(-PING_DT \/ rel\);/);
+    assert.match(ANIM, /env \+= \(xp > env \? aAtkP : aRelP\) \* \(xp - env\);/);
+    assert.match(ANIM, /\? \(env > thrLin \? Math\.exp\(-slope \* Math\.log\(env \/ thrLin\)\) : 1\) \* mkLin/);
+    assert.match(ANIM, /env \*= Math\.exp\(-\(uEnd - u\) \/ rel\);/);
+    assert.match(ANIM, /: ping\s*\? `5 ms CLICK · \$\{Math\.round\(60000 \/ periodMs\)\} BPM`/);
+  });
+
+  /** The DynamicsFlow OUT walk at a phone width: the detector's peak GR and
+   *  the drawn spike's drop under the dotted outline (dB), CLICK 120. */
+  const drawn = (thr: number, atk: number, ping: boolean, ratio = 4, rel = 120) => {
+    const w = 358, stageX = w * 0.42, outX0 = stageX + 10, outX1 = w - 6, msPerPx = 900 / (outX1 - outX0), SUB = 4;
+    const PEAK = 0.1, FLOOR = 10 ** (-52 / 20), DEC = 90, PMS = 5, PDT = 1000 / FS, PN = 240, periodMs = 500;
+    const pingAbs = (u: number) => (u < PMS ? PEAK * 0.5 * (1 - Math.cos((2 * Math.PI * u) / PMS)) * Math.abs(Math.sin(2 * Math.PI * u)) : 0);
+    const cols = Math.floor(outX1 - outX0), cw = (outX1 - outX0) / cols, dts = (cw * msPerPx) / SUB, dtc = dts * SUB;
+    const thrLin = 10 ** (thr / 20), slope = 1 - 1 / ratio;
+    const now = 3000.37, tOld = now - (outX1 - stageX) * msPerPx;
+    const pre = Math.ceil(Math.min(2500, Math.max(periodMs, 5 * rel, 5 * atk, 200)) / dtc);
+    const peaks: number[] = new Array(cols).fill(0), dry: number[] = new Array(cols).fill(0);
+    let t = tOld - pre * dtc, tb = t - Math.floor(t / periodMs) * periodMs, xd = PEAK * Math.exp(-tb / DEC), env = 0, grMax = 0;
+    const law = (c: number, x: number) => {
+      const gr = env > thrLin ? slope * 20 * Math.log10(env / thrLin) : 0;
+      if (c < 0) return;
+      grMax = Math.max(grMax, gr);
+      peaks[c] = Math.max(peaks[c], x * 10 ** (-gr / 20));
+      dry[c] = Math.max(dry[c], x);
+    };
+    for (let k = 0; k < pre + cols * SUB; k++) {
+      const coarse = k < pre, dt = coarse ? dtc : dts, c = coarse ? -1 : cols - 1 - Math.floor((k - pre) / SUB);
+      if (ping) {
+        let u = tb, rem = dt;
+        while (rem > 1e-9) {
+          if (u >= periodMs) u -= periodMs;
+          if (u < PMS) {
+            const uEnd = Math.min(u + rem, PMS);
+            for (let j = Math.ceil(u / PDT - 1e-9); j < PN && j * PDT < uEnd - 1e-9; j++) {
+              const x = pingAbs(j * PDT);
+              env += (x > env ? 1 - Math.exp(-PDT / atk) : 1 - Math.exp(-PDT / rel)) * (x - env);
+              law(c, x);
+            }
+            rem -= uEnd - u; u = uEnd;
+          } else { const uEnd = Math.min(u + rem, periodMs); env *= Math.exp(-(uEnd - u) / rel); rem -= uEnd - u; u = uEnd; }
+        }
+      } else {
+        const x = Math.max(xd, FLOOR);
+        env += (x > env ? 1 - Math.exp(-dt / atk) : 1 - Math.exp(-dt / rel)) * (x - env);
+        law(c, x);
+      }
+      t += dt; tb += dt;
+      if (tb >= periodMs) { tb -= periodMs; xd = PEAK * Math.exp(-tb / DEC); } else xd *= Math.exp(-dt / DEC);
+    }
+    return { gr: grMax, drop: 20 * Math.log10(Math.max(...dry) / Math.max(...peaks)) };
+  };
+  /** The engine's own output: the click's peak in vs out over the last second. */
+  const engineDrop = (thr: number, atk: number) => {
+    const g = comp(thr, 4, atk, 120), src = click(120);
+    let inPk = 0, outPk = 0;
+    for (let i = 0; i < FS * 2; i++) {
+      const x = src(i), gr = g(x);
+      if (i >= FS) { inPk = Math.max(inPk, Math.abs(x)); outPk = Math.max(outPk, Math.abs(x) * 10 ** (-gr / 20)); }
+    }
+    return 20 * Math.log10(inPk / outPk);
+  };
+
+  it('the old drum-hit drawing clamped about 14 dB where the meter kicks about 5.5 (the bug)', () => {
+    const old = drawn(-40, 5, false).gr;
+    assert.ok(Math.abs(old - 14) < 1.5, `drum model ${old.toFixed(1)}`);
+    assert.equal(Math.round(run(click(120), -40, 4, 5, 120, false).mx), 5);
+  });
+  const CASES: [string, number, number][] = [['the opening settings', -40, 5], ['0.5 ms FAST', -40, 0.5], ['25 ms PUNCH', -40, 25], ['THRESH −50', -50, 5], ['THRESH −30', -30, 5]];
+  for (const [label, thr, atk] of CASES) {
+    it(`${label}: the drawn detector's GR matches the meter's within 0.5 dB, and the drawn spike drops what the engine's output does`, () => {
+      const d = drawn(thr, atk, true);
+      const meter = run(click(120), thr, 4, atk, 120, false).mx;
+      assert.ok(Math.abs(d.gr - meter) <= 0.5, `drawn GR ${d.gr.toFixed(2)} vs meter ${meter.toFixed(2)}`);
+      const e = engineDrop(thr, atk);
+      assert.ok(Math.abs(d.drop - e) <= 0.5, `drawn drop ${d.drop.toFixed(2)} vs engine ${e.toFixed(2)}`);
+    });
+  }
+  it('"about 3–5 dB": wherever the 50 ms poll lands after a kick, it reads between about 3 and 5.5 dB', () => {
+    const g = comp(-40, 4, 5, 120), src = click(120);
+    const gr: number[] = [];
+    for (let i = 0; i < FS * 2; i++) { const v = g(src(i)); if (i >= FS) gr.push(v); }
+    const peakAt = gr.indexOf(Math.max(...gr));
+    // a poll every 50 ms: the first one after the peak lands 0–50 ms later
+    const caught = Array.from({ length: 50 }, (_, ms) => gr[peakAt + Math.round((ms * FS) / 1000)]);
+    assert.ok(Math.min(...caught) > 2.5 && Math.max(...caught) < 5.7, `poll reads ${Math.min(...caught).toFixed(1)}–${Math.max(...caught).toFixed(1)}`);
+  });
+  it('what the guide says the spike does: ~1 dB at the start, squeezed at 0.5 ms FAST, untouched at 25 ms PUNCH', () => {
+    assert.ok(drawn(-40, 5, true).drop < 2, 'the opening spike drops about 1 dB');
+    assert.ok(drawn(-40, 0.5, true).drop > 8, '0.5 ms FAST squeezes it');
+    assert.equal(+drawn(-40, 25, true).drop.toFixed(1), 0, '25 ms PUNCH leaves it untouched');
+    assert.match(GUIDES.explore.tryThis[2], /the drawn spike passes untouched/);
+    assert.match(GUIDES.learn.tryThis[1], /0\.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0\.0/);
+    assert.match(GUIDES.explore.seeing.join(' '), /CLICK is the real 5 ms CLICK\. At ATTACK 5 ms the spike passes almost whole \(about 1 dB lower\): GR peaks as the click ends, after its crest/);
+    for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /DRUM-HIT|drawn hit still clamps|longer drawn hit/);
+    assert.doesNotMatch(COMP, /its tail trails behind/);
   });
 });

@@ -66,7 +66,8 @@ describe('a DJ redo is a fresh practice run (owner 2026-10-19)', () => {
 describe('the what’s-left screen keeps a redone screen done and lists none of its chips', () => {
   it('PagedLab: a done (or banked) page carries no what’s-left line at all', () => {
     const s = read('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(s, /if \(pageDetail && endCleared\.has\(String\(i\)\)\) return \{ detail: undefined \};/);
+    // D41 K4 (2026-11-01): every done page drops its line, the shared handsOnDetail one included.
+    assert.match(s, /if \(endCleared\.has\(String\(i\)\)\) return \{ detail: undefined \};/);
     assert.ok(s.indexOf('const endCleared = new Set<string>()') < s.indexOf('const pageDetailOf'), 'cleared is known before the lines are built');
   });
   it('a redo that reports empty chips: the row is still CREDITED/DONE, with no "Left:" line', () => {

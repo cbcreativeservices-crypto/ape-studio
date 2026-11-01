@@ -253,7 +253,8 @@ function PageDesign({ ctx }: { ctx: PageCtx }) {
         <DesignRowCard key={row.id} row={row} onSettled={() => setSettledCount((c) => c + 1)} />
       ))}
       <Body>
-        {settledCount} of {DESIGN_ROWS.length} pairs settled. A △ note means your pick has a real cost for that job — read it,
+        {/* Progress shows what is DONE, never "n of N" (owner D117; D41 C1 2026-11-01). */}
+        {settledCount} {settledCount === 1 ? 'pair' : 'pairs'} settled. A △ note means your pick has a real cost for that job — read it,
         then choose again.
       </Body>
     </View>

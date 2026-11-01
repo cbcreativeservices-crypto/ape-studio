@@ -89,7 +89,15 @@ type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
 // ─────────────────────────────────────────────────────────── model types ──
 /** The dynamics hero's input signal, chosen by the lab's SOURCE key. */
-export type DynSignal = { kind: 'hits'; periodMs: number } | { kind: 'steady' } | { kind: 'noise' };
+export type DynSignal =
+  /** `ping` (D41 J4, 2026-11-01): draw each hit as the REAL CLICK — the
+   *  generator's 5 ms Hann-windowed 1 kHz ping — instead of the 90 ms
+   *  DRUM-HIT MODEL. The compressor uses it, so its drawing and its live GR
+   *  meter run the same input. Ignored in gate mode (the gate and limiter
+   *  drawings keep the drum model). */
+  | { kind: 'hits'; periodMs: number; ping?: boolean }
+  | { kind: 'steady' }
+  | { kind: 'noise' };
 
 /** Per-lab animation model — plain resolved numbers, built by each config's
  *  `anim(values)` mapping from the SAME values driving the audio. */
@@ -244,6 +252,45 @@ function dynLevelDb(tMs: number, kind: number, periodMs: number): number {
   const tb = tMs - Math.floor(tMs / periodMs) * periodMs;
   const db = DYN_PEAK_DB - DYN_DB_PER_MS * tb;
   return db > DYN_FLOOR_DB ? db : DYN_FLOOR_DB;
+}
+
+/* ── the REAL click (D41 J4, 2026-11-01) ──────────────────────────────────
+ * The DRUM-HIT MODEL above drew the compressor clamping ~14 dB on a click the
+ * live GR meter shows kicking ~5.5 dB: a 90 ms ring keeps the detector up far
+ * longer than the generator's 5 ms ping does. With `signal.ping` the hit is
+ * the ping itself — Generator.hpp GenMode::Click, `win · sin(2π·1000·t)` for
+ * t < 5 ms, at the lab's −20 dBFS — walked on the engine's own 48 kHz sample
+ * grid, so the drawn detector is the engine's detector, sample for sample. */
+const PING_MS = 5;
+/** The engine's sample period, ms (48 kHz). */
+const PING_DT = 1000 / 48000;
+/** Samples in one ping. */
+const PING_N = 240;
+/** The ping's peak amplitude: the lab generators' −20 dBFS. */
+const PING_PEAK = Math.pow(10, DYN_PEAK_DB / 20);
+
+/** |x| of the ping, u ms after the hit starts (1 kHz → 2π·u with u in ms). */
+function dynPingAbs(u: number): number {
+  'worklet';
+  if (u < 0 || u >= PING_MS) return 0;
+  const win = 0.5 * (1 - Math.cos((2 * Math.PI * u) / PING_MS));
+  return PING_PEAK * win * Math.abs(Math.sin(2 * Math.PI * u));
+}
+
+/** The loudest engine sample of the ping train inside signal time [t0, t1)
+ *  — a DAW overview's column max, on the same sample grid the walk uses. */
+function dynPingMax(t0: number, t1: number, periodMs: number): number {
+  'worklet';
+  let best = 0;
+  for (let h = Math.floor(t0 / periodMs) * periodMs; h < t1; h += periodMs) {
+    const a = t0 - h > 0 ? t0 - h : 0;
+    const b = t1 - h < PING_MS ? t1 - h : PING_MS;
+    for (let j = Math.ceil(a / PING_DT - 1e-9); j < PING_N && j * PING_DT < b - 1e-9; j++) {
+      const v = dynPingAbs(j * PING_DT);
+      if (v > best) best = v;
+    }
+  }
+  return best;
 }
 
 /** Linear amplitude (0..1 of the panel half-height) of a dBFS level. */
@@ -1777,6 +1824,8 @@ function DynamicsFlow({
   const glow = useDerivedValue(() => Math.min(grG.value / 12, 1), [grG]);
   const sigKind = signal?.kind === 'steady' ? 1 : signal?.kind === 'noise' ? 2 : 0;
   const periodMs = signal?.kind === 'hits' ? Math.max(100, signal.periodMs) : 500;
+  /** Hits drawn as the REAL 5 ms click (the compressor), not the drum model. */
+  const ping = sigKind === 0 && signal?.kind === 'hits' && signal.ping === true && mode !== 'gate';
 
   /** Shared time base: the OUT half defines ms-per-pixel and the IN half
    *  uses the same, so one hit is the SAME WIDTH on both sides of the stage —
@@ -1802,6 +1851,11 @@ function DynamicsFlow({
     const amps: number[] = [];
     for (let c = 0; c < cols; c++) {
       // min/max per column: the loudest moment inside the column's time span.
+      if (ping) {
+        const pk = dynPingMax(now - (inX0 + (c + 1) * cw - stageX) * msPerPx, now - (inX0 + c * cw - stageX) * msPerPx, periodMs);
+        amps.push(dynLin(20 * Math.log10(pk + 1e-12)));
+        continue;
+      }
       let best = -200;
       for (let s = 0; s < DYN_SUB; s++) {
         const x = inX0 + c * cw + ((s + 0.5) * cw) / DYN_SUB;
@@ -1818,7 +1872,7 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(inX0 + (c + 0.5) * cw, mid + A * amps[c]);
     p.close();
     return p;
-  }, [clock, inX0, inX1, stageX, msPerPx, mid, A, sigKind, periodMs]);
+  }, [clock, inX0, inX1, stageX, msPerPx, mid, A, sigKind, periodMs, ping]);
 
   const outPath = useDerivedValue(() => {
     const now = (clock.value / PI2) * 1000;
@@ -1879,9 +1933,49 @@ function DynamicsFlow({
     let env = 0;
     let gG = floorG;
     let holdLeft = 0;
+    // The REAL click (ping): the engine's per-sample coefficients.
+    const aAtkP = 1 - Math.exp(-PING_DT / atk);
+    const aRelP = 1 - Math.exp(-PING_DT / rel);
     for (let k = 0; k < total; k++) {
       const coarse = k < pre;
       const dt = coarse ? dtc : dts;
+      if (ping) {
+        // Walk this step's signal time [tb, tb + dt): inside a ping, every
+        // 48 kHz sample (the engine's detector and law, sample for sample);
+        // between pings, true silence — the detector releases toward 0, which
+        // over n samples is exactly env·e^(−n·T/RELEASE).
+        const c = coarse ? -1 : cols - 1 - Math.floor((k - pre) / DYN_SUB);
+        let u = tb;
+        let rem = dt;
+        while (rem > 1e-9) {
+          if (u >= periodMs) u -= periodMs;
+          if (u < PING_MS) {
+            const uEnd = u + rem < PING_MS ? u + rem : PING_MS;
+            for (let j = Math.ceil(u / PING_DT - 1e-9); j < PING_N && j * PING_DT < uEnd - 1e-9; j++) {
+              const xp = dynPingAbs(j * PING_DT);
+              env += (xp > env ? aAtkP : aRelP) * (xp - env);
+              if (c >= 0) {
+                const gp =
+                  mode === 'compressor'
+                    ? (env > thrLin ? Math.exp(-slope * Math.log(env / thrLin)) : 1) * mkLin
+                    : env > ceilLin ? ceilLin / env : 1;
+                if (xp * gp > peaks[c]) peaks[c] = xp * gp;
+              }
+            }
+            rem -= uEnd - u;
+            u = uEnd;
+          } else {
+            const uEnd = u + rem < periodMs ? u + rem : periodMs;
+            env *= Math.exp(-(uEnd - u) / rel);
+            rem -= uEnd - u;
+            u = uEnd;
+          }
+        }
+        t += dt;
+        tb += dt;
+        if (tb >= periodMs) tb -= periodMs;
+        continue;
+      }
       const x =
         sigKind === 1 ? peakLin : sigKind === 2 ? Math.pow(10, dynLevelDb(t, 2, periodMs) / 20) : xd > floorLin ? xd : floorLin;
       const aAtk = coarse ? aAtkC : aAtkF;
@@ -1932,7 +2026,7 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * peaks[c]);
     p.close();
     return p;
-  }, [clock, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, stageX, msPerPx, mid, A, mode, sigKind, periodMs]);
+  }, [clock, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, stageX, msPerPx, mid, A, mode, sigKind, periodMs, ping]);
 
   // The UNPROCESSED signal's outline behind OUT (cognitive review 2026-10-16:
   // with nothing to compare against, a squeezed hit or a gated tail did not
@@ -1944,6 +2038,11 @@ function DynamicsFlow({
     const cw = (outX1 - outX0) / cols;
     const amps: number[] = [];
     for (let c = 0; c < cols; c++) {
+      if (ping) {
+        const pk = dynPingMax(now - (outX0 + (c + 1) * cw - stageX) * msPerPx, now - (outX0 + c * cw - stageX) * msPerPx, periodMs);
+        amps.push(dynLin(20 * Math.log10(pk + 1e-12)));
+        continue;
+      }
       let best = -200;
       for (let s = 0; s < DYN_SUB; s++) {
         const x = outX0 + c * cw + ((s + 0.5) * cw) / DYN_SUB;
@@ -1960,7 +2059,7 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * amps[c]);
     p.close();
     return p;
-  }, [clock, outX0, outX1, stageX, msPerPx, mid, A, sigKind, periodMs]);
+  }, [clock, outX0, outX1, stageX, msPerPx, mid, A, sigKind, periodMs, ping]);
 
   // Dashed limit guides at their LINEAR height: threshold over the IN side
   // (comp/gate), ceiling over the OUT side (limiter) — dashed = a limit.
@@ -1979,10 +2078,17 @@ function DynamicsFlow({
 
   // What the IN half is: the source as the hero models it (RN text, ≥ 9 pt).
   const note =
-        // ⚠️ "DRUM-HIT MODEL": the lab's CLICK is a 5 ms ping (Generator.hpp), so
-    // the drawing borrows only its TEMPO — the decaying hit is a model, and
-    // the glass says so (audio-expert review 2026-10-16).
-    sigKind === 1 ? 'STEADY TONE · −20 dBFS' : sigKind === 2 ? 'NOISE · PEAKS ≈ −20 dBFS' : `DRUM-HIT MODEL · ${Math.round(60000 / periodMs)} BPM`;
+    // ⚠️ "DRUM-HIT MODEL" (gate, limiter): the lab's CLICK is a 5 ms ping
+    // (Generator.hpp), so those drawings borrow only its TEMPO — the decaying
+    // hit is a model, and the glass says so (audio-expert review 2026-10-16).
+    // The compressor draws the ping itself (D41 J4) and names it.
+    sigKind === 1
+      ? 'STEADY TONE · −20 dBFS'
+      : sigKind === 2
+        ? 'NOISE · PEAKS ≈ −20 dBFS'
+        : ping
+          ? `5 ms CLICK · ${Math.round(60000 / periodMs)} BPM`
+          : `DRUM-HIT MODEL · ${Math.round(60000 / periodMs)} BPM`;
 
   return (
     <FlowScene w={w} h={h} label={label} glow={glow} note={note} noteColor={DIM}>

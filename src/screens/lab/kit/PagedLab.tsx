@@ -107,12 +107,15 @@ function useOsReduceMotion(): boolean {
 }
 
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import { trainingKeyForCheck } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabKeysDone, type LabKey } from '../../../features/lab/labCompletion';
 
 const NO_KEYS: readonly string[] = [];
+/** The end-screen row of a `creditCheckLabId` check (never a page index). */
+const CREDIT_CHECK_ROW = 'credit-check';
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -120,7 +123,7 @@ import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, pageGuide, endGuide, accuracy = true }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, creditCheckLabId, creditCheckTitle, pageGuide, endGuide, accuracy = true }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -183,6 +186,15 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  (unchanged). A CONCEPT lab with guides passes false so the ⓘ takes the
    *  chip's spot; live-mic / real-measurement labs keep it. */
   accuracy?: boolean;
+  /** ADDITIVE (D41 K8, 2026-11-01): the lab whose understanding check is this
+   *  lab's CERTIFICATE credit when this lab has no check of its own (De-Esser
+   *  → 'smart-processors'). With questions authored there, the what's-left
+   *  screen lists that check as its own CHECK row (cleared from its banked
+   *  unit, never removed) and draws the check right on the end screen, so
+   *  LAB COMPLETE never shows above an unpassed check. Omitted = as before. */
+  creditCheckLabId?: string;
+  /** The heading on that check (default: this lab's title). */
+  creditCheckTitle?: string;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -307,10 +319,16 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
   const bankedCheck = useLabClearedUnits(labId);
   const bankedPageKeys = useLabKeysDone(pageCreditKeys);
+  // K8: another lab's check is this lab's credit — only when this lab has
+  // none of its own and that one is authored (opt-in by data, like `check`).
+  const creditCheckId = !check && creditCheckLabId && understandingFor(creditCheckLabId) ? creditCheckLabId : undefined;
+  const bankedCreditCheck = useLabClearedUnits(creditCheckId ?? labId);
   // The banked credit (Patchbay / Connector Select pages, a passed check)
   // could not be read either — the same note, never a missing ✓ as "not done".
   const creditUnreadable = useLabCompletionUnreadable();
   const unreadable = pagesUnreadable || ((!!creditLabKey || !!check || pageCreditKeys.length > 0) && creditUnreadable);
+  // K8: the credit check's banked record is only read on the end screen.
+  const endUnreadable = unreadable || (!!creditCheckId && creditUnreadable);
   // Drag-vs-scroll lock (owner device pass 2026-09-11): the mixing console's
   // fader and pan pot live INSIDE this page scroller, and on device the native
   // scroll view steals a vertical gesture before any JS responder can argue -
@@ -472,8 +490,18 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // cleared and the lab starts from page 1. Credit already banked to the
   // account (Patchbay / Connector Select pages, a passed check) is never
   // removed and still reads CREDITED on the end screen.
+  // The words say only what happens (D41 K3, 2026-11-01). Page credit
+  // (creditLabKey / pageCreditKeys): a credited page keeps its ✓ (endCleared
+  // reads the banked unit). Only a check banks credit (Envelope, De-Esser):
+  // the page ticks clear, the check stays. Neither: the ticks clear.
+  const pageCredit = !!creditLabKey || pageCreditKeys.length > 0;
+  const checkCredit = !!check || !!creditCheckId;
   const confirmReset = () => {
-    const message = `Starts ${title} again from its first page. Credit you have already earned stays.`;
+    const message = pageCredit
+      ? `Starts ${title} again from its first page. Credited pages keep their ✓.`
+      : checkCredit
+        ? `Starts ${title} again from its first page and clears its page ticks. Credit you have already earned stays.`
+        : `Starts ${title} again from its first page and clears its page ticks.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
@@ -499,12 +527,15 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
+  if (creditCheckId && bankedCreditCheck.has(UNDERSTANDING_UNIT)) endCleared.add(CREDIT_CHECK_ROW);
   // A lab's own per-page line (pageDetail) wins over the shared hands-on line.
   // It is a WHAT'S-LEFT line, so a page that is already done carries none
   // (owner 2026-10-19: a redo is a fresh practice run, and its empty chips
-  // are never listed as "left" under a page that keeps its mark).
+  // are never listed as "left" under a page that keeps its mark) — the
+  // shared handsOnDetail line included (D41 K4, 2026-11-01: finished rows
+  // under REVIEW ▾ still read "Counts once…").
   const pageDetailOf = (i: number): { detail: string | undefined } | null => {
-    if (pageDetail && endCleared.has(String(i))) return { detail: undefined };
+    if (endCleared.has(String(i))) return { detail: undefined };
     const d = pageDetail?.(i);
     return d ? { detail: d } : null;
   };
@@ -514,6 +545,9 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
   const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
+  if (creditCheckId) {
+    endRows.push({ id: CREDIT_CHECK_ROW, label: 'Check your understanding', kind: 'check', detail: 'On this screen, above — every answer correct, retry until you are.' });
+  }
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
   // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
@@ -577,13 +611,17 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             labTitle={title}
             units={endRows}
             cleared={endCleared}
-            unreadable={unreadable}
+            unreadable={endUnreadable}
             mode={creditMode}
             noun="page"
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
+            startOver
+            // The credit check's row moves to the check drawn here, never to a page (D41 K6/K8).
+            shownHereId={creditCheckId ? CREDIT_CHECK_ROW : undefined}
+            extra={creditCheckId ? <LabUnderstandingBlock labId={creditCheckId} labTitle={creditCheckTitle ?? title} /> : undefined}
           />
         ) : def.rack ? (
           // Rack page (PageDef.rack): full height, no scroll of its own — its

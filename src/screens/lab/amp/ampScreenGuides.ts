@@ -62,20 +62,22 @@ export const AMP_HOME_GUIDE: ScreenGuide = {
 
 export const AMP_END_GUIDE: ScreenGuide = {
   seeing: [
-    'WHAT’S LEFT: the modules not yet marked complete, and the Final assessment (your best score once submitted). When all are done the title reads LAB COMPLETE.',
+    'WHAT’S LEFT: the modules not yet marked complete, the Final assessment (your best score once submitted), and last the CHECK row for Check your understanding. LAB COMPLETE only once all are done, the check passed included.',
     'Completed items fold into one ✓ DONE row; REVIEW ▾ lists them.',
+    'CHECK YOUR UNDERSTANDING: the lab menu’s quiz, here too. Passing it counts this lab toward certificates.',
   ],
   control: [
-    'Tap a row to open it; the Final assessment row opens Module 8.',
+    'Tap a row to open it; the Final assessment row opens Module 8. The Check your understanding row moves this screen up to the check, which sits on it.',
+    'Answer the CHECK YOUR UNDERSTANDING questions; a wrong pick explains itself and lets you try another.',
     'PRACTICE AGAIN FROM THE START opens Module 1 — it never clears what you have done.',
     'DONE · BACK TO LABS goes back one screen: to the lab menu from a module, out of the lab from the menu.',
   ],
   changes: [
-    'A module counts once it is marked complete. The final counts once your best result passes — a weaker retake never takes that away.',
+    'A module counts once it is marked complete. The final counts once your best result passes — a weaker retake never takes that away. The check counts once every answer is right, and RESET LAB PROGRESS keeps it passed.',
     'If your progress cannot be read, the title reads YOUR PROGRESS and every row stays listed and open.',
   ],
   teaches: [
-    'Which parts of the lab — modules or the final — are still to do.',
+    'Which parts of the lab — modules, the final or the check — are still to do.',
     'Every module can be redone for practice at any time.',
   ],
   tryThis: [

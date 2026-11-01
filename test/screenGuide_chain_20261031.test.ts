@@ -19,7 +19,7 @@
  *      decision is pinned — a CONCEPT lab, so `accuracy={false}`.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
@@ -297,5 +297,154 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(s, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     // The honesty disclosure stays on the faceplate.
     assert.match(s, /badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE'/);
+  });
+});
+
+// ── D41 J3 (2026-11-01): the chain writes every dynamics param it relies on ──
+// Engine params PERSIST across labs (EffectChain::reset only disables nodes),
+// so a param the chain does not write is whatever the last lab left. The gate's
+// HOLD was unwritten: after the Gate lab its GR peak swung 38–47 dB with the
+// Gate lab's HOLD chip (0 / 10 / 100 ms). The comp's MAKEUP was unwritten too:
+// the Compression lab's +6 dB would ride in and feed LIMIT 6 dB hotter.
+describe('6. every dynamics param the engine reads is written by the chain (D41 J3)', () => {
+  const s = code(SCREEN);
+  const fx = code('modules/ape-dsp/ios/core/Effects.hpp');
+  const written = (node: string) => {
+    const block = s.slice(s.indexOf(`[FX.${node}]: [`));
+    return new Set([...block.slice(0, block.indexOf('],')).matchAll(/param: P\.(\w+), value:/g)].map((m) => m[1]));
+  };
+  it('the engine facts this rests on: what each mode reads, and that reset only disables', () => {
+    assert.match(fx, /void reset\(\) \{\s*for \(int id = fx::Eq; id <= fx::Limiter; \+\+id\) set\(id, 0, 0\.0\);\s*\}/);
+    // the limiter forces its own 0.1 ms attack and reads only ceiling + release
+    assert.match(fx, /fx::onePole\(mode_ == LimiterMode \? 0\.1 : attackMs_\.load\(\), fs_\)/);
+    assert.match(fx, /const double over = envDb - ceiling;/);
+    // comp: threshold, ratio, attack, release, makeup
+    assert.match(fx, /gain = std::pow\(10\.0, -gr \/ 20\.0\) \* makeup;/);
+    // gate: threshold, attack, release, range, hold
+    assert.match(fx, /holdLeft_ = holdSamples;/);
+    assert.match(fx, /const double floorG = std::pow\(10\.0, range \/ 20\.0\);/);
+  });
+  it('COMP writes threshold, ratio, attack, release and MAKEUP 0', () => {
+    for (const p of ['thresholdDb', 'ratio', 'attackMs', 'releaseMs', 'makeupDb']) assert.ok(written('comp').has(p), `comp ${p}`);
+    assert.match(s, /\{ fx: FX\.comp, param: P\.makeupDb, value: 0 \}/);
+  });
+  it('GATE writes threshold, range, release, attack and HOLD 10 ms (the Gate lab default)', () => {
+    for (const p of ['thresholdDb', 'rangeDb', 'releaseMs', 'attackMs', 'holdMs']) assert.ok(written('gate').has(p), `gate ${p}`);
+    assert.match(s, /\{ fx: FX\.gate, param: P\.holdMs, value: 10 \}/);
+    const cfg = code('src/screens/lab/fxLabConfigs.tsx');
+    assert.match(cfg, /label: 'HOLD', paramId: P\.holdMs[\s\S]*?initial: 10,/);
+  });
+  it('LIMIT writes ceiling and release', () => {
+    for (const p of ['ceilingDb', 'releaseMs']) assert.ok(written('limiter').has(p), `limiter ${p}`);
+  });
+  it('the chain gate on CLICK 90 (−35 dB, −70 floor, 100 ms, 1 ms attack): HOLD changes its GR, so it must be pinned', () => {
+    const FS = 48000;
+    const op = (ms: number) => 1 - Math.exp(-1 / (0.001 * Math.max(ms, 0.01) * FS));
+    const grMax = (holdMs: number) => {
+      const aA = op(1), aR = op(100), hN = Math.floor(holdMs * 0.001 * FS), fl = 10 ** (-70 / 20);
+      let env = 0, g = 1, hl = 0, mx = 0;
+      for (let i = 0; i < FS * 4; i++) {
+        const t = (i / FS) % (60 / 90);
+        const x = t < 0.005 ? 0.1 * 0.5 * (1 - Math.cos((2 * Math.PI * t) / 0.005)) * Math.sin(2 * Math.PI * 1000 * t) : 0;
+        const ax = Math.abs(x);
+        env += (ax > env ? aA : aR) * (ax - env);
+        if (20 * Math.log10(env + 1e-9) > -35) { hl = hN; g += aA * (1 - g); } else if (hl > 0) hl--; else g += aR * (fl - g);
+        if (i >= FS * 2) mx = Math.max(mx, -20 * Math.log10(g + 1e-9));
+      }
+      return mx;
+    };
+    const [h0, h10, h100] = [0, 10, 100].map(grMax);
+    assert.ok(h0 - h100 > 5, `HOLD moves the gate's GR peak (${h0.toFixed(1)} vs ${h100.toFixed(1)})`);
+    assert.ok(h10 > 40 && h10 < 50, `at the written 10 ms: ${h10.toFixed(1)} dB`);
+  });
+
+  // ── The generic guard (round 2): EVERY node the chain enables, EVERY param
+  // any lab or screen writes. Lab writes come from the twelve effect-lab
+  // configs (`fixed` + `params`, on their `fxId`) and from every direct
+  // ApeDsp.fxSet call in src/ (the EQ audition modules, the Playground).
+  /** "node:param" — EQ bands as "eq:eqBand<b>.<field>". */
+  const key = (node: string, p: string) => `${node}:${p.replace(/^eqBand\((\d), '(\w+)'\)$/, 'eqBand$1.$2')}`;
+  const chainWrites = () => {
+    const d = s.slice(s.indexOf('const DEFAULTS'), s.indexOf('const SCENARIOS'));
+    return new Set([...d.matchAll(/\{ fx: FX\.(\w+), param: P\.(eqBand\(\d, '\w+'\)|\w+), value:/g)].map((m) => key(m[1], m[2])));
+  };
+  const labWrites = () => {
+    const out = new Map<string, string>(); // key → who writes it
+    const cfg = code('src/screens/lab/fxLabConfigs.tsx');
+    const alias = new Map([...cfg.matchAll(/^const ([A-Z_]+) = P\.(eqBand\(\d, '\w+'\)|\w+);/gm)].map((m) => [m[1], m[2]]));
+    const blocks = cfg.split(/\nconst (?=\w+Config: FxLabConfig = \{)/).slice(1);
+    assert.ok(blocks.length >= 12, `found ${blocks.length} effect-lab configs`);
+    for (const b of blocks) {
+      const name = b.slice(0, b.indexOf(':'));
+      const node = b.match(/fxId: FX\.(\w+),/)?.[1];
+      assert.ok(node, `${name}: no fxId`);
+      for (const m of b.matchAll(/paramId: (P\.(eqBand\(\d, '\w+'\)|\w+)|[A-Z_]+)\b/g)) {
+        const p = m[2] ?? alias.get(m[1]);
+        assert.ok(p, `${name}: unknown param alias ${m[1]}`);
+        out.set(key(node!, p!), name);
+      }
+    }
+    const walk = (dir: string): string[] =>
+      readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory() ? walk(`${dir}/${e.name}`) : /\.tsx?$/.test(e.name) ? [`${dir}/${e.name}`] : []);
+    for (const f of walk('src')) {
+      if (f.endsWith('SignalChainLabScreen.tsx')) continue;
+      const c = code(f);
+      for (const m of c.matchAll(/ApeDsp\.fxSet\(FX\.(\w+), FX_PARAM\.(?:eqBand\((\w+), '(\w+)'\)|(\w+))/g)) {
+        if (m[4]) { out.set(key(m[1], m[4]), f); continue; }
+        // a loop variable band (eqAudition pushBands) can be any of the six
+        const bands = /^\d$/.test(m[2]) ? [m[2]] : ['0', '1', '2', '3', '4', '5'];
+        for (const b of bands) out.set(key(m[1], `eqBand(${b}, '${m[3]}')`), f);
+      }
+    }
+    return out;
+  };
+  /** Params the chain may leave unwritten, each with the engine line that
+   *  makes it inert in the chain's settings. */
+  const INERT: Record<string, RegExp> = {
+    // the chain's MOD runs CHORUS (modMode 0): centre frequency and stages are phaser-only
+    'mod:centerHz': /if \(mode == Phaser\) \{\s*const int stages = stages_\.load\(\);\s*const double c0 = centerHz_\.load\(\);/,
+    'mod:stages': /if \(mode == Phaser\) \{\s*const int stages = stages_\.load\(\);/,
+    'mod:enabled': /./, 'eq:enabled': /./, 'stereo:enabled': /./, 'delay:enabled': /./, // the MODULES toggle
+  };
+  // bands 1–5 are written OFF, and an off band's freq / q / gain are never read
+  for (const b of [1, 2, 3, 4, 5]) for (const f of ['freq', 'q', 'gain']) INERT[`eq:eqBand${b}.${f}`] = /const int t = bands_\[i\]\.type\.load\(std::memory_order_relaxed\);\s*if \(t == Off\) continue;/;
+
+  it('the chain enables all nine nodes (FULL CHAIN), so every node is covered', () => {
+    const full = s.match(/key: 'full',[^\n]*enable: \[([^\]]+)\]/)?.[1] ?? '';
+    assert.deepEqual(full.split(',').map((x) => x.trim()), ['FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
+  });
+  it('every param any lab or screen writes is written by the chain too (or is inert in the chain’s settings)', () => {
+    const chain = chainWrites();
+    const missing: string[] = [];
+    for (const [k, who] of labWrites()) {
+      if (chain.has(k)) continue;
+      const inert = INERT[k];
+      if (inert && inert.test(fx)) continue;
+      missing.push(`${k} (written by ${who})`);
+    }
+    assert.deepEqual(missing, []);
+  });
+  it('the guard sees the leaks it was written for (it is not vacuous)', () => {
+    const w = labWrites();
+    for (const k of ['stereo:pan', 'stereo:delayRms', 'stereo:invertR', 'stereo:monoFold', 'stereo:bassMonoHz', 'eq:eqBand5.type', 'mod:modFeedback', 'mod:centerMs', 'delay:pingpong', 'delay:dampHz', 'reverb:preDelayMs', 'reverb:reverbDampHz', 'dist:oversample', 'gate:holdMs', 'comp:makeupDb']) {
+      assert.ok(w.has(k), `no lab writes ${k} any more — trim the chain or this list`);
+    }
+    assert.match(w.get('stereo:pan') ?? '', /FoundationsPlaygroundScreen\.tsx|Config/);
+  });
+  it('the values are each lab’s initial value = the engine default', () => {
+    const want: [string, string][] = [
+      ['stereo', 'pan, value: 0'], ['stereo', 'monoFold, value: 0'], ['stereo', 'invertR, value: 0'], ['stereo', 'delayRms, value: 0'], ['stereo', 'bassMonoHz, value: 0'],
+      ['mod', 'modFeedback, value: 0'], ['mod', 'centerMs, value: 20'], ['delay', 'pingpong, value: 0'], ['delay', 'dampHz, value: 6000'],
+      ['reverb', 'preDelayMs, value: 20'], ['reverb', 'reverbDampHz, value: 5500'], ['dist', 'oversample, value: 1'],
+    ];
+    for (const [n, tail] of want) assert.ok(s.includes(`{ fx: FX.${n}, param: P.${tail} }`), `${n} ${tail}`);
+    for (const b of [1, 2, 3, 4, 5]) assert.ok(s.includes(`{ fx: FX.eq, param: P.eqBand(${b}, 'type'), value: EQ_BAND_TYPES.off }`), `EQ band ${b} off`);
+    assert.match(fx, /pan_\{0\.0\}, delayRms_\{0\.0\}, bassMonoHz_\{0\.0\}/);
+    assert.match(fx, /enabled_\{false\}, monoFold_\{false\}, invertR_\{false\}/);
+    assert.match(fx, /feedback_\{0\.0\}, mix_\{0\.5\};\s*std::atomic<double> centerMs_\{20\.0\}/);
+    assert.match(fx, /dampHz_\{6000\.0\};\s*std::atomic<bool> pingpong_\{false\};/);
+    assert.match(fx, /preDelayMs_\{20\.0\}, dampHz_\{5500\.0\}/);
+    assert.match(fx, /enabled_\{false\}, oversample_\{true\};/);
   });
 });

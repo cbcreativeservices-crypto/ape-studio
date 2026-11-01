@@ -160,7 +160,8 @@ export function Lesson12Body() {
         </>
       ) : unreadable ? null : (
         <>
-          <Eyebrow text={`LAB PROGRESS · ${completion.cleared} OF ${completion.total} UNITS CLEARED`} />
+          {/* Progress shows what is DONE, never "n of N" (owner D117; D41 C2). */}
+          <Eyebrow text={`LAB PROGRESS · ${completion.cleared} ${completion.cleared === 1 ? 'UNIT' : 'UNITS'} CLEARED`} />
           <WhatsLeft nav={nav} />
         </>
       )}

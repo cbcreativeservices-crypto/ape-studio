@@ -20,15 +20,18 @@
  * What it draws (the words come from labEnd.ts, which is unit-tested):
  *   • LAB COMPLETE when everything is banked, otherwise WHAT'S LEFT;
  *   • every unit still to do, by name, each a jump link straight to it;
- *   • the banked units collapsed under "✓ CREDITED · n" (tap to review any);
+ *   • the banked units collapsed under "✓ n CREDITED" (tap to review any) —
+ *     what is done, never "n of N" (owner rule D117; D41 K1 2026-11-01);
  *   • PRACTISE AGAIN (from the start — never clears anything) and DONE, both
  *     always enabled.
+ *   • a CHECK row whose check is drawn on this screen (`shownHereId`, the
+ *     host's `extra`) moves the screen to it instead of leaving (D41 K6).
  *
  * Nothing here auto-appears (Low-Light Production Mode): it only ever renders
  * because the learner pressed FINISH / DONE / the WHAT'S LEFT chip, and it has
  * no timers or entrance animation. Text ≥ 9 pt at 390 wide (smallest is 10).
  */
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -38,7 +41,7 @@ import { isGuestTier } from '../../../features/commercial/tier';
 import { useGuestWording, useTier } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
-import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
+import { endLead, endNote, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
 import { LabNextButton, claimLabLeave } from './LabNavBar';
 import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 
@@ -71,6 +74,8 @@ export function LabEndScreen({
   extra,
   completeTitle,
   unreadable,
+  shownHereId,
+  startOver,
 }: {
   labTitle: string;
   /** Every unit of the lab, in lab order (checks last). */
@@ -104,6 +109,16 @@ export function LabEndScreen({
    *  replaces the lead line and the title never claims what is left or done;
    *  every unit is still listed and opens (labs never block navigation). */
   unreadable?: boolean;
+  /** ADDITIVE (D41 K6, 2026-11-01): the id of the row whose content is drawn
+   *  ON THIS SCREEN as `extra` (Mic Selection, Tube, Amp, a PagedLab credit
+   *  check: the understanding check block). Its row moves the screen up to
+   *  that block instead of calling onJump — before, it showed › and "Opens
+   *  it." and did nothing. */
+  shownHereId?: string;
+  /** ADDITIVE (D41 K2, 2026-11-01): the lab's CONTENTS has START OVER
+   *  (PRACTICE), which clears its ticks — the closing note says so, so
+   *  "practicing never clears" is never told where it would be false. */
+  startOver?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   // WORDING, not behaviour (tier sweep 2026-10-03): "You are not signed in"
@@ -120,6 +135,10 @@ export function LabEndScreen({
   const w = whatsLeft(units, cleared);
   const title = unreadable ? 'YOUR PROGRESS' : w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
+  // Where the host's `extra` (the check block, for `shownHereId`) sits in the scroll.
+  const extraY = useRef(0);
+  const toShownHere = () => scrollRef.current?.scrollTo({ y: Math.max(0, extraY.current - 8), animated: false });
   // ONE exit (bug pass 2026-09-30): a double tap on DONE ran the host's
   // goBack() twice and popped a second screen (Amp, Tuning, Mic Selection,
   // Tube, Mic Principles, Speaker Coverage, every PagedLab).
@@ -134,30 +153,34 @@ export function LabEndScreen({
   // A guest banks nothing to an account, so their rows never read CREDITED.
   const tag = mode === 'credit' && !isGuest ? 'CREDITED' : 'DONE';
 
-  const row = (r: LabEndRow, dim: boolean) => (
-    <Pressable
-      key={r.id}
-      onPress={() => onJump(r.id)}
-      style={[styles.row, dim && styles.rowDim]}
-      accessibilityRole="button"
-      accessibilityLabel={`${r.kind === 'check' ? '' : `${noun} ${r.num}, `}${r.label}${r.optional ? ', optional' : ''}${r.credited ? `, ${tag.toLowerCase()}` : ''}. ${r.detail ?? ''} Opens it.`}
-    >
-      <Text style={[styles.rowNum, r.kind === 'check' && styles.rowNumCheck]}>
-        {r.kind === 'check' ? 'CHECK' : String(r.num).padStart(2, '0')}
-      </Text>
-      <View style={{ flex: 1, gap: 2 }}>
-        <Text style={styles.rowLabel} numberOfLines={2}>
-          {r.label}
+  const row = (r: LabEndRow, dim: boolean) => {
+    const here = shownHereId !== undefined && r.id === shownHereId && extra != null;
+    return (
+      <Pressable
+        key={r.id}
+        onPress={() => (here ? toShownHere() : onJump(r.id))}
+        style={[styles.row, dim && styles.rowDim]}
+        accessibilityRole="button"
+        accessibilityLabel={`${r.kind === 'check' ? '' : `${noun} ${r.num}, `}${r.label}${r.optional ? ', optional' : ''}${r.credited ? `, ${tag.toLowerCase()}` : ''}. ${r.detail ?? ''} ${here ? 'It is on this screen, above.' : 'Opens it.'}`}
+      >
+        <Text style={[styles.rowNum, r.kind === 'check' && styles.rowNumCheck]}>
+          {r.kind === 'check' ? 'CHECK' : String(r.num).padStart(2, '0')}
         </Text>
-        {r.detail ? <Text style={styles.rowDetail}>{r.detail}</Text> : null}
-      </View>
-      {r.credited ? <Text style={styles.rowTag}>✓ {tag}</Text> : null}
-      <Text style={styles.rowGo}>›</Text>
-    </Pressable>
-  );
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={styles.rowLabel} numberOfLines={2}>
+            {r.label}
+          </Text>
+          {r.detail ? <Text style={styles.rowDetail}>{r.detail}</Text> : null}
+        </View>
+        {r.credited ? <Text style={styles.rowTag}>✓ {tag}</Text> : null}
+        <Text style={styles.rowGo}>›</Text>
+      </Pressable>
+    );
+  };
 
   return (
     <ScrollView
+      ref={scrollRef}
       style={{ flex: 1 }}
       contentContainerStyle={[styles.scroll, readingColumn, bottomInset && { paddingBottom: insets.bottom + 28 }]}
     >
@@ -170,7 +193,13 @@ export function LabEndScreen({
       ) : (
         <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen(), account })}</Text>
       )}
-      {extra}
+      {shownHereId !== undefined && extra != null ? (
+        <View collapsable={false} onLayout={(e) => { extraY.current = e.nativeEvent.layout.y; }}>
+          {extra}
+        </View>
+      ) : (
+        extra
+      )}
 
       {w.left.length > 0 ? (
         <View style={styles.list} accessibilityLabel={unreadable ? `${w.left.length} to open` : `${w.left.length} still to do`}>
@@ -197,8 +226,9 @@ export function LabEndScreen({
             aria-expanded={showCredited}
             accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide' : 'Show'} them to review`}
           >
+            {/* What is done, never "n OF N" (owner rule D117; D41 K1). */}
             <Text style={styles.creditedText}>
-              ✓ {tag} · {w.credited.filter((r) => !r.optional).length} OF {w.total}
+              ✓ {w.credited.length} {tag}
             </Text>
             <Text style={styles.creditedToggle}>{showCredited ? 'HIDE ▴' : 'REVIEW ▾'}</Text>
           </Pressable>
@@ -213,9 +243,7 @@ export function LabEndScreen({
       <Text style={styles.note}>
         {isGuest
           ? 'Practicing again, reviewing and leaving are always open.'
-          : mode === 'credit'
-            ? 'Practicing again or reviewing never removes credit you have already earned.'
-            : 'Practicing again or reviewing never clears what you have already done.'}
+          : endNote(mode, !!startOver)}
       </Text>
     </ScrollView>
   );

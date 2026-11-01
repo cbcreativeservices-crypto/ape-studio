@@ -228,7 +228,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     const end = code('src/screens/lab/kit/LabEndScreen.tsx');
     for (const n of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'YOUR PROGRESS']) assert.ok(end.includes(n) && textOf(G.AMP_END_GUIDE as unknown as Guide).includes(n), n);
     assert.match(code('src/features/amp/ampEnd.ts'), /label: 'Final assessment'/);
-    assert.match(HOME, /onJump=\{\(id\) => open\(id === 'final' \? 'apply' : \(id as AmpModuleId\)\)\}/);
+    assert.match(HOME, /onJump=\{\(id\) => \{ if \(id !== AMP_CHECK_UNIT\) open\(id === 'final' \? 'apply' : \(id as AmpModuleId\)\); \}\}/);
   });
   it('the summary label and diagnosis line claim knowledge, never mastery (owner rule 2026-10-31)', () => {
     assert.doesNotMatch(modSrc('apply'), /CONCEPTS MASTERED|you can read an amplifier/);

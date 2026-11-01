@@ -303,7 +303,7 @@ export const ENVELOPE_END_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'Which of the lab’s ideas you have worked through, and which are still ahead.',
-    'Practicing again or reviewing never clears what you have done. Only START OVER (PRACTICE) clears page ticks; a passed check stays.',
+    'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the page ticks for a fresh run; a passed check stays.',
   ],
   tryThis: [
     "The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT'S LEFT ›, just under the page list: it has joined the ✓ DONE line.",

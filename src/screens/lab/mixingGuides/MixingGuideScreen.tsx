@@ -161,6 +161,13 @@ export function MixingGuideScreen() {
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
             doneLabel="DONE · BACK TO THE GUIDES"
+            // PREVIEW EARNS NOTHING (D41 C3, 2026-11-01): markGuideRead drops a
+            // preview's reading, but a SIGNED-IN non-member previewing read as
+            // "not a guest" and was told "Everything you have done is saved on
+            // this device". In a preview the end screen reads the guest-preview
+            // line ("members-only preview, so nothing here is saved or
+            // credited" — no upsell); otherwise the tier decides (useGuestWording).
+            guest={inPreview ? true : undefined}
             bottomInset
           />
         ) : (

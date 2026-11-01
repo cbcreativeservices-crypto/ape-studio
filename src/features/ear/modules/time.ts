@@ -10,12 +10,47 @@ import {
   type Mono, type ReverbSpace,
 } from '../earDsp';
 import type { EarModule, EarTrial } from '../earTypes';
-import { rngFor, pickInt, choice, shuffled, drumPattern, pluckPattern, present, type Rng } from './common';
+import {
+  rngFor, pickInt, choice, shuffled, drumPattern, pluckPattern, presentMatched, presentFixed, type Rng,
+} from './common';
+
+// D41 J1: per-clip −20 dBFS RMS pushed reverb, comb and polarity sums past
+// full scale, where encodeWav clamps them.
+//  • A/B and ABX sets → presentMatched: ONE shared gain per trial, so the
+//    clips stay loudness-matched AND peak at or under −1 dBFS.
+//  • One-clip "which one?" trials → a FIXED level per module and level
+//    (ONE_CLIP_DB below), the same for every answer, so loudness never tells
+//    the answer and a trial renders only the clip it plays.
+//
+// ONE_CLIP_DB derivation (2026-11-01, offline): for 300 random sources (100
+// for reverb), EVERY answer in the level's deck was rendered and presented
+// at −20 dBFS RMS. The worst peak in brackets sets the highest RMS that keeps
+// every answer at or under −1 dBFS; each constant sits ≥ 1 dB under that
+// (presentFixed fades before it sets the RMS, which can lift a peak by up to
+// ~0.3 dB against that measurement; the margin absorbs it).
+// presentFixed's ceiling stays on as a guard that only ever turns DOWN; the
+// tests show it never fires over many seeds (test/earMatchedPeak_20261101).
+const ONE_CLIP_DB = {
+  delay: -22.5, // worst peak 1.05× at −20 (all four times, 1.6 s pad) → max −21.4
+  polarity2: -29, // 2.22× → max −27.9
+  polarity3: -27.5, // 1.84× → max −26.3
+  reverb2: -24.5, // 1.30× (4 spaces × 3 decays) → max −23.3
+  reverb3: -24, // 1.22× (room/hall/plate) → max −22.7
+  reverb4: -24, // 1.22× (all five) → max −22.7
+  reverb5: -23, // 1.10× (4 spaces × bright/dark) → max −21.8
+} as const;
+
+/** A one-clip trial's clip at its fixed level; the ceiling only turns down. */
+const presentOne = (x: Mono, rmsTargetDb: number): Mono => presentFixed(x, rmsTargetDb);
 
 // ————————————————————————————— M8 · Delay —————————————————————————————————
 
 const DELAYS = [500, 250, 100, 50]; // ms, ladder order L1→L4
 const DELAY_CHIPS = [50, 100, 250, 500];
+/** Tail pad for the one-clip "how long?" trial: sized for the LONGEST time,
+ *  so every answer's clip is the same length (a pad that grew with the asked
+ *  delay made the clip — and the lit ▶ — last 2.2–3.1 s by answer). */
+const LONGEST_DELAY_MS = Math.max(...DELAYS);
 
 /** Dry pluck + one echo at −6 dB; ≥250 ms trials add a 0.15 tap at 2×delay (no feedback), giving repeats at d, 2d, 3d (−6, −16.5, −22.5 dB). */
 function withEcho(x: Mono, delayMs: number): Mono {
@@ -49,8 +84,7 @@ export const M8_DELAY: EarModule = {
     const firstOnset = 0.05;
     if (kind === 0) {
       const src = pluckPattern(rng, 0.6 + delay / 500);
-      const dry = present(src);
-      const wet = present(withEcho(src, delay));
+      const [dry, wet] = presentMatched([src, withEcho(src, delay)]);
       const wetFirst = rng() < 0.5;
       return {
         clips: [
@@ -73,7 +107,8 @@ export const M8_DELAY: EarModule = {
       // Three clips, three delays — which is longest?
       const pool = shuffled(rng, DELAY_CHIPS).slice(0, 3);
       const src = pluckPattern(rng, 1.1);
-      const clips = pool.map((d, i) => ({ label: 'ABC'[i], buf: present(withEcho(src, d)) }));
+      const bufs = presentMatched(pool.map((d) => withEcho(src, d)));
+      const clips = pool.map((_, i) => ({ label: 'ABC'[i], buf: bufs[i] }));
       const correct = pool.indexOf(Math.max(...pool));
       return {
         clips,
@@ -93,10 +128,10 @@ export const M8_DELAY: EarModule = {
     // so L1 still asks something) — a fixed per-level time made the chips
     // answerable from the level badge alone.
     const askDelay = choice(rng, DELAYS.slice(0, Math.max(2, Math.min(level, 4))));
-    const src = pluckPattern(rng, 0.6 + askDelay / 500);
+    const src = pluckPattern(rng, 0.6 + LONGEST_DELAY_MS / 500);
     const idx = DELAY_CHIPS.indexOf(askDelay);
     return {
-      clips: [{ label: '▶', buf: present(withEcho(src, askDelay)) }],
+      clips: [{ label: '▶', buf: presentOne(withEcho(src, askDelay), ONE_CLIP_DB.delay) }],
       question: 'About how long is the delay?',
       answers: DELAY_CHIPS.map((d) => ({ label: `${d} ms` })),
       correct: idx,
@@ -135,8 +170,7 @@ export const M13_COMB: EarModule = {
     // character, not one notch pattern (spec).
     const delayMs = 0.5 + rng() * 9.5;
     const src = rng() < 0.5 ? pinkNoise(1.6, rng) : drumPattern(1, rng);
-    const dry = present(src);
-    const combed = present(mixDelayed(src, delayMs, g));
+    const [dry, combed] = presentMatched([src, mixDelayed(src, delayMs, g)]);
     const notchInfo = `Delayed copy ${delayMs.toFixed(1)} ms behind — notches every ${(1000 / delayMs).toFixed(0)} Hz (spacing = 1 ÷ delay).`;
     if (level >= 4) {
       const xIsA = rng() < 0.5;
@@ -223,8 +257,7 @@ export const M12_POLARITY: EarModule = {
         a = fadeEdges(gainDb(sumIn, gain));
         b = fadeEdges(gainDb(sumOut, gain));
       } else {
-        a = present(sumIn);
-        b = present(sumOut);
+        [a, b] = presentMatched([sumIn, sumOut]);
       }
       const inFirst = rng() < 0.5;
       return {
@@ -265,7 +298,7 @@ export const M12_POLARITY: EarModule = {
     const idx = pickInt(rng, variants.length);
     const v = variants[idx];
     return {
-      clips: [{ label: '▶', buf: present(v.buf) }],
+      clips: [{ label: '▶', buf: presentOne(v.buf, level >= 3 ? ONE_CLIP_DB.polarity3 : ONE_CLIP_DB.polarity2) }],
       question: 'What happened in this mic sum?',
       answers: variants.map((x) => ({ label: x.label })),
       correct: idx,
@@ -317,8 +350,10 @@ export const M9_REVERB: EarModule = {
       // grows with the RT so a hall is never cut off mid-bloom.
       const space = choice(rng, SPACES);
       const pad = Math.max(1.2, REVERB_RT60[space.key] * 0.8);
-      const dry = present(padTail(src, pad));
-      const wet = present(reverb(padTail(src, pad), space.key, REVERB_RT60[space.key], 0.5, 0.5));
+      const [dry, wet] = presentMatched([
+        padTail(src, pad),
+        reverb(padTail(src, pad), space.key, REVERB_RT60[space.key], 0.5, 0.5),
+      ]);
       const wetFirst = rng() < 0.5;
       return {
         clips: [
@@ -346,7 +381,7 @@ export const M9_REVERB: EarModule = {
       ];
       const idx = pickInt(rng, decays.length);
       const space = choice(rng, SPACES.slice(0, 4));
-      const wet = present(reverb(padTail(src, 2.6), space.key, decays[idx].rt60, 0.5, 0.5));
+      const wet = presentOne(reverb(padTail(src, 2.6), space.key, decays[idx].rt60, 0.5, 0.5), ONE_CLIP_DB.reverb2);
       return {
         clips: [{ label: '▶', buf: wet }],
         question: 'How long is the decay?',
@@ -365,7 +400,7 @@ export const M9_REVERB: EarModule = {
     if (level === 5) {
       const space = choice(rng, SPACES.slice(0, 4));
       const brightIs = rng() < 0.5;
-      const wet = present(reverb(padTail(src, 1.6), space.key, 1.2, brightIs ? 0.9 : 0.12, 0.55));
+      const wet = presentOne(reverb(padTail(src, 1.6), space.key, 1.2, brightIs ? 0.9 : 0.12, 0.55), ONE_CLIP_DB.reverb5);
       return {
         clips: [{ label: '▶', buf: wet }],
         question: `Is this ${space.label.toLowerCase()} bright or dark?`,
@@ -385,7 +420,10 @@ export const M9_REVERB: EarModule = {
     const deck = level === 3 ? [SPACES[0], SPACES[2], SPACES[3]] : SPACES;
     const idx = pickInt(rng, deck.length);
     const space = deck[idx];
-    const wet = present(reverb(padTail(src, 2.2), space.key, REVERB_RT60[space.key], 0.5, 0.55));
+    const wet = presentOne(
+      reverb(padTail(src, 2.2), space.key, REVERB_RT60[space.key], 0.5, 0.55),
+      level === 3 ? ONE_CLIP_DB.reverb3 : ONE_CLIP_DB.reverb4,
+    );
     // Classic confusions earn half credit at L3–L4: room↔chamber, hall↔plate
     // (spec). findIndex → −1 filters out any pair absent from the L3 deck.
     const nearKeys: Record<string, string[]> = { room: ['chamber'], chamber: ['room'], hall: ['plate'], plate: ['hall'] };

@@ -297,7 +297,7 @@ const DRIVER: Workspace = {
   fields: [
     { key: 'sd', name: 'CONE AREA (Sd)', quantity: 'area', defaultUnit: 'm2', placeholder: '0.05', help: 'Effective radiating area of the cone.', positive: true, warn: { test: (x) => x <= 0, msg: 'Area must be greater than zero.' } },
     { key: 'xmax', name: 'PEAK EXCURSION (Xmax)', quantity: 'length', defaultUnit: 'mm', placeholder: '5', help: 'One-way peak linear cone travel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Excursion must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '40', help: 'The frequency to evaluate output at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '40', help: 'The frequency to evaluate output at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'dist', name: 'DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '1', help: 'Listening distance (half-space).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', positive: true, warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
     { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },

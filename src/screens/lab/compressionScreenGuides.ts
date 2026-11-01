@@ -23,15 +23,21 @@
  *   … THRESH −20 and above               → GR 0.0
  *   RATIO 2:1 / 8:1 / 20:1 at −30         → 4.7 / 8.1 / 8.8       "5 / 8 / 9"
  *   CLICK 120, THRESH −40 (the opening setting, D41 fix 2026-11-01),
- *     ATTACK 5 ms                         → kicks to ~5.5 dB, back to 0.0
+ *     ATTACK 5 ms                         → kicks to ~5.5 dB, back to 0.0;
+ *                                            the 50 ms poll catches it 2.8–5.5
+ *                                            dB after the peak → "about 3–5"
  *   … ATTACK 25 ms PUNCH                  → 0.0 (the 5 ms click is over before
  *                                            the detector reaches −40)
  *   CLICK 120 at THRESH −30 / ATTACK 5 ms → 0.0 (the detector peaks at
  *     −32.7 dBFS) — why the lab no longer opens at −30: GR never moved on
  *     first play.
- * The CLICK drawing is fxAnim's DRUM-HIT MODEL (a 90 ms decaying hit), so at
- * ATTACK 25 ms the picture clamps the tail (~12 dB) while GR reads 0.0 — the
- * guide says the drawing is a model and GR measures the real click.
+ * The CLICK drawing is the REAL click (D41 J4, 2026-11-01): fxAnim walks the
+ * generator's 5 ms ping through the engine's detector on its 48 kHz grid
+ * (it used to draw a 90 ms DRUM-HIT MODEL that clamped ~14 dB while the meter
+ * kicked ~5.5). So the drawn detector peaks where GR does (5.5 dB at the
+ * start), and the drawn spike is the engine's real output: about 1 dB under
+ * the dotted outline at ATTACK 5 ms (GR peaks at the end of the ping, after
+ * its loudest moment), about 10 dB at 0.5 ms FAST, untouched at 25 ms PUNCH.
  * The bezel prints GR as "x.x dB" (FxLabScreen), the meter in LAB NOTES as
  * "−x.x dB". Change a label, a default or the source level → update this
  * file; test/screenGuide_compression_20261031.test.ts pins names + numbers.
@@ -50,10 +56,9 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'Sound flows left → right: IN ▸, through the green COMP bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
-      'The GR ladder on the right grows down as the sound is turned down.',
-      'Readouts: THRESH, RATIO and GR, the gain reduction measured live (— dB while stopped).',
-      'The drawing is a TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
+      'Sound flows IN ▸ through COMP ▸ OUT; dashed lines mark the threshold, the dotted outline the sound untouched.',
+      'Readouts: THRESH, RATIO and live GR, gain reduction (— dB stopped); the ladder at right echoes it.',
+      'A TEACHING MODEL: CLICK is the real 5 ms CLICK. At ATTACK 5 ms the spike passes almost whole (about 1 dB lower): GR peaks as the click ends, after its crest, so the GR kick lands just after each hit.',
     ],
     control: [
       '▶ in the header, or a tap on the display, plays the SOURCE through the compressor; ■ stops it. The THRESH fader runs from −50 to −10 dB.',
@@ -63,7 +68,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     changes: [
       'Only level over the threshold is turned down: each RATIO dB over comes out as 1 dB (4:1 turns 12 dB over into 3).',
-      'ATTACK sets how fast it clamps, RELEASE how fast it lets go. At the start (CLICK 120, THRESH −40 dB, ATTACK 5 ms) GR kicks about 5 dB on each hit, then falls back to 0.0.',
+      'ATTACK sets how fast it clamps, RELEASE how fast it lets go. At the start (CLICK 120, THRESH −40 dB, ATTACK 5 ms) GR kicks about 3–5 dB on each hit, then falls back to 0.0.',
       'MAKEUP raises the output afterwards; GR stays the same.',
       'Every SOURCE peaks near −20 dBFS.',
     ],
@@ -75,7 +80,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     tryThis: [
       'SOURCE → SINE 440 Hz, tap ▶, THRESH at −30 dB: GR holds at about 7 dB. Ride THRESH up to −20 dB: GR falls to 0.0 — the tone no longer crosses.',
       'Back at −30 dB, step RATIO: 2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9 — never past the 10 dB the tone peaks over.',
-      'CLICK 120, THRESH −40 dB (the start): GR kicks on each hit, then falls to 0.0. ATTACK 25 ms PUNCH: GR stays 0.0 — the 5 ms click ends before the clamp builds (the longer drawn hit still clamps).',
+      'CLICK 120, THRESH −40 dB (the start): GR kicks on each hit, then falls to 0.0. ATTACK 25 ms PUNCH: GR stays 0.0 — the 5 ms click ends before the clamp builds, and the drawn spike passes untouched.',
     ],
   },
 
@@ -102,7 +107,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Work the formula: 12 dB over at 4:1 → 12 × (1 − 1/4) = 9 dB of gain reduction, so the output rises 3 dB. CHECK asks the same kind of sum.',
-      'Read the COMMON MISTAKES line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper; 25 ms PUNCH leaves it at 0.0 (the drawn hit still clamps).',
+      'Read the COMMON MISTAKES line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0.0.',
     ],
   },
 

@@ -60,17 +60,19 @@ export function ciSaveWording(state: CiSaveState, account?: AccountWording): CiS
   return (state === 'guest' || state === 'saved') && account ? account : state;
 }
 
-/** The lead line when stages are still outstanding (the WHAT IS LEFT state). */
+/** The lead line when stages are still outstanding (the WHAT IS LEFT state).
+ *  Counts what is LEFT, never "n of N" (owner D117; D41 2026-11-01). `total`
+ *  stays in the signature for the caller but is not printed. */
 export function ciLeftLead(state: CiSaveState, o: { unbanked: number; replayOnly: number; total: number }): string {
-  const { unbanked, replayOnly, total } = o;
+  const { unbanked, replayOnly } = o;
   if (state !== 'saved') {
     // Never "saved", never "credited" — nothing in this run is kept.
     const n = unbanked + replayOnly;
-    return `${n} of ${total} stage${n === 1 ? '' : 's'} still to go.`;
+    return `${n} stage${n === 1 ? '' : 's'} still to go.`;
   }
   return unbanked > 0
-    ? `${unbanked} of ${total} stage${unbanked === 1 ? '' : 's'} still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.${replayOnly > 0 ? ` ${replayOnly} more not replayed this run — already credited.` : ''}`
-    : `${replayOnly} of ${total} stage${replayOnly === 1 ? '' : 's'} not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.`;
+    ? `${unbanked} stage${unbanked === 1 ? '' : 's'} still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.${replayOnly > 0 ? ` ${replayOnly} more not replayed this run — already credited.` : ''}`
+    : `${replayOnly} stage${replayOnly === 1 ? '' : 's'} not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.`;
 }
 
 export type CiSaveNotice = {

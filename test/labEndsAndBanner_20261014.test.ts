@@ -64,7 +64,7 @@ describe('#21 the one-page review labs end on the what’s-left screen', () => {
     assert.equal(units[0].id, REVIEW_UNIT_ID);
     const left = whatsLeft(units, new Set());
     assert.equal(left.complete, false);
-    assert.match(endLead(left, { mode: 'credit', noun: 'step' }), /^1 step of 1 still to finish before this lab counts toward your credit\./);
+    assert.match(endLead(left, { mode: 'credit', noun: 'step' }), /^1 step still to finish before this lab counts toward your credit\./);
     assert.equal(whatsLeft(units, new Set([REVIEW_UNIT_ID])).complete, true);
   });
   it('ReviewLabEnd is the shared LabEndScreen, opened only by a tap, never blocking', () => {

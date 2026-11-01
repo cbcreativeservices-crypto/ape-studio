@@ -29,6 +29,7 @@ const { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } = await import('../src/fea
 const { M5_DEFECTS } = await import('../src/features/ear/modules/defects.ts');
 const { M6_STEREO } = await import('../src/features/ear/modules/spatial.ts');
 const { M11_PITCH } = await import('../src/features/ear/modules/pitch.ts');
+const { PEAK_CEILING } = await import('../src/features/ear/modules/common.ts');
 const { EAR_MODULES } = await import('../src/features/ear/modules/registry.ts');
 const { applyTrial, emptyModuleProgress } = await import('../src/features/ear/earProgress.ts');
 
@@ -654,6 +655,64 @@ console.log('— M11 Pitch: the declared higher note is higher; intervals are th
   }
   ok(`higher/lower honest (${hlOk}/${hlN})`, hlOk === hlN && hlN > 0);
   ok(`intervals honest (${ivOk}/${ivN})`, ivOk === ivN && ivN > 0);
+}
+
+console.log('— D41 J1: matched sets never clip — one shared gain per trial, peak ≤ −1 dBFS, RMS still matched —');
+{
+  // Per-clip −20 dBFS RMS pushed compressed drums to 4× full scale, polarity
+  // sums to 2×, reverb and comb past 1.0 (encodeWav clamps). Each trial's set
+  // now shares ONE gain: no sample over the ceiling, A/B clips still matched,
+  // and one-clip trials play at a level that does not depend on the answer.
+  const peakOf = (b) => {
+    let p = 0;
+    for (const ch of b.l ? [b.l, b.r] : [b]) for (const v of ch) p = Math.max(p, Math.abs(v));
+    return p;
+  };
+  const SETS = [[M10_COMPRESSION, 'compression'], [M12_POLARITY, 'polarity'], [M13_COMB, 'comb'], [M9_REVERB, 'reverb'], [M8_DELAY, 'delay']];
+  for (const [mod, name] of SETS) {
+    for (let level = 1; level <= mod.levels; level++) {
+      let worstPk = 0, worstSpread = 0, lo = 0, hi = -999;
+      const byAnswer = {};
+      for (let k = 0; k < 40; k++) {
+        const t = mod.makeTrial(level, 31000 + k * 104729 + level);
+        const rms = [];
+        for (const c of t.clips) {
+          worstPk = Math.max(worstPk, peakOf(c.buf));
+          const r = rmsDb(mono(c.buf));
+          if (r > -100) { rms.push(r); lo = Math.min(lo, r); hi = Math.max(hi, r); }
+        }
+        // Polarity L1 keeps its documented level drop (the flipped sum is silence).
+        if (rms.length > 1) worstSpread = Math.max(worstSpread, Math.max(...rms) - Math.min(...rms));
+        if (t.clips.length === 1) (byAnswer[t.answers[t.correct].label] ??= []).push(rms[0]);
+      }
+      const means = Object.values(byAnswer).map((v) => v.reduce((a, b) => a + b, 0) / v.length);
+      // One-clip trials: per-answer mean levels differ only by source noise
+      // (the gain is computed over every answer's render). A per-answer cap
+      // would open a gap of several dB (compression: ~10 dB).
+      const answerGap = means.length > 1 ? Math.max(...means) - Math.min(...means) : 0;
+      ok(
+        `${name} L${level}: peak ≤ −1 dBFS, clips matched ≤ 0.5 dB, level not tied to the answer`,
+        worstPk <= PEAK_CEILING + 1e-6 && worstSpread <= 0.5 && answerGap <= 1.5,
+        `peak ${worstPk.toFixed(3)} · spread ${worstSpread.toFixed(2)} dB · answer gap ${answerGap.toFixed(2)} dB · ${lo.toFixed(1)}…${hi.toFixed(1)} dBFS RMS`,
+      );
+    }
+  }
+}
+
+// Round 2: the delay "how long?" clip is padded for the longest time, so its
+// length (and how long the ▶ stays lit) is the same for every answer.
+{
+  const lens = new Set();
+  const seen = new Set();
+  for (let level = 1; level <= 4; level++) {
+    for (let k = 0; k < 60; k++) {
+      const t = M8_DELAY.makeTrial(level, 81000 + k * 7919 + level);
+      if (t.question !== 'About how long is the delay?') continue;
+      seen.add(t.answers[t.correct].label);
+      lens.add(t.clips[0].buf.length);
+    }
+  }
+  ok('delay "how long?" clips are one length for every answer', lens.size === 1 && seen.size >= 4, `${[...lens].map((n) => (n / 48000).toFixed(2) + ' s').join(', ')} · answers seen ${seen.size}`);
 }
 
 console.log('— ordered decks: "k steps low/high" feedback only where the deck really is a ladder —');

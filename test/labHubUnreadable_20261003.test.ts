@@ -211,12 +211,14 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
     assert.match(src, /const p = unreadable \? undefined : progress\?\.modules\[m\.id\]/);
   });
 
-  it('Amplifier Principles hub: loading and unreadable before "N of M modules complete"', () => {
+  it('Amplifier Principles hub: loading and unreadable before "N modules complete"', () => {
     const src = read('src/screens/lab/amp/AmpLabHomeScreen.tsx');
-    before(src, '<ProgressUnreadableNote />', 'modules complete</Text>', 'Amp');
-    before(src, '<ProgressLoadingNote />', 'modules complete</Text>', 'Amp (loading)');
-    assert.match(src, /unreadable=\{unreadable\}/);
-    assert.match(read('src/screens/lab/amp/AmpModuleScreen.tsx'), /unreadable=\{isAmpProgressUnreadable\(endState\)\}/);
+    before(src, '<ProgressUnreadableNote />', "'modules'} complete</Text>", 'Amp');
+    before(src, '<ProgressLoadingNote />', "'modules'} complete</Text>", 'Amp (loading)');
+    // D41 J2 (2026-11-01): the end screen also says so when the banked check could not be read.
+    assert.match(src, /const endUnreadable = unreadable \|\| \(hasCheck && completionUnreadable\);/);
+    assert.match(src, /unreadable=\{endUnreadable\}/);
+    assert.match(read('src/screens/lab/amp/AmpModuleScreen.tsx'), /unreadable=\{isAmpProgressUnreadable\(endState\) \|\| \(hasCheck && completionUnreadable\)\}/);
   });
 
   it('Tuning & Temperament', () => {
@@ -251,7 +253,7 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
       const src = read(p);
       assert.match(src, /isPagedProgressUnreadable\(/, p);
       assert.ok(src.includes(NOTE), p);
-      assert.match(src, /unreadable=\{(unreadable|pagesUnreadable)\}/, p);
+      assert.match(src, /unreadable=\{(unreadable|pagesUnreadable|endUnreadable)\}/, p);
     }
   });
 
@@ -285,7 +287,9 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
     for (const p of ['eq/EqLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'roomdesign/RoomDesignLabScreen']) {
       const src = read(`src/screens/lab/${p}.tsx`);
       assert.match(src, /useLabVisitsUnreadable\(\)/, p);
-      assert.match(src, /unreadable=\{visitsUnreadable\}/, p);
+      // EQ (D41 J2, 2026-11-01): its end screen also counts the banked check, so the visits read joins the completion read.
+      if (p.startsWith('eq/')) assert.match(src, /const progressUnreadable = visitsUnreadable \|\| \(hasCheck && completionUnreadable\);[\s\S]*unreadable=\{progressUnreadable\}/, p);
+      else assert.match(src, /unreadable=\{visitsUnreadable\}/, p);
     }
     before(read('src/screens/lab/roomdesign/RoomDesignLabScreen.tsx'), NOTE, '<LabEndScreen', 'Room Design');
   });

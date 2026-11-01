@@ -431,7 +431,7 @@ const TRANSMISSION: Workspace = {
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
     { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', meaning: 'number:panel-mass', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square meter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', positive: true, warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
   ],
   functions: [

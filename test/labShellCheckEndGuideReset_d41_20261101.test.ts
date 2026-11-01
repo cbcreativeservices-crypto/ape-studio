@@ -88,7 +88,9 @@ describe('#3 / #12 / #14 Binaural, Stereo Imaging and FM end on a what’s-left 
     assert.match(c, /const cleared = useLabClearedUnits\(labId\);/);
     assert.match(c, /<LabEndScreen[\s\S]*units=\{CHECK_END_UNITS\}[\s\S]*mode="credit"[\s\S]*noun="check"[\s\S]*onJump=\{close\}\s*onPracticeAgain=\{close\}/);
     assert.match(c, /runSoon\(\(\) => safeGoBack\(navigation\)\)/);
-    assert.match(c, /<ScreenGuideHost regions=\{false\}[\s\S]*<ScreenGuideKey title="WHERE YOU ARE" guide=\{endGuide\} \/>/);
+    // D41 K7 (2026-11-01): the in-layer host hands back `backRef`, so Android
+    // BACK closes the guide first (test/labEndKit_d41k_20261101 pins it).
+    assert.match(c, /<ScreenGuideHost regions=\{false\}[^>]*backRef=\{guideBack\}>[\s\S]*<ScreenGuideKey title="WHERE YOU ARE" guide=\{endGuide\} \/>/);
     assert.match(END, /id: UNDERSTANDING_UNIT,\s*label: 'Understanding check',[\s\S]*?kind: 'check',/);
     for (const f of ['BinauralLabScreen', 'FmLabScreen', 'FxLabScreen']) assert.match(code(`src/screens/lab/${f}.tsx`), /import \{ LabCheckEnd \} from '\.\/kit\/LabCheckEnd';/, f);
   });

@@ -300,7 +300,7 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
   it('the third title: YOUR PROGRESS when saved pages could not be read (this lab passes pageCreditKeys)', () => {
     assert.match(ENDSCREEN, /const title = unreadable \? 'YOUR PROGRESS'/);
     assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \([^;]*pageCreditKeys\.length > 0\) && creditUnreadable\);/);
-    assert.match(endCall, /unreadable=\{unreadable\}/);
+    assert.match(endCall, /unreadable=\{(unreadable|endUnreadable)\}/);
     assert.match(ET, /YOUR PROGRESS if saved pages could not be read/);
   });
   it('credit mode: the lab passes pageCreditKeys, so rows read ✓ CREDITED (✓ DONE for a guest)', () => {
@@ -354,7 +354,7 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
   it('credit per page (signed in), kept after START OVER: onPageDone reports each page’s key; banked keys stay cleared', () => {
     assert.match(SCREEN, /const onPageDone = \(index: number\) => reportTrainingComplete\(mixingPageKeyAt\('adv', index\)\);/);
     assert.match(PAGED, /\(!!pageCreditKeys\[i\] && bankedPageKeys\.has\(pageCreditKeys\[i\]\)\)/);
-    assert.match(ENDSCREEN, /'Practicing again or reviewing never removes credit you have already earned\.'/);
+    assert.match(LABEND, /'Practicing again or reviewing never removes credit you have already earned\./); // endNote (D41 K2)
     assert.match(ET, /never removes credit you have already earned/);
   });
   it('no check row and no optional pages, so the guide says the pages are the whole list', () => {

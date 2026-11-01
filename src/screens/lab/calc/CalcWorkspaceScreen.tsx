@@ -119,6 +119,19 @@ export function CalcWorkspaceScreen() {
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
   const { outputs, steps, table, computeError, negativeField, inputError, refused } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
+  // SEND → only beside an answer some input can take (D41 follow-up J5a):
+  // after the meaning tags, 27 answers have no taker anywhere, and a SEND →
+  // there led to a chain banner promising a ⤵ USE that no input ever offered.
+  // Same rule as the guide's TRY THIS line (calcSendTarget). Keyed by label —
+  // an answer's meaning never depends on the numbers typed.
+  const sendTakers = useMemo(() => {
+    const m = new Map<string, boolean>();
+    if (!ws || !fn) return m;
+    for (const o of outputs) {
+      if ('value' in o && !m.has(o.label)) m.set(o.label, calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) !== null);
+    }
+    return m;
+  }, [ws, fn, outputs]);
 
   // Screen Guide: its TRY THIS numbers are what THIS screen prints when every
   // input holds its grey example value (the placeholder) — the same
@@ -480,7 +493,7 @@ export function CalcWorkspaceScreen() {
                         >
                           <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
                         </Pressable>
-                        {o.chainable !== false && Number.isFinite(o.value) && !refused ? (
+                        {sendTakers.get(o.label) && o.chainable !== false && Number.isFinite(o.value) && !refused ? (
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}

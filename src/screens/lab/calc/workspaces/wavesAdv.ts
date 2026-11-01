@@ -39,7 +39,7 @@ const ALIGN: Workspace = {
   fields: [
     { key: 'offset', name: 'PATH OFFSET', quantity: 'length', meaning: 'length:pathdiff', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'delay', name: 'DELAY', quantity: 'time', meaning: 'time:delay', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
   ],
@@ -170,8 +170,8 @@ const IMD: Workspace = {
     'frequencies, not their amplitudes.',
   glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'nonlinear distortion', 'Frequency'],
   fields: [
-    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', meaning: 'frequency:point', placeholder: '19000', help: 'First input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', meaning: 'frequency:point', placeholder: '20000', help: 'Second input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '19000', help: 'First input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '20000', help: 'Second input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {

@@ -290,17 +290,17 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
 /** The what's-left screen (LabEndScreen, mode "progress", noun "section"). */
 export const TUBE_END_GUIDE: ScreenGuide = {
   seeing: [
-    'WHAT’S LEFT: the modules of this lab you have not opened yet. When none are left the title reads LAB COMPLETE.',
-    'Opened modules fold into one ✓ DONE row; REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
+    'WHAT’S LEFT: the modules of this lab you have not opened yet, then the check — its CHECK row is the last on the list. LAB COMPLETE once every module is opened and the check is passed.',
+    'Opened modules, and the check once passed, fold into one ✓ DONE row; REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
   ],
   control: [
-    'Tap a module’s row to open it.',
+    'Tap a module’s row to open it; the CHECK row moves this screen up to the check, which sits on it.',
     'Answer the CHECK YOUR UNDERSTANDING questions; a wrong pick explains itself and lets you try another.',
     'PRACTICE AGAIN FROM THE START opens What’s Inside — it never clears what you have done.',
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'A module counts once you open it; its row moves from the list to the ✓ row.',
+    'A module counts once you open it; its row moves from the list to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
     'If your progress cannot be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [

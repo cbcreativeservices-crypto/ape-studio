@@ -24,7 +24,8 @@ const lin = (k: number): Pick<UnitDef, 'toBase' | 'fromBase'> => ({
 });
 const ident = lin(1);
 
-import type { CalcFunction, CalcValues, FieldDef } from './calcTypes';
+import type { CalcFunction, CalcValues, FieldDef, OutputVal } from './calcTypes';
+import type { ValueSource } from './workflowModel';
 
 export type QuantityKind =
   | 'frequency' // base Hz
@@ -671,6 +672,32 @@ export function chainFits(
   if (!unitFits(label, quantity, field)) return false;
   if (meaning && field.meaning) return meaningMatches(meaning, field.meaning);
   return SAFE_UNTAGGED_KINDS.has(quantity);
+}
+type ChainNumOut = Extract<OutputVal, { value: number }>;
+
+/** D41 follow-up (J5c), for CalcWorkflowRunScreen: the answer a saved live
+ *  import points at, from the steps computed so far, and whether it may fill `f` — the same unit AND meaning rule as the ⤵ USE
+ *  offer (chainFits, D41). null: no answer to judge yet (the upstream step is
+ *  incomplete or refused) — the field reads honestly empty, no reason given. */
+export function liveImport(
+  out: readonly ({ result: { refused?: boolean; outputs: OutputVal[] } } | undefined)[],
+  src: Extract<ValueSource, { kind: 'prior-step' }>,
+  f: Pick<FieldDef, 'name' | 'quantity' | 'meaning'>,
+): { o: ChainNumOut; fits: boolean } | null {
+  // A REFUSED upstream step has no answer to pass on (owner 2026-10-03,
+  // "do 1"): a figure printed beside the refusal is not this step's input.
+  const up0 = out[src.stepIndex];
+  const up = up0?.result.refused ? undefined : up0;
+  const isNum = (x: OutputVal | undefined): x is ChainNumOut => !!x && 'value' in x;
+  // By label; else by position when the label carries an input that has since
+  // changed (see ValueSource.outputIndex).
+  let o = up?.result.outputs.find((x): x is ChainNumOut => isNum(x) && x.label === src.outputLabel);
+  if (!o && src.outputIndex != null) {
+    const at = up?.result.outputs[src.outputIndex];
+    if (isNum(at) && at.chainable !== false) o = at;
+  }
+  if (!o) return null;
+  return { o, fits: chainFits(o.label, o.quantity, f, o.meaning) && o.quantity === f.quantity };
 }
 /** The first input of `fn` holding an impossible negative, or null. Lists are
  *  checked element by element (a −30 min interval used to REDUCE a noise dose). */

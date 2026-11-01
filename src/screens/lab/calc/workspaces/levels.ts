@@ -601,7 +601,7 @@ const WS_ELECTRONICS: Workspace = {
     { key: 'vin', name: 'INPUT VOLTAGE', quantity: 'voltage', meaning: ['voltage:rms', 'voltage:peak', 'voltage:pp'], signed: true, placeholder: '1', help: 'Voltage across the whole divider (top of R1 to bottom of R2).' },
     { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', positive: true, warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
     { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the tool converts to farads internally (×10⁻⁶).', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
     { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the tool converts to henries internally (×10⁻³).', positive: true, warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
     { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The R of the RC network.', positive: true, warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
@@ -858,8 +858,8 @@ const WS_QBW: Workspace = {
     { key: 'bw', name: 'BANDWIDTH', quantity: 'frequency', meaning: 'frequency:bandwidth', placeholder: '709', help: 'Width between the −3 dB edge frequencies.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bandwidth must be positive.' } },
     { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', meaning: 'number:octaves', nonNegative: true, placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', positive: true, warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
     { key: 'gain', name: 'GAIN', quantity: 'db', signed: true, placeholder: '9', help: 'Boost (+) or cut (−) at the center of the parametric bell.' },
-    { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', meaning: 'frequency:point:edge-low', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
-    { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', meaning: 'frequency:point:edge-high', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', meaning: 'frequency:edge:low', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', meaning: 'frequency:edge:high', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
   ],
   functions: [
     {
@@ -919,8 +919,8 @@ const WS_QBW: Workspace = {
         const { f1, f2 } = bandEdges(fc, q);
         return [
           { label: 'BANDWIDTH', value: fc / q, quantity: 'frequency', meaning: 'frequency:bandwidth' },
-          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:point:edge-low' },
-          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:point:edge-high' },
+          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:edge:low' },
+          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:edge:high' },
           { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', meaning: 'number:octaves', chainable: false },
         ];
       },
@@ -952,8 +952,8 @@ const WS_QBW: Workspace = {
         const { f1, f2 } = bandEdges(fc, q);
         return [
           { label: 'Q', value: q, quantity: 'number', meaning: 'number:q-filter' },
-          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:point:edge-low', chainable: false },
-          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:point:edge-high', chainable: false },
+          { label: 'LOWER EDGE f₁ (−3 dB)', value: f1, quantity: 'frequency', meaning: 'frequency:edge:low', chainable: false },
+          { label: 'UPPER EDGE f₂ (−3 dB)', value: f2, quantity: 'frequency', meaning: 'frequency:edge:high', chainable: false },
         ];
       },
       steps: (v) => {
@@ -1044,8 +1044,8 @@ const WS_QBW: Workspace = {
         const g = n(v.gain);
         const { f1, f2 } = bandEdges(fc, q);
         return [
-          { label: 'AFFECTED RANGE — LOWER f₁', value: f1, quantity: 'frequency', meaning: 'frequency:point:reach-low' },
-          { label: 'AFFECTED RANGE — UPPER f₂', value: f2, quantity: 'frequency', meaning: 'frequency:point:reach-high' },
+          { label: 'AFFECTED RANGE — LOWER f₁', value: f1, quantity: 'frequency', meaning: 'frequency:edge:reach-low' },
+          { label: 'AFFECTED RANGE — UPPER f₂', value: f2, quantity: 'frequency', meaning: 'frequency:edge:reach-high' },
           { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', meaning: 'number:octaves', chainable: false },
           {
             label: 'AUDIBLE REACH',

@@ -77,18 +77,18 @@ describe('guest / preview copy never says "saved" for this run', () => {
 });
 
 describe('signed-in branch is unchanged; members see no offer', () => {
-  it('the signed-in lead is the original wording', () => {
+  it('the signed-in lead counts what is left, never "n of N" (D41 2026-11-01)', () => {
     assert.equal(
       ciLeftLead('saved', { unbanked: 5, replayOnly: 0, total: 13 }),
-      '5 of 13 stages still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.',
+      '5 stages still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.',
     );
     assert.equal(
       ciLeftLead('saved', { unbanked: 1, replayOnly: 2, total: 13 }),
-      '1 of 13 stage still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like. 2 more not replayed this run — already credited.',
+      '1 stage still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like. 2 more not replayed this run — already credited.',
     );
     assert.equal(
       ciLeftLead('saved', { unbanked: 0, replayOnly: 4, total: 13 }),
-      '4 of 13 stages not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.',
+      '4 stages not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.',
     );
   });
   it('a saved learner (and so every member) gets no notice and no offer', () => {

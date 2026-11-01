@@ -24,7 +24,7 @@
  * lines, the grid's field) — one switch connecting the outside of the tube
  * to what happens inside it.
  */
-import { useEffect, useState, type MutableRefObject, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type MutableRefObject, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,6 +48,9 @@ import { gridState, gridWord, plateCurrentFrac } from './gridModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import type { LabEndUnit } from '../kit/labEnd';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -885,7 +888,19 @@ export function VacuumTubeLabScreen() {
   const { resolved: entResolved } = useEntitlement();
   const visited = useLabVisits('tube');
   // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
-  const progressUnreadable = useLabVisitsUnreadable();
+  const visitsUnreadable = useLabVisitsUnreadable();
+  // THE CHECK IS A UNIT (D41 J2, owner 2026-11-01; the Mic Selection fix): the
+  // understanding check is what completes this lab for certificates, so it is
+  // the end screen's last row (kind 'check', the PagedLab pattern) and LAB
+  // COMPLETE can never show above an unpassed check. Read from the banked
+  // record, never cleared by a practice run (credit is never removed).
+  const bankedUnits = useLabClearedUnits('tube');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('tube');
+  // Either record unread = the end screen's note, never "all left" (D51).
+  const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
+  const endUnits = useMemo(() => tubeEndUnits(hasCheck), [hasCheck]);
+  const endCleared = useMemo(() => tubeEndCleared(visited, bankedUnits), [visited, bankedUnits]);
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30): the provider boots at
     // 'anonymous'-but-unresolved, so a cold-start guest's first section was
@@ -949,12 +964,15 @@ export function VacuumTubeLabScreen() {
         {ending ? (
           <LabEndScreen
             labTitle="Vacuum Tube Fundamentals"
-            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
-            cleared={visited}
+            units={endUnits}
+            cleared={endCleared}
             unreadable={progressUnreadable}
             mode="progress"
             noun="section"
-            onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
+            // The CHECK row stays here: the check is drawn on this screen (extra).
+            onJump={(id) => { if (id !== UNDERSTANDING_UNIT) openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id))); }}
+            // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
+            shownHereId={UNDERSTANDING_UNIT}
             onPracticeAgain={() => openSection(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
@@ -976,6 +994,21 @@ export function VacuumTubeLabScreen() {
     </View>
     </LabNavProvider>
   );
+}
+
+/** The end screen's units: every section in order, then the understanding
+ *  check as a CHECK row when questions are authored for this lab (D41 J2). */
+export function tubeEndUnits(hasCheck: boolean): LabEndUnit[] {
+  const units: LabEndUnit[] = SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }));
+  if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
+  return units;
+}
+
+/** Sections opened (device progress) plus the check once it is banked. */
+export function tubeEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {
+  const out = new Set(visited);
+  if (banked.has(UNDERSTANDING_UNIT)) out.add(UNDERSTANDING_UNIT);
+  return out;
 }
 
 const styles = StyleSheet.create({

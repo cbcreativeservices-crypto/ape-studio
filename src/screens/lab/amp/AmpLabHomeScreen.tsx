@@ -13,7 +13,7 @@ import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES, type AmpModuleId } from '../../../features/amp/ampContent';
-import { ampEndModel } from '../../../features/amp/ampEnd';
+import { AMP_CHECK_UNIT, ampEndModel } from '../../../features/amp/ampEnd';
 import { isAmpProgressUnreadable, resetAmpProgress, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
@@ -30,6 +30,8 @@ import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { understandingFor } from '../../../features/lab/understanding';
 
 export function AmpLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -110,7 +112,16 @@ export function AmpLabHomeScreen() {
   // says how many are done. The module map stays open either way.
   const unreadable = !!progress && isAmpProgressUnreadable(progress);
   const built = AMP_MODULES.filter((m) => BUILT_MODULE_IDS.includes(m.id));
-  const endModel = ampEndModel(progress ?? { modules: {} }, built);
+  // THE CHECK IS A UNIT (D41 J2, owner 2026-11-01): the understanding check
+  // completes this lab for certificates, so WHAT'S LEFT lists it last and LAB
+  // COMPLETE never shows above an unpassed check. Banked record — a practice
+  // run (RESET LAB PROGRESS) never clears it.
+  const bankedUnits = useLabClearedUnits('amp');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('amp');
+  const endModel = ampEndModel(progress ?? { modules: {} }, built, hasCheck ? { passed: bankedUnits.has(AMP_CHECK_UNIT) } : undefined);
+  // Either record unread = the end screen's note, never "all left" (D51).
+  const endUnreadable = unreadable || (hasCheck && completionUnreadable);
   const doneCount = built.filter((m) => progress?.modules[m.id]?.done).length;
   const resumeTarget =
     (progress?.lastModule && BUILT_MODULE_IDS.includes(progress.lastModule) && !progress.modules[progress.lastModule]?.done
@@ -153,12 +164,16 @@ export function AmpLabHomeScreen() {
           labTitle="Amplifier Principles Lab"
           units={endModel.units}
           cleared={endModel.cleared}
-          unreadable={unreadable}
+          unreadable={endUnreadable}
           mode="progress"
-          onJump={(id) => open(id === 'final' ? 'apply' : (id as AmpModuleId))}
+          // The CHECK row stays here: the check is drawn on this screen (extra).
+          onJump={(id) => { if (id !== AMP_CHECK_UNIT) open(id === 'final' ? 'apply' : (id as AmpModuleId)); }}
+          // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
+          shownHereId={AMP_CHECK_UNIT}
           onPracticeAgain={() => open(built[0]?.id ?? AMP_MODULES[0].id)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
+          extra={<LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />}
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
@@ -173,7 +188,7 @@ export function AmpLabHomeScreen() {
           <ProgressLoadingNote />
         ) : (
         <View style={styles.progressRow}>
-          <Text style={styles.progressText}>{doneCount} of {built.length} modules complete</Text>
+          <Text style={styles.progressText}>{doneCount} {doneCount === 1 ? 'module' : 'modules'} complete</Text>
           {progress?.final ? (
             <Text style={[styles.progressText, { color: progress.final.passed ? colors.green : colors.gold }]}>
               Final: {Math.round(progress.final.scorePct)}%

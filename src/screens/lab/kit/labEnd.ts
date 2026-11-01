@@ -75,7 +75,7 @@ export type LabEndUnit = {
   kind?: 'unit' | 'check';
   /** ADDITIVE (2026-10-18, DJ Systems Lab): an OPTIONAL path (an equipment
    *  path a learner may skip). Listed under its own heading when not done,
-   *  never counted in "n of N", and never keeps the lab from LAB COMPLETE. */
+   *  never counted in what is left, and never keeps the lab from LAB COMPLETE. */
   optional?: boolean;
 };
 
@@ -159,42 +159,66 @@ export function endLead(
   const { mode, noun, guest, preview, carry = true, account } = opts;
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
   // A check row (final exam / understanding check) is not a module or page —
-  // count it separately so "8 modules + the check" never reads "9 modules of 9".
-  const all = [...w.left, ...w.credited].filter((r) => !r.optional);
-  const unitsTotal = all.filter((r) => r.kind !== 'check').length;
+  // count it separately so "8 modules + the check" never reads "9 modules".
+  // NO TOTAL (owner rule D117, 2026-10-29; D41 K1 2026-11-01): progress says
+  // what is left, never "n of N" — the rows below name each one.
   const unitsLeft = w.left.filter((r) => r.kind !== 'check').length;
-  const checkLeft = w.left.some((r) => r.kind === 'check');
-  const what = `${plural(unitsLeft)} of ${unitsTotal}${checkLeft ? ' plus the check' : ''}`;
-  const onlyCheck = unitsLeft === 0 && checkLeft;
-  if (guest && preview) {
+  // More than one check row (Amp: the final assessment AND the understanding
+  // check, D41 2026-11-01) is counted, never read as "the check".
+  const checksLeft = w.left.filter((r) => r.kind === 'check').length;
+  const what = `${plural(unitsLeft)}${checksLeft === 1 ? ' plus the check' : checksLeft > 1 ? ` plus ${checksLeft} checks` : ''}`;
+  const onlyCheck = unitsLeft === 0 && checksLeft > 0;
+  const onlyWhat = checksLeft > 1 ? 'Only the checks are left' : 'Only the check is left';
+  // A members-only PREVIEW records nothing for ANYONE (owner 2026-09-01) — a
+  // signed-in non-member too, whose `guest` is false (D41, 2026-11-01): it
+  // used to fall through to "saved on this device". No upsell here.
+  if (preview) {
     return w.complete
       ? `You have been through every ${noun}. This is a members-only preview, so none of this is saved or credited.`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. This is a members-only preview, so nothing here is saved or credited.`;
+      : `${onlyCheck ? onlyWhat : `${what} still to go`}. This is a members-only preview, so nothing here is saved or credited.`;
   }
   if (guest && !carry) {
     return w.complete
       ? `You have been through every ${noun}. You are not signed in, so nothing here is saved.`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved.`;
+      : `${onlyCheck ? onlyWhat : `${what} still to go`}. You are not signed in, so nothing here is saved.`;
   }
   if (guest) {
     return w.complete
       ? `You have been through every ${noun}. You are not signed in, so none of this is saved yet — sign in before you close the app to keep it.`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress.`;
+      : `${onlyCheck ? onlyWhat : `${what} still to go`}. You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress.`;
   }
   if (account) {
     const why = accountWhy(account);
     return w.complete
       ? `You have been through every ${noun}. ${why}`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. ${why}`;
+      : `${onlyCheck ? onlyWhat : `${what} still to go`}. ${why}`;
   }
   if (w.complete) {
     return mode === 'credit'
       ? `Every ${noun} is credited. Review any of them, or practice the whole lab again. Practicing never removes credit you have earned.`
-      : `Every ${noun} is done. Review any of them, or practice the whole lab again. Practicing never clears what you have done.`;
+      : `Every ${noun} is done. Review any of them, or practice the whole lab again. PRACTICE AGAIN clears nothing you have done.`;
   }
   return mode === 'credit'
-    ? `${onlyCheck ? 'Only the check is left' : `${what} still to finish`} before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`
-    : `${onlyCheck ? 'Only the check is left' : `${what} not done yet`}. Everything you have done is saved on this device — jump straight to any of them.`;
+    ? `${onlyCheck ? onlyWhat : `${what} still to finish`} before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`
+    : `${onlyCheck ? onlyWhat : `${what} not done yet`}. Everything you have done is saved on this device — jump straight to any of them.`;
+}
+
+/**
+ * The closing line under the buttons (D41 K2, 2026-11-01). PRACTICE AGAIN and
+ * reviewing really clear nothing. START OVER (PRACTICE), where a lab's
+ * CONTENTS has it: in a progress lab it clears the ticks (said, never hidden
+ * behind "practicing never clears"); in a credit lab a credited page keeps
+ * its ✓ (PagedLab's endCleared reads the banked unit). Credit never goes.
+ */
+export function endNote(mode: 'credit' | 'progress', startOver: boolean): string {
+  if (mode === 'credit') {
+    return startOver
+      ? 'Practicing again or reviewing never removes credit you have already earned. START OVER (PRACTICE) starts a fresh run; credited pages keep their ✓.'
+      : 'Practicing again or reviewing never removes credit you have already earned.';
+  }
+  return startOver
+    ? 'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the ticks for a fresh run.'
+    : 'Practicing again or reviewing never clears what you have already done.';
 }
 
 /** The one unit of a MARK AS REVIEWED lab (owner ruling 2026-10-14, #21:

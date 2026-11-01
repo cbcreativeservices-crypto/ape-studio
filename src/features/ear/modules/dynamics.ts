@@ -12,7 +12,7 @@ import {
   type Mono,
 } from '../earDsp';
 import type { EarModule, EarTrial } from '../earTypes';
-import { rngFor, pickInt, choice, drumPattern, p99, present, type Rng } from './common';
+import { rngFor, pickInt, choice, drumPattern, p99, present, presentMatched, presentFixed, type Rng } from './common';
 
 // ————————————————————————————— M7 · Loudness ——————————————————————————————
 
@@ -117,10 +117,31 @@ const COMP: CompSetting[] = [
   },
 ];
 
-function m10Render(setting: CompSetting, rng: Rng): { dry: Mono; out: Mono } {
+/**
+ * D41 J1. Squashing a hit lets its first few ms through and then holds the
+ * body down, so at −20 dBFS RMS a heavy render peaks near 4× full scale
+ * (moderate ~2×, pumping ~1.3×) and encodeWav clamped it.
+ *  • A/B (L1, L4): the pair is a matched set — one shared gain, still
+ *    loudness-matched, under −1 dBFS: about −31…−34 dBFS RMS for none vs
+ *    heavy; none vs light still plays at −20.
+ *  • One clip (L2–L3): a FIXED level, the same for every answer, so loudness
+ *    never tells the setting and only the played clip is rendered.
+ *    Derived offline 2026-11-01: 300 random drum loops, every setting
+ *    presented at −20 dBFS RMS; worst peak 4.15× (heavy), so −33.4 is the
+ *    highest RMS that keeps every answer at or under −1 dBFS; the constant
+ *    sits 1.1 dB under it. presentFixed's ceiling stays on as a guard that only
+ *    ever turns DOWN; the tests show it never fires.
+ */
+const M10_ONE_CLIP_DB = -34.5;
+
+function m10Pair(setting: CompSetting, rng: Rng): Mono[] {
   const dry = drumPattern(2, rng);
-  const out = setting.apply ? setting.apply(dry) : dry;
-  return { dry: present(dry), out: present(out) };
+  return presentMatched([dry, setting.apply ? setting.apply(dry) : dry]);
+}
+
+function m10One(setting: CompSetting, rng: Rng): Mono {
+  const dry = drumPattern(2, rng);
+  return presentFixed(setting.apply ? setting.apply(dry) : dry, M10_ONE_CLIP_DB);
 }
 
 export const M10_COMPRESSION: EarModule = {
@@ -129,7 +150,7 @@ export const M10_COMPRESSION: EarModule = {
   title: 'Compression Recognition',
   blurb: 'None, light, moderate, heavy, pumping — hear the envelope change, not the level.',
   phones: 'recommended',
-  playbackNote: 'Rendered drum surrogate; headphones help on the light settings.',
+  playbackNote: 'Rendered drum surrogate; headphones help on the light settings. Levels 1–3 play quieter so no hit ever clips.',
   // NEW COPY
   listenFor: 'Same loudness, different shape: do the hits snap, or sit down flat? Does the space between hits swell back up?',
   levels: 4,
@@ -139,7 +160,7 @@ export const M10_COMPRESSION: EarModule = {
     if (level === 1 || level >= 4) {
       // AB: which is compressed? L1 uses heavy (obvious), L4 light (subtle).
       const setting = COMP[level === 1 ? 3 : 1];
-      const { dry, out } = m10Render(setting, rng);
+      const [dry, out] = m10Pair(setting, rng);
       const compFirst = rng() < 0.5;
       return {
         clips: [
@@ -160,7 +181,7 @@ export const M10_COMPRESSION: EarModule = {
     const deck = level === 2 ? [COMP[0], COMP[2], COMP[3]] : COMP;
     const idx = pickInt(rng, deck.length);
     const setting = deck[idx];
-    const { out } = m10Render(setting, rng);
+    const out = m10One(setting, rng);
     return {
       clips: [{ label: '▶', buf: out }],
       question: 'Which compression setting is this?',

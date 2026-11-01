@@ -343,7 +343,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(endEl, /mode=\{creditMode\}/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.match(LES, /✓ \{tag\} · /);
+    assert.match(LES, /✓ \{w\.credited\.length\} \{tag\}/); // D41 K1: what is done, no total
     assert.match(ET, /✓ CREDITED line \(✓ DONE when you are not signed in\)/);
   });
   it('the unit is a page; no understanding check, no optional page, no per-page detail line', () => {
@@ -409,7 +409,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
   });
   it('YOUR PROGRESS when saved progress cannot be read; every row still opens', () => {
     assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
-    assert.match(endEl, /unreadable=\{unreadable\}/);
+    assert.match(endEl, /unreadable=\{(unreadable|endUnreadable)\}/);
     assert.match(ET, /the title reads YOUR PROGRESS and every page can still be opened/);
   });
   it('TRY THIS holds on every face: LAB COMPLETE lists nothing; REVIEW ▾ only once a page is done', () => {

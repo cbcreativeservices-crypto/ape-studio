@@ -9,7 +9,7 @@
  * LabNavBar host; this layer's "‹ BACK TO THE LAB" is the same label the other
  * end layers use.
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,6 +43,13 @@ const CHECK_END_UNITS: LabEndUnit[] = [
  * lab stays as left underneath. The unit is read from the banked record (never
  * cleared; practising again only returns to the lab). Nothing auto-appears
  * (Low-Light): only a tap opens it. `endGuide` puts the ⓘ on the layer.
+ *
+ * ANDROID BACK CLOSES THE GUIDE FIRST (D41 K7, 2026-11-01). Inside a Modal the
+ * hardware BACK reaches only the Modal's onRequestClose, never the in-layer
+ * guide overlay's BackHandler, so one BACK closed the whole layer. The layer's
+ * own ScreenGuideHost hands back a `backRef`; onRequestClose asks it first
+ * (closes an open guide → done), and only then closes the layer. The guide
+ * stays in-tree (never Modal over Modal, K10).
  */
 export function LabCheckEnd({
   labId,
@@ -58,6 +65,8 @@ export function LabCheckEnd({
   endGuide?: ScreenGuide;
 }) {
   const [open, setOpen] = useState(false);
+  // "Close the open guide, if any" — filled by the layer's ScreenGuideHost.
+  const guideBack = useRef<(() => boolean) | null>(null);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const cleared = useLabClearedUnits(labId);
@@ -71,10 +80,19 @@ export function LabCheckEnd({
           setOpen(true);
         }}
       />
-      <Modal visible={open} animationType="none" onRequestClose={close} statusBarTranslucent>
+      <Modal
+        visible={open}
+        animationType="none"
+        // BACK: the open guide first, then the layer on the next press.
+        onRequestClose={() => {
+          if (guideBack.current?.()) return;
+          close();
+        }}
+        statusBarTranslucent
+      >
         <View style={[styles.endRoot, { paddingTop: insets.top + 8 }]}>
           {/* Its own guide host: the layer sits above the shell's. */}
-          <ScreenGuideHost regions={false} resetKey={open ? 'end' : 'closed'}>
+          <ScreenGuideHost regions={false} resetKey={open ? 'end' : 'closed'} backRef={guideBack}>
             <View style={styles.endHeader}>
               <Pressable onPress={close} hitSlop={12} accessibilityRole="button" accessibilityLabel={`Back to the ${labTitle}`}>
                 <Text style={styles.endBack}>‹ BACK TO THE LAB</Text>

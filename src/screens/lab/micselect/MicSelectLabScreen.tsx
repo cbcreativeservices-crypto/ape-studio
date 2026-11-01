@@ -1077,6 +1077,8 @@ export function MicSelectLabScreen() {
           noun="lesson"
           // The CHECK row stays here: the check is drawn on this screen (extra).
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goTo(Math.max(0, STEPS.findIndex((st) => st.key === id))); }}
+          // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
+          shownHereId={UNDERSTANDING_UNIT}
           onPracticeAgain={() => goTo(0)}
           onDone={() => safeGoBack(navigation)}
           bottomInset

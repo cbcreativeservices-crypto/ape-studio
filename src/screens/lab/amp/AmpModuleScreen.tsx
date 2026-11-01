@@ -24,7 +24,10 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
 import { emptyAmpModule, isAmpProgressUnreadable, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
-import { ampEndModel } from '../../../features/amp/ampEnd';
+import { AMP_CHECK_UNIT, ampEndModel } from '../../../features/amp/ampEnd';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { understandingFor } from '../../../features/lab/understanding';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AmpStepHostContext, type AmpStepHost } from './steps';
@@ -117,6 +120,13 @@ export function AmpModuleScreen() {
    * it). PRACTISE AGAIN reopens Module 1 and clears nothing.
    */
   const [endState, setEndState] = useState<AmpProgressState | null>(null);
+  // THE CHECK IS A UNIT (D41 J2, owner 2026-11-01): the understanding check
+  // completes this lab for certificates, so the end screen lists it last and
+  // LAB COMPLETE never shows above an unpassed check. Banked record, never
+  // cleared by a practice run.
+  const bankedUnits = useLabClearedUnits('amp');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('amp');
   // Bumped by every move away from the end screen (night pass 2, 2026-10-01):
   // FINISH then a quick strip tap left the queued read to land afterwards and
   // throw the end screen back over the module just chosen.
@@ -281,18 +291,23 @@ export function AmpModuleScreen() {
   let end: ReactNode = null;
   if (endState) {
     // The same builder as the hub's SEE WHAT'S LEFT (features/amp/ampEnd).
-    const { units: endUnits, cleared } = ampEndModel(endState, built);
+    const { units: endUnits, cleared } = ampEndModel(endState, built, hasCheck ? { passed: bankedUnits.has(AMP_CHECK_UNIT) } : undefined);
     end = (
       <LabEndScreen
         labTitle={LAB_TITLE}
         units={endUnits}
         cleared={cleared}
-        unreadable={isAmpProgressUnreadable(endState)}
+        // Either record unread = the end screen's note, never "all left" (D51).
+        unreadable={isAmpProgressUnreadable(endState) || (hasCheck && completionUnreadable)}
         mode="progress"
-        onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
+        // The CHECK row stays here: the check is drawn on this screen (extra).
+        onJump={(id) => { if (id !== AMP_CHECK_UNIT) navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) }); }}
+        // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
+        shownHereId={AMP_CHECK_UNIT}
         onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}
         onDone={() => safeGoBack(navigation)}
         bottomInset
+        extra={<LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />}
       />
     );
   }

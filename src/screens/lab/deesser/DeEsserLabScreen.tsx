@@ -602,6 +602,10 @@ export function DeEsserLabScreen() {
       pages={PAGES}
       pageGuide={deEsserPageGuide}
       endGuide={DEESSER_END_GUIDE}
+      // D41 K8: the certificate credit is the Smart Processors check — the
+      // what's-left screen lists it and draws it, so LAB COMPLETE waits for it.
+      creditCheckLabId="smart-processors"
+      creditCheckTitle="Smart Processors Lab"
       // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only
       // on live-mic tools and labs showing real-world measurement numbers.
       // This is a CONCEPT lab — every display is computed from a modelled

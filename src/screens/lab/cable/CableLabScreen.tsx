@@ -168,7 +168,8 @@ export function CableLabScreen() {
           <View style={styles.tagRow}>
             <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
             {total > 0 && !unreadable ? (
-              <Text style={styles.progressText} accessibilityLabel={`${cleared} of ${total} lab units cleared`}>{`${cleared}/${total} UNITS`}</Text>
+              // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
+              <Text style={styles.progressText} accessibilityLabel={`${cleared} lab ${cleared === 1 ? 'unit' : 'units'} cleared`}>{`${cleared} ${cleared === 1 ? 'UNIT' : 'UNITS'} CLEARED`}</Text>
             ) : null}
           </View>
           {unreadable ? <ProgressUnreadableNote /> : null}

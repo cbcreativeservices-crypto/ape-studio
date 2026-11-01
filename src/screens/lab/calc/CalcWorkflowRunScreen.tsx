@@ -35,8 +35,8 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
-import { refusalRows, type CalcFunction, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
-import { chainFits, fmt, fmtCarried, parseQuantity, unitFits, unitsFor } from './calcUnits';
+import { refusalRows, type CalcFunction, type FieldDef, type Workspace } from './calcTypes';
+import { chainFits, fmt, fmtCarried, liveImport, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -65,6 +65,10 @@ type StepComputed = {
   effRaw: Record<string, string>;
   result: ComputeResult;
   complete: boolean;
+  /** Fields whose saved import points at an answer that no longer fits them
+   *  (D41 follow-up J5c): the field reads empty WITH a reason, offers its
+   *  ⤵ USE buttons again, and typing makes it a plain manual value. */
+  refusedImports: string[];
 };
 
 /** Human line for a source label (spec: "Entered manually", "From Speed of
@@ -303,36 +307,27 @@ export function CalcWorkflowRunScreen() {
       const bound = run.steps[i]?.inputs ?? {};
       const effRaw: Record<string, string> = {};
       const unitSel: Record<string, number> = {};
+      const refusedImports: string[] = [];
       for (const f of fields) {
         const b = bound[f.key];
         unitSel[f.key] = b?.unitIdx ?? defaultUnitIdx(f);
         if (b && b.source.kind === 'prior-step') {
           // LIVE import: derive from the upstream step's CURRENT output.
-          // A REFUSED upstream step has no answer to pass on (owner 2026-10-03,
-          // "do 1"): a figure printed beside the refusal is not this step's
-          // input — the field reads honestly empty, as for an incomplete step.
-          const up0 = out[b.source.stepIndex];
-          const up = up0?.result.refused ? undefined : up0;
-          const srcRef = b.source;
-          const isNum = (x: OutputVal | undefined): x is Extract<OutputVal, { value: number }> => !!x && 'value' in x;
-          // By label; else by position when the label carries an input that
-          // has since changed (see ValueSource.outputIndex).
-          let o = up?.result.outputs.find((x): x is Extract<OutputVal, { value: number }> => isNum(x) && x.label === srcRef.outputLabel);
-          if (!o && srcRef.outputIndex != null) {
-            const at = up?.result.outputs[srcRef.outputIndex];
-            if (isNum(at) && at.chainable !== false) o = at;
-          }
           // Finite only: fmt(NaN) is "—", which the field then flagged as the
-          // user's own unreadable typing. chainFits: the same unit AND meaning
+          // user's own unreadable typing. `fits`: the same unit AND meaning
           // rule as the offer below — a relabelled output must still fit this
           // field, and a saved run's import that no longer means the same
-          // thing (D41) reads honestly empty instead of a wrong figure.
-          if (o && chainFits(o.label, o.quantity, f, o.meaning) && o.quantity === f.quantity && Number.isFinite(o.value)) {
+          // thing (D41) never shows a wrong figure.
+          const li = liveImport(out, b.source, f);
+          const o = li?.o;
+          if (o && li?.fits && o.quantity === f.quantity && Number.isFinite(o.value)) {
             const units = unitsFor(f.quantity, f.unitIds);
             const u = units[unitSel[f.key] % units.length];
             effRaw[f.key] = fmtCarried(u.fromBase(o.value), f.quantity);
           } else {
             effRaw[f.key] = ''; // upstream incomplete/missing — honestly empty
+            // …or an answer that no longer fits: empty, and the field says why.
+            if (li && !li.fits) refusedImports.push(f.key);
           }
         } else {
           effRaw[f.key] = b?.raw ?? '';
@@ -341,7 +336,7 @@ export function CalcWorkflowRunScreen() {
       const values = resolved ? buildValues(fields, effRaw, unitSel) : null;
       const result = runCompute(resolved?.fn ?? null, values, fields);
       // A refused step is not complete — like an error, it is not counted.
-      out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError && !result.refused });
+      out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError && !result.refused, refusedImports });
     });
     return out;
   }, [workflow, run]);
@@ -383,7 +378,10 @@ export function CalcWorkflowRunScreen() {
 
   const onEditField = (f: FieldDef, text: string) => {
     const existing = run?.steps[idx]?.inputs[f.key];
-    if (existing && existing.source.kind === 'prior-step') {
+    // An import that no longer fits (J5c) has nothing to restore: typing over
+    // it is a plain manual value, never an override offering ⟲ RESTORE.
+    const deadImport = existing?.source.kind === 'prior-step' && !!computed[idx]?.refusedImports.includes(f.key);
+    if (existing && existing.source.kind === 'prior-step' && !deadImport) {
       // Typing over an import = manual OVERRIDE (restorable).
       setBound(f.key, { raw: text, unitIdx: existing.unitIdx, source: { kind: 'override', replaced: existing.source } });
       return;
@@ -435,7 +433,10 @@ export function CalcWorkflowRunScreen() {
   const restoreImport = (f: FieldDef) => {
     const existing = run?.steps[idx]?.inputs[f.key];
     if (existing && existing.source.kind === 'override') {
-      setBound(f.key, { raw: '', unitIdx: existing.unitIdx, source: existing.source.replaced });
+      // Never back to an import that no longer fits (J5c) — the button is hidden too.
+      const was = existing.source.replaced;
+      if (was.kind === 'prior-step' && liveImport(computed, was, f)?.fits === false) return;
+      setBound(f.key, { raw: '', unitIdx: existing.unitIdx, source: was });
     }
   };
 
@@ -789,11 +790,24 @@ export function CalcWorkflowRunScreen() {
                       });
                     }
                   }
-                  const isImport = b?.source.kind === 'prior-step';
+                  // A saved import whose answer no longer fits this input (J5c):
+                  // say why the field is empty, offer the answers that DO fit,
+                  // and never offer ⟲ RESTORE back to it.
+                  const deadImport = b?.source.kind === 'prior-step' && cur.refusedImports.includes(f.key);
+                  const isImport = b?.source.kind === 'prior-step' && !deadImport;
+                  const canRestore =
+                    b?.source.kind === 'override' &&
+                    !(b.source.replaced.kind === 'prior-step' && liveImport(computed, b.source.replaced, f)?.fits === false);
                   const footer = (
                     <View style={styles.srcWrap}>
-                      {src ? <Text style={[styles.srcLabel, b?.source.kind === 'override' && styles.srcLabelOverride]}>{src}</Text> : null}
-                      {b?.source.kind === 'override' ? (
+                      {deadImport && b?.source.kind === 'prior-step' ? (
+                        <Text style={[styles.srcLabel, styles.srcLabelOverride]}>
+                          {`${b.source.outputLabel} from step ${b.source.stepIndex + 1} no longer fits this input — type a value.`}
+                        </Text>
+                      ) : src ? (
+                        <Text style={[styles.srcLabel, b?.source.kind === 'override' && styles.srcLabelOverride]}>{src}</Text>
+                      ) : null}
+                      {canRestore ? (
                         <Pressable style={styles.srcBtn} onPress={() => restoreImport(f)} accessibilityRole="button" accessibilityLabel={`Restore the imported value for ${f.name}`}>
                           <Text style={styles.srcBtnText}>⟲ RESTORE IMPORT</Text>
                         </Pressable>

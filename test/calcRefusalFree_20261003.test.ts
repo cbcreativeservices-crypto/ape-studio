@@ -119,6 +119,7 @@ test('R4 — a normal numeric answer still costs', () => {
 test('R5 — a refused workflow step is not complete and feeds no later step', () => {
   const src = read('CalcWorkflowRunScreen.tsx');
   assert.match(src, /complete: values != null && !result\.computeError && !result\.refused/);
-  assert.match(src, /const up = up0\?\.result\.refused \? undefined : up0;/);
+  // The live import moved to calcUnits.liveImport (D41 J5c).
+  assert.match(read('calcUnits.ts'), /const up = up0\?\.result\.refused \? undefined : up0;/);
   assert.match(src, /if \(computed\[k\]\?\.result\.refused\) continue;/);
 });

@@ -81,7 +81,10 @@ const WS_COMPRESSOR: Workspace = {
   fields: [
     { key: 'thr', name: 'THRESHOLD', quantity: 'db', meaning: 'db:comp-threshold', signed: true, ...compLevel('THRESHOLD'), placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
     { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', meaning: 'number:comp-ratio', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
-    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', signed: true, ...compLevel('INPUT LEVEL'), placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
+    // D41 follow-up (J5d): OUTPUT LEVEL → INPUT LEVEL is two compressors in
+    // series — both 'db:dbfs-level'. THRESHOLD ('db:comp-threshold') and
+    // TARGET OUTPUT (a wanted level, untagged) never take a signal level.
+    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', meaning: 'db:dbfs-level', signed: true, ...compLevel('INPUT LEVEL'), placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
     { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', signed: true, ...compLevel('TARGET OUTPUT'), placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
     { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', nonNegative: true, placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
   ],
@@ -112,7 +115,7 @@ const WS_COMPRESSOR: Workspace = {
         const out = above > 0 ? thr + above / r : inp;
         const gr = inp - out;
         return [
-          { label: 'OUTPUT LEVEL', value: out, quantity: 'db' },
+          { label: 'OUTPUT LEVEL', value: out, quantity: 'db', meaning: 'db:dbfs-level' },
           { label: 'GAIN REDUCTION', value: gr, quantity: 'db', chainable: false },
           { label: 'INPUT ABOVE THRESHOLD', value: Math.max(0, above), quantity: 'db', chainable: false },
         ];

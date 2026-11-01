@@ -541,7 +541,7 @@ const COMPLEXZ: Workspace = {
     { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '8', help: 'Series resistance in ohms.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'indmH', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Inductance in millihenries.', warn: { test: (x) => x < 0, msg: 'Inductance cannot be negative.' } },
     { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Capacitance in microfarads.', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: 'frequency:point', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '1000', help: 'The frequency to evaluate the impedance at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {

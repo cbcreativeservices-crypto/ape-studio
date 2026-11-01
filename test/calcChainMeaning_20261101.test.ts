@@ -43,7 +43,7 @@ const { WORKSPACES, getWorkspace } = await import('../src/screens/lab/calc/regis
 const U = await import('../src/screens/lab/calc/calcUnits.ts');
 const { WORKFLOW_TEMPLATES } = await import('../src/screens/lab/calc/workflowCatalog.ts');
 const G = await import('../src/screens/lab/calc/calcScreenGuides.ts');
-const { chainFits, unitFits, meaningMatches, SAFE_UNTAGGED_KINDS, parseList, parseQuantity, unitsFor } = U;
+const { chainFits, unitFits, meaningMatches, SAFE_UNTAGGED_KINDS, parseList, parseQuantity, unitsFor, liveImport } = U;
 
 const src = (rel: string) => readFileSync(new URL(`../src/screens/lab/calc/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 type Ws = NonNullable<ReturnType<typeof getWorkspace>>;
@@ -269,7 +269,8 @@ describe('every entry point uses the meaning rule; projects keep kind + unit', (
     const run = src('CalcWorkflowRunScreen.tsx');
     assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.chainable !== false/);
     // A saved run's import that no longer means the same thing reads empty.
-    assert.match(run, /if \(o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.quantity === f\.quantity/);
+    assert.match(src('calcUnits.ts'), /return \{ o, fits: chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.quantity === f\.quantity \};/);
+    assert.match(run, /const li = liveImport\(out, b\.source, f\);\n\s+const o = li\?\.o;\n\s+if \(o && li\?\.fits && o\.quantity === f\.quantity && Number\.isFinite\(o\.value\)\) \{/);
     assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\)\)/);
     assert.doesNotMatch(run, /chainFits\([^)]*\bv\.label/);
   });
@@ -302,5 +303,160 @@ describe('the guide says what the screen does', () => {
   it('project values: still offered by kind, so the guide still says to check the name', () => {
     assert.ok(text.includes('A project value is offered only to an input of the same kind — a power never fills a voltage. Check it is the same thing before you tap ⤵ USE.'));
     assert.ok(text.includes('so its values offer ⤵ USE … (PROJECT) on inputs of the same kind.'));
+  });
+});
+
+/* ------------------------------------------------------------------------ *
+ * J5 (D41 follow-ups, owner-approved 2026-11-01: "lets continue fixing what
+ * the bugs discovered").
+ * ------------------------------------------------------------------------ */
+
+describe('J5a — SEND → shows only beside an answer some input takes', () => {
+  /** Every chainable answer in the lab at its example values. */
+  const answers = (): { w: Ws; f: Fn; o: NumOut }[] => {
+    const all: { w: Ws; f: Fn; o: NumOut }[] = [];
+    for (const w of WORKSPACES as Ws[]) {
+      for (const f of w.functions) {
+        for (const o of example(w, f)) if ('value' in o && o.chainable !== false && Number.isFinite(o.value)) all.push({ w, f, o: o as NumOut });
+      }
+    }
+    return all;
+  };
+  it('the button is gated on calcSendTarget, the guide’s own rule', () => {
+    const w = src('CalcWorkspaceScreen.tsx');
+    assert.match(w, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) !== null\)/);
+    assert.match(w, /\{sendTakers\.get\(o\.label\) && o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);
+    // Exactly one SEND → button, and it sits behind that gate.
+    assert.equal(w.split('>SEND →</Text>').length, 2);
+  });
+  it('answers with no taker anywhere get no SEND → (a voltage drop); answers with one keep it', () => {
+    const all = answers();
+    const none = all.filter(({ w, f, o }) => G.calcSendTarget(w, f, o.label, o.quantity, o.meaning) === null);
+    const some = all.length - none.length;
+    assert.ok(none.length > 0 && some > 0, `${none.length} without, ${some} with`);
+    assert.ok(none.some(({ o }) => o.label === 'VOLTAGE DROP'));
+    // …and every one hidden really has no input anywhere taking it.
+    for (const { w, f, o } of none) {
+      for (const w2 of WORKSPACES as Ws[]) {
+        for (const g of w2.functions) {
+          if (w2.id === w.id && g.key === f.key) continue;
+          for (const k of g.inputs) {
+            const fd = w2.fields.find((x) => x.key === k)!;
+            assert.ok(!chainFits(o.label, o.quantity, fd, o.meaning), `${w.id}/${o.label} → ${w2.id}.${k}`);
+          }
+        }
+      }
+    }
+  });
+  it('the guide still names SEND → only where a taker exists', () => {
+    assert.ok(src('calcScreenGuides.ts').includes('SEND → (if an input takes it) passes it on'));
+  });
+});
+
+describe('J5b — a band edge is not a centre', () => {
+  const lo = () => out('qbw', 'bwFromQ', 'LOWER EDGE f₁ (−3 dB)');
+  const hi = () => out('qbw', 'bwFromQ', 'UPPER EDGE f₂ (−3 dB)');
+  const reachLo = () => out('qbw', 'paramReach', 'AFFECTED RANGE — LOWER f₁');
+  const tagsOf = (m: string | readonly string[] | undefined): readonly string[] => (m == null ? [] : typeof m === 'string' ? [m] : m);
+  it('no tag sits under frequency:point any more', () => {
+    for (const w of WORKSPACES as Ws[]) {
+      for (const g of w.functions) for (const o of example(w, g)) if ('value' in o && o.meaning) assert.ok(!o.meaning.startsWith('frequency:point:'), `${w.id}/${o.label}`);
+      for (const f of w.fields) for (const t of tagsOf(f.meaning)) assert.ok(!t.startsWith('frequency:point:'), `${w.id}.${f.key}`);
+    }
+  });
+  it('CENTER FREQUENCY refuses a lower edge, an upper edge and an affected-range edge', () => {
+    for (const o of [lo(), hi(), reachLo()]) {
+      assert.ok(unitFits(o.label, o.quantity, field('qbw', 'fc')));
+      assert.equal(chainFits(o.label, o.quantity, field('qbw', 'fc'), o.meaning), false, o.label);
+    }
+  });
+  it('CENTER FREQUENCY still takes a centre: a geometric centre, a room mode', () => {
+    const centre = example(ws('qbw'), fn('qbw', 'geoCenter')).find((o) => 'value' in o) as NumOut;
+    assert.ok(offered(centre, field('qbw', 'fc')));
+    assert.ok(offered(out('wave', 'distToFreq', 'HALF-WAVE FREQUENCY (room-mode f₁ for this dimension)'), field('qbw', 'fc')));
+  });
+  it('every generic FREQUENCY still takes an edge (wavelength, reactance, impedance, isolation, excursion, phase, IMD tones)', () => {
+    const generic: string[] = [];
+    for (const w of WORKSPACES as Ws[]) {
+      for (const f of w.fields) {
+        if (f.quantity !== 'frequency') continue;
+        const tags = tagsOf(f.meaning);
+        if (tags.includes('frequency:point') && tags.includes('frequency:edge')) {
+          generic.push(`${w.id}.${f.key}`);
+          for (const o of [lo(), hi(), reachLo()]) assert.ok(offered(o, f), `${o.label} → ${w.id}.${f.key}`);
+        }
+      }
+    }
+    assert.equal(generic.length, 13, generic.join(', '));
+    assert.ok(generic.includes('wave.f'), generic.join(', '));
+  });
+  it('the band-centre helper still pairs edge with edge: LOWER takes f₁, UPPER takes f₂, never crossed', () => {
+    assert.ok(offered(lo(), field('qbw', 'flo')));
+    assert.ok(offered(hi(), field('qbw', 'fhi')));
+    assert.equal(chainFits(lo().label, 'frequency', field('qbw', 'fhi'), lo().meaning), false);
+    assert.equal(chainFits(hi().label, 'frequency', field('qbw', 'flo'), hi().meaning), false);
+  });
+});
+
+describe('J5c — a saved import that no longer fits says so, and is never restored', () => {
+  const need = () => out('sabine', 'neededA', 'ABSORPTION NEEDED');
+  const at0 = { kind: 'prior-step' as const, stepIndex: 0, outputLabel: 'ABSORPTION NEEDED' };
+  it('liveImport judges the saved binding by the same meaning rule', () => {
+    const f = field('treatment', 'panelArea');
+    const li = liveImport([{ result: { refused: false, outputs: [need()] } }], at0, f);
+    assert.ok(li);
+    assert.equal(li!.fits, false);
+    // No answer yet (step 1 incomplete or refused): nothing to judge — no reason shown.
+    assert.equal(liveImport([undefined], at0, f), null);
+    assert.equal(liveImport([{ result: { refused: true, outputs: [need()] } }], at0, f), null);
+    // A fitting import still fits.
+    const rt = out('sabine', 'rtFromVA', 'RT60');
+    const ok = liveImport([{ result: { outputs: [rt] } }], { kind: 'prior-step', stepIndex: 0, outputLabel: 'RT60' }, field('critdist', 'rt60'));
+    assert.equal(ok?.fits, true);
+  });
+  it('the runner shows the reason, offers ⤵ USE again, types a MANUAL value, and hides ⟲ RESTORE', () => {
+    const run = src('CalcWorkflowRunScreen.tsx');
+    assert.match(run, /if \(li && !li\.fits\) refusedImports\.push\(f\.key\);/);
+    assert.match(run, /const deadImport = b\?\.source\.kind === 'prior-step' && cur\.refusedImports\.includes\(f\.key\);/);
+    assert.match(run, /const isImport = b\?\.source\.kind === 'prior-step' && !deadImport;/);
+    assert.match(run, /no longer fits this input — type a value\./);
+    // Typing over a dead import is not an override (nothing to restore).
+    assert.match(run, /if \(existing && existing\.source\.kind === 'prior-step' && !deadImport\) \{\n\s+\/\/ Typing over an import = manual OVERRIDE/);
+    // ⟲ RESTORE IMPORT only when the import it would bring back still fits.
+    assert.match(run, /\{canRestore \? \(\n\s+<Pressable style=\{styles\.srcBtn\} onPress=\{\(\) => restoreImport\(f\)\}/);
+    assert.match(run, /if \(was\.kind === 'prior-step' && liveImport\(computed, was, f\)\?\.fits === false\) return;/);
+  });
+  it('the guide says what the field does', () => {
+    assert.ok(src('calcScreenGuides.ts').includes('A saved import that no longer fits says so: type a value.'));
+  });
+});
+
+describe('J5d — compressors in series: OUTPUT LEVEL feeds the next INPUT LEVEL', () => {
+  const o = () => out('compressor', 'outFromRatio', 'OUTPUT LEVEL');
+  it('offered to INPUT LEVEL (−17 dBFS out of the first becomes the second’s input)', () => {
+    assert.equal(o().value, -17);
+    assert.ok(offered(o(), field('compressor', 'inLvl')));
+    // SEND → now has a taker: the same calculator's other calculations.
+    assert.equal(G.calcSendTarget(ws('compressor'), fn('compressor', 'outFromRatio'), o().label, o().quantity, o().meaning), 'here');
+  });
+  it('never offered to THRESHOLD, TARGET OUTPUT or TARGET GAIN REDUCTION, nor to a dBu/dBV level', () => {
+    for (const k of ['thr', 'targetOut', 'targetGr']) assert.equal(chainFits(o().label, o().quantity, field('compressor', k), o().meaning), false, k);
+    for (const k of ['dbu', 'dbv', 'dbx']) assert.equal(chainFits(o().label, o().quantity, field('level', k), o().meaning), false, k);
+    // SET THRESHOLD TO stays a threshold: never an input level.
+    const thr = fn('compressor', 'thrForGr').compute({ inLvl: -8, ratio: 4, targetGr: 3 }).find((x) => x.label === 'SET THRESHOLD TO') as NumOut;
+    assert.equal(chainFits(thr.label, thr.quantity, field('compressor', 'inLvl'), thr.meaning), false);
+  });
+  it('only OUTPUT LEVEL carries the tag among answers; only INPUT LEVEL among inputs', () => {
+    const answersTagged: string[] = [];
+    const inputsTagged: string[] = [];
+    for (const w of WORKSPACES as Ws[]) {
+      for (const g of w.functions) for (const x of example(w, g)) if ('value' in x && x.meaning === 'db:dbfs-level') answersTagged.push(`${w.id}/${x.label}`);
+      for (const f of w.fields) {
+        const m = f.meaning;
+        if (m && (typeof m === 'string' ? [m] : m).includes('db:dbfs-level')) inputsTagged.push(`${w.id}.${f.key}`);
+      }
+    }
+    assert.deepEqual(answersTagged, ['compressor/OUTPUT LEVEL']);
+    assert.deepEqual(inputsTagged, ['compressor.inLvl']);
   });
 });

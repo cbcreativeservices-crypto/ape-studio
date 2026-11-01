@@ -140,7 +140,7 @@ export function CableInstallLabScreen() {
   const repeatedRef = useRef(false);
   const [, forceTick] = useState(0);
 
-  const { complete: labComplete, cleared, total } = useLabCompletion(LAB_KEY);
+  const { complete: labComplete, cleared } = useLabCompletion(LAB_KEY);
   const clearedUnits = useLabClearedUnits(LAB_KEY);
   // UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51): the
   // banked units (ape:labProgress) or this lab's run, scores and place
@@ -516,7 +516,8 @@ export function CableInstallLabScreen() {
               // stage (bug hunt 2026-09-30).
               onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
               resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — MODULE ${firstIncomplete}` : null}
-              progressLine={`${cleared} of ${total} units complete`}
+              // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
+              progressLine={`${cleared} ${cleared === 1 ? 'unit' : 'units'} complete`}
               unreadable={progressUnreadable}
               onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
             />

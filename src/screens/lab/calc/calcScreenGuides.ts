@@ -164,7 +164,7 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
       : `INPUTS: ${names}. Type a number in each; a grey number in an empty box is an example value.`,
     '⇄ switches a box’s unit; ⓘ says what an input means; a ⚠ under a box flags a value worth a second look.',
     picker,
-    'In the answer: tap a number for another unit; SEND → passes it on; SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
+    'In the answer: tap a number for another unit; SEND → (if an input takes it) passes it on; SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
   ];
   if (capped) control.push('On this account, CALCULATE reveals each new answer and uses one of this week’s calculations; an error costs nothing.');
 
@@ -341,7 +341,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     control: [
       'Type values as in any calculator: ⇄ switches a unit, ⓘ explains an input, a tap on an answer number changes its unit.',
-      '⤵ USE … (STEP n) fills an input with an earlier step’s answer that means the same thing. Typing over it marks it Manually overridden; ⟲ RESTORE IMPORT brings it back.',
+      '⤵ USE … (STEP n) fills an input with an earlier step’s answer that means the same thing. Typing over it marks it Manually overridden; ⟲ RESTORE IMPORT brings it back. A saved import that no longer fits says so: type a value.',
       '⛭ USE A SAVED PROJECT (when you have one) attaches a project, so its values offer ⤵ USE … (PROJECT) on inputs of the same kind.',
       '‹ PREVIOUS and CONTINUE › move between steps (FINISH ✓ on the last); tap a step button to jump. SAVE, where shown, keeps your progress.',
     ],

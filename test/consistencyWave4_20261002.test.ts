@@ -124,9 +124,10 @@ test('1b · Amp hub: SEE WHAT’S LEFT shows the FINISH list — same read, same
   const h = code('screens/lab/amp/AmpLabHomeScreen.tsx');
   const m = code('screens/lab/amp/AmpModuleScreen.tsx');
   // Same builder and source on both sides.
-  assert.match(m, /const \{ units: endUnits, cleared \} = ampEndModel\(endState, built\);/);
+  // (D41 J2, 2026-11-01: both pass the same banked understanding check as the last CHECK row.)
+  assert.match(m, /const \{ units: endUnits, cleared \} = ampEndModel\(endState, built, hasCheck \? \{ passed: bankedUnits\.has\(AMP_CHECK_UNIT\) \} : undefined\);/);
   assert.match(m, /void updateAmpProgress\(\(\) => \{\}\)\.then\(\(s\) => \{\s*if \(my === endReq\.current\) setEndState\(s\);/);
-  assert.match(h, /const endModel = ampEndModel\(progress \?\? \{ modules: \{\} \}, built\);/);
+  assert.match(h, /const endModel = ampEndModel\(progress \?\? \{ modules: \{\} \}, built, hasCheck \? \{ passed: bankedUnits\.has\(AMP_CHECK_UNIT\) \} : undefined\);/);
   assert.match(h, /units=\{endModel\.units\}\s*cleared=\{endModel\.cleared\}/);
   const mode = (s: string) => /<LabEndScreen[\s\S]*?mode="(credit|progress)"/.exec(s)?.[1];
   assert.equal(mode(h), 'progress');
@@ -143,7 +144,7 @@ test('1b · Amp hub: SEE WHAT’S LEFT shows the FINISH list — same read, same
   assert.match(h, /const open = \(id: AmpModuleId\) => \{\s*setEnding\(false\);\s*navigation\.navigate\('AmpModule', \{ id \}\);/);
   // PRACTISE AGAIN reopens Module 1 and clears nothing; DONE leaves through safeGoBack.
   assert.match(h, /onPracticeAgain=\{\(\) => open\(built\[0\]\?\.id \?\? AMP_MODULES\[0\]\.id\)\}/);
-  assert.match(h, /onJump=\{\(id\) => open\(id === 'final' \? 'apply' : \(id as AmpModuleId\)\)\}/);
+  assert.match(h, /onJump=\{\(id\) => \{ if \(id !== AMP_CHECK_UNIT\) open\(id === 'final' \? 'apply' : \(id as AmpModuleId\)\); \}\}/);
   assert.match(h, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
   assert.doesNotMatch(h, /navigation\.goBack\(/);
 });

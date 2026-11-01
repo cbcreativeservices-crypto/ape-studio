@@ -350,7 +350,7 @@ export const MICSEL_END_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap an answer: CORRECT and why, or NOT QUITE — TRY ANOTHER with the reason; pick again straight away.',
-    'Tap a lesson row to jump to it; the CHECK row stays here, as the check is on this screen. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
+    'Tap a lesson row to jump to it; the CHECK row moves this screen up to the check, which sits on it. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
     'A lesson counts once it is opened — progress on this device, not a grade.',

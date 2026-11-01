@@ -6,7 +6,7 @@
  * No GuidedLessonSheet yet — the 'eq' lesson belongs to the audible Equalizer
  * effect lab; this lab gets its own entry when the content registry grows one.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +41,10 @@ import { EqChallengesModule } from './modules/EqChallenges';
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import { eqEndCleared, eqEndUnits } from './eqEnd';
 
 /** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
  *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
@@ -129,7 +133,18 @@ export function EqModuleScreen() {
   const { resolved } = useEntitlement();
   const visited = useLabVisits('eq');
   // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
-  const progressUnreadable = useLabVisitsUnreadable();
+  const visitsUnreadable = useLabVisitsUnreadable();
+  // THE CHECK IS A UNIT (D41 J2, owner 2026-11-01): the understanding check
+  // completes this lab for certificates, so WHAT'S LEFT lists it last and LAB
+  // COMPLETE never shows above an unpassed check (eqEnd). Banked record,
+  // never cleared by a practice run.
+  const bankedUnits = useLabClearedUnits('eq');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('eq');
+  const endUnits = useMemo(() => eqEndUnits(EQ_MODULES, hasCheck), [hasCheck]);
+  const endCleared = useMemo(() => eqEndCleared(visited, bankedUnits), [visited, bankedUnits]);
+  // Either record unread = the end screen's note, never "all left" (D51).
+  const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
   // Wait for `resolved` (the Room Design rule): before it a guest reads as a
   // member, so a guest's first module was SAVED to the device (night pass 2,
   // 2026-10-01). The effect re-runs when the tier lands.
@@ -148,14 +163,16 @@ export function EqModuleScreen() {
   const endScreen = ending ? (
     <LabEndScreen
       labTitle="EQ Lab"
-      units={EQ_MODULES.map((m) => ({ id: m.id, label: m.title }))}
-      cleared={visited}
+      units={endUnits}
+      cleared={endCleared}
       unreadable={progressUnreadable}
       mode="progress"
-      onJump={(id) => goToModule(EQ_MODULES.findIndex((m) => m.id === id))}
+      // The CHECK row stays here: the check is drawn on this screen (extra).
+      onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goToModule(EQ_MODULES.findIndex((m) => m.id === id)); }}
       onPracticeAgain={() => goToModule(0)}
       onDone={() => safeGoBack(navigation)}
       bottomInset
+      extra={<LabUnderstandingBlock labId="eq" labTitle="EQ Lab" />}
     />
   ) : null;
 

@@ -53,7 +53,8 @@ describe('WP3 hosts use the shared lab navigation', () => {
       const at = src.indexOf('<LabEndScreen');
       assert.ok(at > 0);
       const el = src.slice(at, src.indexOf('/>', at));
-      assert.match(el, /onJump=\{\(id\) => openSection\(/);
+      // Tube (D41 J2, 2026-11-01): its CHECK row stays on the end screen, where the check is drawn.
+      assert.match(el, /onJump=\{\(id\) => (\{ if \(id !== UNDERSTANDING_UNIT\) )?openSection\(/);
       assert.match(el, /onPracticeAgain=\{\(\) => openSection\(0\)\}/);
       assert.match(el, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
     });

@@ -305,15 +305,17 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.doesNotMatch(PAGED, /completeTitle/);
     assert.match(END.seeing.join(' '), /WHAT'S LEFT lists, by name, each page[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
   });
-  it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED', () => {
+  it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED; the credit check is listed and drawn (D41 K8)', () => {
     for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail', 'pageDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
     assert.match(SHELL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.match(END.seeing.join(' '), /one ✓ DONE row: these pages record progress, not certificate credit/);
+    assert.match(END.seeing.join(' '), /then a CHECK row: the five-question Smart Processors check\. LAB COMPLETE once every page is done and the check passed/);
+    assert.match(END.seeing.join(' '), /Done pages and a passed check fold into one ✓ DONE row/);
+    assert.match(PAGED, /creditCheckLabId="smart-processors"/);
     assert.doesNotMatch(endText, /CREDITED/);
     // the lab's credit is the hub's check (labId smart-processors), not these pages
     assert.match(HUB, /<LabUnderstandingBlock labId="smart-processors"/);
-    assert.match(END.changes.join(' '), /counts toward certificates only through the five-question check on the Smart Processors Lab page/);
+    assert.match(END.changes.join(' '), /Certificates count only the five-question check, here or on the Smart Processors Lab page/);
   });
   it('every button by its exact label, and what each does', () => {
     assert.match(END_SCREEN, /<GlassButton label="PRACTICE AGAIN FROM THE START"[^>]*onPress=\{onPracticeAgain\} \/>/);
@@ -328,13 +330,13 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START opens What Sibilance Is and clears nothing/);
     // DONE goes back ONE screen: the de-esser is only ever opened from the hub
     assert.match(HUB, /route: 'DeEsserLab'/);
-    assert.match(END.control.join(' '), /DONE · BACK TO LABS goes back one screen: to the Smart Processors Lab page/);
+    assert.match(END.control.join(' '), /DONE · BACK TO LABS goes back one screen, to the Smart Processors Lab page/);
     // the strip on the end screen: ‹ PREV leaves the end screen for the page you were on; the WHAT'S LEFT ▾ readout drops down the page list
     const nav = code('src/screens/lab/kit/useLabNav.ts');
     assert.match(nav, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/);
     assert.match(code('src/screens/lab/kit/labNav.ts'), /pos: "What's left\. Opens the contents"/);
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
-    assert.match(END.control.join(' '), /‹ PREV returns to the page you came from; WHAT'S LEFT ▾ drops down a list of every page, with START OVER \(PRACTICE\) at its foot, which clears these ✓ marks/);
+    assert.match(END.control.join(' '), /‹ PREV returns to the page you came from; WHAT'S LEFT ▾ drops down a list of every page, with START OVER \(PRACTICE\) at its foot, which clears the page ✓ marks after asking; a passed check stays/);
   });
   it('what makes a page count: any control or its check (touch / markDone), or NEXT / FINISH (no manualDone page); a CONTENTS jump never', () => {
     assert.doesNotMatch(LAB, /manualDone/);
@@ -360,7 +362,7 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(SHELL, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\)/);
     assert.match(SHELL, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{nav\.reset \? \(/);
-    assert.match(END.teaches.join(' '), /Reopening a page for practice takes nothing away; only START OVER \(PRACTICE\) clears the ✓ marks, and it asks first/);
+    assert.match(END.teaches.join(' '), /Reopening a page for practice takes nothing away; only START OVER \(PRACTICE\) clears the page ✓ marks, and it asks first/);
     assert.doesNotMatch(endText, /Nothing is taken away/);
   });
   it('unreadable: YOUR PROGRESS, yet a page done on this visit still folds under ✓ DONE (endCleared reads progress.completed)', () => {

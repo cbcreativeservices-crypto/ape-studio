@@ -5,7 +5,7 @@
  * (LEARN / EXPLORE / TRAIN / CHALLENGE); built modules open, planned modules
  * are listed honestly as IN DEVELOPMENT. Mirrors DigitalLabHomeScreen.
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LabHeader } from '../kit/LabNavBar';
 import { useNavigation } from '@react-navigation/native';
@@ -26,6 +26,9 @@ import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import { eqEndCleared, eqEndUnits } from './eqEnd';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -48,6 +51,17 @@ export function EqLabHomeScreen() {
   // The hub's rows carry no ticks; only WHAT'S LEFT shows progress — and
   // says so when the visits could not be read (owner 2026-10-03, "do 2").
   const visitsUnreadable = useLabVisitsUnreadable();
+  // THE CHECK IS A UNIT (D41 J2, owner 2026-11-01): the understanding check
+  // completes this lab for certificates, so WHAT'S LEFT lists it last and LAB
+  // COMPLETE never shows above an unpassed check (eqEnd). Banked record,
+  // never cleared by a practice run.
+  const bankedUnits = useLabClearedUnits('eq');
+  const completionUnreadable = useLabCompletionUnreadable();
+  const hasCheck = !!understandingFor('eq');
+  const endUnits = useMemo(() => eqEndUnits(EQ_MODULES, hasCheck), [hasCheck]);
+  const endCleared = useMemo(() => eqEndCleared(visited, bankedUnits), [visited, bankedUnits]);
+  // Either record unread = the end screen's note, never "all left" (D51).
+  const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
   const open = (id: EqModuleId) => {
     setEnding(false);
     navigation.navigate('EqModule', { id });
@@ -75,14 +89,16 @@ export function EqLabHomeScreen() {
       {ending ? (
         <LabEndScreen
           labTitle="EQ Lab"
-          units={EQ_MODULES.map((m) => ({ id: m.id, label: m.title }))}
-          cleared={visited}
-          unreadable={visitsUnreadable}
+          units={endUnits}
+          cleared={endCleared}
+          unreadable={progressUnreadable}
           mode="progress"
-          onJump={(id) => open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id)}
+          // The CHECK row stays here: the check is drawn on this screen (extra).
+          onJump={(id) => { if (id !== UNDERSTANDING_UNIT) open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id); }}
           onPracticeAgain={() => open(EQ_MODULES[0].id)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
+          extra={<LabUnderstandingBlock labId="eq" labTitle="EQ Lab" />}
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>

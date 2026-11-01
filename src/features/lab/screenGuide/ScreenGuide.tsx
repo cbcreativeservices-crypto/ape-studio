@@ -46,6 +46,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -210,17 +211,39 @@ const HostContext = createContext<HostApi | null>(null);
  * absolute fill covers the screen. `resetKey` closes an open guide when the
  * screen swaps content in place (a module change). `regions={false}` for a
  * screen with no Rack Unit (the lab home): bottom card, no bright band.
+ *
+ * `backRef` (ADDITIVE, D41 K7 2026-11-01): for a host INSIDE a native Modal
+ * (kit/LabCheckEnd's end layer). There Android BACK reaches only the Modal's
+ * onRequestClose, never the overlay's BackHandler, so the Modal asks the host
+ * first: `backRef.current()` closes an open guide and returns true, or
+ * returns false when none is open. Omitted = exactly as before.
  */
 export function ScreenGuideHost({
   children,
   resetKey,
   regions = true,
+  backRef,
 }: {
   children: ReactNode;
   resetKey?: string;
   regions?: boolean;
+  backRef?: MutableRefObject<(() => boolean) | null>;
 }) {
   const [shown, setShown] = useState<{ title: string; guide: ScreenGuide } | null>(null);
+  const shownRef = useRef(false);
+  shownRef.current = shown != null;
+  useEffect(() => {
+    if (!backRef) return;
+    backRef.current = () => {
+      if (!shownRef.current) return false;
+      shownRef.current = false;
+      setShown(null);
+      return true;
+    };
+    return () => {
+      backRef.current = null;
+    };
+  }, [backRef]);
   const open = useCallback((title: string, guide: ScreenGuide) => setShown({ title, guide }), []);
   const api = useMemo(() => ({ open }), [open]);
   useEffect(() => setShown(null), [resetKey]);

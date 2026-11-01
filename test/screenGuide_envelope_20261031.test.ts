@@ -356,7 +356,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(LAB_END, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
     assert.match(END_SCREEN, /const title = unreadable \? 'YOUR PROGRESS' : w\.complete && completeTitle \? completeTitle : endTitle\(w\);/);
     assert.doesNotMatch(PAGED_END, /completeTitle=/);
-    assert.match(PAGED_END, /unreadable=\{unreadable\}/);
+    assert.match(PAGED_END, /unreadable=\{(unreadable|endUnreadable)\}/);
     // LAB COMPLETE needs every page AND the check (all rows cleared)
     assert.match(LAB_END, /complete: required > 0 && left\.length === 0/);
     assert.match(END.seeing[0], /WHAT'S LEFT, or LAB COMPLETE once every page and the check are done/);
@@ -396,7 +396,9 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED_END, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
     assert.match(PAGED_END, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
     assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing\. DONE · BACK TO LABS leaves the lab\./);
-    assert.match(END_SCREEN, /'Practicing again or reviewing never clears what you have already done\.'/);
+    // D41 K2: PagedLab's START OVER clears ticks, so its end screen's note says so (endNote).
+    assert.match(PAGED_END, /\bstartOver\b/);
+    assert.match(LAB_END, /'PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the ticks for a fresh run\.'/);
     // …but START OVER (PRACTICE) at the foot of CONTENTS DOES clear the page
     // ticks: no creditLabKey / pageCreditKeys here, so only the banked check
     // survives doReset. The guide must never say "nothing is taken away".
@@ -404,7 +406,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /resetPagedProgress\(labId\)\)\.then\(\(\) => \{\s*const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)\s*: \(!!creditLabKey && bankedPages\.has/);
     assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
-    assert.match(END.teaches[1], /^Practicing again or reviewing never clears what you have done\. Only START OVER \(PRACTICE\) clears page ticks; a passed check stays\.$/);
+    assert.match(END.teaches[1], /^PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the page ticks for a fresh run; a passed check stays\.$/);
     assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page ticks\./);
     assert.doesNotMatch(t, /Nothing is taken away/i);
   });

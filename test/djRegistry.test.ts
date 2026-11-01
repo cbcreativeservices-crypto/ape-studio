@@ -76,7 +76,7 @@ describe('the what’s-left screen with optional units', () => {
     const w = whatsLeft(units, new Set(['0']));
     assert.equal(w.complete, false);
     assert.deepEqual(w.left.map((r) => [r.id, r.num]), [['2', 3]]);
-    assert.match(endLead(w, { mode: 'progress', noun: 'page' }), /^1 page of 2 not done yet/);
+    assert.match(endLead(w, { mode: 'progress', noun: 'page' }), /^1 page not done yet/);
   });
   it('a lab with no optional units reads exactly as before', () => {
     const plain: LabEndUnit[] = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }];

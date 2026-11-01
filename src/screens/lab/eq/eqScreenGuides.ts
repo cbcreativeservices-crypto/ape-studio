@@ -63,16 +63,16 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
 /** The what's-left screen (LabEndScreen, "progress" mode) — home and FINISH. */
 export const EQ_END_GUIDE: ScreenGuide = {
   seeing: [
-    'WHAT’S LEFT: the EQ Lab modules you have not opened yet. When none are left the title reads LAB COMPLETE.',
-    'Opened modules fold into one ✓ DONE row; REVIEW ▾ lists them.',
+    'WHAT’S LEFT: the EQ Lab modules you have not opened yet, then the check — its CHECK row is the last on the list. LAB COMPLETE once every module is opened and the check is passed.',
+    'Opened modules, and the check once passed, fold into one ✓ DONE row; REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz, as on the lab menu.',
   ],
   control: [
-    'Tap a module’s row to open it.',
+    'Tap a module’s row to open it; the CHECK row stays here, as the check is on this screen.',
     'PRACTICE AGAIN FROM THE START opens Seeing Frequency — it never clears what you have done.',
     'DONE · BACK TO LABS goes back one screen: to the lab menu after FINISH on the last module, out of the lab from the menu.',
   ],
   changes: [
-    'A module counts once you open it; its row moves from the list to the ✓ row.',
+    'A module counts once you open it; its row moves from the list to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
     'If your progress cannot be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [

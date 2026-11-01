@@ -369,14 +369,14 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     // drop no supply voltage, an absorption total no panel area.
     const pick = (t: string | null) => sendable.filter((b) => b.ex!.sendTo === t).map((b) => b.id).sort();
     assert.deepEqual(pick(null), [
-      'bitdepth/fromBits', 'bpm/lfoSync', 'cable/loss', 'cable/maxlen', 'complexz/impedance', 'compressor/outFromRatio',
+      'bitdepth/fromBits', 'bpm/lfoSync', 'cable/loss', 'cable/maxlen', 'complexz/impedance',
       'critdist/dc', 'critdist/drr', 'diffuser/qrd', 'driver/portLength', 'electronics/divider', 'electronics/xc',
       'electronics/xl', 'fft/resFromSize', 'fft/tradeoff', 'filesize/multitrack', 'filesize/size', 'loudtp/loudnessDelta',
       'micgain/maxspl', 'netaudio/bandwidth', 'pitch/interval', 'pitch/transpose', 'rflink/pathLoss', 'sabine/neededA',
       'schroeder/volForFs', 'stereomic/threeToOne', 'transloss/massTL', 'treatment/panels', 'vdrop/drop', 'wave/speed',
     ]);
     assert.deepEqual(pick('here'), [
-      'bitdepth/bitsFromRange', 'bpm/bpmFromInterval', 'compressor/ratioForOut', 'compressor/thrForGr', 'eyring/absForRt',
+      'bitdepth/bitsFromRange', 'bpm/bpmFromInterval', 'compressor/outFromRatio', 'compressor/ratioForOut', 'compressor/thrForGr', 'eyring/absForRt',
       'firlen/sizeTaps', 'level/ampToDb', 'level/dbToAmp', 'level/dbToPow', 'level/dbuDbv', 'level/pctToDb', 'level/powToDb',
       'level/vToDbu', 'level/vToDbv', 'micsens/mvToDb', 'phase/phaseFromDist', 'phase/phaseFromTime', 'pitch/freqToNote',
       'qbw/bwFromQ', 'qbw/octFromQ', 'qbw/qFromBw', 'qbw/qFromOct', 'sabine/rtFromSurfaces', 'timecode/toFrames',
