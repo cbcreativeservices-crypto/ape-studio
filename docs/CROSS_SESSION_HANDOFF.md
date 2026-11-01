@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 01:26 · ccode · 37175fbc
+changed: D41(f): fix 29 of 32 held lab screen bugs, each independently checked
+affects other side: nothing — app-only, no server change
+needs: nothing
+
+
 ### 2026-10-31 19:50 · ccode · 724a3cd3
 changed: Lab screen guides: what's-left end-screen guides for 10 labs (D41 g)
 affects other side: nothing — app-only, no server change
