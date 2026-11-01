@@ -6,8 +6,9 @@
  * The lab is a PagedLab with no menu of its own: the learner lands on page 1
  * from the Mixing list, so page 1's guide also explains the strip. One guide
  * per page, keyed 'p1'…'p16' in page order (pagesA → pagesD, as
- * BeginningMixingLabScreen spreads them). The what's-left screen shows no ⓘ
- * (PagedLab). The lab has no appended check page (no authored check).
+ * BeginningMixingLabScreen spreads them). The what's-left END screen has its
+ * own guide, BEGINNING_MIXING_END_GUIDE (PagedLab's `endGuide`, titled WHERE
+ * YOU ARE). The lab has no appended check page (no authored check).
  *
  * Every line was written against the page's own code (pagesA–D, kit, begArt,
  * advPlots, engine/mixModel, engine/routing): names are the on-screen names
@@ -518,8 +519,48 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   },
 };
 
+/**
+ * The what's-left END screen (PagedLab `endGuide`, titled WHERE YOU ARE).
+ * Written against what PagedLab + LabEndScreen draw for THIS lab: credit mode
+ * (it passes pageCreditKeys, so rows read ✓ CREDITED; ✓ DONE for a guest or a
+ * members-only preview), noun "page", sixteen pages and no check row (the
+ * "Pass the check" goal chips sit on the pages), every unfinished row carrying
+ * HANDS_ON_DETAIL (every page is manualDone and counts only through its goal
+ * chips — useVisitGoals), PRACTICE AGAIN FROM THE START = page 1 and clears
+ * nothing, DONE · BACK TO LABS = safeGoBack (the screen the lab was opened
+ * from). Pinned by test/screenGuide_mixing-beg_20261031.test.ts.
+ */
+export const BEGINNING_MIXING_END_GUIDE: ScreenGuide = {
+  seeing: [
+    "The title reads WHAT'S LEFT, or LAB COMPLETE once every page is done (credited, for a member).",
+    'If progress cannot be read, it reads YOUR PROGRESS and every page stays open.',
+    'A page still to do is listed with “Counts once the goals at the foot of the page are done. NEXT moves on without counting it.”',
+    'Done pages fold into one ✓ CREDITED line (✓ DONE when you are not signed in, or in a members-only preview).',
+  ],
+  control: [
+    'Tap a page that is still listed to jump straight to it.',
+    'REVIEW ▾ on the ✓ line unfolds the finished pages; tap any one to open it again. HIDE ▴ folds them away.',
+    'PRACTICE AGAIN FROM THE START opens page 1, What Mixing Does, and clears nothing.',
+    'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from.',
+    "‹ PREV on the strip returns to the page you came from; WHAT'S LEFT in the strip opens CONTENTS.",
+  ],
+  changes: [
+    'A page counts only when every goal chip at its foot turns ✓; on most pages one chip is Pass the check. NEXT and FINISH move on without counting it.',
+    'As a member, each credited page is kept with your account, and a practice run never removes it. A members-only preview saves nothing.',
+    'START OVER (PRACTICE) in CONTENTS clears the page marks on this device for a fresh run; credit already earned stays.',
+  ],
+  teaches: [
+    'Which steps of the mixing process you have worked through hands-on, and which you have not met yet.',
+    'The process in page order: what mixing does, prep, signal flow, gain staging, balance, subtractive mixing, panning, EQ, compression, space, routing, automation, checking, export, the final mix.',
+  ],
+  tryThis: [
+    'A page still listed? Open it and scroll to the goal chips at its foot: they are what counts that page.',
+    'Pages on the ✓ line? Tap REVIEW ▾ and reopen one for practice; its ✓ on this screen stays, whatever you do there.',
+  ],
+};
+
 /** PagedLab's `pageGuide`: page index (0-based) → that page's guide. The
- *  what's-left screen never asks (PagedLab shows no ⓘ there). */
+ *  what's-left screen uses BEGINNING_MIXING_END_GUIDE instead (`endGuide`). */
 export function beginningMixingPageGuide(index: number): ScreenGuide | undefined {
   return BEGINNING_MIXING_SCREEN_GUIDES[`p${index + 1}`];
 }

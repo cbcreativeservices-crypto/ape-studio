@@ -51,7 +51,7 @@ import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 // Screen Guide (owner 2026-10-31): "this step, explained" — one guide per step.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
-import { masteringStepGuide } from './masteringScreenGuides';
+import { MASTERING_END_GUIDE, masteringStepGuide } from './masteringScreenGuides';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 export const MASTERING_LAB_TITLE = 'Mastering Lab';
@@ -513,7 +513,8 @@ export function MasteringLabScreen() {
     );
   }
 
-  // The guide for the step on screen (none on the what's-left screen). A rack
+  // The guide for the step on screen (the what's-left screen has its own,
+  // MASTERING_END_GUIDE, handed to the header below). A rack
   // step measures the Rack Unit's display and dock so each guide step sits
   // beside the area it explains; a reading step uses the bottom card.
   const stepGuide = endState ? undefined : masteringStepGuide(mod.id, stepIdx);
@@ -532,8 +533,8 @@ export function MasteringLabScreen() {
           title={endState ? MASTERING_LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
           subtitle={endState ? 'What’s left' : `${MASTERING_LAB_TITLE}: ${SUBTITLE}${done ? ' · credited' : ''}`}
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
-          guide={stepGuide?.guide}
-          guideTitle={stepGuide?.title.toUpperCase()}
+          guide={endState ? MASTERING_END_GUIDE : stepGuide?.guide}
+          guideTitle={endState ? 'WHAT’S LEFT' : stepGuide?.title.toUpperCase()}
         />
         <LabNavBar nav={nav} />
         {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}

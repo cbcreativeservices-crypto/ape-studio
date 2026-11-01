@@ -63,7 +63,8 @@ import { DJ_LAB_ID, isOptionalNo } from './pages/registry';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { leftLine } from './booth/goalStore';
 // Screen Guide (owner 2026-10-31): each screen's "explained" guide, by its title.
-import { DJ_SCREEN_GUIDES } from './djScreenGuides';
+// …and the what's-left screen's own (PagedLab shows it when FINISH ends the lab).
+import { DJ_END_GUIDE, DJ_SCREEN_GUIDES } from './djScreenGuides';
 
 export { DJ_LAB_ID };
 export const DJ_LAB_TITLE = 'DJ Systems Lab';
@@ -110,6 +111,7 @@ export function DJSystemsLabScreen() {
       optionalPage={optionalPage}
       labDoneKey={trainingKeyFor('DJSystemsLab')}
       pageGuide={pageGuide}
+      endGuide={DJ_END_GUIDE}
     />
   );
 }

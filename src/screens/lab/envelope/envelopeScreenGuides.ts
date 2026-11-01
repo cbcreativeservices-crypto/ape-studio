@@ -6,7 +6,9 @@
  * The lab is a PagedLab: seven pages of its own (EnvelopeLabScreen.tsx PAGES,
  * keyed p1…p7 in page order) plus the understanding check PagedLab appends
  * (understandingChecks.ts ENVELOPE, keyed `check`). The what's-left screen
- * shows no ⓘ (PagedLab).
+ * has its own guide, ENVELOPE_END_GUIDE (PagedLab `endGuide`, titled WHERE
+ * YOU ARE): progress mode (no creditLabKey / pageCreditKeys, so rows read
+ * ✓ DONE), noun "page", PagedLab's default buttons.
  *
  * Every name is the on-screen name in EnvelopeLabScreen.tsx / EnvelopeChart
  * (page titles, slider labels, button labels, chart tags, card eyebrows,
@@ -268,9 +270,51 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   },
 };
 
+// ── WHAT'S LEFT (LabEndScreen via PagedLab, progress mode) ───────────────────
+// Every fact is the code's: titles from labEnd.ts endTitle (+ YOUR PROGRESS
+// and the shared unreadable note in place of the lead line when unreadable —
+// a failed credit read alone sets it, since this lab has a check); mode
+// 'progress' → ✓ DONE (the word CREDITED never shows here); PagedLab's
+// buttons (PRACTICE AGAIN FROM THE START = goTo(0), default doneLabel); pages
+// 1–5 mark on the first slider / choice button / page-4 numbered marker
+// (useTouch) or NEXT, page 6 on GOT IT › or NEXT, Check Yourself (manualDone)
+// on all six, the check on all four; a CONTENTS / row jump never marks.
+// CONTENTS ends WHAT'S LEFT ›, then START OVER (PRACTICE) (doReset →
+// resetPagedProgress): no creditLabKey / pageCreditKeys, so the page ticks
+// go; only the banked check (UNDERSTANDING_UNIT) stays. The check's pass is
+// the lab's certificate unit (trainingLabKeys tr_envelope, 'understanding').
+// Quoted labels use the straight ' the screen draws (labEnd.ts, NAV.whatsLeft).
+export const ENVELOPE_END_GUIDE: ScreenGuide = {
+  seeing: [
+    "The title reads WHAT'S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what is left and whether it is saved.",
+    'Each page not done yet is listed by name; Check your understanding sits last, marked CHECK. Pages done fold into one ✓ DONE line.',
+    'If saved progress could not be read, the title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens.',
+  ],
+  control: [
+    'Tap any listed row to jump straight to that page.',
+    'REVIEW ▾ on the ✓ DONE line unfolds the finished pages; tap one to open it again.',
+    'PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing. DONE · BACK TO LABS leaves the lab.',
+    "In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page ticks.",
+  ],
+  changes: [
+    'Pages 1–5 count as done once you move a slider or tap a choice button or numbered marker, or with NEXT ›. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
+    'Check Yourself counts once all six are right, Check your understanding once all four are. A jump never marks a page.',
+    'Rows read ✓ DONE: a page tick is progress, not credit. Passing the check completes the lab, for any certificate that needs it.',
+  ],
+  teaches: [
+    'Which of the lab’s ideas you have worked through, and which are still ahead.',
+    'Practicing again or reviewing never clears what you have done. Only START OVER (PRACTICE) clears page ticks; a passed check stays.',
+  ],
+  tryThis: [
+    "The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT'S LEFT ›, just under the page list: it has joined the ✓ DONE line.",
+    'Only Check your understanding left? Open it, get all four questions right, then tap FINISH ›: the title reads LAB COMPLETE.',
+    'Some pages done? Tap REVIEW ▾, open one and use it again, then tap MODULE ▾: its ✓ is still there.',
+  ],
+};
+
 /** PagedLab's `pageGuide`: page index (0-based) → that page's guide. Index 7
- *  is the appended understanding check; the what's-left screen never asks
- *  (PagedLab shows no ⓘ there). */
+ *  is the appended understanding check; the what's-left screen takes
+ *  ENVELOPE_END_GUIDE through PagedLab's `endGuide`. */
 export function envelopePageGuide(index: number): ScreenGuide | undefined {
   if (index === 7) return ENVELOPE_SCREEN_GUIDES.check;
   return ENVELOPE_SCREEN_GUIDES[`p${index + 1}`];

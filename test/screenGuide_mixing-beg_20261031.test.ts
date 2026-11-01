@@ -9,9 +9,12 @@
  *   2. each guide quotes its page's REAL names — each one pinned here is in
  *      both the guide and the lab's source (comments stripped);
  *   3. the numbers and states the guides quote are what the page draws;
- *   4. wiring: BeginningMixingLabScreen passes `pageGuide` to PagedLab;
+ *   4. wiring: BeginningMixingLabScreen passes `pageGuide` AND `endGuide`
+ *      to PagedLab; the what's-left screen shows the END guide;
  *   5. the accuracy-chip decision: KEPT (PagedLab's default) — the lab shows
- *      measured level readouts (Gain Staging's peak / RMS meters).
+ *      measured level readouts (Gain Staging's peak / RMS meters);
+ *   6. the END guide is true for this lab's end screen (titles, credit mode,
+ *      the goal-chip credit rule, no check row, every button label).
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -36,7 +39,7 @@ registerHooks({
 });
 
 const MX = 'src/screens/lab/mixing';
-const { BEGINNING_MIXING_SCREEN_GUIDES, BEGINNING_MIXING_GUIDE_PAGE_TITLES, beginningMixingPageGuide } = await import(`../${MX}/beginningMixingScreenGuides.ts`);
+const { BEGINNING_MIXING_SCREEN_GUIDES, BEGINNING_MIXING_GUIDE_PAGE_TITLES, BEGINNING_MIXING_END_GUIDE, beginningMixingPageGuide } = await import(`../${MX}/beginningMixingScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const MODEL = await import(`../${MX}/engine/mixModel.ts`);
 const ROUTING = await import(`../${MX}/engine/routing.ts`);
@@ -244,19 +247,115 @@ describe('4. wiring: every page draws the ⓘ through PagedLab', () => {
   const SCREEN = code(`${MX}/BeginningMixingLabScreen.tsx`);
   const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
   it('BeginningMixingLabScreen passes the lookup as pageGuide', () => {
-    assert.match(SCREEN, /import \{ beginningMixingPageGuide \} from '\.\/beginningMixingScreenGuides';/);
+    assert.match(SCREEN, /import \{ [^}]*\bbeginningMixingPageGuide \} from '\.\/beginningMixingScreenGuides';/);
     assert.match(SCREEN, /<PagedLab[^>]*pageGuide=\{beginningMixingPageGuide\}[^>]*\/>/);
   });
-  it('PagedLab: no ⓘ on the what’s-left screen; the host wraps the page', () => {
-    assert.match(PAGED, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+  it('BeginningMixingLabScreen passes the END guide as endGuide', () => {
+    assert.match(SCREEN, /import \{ BEGINNING_MIXING_END_GUIDE, beginningMixingPageGuide \} from '\.\/beginningMixingScreenGuides';/);
+    assert.match(SCREEN, /<PagedLab[^>]*endGuide=\{BEGINNING_MIXING_END_GUIDE\}[^>]*\/>/);
+  });
+  it('PagedLab: the what’s-left screen shows endGuide under WHERE YOU ARE; the host wraps the page', () => {
+    assert.match(PAGED, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PAGED, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
     assert.match(PAGED, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\} regions=\{!!def\.rack && !ending\}>/);
+  });
+});
+
+describe('6. the END guide (what’s-left screen) is true for THIS lab’s end screen', () => {
+  const END = BEGINNING_MIXING_END_GUIDE as unknown as Guide;
+  const ET = textOf(END);
+  const SCREEN = code(`${MX}/BeginningMixingLabScreen.tsx`);
+  const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
+  const LES = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LABEND = code('src/screens/lab/kit/labEnd.ts');
+  const KIT = code(`${MX}/kit.tsx`);
+  it('shape, budgets and copy rules — the same bar as every page guide', () => {
+    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    for (const k of SECTION_KEYS) assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: 1–5 bullets`);
+    assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3, 'end: TRY THIS is 2–3 experiments');
+    for (const s of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      if (s.place === 'strip') {
+        for (const item of END.tryThis) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `end.tryThis over budget: ${item}`);
+        continue;
+      }
+      const cap = s.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low;
+      assert.ok(END[s.key].join(' ').length <= cap, `end.${s.key} over ${cap}`);
+    }
+    assert.doesNotMatch(ET, /\byou(’|')?ll (master|build|mix|be able)|\bmastery\b|\byou(’|')?ve mastered\b|\byou mastered\b|\byou will learn to\b/i);
+    assert.doesNotMatch(ET, /\b\d+\s+of\s+\d+\b|\b\d+\s*\/\s*\d+\b|\bOF\s+\d+/i, 'no "N of total"');
+    assert.doesNotMatch(ET, /\brecommend/i);
+    assert.doesNotMatch(ET, /\b(TODO|FIXME|placeholder|owner 20\d\d)\b/i);
+  });
+  it('the titles it names are the ones labEnd.ts draws', () => {
+    assert.match(LABEND, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.ok(ET.includes("WHAT'S LEFT") && ET.includes('LAB COMPLETE'));
+    // A failed read of the saved pages OR the banked page keys → YOUR PROGRESS.
+    assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
+    assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \(\(!!creditLabKey \|\| !!check \|\| pageCreditKeys\.length > 0\) && creditUnreadable\);/);
+    assert.ok(ET.includes('YOUR PROGRESS'), 'names the unreadable title');
+    // LAB COMPLETE counts a page banked OR marked on this device (a guest / preview completes with ✓ DONE).
+    assert.match(PAGED, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
+  });
+  it('a members-only preview: rows read ✓ DONE and nothing is saved, and the guide says so', () => {
+    assert.match(code('src/navigation/RootNavigator.tsx'), /BeginningMixingLab: lazyScreen\(\(\) => withMembershipPreview\(/);
+    const TIER = code('src/features/commercial/tier.ts');
+    assert.match(TIER, /return tier === 'guest' \|\| tier === 'preview';/);
+    assert.match(TIER, /return isGuestTier\(tier\) && \(tier === 'preview' \|\| tierKnown\);/);
+    assert.match(TIER, /export function persistAllowed\(tier: Tier\): boolean \{\s*return tier === 'free' \|\| tier === 'member';/);
+    assert.ok(ET.includes('✓ DONE when you are not signed in, or in a members-only preview'));
+    assert.ok(ET.includes('As a member, each credited page is kept') && ET.includes('A members-only preview saves nothing'));
+  });
+  it('credit mode: the lab passes pageCreditKeys, so PagedLab runs LabEndScreen in credit mode (✓ CREDITED; ✓ DONE for a guest), noun "page"', () => {
+    assert.match(SCREEN, /pageCreditKeys=\{PAGE_KEYS\}/);
+    assert.doesNotMatch(SCREEN, /creditLabKey=|labDoneKey=|optionalPage=|pageDetail=/, 'the guide assumes none of these — update it');
+    assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(PAGED, /mode=\{creditMode\}\s*noun="page"/);
+    assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE when you are not signed in'));
+  });
+  it('the credit rule: every page is manualDone and counts only through its goal chips; NEXT / FINISH never mark it', () => {
+    const flags = PAGE_FILES.flatMap((f) => [...code(f).matchAll(/\{ title: '[^']*', short: '[^']*', Component: \w+(, manualDone: true)? \}/g)].map((m) => !!m[1]));
+    assert.equal(flags.length, 16);
+    assert.ok(flags.every(Boolean), 'a page lost manualDone — NEXT would count it; update the END guide');
+    assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    assert.match(KIT, /useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
+    assert.match(KIT, /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
+    assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
+    assert.ok(ET.includes('“Counts once the goals at the foot of the page are done. NEXT moves on without counting it.”'), 'quotes the whole row line');
+    assert.match(ET, /every goal chip at its foot turns ✓; on most pages one chip is Pass the check\. NEXT and FINISH move on without counting it/);
+  });
+  it('no check row: the lab has no understanding check; the guide names the pages’ Pass the check chips, never a "check row"', () => {
+    assert.doesNotMatch(read('src/features/lab/understandingChecks.ts') + read('src/features/lab/understanding.ts'), /mixing-beg/);
+    assert.doesNotMatch(ET, /check row/, 'a beginner reads "no check row" as "the checks do not count"');
+    const chips = PAGE_FILES.reduce((n, f) => n + (code(f).match(/\{ label: 'Pass the check', hit: checkDone \}/g) ?? []).length, 0);
+    assert.ok(chips > 8, `"on most pages one chip is Pass the check": ${chips} of the pages carry it`);
+  });
+  it('every button label it names is the one drawn, and each does what it says', () => {
+    assert.match(LES, /label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(LES, /doneLabel = 'DONE · BACK TO LABS'/);
+    assert.match(LES, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+    const at = PAGED.indexOf('<LabEndScreen');
+    const end = PAGED.slice(at, PAGED.indexOf('/>', at));
+    assert.doesNotMatch(end, /doneLabel=/, 'PagedLab keeps the default DONE label');
+    assert.match(end, /onPracticeAgain=\{\(\) => goTo\(0\)\}/, 'PRACTICE AGAIN opens page 1 and clears nothing');
+    assert.match(end, /onDone=\{\(\) => safeGoBack\(navigation\)\}/, 'DONE goes back to the screen the lab was opened from');
+    assert.match(PAGED, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    for (const label of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'HIDE ▴', 'START OVER (PRACTICE)', '‹ PREV']) assert.ok(ET.includes(label), `the END guide never names "${label}"`);
+    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1, What Mixing Does, and clears nothing/);
+    assert.equal(BEGINNING_MIXING_GUIDE_PAGE_TITLES.p1, 'What Mixing Does');
+  });
+  it('the strip on the end screen: ‹ PREV returns to the page, the readout reads WHAT’S LEFT and opens CONTENTS', () => {
+    const nav = code('src/screens/lab/kit/labNav.ts');
+    assert.match(nav, /whatsLeft: "WHAT'S LEFT"/);
+    assert.match(nav, /pos: "What's left\. Opens the contents"/);
+    assert.match(code('src/screens/lab/kit/useLabNav.ts'), /if \(ending\) \{\s*unEnd\(\);\s*return;/);
   });
 });
 
 describe('5. the accuracy chip: KEPT — the lab shows measured level readouts', () => {
   it('the screen does not pass accuracy={false}; PagedLab’s default is true', () => {
     assert.doesNotMatch(code(`${MX}/BeginningMixingLabScreen.tsx`), /accuracy=\{false\}/);
-    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, accuracy = true \}/);
+    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true \}/);
   });
   it('the reason is on screen: Gain Staging draws measured meters', () => {
     assert.match(code(`${MX}/begArt.tsx`), /sub=\{a \? 'MEASURED' : 'PLAY IT'\}/);

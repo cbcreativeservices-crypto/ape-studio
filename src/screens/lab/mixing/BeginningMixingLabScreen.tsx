@@ -22,8 +22,9 @@ import { MIXING_PAGES_A } from './pagesA';
 import { MIXING_PAGES_B } from './pagesB';
 import { MIXING_PAGES_C } from './pagesC';
 import { MIXING_PAGES_D } from './pagesD';
-// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
-import { beginningMixingPageGuide } from './beginningMixingScreenGuides';
+// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page,
+// plus the what's-left END screen's own (PagedLab endGuide, WHERE YOU ARE).
+import { BEGINNING_MIXING_END_GUIDE, beginningMixingPageGuide } from './beginningMixingScreenGuides';
 
 const PAGES = [...MIXING_PAGES_A, ...MIXING_PAGES_B, ...MIXING_PAGES_C, ...MIXING_PAGES_D];
 
@@ -49,5 +50,5 @@ export function BeginningMixingLabScreen() {
   // an uncalibrated phone output. The note sits at the top of each reading page
   // (PagedLab draws the header chip only on rack pages, and this lab has none);
   // the ⓘ has the header to itself.
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

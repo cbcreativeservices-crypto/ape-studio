@@ -5,7 +5,8 @@
  * The lab is a PagedLab with no menu of its own: the learner lands on page 1
  * from the Signal list, so page 1's guide also explains the strip. One guide
  * per page, keyed by the lab's own completion unit ids (units.ts: 'p1'…'p23',
- * 1-based page order). The what's-left screen shows no ⓘ (PagedLab).
+ * 1-based page order). The what's-left END screen has its own guide,
+ * PATCHBAY_END_GUIDE (PagedLab's `endGuide`, titled WHERE YOU ARE).
  *
  * Every line was written against the page's own code (pagesA–D, rackLayout,
  * art/PatchPairView, art/JackCutaway, art/StudioBayView, engine/patchbay,
@@ -678,8 +679,49 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   },
 };
 
+/**
+ * The what's-left END screen (PagedLab's `endGuide`; shared kit/LabEndScreen +
+ * kit/labEnd). Written against what this lab hands it: `creditLabKey` set →
+ * credit mode (rows read ✓ CREDITED, ✓ DONE for a guest), noun "page", no
+ * understanding check, no optional pages, no per-page detail lines, the
+ * default DONE · BACK TO LABS (safeGoBack: one screen back). A page counts
+ * when its device tick or its banked `p<n>` unit is set; NEXT ticks only the
+ * three pages without `manualDone` (p1, p2, p13; FINISH is on p23, which is
+ * manualDone, so it ticks none) — every other page ticks itself when its task
+ * is done. START OVER clears device ticks only; banked p<n> keeps the ✓.
+ */
+export const PATCHBAY_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'Where you are in the lab: the title reads WHAT’S LEFT, or LAB COMPLETE once every page is done.',
+    'Each page still to do is listed by its number and name.',
+    'Finished pages fold into one ✓ CREDITED line (✓ DONE when you are not signed in).',
+    'If your saved progress cannot be read, the title reads YOUR PROGRESS and every page can still be opened.',
+  ],
+  control: [
+    'Tap a page still listed to jump straight to it.',
+    'REVIEW ▾ on the ✓ line unfolds the finished pages (HIDE ▴ folds them again); tap any one to open it.',
+    'PRACTICE AGAIN FROM THE START opens page 1 and clears nothing.',
+    'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from.',
+    '‹ PREV on the strip returns to the page you came from; the WHAT’S LEFT readout opens CONTENTS.',
+  ],
+  changes: [
+    'Three pages count as soon as you leave them with NEXT: page 1, page 2 and page 13.',
+    'Every other page counts only once its task is done, such as all its goal chips lit or every question on it answered correctly. NEXT (FINISH on the last page) still moves on, but the page stays listed.',
+    'START OVER (PRACTICE), last in CONTENTS, asks first, then starts again from page 1. Pages already credited keep their ✓.',
+  ],
+  teaches: [
+    'Which parts of the lab you have worked through (thru, full- and half-normal, the switching contact, the studio bay, the safety rules) and which you have not met yet.',
+    'Once every page is credited while you are signed in, this lab counts toward your credit.',
+    'Nothing is taken away: any page can be opened again for practice.',
+  ],
+  tryThis: [
+    'A page still listed? Jump to the first one and finish its task; pages 1, 2 and 13 count once you leave them with NEXT.',
+    'Something on the ✓ line? Tap REVIEW ▾ and reopen a page you found hard, such as Patchbay detective. Practicing it again never takes away what you finished.',
+  ],
+};
+
 /** PagedLab's `pageGuide`: page index (0-based) → that page's guide. The
- *  what's-left screen never asks (PagedLab shows no ⓘ there). */
+ *  what's-left screen uses PATCHBAY_END_GUIDE instead (PagedLab's `endGuide`). */
 export function patchbayPageGuide(index: number): ScreenGuide | undefined {
   return PATCHBAY_SCREEN_GUIDES[`p${index + 1}`];
 }

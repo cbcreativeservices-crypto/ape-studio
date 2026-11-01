@@ -10,8 +10,11 @@
  *   3. every number TRY THIS quotes is what the step prints at that setting
  *      (masteringEngine maths, the module files' own formulas);
  *   4. wiring: MasteringLabScreen hands the step's guide to LabHeader and
- *      hosts the overlay (regions on rack steps; none on the what's-left
- *      screen);
+ *      hosts the overlay (regions on rack steps); the what's-left screen
+ *      hands MASTERING_END_GUIDE, titled WHAT’S LEFT;
+ *   6. the END guide: complete, in budget, in the copy rules, and every key
+ *      fact (title states, row contents, button labels, where each goes, what
+ *      makes a module done) pinned against the end branch and LabEndScreen;
  *   5. the accuracy chip: KEPT — LUFS / true-peak / PLR estimates and
  *      monitoring SPL against the NIOSH daily limit are on screen.
  */
@@ -37,7 +40,7 @@ registerHooks({
 });
 
 const MA = 'src/screens/lab/mastering';
-const { MASTERING_GUIDE_STEPS, masteringStepGuide } = await import(`../${MA}/masteringScreenGuides.ts`);
+const { MASTERING_GUIDE_STEPS, MASTERING_END_GUIDE, masteringStepGuide } = await import(`../${MA}/masteringScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const C = await import(`../${MA}/masteringContent.ts`);
 const E = await import(`../${MA}/masteringEngine.ts`);
@@ -350,13 +353,13 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
 
 describe('4. wiring: the step’s guide reaches the header; the host wraps the screen', () => {
   const S = code(`${MA}/MasteringLabScreen.tsx`);
-  it('imports and asks masteringStepGuide for the step on screen; none on the what’s-left screen', () => {
+  it('imports and asks masteringStepGuide for the step on screen; no step guide on the what’s-left screen', () => {
     assert.match(S, /import \{ ScreenGuideHost \} from '\.\.\/\.\.\/\.\.\/features\/lab\/screenGuide';/);
-    assert.match(S, /import \{ masteringStepGuide \} from '\.\/masteringScreenGuides';/);
+    assert.match(S, /import \{ MASTERING_END_GUIDE, masteringStepGuide \} from '\.\/masteringScreenGuides';/);
     assert.match(S, /const stepGuide = endState \? undefined : masteringStepGuide\(mod\.id, stepIdx\);/);
   });
-  it('LabHeader carries the guide and its step title; the host resets per step and measures regions only on rack steps', () => {
-    assert.match(S, /<LabHeader[\s\S]*?guide=\{stepGuide\?\.guide\}\s*guideTitle=\{stepGuide\?\.title\.toUpperCase\(\)\}\s*\/>/);
+  it('LabHeader carries the step’s guide and title — or, on the what’s-left screen, MASTERING_END_GUIDE titled WHAT’S LEFT; the host resets per step and measures regions only on rack steps', () => {
+    assert.match(S, /<LabHeader[\s\S]*?guide=\{endState \? MASTERING_END_GUIDE : stepGuide\?\.guide\}\s*guideTitle=\{endState \? 'WHAT’S LEFT' : stepGuide\?\.title\.toUpperCase\(\)\}\s*\/>/);
     assert.match(S, /<ScreenGuideHost resetKey=\{endState \? 'end' : `\$\{mod\.id\}:\$\{stepIdx\}`\} regions=\{!!stepGuide\?\.rack\}>/);
     assert.match(S, /<\/ScreenGuideHost>\n\s*<\/View>\s*(\{\})?\s*<ProNoteIntro \/>/);
   });
@@ -369,5 +372,113 @@ describe('5. the accuracy chip: KEPT — real measurement numbers on screen', ()
   it('the reason is on screen: LUFS / TRUE PK / PLR bezels and the NIOSH daily limit', () => {
     assert.match(code(`${MA}/kit.tsx`), /\{ k: 'LUFS', v: m \? `\$\{m\.lufs\.toFixed\(1\)\}`/);
     assert.match(code(`${MA}/modules/mod3Room.tsx`), /\{ k: 'PER DAY', v: dailyLimitLabel\(level\)/);
+  });
+});
+
+describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the end branch', () => {
+  const G = MASTERING_END_GUIDE as unknown as Guide;
+  const T = textOf(G);
+  const S = code(`${MA}/MasteringLabScreen.tsx`);
+  const END = S.slice(S.indexOf('if (endState) {'), S.indexOf('const stepGuide'));
+  const LES = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LE = code('src/screens/lab/kit/labEnd.ts');
+  const NAVK = code('src/screens/lab/kit/useLabNav.ts');
+  const IDX = code(`${MA}/modules/index.ts`);
+  it('complete: all five sections, 1–5 bullets, 2–3 TRY THIS; inside the no-scroll budget', () => {
+    assert.deepEqual(Object.keys(G).sort(), [...SECTION_KEYS].sort());
+    for (const k of SECTION_KEYS) assert.ok(G[k].length >= 1 && G[k].length <= 5, k);
+    assert.ok(G.tryThis.length >= 2 && G.tryThis.length <= 3);
+    for (const sec of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      if (sec.place === 'strip') {
+        for (const item of G.tryThis) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `tryThis ${item.length}`);
+        continue;
+      }
+      const cap = sec.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low;
+      assert.ok(G[sec.key].join(' ').length <= cap, `${sec.key}: ${G[sec.key].join(' ').length} > ${cap}`);
+    }
+  });
+  it('house copy rules: no "N of total", no "recommend", no skill claims, no build notes', () => {
+    assert.doesNotMatch(T, /\b\d+\s+of\s+\d+\b|\b\d+\s*\/\s*\d+\b/i);
+    assert.doesNotMatch(T, /\brecommend/i);
+    assert.doesNotMatch(T, /\byou(’|')?ll (master|build|mix|be able)|\bmastery\b|\byou will learn to\b/i);
+    assert.doesNotMatch(T, /\b(TODO|FIXME|placeholder|owner 20\d\d|toddler pass|bug pass)\b/i);
+  });
+  it('the titles: WHAT’S LEFT / LAB COMPLETE from labEnd, YOUR PROGRESS when the read failed — and the end branch passes `unreadable`, no completeTitle', () => {
+    assert.match(LE, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
+    assert.match(END, /unreadable=\{masteringReadFailed\(endState\)\}/);
+    assert.doesNotMatch(END, /completeTitle/);
+    for (const t of ['WHAT’S LEFT', 'LAB COMPLETE', 'YOUR PROGRESS']) assert.ok(T.includes(t), t);
+  });
+  it('progress mode, noun module: rows and the folded line read ✓ DONE (never CREDITED); REVIEW ▾ unfolds them', () => {
+    assert.match(END, /mode="progress"/);
+    assert.doesNotMatch(END, /noun=/);
+    assert.match(LES, /noun = 'module'/);
+    assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.match(LES, /showCredited \? 'HIDE ▴' : 'REVIEW ▾'/);
+    assert.ok(T.includes('✓ DONE') && T.includes('REVIEW ▾'));
+    assert.doesNotMatch(T, /CREDITED/);
+  });
+  it('one row per module, each with what finishes it; Module 8 = four track decisions + the QC checklist', () => {
+    assert.match(END, /units=\{MASTERING_MODULES\.map\(\(x\) => \(\{ id: x\.id, label: x\.title, detail: x\.id === 'project' \? 'Four track decisions \+ the QC checklist' : `\$\{scenariosForModule\(x\.id\)\.length\} decisions on the PRACTICE step` \}\)\)\}/);
+    assert.equal(C.scenariosForModule('project').length, 4);
+    assert.match(T, /decisions on its PRACTICE step, or for Module 8 the four track decisions and the QC checklist/);
+  });
+  it('a row opens the step that finishes it (PRACTICE deck; Module 8 decisions, then QC once all four are in); a finished module opens at step 1', () => {
+    assert.match(END, /if \(cleared\.has\(id\)\) return 0;/);
+    assert.match(END, /decisions\.every\(\(s\) => s\.id in answered\) \? MASTERING_PROJECT_QC_STEP : MASTERING_CREDIT_STEP\.project/);
+    assert.match(END, /return MASTERING_CREDIT_STEP\[id\];/);
+    assert.match(END, /onJump=\{\(id\) => openModule\(id as MasteringModuleId, jumpStep\(id as MasteringModuleId\)\)\}/);
+    // The credit steps ARE the PRACTICE decks (Module 8: its track-decision deck, then the QC checklist).
+    const credit = Object.fromEntries([...IDX.slice(IDX.indexOf('MASTERING_CREDIT_STEP')).matchAll(/(\w+): (\d+)/g)].slice(0, 8).map((m) => [m[1], Number(m[2])]));
+    for (const mod of Object.keys(MOD_FILES).filter((m) => m !== 'project')) {
+      assert.equal(declared(mod)[credit[mod]]?.key, 'practice', `${mod}: the credit step is the PRACTICE deck`);
+    }
+    assert.equal(declared('project')[credit.project]?.key, 'problems');
+    assert.match(code(`${MA}/modules/mod8Project.tsx`), /key: 'problems', title: '[^']*', kind: 'PRACTICE'/);
+    assert.match(IDX, /export const MASTERING_PROJECT_QC_STEP = 4;/);
+    assert.equal(declared('project')[4]?.key, 'qc');
+    assert.ok(T.includes('open it on the step that finishes it: its PRACTICE deck, or Module 8’s track decisions — its QC checklist once those four are saved. A finished module opens at its first step.'));
+  });
+  it('the buttons: PRACTICE AGAIN FROM THE START → Module 1 step 1 (clears nothing); DONE · BACK TO LABS (the default label) → leaves', () => {
+    assert.match(LES, /label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(LES, /doneLabel = 'DONE · BACK TO LABS'/);
+    assert.doesNotMatch(END, /doneLabel=/);
+    assert.match(END, /onPracticeAgain=\{\(\) => openModule\('what', 0\)\}/);
+    assert.doesNotMatch(S.slice(S.indexOf('const openModule'), S.indexOf('const onAnswered')), /resetMasteringPractice|done: false/);
+    assert.match(END, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.ok(T.includes('PRACTICE AGAIN FROM THE START opens Module 1 at its first step; saved answers stay, and it never undoes a finished module.'));
+    assert.ok(T.includes('DONE · BACK TO LABS leaves the lab.'));
+  });
+  it('the strip on the end screen: ‹ PREV leaves the end screen for the step underneath; ⏮ goes to Module 1; the readout opens the list', () => {
+    assert.match(NAVK, /if \(ending\) \{\n\s*unEnd\(\);\n\s*return;\n\s*\}/);
+    assert.match(S, /const unEnd = useCallback\(\(\) => \{\n\s*navSeqRef\.current\+\+;\n\s*setEndState\(null\);\n\s*\}/);
+    assert.match(S, /if \(target\.id === modId\) \{\n\s*setEndState\(null\);\n\s*setStep\(0\);/);
+    // The step is rebuilt (the end screen replaces it): answers and Module 8 ticks live in the host, everything else starts fresh.
+    assert.match(S, /\{end \?\? \(\n\s*<View style=\{styles\.body\}>/);
+    assert.match(S, /<RecordedAnswersContext\.Provider value=\{answers\}>/);
+    assert.match(S, /savedChecks=\{project\.checks\} savedQc=\{project\.qc\}/);
+    assert.match(T, /‹ PREV returns to the step you came from — your answers and ticks are kept, its other settings start fresh — and ⏮ opens Module 1/);
+    assert.doesNotMatch(T, /as you left it/);
+  });
+  it('what makes a module done: every decision answered (right or wrong); Module 8 also every QC line — and START OVER (PRACTICE) keeps done', () => {
+    assert.match(S, /const complete = answeredCount === scenarios\.length && \(mod\.id !== 'project' \|\| qcComplete\);/);
+    assert.match(S, /if \(loaded && complete && !done\) bank\(\);/);
+    assert.match(S, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    assert.match(code(`${MA}/masteringProgress.ts`), /s\.modules\[id\] = \{ \.\.\.emptyMasteringModule\(\), done: !!s\.modules\[id\]\?\.done \};/);
+    assert.match(T, /the moment every one of its decisions has an answer, right or wrong\. Module 8 also needs every QC line ticked\./);
+    assert.match(S, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\);/);
+    assert.match(S.slice(S.indexOf('const doReset'), S.indexOf('const confirmReset')), /openModule\('what', 0\);/);
+    assert.match(T, /START OVER \(PRACTICE\)[^.]*asks first, then clears your answers and Module 8 ticks and opens Module 1; finished modules stay done\./);
+  });
+  it('"kept on this device" is true: the store is AsyncStorage and the end screen is in progress mode', () => {
+    assert.match(code(`${MA}/masteringProgress.ts`), /await AsyncStorage\.setItem\(KEY, JSON\.stringify\(s\)\);/);
+    assert.match(LE, /Everything you have done is saved on this device/);
+    assert.ok(T.includes('Progress is kept on this device.'));
+  });
+  it('the module path names every module, in order', () => {
+    const titles = C.MASTERING_MODULES.map((m: { title: string }) => m.title.toLowerCase());
+    assert.deepEqual(titles, ['what mastering is', 'two roles', 'room and monitoring', 'mastering equipment and tools', 'the mastering workflow', 'loudness and translation', 'mastering for release', 'putting it all together']);
+    assert.match(G.teaches[0], /^Which modules are done and which are still to do — from what mastering is through to a full project\.$/);
   });
 });

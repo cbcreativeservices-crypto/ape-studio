@@ -28,8 +28,8 @@ import {
 } from './deEsserViz';
 import { pathHeight, pathOrder } from './pathLayout';
 // Screen Guide (owner 2026-10-31): one guide per page, kept in the lab's own
-// content file (pageGuide).
-import { deEsserPageGuide } from './smartProcessorsScreenGuides';
+// content file (pageGuide), plus the what's-left screen's own (endGuide).
+import { DEESSER_END_GUIDE, deEsserPageGuide } from './smartProcessorsScreenGuides';
 
 /** Every drawing is a 340-unit viewBox drawn at the page width (h = w / aspect)
  *  inside ExpandableFigure, whose FULL SCREEN button sits under it and whose
@@ -601,6 +601,7 @@ export function DeEsserLabScreen() {
       subtitle="A compressor that listens only to the hiss — Smart Processors, V1."
       pages={PAGES}
       pageGuide={deEsserPageGuide}
+      endGuide={DEESSER_END_GUIDE}
       // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only
       // on live-mic tools and labs showing real-world measurement numbers.
       // This is a CONCEPT lab — every display is computed from a modelled

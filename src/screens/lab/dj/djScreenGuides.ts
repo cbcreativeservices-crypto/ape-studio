@@ -641,3 +641,39 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
   },
 };
+
+/* ── the what's-left screen (PagedLab → LabEndScreen, after FINISH) ────────
+ * Written against the code path: PagedLab passes mode 'progress' (this lab
+ * hands it no creditLabKey / pageCreditKeys), so finished rows read ✓ DONE;
+ * noun 'page'; no appended check row (no understanding check is authored for
+ * dj-systems); screens 16–18 are optional (optionalPage); each row's line is
+ * leftDetail → goalStore.leftLine; PRACTICE AGAIN → goTo(0); DONE uses the
+ * default label and safeGoBack. A screen marks itself (manualDone) through
+ * bits.useVisitGoals when every goal chip latches; NEXT never marks it. The
+ * whole lab's tr_dj credit is labDoneKey once every REQUIRED screen is done.
+ */
+export const DJ_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'The title reads WHAT’S LEFT, or LAB COMPLETE once every required screen is done (YOUR PROGRESS if saved progress could not be read). The line under it says whether your work is saved.',
+    'Each screen still to do is listed by name, usually with Left: and up to three goals your last visit missed, then + n more. Screens 16–18, until done, sit under OPTIONAL PATHS. Finished screens fold into one ✓ DONE line.',
+  ],
+  control: [
+    'Tap any listed screen to jump straight to it.',
+    'REVIEW ▾ on the ✓ DONE line unfolds the finished screens; tap one to open it again. HIDE ▴ folds them away.',
+    'PRACTICE AGAIN FROM THE START reopens Screen 1 and clears nothing.',
+    'DONE · BACK TO LABS leaves the lab.',
+  ],
+  changes: [
+    'A screen counts once every goal chip on it ticks in one visit: its tasks, its troubleshooting exercise and, on most screens, Pass the check. It marks itself; NEXT never counts it.',
+    'Left: is what your last visit this session missed (every goal, if not opened yet). Chips start empty each visit: a row reading Every goal is met needs them all again.',
+    'Screens 16–18 are optional and never hold back LAB COMPLETE.',
+  ],
+  teaches: [
+    'Which parts of the DJ booth you have worked through, and which you have not met yet.',
+    'With every required screen done, the lab counts toward the DJ credentials that list it. Reopening a screen to practice never clears its ✓ DONE. START OVER (PRACTICE), at the foot of the list WHAT’S LEFT ▾ opens at the top, asks first, then clears every ✓ DONE mark for a fresh run; credential credit already earned is kept.',
+  ],
+  tryThis: [
+    'Jump to the first screen still listed and tick every goal chip on it in that one visit; its Left: line names the ones your last visit missed.',
+    'Tap REVIEW ▾ and open a finished screen: its goal chips start empty for practice, and it stays ✓ DONE here.',
+  ],
+};

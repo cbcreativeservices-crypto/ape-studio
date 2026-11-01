@@ -7,7 +7,8 @@
  * (the soft prerequisite gate) from the Mixing list, so page 1's guide also
  * explains the strip. One guide per page, keyed 'p1'…'p20' in page order
  * (pagesAdvA → pagesAdvD, as AdvancedMixingLabScreen spreads them). The
- * what's-left screen shows no ⓘ (PagedLab). No appended check page.
+ * what's-left screen has its own guide, ADVANCED_MIXING_END_GUIDE (PagedLab
+ * `endGuide`, titled WHERE YOU ARE). No appended check page.
  *
  * Every line was written against the page's own code (pagesAdvA–D, kit,
  * advFigures, advPlots, engine/advanced): names are the on-screen names (card
@@ -609,7 +610,40 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 };
 
 /** PagedLab's `pageGuide`: page index (0-based) → that page's guide. The
- *  what's-left screen never asks (PagedLab shows no ⓘ there). */
+ *  what's-left screen never asks: it shows ADVANCED_MIXING_END_GUIDE. */
 export function advancedMixingPageGuide(index: number): ScreenGuide | undefined {
   return ADVANCED_MIXING_SCREEN_GUIDES[`p${index + 1}`];
 }
+
+/* ── the what's-left screen (after FINISH on The Final Repair) ─────────────
+ * Written against kit/PagedLab + kit/LabEndScreen + kit/labEnd as this lab
+ * drives them: credit mode (pageCreditKeys), noun "page", no optional pages,
+ * no check, every page manualDone (HANDS_ON_DETAIL on each row still left),
+ * default DONE label, DONE = back one screen. */
+export const ADVANCED_MIXING_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'The title reads WHAT’S LEFT, or LAB COMPLETE once every page is done (YOUR PROGRESS if saved pages could not be read).',
+    'Each page not done yet is listed by number and name, with a line saying it counts once the goals at the foot of the page are done.',
+    'Finished pages fold into one ✓ CREDITED line (✓ DONE when you are not signed in). No CHECK row: the pages are the whole list.',
+  ],
+  control: [
+    'Tap a listed page to jump straight to it.',
+    'REVIEW ▾ on the ✓ line unfolds the finished pages; tap one to open it again. HIDE ▴ folds them away.',
+    'PRACTICE AGAIN FROM THE START opens page 1, Before You Begin, and clears nothing.',
+    'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from.',
+    'On the strip: ‹ PREV returns to the page you were on, ⏮ opens page 1, and the WHAT’S LEFT readout opens the list of every page (✓ when done).',
+  ],
+  changes: [
+    'A page counts when every goal chip at its foot shows ✓ — it then marks itself. NEXT and FINISH move on without counting it.',
+    'Before You Begin counts when you open it with Beginning Mixing complete on this device, or once its three checks are passed.',
+    'Signed in, each page is credited to your account as it counts, and still reads ✓ CREDITED after START OVER (PRACTICE) at the foot of the strip’s page list.',
+  ],
+  teaches: [
+    'Which parts of the advanced mixing workflow you have worked through — planning, routing, processing, checking, delivering, diagnosing — and which you have not met yet.',
+    'Nothing is taken away: any page can be opened again for practice, and practicing never removes credit you have already earned.',
+  ],
+  tryThis: [
+    'Jump to the first page still listed and scroll to its goal chips before you begin, so you know what makes it count.',
+    'Tap REVIEW ▾ and reopen a finished page to practice it again; reviewing never removes its credit.',
+  ],
+};

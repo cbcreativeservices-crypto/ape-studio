@@ -8,7 +8,9 @@
  * module id, in step order, each entry carrying the step's own key, title and
  * layout (rack = a Rack Unit with display, bezel and dock; read = a document
  * page). MasteringLabScreen asks masteringStepGuide(module, step); the
- * what's-left screen shows no ⓘ.
+ * what's-left screen (its own end state, FINISH › or CONTENTS → WHAT'S LEFT ›)
+ * shows MASTERING_END_GUIDE, written against that branch of the screen and the
+ * shared LabEndScreen (mode="progress", noun module, default DONE label).
  *
  * Every line was written against the step's own code (modules/mod1–mod8,
  * kit, stages, masteringContent, masteringEngine): names are the on-screen
@@ -1036,6 +1038,40 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
       },
     },
+  ],
+};
+
+/** The what's-left screen (FINISH › on Module 8's last step, or the strip's
+ *  readout → WHAT'S LEFT ›). Every line is true of MasteringLabScreen's end
+ *  branch: LabEndScreen in "progress" mode (rows read ✓ DONE), one row per
+ *  module, a row opening the step that earns it (MASTERING_CREDIT_STEP /
+ *  MASTERING_PROJECT_QC_STEP), PRACTICE AGAIN → Module 1 step 1 with nothing
+ *  cleared, DONE · BACK TO LABS → safeGoBack. A module is done once every
+ *  decision on it has an answer (Module 8: and every QC line ticked). */
+export const MASTERING_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'The title reads WHAT’S LEFT, or LAB COMPLETE once every module is done; YOUR PROGRESS if your saved progress could not be read.',
+    'One row per module still to do, with what finishes it: the decisions on its PRACTICE step, or for Module 8 the four track decisions and the QC checklist.',
+    'Finished modules fold into one ✓ DONE line; REVIEW ▾ lists them.',
+  ],
+  control: [
+    'Tap a module’s row to open it on the step that finishes it: its PRACTICE deck, or Module 8’s track decisions — its QC checklist once those four are saved. A finished module opens at its first step.',
+    'PRACTICE AGAIN FROM THE START opens Module 1 at its first step; saved answers stay, and it never undoes a finished module.',
+    'DONE · BACK TO LABS leaves the lab.',
+    'On the strip, ‹ PREV returns to the step you came from — your answers and ticks are kept, its other settings start fresh — and ⏮ opens Module 1. Tap the WHAT’S LEFT ▾ readout for the list of modules.',
+  ],
+  changes: [
+    'A module is done — “credited” inside the module — the moment every one of its decisions has an answer, right or wrong. Module 8 also needs every QC line ticked.',
+    'START OVER (PRACTICE), at the foot of the module list, asks first, then clears your answers and Module 8 ticks and opens Module 1; finished modules stay done.',
+    'Progress is kept on this device. Signed out, the line under the title says what is kept.',
+  ],
+  teaches: [
+    'Which modules are done and which are still to do — from what mastering is through to a full project.',
+    'Any module can be opened again for practice; nothing done is taken away.',
+  ],
+  tryThis: [
+    'If a module is still listed, tap its row: it opens on a step that earns it (Module 8 needs two). Then tap the strip’s readout and WHAT’S LEFT › to come back here.',
+    'If a ✓ DONE line shows, tap REVIEW ▾ and reopen a module you found hard — it opens at its first step.',
   ],
 };
 

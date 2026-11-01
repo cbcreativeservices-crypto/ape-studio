@@ -10,8 +10,10 @@
  *   DEESSER_SCREEN_GUIDES — one guide per page of the De-Esser & Sibilance
  *     Control PagedLab (DeEsserLabScreen PAGES, in order; DEESSER_PAGES pairs
  *     each id with its PageDef title so a reorder or rename fails the test).
- *     The PagedLab's what's-left screen carries no ⓘ by design, and the
- *     de-esser has no appended check page (its check lives on the hub).
+ *     The de-esser has no appended check page (its check lives on the hub);
+ *   DEESSER_END_GUIDE — the PagedLab's what's-left screen (kit/LabEndScreen,
+ *     PagedLab `endGuide`, header WHERE YOU ARE): "progress" mode (no
+ *     creditLabKey / pageCreditKeys), noun "page", default DONE label.
  *
  * Every name is the on-screen name (DeEsserLabScreen, deEsserViz,
  * pathLayout, deEsserModel). Every TRY THIS number is what deEsserModel makes
@@ -304,6 +306,38 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'OPEN › Compression and compare: the same parts, listening to the whole signal instead of a filtered copy.',
     ],
   },
+};
+
+// ── THE WHAT'S-LEFT SCREEN ──────────────────────────────────────────────────
+/** PagedLab's `endGuide`: the de-esser's what's-left screen (LabEndScreen in
+ *  "progress" mode — rows read ✓ DONE; DONE goes back one screen, to the hub). */
+export const DEESSER_END_GUIDE: ScreenGuide = {
+  seeing: [
+    "WHAT'S LEFT lists, by name, each page of De-Esser & Sibilance Control not done yet. When every page is done the title reads LAB COMPLETE.",
+    'Finished pages fold into one ✓ DONE row: these pages record progress, not certificate credit.',
+    'If your saved pages cannot be read, the title reads YOUR PROGRESS and every page stays open; only pages done on this visit fold under ✓ DONE.',
+  ],
+  control: [
+    'Tap a page’s row to open it.',
+    'REVIEW ▾ on the ✓ DONE row lists the finished pages; tap any one to open it again.',
+    'PRACTICE AGAIN FROM THE START opens What Sibilance Is and clears nothing.',
+    'DONE · BACK TO LABS goes back one screen: to the Smart Processors Lab page, where the lab’s five-question check sits.',
+    "In the strip above, ‹ PREV returns to the page you came from; WHAT'S LEFT ▾ drops down a list of every page, with START OVER (PRACTICE) at its foot, which clears these ✓ marks after asking.",
+  ],
+  changes: [
+    'A page counts as done once you use one of its controls (not FULL SCREEN or RESET RACK TO DEFAULTS), get a check on it right, or press NEXT. Connections & Check counts on a right answer to its closing question, or on FINISH.',
+    "Opening a page from the WHAT'S LEFT ▾ list or from a row here does not count it.",
+    'The lab counts toward certificates only through the five-question check on the Smart Processors Lab page.',
+  ],
+  teaches: [
+    'Which pages of the de-esser — sibilance, the detection path, threshold, frequency, gain reduction, mode, over-de-essing — are marked done, and which are still listed.',
+    'Reopening a page for practice takes nothing away; only START OVER (PRACTICE) clears the ✓ marks, and it asks first.',
+  ],
+  tryThis: [
+    'Open the first page still listed and work down in order — each page builds on the last.',
+    'Tap DONE · BACK TO LABS, then take the five questions on the Smart Processors Lab page: every answer is on one of these pages.',
+    'Tap REVIEW ▾ and reopen a finished page you found hard; its ✓ stays.',
+  ],
 };
 
 /** PagedLab's `pageGuide`: page index → its guide (undefined past the end). */

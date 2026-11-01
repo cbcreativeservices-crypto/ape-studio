@@ -31,7 +31,7 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/component
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
 import { CHART_HONESTY, EnvelopeChart } from './EnvelopeChart';
-import { envelopePageGuide } from './envelopeScreenGuides';
+import { ENVELOPE_END_GUIDE, envelopePageGuide } from './envelopeScreenGuides';
 import { envLogMs, envToLog, fmtEnvMs } from '../../../features/lab/sliderMaps';
 
 /** Preset handed from the gallery to the explorer (module-local, consumed once on arrival). */
@@ -507,8 +507,9 @@ export function EnvelopeLabScreen() {
       subtitle="How a sound evolves over time — at its source."
       pages={PAGES}
       // Screen Guide (owner 2026-10-31): the ⓘ on every page, the appended
-      // check included (none on the what's-left screen).
+      // check included, and on the what's-left screen (WHERE YOU ARE).
       pageGuide={envelopePageGuide}
+      endGuide={ENVELOPE_END_GUIDE}
       // A CONCEPT lab (owner rule 2026-10-31): visual only, nothing is
       // measured — every chart carries its own ILLUSTRATIVE MODEL badge — so
       // no accuracy note; the ⓘ takes its spot.

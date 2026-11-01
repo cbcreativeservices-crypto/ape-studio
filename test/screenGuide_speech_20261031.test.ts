@@ -14,7 +14,11 @@
  *      the SAME model functions the pages call (speechModel / speechSignals);
  *   5. wiring + the accuracy-chip decision: a CONCEPT lab (no microphone, no
  *      measurement — typical teaching values the pages call illustrative) →
- *      `accuracy={false}`.
+ *      `accuracy={false}`;
+ *   7. the what's-left END screen's guide (SPEECH_END_GUIDE, PagedLab
+ *      `endGuide`): wired, the same shape / copy / budget rules, every name it
+ *      quotes is on that screen, and each fact (progress mode, the buttons,
+ *      what makes a page count) is pinned against the code that renders it.
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -39,7 +43,7 @@ registerHooks({
 });
 
 const SP = 'src/screens/lab/speech';
-const { SPEECH_SCREEN_GUIDES, SPEECH_GUIDE_PAGE_TITLES, speechPageGuide } = await import(`../${SP}/speechScreenGuides.ts`);
+const { SPEECH_SCREEN_GUIDES, SPEECH_GUIDE_PAGE_TITLES, SPEECH_END_GUIDE, speechPageGuide } = await import(`../${SP}/speechScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const M = await import('../src/features/speech/speechModel.ts');
 const SIG = await import('../src/features/speech/speechSignals.ts');
@@ -398,11 +402,13 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
 });
 
 describe('5. wiring + the accuracy-chip decision', () => {
-  it('SpeechLabScreen passes pageGuide to PagedLab; PagedLab draws the ⓘ (none on the what’s-left screen)', () => {
-    assert.match(s, /import \{ speechPageGuide \} from '\.\/speechScreenGuides';/);
+  it('SpeechLabScreen passes pageGuide AND endGuide to PagedLab; PagedLab draws the ⓘ on every page and on the what’s-left screen', () => {
+    assert.match(s, /import \{ SPEECH_END_GUIDE, speechPageGuide \} from '\.\/speechScreenGuides';/);
     assert.match(s, /<PagedLab[\s\S]*?pageGuide=\{speechPageGuide\}[\s\S]*?\/>/);
+    assert.match(s, /<PagedLab[\s\S]*?endGuide=\{SPEECH_END_GUIDE\}[\s\S]*?\/>/);
     const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(PAGED, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PAGED, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PAGED, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
     assert.match(PAGED, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\}/);
   });
   it('a CONCEPT lab: accuracy={false}; no microphone, no audio engine, and the pages keep their own "illustrative" labels', () => {
@@ -413,5 +419,137 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.match(B, /Relative, illustrative values/);
     assert.match(code(`${SP}/speechCharts.tsx`), /0 dB = loudest band · illustrative/);
     assert.match(code(`${SP}/vowelViz.tsx`), /badge="Typical adult-male values · a source–filter model, not a measurement"/);
+  });
+});
+
+describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
+  const END = SPEECH_END_GUIDE as unknown as Guide;
+  const et = textOf(END);
+  const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
+  const LES = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LE = code('src/screens/lab/kit/labEnd.ts');
+  const NAVT = code('src/screens/lab/kit/labNav.ts');
+  const BAR = code('src/screens/lab/kit/LabNavBar.tsx');
+  const USE = code('src/screens/lab/kit/useLabNav.ts');
+  const endBlock = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)![0];
+
+  it('all five sections, 1–5 bullets, TRY THIS 2–3; fits the no-scroll budget', () => {
+    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    for (const sec of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      const b = END[sec.key];
+      assert.ok(b.length >= 1 && b.length <= 5, `end.${sec.key}: ${b.length} bullets`);
+      for (const line of b) assert.ok(line.trim().length > 10, `end.${sec.key}: a blank bullet`);
+      if (sec.place === 'strip') {
+        for (const item of b) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `end.tryThis (${item.length})`);
+        continue;
+      }
+      const cap = sec.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low;
+      assert.ok(b.join(' ').length <= cap, `end.${sec.key}: ${b.join(' ').length} > ${cap}`);
+    }
+    assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3);
+  });
+
+  it('house copy rules: no skills claim, no "N of total", no "recommend", no build notes, no brands; never gives a check answer', () => {
+    assert.doesNotMatch(et, /\byou(’|')?ll (master|build|mix|be able)|\bmaster(y|ed)?\b|\byou will learn to\b/i);
+    assert.doesNotMatch(et, /\b\d+\s+(of|OF)\s+\d+\b|\b\d+\s*\/\s*\d+\b/);
+    assert.doesNotMatch(et, /\brecommend/i);
+    assert.doesNotMatch(et, /\b(TODO|FIXME|placeholder|walkthrough|owner 20\d\d|NEW COPY|redraw)\b/i);
+    assert.doesNotMatch(et, /\b(Neumann|Shure|Sennheiser|Rode|AKG|Audio-Technica|Electro-Voice|SM58|SM7B|U87)\b/i);
+    const appended = [...code('src/features/lab/understandingChecks.ts').matchAll(/correct: '((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]);
+    const finals = M.SPEECH_CHECKS.map((c: { options: string[]; correct: number }) => c.options[c.correct]);
+    for (const answer of [...finals, ...appended]) assert.ok(!et.includes(answer), `end quotes "${answer}"`);
+  });
+
+  it('every name it quotes is on the end screen / strip it explains', () => {
+    const SCREEN_SRC = [LES, LE, PAGED, NAVT, BAR, s, B].join('\n');
+    const names = ['LAB COMPLETE', 'CHECK', '✓', 'DONE', 'REVIEW ▾', 'HIDE ▴', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV', '⏮', '▾', 'START OVER (PRACTICE)', 'NEXT ›', 'GOT IT ›', 'The Speech System', 'Voices Differ', 'Check Yourself', 'Speech Problem Simulator'];
+    for (const n of names) {
+      assert.ok(SCREEN_SRC.includes(n), `"${n}" is not in the end screen source`);
+      assert.ok(et.includes(n), `the end guide never names "${n}"`);
+    }
+    // WHAT’S LEFT: the title and the strip readout (source spells it with a straight quote)
+    assert.match(LE, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(NAVT, /whatsLeft: "WHAT'S LEFT",/);
+    assert.ok(et.includes('WHAT’S LEFT, or LAB COMPLETE') && et.includes('WHAT’S LEFT ▾'));
+    assert.match(LES, /\{r\.kind === 'check' \? 'CHECK' : String\(r\.num\)\.padStart\(2, '0'\)\}/);
+    assert.match(LES, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+  });
+
+  it('PROGRESS mode: no credit keys → rows read ✓ DONE and the lead says saved on this device', () => {
+    assert.doesNotMatch(s, /creditLabKey|pageCreditKeys|handsOnDetail|pageDetail|optionalPage|labDoneKey/);
+    assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(endBlock, /mode=\{creditMode\}/);
+    assert.match(endBlock, /noun="page"/);
+    assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.match(LE, /Everything you have done is saved on this device/);
+    assert.ok(END.seeing.join(' ').includes('saved on this device'));
+    assert.ok(et.includes('✓ DONE'));
+    assert.doesNotMatch(et, /CREDITED|credited/);
+  });
+
+  it('the buttons: PRACTICE AGAIN → page 1 (The Speech System), clears nothing; DONE keeps its default label and goes back', () => {
+    assert.doesNotMatch(endBlock, /doneLabel=|completeTitle=/);
+    assert.match(LES, /doneLabel = 'DONE · BACK TO LABS'/);
+    assert.match(LES, /label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(endBlock, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
+    assert.match(endBlock, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.match(endBlock, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
+    assert.equal(PAGE_TITLES[0], 'The Speech System');
+    const c = END.control.join(' ');
+    assert.ok(c.includes('PRACTICE AGAIN FROM THE START opens The Speech System and clears nothing'));
+    assert.ok(c.includes('DONE · BACK TO LABS leaves the lab, back to the screen you opened it from'));
+    // the strip on the end screen: ‹ PREV leaves the end screen for the page you came from
+    assert.match(USE, /if \(ending\) \{\s*unEnd\(\);\s*return;/);
+    assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/);
+    assert.ok(c.includes('‹ PREV returns to the page you came from'));
+  });
+
+  it('what makes a page count: NEXT (not Check Yourself), main keys, five right on Check Yourself, all four on the check; a list jump marks nothing', () => {
+    assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    assert.match(s, /title: 'Check Yourself', short: 'Check', Component: PageSpeechChecks, manualDone: true/);
+    assert.match(B, /const PASS_MARK = 5;/);
+    assert.match(B, /if \(n >= PASS_MARK && !isDone\) markDone\(\);/);
+    assert.match(B, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
+    // goTo (a row tap / CONTENTS jump) never marks a page
+    const goTo = PAGED.match(/const goTo = useCallback\([\s\S]*?\n  \}, \[/)![0];
+    assert.doesNotMatch(goTo, /markDone/);
+    const ch = END.changes.join(' ');
+    assert.ok(ch.includes('leave it with NEXT ›') && ch.includes('GOT IT › on Voices Differ') && ch.includes('Opening it from a list counts nothing'));
+    assert.ok(ch.includes('Check Yourself counts only at five right in one visit'));
+    assert.ok(ch.includes('only once all four are right'));
+    const blk = code('src/features/lab/understandingChecks.ts').match(/const SPEECH: readonly Q\[\] = \[([\s\S]*?)\n\];/);
+    assert.equal([...blk![1].matchAll(/\bid: '/g)].length, 4);
+  });
+
+  it('START OVER clears page marks, but a passed check stays done (banked UNDERSTANDING_UNIT); the check completes tr_speech', () => {
+    assert.match(PAGED, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    assert.match(PAGED, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
+    assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)/);
+    assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'SpeechLab', key: 'tr_speech', completion: 'understanding' \}/);
+    assert.ok(END.changes.join(' ').includes('a passed check stays done'));
+    assert.ok(END.teaches.join(' ').includes('The check is what completes the lab'));
+  });
+
+  it('review fixes (2026-10-31): big title vs header, YOUR PROGRESS, check row name, REVIEW only lists done rows, every page in teaches', () => {
+    // the header reads "Where you are"; WHAT'S LEFT is the BIG title in the body
+    assert.match(PAGED, /title=\{ending \? 'Where you are' : def\.title\}/);
+    assert.ok(END.seeing[0].startsWith('The big title reads WHAT’S LEFT'));
+    // the unreadable face
+    assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
+    assert.ok(END.seeing.join(' ').includes('YOUR PROGRESS if saved progress cannot be read'));
+    // the check's row by its on-screen name; a passed check joins ✓ DONE
+    assert.match(PAGED, /label: 'Check your understanding', kind: 'check'/);
+    assert.ok(END.seeing.join(' ').includes('Check your understanding, is marked CHECK'));
+    assert.ok(END.seeing.join(' ').includes('and the check once passed, fold into one ✓ DONE line'));
+    // REVIEW ▾ exists only when something is done, and lists only done rows
+    assert.match(LES, /\{w\.credited\.length > 0 \? \(/);
+    assert.match(LES, /w\.credited\.map\(\(r\) => row\(r, true\)\)/);
+    assert.ok(END.tryThis.some((t) => t.includes('from its row or from REVIEW ▾ once it is done')));
+    assert.doesNotMatch(END.tryThis.join('\n'), /^Tap REVIEW ▾/m);
+    // the first-row experiment holds for Check Yourself / the check / LAB COMPLETE
+    assert.ok(END.tryThis[0].startsWith('If any row is still listed') && END.tryThis[0].includes('on any page before Check Yourself, NEXT › then counts it'));
+    // every content page's idea is named (page 2 included)
+    assert.equal(PAGE_TITLES[1], 'How a Voice Is Made');
+    assert.ok(END.teaches[0].includes('anatomy, how a voice is made, voicing'));
   });
 });

@@ -22,8 +22,9 @@ import { PATCHBAY_PAGES_D } from './pagesD';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import { loadPagedProgress } from '../../../features/lab/pagedProgress';
 import { PATCHBAY_LAB_KEY, PATCHBAY_PAGE_COUNT, PATCHBAY_UNITS } from './units';
-// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
-import { patchbayPageGuide } from './patchbayScreenGuides';
+// Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page,
+// plus the what's-left end screen's own (WHERE YOU ARE).
+import { PATCHBAY_END_GUIDE, patchbayPageGuide } from './patchbayScreenGuides';
 
 const PAGES = [...PATCHBAY_PAGES_A, ...PATCHBAY_PAGES_B, ...PATCHBAY_PAGES_C, ...PATCHBAY_PAGES_D];
 
@@ -65,8 +66,9 @@ export function PatchbayLabScreen() {
       pages={PAGES}
       onPageDone={onPageDone}
       creditLabKey={PATCHBAY_LAB_KEY}
-      // Screen Guide: the ⓘ on every page (none on the what's-left screen).
+      // Screen Guide: the ⓘ on every page, and on the what's-left screen.
       pageGuide={patchbayPageGuide}
+      endGuide={PATCHBAY_END_GUIDE}
       // A CONCEPT lab (owner rule 2026-10-31): its readouts are routing
       // states (CORD / EMPTY, INTACT / BROKEN, SOURCE / PATCH), never a
       // real-world measurement, and the jack cutaway carries its own

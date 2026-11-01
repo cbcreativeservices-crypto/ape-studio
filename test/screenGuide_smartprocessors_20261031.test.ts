@@ -4,16 +4,20 @@
  * PagedLab rollouts (pageGuide).
  *
  *   1. every screen the learner reaches has a guide: the family hub
- *      (SmartProcessorsLabScreen) and each of the nine De-Esser pages, in
- *      PAGES order (the what's-left screen carries no ⓘ by design; the lab's
- *      check lives on the hub) — five sections, copy rules, 2–3 TRY THIS;
+ *      (SmartProcessorsLabScreen), each of the nine De-Esser pages, in
+ *      PAGES order, and the De-Esser's what's-left screen (DEESSER_END_GUIDE,
+ *      2026-10-31; the lab's check lives on the hub) — five sections, copy
+ *      rules, 2–3 TRY THIS;
  *   2. every step fits its no-scroll budget;
  *   3. the guide quotes the screens' REAL names;
  *   4. every TRY THIS number is what deEsserModel makes the page print at
  *      that setting — recomputed here from the model;
  *   5. wiring: the hub draws the ⓘ (inside the hint anchor, under a
  *      ScreenGuideHost) in place of the accuracy chip; the De-Esser PagedLab
- *      gets `pageGuide` and `accuracy={false}` — a CONCEPT lab.
+ *      gets `pageGuide`, `endGuide` and `accuracy={false}` — a CONCEPT lab;
+ *   6. the end guide's facts, against the code: the title states, "progress"
+ *      mode (✓ DONE, not CREDITED), every button's label, what makes a page
+ *      count, and where DONE goes (one screen back, to the hub).
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -32,7 +36,8 @@ type Guide = Record<string, string[]>;
 const SECTION_KEYS = SCREEN_GUIDE_SECTIONS.map((s: { key: string }) => s.key);
 const PAGES = G.DEESSER_SCREEN_GUIDES as unknown as Record<string, Guide>;
 const HOME = G.SMART_PROCESSORS_HOME_GUIDE as unknown as Guide;
-const allGuides: [string, Guide][] = [['home', HOME], ...Object.entries(PAGES)];
+const END = G.DEESSER_END_GUIDE as unknown as Guide;
+const allGuides: [string, Guide][] = [['home', HOME], ...Object.entries(PAGES), ['end', END]];
 const textOf = (gd: Guide) => SECTION_KEYS.map((k: string) => gd[k].join('\n')).join('\n');
 
 const HUB_FILE = 'src/screens/lab/deesser/SmartProcessorsLabScreen.tsx';
@@ -40,7 +45,10 @@ const LAB_FILE = 'src/screens/lab/deesser/DeEsserLabScreen.tsx';
 const HUB = code(HUB_FILE);
 const LAB = code(LAB_FILE);
 const MODEL = code('src/features/deesser/deEsserModel.ts');
-const SRC = [HUB, LAB, MODEL, code('src/screens/lab/deesser/deEsserViz.tsx'), code('src/screens/lab/deesser/pathLayout.ts'), code('src/screens/lab/kit/ExpandableFigure.tsx'), code('src/screens/lab/kit/LabNavBar.tsx'), code('src/screens/lab/kit/labNav.ts'), code('src/screens/lab/tuning/components/check.tsx'), code('src/components/LabUnderstandingCheck.tsx')].join('\n');
+const SHELL = code('src/screens/lab/kit/PagedLab.tsx');
+const END_SCREEN = code('src/screens/lab/kit/LabEndScreen.tsx');
+const LAB_END = code('src/screens/lab/kit/labEnd.ts');
+const SRC = [HUB, LAB, MODEL, SHELL, END_SCREEN, LAB_END, code('src/screens/lab/deesser/deEsserViz.tsx'), code('src/screens/lab/deesser/pathLayout.ts'), code('src/screens/lab/kit/ExpandableFigure.tsx'), code('src/screens/lab/kit/LabNavBar.tsx'), code('src/screens/lab/kit/labNav.ts'), code('src/screens/lab/tuning/components/check.tsx'), code('src/components/LabUnderstandingCheck.tsx')].join('\n');
 
 /** Page body source, by PageDef component name. */
 const pageSrc = (fn: string) => {
@@ -55,7 +63,7 @@ describe('1. every Smart Processors screen has a complete guide', () => {
     assert.deepEqual(titles, G.DEESSER_PAGES.map((p: { title: string }) => p.title));
     assert.deepEqual(Object.keys(PAGES), G.DEESSER_PAGES.map((p: { id: string }) => p.id));
     G.DEESSER_PAGES.forEach((p: { id: string }, i: number) => assert.equal(G.deEsserPageGuide(i), PAGES[p.id]));
-    assert.equal(G.deEsserPageGuide(G.DEESSER_PAGES.length), undefined, 'no guide past the end (the what’s-left screen)');
+    assert.equal(G.deEsserPageGuide(G.DEESSER_PAGES.length), undefined, 'no page guide past the end — the what’s-left screen has its own (endGuide)');
   });
   it('the de-esser has no appended check page; its check lives on the hub (five questions)', () => {
     const checks = code('src/features/lab/understandingChecks.ts');
@@ -118,11 +126,12 @@ describe('3. each guide quotes its screen’s real names', () => {
     mode: ['BROADBAND', 'SPLIT-BAND', 'THIS FRAME · BEFORE (GHOST) AND AFTER', 'AUTO-STEP', 'JUMP TO AN S', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
     over: ['OUTPUT', 'THE PROGRESSION', 'How hard', 'RESET RACK TO DEFAULTS', 'Transparent', 'Controlled', 'Lisping', 'Dull and lifeless', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
     connections: ['EQ Lab', 'Compression', 'Gate / Expander', 'Visual Audio Analysis', 'Speech & Voice Lab', 'OPEN ›', 'FINISH · SEE WHAT’S LEFT'],
+    end: ["WHAT'S LEFT", 'LAB COMPLETE', 'YOUR PROGRESS', '✓', 'DONE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV', '▾', 'What Sibilance Is', 'Connections & Check', 'De-Esser & Sibilance Control', 'Smart Processors', 'NEXT', 'FINISH'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), allGuides.map(([id]) => id).sort()));
   for (const [id, names] of Object.entries(NAMES)) {
     it(`${id}: every pinned name is on the screen AND in the guide`, () => {
-      const gt = textOf(id === 'home' ? HOME : PAGES[id]);
+      const gt = textOf(id === 'home' ? HOME : id === 'end' ? END : PAGES[id]);
       for (const n of names) {
         assert.ok(SRC.includes(n), `${id}: "${n}" is no longer in the lab source — update the guide`);
         assert.ok(gt.includes(n), `${id}: the guide never names "${n}"`);
@@ -272,17 +281,90 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.match(HUB, /<ScreenGuideHost regions=\{false\}>[\s\S]*<ScreenGuideHintAnchor>[\s\S]*<ScreenGuideKey title="SMART PROCESSORS LAB" guide=\{SMART_PROCESSORS_HOME_GUIDE\} \/>[\s\S]*<\/ScreenGuideHintAnchor>[\s\S]*<LabUnderstandingBlock[\s\S]*<\/ScreenGuideHost>/);
     assert.doesNotMatch(HUB, /AccuracyNote/);
   });
-  it('the De-Esser PagedLab: pageGuide + accuracy={false}', () => {
-    assert.match(LAB, /import \{ deEsserPageGuide \} from '\.\/smartProcessorsScreenGuides';/);
-    assert.match(LAB, /<PagedLab[\s\S]*?pageGuide=\{deEsserPageGuide\}[\s\S]*?accuracy=\{false\}[\s\S]*?\/>/);
-    // the shell honours both
-    const shell = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(shell, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
-    assert.match(shell, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} \/> : null\}/);
+  it('the De-Esser PagedLab: pageGuide + endGuide + accuracy={false}', () => {
+    assert.match(LAB, /import \{ DEESSER_END_GUIDE, deEsserPageGuide \} from '\.\/smartProcessorsScreenGuides';/);
+    assert.match(LAB, /<PagedLab[\s\S]*?pageGuide=\{deEsserPageGuide\}[\s\S]*?endGuide=\{DEESSER_END_GUIDE\}[\s\S]*?accuracy=\{false\}[\s\S]*?\/>/);
+    // the shell honours all three: the end guide shows only while ending, titled WHERE YOU ARE
+    assert.match(SHELL, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(SHELL, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
+    assert.match(SHELL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} \/> : null\}/);
   });
   it('a CONCEPT lab: nothing plays, nothing is measured, and every figure keeps its "conceptual" badge', () => {
     assert.doesNotMatch(LAB + HUB, /ApeDsp|useMicrophone|getUserMedia|AudioRecorder|startFenced/);
     assert.match(LAB, /const CONCEPTUAL = 'Relative levels from a modeled phrase — conceptual, not a calibrated meter\.';/);
     assert.ok((LAB.match(/badge=\{CONCEPTUAL\}/g) ?? []).length >= 6);
+  });
+});
+
+describe('6. the end guide is true for THIS lab’s what’s-left screen', () => {
+  const PAGED = LAB.slice(LAB.indexOf('<PagedLab'), LAB.indexOf('/>', LAB.indexOf('<PagedLab')));
+  const endText = textOf(END);
+  it('titles: WHAT\'S LEFT, LAB COMPLETE when every page is done, YOUR PROGRESS when unreadable', () => {
+    assert.match(LAB_END, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(END_SCREEN, /const title = unreadable \? 'YOUR PROGRESS' : w\.complete && completeTitle \? completeTitle : endTitle\(w\);/);
+    assert.doesNotMatch(PAGED, /completeTitle/);
+    assert.match(END.seeing.join(' '), /WHAT'S LEFT lists, by name, each page[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
+  });
+  it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED', () => {
+    for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail', 'pageDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
+    assert.match(SHELL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.match(END.seeing.join(' '), /one ✓ DONE row: these pages record progress, not certificate credit/);
+    assert.doesNotMatch(endText, /CREDITED/);
+    // the lab's credit is the hub's check (labId smart-processors), not these pages
+    assert.match(HUB, /<LabUnderstandingBlock labId="smart-processors"/);
+    assert.match(END.changes.join(' '), /counts toward certificates only through the five-question check on the Smart Processors Lab page/);
+  });
+  it('every button by its exact label, and what each does', () => {
+    assert.match(END_SCREEN, /<GlassButton label="PRACTICE AGAIN FROM THE START"[^>]*onPress=\{onPracticeAgain\} \/>/);
+    assert.match(END_SCREEN, /doneLabel = 'DONE · BACK TO LABS',/);
+    assert.match(END_SCREEN, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+    assert.match(SHELL, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
+    assert.match(SHELL, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
+    assert.match(SHELL, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.match(SHELL, /noun="page"/);
+    // page 1 is What Sibilance Is; PRACTICE AGAIN only moves (goTo never clears marks)
+    assert.match(LAB, /const PAGES: PageDef\[\] = \[\n\s*\{ title: 'What Sibilance Is'/);
+    assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START opens What Sibilance Is and clears nothing/);
+    // DONE goes back ONE screen: the de-esser is only ever opened from the hub
+    assert.match(HUB, /route: 'DeEsserLab'/);
+    assert.match(END.control.join(' '), /DONE · BACK TO LABS goes back one screen: to the Smart Processors Lab page/);
+    // the strip on the end screen: ‹ PREV leaves the end screen for the page you were on; the WHAT'S LEFT ▾ readout drops down the page list
+    const nav = code('src/screens/lab/kit/useLabNav.ts');
+    assert.match(nav, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/);
+    assert.match(code('src/screens/lab/kit/labNav.ts'), /pos: "What's left\. Opens the contents"/);
+    assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
+    assert.match(END.control.join(' '), /‹ PREV returns to the page you came from; WHAT'S LEFT ▾ drops down a list of every page, with START OVER \(PRACTICE\) at its foot, which clears these ✓ marks/);
+  });
+  it('what makes a page count: any control or its check (touch / markDone), or NEXT / FINISH (no manualDone page); a CONTENTS jump never', () => {
+    assert.doesNotMatch(LAB, /manualDone/);
+    assert.match(SHELL, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    // pages 1–8 mark themselves on any control (touch); page 9 only on the closing question's right answer
+    for (const fn of ['PageWhat', 'PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageGr', 'PageMode', 'PageOver']) assert.match(pageSrc(fn), /touch\(ctx\)/, fn);
+    assert.doesNotMatch(pageSrc('PageConnections'), /touch\(ctx\)/);
+    assert.match(pageSrc('PageConnections'), /onCorrect=\{\(\) => ctx\.markDone\(\)\}/);
+    // goTo (CONTENTS / an end-screen row) marks nothing
+    const goTo = SHELL.slice(SHELL.indexOf('const goTo = useCallback'), SHELL.indexOf('const markDone = useCallback'));
+    assert.doesNotMatch(goTo, /markDone|completed/);
+    const t = END.changes.join(' ');
+    assert.match(t, /use one of its controls \(not FULL SCREEN or RESET RACK TO DEFAULTS\), get a check on it right, or press NEXT\. Connections & Check counts on a right answer to its closing question, or on FINISH/);
+    assert.match(t, /Opening a page from the WHAT'S LEFT ▾ list or from a row here does not count it/);
+    // the two controls that do NOT count a page: FULL SCREEN (ExpandableFigure only opens) and RESET RACK TO DEFAULTS
+    const fig = code('src/screens/lab/kit/ExpandableFigure.tsx');
+    assert.match(fig, /onPress=\{\(\) => setFull\(true\)\}/);
+    assert.doesNotMatch(fig, /markDone|touch/);
+    assert.match(LAB, /<Btn label="RESET RACK TO DEFAULTS" onPress=\{\(\) => \{ set\(\{ \.\.\.LAB_DEFAULTS \}\); setAmount\(0\); \}\}/);
+  });
+  it('START OVER (PRACTICE) sits at the foot of the WHAT\'S LEFT ▾ list, asks first, and clears the ✓ marks (no credit elsewhere)', () => {
+    assert.match(SHELL, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    assert.match(SHELL, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\)/);
+    assert.match(SHELL, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
+    assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{nav\.reset \? \(/);
+    assert.match(END.teaches.join(' '), /Reopening a page for practice takes nothing away; only START OVER \(PRACTICE\) clears the ✓ marks, and it asks first/);
+    assert.doesNotMatch(endText, /Nothing is taken away/);
+  });
+  it('unreadable: YOUR PROGRESS, yet a page done on this visit still folds under ✓ DONE (endCleared reads progress.completed)', () => {
+    assert.match(SHELL, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
+    assert.match(END.seeing.join(' '), /YOUR PROGRESS and every page stays open; only pages done on this visit fold under ✓ DONE/);
   });
 });

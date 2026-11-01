@@ -13,7 +13,10 @@
  *      in both the guide and that lab's source (rename one → update both);
  *   5. the numbers TRY THIS quotes are the ones the data produces;
  *   6. wiring: CableLabScreen passes the per-lesson guide to LabHeader inside
- *      a regions-off ScreenGuideHost; ConnectorSelect passes pageGuide;
+ *      a regions-off ScreenGuideHost; ConnectorSelect passes pageGuide AND
+ *      endGuide (the what's-left screen, WHERE YOU ARE) — its facts (title
+ *      states, button labels, credit mode, what makes a page count, where
+ *      DONE goes) pinned against PagedLab / LabEndScreen / labEnd / bits;
  *   7. the ACCURACY CHIP decision: both are CONCEPT labs (nothing measured;
  *      the Cable lab's tester is labelled a simulation, the Connector lab's is
  *      a drawn tester with lamps) — the chip / note is gone.
@@ -46,7 +49,7 @@ registerHooks({
 
 const { CABLE_LESSONS } = await import('../src/screens/lab/cable/data/lessons.ts');
 const { CABLE_SCREEN_GUIDES } = await import('../src/screens/lab/cable/cableScreenGuides.ts');
-const { CONNECTOR_SELECT_PAGES, CONNECTOR_SELECT_SCREEN_GUIDES, connectorSelectPageGuide } = await import(
+const { CONNECTOR_SELECT_PAGES, CONNECTOR_SELECT_SCREEN_GUIDES, CONNECTOR_SELECT_END_GUIDE, connectorSelectPageGuide } = await import(
   '../src/screens/lab/connectorselect/connectorSelectScreenGuides.ts'
 );
 const { CONNECTOR_SELECT_PAGE_COUNT } = await import('../src/screens/lab/connectorselect/units.ts');
@@ -59,6 +62,7 @@ const CONN = CONNECTOR_SELECT_SCREEN_GUIDES as unknown as Record<string, Guide>;
 const allGuides: [string, Guide][] = [
   ...Object.entries(CABLE).map(([k, v]) => [`cable.${k}`, v] as [string, Guide]),
   ...Object.entries(CONN).map(([k, v]) => [`connector.${k}`, v] as [string, Guide]),
+  ['connector.END', CONNECTOR_SELECT_END_GUIDE as unknown as Guide],
 ];
 const textOf = (gd: Guide) => SECTION_KEYS.map((k) => gd[k].join('\n')).join('\n');
 
@@ -389,14 +393,129 @@ describe('6. wiring', () => {
     assert.match(CL, /<\/ScrollView>\s*<\/ScreenGuideHost>\s*<\/View>\s*<\/LabNavProvider>/);
   });
   it('ConnectorSelectLabScreen: PagedLab gets pageGuide (its host is built in; no rack pages, so regions stay off)', () => {
-    assert.match(CS, /import \{ connectorSelectPageGuide \} from '\.\/connectorSelectScreenGuides';/);
+    assert.match(CS, /import \{[^}]*\bconnectorSelectPageGuide\b[^}]*\} from '\.\/connectorSelectScreenGuides';/);
     assert.match(CS, /<PagedLab[\s\S]*?pageGuide=\{connectorSelectPageGuide\}[\s\S]*?\/>/);
     for (const f of ['pagesA.tsx', 'pagesB.tsx', 'pagesC.tsx', 'pagesD.tsx']) {
       assert.doesNotMatch(code(`${CONN_DIR}/${f}`), /rack: true/, `${f}: a rack page would need regions`);
     }
     const PL = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(PL, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PL, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
     assert.match(PL, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\} regions=\{!!def\.rack && !ending\}>/);
+  });
+  it('ConnectorSelectLabScreen: the what’s-left screen has its own guide — PagedLab gets endGuide (titled WHERE YOU ARE)', () => {
+    assert.match(CS, /import \{ CONNECTOR_SELECT_END_GUIDE, connectorSelectPageGuide \} from '\.\/connectorSelectScreenGuides';/);
+    assert.match(CS, /<PagedLab[\s\S]*?endGuide=\{CONNECTOR_SELECT_END_GUIDE\}[\s\S]*?\/>/);
+    const PL = code('src/screens/lab/kit/PagedLab.tsx');
+    assert.match(PL, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
+  });
+});
+
+describe('6b. the END guide says only what this lab’s end screen does', () => {
+  const CS = code(`${CONN_DIR}/ConnectorSelectLabScreen.tsx`);
+  const PL = code('src/screens/lab/kit/PagedLab.tsx');
+  const LE = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LJ = code('src/screens/lab/kit/labEnd.ts');
+  const NAVSRC = code('src/screens/lab/kit/LabNavBar.tsx') + code('src/screens/lab/kit/labNav.ts') + code('src/screens/lab/kit/useLabNav.ts');
+  const T = textOf(CONNECTOR_SELECT_END_GUIDE as unknown as Guide);
+  it("title states: WHAT'S LEFT / LAB COMPLETE / YOUR PROGRESS (unreadable) — as labEnd + LabEndScreen draw them", () => {
+    assert.match(LJ, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(LE, /const title = unreadable \? 'YOUR PROGRESS'/);
+    for (const s of ["WHAT'S LEFT", 'LAB COMPLETE', 'YOUR PROGRESS']) assert.ok(T.includes(s), s);
+  });
+  it('CREDIT mode (rows ✓ CREDITED, ✓ DONE for a guest): this lab passes creditLabKey', () => {
+    assert.match(CS, /creditLabKey=\{CONNECTOR_SELECT_LAB_KEY\}/);
+    assert.match(PL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(LE, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.ok(T.includes('✓ CREDITED') && T.includes('✓ DONE when you are not signed in or are in a preview'));
+    // isGuest comes from useGuestWording, which is true for a preview too (this
+    // lab is members-only with a preview), so a preview's rows read DONE.
+    assert.match(LE, /const isGuest = guest \?\? wording\.guest;/);
+    assert.match(code('src/features/commercial/tier.ts'), /return isGuestTier\(tier\) && \(tier === 'preview' \|\| tierKnown\);/);
+    assert.match(LE, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+    assert.ok(T.includes('REVIEW ▾'));
+  });
+  it('noun "page"; no check row (no understanding check authored) and no optional pages', async () => {
+    assert.match(PL, /noun="page"/);
+    const { understandingFor } = await import('../src/features/lab/understanding.ts');
+    assert.equal(understandingFor('connector-select'), null, 'a check would add a CHECK row — update the END guide');
+    assert.match(CS, /labId="connector-select"/);
+    assert.doesNotMatch(CS, /optionalPage=|handsOnDetail=|pageDetail=|labDoneKey=/);
+    assert.doesNotMatch(T, /check row|optional/i, 'no check row and no optional pages: the guide names neither');
+    // Rows are page titles, not stations (the misconceptions page and the Final carry no STATION tag).
+    assert.doesNotMatch(T, /station/i);
+    assert.ok(T.includes('Which pages of the lab, from Connector, cable, signal to the Final'));
+    assert.match(code(`${CONN_DIR}/pagesA.tsx`), /title: 'Connector, cable, signal'/);
+    // The line under the title: how much is left + whether the work is saved (every endLead branch).
+    assert.match(LE, /<Text style=\{styles\.lead\}>\{endLead\(w, \{ mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen\(\), account \}\)\}<\/Text>/);
+    assert.ok(T.includes('The line under the title says how much is left and whether your work is saved'));
+    // Unreadable: the note replaces the lead; rows still split by what could be read, so the guide says "still opens", not "listed".
+    assert.match(LE, /\{unreadable \? \(\s*<ProgressUnreadableNote \/>/);
+    assert.ok(T.includes('a note says why, and every page still opens'));
+    assert.doesNotMatch(T, /goals are not all met|stays listed/);
+  });
+  it('button labels verbatim: PRACTICE AGAIN FROM THE START (page 1, clears nothing), DONE · BACK TO LABS (safeGoBack), ‹ PREV (back to the page)', () => {
+    assert.match(LE, /<GlassButton label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(LE, /doneLabel = 'DONE · BACK TO LABS'/);
+    assert.match(PL, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
+    assert.match(PL, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.doesNotMatch(PL, /doneLabel=/, 'PagedLab keeps the default DONE label');
+    assert.match(NAVSRC, /prev: '‹ PREV'/);
+    assert.match(NAVSRC, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/);
+    assert.match(PL, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    for (const s of [
+      'PRACTICE AGAIN FROM THE START opens page 1 and clears nothing',
+      'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from',
+      '‹ PREV returns to the page you were on',
+      'START OVER (PRACTICE)',
+    ])
+      assert.ok(T.includes(s), s);
+  });
+  it('what makes a page count: every page marks ITSELF when all its goal chips tick (NEXT / FINISH never mark it); the Final’s goal is a pass', () => {
+    const defLines = ['pagesA.tsx', 'pagesB.tsx', 'pagesC.tsx', 'pagesD.tsx'].flatMap((f) => {
+      const src = code(`${CONN_DIR}/${f}`);
+      return src
+        .slice(src.indexOf(': PageDef[] = ['))
+        .split('\n')
+        .filter((l) => /\{ title: '/.test(l));
+    });
+    assert.equal(defLines.length, CONNECTOR_SELECT_PAGE_COUNT);
+    for (const l of defLines) assert.match(l, /manualDone: true/, `every page marks itself: ${l}`);
+    assert.match(PL, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    const BITS = code(`${CONN_DIR}/bits.tsx`);
+    assert.match(BITS, /const all = seen\.current\.every\(Boolean\);\s*useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
+    // Goal chips on all 16 pages: four per file, except pagesC, whose three
+    // build pages share one makeScenarioPage body (one <GoalChips>) + the tester.
+    const chips: Record<string, number> = { 'pagesA.tsx': 4, 'pagesB.tsx': 4, 'pagesC.tsx': 2, 'pagesD.tsx': 4 };
+    for (const [f, n] of Object.entries(chips)) {
+      assert.equal((code(`${CONN_DIR}/${f}`).match(/<GoalChips /g) ?? []).length, n, `${f}: goal chips`);
+    }
+    assert.equal((code(`${CONN_DIR}/pagesC.tsx`).match(/= makeScenarioPage\(/g) ?? []).length, 3);
+    const PD = code(`${CONN_DIR}/pagesD.tsx`);
+    assert.match(PD, /label: `Pass the job: \$\{PASS_PCT\}% \+ every safety call right`, hit: passedOnce/);
+    // Goals live in the page's own state + a per-mount ref, and PagedLab swaps the
+    // page component on every jump, so a half-done page restarts at ○ next visit.
+    assert.match(BITS, /const seen = useRef<boolean\[\]>\(goals\.map\(\(\) => ctx\.isDone\)\);/);
+    assert.match(PL, /const Page = def\.Component;/);
+    assert.ok(T.includes('all its goal chips read ✓ in one visit; leave early and they reset to ○. NEXT and FINISH never mark it.'));
+    assert.ok(T.includes('The Final counts only after a pass: 80% and every safety call right'));
+  });
+  it('credit: a done page banks p<n> to the lab key; START OVER clears page marks only, banked credit still counts', () => {
+    assert.match(CS, /markLabUnit\(CONNECTOR_SELECT_LAB_KEY, `p\$\{index \+ 1\}`\)/);
+    assert.match(PL, /\(!!creditLabKey && bankedPages\.has\(`p\$\{i \+ 1\}`\)\)/);
+    assert.match(PL, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
+    assert.ok(T.includes('START OVER (PRACTICE) in the contents resets goal chips, never credit'));
+    // A guest's units are HELD and replayed into the first account signed into this
+    // session (when the carry is open — the lead line says which); only a preview earns nothing.
+    const LC = code('src/features/lab/labCompletion.ts');
+    assert.match(LC, /if \(getLabPreview\(\)\.active\) return;\s*(\/\/[^\n]*\n\s*)*holdSessionWork<HeldUnits>\(CARRY_KEY, [^\n]*\{ guestOnly: true \}\);/);
+    assert.match(LJ, /sign in before you close the app to keep your progress/);
+    assert.ok(T.includes('Signed out, the line under the title says if signing in can still keep them; a preview earns nothing'));
+    assert.doesNotMatch(T, /not when signed out/);
+  });
+  it("the way in: FINISH on the last page, or WHAT'S LEFT in the contents", () => {
+    assert.match(NAVSRC, /finish: 'FINISH ›'/);
+    assert.match(NAVSRC, /onPress=\{nav\.openEnd\}/);
+    assert.match(NAVSRC, /whatsLeft: "WHAT'S LEFT"/);
   });
 });
 

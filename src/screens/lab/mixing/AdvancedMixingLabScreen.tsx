@@ -23,7 +23,8 @@ import { MIXING_ADV_PAGES_B } from './pagesAdvB';
 import { MIXING_ADV_PAGES_C } from './pagesAdvC';
 import { MIXING_ADV_PAGES_D } from './pagesAdvD';
 // Screen Guide (owner 2026-10-31): "this page, explained" — one guide per page.
-import { advancedMixingPageGuide } from './advancedMixingScreenGuides';
+// The what's-left screen has its own (WHERE YOU ARE), via PagedLab's endGuide.
+import { ADVANCED_MIXING_END_GUIDE, advancedMixingPageGuide } from './advancedMixingScreenGuides';
 
 const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES_C, ...MIXING_ADV_PAGES_D];
 
@@ -46,5 +47,5 @@ export function AdvancedMixingLabScreen() {
   // decays. The note sits at the top of each reading page (PagedLab draws the
   // header chip only on rack pages, and this lab has none); the ⓘ has the
   // header to itself.
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

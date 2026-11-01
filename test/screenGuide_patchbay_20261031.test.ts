@@ -10,11 +10,16 @@
  *      both the guide and the lab's source (comments stripped);
  *   3. the numbers and states the TRY THIS lines quote are what the engine
  *      and the page code produce;
- *   4. wiring: PatchbayLabScreen passes `pageGuide` to PagedLab; PagedLab
- *      draws the ⓘ (none on the what's-left screen) and hosts the overlay;
+ *   4. wiring: PatchbayLabScreen passes `pageGuide` and `endGuide` to
+ *      PagedLab; PagedLab draws the ⓘ on every page AND on the what's-left
+ *      screen (titled WHERE YOU ARE) and hosts the overlay;
  *   5. the accuracy-chip decision: Patchbay is a CONCEPT lab (routing states,
  *      no real-world measurement numbers; the cutaway has its own CONCEPTUAL
- *      MODEL badge) → `accuracy={false}`, so the ⓘ takes the chip's spot.
+ *      MODEL badge) → `accuracy={false}`, so the ⓘ takes the chip's spot;
+ *   6. the END guide (PATCHBAY_END_GUIDE): shape, budgets, copy rules, and
+ *      every fact it states pinned against LabEndScreen / labEnd / PagedLab /
+ *      useLabNav and the props this lab passes (credit mode, noun, no check,
+ *      button labels, which pages NEXT ticks, where DONE goes).
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -39,7 +44,7 @@ registerHooks({
 });
 
 const PB = 'src/screens/lab/patchbay';
-const { PATCHBAY_SCREEN_GUIDES, PATCHBAY_GUIDE_PAGE_TITLES, patchbayPageGuide } = await import(`../${PB}/patchbayScreenGuides.ts`);
+const { PATCHBAY_SCREEN_GUIDES, PATCHBAY_GUIDE_PAGE_TITLES, PATCHBAY_END_GUIDE, patchbayPageGuide } = await import(`../${PB}/patchbayScreenGuides.ts`);
 const { PATCHBAY_UNITS, PATCHBAY_PAGE_COUNT } = await import(`../${PB}/units.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const E = await import(`../${PB}/engine/patchbay.ts`);
@@ -64,7 +69,7 @@ describe('1. every Patchbay page has a complete guide', () => {
     assert.equal(PAGE_TITLES.length, 23, 'parsed every PageDef');
     assert.deepEqual(Object.values(PATCHBAY_GUIDE_PAGE_TITLES), PAGE_TITLES);
   });
-  it('the PagedLab lookup is 0-based, and the what’s-left index has none', () => {
+  it('the PagedLab lookup is 0-based; past the last page it has none (the end screen uses endGuide)', () => {
     assert.equal(patchbayPageGuide(0), GUIDES.p1);
     assert.equal(patchbayPageGuide(22), GUIDES.p23);
     assert.equal(patchbayPageGuide(23), undefined);
@@ -262,14 +267,15 @@ describe('3. the numbers and states TRY THIS quotes are what the screen shows', 
 describe('4. wiring: every page draws the ⓘ through PagedLab', () => {
   const SCREEN = code(`${PB}/PatchbayLabScreen.tsx`);
   const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
-  it('PatchbayLabScreen passes the lookup as pageGuide', () => {
-    assert.match(SCREEN, /import \{ patchbayPageGuide \} from '\.\/patchbayScreenGuides';/);
+  it('PatchbayLabScreen passes the lookup as pageGuide and PATCHBAY_END_GUIDE as endGuide', () => {
+    assert.match(SCREEN, /import \{ PATCHBAY_END_GUIDE, patchbayPageGuide \} from '\.\/patchbayScreenGuides';/);
     assert.match(SCREEN, /<PagedLab[\s\S]*?pageGuide=\{patchbayPageGuide\}[\s\S]*?\/>/);
+    assert.match(SCREEN, /<PagedLab[\s\S]*?endGuide=\{PATCHBAY_END_GUIDE\}[\s\S]*?\/>/);
   });
-  it('PagedLab: no ⓘ on the what’s-left screen; the host wraps the page, regions on rack pages', () => {
-    assert.match(PAGED, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+  it('PagedLab: the end guide shows while ending, titled WHERE YOU ARE; the host wraps the page, regions on rack pages only', () => {
+    assert.match(PAGED, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
     assert.match(PAGED, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\} regions=\{!!def\.rack && !ending\}>/);
-    assert.match(PAGED, /guide=\{guide\}\s*guideTitle=\{def\.title\.toUpperCase\(\)\}/);
+    assert.match(PAGED, /guide=\{guide\}\s*guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
   });
 });
 
@@ -285,5 +291,132 @@ describe('5. the accuracy chip: Patchbay is a CONCEPT lab', () => {
       assert.doesNotMatch(code(f), /AccuracyNote/, `${f} draws an accuracy chip`);
     }
     assert.match(code(`${PB}/art/JackCutaway.tsx`), /export const JACK_BADGE = `CONCEPTUAL MODEL/);
+  });
+});
+
+describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
+  const END = PATCHBAY_END_GUIDE as unknown as Guide;
+  const ET = textOf(END);
+  const SCREEN = code(`${PB}/PatchbayLabScreen.tsx`);
+  const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
+  const LES = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LABEND = code('src/screens/lab/kit/labEnd.ts');
+  const NAV = code('src/screens/lab/kit/useLabNav.ts');
+  const NAVBAR = code('src/screens/lab/kit/LabNavBar.tsx');
+  const NAVPURE = code('src/screens/lab/kit/labNav.ts');
+  /** PagedLab's own <LabEndScreen … /> element. */
+  const endEl = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
+
+  it('all five sections, 1–5 bullets, 2–3 TRY THIS, inside the no-scroll budgets', () => {
+    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    for (const k of SECTION_KEYS) {
+      assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: ${END[k].length} bullets`);
+      for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
+    }
+    assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3);
+    for (const s of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      if (s.place === 'strip') {
+        for (const item of END.tryThis) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `end.tryThis (${item.length})`);
+        continue;
+      }
+      const cap = s.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low;
+      const n = END[s.key].join(' ').length;
+      assert.ok(n <= cap, `end.${s.key}: ${n} > ${cap}`);
+    }
+  });
+  it('house copy rules', () => {
+    assert.doesNotMatch(ET, /\byou(’|')?ll (master|build|mix|be able)|\bmaster(y|ed)?\b|\byou will learn to\b/i);
+    assert.doesNotMatch(ET, /\b\d+\s+of\s+\d+\b|\b\d+\s*\/\s*\d+\b|\bOF\s+\d+\b/i, 'an "N of total"');
+    assert.doesNotMatch(ET, /\brecommend/i);
+    assert.doesNotMatch(ET, /\b(TODO|FIXME|placeholder|owner 20\d\d)\b/i);
+    assert.doesNotMatch(ET, /\b(Neutrik|Bittree|Behringer|Samson)\b/i);
+  });
+  it('the titles it names are the ones labEnd / LabEndScreen draw', () => {
+    assert.match(LABEND, /w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT"/);
+    assert.match(ET, /WHAT’S LEFT[\s\S]*LAB COMPLETE/);
+    assert.ok(endEl.length > 0, 'found PagedLab’s <LabEndScreen />');
+    assert.doesNotMatch(endEl, /completeTitle=/, 'no custom complete title for this lab');
+    assert.match(PAGED, /guideTitle=\{ending \? 'WHERE YOU ARE'/);
+  });
+  it('credit mode: Patchbay banks p<n> credit (creditLabKey) → rows read ✓ CREDITED, ✓ DONE for a guest', () => {
+    assert.match(SCREEN, /<PagedLab[\s\S]*?creditLabKey=\{PATCHBAY_LAB_KEY\}[\s\S]*?\/>/);
+    assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(endEl, /mode=\{creditMode\}/);
+    assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.match(LES, /✓ \{tag\} · /);
+    assert.match(ET, /✓ CREDITED line \(✓ DONE when you are not signed in\)/);
+  });
+  it('the unit is a page; no understanding check, no optional page, no per-page detail line', () => {
+    assert.match(endEl, /noun="page"/);
+    assert.doesNotMatch(code('src/features/lab/understandingChecks.ts'), /\bpatchbay\s*:/, 'Patchbay has no understanding check (no CHECK row)');
+    assert.doesNotMatch(SCREEN, /optionalPage=|pageDetail=|handsOnDetail=|labDoneKey=|doneLabel=/);
+    assert.doesNotMatch(ET, /\bCHECK\b|optional/i);
+    assert.match(ET, /listed by its number and name/);
+    assert.match(LES, /String\(r\.num\)\.padStart\(2, '0'\)/);
+  });
+  it('every button label it quotes is on the end screen or the strip, exactly', () => {
+    assert.match(LES, /label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(LES, /doneLabel = 'DONE · BACK TO LABS'/);
+    assert.doesNotMatch(endEl, /doneLabel=/, 'PagedLab keeps the default DONE label');
+    assert.match(LES, /'HIDE ▴' : 'REVIEW ▾'/);
+    assert.match(NAVPURE, /prev: '‹ PREV'/);
+    assert.match(NAVPURE, /whatsLeft: "WHAT'S LEFT"/);
+    assert.match(PAGED, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    for (const label of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'HIDE ▴', '‹ PREV', 'START OVER (PRACTICE)', 'WHAT’S LEFT readout opens CONTENTS']) {
+      assert.ok(ET.includes(label), `the end guide never names "${label}"`);
+    }
+  });
+  it('what each control does: row → that page; PRACTICE AGAIN → page 1, clears nothing; DONE → one screen back; ‹ PREV → the page you came from', () => {
+    assert.match(endEl, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
+    assert.match(endEl, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
+    assert.match(endEl, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.match(NAV, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/, '‹ PREV on the end screen leaves it back to the page');
+    assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/, 'page index untouched');
+    assert.match(NAVBAR, /onPress=\{nav\.prev\}/);
+    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1 and clears nothing/);
+    assert.match(ET, /DONE · BACK TO LABS leaves the lab, back to the screen you opened it from/);
+  });
+  it('the credit rule: NEXT / FINISH tick only the three pages without manualDone; every other page ticks itself', () => {
+    const defs = PAGE_FILES.flatMap((f) =>
+      [...code(f).matchAll(/\{ title: '((?:[^'\\]|\\.)*)', short: [^\n]*\}/g)].map((m) => ({ title: m[1], manual: /manualDone: true/.test(m[0]) })),
+    );
+    assert.equal(defs.length, 23);
+    assert.deepEqual(
+      defs.filter((d) => !d.manual).map((d) => d.title),
+      ['Signal falls downhill', 'One pair, two pictures', 'The four questions, answered'],
+    );
+    // …which are pages 1, 2 and 13 — and none of them is the last page, so
+    // FINISH (shown only on p23, a manualDone page) ticks nothing.
+    const idx = defs.map((d, i) => (d.manual ? -1 : i + 1)).filter((n) => n > 0);
+    assert.deepEqual(idx, [1, 2, 13]);
+    assert.ok(defs[defs.length - 1].manual, 'the last page (FINISH) marks itself');
+    assert.match(NAV, /if \(index >= last\) \{\s*finish\(\);/);
+    assert.match(ET, /Three pages count as soon as you leave them with NEXT: page 1, page 2 and page 13\./);
+    assert.doesNotMatch(ET, /leave them with NEXT or FINISH/);
+    assert.match(ET, /NEXT \(FINISH on the last page\) still moves on, but the page stays listed/);
+    assert.match(ET, /pages 1, 2 and 13 count once you leave them with NEXT/);
+    assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    // A page counts by its device tick OR its banked p<n> credit unit.
+    assert.match(PAGED, /\(!!creditLabKey && bankedPages\.has\(`p\$\{i \+ 1\}`\)\)/);
+    assert.match(SCREEN, /markLabUnit\(PATCHBAY_LAB_KEY, `p\$\{index \+ 1\}`\)/);
+  });
+  it('START OVER (PRACTICE): last row of CONTENTS, asks first, page 1; banked pages keep their ✓', () => {
+    assert.match(PAGED, /Credit you have already earned stays\./);
+    assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
+    assert.match(PAGED, /setEnding\(false\);\s*setPage\(0\);/);
+    assert.match(NAVBAR, /\{NAV\.whatsLeft\} ›<\/Text>[\s\S]*?\{nav\.reset \?/, 'the reset row is the last row of CONTENTS');
+    assert.match(ET, /START OVER \(PRACTICE\), last in CONTENTS, asks first, then starts again from page 1\. Pages already credited keep their ✓\./);
+  });
+  it('YOUR PROGRESS when saved progress cannot be read; every row still opens', () => {
+    assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
+    assert.match(endEl, /unreadable=\{unreadable\}/);
+    assert.match(ET, /the title reads YOUR PROGRESS and every page can still be opened/);
+  });
+  it('TRY THIS holds on every face: LAB COMPLETE lists nothing; REVIEW ▾ only once a page is done', () => {
+    assert.match(LES, /\{w\.left\.length > 0 \?/);
+    assert.match(LES, /\{w\.credited\.length > 0 \?/);
+    assert.match(END.tryThis[0], /^A page still listed\?/);
+    assert.match(END.tryThis[1], /^Something on the ✓ line\?/);
+    assert.doesNotMatch(ET, /keeps its credit/);
   });
 });

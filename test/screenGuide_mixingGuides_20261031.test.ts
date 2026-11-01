@@ -8,10 +8,15 @@
  *   2. each guide quotes the screen's REAL names (guide AND source);
  *   3. the search results TRY THIS quotes are what filterGuides returns;
  *   4. wiring: the hub and the reader hand their guide to LabHeader and host
- *      the overlay (no ⓘ on the what's-left screen); the hand-edited guide
- *      data and the owner's world map are only read, never touched;
+ *      the overlay; the reader's what's-left END screen hands its own guide
+ *      (WHERE YOU ARE); the hand-edited guide data and the owner's world map
+ *      are only read, never touched;
  *   5. the accuracy chip: the reader KEEPS it (live SPL and loudness figures);
- *      the hub has none (no measurement shown).
+ *      the hub has none (no measurement shown);
+ *   6. the END guide's facts match the code: the props this screen passes to
+ *      LabEndScreen (progress mode, noun, DONE label, PRACTICE AGAIN → first
+ *      guide, DONE → back), the shared kit's titles / button / row words, and
+ *      what makes a guide count as read (NEXT › / FINISH › / MARK AS READ).
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -35,17 +40,17 @@ registerHooks({
 });
 
 const MG = 'src/screens/lab/mixingGuides';
-const { MIXING_GUIDES_HUB_GUIDE, MIXING_GUIDE_READER_GUIDE } = await import(`../${MG}/mixingGuidesScreenGuides.ts`);
+const { MIXING_GUIDES_HUB_GUIDE, MIXING_GUIDE_READER_GUIDE, MIXING_GUIDES_END_GUIDE } = await import(`../${MG}/mixingGuidesScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const { filterGuides } = await import(`../${MG}/guideSearch.ts`);
 const { MIXING_GUIDE_INDEX } = await import(`../${MG}/data/index.ts`);
 
 type Guide = Record<string, string[]>;
-const GUIDES: Record<string, Guide> = { hub: MIXING_GUIDES_HUB_GUIDE, reader: MIXING_GUIDE_READER_GUIDE };
+const GUIDES: Record<string, Guide> = { hub: MIXING_GUIDES_HUB_GUIDE, reader: MIXING_GUIDE_READER_GUIDE, end: MIXING_GUIDES_END_GUIDE };
 const SECTION_KEYS = SCREEN_GUIDE_SECTIONS.map((s: { key: string }) => s.key);
 const textOf = (gd: Guide) => SECTION_KEYS.map((k) => gd[k].join('\n')).join('\n');
 
-describe('1. both screens have a complete guide', () => {
+describe('1. every screen (hub, reader, end) has a complete guide', () => {
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
       assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
@@ -82,8 +87,8 @@ describe('1. both screens have a complete guide', () => {
       assert.match(t, /starting points?, not (a )?rules?/i, `${id}: no “starting points, not rules”`);
     }
   });
-  it('the reader guide names the template, never one style', () => {
-    const t = textOf(GUIDES.reader);
+  it('the reader and end guides name the template, never one style', () => {
+    const t = textOf(GUIDES.reader) + '\n' + textOf(GUIDES.end);
     for (const g of MIXING_GUIDE_INDEX as { title: string }[]) assert.ok(!t.includes(g.title + ' '), `reader names the style “${g.title}”`);
   });
 });
@@ -152,10 +157,12 @@ describe('4. wiring', () => {
     assert.match(HUB, /<ScreenGuideHost regions=\{false\} resetKey="hub">\s*<LabHeader title="MIXING GUIDES"[^>]*guide=\{MIXING_GUIDES_HUB_GUIDE\} \/>/);
     assert.match(HUB, /<\/ScreenGuideHost>\s*(\{\})?\s*<ProNoteIntro \/>/);
   });
-  it('the reader hands its guide to LabHeader, never on the what’s-left screen', () => {
-    assert.match(READER, /import \{ MIXING_GUIDE_READER_GUIDE \} from '\.\/mixingGuidesScreenGuides';/);
+  it('the reader hands its guide to LabHeader; the what’s-left screen hands the END guide, titled WHERE YOU ARE', () => {
+    assert.match(READER, /import \{ MIXING_GUIDE_READER_GUIDE, MIXING_GUIDES_END_GUIDE \} from '\.\/mixingGuidesScreenGuides';/);
     assert.match(READER, /<ScreenGuideHost regions=\{false\} resetKey=\{ending \? 'end' : 'guide'\}>/);
-    assert.match(READER, /guide=\{ending \? undefined : MIXING_GUIDE_READER_GUIDE\}/);
+    assert.match(READER, /guide=\{ending \? MIXING_GUIDES_END_GUIDE : MIXING_GUIDE_READER_GUIDE\}/);
+    assert.match(READER, /guideTitle=\{ending \? 'WHERE YOU ARE' : undefined\}/);
+    assert.doesNotMatch(READER, /guide=\{ending \? undefined/, 'the end screen has a guide now');
     assert.match(READER, /<\/ScreenGuideHost>\s*<\/View>\s*<\/LabNavProvider>/);
   });
   it('the guide file only reads the template: it imports nothing from the hand-edited guide data or the map', () => {
@@ -172,5 +179,87 @@ describe('5. the accuracy chip', () => {
   });
   it('the hub has no chip (no measurement on the menu)', () => {
     assert.doesNotMatch(code(`${MG}/MixingGuidesHubScreen.tsx`), /AccuracyNote/);
+  });
+});
+
+describe('6. the END guide matches the end screen this lab renders', () => {
+  const READER = code(`${MG}/MixingGuideScreen.tsx`);
+  const KIT = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LAB_END = code('src/screens/lab/kit/labEnd.ts');
+  const NAV_RAW = ['src/screens/lab/kit/labNav.ts', 'src/screens/lab/kit/useLabNav.ts', 'src/screens/lab/kit/LabNavBar.tsx'].map(read).join('\n');
+  const NAV = ['src/screens/lab/kit/labNav.ts', 'src/screens/lab/kit/useLabNav.ts', 'src/screens/lab/kit/LabNavBar.tsx'].map(code).join('\n');
+  const END = textOf(GUIDES.end);
+  const at = READER.indexOf('<LabEndScreen');
+  const endBlock = READER.slice(at, READER.indexOf('/>', at));
+
+  it('the props it passes: progress mode, noun guide, the DONE label, first guide on PRACTICE AGAIN, back on DONE', () => {
+    assert.ok(at > 0, 'the reader no longer renders LabEndScreen');
+    assert.match(endBlock, /labTitle="Mixing Guides"/);
+    assert.match(endBlock, /mode="progress"/);
+    assert.match(endBlock, /noun="guide"/);
+    assert.match(endBlock, /doneLabel="DONE · BACK TO THE GUIDES"/);
+    assert.match(endBlock, /onPracticeAgain=\{\(\) => go\(0\)\}/);
+    assert.match(endBlock, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.match(endBlock, /cleared=\{readIds\}/);
+    assert.match(endBlock, /unreadable=\{unreadable\}/);
+    assert.match(endBlock, /units=\{MIXING_GUIDE_INDEX\.map\(\(g\) => \(\{ id: g\.id, label: g\.title \}\)\)\}/);
+    // No completeTitle (LAB COMPLETE stays), no optional units, no check, no extra.
+    assert.doesNotMatch(endBlock, /completeTitle|optional|kind: 'check'|extra=/);
+    // The hub is the only way in, so DONE and the header ‹ land on the menu.
+    assert.match(code(`${MG}/MixingGuidesHubScreen.tsx`), /navigation\.navigate\('MixingGuide', \{ id \}\)/);
+  });
+
+  it('the kit’s words it quotes: titles, button labels, the ✓ DONE line and REVIEW ▾', () => {
+    for (const w of ["'LAB COMPLETE'", `"WHAT'S LEFT"`]) assert.ok(LAB_END.includes(w), `labEnd.ts no longer says ${w}`);
+    assert.match(KIT, /unreadable \? 'YOUR PROGRESS'/);
+    assert.match(KIT, /label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(KIT, /label=\{doneLabel\}/);
+    assert.match(KIT, /showCredited \? 'HIDE ▴' : 'REVIEW ▾'/);
+    // progress mode → the tag is DONE for everyone (never CREDITED).
+    assert.match(KIT, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    for (const w of ['WHAT’S LEFT', 'LAB COMPLETE', 'YOUR PROGRESS', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO THE GUIDES', '✓ DONE', 'REVIEW ▾', 'MIXING GUIDES']) {
+      assert.ok(END.includes(w), `the END guide never names "${w}"`);
+    }
+    assert.doesNotMatch(END, /CREDITED|credit/i, 'a progress-mode lab never reads CREDITED');
+    assert.doesNotMatch(END, /OPTIONAL|\bCHECK\b/, 'this lab has no optional units and no check');
+  });
+
+  it('what counts as read: NEXT › / FINISH › (beforeAdvance) or MARK AS READ — never a CONTENTS jump or ‹ PREV; a preview records nothing', () => {
+    assert.match(READER, /beforeAdvance: \(from\) => \{\n\s*void markGuideRead\(MIXING_GUIDE_INDEX\[from\]\.id\);/);
+    assert.match(READER, /const markRead = useLatchedPress\(\(\) => markGuideRead\(entry\.id\)\);/);
+    assert.match(NAV_RAW, /FINISH\s+→ beforeAdvance\?\(i\) → finish\(\)/);
+    assert.match(NAV_RAW, /CONTENTS → jump\(i\) = go\(i\)\s+\(beforeAdvance is NOT run\)/);
+    assert.match(NAV, /const jump = useCallback\(\n\s*\(i: number\) => \{\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*leaveEnd\(\);\n\s*go\(/);
+    assert.match(code(`${MG}/readProgress.ts`), /if \(getLabPreview\(\)\.active\) return Promise\.resolve\(false\);/);
+    // The in-flow button at the foot of each guide runs the same nav.next.
+    assert.match(NAV, /const press = onPress \?\? nav\?\.next;/);
+    assert.ok(GUIDES.end.changes[0].includes('NEXT › or FINISH › (in the strip or at its foot), or tap MARK AS READ'));
+    // ⏮ (start → go(0)) and the CONTENTS footer (openEnd → finish()) skip beforeAdvance too.
+    assert.match(NAV, /const openEnd = useCallback\(\(\) => \{\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*finish\(\);/);
+    assert.ok(GUIDES.end.changes[0].includes('Opening it, ‹ PREV, ⏮, list jumps, WHAT’S LEFT › and the ‹ at the top do not count'));
+    assert.ok(GUIDES.end.changes[1].includes('A members-only preview records nothing'));
+  });
+
+  it('the strip on the end screen: ‹ PREV returns to the guide you came from, the readout reads WHAT’S LEFT', () => {
+    assert.match(NAV, /if \(ending\) \{\n\s*unEnd\(\);\n\s*return;/);
+    assert.match(NAV, /whatsLeft: "WHAT'S LEFT"/);
+    assert.match(NAV, /\{NAV\.whatsLeft\} ›/);
+    assert.match(READER, /unEnd: \(\) => setEnding\(false\)/);
+    assert.ok(END.includes('‹ PREV goes back to the guide you came from'));
+    assert.ok(END.includes('WHAT’S LEFT ›'), 'TRY THIS names the CONTENTS footer');
+  });
+
+  it('review fixes 2026-10-31: open sections are ONE set for the screen; unreadable still shows this session’s marks', () => {
+    // One shared open set, kept across styles — never remembered per style.
+    assert.match(READER, /const \[open, setOpen\] = useState<ReadonlySet<GuideSectionKey>>\(\(\) => new Set<GuideSectionKey>\(\['purpose'\]\)\);/);
+    assert.ok(GUIDES.end.tryThis[1].includes('the sections you had open on your last guide are open on this one too'));
+    assert.doesNotMatch(END, /sections you left open are still open/);
+    // Unreadable: the note replaces the lead; marks made this session still leave the list, so never "every guide stays listed".
+    assert.match(KIT, /\{unreadable \? \(\n\s*<ProgressUnreadableNote \/>/);
+    assert.doesNotMatch(END, /every guide stays listed/);
+    assert.ok(GUIDES.end.changes[2].includes('a note says why, and every guide still opens'));
+    // FINISH › on the last style goes straight to the end screen.
+    assert.ok(GUIDES.end.tryThis[0].includes('on the last style, FINISH › brings you straight back'));
+    assert.doesNotMatch(END, /index order|still new to you/);
   });
 });

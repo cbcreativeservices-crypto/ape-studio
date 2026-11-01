@@ -3,8 +3,12 @@
  * Guide rollout 2026-10-31, after the Wave Physics pilot). One guide per
  * page of the PagedLab, in page order: CONNECTOR_SELECT_PAGES pairs each id
  * with its PageDef title (pagesA–D), and the test pins that order against
- * the page files. There is no separate home: page 1 is the landing, and the
- * PagedLab's what's-left screen carries no ⓘ by design.
+ * the page files. There is no separate home: page 1 is the landing. The
+ * PagedLab's what's-left screen has its own guide, CONNECTOR_SELECT_END_GUIDE
+ * (PagedLab `endGuide`, titled WHERE YOU ARE), written against
+ * kit/LabEndScreen + kit/labEnd as this lab drives them: credit mode
+ * (creditLabKey af_connector_select), noun "page", no understanding check,
+ * no optional pages, the default DONE · BACK TO LABS (safeGoBack).
  *
  * Every line was written against the page's own code (pagesA–D, bits, data/*,
  * engine/*): the names are the on-screen names (station tags, buttons, goal
@@ -496,6 +500,38 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
       'Miss one SAFETY-CRITICAL question and score high anyway: it still reads NOT YET.',
     ],
   },
+};
+
+/** PagedLab's `endGuide`: the what's-left screen (FINISH › on the last page,
+ *  or WHAT'S LEFT › in the contents). Every page here marks ITSELF done when
+ *  its goal chips all tick (manualDone + useVisitGoals) and banks `p<n>`
+ *  credit; the Final's goal is a pass (80% + every safety call). */
+export const CONNECTOR_SELECT_END_GUIDE: ScreenGuide = {
+  seeing: [
+    "WHAT'S LEFT: each page not finished yet, by name. With none left the title reads LAB COMPLETE.",
+    'Finished pages fold into one ✓ CREDITED row (✓ DONE when you are not signed in or are in a preview); REVIEW ▾ lists them.',
+    'The line under the title says how much is left and whether your work is saved.',
+    'If your progress cannot be read, the title reads YOUR PROGRESS, a note says why, and every page still opens.',
+  ],
+  control: [
+    'Tap a page’s row to jump straight to it.',
+    'REVIEW ▾ on the ✓ row unfolds the finished pages; tap any one to open it again.',
+    'PRACTICE AGAIN FROM THE START opens page 1 and clears nothing.',
+    'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from. ‹ PREV returns to the page you were on.',
+  ],
+  changes: [
+    'A page counts once all its goal chips read ✓ in one visit; leave early and they reset to ○. NEXT and FINISH never mark it.',
+    'The Final counts only after a pass: 80% and every safety call right.',
+    'Finished pages are credited to your account. Signed out, the line under the title says if signing in can still keep them; a preview earns nothing. START OVER (PRACTICE) in the contents resets goal chips, never credit.',
+  ],
+  teaches: [
+    'Which pages of the lab, from Connector, cable, signal to the Final, you have not finished yet.',
+    'Every page can be redone for practice at any time; practicing never removes credit you have earned.',
+  ],
+  tryThis: [
+    'Jump to the first page still listed and find its goal chips at the bottom: each ○ is a goal not met yet.',
+    'Tap REVIEW ▾ and reopen a finished page you found hard — practicing it never removes its credit.',
+  ],
 };
 
 /** PagedLab's `pageGuide`: page index → its guide (undefined past the end). */

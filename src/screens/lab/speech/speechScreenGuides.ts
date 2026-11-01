@@ -7,7 +7,8 @@
  * from Advanced Training → Voice & Speech, so page 1's guide also explains
  * the strip. One guide per page, keyed p1…p11 in page order (SpeechLabScreen
  * PAGES), plus the understanding check PagedLab appends (understandingChecks
- * SPEECH, keyed `check`). The what's-left screen shows no ⓘ (PagedLab).
+ * SPEECH, keyed `check`). The what's-left screen has its own guide,
+ * SPEECH_END_GUIDE (PagedLab `endGuide`, titled WHERE YOU ARE).
  *
  * Every line was written against the page's own code (speechPagesA/B,
  * headSection, speechViz, vowelViz, consonantViz, distanceViz, speechCharts,
@@ -378,9 +379,51 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   },
 };
 
+/**
+ * The what's-left END screen (PagedLab `endGuide`; LabEndScreen + labEnd).
+ * Written against what this lab passes: no creditLabKey / pageCreditKeys, so
+ * PROGRESS mode (rows read ✓ DONE, saved on this device); noun "page"; no
+ * handsOnDetail / pageDetail / optionalPage, so no detail lines except the
+ * appended check's own; the default DONE label (DONE · BACK TO LABS →
+ * safeGoBack, the screen the lab was opened from); PRACTICE AGAIN → goTo(0),
+ * clears nothing. A page counts done when NEXT/FINISH leaves it
+ * (beforeAdvance) or one of its main keys calls ctx.markDone (GOT IT › on
+ * Voices Differ; not p3's pair keys or FULL SCREEN); Check Yourself is manualDone and marks itself at
+ * PASS_MARK = 5; the check marks itself at all four right and is banked to
+ * the account (UNDERSTANDING_UNIT), so START OVER (PRACTICE) never unmarks it.
+ * Pinned in test/screenGuide_speech_20261031 §7.
+ */
+export const SPEECH_END_GUIDE: ScreenGuide = {
+  seeing: [
+    'The big title reads WHAT’S LEFT, or LAB COMPLETE once every page and the check are done (YOUR PROGRESS if saved progress cannot be read). Under WHAT’S LEFT, a line says what is left and whether your work is saved on this device.',
+    'Each page not done yet is a row, by name; the check’s row, Check your understanding, is marked CHECK.',
+    'The pages you have done, and the check once passed, fold into one ✓ DONE line.',
+  ],
+  control: [
+    'Tap a row to jump straight to that page, or to the check.',
+    'REVIEW ▾ on the ✓ DONE line unfolds what you have done; tap any row to open it again. HIDE ▴ folds them away.',
+    'PRACTICE AGAIN FROM THE START opens The Speech System and clears nothing. DONE · BACK TO LABS leaves the lab, back to the screen you opened it from.',
+    'On the strip, ‹ PREV returns to the page you came from, ⏮ opens the first page, and WHAT’S LEFT ▾ lists every page.',
+  ],
+  changes: [
+    'A page counts once you leave it with NEXT ›, or sooner when you tap one of its main keys (GOT IT › on Voices Differ). Opening it from a list counts nothing.',
+    'Check Yourself counts only at five right in one visit; the check, only once all four are right.',
+    'START OVER (PRACTICE), in the strip’s list, clears the page marks; a passed check stays done.',
+  ],
+  teaches: [
+    'Which of the lab’s ideas you have met — anatomy, how a voice is made, voicing, vowels, consonants, plosives, sibilance, distance, voices, problems — and which are still ahead.',
+    'The check is what completes the lab for any certificate or program that lists it.',
+  ],
+  tryThis: [
+    'If any row is still listed, open the first one straight from here and try its keys or answers; on any page before Check Yourself, NEXT › then counts it.',
+    'If the CHECK row is still listed, open it: a wrong answer explains itself, so read it and pick again.',
+    'Open the Speech Problem Simulator, from its row or from REVIEW ▾ once it is done, and tap each problem key in turn.',
+  ],
+};
+
 /** PagedLab's `pageGuide`: page index (0-based) → that page's guide. Index 11
- *  is the appended understanding check; the what's-left screen never asks
- *  (PagedLab shows no ⓘ there). */
+ *  is the appended understanding check; the what's-left screen uses
+ *  SPEECH_END_GUIDE (PagedLab `endGuide`) instead. */
 export function speechPageGuide(index: number): ScreenGuide | undefined {
   if (index === 11) return SPEECH_SCREEN_GUIDES.check;
   return SPEECH_SCREEN_GUIDES[`p${index + 1}`];

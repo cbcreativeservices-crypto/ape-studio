@@ -14,7 +14,12 @@
  *      shared shell, already draws the ⓘ and hosts the overlay);
  *   5. the accuracy-chip decision: KEPT — the lab prints gain/level readouts
  *      (dBFS meters), modeled dBA and a 4-hour dose (Screen 20) and latency,
- *      and its chip carries the lab's own safe-listening detail.
+ *      and its chip carries the lab's own safe-listening detail;
+ *   6. the what's-left END screen has its own guide (DJ_END_GUIDE, passed to
+ *      PagedLab as endGuide, titled WHERE YOU ARE), and every fact it states
+ *      is pinned to the code: progress mode (✓ DONE, never CREDITED), the
+ *      button labels, no check row, screens 16–18 optional, the self-marking
+ *      goal rule, the Left: line and where DONE goes.
  */
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -40,7 +45,7 @@ const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g,
 /** Source with comments stripped — a name in a comment proves nothing. */
 const code = (p: string) => read(p).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
 
-const { DJ_SCREEN_GUIDES } = await import('../src/screens/lab/dj/djScreenGuides.ts');
+const { DJ_SCREEN_GUIDES, DJ_END_GUIDE } = await import('../src/screens/lab/dj/djScreenGuides.ts');
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const { nioshDose } = await import('../src/screens/lab/calc/workspaces/splSafety.ts');
 const { pitchFor } = await import('../src/screens/lab/dj/model/djTime.ts');
@@ -229,13 +234,13 @@ describe('3. every TRY THIS number is the screen’s own', () => {
 describe('4. wiring: PagedLab gets the guides', () => {
   it('DJSystemsLabScreen passes pageGuide, by each screen’s title', () => {
     const scr = code(`${DJ}/DJSystemsLabScreen.tsx`);
-    assert.match(scr, /import \{ DJ_SCREEN_GUIDES \} from '\.\/djScreenGuides';/);
+    assert.match(scr, /import \{ DJ_END_GUIDE, DJ_SCREEN_GUIDES \} from '\.\/djScreenGuides';/);
     assert.match(scr, /const pageGuide = \(i: number\) => \(DJ_PAGES\[i\] \? DJ_SCREEN_GUIDES\[DJ_PAGES\[i\]\.title\] : undefined\);/);
     assert.match(scr, /<PagedLab[\s\S]*?pageGuide=\{pageGuide\}[\s\S]*?\/>/);
   });
-  it('the shared shell draws the key and hosts the overlay for a pageGuide (unchanged here)', () => {
+  it('the shared shell draws the key and hosts the overlay for a pageGuide (and, ending, the endGuide)', () => {
     const pl = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(pl, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(pl, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
     assert.match(pl, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\} regions=\{!!def\.rack && !ending\}>/);
     // every DJ screen is a Rack Unit page, so every step sits beside its area
     for (const f of PAGE_FILES) assert.match(code(`${DJ}/pages/${f}`), /manualDone: true, rack: true \};/, `${f}: a rack page`);
@@ -255,5 +260,171 @@ describe('5. the accuracy chip: KEPT (gain/level readouts, modeled dBA and dose)
     assert.match(p20, /k: 'FLOOR'/);
     assert.match(p20, /k: '4-HOUR DOSE'/);
     assert.match(code(`${DJ}/pages/p16Laptop.tsx`), /k: 'LATENCY'/);
+  });
+});
+
+describe('6. the what’s-left END screen has its own guide, every fact pinned to the code', () => {
+  const END = DJ_END_GUIDE as unknown as Guide;
+  const et = textOf(END);
+  const scr = code(`${DJ}/DJSystemsLabScreen.tsx`);
+  const pl = code('src/screens/lab/kit/PagedLab.tsx');
+  const les = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const le = code('src/screens/lab/kit/labEnd.ts');
+  /** The <LabEndScreen …/> PagedLab draws when ending. */
+  const endEl = pl.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
+
+  it('shape, budgets and house copy rules', () => {
+    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    for (const k of SECTION_KEYS) {
+      assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: 1–5 bullets`);
+      for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
+    }
+    assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3);
+    for (const s of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      if (s.place === 'strip') {
+        for (const item of END.tryThis) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `end.tryThis (${item.length})`);
+        continue;
+      }
+      const n = END[s.key].join(' ').length;
+      assert.ok(n <= (s.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low), `end.${s.key}: ${n}`);
+    }
+    assert.doesNotMatch(et, /\byou(’|')?ll (master|build|mix|be able)|\bmastery\b|\byou mastered\b|\byou will learn to\b|\byou can now\b/i);
+    assert.doesNotMatch(et, /\b\d+\s+of\s+\d+\b|\b\d+\s*\/\s*\d+\b|\bOF\b/, 'no "N of total" — the ✓ DONE line’s count is never quoted');
+    assert.doesNotMatch(et, /\brecommend/i);
+    assert.doesNotMatch(et, /\b(TODO|FIXME|placeholder|walkthrough|owner 20\d\d|build \d+)\b/i);
+    assert.doesNotMatch(et, /\b(Pioneer|Technics|Serato|rekordbox|Rekordbox|Traktor|Native Instruments|Denon|Rane|Allen & Heath|Numark|Shure|Sennheiser|Ableton|Roland)\b/);
+  });
+
+  it('wiring: DJSystemsLabScreen passes endGuide={DJ_END_GUIDE}; PagedLab shows it ending, titled WHERE YOU ARE', () => {
+    assert.match(scr, /import \{ DJ_END_GUIDE, DJ_SCREEN_GUIDES \} from '\.\/djScreenGuides';/);
+    assert.match(scr, /<PagedLab[\s\S]*?endGuide=\{DJ_END_GUIDE\}[\s\S]*?\/>/);
+    assert.match(pl, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(pl, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
+    assert.match(pl, /<LabHeader title=\{ending \? 'Where you are' : def\.title\}/);
+  });
+
+  it('progress mode: finished rows read ✓ DONE (never CREDITED) — the lab hands PagedLab no creditLabKey / pageCreditKeys', () => {
+    assert.doesNotMatch(scr, /creditLabKey=|pageCreditKeys=|onPageDone=/);
+    assert.match(pl, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(endEl, /mode=\{creditMode\}/);
+    assert.match(endEl, /noun="page"/);
+    assert.match(les, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.ok(et.includes('✓ DONE'));
+    assert.ok(!et.includes('CREDITED'));
+  });
+
+  it('the titles it names are labEnd’s / LabEndScreen’s', () => {
+    assert.match(le, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(les, /const title = unreadable \? 'YOUR PROGRESS' :/);
+    for (const t of ['WHAT’S LEFT', 'LAB COMPLETE', 'YOUR PROGRESS']) assert.ok(et.includes(t), `guide names ${t}`);
+    // no completeTitle is passed, so LAB COMPLETE is the complete title
+    assert.doesNotMatch(endEl, /completeTitle=/);
+  });
+
+  it('every button label is the one drawn: PRACTICE AGAIN FROM THE START, DONE · BACK TO LABS (default), REVIEW ▾ / HIDE ▴', () => {
+    assert.match(les, /<GlassButton label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(les, /doneLabel = 'DONE · BACK TO LABS',/);
+    assert.doesNotMatch(endEl, /doneLabel=/, 'PagedLab keeps the default DONE label');
+    assert.match(les, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+    for (const b of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'HIDE ▴']) assert.ok(et.includes(b), `guide names ${b}`);
+  });
+
+  it('where each button goes: a row jumps to its screen, PRACTICE AGAIN reopens Screen 1 (clears nothing), DONE leaves the lab', () => {
+    assert.match(endEl, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
+    assert.match(endEl, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
+    assert.match(endEl, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    // goTo only moves the page — it never resets progress (doReset is START OVER's)
+    const goTo = pl.match(/const goTo = useCallback\(\(i: number\) => \{[\s\S]*?\}, \[/)?.[0] ?? '';
+    assert.ok(goTo && !/resetPagedProgress|completed: \[\]/.test(goTo), 'PRACTICE AGAIN clears nothing');
+    assert.ok(et.includes('PRACTICE AGAIN FROM THE START reopens Screen 1 and clears nothing.'));
+    assert.ok(et.includes('DONE · BACK TO LABS leaves the lab.'));
+    assert.ok(et.includes('jump straight to it'));
+  });
+
+  it('no check row: no understanding check is authored for this lab, so the guide never lists one', async () => {
+    const { understandingFor } = await import('../src/features/lab/understanding.ts');
+    assert.equal(understandingFor('dj-systems'), null);
+    assert.match(code(`${DJ}/pages/registry.ts`), /export const DJ_LAB_ID = 'dj-systems';/);
+    assert.ok(!/Check your understanding|CHECK YOUR UNDERSTANDING/.test(et));
+  });
+
+  it('the credit rule: a screen counts when every goal chip ticks in one visit (it marks itself); NEXT never counts it', () => {
+    // every DJ screen marks itself (manualDone) — pinned per page in section 4 — so NEXT never marks it
+    assert.match(pl, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    const bits = code(`${DJ}/bits.tsx`);
+    assert.match(bits, /const all = seen\.current\.every\(Boolean\);/);
+    assert.match(bits, /if \(markOnMet\(true, ctx\.isDone\)\) ctx\.markDone\(\);/);
+    // chips start empty every visit; a done screen is never unmarked
+    const gs = code(`${DJ}/booth/goalStore.ts`);
+    assert.match(gs, /return Array\.from\(\{ length: Math\.max\(0, count\) \}, \(\) => false\);/);
+    assert.match(gs, /return allMet && !isDone;/);
+    assert.ok(et.includes('every goal chip on it ticks in one visit'));
+    assert.ok(et.includes('It marks itself; NEXT never counts it.'));
+    // the first TRY THIS asks for EVERY chip in one visit, not just the Left: ones
+    assert.ok(et.includes('tick every goal chip on it in that one visit'));
+    // Effects has two fault cards (and two fault goals); every other screen one
+    const fx = code(`${DJ}/pages/p13Effects.tsx`);
+    assert.equal((fx.match(/<FaultCard/g) ?? []).length, 2);
+    for (const f of PAGE_FILES.filter((f) => f !== 'p13Effects.tsx')) assert.equal((code(`${DJ}/pages/${f}`).match(/<FaultCard/g) ?? []).length, 1, f);
+    // one exercise per screen: Effects' exercise has two fault cards, so never "its fault" (singular)
+    assert.ok(et.includes('its troubleshooting exercise'));
+    assert.ok(!et.includes('its fault to fix'));
+    assert.ok(et.includes('its goal chips start empty for practice, and it stays ✓ DONE here'));
+    // "on most screens, Pass the check": most goal lists carry it, not all
+    const lists = PAGE_FILES.map((f) => code(`${DJ}/pages/${f}`).match(/export const GOALS_\w+ = \[([^\]]*)\]/)?.[1] ?? '');
+    assert.ok(lists.every((l) => l.length > 0), 'every screen has a goal list');
+    const withCheck = lists.filter((l) => l.includes("'Pass the check'")).length;
+    assert.ok(withCheck > lists.length / 2 && withCheck < lists.length, `Pass the check on ${withCheck} screens`);
+    assert.ok(et.includes('on most screens, Pass the check'));
+  });
+
+  it('each row’s Left: line (up to three goals, from this session’s last visit) and the optional 16–18', async () => {
+    assert.match(scr, /pageDetail=\{leftDetail\}/);
+    const { leftLine, LEFT_SHOWN, clearGoalReports, reportGoals } = await import('../src/screens/lab/dj/booth/goalStore.ts');
+    assert.equal(LEFT_SHOWN, 3);
+    clearGoalReports();
+    assert.equal(leftLine('X', ['a', 'b', 'c', 'd']), 'Left: a · b · c · + 1 more');
+    reportGoals('X', ['a', 'b', 'c', 'd'], [true, false, true, true]);
+    assert.equal(leftLine('X', ['a', 'b', 'c', 'd']), 'Left: b');
+    // a last visit that met every goal (e.g. after START OVER) shows no Left: at all
+    reportGoals('X', ['a', 'b', 'c', 'd'], [true, true, true, true]);
+    assert.equal(leftLine('X', ['a', 'b', 'c', 'd']), 'Every goal is met — open it once more to count it.');
+    clearGoalReports();
+    // every DJ screen has at least four goals, so a fresh one never lists them all
+    const counts = PAGE_FILES.map((f) => (code(`${DJ}/pages/${f}`).match(/export const GOALS_\w+ = \[([^\]]*)\]/)?.[1].match(/'[^']*'/g) ?? []).length);
+    assert.ok(Math.min(...counts) > LEFT_SHOWN, `fewest goals ${Math.min(...counts)}`);
+    assert.ok(et.includes('usually with Left: and up to three goals your last visit missed, then + n more'));
+    assert.ok(et.includes('Left: is what your last visit this session missed (every goal, if not opened yet).'));
+    assert.ok(et.includes('Chips start empty each visit: a row reading Every goal is met needs them all again.'));
+    assert.ok(!/still needs\.|lists all its goals|goals it still needs/.test(et));
+    assert.match(code(`${DJ}/bits.tsx`), /const seen = useRef<boolean\[\]>\(visitStart\(goals\.length\)\);/);
+    const { DJ_OPTIONAL_NUMBERS } = await import('../src/screens/lab/dj/pages/registry.ts');
+    assert.deepEqual([...DJ_OPTIONAL_NUMBERS], [16, 17, 18]);
+    assert.match(scr, /optionalPage=\{optionalPage\}/);
+    assert.match(les, /`OPTIONAL PATHS · \$\{w\.optionalLeft\.length\} NOT DONE — not needed to complete the lab`/);
+    // a DONE optional screen folds into ✓ DONE (whatsLeft puts it in credited)
+    assert.match(le, /if \(row\.credited\) credited\.push\(row\);\n\s*else \(u\.optional \? optionalLeft : left\)\.push\(row\);/);
+    assert.ok(et.includes('Screens 16–18, until done, sit under OPTIONAL PATHS'));
+    assert.ok(et.includes('never hold back LAB COMPLETE'));
+  });
+
+  it('the lab’s credential credit: labDoneKey once every REQUIRED screen is done', () => {
+    assert.match(scr, /labDoneKey=\{trainingKeyFor\('DJSystemsLab'\)\}/);
+    assert.match(pl, /if \(labDoneKey && labComplete\) reportTrainingComplete\(labDoneKey\);/);
+    assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'DJSystemsLab', key: 'tr_dj', completion: 'all-modules' \}/);
+    assert.ok(et.includes('With every required screen done, the lab counts toward the DJ credentials that list it.'));
+  });
+
+  it('START OVER (PRACTICE) stays reachable on the end screen and clears every ✓ DONE (no banked page credit in this lab)', () => {
+    assert.ok(!/Nothing is taken away/.test(et));
+    // the strip stays drawn while ending; its list ends with the reset
+    assert.match(pl, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(pl, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    assert.match(code('src/screens/lab/kit/labNav.ts'), /whatsLeft: "WHAT'S LEFT"/);
+    // doReset empties progress.completed; endCleared then has only banked units, and this lab banks none
+    assert.match(pl, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
+    assert.match(pl, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
+    assert.ok(et.includes('Reopening a screen to practice never clears its ✓ DONE.'));
+    assert.ok(et.includes('START OVER (PRACTICE), at the foot of the list WHAT’S LEFT ▾ opens at the top, asks first, then clears every ✓ DONE mark for a fresh run'));
   });
 });

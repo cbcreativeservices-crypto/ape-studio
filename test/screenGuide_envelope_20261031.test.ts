@@ -11,7 +11,10 @@
  *   4. every number TRY THIS quotes is what the page prints, recomputed with
  *      the SAME functions the page calls (envelopeModel + sliderMaps);
  *   5. wiring + the accuracy-chip decision: a CONCEPT lab (visual only,
- *      every chart badged ILLUSTRATIVE MODEL) → `accuracy={false}`.
+ *      every chart badged ILLUSTRATIVE MODEL) → `accuracy={false}`;
+ *   6. the what's-left END guide (ENVELOPE_END_GUIDE, PagedLab `endGuide`):
+ *      shape, budget, copy rules, and every fact it states pinned against
+ *      LabEndScreen / labEnd / PagedLab / this lab's own marking code.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -24,7 +27,7 @@ const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g,
 const code = (p: string) => read(p).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
 
 const ENV = 'src/screens/lab/envelope';
-const { ENVELOPE_SCREEN_GUIDES, ENVELOPE_GUIDE_PAGE_TITLES, envelopePageGuide } = await import(`../${ENV}/envelopeScreenGuides.ts`);
+const { ENVELOPE_SCREEN_GUIDES, ENVELOPE_GUIDE_PAGE_TITLES, ENVELOPE_END_GUIDE, envelopePageGuide } = await import(`../${ENV}/envelopeScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 const M = await import('../src/features/envelope/envelopeModel.ts');
 const S = await import('../src/features/lab/sliderMaps.ts');
@@ -296,11 +299,13 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
 });
 
 describe('5. wiring + the accuracy-chip decision', () => {
-  it('EnvelopeLabScreen passes pageGuide to PagedLab; PagedLab draws the ⓘ (none on the what’s-left screen)', () => {
-    assert.match(s, /import \{ envelopePageGuide \} from '\.\/envelopeScreenGuides';/);
+  it('EnvelopeLabScreen passes pageGuide AND endGuide to PagedLab; PagedLab draws the ⓘ on every page and on the what’s-left screen', () => {
+    assert.match(s, /import \{ ENVELOPE_END_GUIDE, envelopePageGuide \} from '\.\/envelopeScreenGuides';/);
     assert.match(s, /<PagedLab[\s\S]*?pageGuide=\{envelopePageGuide\}[\s\S]*?\/>/);
+    assert.match(s, /<PagedLab[\s\S]*?endGuide=\{ENVELOPE_END_GUIDE\}[\s\S]*?\/>/);
     const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(PAGED, /const guide = ending \? undefined : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PAGED, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
+    assert.match(PAGED, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
     assert.match(PAGED, /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\}/);
   });
   it('a CONCEPT lab: accuracy={false}; nothing is measured and every chart keeps its ILLUSTRATIVE MODEL badge', () => {
@@ -311,5 +316,147 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(s + code(`${ENV}/EnvelopeChart.tsx`), /ApeDsp|useMicrophone|getUserMedia|AudioRecorder/);
     assert.match(code(`${ENV}/EnvelopeChart.tsx`), /export const CHART_HONESTY = 'ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT';/);
     assert.match(s, /badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED"/);
+  });
+});
+
+describe('6. the what’s-left END guide is complete and true for this lab', () => {
+  const END = ENVELOPE_END_GUIDE as unknown as Guide;
+  const t = textOf(END);
+  const END_SCREEN = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const LAB_END = code('src/screens/lab/kit/labEnd.ts');
+  const PAGED = code('src/screens/lab/kit/PagedLab.tsx');
+  const NAVC = code('src/screens/lab/kit/labNav.ts');
+  const BAR = code('src/screens/lab/kit/LabNavBar.tsx');
+  const PAGED_END = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
+
+  it('all five sections, 1–5 bullets, TRY THIS 2–3, within the no-scroll budget', () => {
+    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    for (const k of SECTION_KEYS) {
+      assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: ${END[k].length} bullets`);
+      for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
+    }
+    assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3);
+    for (const sec of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
+      if (sec.place === 'strip') {
+        for (const item of END.tryThis) assert.ok(item.length <= SCREEN_GUIDE_BUDGET.tryItem, `end.tryThis (${item.length})`);
+        continue;
+      }
+      const n = END[sec.key].join(' ').length;
+      assert.ok(n <= (sec.place === 'high' ? SCREEN_GUIDE_BUDGET.high : SCREEN_GUIDE_BUDGET.low), `end.${sec.key}: ${n}`);
+    }
+  });
+  it('house copy rules: knowledge not skills, no "N of total", no "recommend", no build notes', () => {
+    assert.doesNotMatch(t, /\byou(’|')?ll (master|build|mix|be able)|\bmaster(y|ed)?\b|\byou will learn to\b/i);
+    assert.doesNotMatch(t, /\b\d+\s+(of|OF)\s+\d+\b|\b\d+\s*\/\s*\d+\b/);
+    assert.doesNotMatch(t, /\bOF\b/); // never echoes the "✓ DONE · n OF N" count
+    assert.doesNotMatch(t, /\brecommend/i);
+    assert.doesNotMatch(t, /\b(TODO|FIXME|placeholder|owner 20\d\d|NEW COPY)\b/i);
+  });
+  it('the titles: WHAT’S LEFT / LAB COMPLETE (endTitle; Envelope passes no completeTitle), YOUR PROGRESS when unreadable', () => {
+    assert.match(LAB_END, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
+    assert.match(END_SCREEN, /const title = unreadable \? 'YOUR PROGRESS' : w\.complete && completeTitle \? completeTitle : endTitle\(w\);/);
+    assert.doesNotMatch(PAGED_END, /completeTitle=/);
+    assert.match(PAGED_END, /unreadable=\{unreadable\}/);
+    // LAB COMPLETE needs every page AND the check (all rows cleared)
+    assert.match(LAB_END, /complete: required > 0 && left\.length === 0/);
+    assert.match(END.seeing[0], /WHAT'S LEFT, or LAB COMPLETE once every page and the check are done/);
+    // unreadable: a failed credit read ALONE sets it (this lab has a check),
+    // so done pages may still fold into ✓ DONE — never "every page is listed";
+    // the shared note replaces the lead line; every row (listed or under
+    // REVIEW ▾) still jumps.
+    assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \(\(!!creditLabKey \|\| !!check \|\| pageCreditKeys\.length > 0\) && creditUnreadable\);/);
+    assert.match(END_SCREEN, /\{unreadable \? \(\s*<ProgressUnreadableNote \/>\s*\) : \(\s*<Text style=\{styles\.lead\}>/);
+    assert.match(END.seeing[2], /title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens\./);
+    assert.doesNotMatch(t, /every page is still listed/);
+  });
+  it('progress mode: Envelope banks no page credit, so rows and the fold read ✓ DONE, never CREDITED', () => {
+    assert.doesNotMatch(s, /creditLabKey=|pageCreditKeys=|onPageDone=/);
+    assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
+    assert.match(PAGED_END, /mode=\{creditMode\}/);
+    assert.match(PAGED_END, /noun="page"/);
+    assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
+    assert.match(END_SCREEN, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
+    assert.match(t, /✓ DONE line/);
+    assert.match(END.changes[2], /^Rows read ✓ DONE: a page tick is progress, not credit\./);
+    assert.doesNotMatch(t, /CREDITED/); // a word this lab's end screen never shows
+    // the check row: label + CHECK in the number column, listed last
+    assert.match(PAGED, /label: 'Check your understanding', kind: 'check'/);
+    assert.match(END_SCREEN, /r\.kind === 'check' \? 'CHECK'/);
+    assert.match(END.seeing[1], /Check your understanding sits last, marked CHECK/);
+    // passing the check is the lab's certificate unit
+    assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'EnvelopeLab', key: 'tr_envelope', completion: 'understanding' \}/);
+    assert.match(END.changes[2], /Passing the check completes the lab, for any certificate that needs it\./);
+  });
+  it('the buttons are the exact labels this lab gets (PagedLab passes no doneLabel)', () => {
+    assert.match(END_SCREEN, /<GlassButton label="PRACTICE AGAIN FROM THE START"/);
+    assert.match(END_SCREEN, /doneLabel = 'DONE · BACK TO LABS',/);
+    assert.doesNotMatch(PAGED_END, /doneLabel=/);
+    assert.match(PAGED_END, /onPracticeAgain=\{\(\) => goTo\(0\)\}/); // page 1, clears nothing
+    assert.equal(PAGE_TITLES[0], 'The Envelope Explorer');
+    assert.match(PAGED_END, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
+    assert.match(PAGED_END, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+    assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing\. DONE · BACK TO LABS leaves the lab\./);
+    assert.match(END_SCREEN, /'Practicing again or reviewing never clears what you have already done\.'/);
+    // …but START OVER (PRACTICE) at the foot of CONTENTS DOES clear the page
+    // ticks: no creditLabKey / pageCreditKeys here, so only the banked check
+    // survives doReset. The guide must never say "nothing is taken away".
+    assert.match(PAGED, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    assert.match(PAGED, /resetPagedProgress\(labId\)\)\.then\(\(\) => \{\s*const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
+    assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)\s*: \(!!creditLabKey && bankedPages\.has/);
+    assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
+    assert.match(END.teaches[1], /^Practicing again or reviewing never clears what you have done\. Only START OVER \(PRACTICE\) clears page ticks; a passed check stays\.$/);
+    assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page ticks\./);
+    assert.doesNotMatch(t, /Nothing is taken away/i);
+  });
+  it('the strip on the end screen: ⏮ live, ‹ PREV leaves back to the page, readout WHAT’S LEFT ▾ opens the list; CONTENTS footer WHAT’S LEFT ›', () => {
+    assert.match(NAVC, /if \(ending\) \{\s*return \{\s*startOn: count > 0,\s*prevOn: true,\s*nextLabel: null,\s*noun: '',\s*pos: NAV\.whatsLeft,/);
+    assert.match(code('src/screens/lab/kit/useLabNav.ts'), /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/);
+    assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/); // page unchanged
+    assert.match(BAR, /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
+    assert.match(BAR, /\{NAV\.whatsLeft\} ›/);
+    assert.match(END.control[3], /⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages/);
+    // CONTENTS order: the page rows, then WHAT'S LEFT ›, then START OVER
+    // (PRACTICE) last — so WHAT'S LEFT › is "just under the page list", not
+    // "at the foot".
+    assert.match(BAR, /\{NAV\.whatsLeft\} ›<\/Text>\s*<\/Pressable>\s*\{nav\.reset \? \(/);
+    assert.match(END.tryThis[0], /tap MODULE ▾ and WHAT'S LEFT ›, just under the page list:/);
+    assert.doesNotMatch(END.tryThis[0], /foot of the list/);
+    // REVIEW ▾ exists only once something is done; the ✓ is read in CONTENTS
+    assert.match(END_SCREEN, /\{w\.credited\.length > 0 \? \(/);
+    assert.match(PAGED, /done: endCleared\.has\(String\(i\)\),/);
+    assert.match(END.tryThis[2], /^Some pages done\? Tap REVIEW ▾, open one and use it again, then tap MODULE ▾: its ✓ is still there\.$/);
+    // labels quoted with the straight ' the screen draws
+    assert.doesNotMatch(t, /WHAT’S/);
+  });
+  it('what makes a page count as done, as THIS lab codes it', () => {
+    // pages 1–5: the first slider / choice button (useTouch), or NEXT (not manualDone)
+    assert.match(s, /function useTouch\(ctx: PageCtx\) \{[\s\S]*?if \(!ctx\.isDone\) ctx\.markDone\(\);/);
+    assert.equal((s.match(/const touch = useTouch\(ctx\);/g) ?? []).length, 5);
+    assert.match(s, /const set = \(k: keyof Adsr\) => \(v: number\) => \{ setAdsr\(\(prev\) => \(\{ \.\.\.prev, \[k\]: v \}\)\); touch\(\); \};/);
+    assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    assert.match(s, /const pick = \(i: number\) => \{ setSel\(i\); touch\(\); \};/);
+    assert.match(s, /<G key=\{e\.name\} onPress=\{\(\) => pick\(i\)\}>/); // page 4's numbered markers
+    assert.match(END.changes[0], /^Pages 1–5 count as done once you move a slider or tap a choice button or numbered marker, or with NEXT ›/);
+    // page 6: GOT IT › or NEXT
+    assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
+    assert.match(END.changes[0], /Envelope vs Propagation counts with GOT IT › or NEXT ›/);
+    // page 7 (manualDone): all six; the check (manualDone): all four
+    assert.match(s, /\{ title: 'Check Yourself', short: 'Check', Component: PageChecks, manualDone: true \}/);
+    assert.match(s, /if \(got\.current\.size >= CHECKS\.length && !ctx\.isDone\) ctx\.markDone\(\);/);
+    assert.equal((s.match(/^\s{4}q: '/gm) ?? []).length, 6);
+    const env = code('src/features/lab/understandingChecks.ts').match(/const ENVELOPE: readonly Q\[\] = \[([\s\S]*?)\n\];/)?.[1] ?? '';
+    assert.equal((env.match(/^\s{4}id: '/gm) ?? []).length, 4);
+    assert.match(END.changes[1], /Check Yourself counts once all six are right, Check your understanding once all four are/);
+    // a jump (row / CONTENTS) never marks: goTo sets the page only
+    assert.match(PAGED, /const goTo = useCallback\(\(i: number\) => \{\s*const idx = [^\n]*\n\s*navigatedRef\.current = true;\s*setEnding\(false\);\s*setPage\(idx\);/);
+    assert.match(END.changes[1], /A jump never marks a page\./);
+  });
+  it('every on-screen name the END guide quotes is in the source it describes', () => {
+    const SRC_END = [END_SCREEN, LAB_END, PAGED, NAVC, BAR, s].join('\n');
+    for (const n of ['LAB COMPLETE', 'YOUR PROGRESS', 'Check your understanding', 'CHECK', 'DONE', 'REVIEW ▾', 'START OVER (PRACTICE)', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '⏮', '‹ PREV', 'MODULE', 'GOT IT ›', 'Check Yourself', 'Envelope vs Propagation', 'The Envelope Explorer', 'FINISH ›']) {
+      assert.ok(SRC_END.includes(n), `"${n}" is no longer in the source`);
+      assert.ok(t.includes(n), `the END guide never names "${n}"`);
+    }
+    assert.ok(SRC_END.includes("WHAT'S LEFT"));
   });
 });

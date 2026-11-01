@@ -120,7 +120,7 @@ import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, pageGuide, accuracy = true }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, pageGuide, endGuide, accuracy = true }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -176,6 +176,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  appended check page and the what's-left screen never show a key unless
    *  this returns one for the check's index. */
   pageGuide?: (index: number) => ScreenGuide | undefined;
+  /** ADDITIVE (owner 2026-10-31): the guide for the what's-left screen. */
+  endGuide?: ScreenGuide;
   /** ADDITIVE (owner 2026-10-31): the AccuracyNote — the compact header chip
    *  on a rack page, the in-flow note on a reading page. Default true
    *  (unchanged). A CONCEPT lab with guides passes false so the ⓘ takes the
@@ -548,8 +550,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
-  // Screen Guide for this page (none on the what's-left screen).
-  const guide = ending ? undefined : def.guide ?? pageGuide?.(page);
+  // Screen Guide for this page, or the what's-left screen's own.
+  const guide = ending ? endGuide : def.guide ?? pageGuide?.(page);
 
   return (
     <LabNavProvider value={nav}>
@@ -562,7 +564,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           subtitle={title}
           right={accuracy && def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined}
           guide={guide}
-          guideTitle={def.title.toUpperCase()}
+          guideTitle={ending ? 'WHERE YOU ARE' : def.title.toUpperCase()}
         />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
