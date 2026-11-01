@@ -50,24 +50,92 @@ export default function Page() {
         </div>
       </div>
 
-      <Section title="For instructors and schools">
+      {/* What Academy training means for an employer — owner scope brief
+          2026-11-01. Facts from the live award rules: every credential
+          requires the four core topics (award_standing_requirements) plus its
+          specialty topics; a quiz topic opens only after its study activities
+          are complete; quizzes are up to 30 questions, 10 minutes, at most two
+          wrong; Audio Fundamentals is completed through its 15 labs; then a
+          final exam to the same standard. Other lab requirements are NOT
+          claimed (enforcement is off until store approval). Claims KNOWLEDGE,
+          never skills (owner rule 2026-10-28). */}
+      <Section id="training" title="What Academy training means for your team">
         <p>
-          Teaching audio? You can use Academy certificates as course work. Assign
-          a certificate to your students, then ask each student for their
-          verification code or QR code when it’s due. This page confirms which
-          certificates they have completed and when.
+          The Academy prepares people to <strong>begin</strong> hands-on
+          training, so more of the time you spend with them goes into your work
+          rather than the basics. A graduate arrives knowing the terminology,
+          the types of equipment and the principles of their specialty — what
+          things are, what they do and how they work — ready to follow your
+          instruction, ask useful questions and understand what they are
+          watching.
         </p>
         <p>
-          You see completion only — never their progress, quiz scores, or
-          personal details. No account is needed to check.
+          What they still need is what only you can give: time on your
+          equipment, in your venue or studio, under your supervision. Academy
+          training is built to make that time count, not to replace it.
         </p>
       </Section>
 
-      <Section title="What a credential represents">
+      <Section title="What every graduate has studied">
+        <p>
+          Every Academy credential — whatever its specialty — requires the same
+          four core topics, because they are the foundation of working safely and
+          working well with others:
+        </p>
+        <List
+          items={[
+            <>
+              <strong>Pro Audio Safety</strong> — how their actions affect their
+              own safety and the safety of the people around them, and how to
+              recognize the limits of what they know.
+            </>,
+            <>
+              <strong>Grounding &amp; Electrical</strong> — electrical and
+              grounding awareness for powered equipment, with the emphasis on
+              responsible behavior and on knowing when a situation needs a
+              qualified professional.
+            </>,
+            <>
+              <strong>Audio Fundamentals</strong> — the physics of sound, signal
+              and level that everything else is built on.
+            </>,
+            <>
+              <strong>Workplace Skills</strong> — communication, cooperation,
+              reliability, respect and professional conduct on a team.
+            </>,
+          ]}
+        />
+        <p>
+          We believe workplace conduct deserves far more attention than
+          education usually gives it. People should enter the workplace with a
+          foundation in working together, so you can build on it rather than
+          teach it from the beginning.
+        </p>
+      </Section>
+
+      <Section title="How a credential is earned">
         <p>
           An Academy credential verifies completion of defined educational
-          requirements in professional audio. It is evidence that the holder has
-          studied and been assessed on that material.
+          requirements in professional audio — evidence that the holder has
+          studied and been assessed on that material. Each credential requires
+          the four core topics plus the topics of its specialty.
+        </p>
+        <List
+          items={[
+            "A topic’s quiz opens only after every study activity in that topic is complete.",
+            "Each topic quiz has up to 30 questions and a 10-minute limit. A pass allows no more than two wrong answers.",
+            "Audio Fundamentals is completed through 15 interactive labs in the app.",
+            "The final examination is drawn from all the required topics, to the same standard. The credential is conferred only when it is passed.",
+          ]}
+        />
+        <p>
+          A <strong>Specialization Certificate</strong> documents a focused area
+          of professional practice. A{" "}
+          <strong>Professional Certificate Program</strong> documents a broader
+          course of study across a complete professional role, such as live
+          sound, studio recording, broadcast or forensic audio. Every
+          verification result includes the credential catalog, with the topics
+          each credential requires.
         </p>
       </Section>
 
@@ -91,6 +159,32 @@ export default function Page() {
           covers. The hiring judgment remains yours. For instructors, it confirms
           the student met the certificate’s requirements; your own grading
           remains yours.
+        </p>
+      </Section>
+
+      <Section title="The thinking behind it">
+        <p>
+          The Academy exists to make a serious foundation in audio — knowledge,
+          safety awareness and an understanding of professional conduct —
+          affordable to anyone serious about sound. That widens the pool of
+          capable people who reach you, including talent a costly educational
+          path might have kept out of the field.{" "}
+          <a href="/about" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            Read the Academy’s mission →
+          </a>
+        </p>
+      </Section>
+
+      <Section title="For instructors and schools">
+        <p>
+          Teaching audio? You can use Academy certificates as course work. Assign
+          a certificate to your students, then ask each student for their
+          verification code or QR code when it’s due. This page confirms which
+          certificates they have completed and when.
+        </p>
+        <p>
+          You see completion only — never their progress, quiz scores, or
+          personal details. No account is needed to check.
         </p>
       </Section>
 

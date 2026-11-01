@@ -69,6 +69,23 @@ export default function Page() {
         </p>
       </Section>
 
+      <Section title="The whole field of sound">
+        <p>
+          The curriculum and glossary are built for everyone who works seriously
+          with sound — not only recording, production and live sound, but
+          broadcast, bioacoustics and nature recording, acoustics and
+          measurement, audio forensics, acoustic imaging, transducer design,
+          electronics, repair, consumer audio, vacuum tubes and emerging
+          technologies. Safety, grounding and electrical awareness, and
+          workplace skills are required for every credential; hearing
+          protection is taught alongside them.
+        </p>
+        <p>
+          That breadth is intentional: people working with sound in very
+          different settings should recognize that their work belongs here.
+        </p>
+      </Section>
+
       <Section title="What the Academy is — and isn’t">
         <p>
           The Academy is a serious way to learn, organize, apply, and document

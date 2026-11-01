@@ -120,6 +120,11 @@ export default function CredentialCatalog() {
             {catalog.core.join(" · ")}
           </p>
         ) : null}
+        <p>
+          <a href="/employers#training" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            What Academy training means for your team →
+          </a>
+        </p>
       </div>
 
       {catalog === undefined ? (
