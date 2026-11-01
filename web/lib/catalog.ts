@@ -14,6 +14,8 @@ import { getSupabaseBrowser } from "./supabase";
 
 /** Required of every certificate and program (app: COREQ_TOPIC_GS in src/screens/awards/awardsData.ts). */
 export const CORE_TOPIC_GS = [3060, 3070, 3081, 4370];
+/** Audio Fundamentals (3081) is the required LABS for everyone, not a topic (owner 2026-11-01). */
+export const AUDIO_FUNDAMENTALS_GS = 3081;
 
 export type CatalogKind = "certificate" | "program";
 
@@ -91,7 +93,9 @@ export async function loadCatalog(): Promise<Catalog | null> {
     const byName = (a: CatalogEntry, b: CatalogEntry) => a.name.localeCompare(b.name);
 
     return {
-      core: CORE_TOPIC_GS.map((gs) => topicName.get(gs)).filter((n): n is string => !!n),
+      core: CORE_TOPIC_GS.filter((gs) => gs !== AUDIO_FUNDAMENTALS_GS)
+        .map((gs) => topicName.get(gs))
+        .filter((n): n is string => !!n),
       certificates: certs
         .map((c) => ({
           kind: "certificate" as const,

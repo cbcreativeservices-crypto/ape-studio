@@ -69,6 +69,19 @@ export default function Page() {
         </p>
       </Section>
 
+      <Section title="The whole field of sound">
+        <p>
+          The curriculum and glossary go well beyond recording and live sound.
+          They reach into broadcast, nature and wildlife recording, acoustics
+          and measurement, scientific research, audio forensics, electronics
+          and repair, consumer audio, vacuum tubes and emerging technologies.
+        </p>
+        <p>
+          That breadth is intentional. Wherever you work with sound, your work
+          belongs here.
+        </p>
+      </Section>
+
       <Section title="What the Academy is — and isn’t">
         <p>
           The Academy is a serious way to learn, organize, apply, and document

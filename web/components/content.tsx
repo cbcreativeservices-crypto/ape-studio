@@ -40,13 +40,16 @@ export function PageHero({
 /** A titled content section (prose-ish, dark theme). */
 export function Section({
   title,
+  id,
   children,
 }: {
   title?: string;
+  /** Optional anchor, so another page can link straight to this section. */
+  id?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <section id={id} className="mx-auto max-w-3xl scroll-mt-24 px-4 py-8 sm:px-6">
       {title ? (
         <h2 className="mb-3 border-t border-border pt-8 font-display text-xl font-semibold tracking-wide text-foreground">
           {title}

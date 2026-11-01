@@ -102,9 +102,9 @@ export default function CredentialCatalog() {
       <div className="mt-3 max-w-prose space-y-3 text-sm leading-relaxed text-text-sub">
         <p>
           Every Academy credential is awarded only when its full requirements have been met. Each
-          requires the core topics shared by every credential, the topics particular to that
-          credential, successful performance on its final examination and, where the credential
-          requires them, practical laboratory work.
+          requires the three core topics and the Audio Fundamentals labs shared by every
+          credential, the topics particular to that credential, successful performance on its final
+          examination and, where the credential requires them, further laboratory work.
         </p>
         <p>
           A <span className="text-foreground">Specialization Certificate</span> documents a focused
@@ -115,11 +115,16 @@ export default function CredentialCatalog() {
         {catalog && catalog.core.length ? (
           <p>
             <span className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted">
-              Core topics, required for every credential:
+              Required for every credential:
             </span>{" "}
-            {catalog.core.join(" · ")}
+            {catalog.core.join(" · ")}, plus the 15 Audio Fundamentals labs
           </p>
         ) : null}
+        <p>
+          <a href="/employers#training" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            What Academy training means for your team →
+          </a>
+        </p>
       </div>
 
       {catalog === undefined ? (
