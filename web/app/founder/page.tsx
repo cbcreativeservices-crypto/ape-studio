@@ -10,6 +10,10 @@ import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
  * in quotes); degrees always "Dual BA and MA"; Program Director and Lead Faculty
  * (NEVER coordinator) of a state-certified program, "since 1999"; partners may be
  * named, never an individual contact; do NOT name the groups he plays with.
+ * Owner 2026-11-01: at 11 another school hired him to run its sound; theater
+ * upbringing (design, equipment, lighting, audio, sound design, movement);
+ * stadiums, theaters, clubs, festivals; "visual and dramatic arts"; NO Yamaha
+ * line (one partner alone reads as the only reference).
  * The full original resume is still to come (must-do D36).
  */
 export const metadata: Metadata = {
@@ -34,38 +38,38 @@ export default function Page() {
           Dual BA and MA · Berklee College of Music · Member, Audio Engineering Society
         </p>
         <p>
-          Channing Booth’s career in audio began at age 11, when he was hired to
-          run sound for a school production. In the four decades since, he has
-          done nearly every job the field
-          offers, from front of house and monitors to the studio, system design,
-          and installation. He has served as live sound engineer and audio
-          installation technician for Harvard University and the Boston Museum
-          of Science, and has engineered live sound for artists and presenters
-          from Bonnie Raitt to Bill Nye the Science Guy.
+          Channing Booth grew up on both sides of the stage: performing music,
+          and working in theater on design, equipment, lighting, audio and sound
+          design, and movement. At 11, another school hired him to run its
+          sound, the start of his career in audio. In the four decades since, he
+          has done nearly every job the field offers: front of house and
+          monitors, studio recording, system design, and installation. He has served as live sound engineer and
+          audio installation technician for Harvard University and the Boston
+          Museum of Science, and has engineered live sound for artists and
+          presenters from Bonnie Raitt to Bill Nye the Science Guy.
         </p>
         <p>
           Since 1999 he has taught audio at San Diego Miramar College, as
           Professor, Program Director and Lead Faculty of its state-certified
-          Audio Production and Engineering program. He built the program,
-          created several of its eight courses and edits and reviews the
-          curriculum of the rest, designed the
-          campus’s state-of-the-art studio and facility where he now teaches,
-          and keeps the program tied to the industry through partners such as
-          Yamaha Corporation of America.
+          Audio Production and Engineering program. He built the program, wrote
+          several of its eight courses and edits and reviews the rest, and
+          designed the campus’s state-of-the-art studio and facility where he
+          now teaches.
         </p>
         <p>
           He knows audio from the inside because he builds it: ribbon
-          microphones, guitar amplifiers, diffusers, and instruments of wood and
-          metal. He services everything from electronics to Hammond organs and
-          Rhodes pianos, and tunes and repairs pianos.
+          microphones, guitar amplifiers, acoustic diffusers, and instruments of
+          wood and metal. He services electronics, Hammond organs and Rhodes
+          pianos, and tunes and repairs pianos.
         </p>
         <p>
           At Berklee he studied far beyond music: alongside his degrees he took
           audio courses and spent long hours recording in the college’s studios.
-          A Berklee-trained musician and a lifelong polymath, he has performed
-          across the United States and around the world. His curiosity runs from physics and acoustics to
-          psychology, ethnomusicology, history, painting, and photography, and in
-          the Academy he found that all of it connects.
+          As a musician he has performed across the United States and around the
+          world, in stadiums, theaters, clubs, and music festivals. He is a
+          lifelong polymath: his curiosity runs from physics and acoustics to
+          psychology, ethnomusicology, history, and the visual and dramatic arts,
+          and in the Academy he found that all of it connects.
         </p>
       </Section>
 
