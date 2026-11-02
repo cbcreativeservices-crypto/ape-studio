@@ -5,13 +5,20 @@
  * A request carries a PURPOSE that the recipient already agreed to hear about,
  * and a short message. Nothing is a conversation until the recipient accepts.
  * No email address appears anywhere in this screen, in either direction.
+ *
+ * LAYOUT (owner-approved redesign 2026-11-01, mockup
+ * Downloads/2026-11-01_COMMUNITY_CHAT_REDESIGN_MOCKUP.html): an inbox grouped
+ * by what each request needs — WAITING ON YOU, CONVERSATIONS, SENT, CLOSED —
+ * with compact rows, and a full-height conversation thread. Presentation only:
+ * every handler, fence and confirmation below is the one that was here.
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState, FlatList, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
-import { colors, fonts } from '../../theme/tokens';
-import { AlsoBlockChip, Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, useSending, useSendingPer } from './directoryBits';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
+import { AlsoBlockChip, Banner, Chip, ChipWrap, EmptyState, Helper, Loading, PrimaryButton, RetryOrSignIn, useSending, useSendingPer } from './directoryBits';
+import { ChannelBadge, STEEL, type BadgeLed } from './ChannelBadge';
 import {
   blockThread,
   fetchContactThreads,
@@ -35,6 +42,22 @@ import { cardColumn } from '../../theme/readingColumn';
 import * as Crypto from 'expo-crypto';
 import { landedAlready, pendingFor, type PendingSend } from '../../features/directory/sendOnce';
 import { sampleDirectoryOn } from '../../features/directory/sampleThreads';
+
+/** The mockup's palette (brief 2026-11-01). Amber, green and steel come from
+ *  the theme tokens / ChannelBadge. */
+const C = {
+  bg: '#0b0c0f',
+  panel: '#121318',
+  raised: '#181a21',
+  line: '#24262e',
+  line2: '#2e313b',
+  text: '#f0f0f0',
+  sub: '#a6a6ad',
+  muted: '#7f818a',
+  mineBg: '#262010',
+  mineBorder: 'rgba(255,198,77,.35)',
+  mineTime: '#a08a55',
+} as const;
 
 const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'spam', label: 'Spam' },
@@ -76,18 +99,256 @@ export function conversationLabel(t: ContactThread, unread: number): string {
   return unread > 0 ? `${base} · ${unread} NEW` : base;
 }
 
-/** One flattened row of the requests list: a section eyebrow or a request card.
- *  INCOMING and SENT always shared one scroller, so they share one FlatList. */
+// ── TIME WORDS ─────────────────────────────────────────────────────────────
+// Hand-rolled (no Intl options), so Hermes, the web preview and the tests all
+// print the same thing.
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const WEEKDAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+const parseTime = (iso: string | null | undefined): number => (iso ? Date.parse(iso) : NaN);
+
+/** "3h" on the row, "3 hours ago" for a screen reader. null for no date. */
+function relativeTime(iso: string | null | undefined, now = Date.now()): { short: string; spoken: string } | null {
+  const t = parseTime(iso);
+  if (!Number.isFinite(t)) return null;
+  const mins = Math.floor(Math.max(0, now - t) / 60_000);
+  const say = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'} ago`;
+  if (mins < 1) return { short: 'now', spoken: 'just now' };
+  if (mins < 60) return { short: `${mins}m`, spoken: say(mins, 'minute') };
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return { short: `${hours}h`, spoken: say(hours, 'hour') };
+  const days = Math.floor(hours / 24);
+  if (days < 7) return { short: `${days}d`, spoken: say(days, 'day') };
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return { short: `${weeks}w`, spoken: say(weeks, 'week') };
+  const d = new Date(t);
+  const label = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return { short: label, spoken: label };
+}
+
+/** "4:12 PM" under a bubble. '' for no date. */
+function clockTime(iso: string | null | undefined): string {
+  const t = parseTime(iso);
+  if (!Number.isFinite(t)) return '';
+  const d = new Date(t);
+  const h = d.getHours();
+  return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
+const dayStart = (t: number) => {
+  const d = new Date(t);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+/** The divider above a day's first message: TODAY, a weekday in the last
+ *  week, or the date. '' for no date. */
+function dayLabel(iso: string | null | undefined, now = Date.now()): string {
+  const t = parseTime(iso);
+  if (!Number.isFinite(t)) return '';
+  const days = Math.round((dayStart(now) - dayStart(t)) / 86_400_000);
+  if (days <= 0) return 'TODAY';
+  const d = new Date(t);
+  if (days < 7) return WEEKDAYS[d.getDay()];
+  const label = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return d.getFullYear() === new Date(now).getFullYear() ? label : `${label}, ${d.getFullYear()}`;
+}
+
+/** One message plus the day divider drawn above it (only on a new day). */
+type MsgRow = { m: ThreadMessage; day: string | null };
+
+function withDays(msgs: ThreadMessage[]): MsgRow[] {
+  const now = Date.now();
+  let prev: string | null = null;
+  return msgs.map((m) => {
+    const label = dayLabel(m.createdAt, now);
+    const day = label && label !== prev ? label : null;
+    if (label) prev = label;
+    return { m, day };
+  });
+}
+
+// ── INBOX ROWS ─────────────────────────────────────────────────────────────
+
+/**
+ * The channel LED in Requests (brief 2026-11-01): amber = waiting on you (an
+ * incoming request still pending, or an open conversation with unread
+ * messages), green = an open conversation, off = sent / declined / withdrawn
+ * / blocked.
+ */
+function rowLed(t: ContactThread, unread: number): BadgeLed {
+  if (t.status === 'accepted') return unread > 0 ? 'amber' : 'green';
+  if (t.status === 'pending' && t.direction === 'incoming') return 'amber';
+  return 'off';
+}
+
+/** The small mono state under a row that is not waiting on you. */
+function stateLine(t: ContactThread): string | null {
+  if (t.status === 'accepted') return null;
+  if (t.status === 'pending') return t.direction === 'outgoing' ? 'WAITING FOR A REPLY' : null;
+  return STATUS_LABEL[t.status].toUpperCase();
+}
+
+/** One flattened row of the requests list: a section header or a request row.
+ *  All four sections share one scroller, so they share one FlatList. */
 type RequestRow =
-  | { kind: 'eyebrow'; key: string; label: string }
+  | { kind: 'eyebrow'; key: string; label: string; count?: number; first: boolean }
   | { kind: 'incoming'; key: string; thread: ContactThread }
   | { kind: 'outgoing'; key: string; thread: ContactThread };
 
+function SectionHead({ label, count, first }: { label: string; count?: number; first: boolean }) {
+  return (
+    <View
+      style={[st.sec, !first && st.secGap]}
+      accessible
+      accessibilityRole="header"
+      accessibilityLabel={count ? `${label}, ${count}` : label}
+    >
+      <Text style={st.secText}>{label.toUpperCase()}</Text>
+      {count ? <Text style={st.secCount}>{count}</Text> : null}
+    </View>
+  );
+}
+
+/** A compact answer button: ACCEPT (solid green), DECLINE / WITHDRAW (outline). */
+function Pill({
+  label,
+  tone,
+  disabled,
+  onPress,
+}: {
+  label: string;
+  tone: 'yes' | 'no';
+  disabled?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={6}
+      style={({ pressed }) => [
+        st.pill,
+        tone === 'yes' ? st.pillYes : st.pillNo,
+        disabled && st.pillOff,
+        pressed && !disabled && st.pressed,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
+    >
+      <Text style={[st.pillText, tone === 'yes' ? st.pillTextYes : st.pillTextNo]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/** "···" — shows (or hides) BLOCK and REPORT for one person. */
+function MoreButton({ name, open, onPress }: { name: string; open: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={12}
+      style={({ pressed }) => [st.more, pressed && st.pressed]}
+      accessibilityRole="button"
+      accessibilityLabel={`Block or report ${name}`}
+      accessibilityState={{ expanded: open }}
+    >
+      <Text style={[st.moreText, open && st.moreTextOn]}>···</Text>
+    </Pressable>
+  );
+}
+
 /**
- * An incoming request card. Extracted to module scope and memoized
- * (virtualization pass 2026-09-11): every card carries its own ReportLink —
+ * The shared inbox row: channel badge, who (with the verified plate), a
+ * relative time, the purpose, a two-line preview of the request message and,
+ * for an open conversation, the OPEN CONVERSATION link. The answer buttons and
+ * the BLOCK / REPORT row come in as children from each card.
+ */
+function InboxRow({
+  t,
+  unread,
+  onOpen,
+  more,
+  onMore,
+  children,
+}: {
+  t: ContactThread;
+  unread: number;
+  onOpen: (t: ContactThread) => void;
+  more: boolean;
+  onMore: () => void;
+  children?: ReactNode;
+}) {
+  const led = rowLed(t, unread);
+  const when = relativeTime(t.status === 'pending' ? t.createdAt : (t.respondedAt ?? t.createdAt));
+  const state = stateLine(t);
+  const isOpen = t.status === 'accepted';
+  // Incoming: always (as before). Sent: once accepted — only then can they
+  // write back (see ThreadModeration).
+  const canModerate = t.direction === 'incoming' || isOpen;
+  // WAITING ON YOU shows the WHOLE request: the person needs all of it to
+  // decide whether to accept, decline or report. Every other row is a
+  // two-line preview.
+  const waiting = t.direction === 'incoming' && t.status === 'pending';
+  const preview = (
+    <Text style={[st.preview, led === 'amber' && st.previewNew]} numberOfLines={waiting ? undefined : 2}>
+      {t.message}
+    </Text>
+  );
+  return (
+    <View style={st.ib}>
+      <ChannelBadge name={t.otherDisplayName} led={led} steel={t.otherKind !== 'member' && t.otherVerified} />
+      <View style={st.ibBody}>
+        <ThreadWho
+          t={t}
+          right={
+            <View style={st.topRight}>
+              {when ? (
+                <Text style={st.time} accessibilityLabel={when.spoken}>
+                  {when.short}
+                </Text>
+              ) : null}
+              {canModerate ? <MoreButton name={t.otherDisplayName} open={more} onPress={onMore} /> : null}
+            </View>
+          }
+        />
+        <Text style={st.purpose}>{t.purposeLabel}</Text>
+        {isOpen ? (
+          // A tap on the preview opens the conversation too. Hidden from a
+          // screen reader, which gets the explicit link just below instead
+          // (a Pressable is one element on iOS and would swallow the text).
+          <Pressable onPress={() => onOpen(t)} accessible={false} importantForAccessibility="no">
+            {preview}
+          </Pressable>
+        ) : (
+          preview
+        )}
+        {state ? <Text style={st.state}>{state}</Text> : null}
+        {isOpen ? (
+          <Pressable
+            onPress={() => onOpen(t)}
+            hitSlop={8}
+            style={({ pressed }) => [st.openLink, pressed && st.pressed]}
+            accessibilityRole="button"
+            accessibilityLabel={conversationLabel(t, unread)}
+          >
+            <Text style={st.openLinkText}>{`${conversationLabel(t, unread)} ›`}</Text>
+          </Pressable>
+        ) : null}
+        {children}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * An incoming request row. Extracted to module scope and memoized
+ * (virtualization pass 2026-09-11): every row can carry its own ReportLink —
  * which holds state AND mounts a Modal — so rendering the whole inbox eagerly
- * inside a ScrollView cost one hidden sheet per request. Markup is unchanged.
+ * inside a ScrollView cost one hidden sheet per request. Since the 2026-11-01
+ * redesign the BLOCK / REPORT row mounts only once "···" opens it.
  */
 const IncomingCard = memo(function IncomingCard({
   t,
@@ -112,24 +373,17 @@ const IncomingCard = memo(function IncomingCard({
   /** Unread messages from them in this conversation (0 when unknown). */
   unread: number;
 }) {
+  const [more, setMore] = useState(false);
   return (
-    <View style={st.card}>
-      <ThreadWho t={t} />
-      <Text style={st.purpose}>{t.purposeLabel}</Text>
-      <Text style={st.msg}>{t.message}</Text>
-      <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
+    <InboxRow t={t} unread={unread} onOpen={onOpen} more={more} onMore={() => setMore((v) => !v)}>
       {t.status === 'pending' ? (
-        <View style={st.row}>
-          <PrimaryButton label="ACCEPT" tone="green" disabled={acting} onPress={() => onAct(t, 'accept')} />
-          <View style={{ width: 8 }} />
-          <PrimaryButton label="DECLINE" disabled={acting} onPress={() => onAct(t, 'decline')} />
+        <View style={st.actions}>
+          <Pill label="ACCEPT" tone="yes" disabled={acting} onPress={() => onAct(t, 'accept')} />
+          <Pill label="DECLINE" tone="no" disabled={acting} onPress={() => onAct(t, 'decline')} />
         </View>
       ) : null}
-      {t.status === 'accepted' ? (
-        <PrimaryButton label={conversationLabel(t, unread)} onPress={() => onOpen(t)} />
-      ) : null}
-      <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
-    </View>
+      {more ? <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} /> : null}
+    </InboxRow>
   );
 });
 
@@ -139,6 +393,7 @@ const IncomingCard = memo(function IncomingCard({
  * it is accepted, and that card had neither control: whoever you wrote to
  * could reply with anything and the Requests screen gave you no way to block
  * or report them. Both calls are thread-scoped, so they work from either side.
+ * Since 2026-11-01 it sits behind each row's "···" and the thread's "···".
  */
 function ThreadModeration({
   t,
@@ -192,7 +447,7 @@ function ThreadModeration({
   );
 }
 
-/** A sent (outgoing) request card. */
+/** A sent (outgoing) request row. */
 const OutgoingCard = memo(function OutgoingCard({
   t,
   onAct,
@@ -214,23 +469,19 @@ const OutgoingCard = memo(function OutgoingCard({
   /** Unread messages from them in this conversation (0 when unknown). */
   unread: number;
 }) {
+  const [more, setMore] = useState(false);
   return (
-    <View style={st.card}>
-      <ThreadWho t={t} />
-      <Text style={st.purpose}>{t.purposeLabel}</Text>
-      <Text style={st.msg}>{t.message}</Text>
-      <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
+    <InboxRow t={t} unread={unread} onOpen={onOpen} more={more} onMore={() => setMore((v) => !v)}>
       {t.status === 'pending' ? (
-        <PrimaryButton label="WITHDRAW" disabled={acting} onPress={() => onAct(t, 'withdraw')} />
+        <View style={st.actions}>
+          <Pill label="WITHDRAW" tone="no" disabled={acting} onPress={() => onAct(t, 'withdraw')} />
+        </View>
       ) : null}
-      {t.status === 'accepted' ? (
-        <>
-          <PrimaryButton label={conversationLabel(t, unread)} onPress={() => onOpen(t)} />
-          {/* Accepted = they can now write back — see ThreadModeration. */}
-          <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
-        </>
+      {t.status === 'accepted' && more ? (
+        // Accepted = they can now write back — see ThreadModeration.
+        <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
       ) : null}
-    </View>
+    </InboxRow>
   );
 });
 
@@ -343,25 +594,49 @@ export function RequestsView({
   );
 
   const openThread = useCallback((t: ContactThread) => setOpen(t), []);
+  /** A block from inside the conversation: tell the host, as the rows do, and
+   *  close the conversation — it no longer exists. */
+  const blockedInThread = useCallback(
+    (t: ContactThread) => {
+      noteBlocked(t);
+      setOpen(null);
+    },
+    [noteBlocked],
+  );
 
-  // INCOMING then SENT, each behind its eyebrow — the exact order and spacing
-  // the ScrollView rendered, flattened so ONE FlatList virtualizes both.
+  // Grouped by what each request needs (redesign 2026-11-01), each section
+  // behind its header and flattened so ONE FlatList virtualizes them all.
   const rows = useMemo<RequestRow[]>(() => {
     if (!threads) return [];
-    const incoming = threads.filter((t) => t.direction === 'incoming');
-    const outgoing = threads.filter((t) => t.direction === 'outgoing');
+    const waiting = threads.filter((t) => t.direction === 'incoming' && t.status === 'pending');
+    const conversations = threads.filter((t) => t.status === 'accepted');
+    const sent = threads.filter((t) => t.direction === 'outgoing' && t.status === 'pending');
+    const closed = threads.filter((t) => t.status !== 'pending' && t.status !== 'accepted');
+    const sections: [string, string, ContactThread[], boolean][] = [
+      ['wait', 'Waiting on you', waiting, true],
+      ['conv', 'Conversations', conversations, false],
+      ['sent', 'Sent', sent, false],
+      ['closed', 'Closed', closed, false],
+    ];
     const out: RequestRow[] = [];
-    if (incoming.length) out.push({ kind: 'eyebrow', key: 'eb:in', label: 'INCOMING' });
-    for (const t of incoming) out.push({ kind: 'incoming', key: `in:${t.id}`, thread: t });
-    if (outgoing.length) out.push({ kind: 'eyebrow', key: 'eb:out', label: 'SENT' });
-    for (const t of outgoing) out.push({ kind: 'outgoing', key: `out:${t.id}`, thread: t });
+    for (const [key, label, list, counted] of sections) {
+      if (!list.length) continue;
+      out.push({ kind: 'eyebrow', key: `eb:${key}`, label, count: counted ? list.length : undefined, first: out.length === 0 });
+      for (const t of list) {
+        out.push(
+          t.direction === 'incoming'
+            ? { kind: 'incoming', key: `in:${t.id}`, thread: t }
+            : { kind: 'outgoing', key: `out:${t.id}`, thread: t },
+        );
+      }
+    }
     return out;
   }, [threads]);
 
   const keyExtractor = useCallback((r: RequestRow) => r.key, []);
   const renderRow = useCallback(
     ({ item }: { item: RequestRow }) => {
-      if (item.kind === 'eyebrow') return <Eyebrow>{item.label}</Eyebrow>;
+      if (item.kind === 'eyebrow') return <SectionHead label={item.label} count={item.count} first={item.first} />;
       if (item.kind === 'incoming') {
         return (
           <IncomingCard
@@ -442,17 +717,25 @@ export function RequestsView({
           </>
         }
         ListFooterComponent={
-          <Helper>
-            Messages reach members through Pro Audio Training Academy. Email addresses are never
-            shown to either side, and both members remain identifiable to the Academy so that
-            reports can be acted on.
-          </Helper>
+          <View style={st.footer}>
+            <Helper>
+              Messages reach members through Pro Audio Training Academy. Email addresses are never
+              shown to either side, and both members remain identifiable to the Academy so that
+              reports can be acted on.
+            </Helper>
+          </View>
         }
       />
 
       {/* Outside the list: a Modal renders as an overlay regardless of where it
           sits in the tree, and this keeps it mounted across cell recycling. */}
-      <ThreadSheet thread={open} onClose={() => setOpen(null)} />
+      <ThreadSheet
+        thread={open}
+        onClose={() => setOpen(null)}
+        onReload={load}
+        onError={setErr}
+        onBlocked={blockedInThread}
+      />
     </>
   );
 }
@@ -478,19 +761,24 @@ export function RequestsView({
  *
  * A verified INSTRUCTOR or school gets the same treatment with its own words
  * (R1, 2026-10-27): "VERIFIED INSTRUCTOR", and its site.
+ *
+ * `right` sits at the end of the name line (the row's time and "···").
  */
-function ThreadWho({ t }: { t: ContactThread }) {
+function ThreadWho({ t, right }: { t: ContactThread; right?: ReactNode }) {
   const verifier = t.otherKind === 'member' ? null : VERIFIER_COPY[t.otherKind];
   const pageUrl = employerPageUrl(t.otherPageToken);
   return (
     <View style={st.whoWrap}>
-      <View style={st.whoRow}>
-        <Text style={st.name}>{t.otherDisplayName}</Text>
-        {verifier && t.otherVerified ? (
-          <View style={st.verifiedTag} accessible accessibilityLabel={verifier.badgeA11y}>
-            <Text style={st.verifiedTagText}>{verifier.badge}</Text>
-          </View>
-        ) : null}
+      <View style={st.whoTop}>
+        <View style={st.whoRow}>
+          <Text style={st.name}>{t.otherDisplayName}</Text>
+          {verifier && t.otherVerified ? (
+            <View style={st.verifiedTag} accessible accessibilityLabel={verifier.badgeA11y}>
+              <Text style={st.verifiedTagText}>{verifier.badge}</Text>
+            </View>
+          ) : null}
+        </View>
+        {right}
       </View>
       {verifier && t.otherWebsite ? (
         <Text style={st.whoSite} numberOfLines={1}>
@@ -508,8 +796,8 @@ function ThreadWho({ t }: { t: ContactThread }) {
               notify('Couldn’t open the page', `Open this address in your browser: ${pageUrl}`),
             )
           }
-          hitSlop={6}
-          style={st.link}
+          hitSlop={10}
+          style={st.pageLink}
           accessibilityRole="link"
           accessibilityLabel={`View the public page of ${t.otherDisplayName} on the website`}
         >
@@ -551,8 +839,8 @@ function ReportLink({
         <Text style={st.linkText}>REPORT</Text>
       </Pressable>
       <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        {/* ⛔ KEYBOARD TRAP — the same shape fixed in the message sheet 145
-            lines below, and missed here. Bottom-anchored Modal, multiline
+        {/* ⛔ KEYBOARD TRAP — the same shape fixed in the message sheet
+            below, and missed here. Bottom-anchored Modal, multiline
             detail box, SEND REPORT and CANCEL last, nothing to drag the
             keyboard down with and a scrim that is not pressable. This is the
             messaging report path Apple 1.2 requires. */}
@@ -634,26 +922,88 @@ function ReportLink({
   );
 }
 
-/** One conversation bubble. Module-level + memoized so the message FlatList can
- *  reuse cells (virtualization pass 2026-09-11); markup is unchanged. */
-const Bubble = memo(function Bubble({ m }: { m: ThreadMessage }) {
+/** One conversation bubble, with the day divider above it when a new day
+ *  starts. Module-level + memoized so the message FlatList can reuse cells
+ *  (virtualization pass 2026-09-11). Theirs: charcoal, bottom-left corner
+ *  tightened; mine: amber-tinted, bottom-right corner tightened. */
+const Bubble = memo(function Bubble({ m, day, who }: { m: ThreadMessage; day: string | null; who: string }) {
+  const time = clockTime(m.createdAt);
   return (
-    <View style={[st.bubble, m.mine && st.bubbleMine]}>
-      <Text style={st.bubbleText}>{m.body}</Text>
-    </View>
+    <>
+      {day ? (
+        <Text style={st.day} accessibilityRole="header">
+          {day}
+        </Text>
+      ) : null}
+      <View
+        style={[st.bubble, m.mine ? st.bubbleMine : st.bubbleThem]}
+        accessible
+        accessibilityLabel={`${who}${time ? `, ${time}` : ''}: ${m.body}`}
+      >
+        <Text style={st.bubbleText}>{m.body}</Text>
+        {time ? <Text style={[st.bubbleTime, m.mine && st.bubbleTimeMine]}>{time}</Text> : null}
+      </View>
+    </>
   );
 });
 
-const bubbleKey = (m: ThreadMessage) => m.id;
-const renderBubble = ({ item }: { item: ThreadMessage }) => <Bubble m={item} />;
+const bubbleKey = (r: MsgRow) => r.m.id;
 
-function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClose: () => void }) {
+/** The round amber SEND with an up arrow. Same label and disabled state as
+ *  the old SEND button. */
+function SendButton({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={4}
+      style={({ pressed }) => [st.send, disabled && st.sendOff, pressed && !disabled && st.pressed]}
+      accessibilityRole="button"
+      accessibilityLabel="SEND"
+      accessibilityState={{ disabled }}
+      aria-disabled={disabled}
+    >
+      <Text style={[st.sendArrow, disabled && st.sendArrowOff]}>↑</Text>
+    </Pressable>
+  );
+}
+
+function ThreadSheet({
+  thread,
+  onClose,
+  onReload,
+  onError,
+  onBlocked,
+}: {
+  thread: ContactThread | null;
+  onClose: () => void;
+  /** BLOCK / REPORT from the "···" menu use the list's own handlers. */
+  onReload: () => Promise<void>;
+  onError: (e: string | null) => void;
+  onBlocked: (t: ContactThread) => void;
+}) {
   const insets = useSafeAreaInsets();
+  /**
+   * ⛔ THE MODAL STAYS MOUNTED (checker 2026-11-01, the build-36 frozen-screen
+   * pattern). This used to `return null` when the thread closed, unmounting
+   * the Modal outright. A block from the header's REPORT closes the nested
+   * report Modal and this one in the same moment, and an unmounted outer
+   * Modal skips DimModal's nested-close hold: on iOS the outer controller
+   * stays presented, empty, over the whole app. So the Modal is always
+   * mounted and only `visible` follows `thread`; `view` is the last thread
+   * shown, so the closing frames still draw it (and the nested report Modal
+   * can finish closing first). Nothing renders inside before the first open.
+   */
+  const lastThread = useRef<ContactThread | null>(thread);
+  if (thread) lastThread.current = thread;
+  const view = thread ?? lastThread.current;
   const [msgs, setMsgs] = useState<ThreadMessage[]>([]);
   const [body, setBody] = useState('');
   const [err, setErr] = useState<string | null>(null);
   /** Remaining allowance. null = unknown, which must read as ALLOWED. */
   const [allow, setAllow] = useState<ContactAllowance | null>(null);
+  /** The header's "···" (BLOCK / REPORT) is open. */
+  const [more, setMore] = useState(false);
   // Per conversation (night pass 3, 2026-10-01): this sheet stays mounted
   // across threads, and one shared lock left SEND dead in B — and swallowed
   // the tap — while a send in A was still out.
@@ -669,7 +1019,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const sending = sendingIn(threadId);
   /**
    * Unsent replies, per conversation (bug hunt 2026-09-30). Closing the sheet —
-   * ✕, Android BACK, a stray tap — wiped whatever had been typed, because the
+   * ‹, Android BACK, a stray tap — wiped whatever had been typed, because the
    * reset below cleared `body` on every open and close. Kept for as long as
    * the Requests tab is mounted; a successful SEND drops its entry.
    */
@@ -738,6 +1088,9 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setErr(null);
     setBody(threadId ? (drafts.current.get(threadId) ?? '') : '');
     setAllow(null);
+    // On OPEN only: on close the "···" row (and a report Modal still
+    // animating away inside it) stays until the thread has slid out.
+    if (threadId) setMore(false);
   }, [threadId]);
 
   useEffect(() => {
@@ -764,13 +1117,31 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
    * SEND; a drag up to read history unpins it, so a re-read never yanks the
    * reader away from what they are reading.
    */
-  const listRef = useRef<FlatList<ThreadMessage>>(null);
+  const listRef = useRef<FlatList<MsgRow>>(null);
   const pinToEnd = useRef(true);
   useEffect(() => {
     pinToEnd.current = true;
   }, [threadId]);
 
-  if (!thread) return null;
+  // Day dividers ride on the messages (TODAY / a weekday / a date).
+  const rowsWithDays = useMemo(() => withDays(msgs), [msgs]);
+  const otherName = view?.otherDisplayName ?? '';
+  const renderMsg = useCallback(
+    ({ item }: { item: MsgRow }) => <Bubble m={item.m} day={item.day} who={item.m.mine ? 'You' : otherName} />,
+    [otherName],
+  );
+  /** A BLOCK / REPORT failure shows here, where the person is looking, and on
+   *  the list behind. A success never clears this conversation's own error. */
+  const modError = useCallback(
+    (e: string | null) => {
+      if (e) setErr(e);
+      onError(e);
+    },
+    [onError],
+  );
+
+  const verifier = !view || view.otherKind === 'member' ? null : VERIFIER_COPY[view.otherKind];
+  const pinState = !view ? '' : view.status === 'accepted' ? 'ACCEPTED' : STATUS_LABEL[view.status].toUpperCase();
   return (
     /**
      * ⛔ THE KEYBOARD COVERED THE COMPOSER AND SEND, WITH NO WAY OUT.
@@ -785,250 +1156,398 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
      * on a drag either. The only escape was backgrounding the app — on every
      * single message send, in the whole of the messaging feature.
      */
-    <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={st.sheetRoot}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        {/* With the keyboard DOWN, SEND used to sit 14pt from the physical
-            edge, under the home indicator. */}
-        <View style={[st.sheet, { maxHeight: '88%', paddingBottom: 14 + insets.bottom }]}>
-          <View style={st.sheetHead}>
-            <Text accessibilityRole="header" style={st.sheetTitle}>
-              {thread.otherDisplayName.toUpperCase()}
-            </Text>
-            <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close conversation">
-              <Text style={st.close}>✕</Text>
-            </Pressable>
-          </View>
-          {err ? <Banner tone="warn">{err}</Banner> : null}
-          {/* Virtualized 2026-09-11: a conversation grows without bound, and
-              every bubble was mounted on open. The sheet body is a plain View,
-              so nothing of the same orientation nests this list; the request's
-              purpose + opening message stay pinned above as the list header,
-              exactly where the ScrollView put them. */}
-          <FlatList
-            // ⛔ flexShrink, NEVER flex: 1 (evening hunt 2026-10-02) — the
-            // TestFlight-32 PreviewSheet trap in MyProfileView, same shape:
-            // this sheet has only a maxHeight, so a flex-basis-0 list adds
-            // nothing to its height and the conversation laid out ZERO tall
-            // between the header and the reply box.
-            style={{ flexShrink: 1 }}
-            ref={listRef}
-            onContentSizeChange={() => {
-              if (pinToEnd.current) listRef.current?.scrollToEnd({ animated: false });
-            }}
-            onScrollBeginDrag={() => {
-              pinToEnd.current = false;
-            }}
-            // Drag the conversation to put the keyboard away — the second
-            // escape route, since a multiline Return cannot dismiss it.
-            keyboardDismissMode="interactive"
-            keyboardShouldPersistTaps="handled"
-            data={msgs}
-            keyExtractor={bubbleKey}
-            renderItem={renderBubble}
-            initialNumToRender={12}
-            maxToRenderPerBatch={12}
-            windowSize={7}
-            ListHeaderComponent={
-              <>
-                <Text style={st.purpose}>{thread.purposeLabel}</Text>
-                <Text style={st.msg}>{thread.message}</Text>
-              </>
-            }
-          />
-          <TextInput
-            style={st.input}
-            value={body}
-            onChangeText={editBody}
-            placeholder="Write a reply"
-            placeholderTextColor={colors.textMuted}
-            multiline
-            maxLength={allow?.messageMaxChars ?? 1000}
-            accessibilityLabel="Write a reply"
-          />
-
-          {/* ── SAY THE LIMIT BEFORE THE WALL (owner 2026-09-19) ───────────
-              Every cap here used to be discovered by hitting it. `allow` is
-              null when the read failed, and null must read as ALLOWED — the
-              server is the enforcement, and guessing "blocked" on a dropped
-              connection would lock someone out of their own conversation. */}
-          {/* SEND is disabled on THREE caps, and only the per-conversation one
-              had a sentence — the other two produced a dead button and no
-              explanation. All three windows are ROLLING on the server, so none
-              of them "resets tomorrow". */}
-          {allow?.awaitingReply ? (
-            <Text style={st.allowance}>
-              Wait for a reply before sending more.
-            </Text>
-          ) : allow?.messagesLeftThisWeek === 0 ? (
-            <Text style={st.allowance}>
-              No messages left this week. The oldest frees up 7 days after you sent it.
-            </Text>
-          ) : allow?.messagesLeftToday === 0 ? (
-            <Text style={st.allowance}>
-              No messages left today across all conversations. The oldest frees up 24 hours
-              after you sent it.
-            </Text>
-          ) : allow && allow.messagesLeftHereToday <= 3 ? (
-            <Text style={st.allowance}>
-              {allow.messagesLeftHereToday === 0
-                ? 'No replies left in this conversation for now. The oldest frees up 24 hours after you sent it.'
-                : `${allow.messagesLeftHereToday} ${allow.messagesLeftHereToday === 1 ? 'reply' : 'replies'} left in this conversation today.`}
-            </Text>
-          ) : null}
-
-          <PrimaryButton
-            label="SEND"
-            tone="green"
-            disabled={
-              sending ||
-              !body.trim() ||
-              allow?.awaitingReply === true ||
-              allow?.messagesLeftHereToday === 0 ||
-              allow?.messagesLeftToday === 0 ||
-              allow?.messagesLeftThisWeek === 0
-            }
-            onPress={() => {
-              // What this press sent (bug hunt 2026-09-30, pass 2). The box
-              // stays editable while SEND is out, and a success cleared it
-              // outright — whatever was typed during a slow send was wiped,
-              // draft included. Only the text that was actually sent is cleared.
-              const sentRaw = body;
-              // …and the sent text is cleared even when more was typed after it
-              // (bug hunt 2026-09-30, pass 3). Pass 2 kept the WHOLE box in that
-              // case — the message already delivered plus the new words — so the
-              // next SEND delivered the first message a second time.
-              const unsent = (cur: string) =>
-                cur.startsWith(sentRaw) ? cur.slice(sentRaw.length).replace(/^\s+/, '') : cur;
-              // #11: the same text again is a RETRY of the same message — same
-              // client id, and the first attempt's snapshot. A retry re-reads
-              // first: if that attempt already landed (it timed out here but
-              // the server stored it), it is answered as sent, not sent twice.
-              const { pending, retry } = pendingFor(
-                pendingSends.current.get(thread.id),
-                sentRaw.trim(),
-                msgsFor.current === thread.id ? new Set(msgs.map((m) => m.id)) : null,
-                () => Crypto.randomUUID(),
-              );
-              pendingSends.current.set(thread.id, pending);
-              const sendOnce = async () => {
-                if (retry && pending.knownIds) {
-                  const seen = await fetchThreadMessages(thread.id);
-                  if (seen.ok && landedAlready(pending, seen.rows)) return { ok: true } as const;
+    <Modal accessibilityViewIsModal visible={thread != null} transparent animationType="slide" onRequestClose={onClose}>
+      {view ? (
+        <KeyboardAvoidingView
+          style={st.threadRoot}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          {/* FULL HEIGHT since the 2026-11-01 redesign: the thread fills the
+              screen inside the safe area, and the composer keeps the bottom
+              inset (SEND used to sit under the home indicator). */}
+          <View style={[st.thread, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+            <View style={st.thHead}>
+              <Pressable
+                onPress={onClose}
+                hitSlop={12}
+                style={({ pressed }) => [st.back, pressed && st.pressed]}
+                accessibilityRole="button"
+                accessibilityLabel="Close conversation"
+              >
+                <Text style={st.backText} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
+              </Pressable>
+              <ChannelBadge
+                name={view.otherDisplayName}
+                led={view.status === 'accepted' ? 'green' : 'off'}
+                steel={view.otherKind !== 'member' && view.otherVerified}
+                size={40}
+              />
+              <View style={st.thWho}>
+                <View style={st.whoRow}>
+                  <Text accessibilityRole="header" style={st.thName}>
+                    {view.otherDisplayName}
+                  </Text>
+                  {verifier && view.otherVerified ? (
+                    <View style={st.verifiedTag} accessible accessibilityLabel={verifier.badgeA11y}>
+                      <Text style={st.verifiedTagText}>{verifier.badge}</Text>
+                    </View>
+                  ) : null}
+                </View>
+                <Text style={st.thSub}>{view.purposeLabel}</Text>
+              </View>
+              <MoreButton name={view.otherDisplayName} open={more} onPress={() => setMore((v) => !v)} />
+            </View>
+            {more ? (
+              <View style={st.thMore}>
+                <ThreadModeration t={view} onReload={onReload} onError={modError} onBlocked={onBlocked} />
+              </View>
+            ) : null}
+            {err ? (
+              <View style={st.thBanner}>
+                <Banner tone="warn">{err}</Banner>
+              </View>
+            ) : null}
+            {/* Virtualized 2026-09-11: a conversation grows without bound, and
+                every bubble was mounted on open. The request's purpose + opening
+                message stay pinned above as the list header. */}
+            <View style={st.msgArea}>
+              <FlatList
+                // ⛔ flexShrink, NEVER flex: 1 on the list itself (evening hunt
+                // 2026-10-02) — the TestFlight-32 PreviewSheet trap in
+                // MyProfileView. The thread is full height now and `msgArea`
+                // owns the space; the list shrinks into it and scrolls.
+                style={{ flexShrink: 1 }}
+                ref={listRef}
+                onContentSizeChange={() => {
+                  if (pinToEnd.current) listRef.current?.scrollToEnd({ animated: false });
+                }}
+                onScrollBeginDrag={() => {
+                  pinToEnd.current = false;
+                }}
+                // Drag the conversation to put the keyboard away — the second
+                // escape route, since a multiline Return cannot dismiss it.
+                keyboardDismissMode="interactive"
+                keyboardShouldPersistTaps="handled"
+                data={rowsWithDays}
+                keyExtractor={bubbleKey}
+                renderItem={renderMsg}
+                initialNumToRender={12}
+                maxToRenderPerBatch={12}
+                windowSize={7}
+                contentContainerStyle={st.msgs}
+                ListHeaderComponent={
+                  <View style={st.pin}>
+                    <Text style={st.pinLabel}>{`${view.purposeLabel.toUpperCase()} REQUEST · ${pinState}`}</Text>
+                    <Text style={st.pinText}>{view.message}</Text>
+                  </View>
                 }
-                // `pending.clientId` goes to the server (Comp A #11, live
-                // 2026-10-23): a repeat id saves nothing. sendThreadMessage
-                // falls back to the 2-argument call on a server without it.
-                return sendThreadMessage(thread.id, pending.body, pending.clientId);
-              };
-              runSendIn(thread.id, () =>
-                sendOnce().then(async (r) => {
-                  if (r.ok && pendingSends.current.get(thread.id) === pending) {
-                    pendingSends.current.delete(thread.id);
+              />
+            </View>
+
+            <View style={st.composer}>
+              <View style={st.composerRow}>
+                <TextInput
+                  style={st.reply}
+                  value={body}
+                  onChangeText={editBody}
+                  placeholder="Write a reply"
+                  placeholderTextColor={C.muted}
+                  multiline
+                  maxLength={allow?.messageMaxChars ?? 1000}
+                  accessibilityLabel="Write a reply"
+                />
+                <SendButton
+                  disabled={
+                    !thread ||
+                    sending ||
+                    !body.trim() ||
+                    allow?.awaitingReply === true ||
+                    allow?.messagesLeftHereToday === 0 ||
+                    allow?.messagesLeftToday === 0 ||
+                    allow?.messagesLeftThisWeek === 0
                   }
-                  // `thread` is the one this press was made in.
-                  const draft = drafts.current.get(thread.id);
-                  if (r.ok && draft !== undefined) {
-                    const rest = unsent(draft);
-                    if (rest) drafts.current.set(thread.id, rest);
-                    else drafts.current.delete(thread.id);
-                  }
-                  // Closed or switched while it was out: this answer is about
-                  // a conversation no longer on screen — its error must not
-                  // land on the next one, nor its clear wipe that one's draft.
-                  if (openId.current !== thread.id) return;
-                  if (!r.ok) return setErr(r.error);
-                  setErr(null);
-                  setBody(unsent);
-                  pinToEnd.current = true; // show the message just sent
-                  await load();
-                }),
-              );
-            }}
-          />
-        </View>
-      </KeyboardAvoidingView>
+                  onPress={() => {
+                    // Closing (the thread slides out with `view`): nothing to send to.
+                    if (!thread) return;
+                    // What this press sent (bug hunt 2026-09-30, pass 2). The box
+                    // stays editable while SEND is out, and a success cleared it
+                    // outright — whatever was typed during a slow send was wiped,
+                    // draft included. Only the text that was actually sent is cleared.
+                    const sentRaw = body;
+                    // …and the sent text is cleared even when more was typed after it
+                    // (bug hunt 2026-09-30, pass 3). Pass 2 kept the WHOLE box in that
+                    // case — the message already delivered plus the new words — so the
+                    // next SEND delivered the first message a second time.
+                    const unsent = (cur: string) =>
+                      cur.startsWith(sentRaw) ? cur.slice(sentRaw.length).replace(/^\s+/, '') : cur;
+                    // #11: the same text again is a RETRY of the same message — same
+                    // client id, and the first attempt's snapshot. A retry re-reads
+                    // first: if that attempt already landed (it timed out here but
+                    // the server stored it), it is answered as sent, not sent twice.
+                    const { pending, retry } = pendingFor(
+                      pendingSends.current.get(thread.id),
+                      sentRaw.trim(),
+                      msgsFor.current === thread.id ? new Set(msgs.map((m) => m.id)) : null,
+                      () => Crypto.randomUUID(),
+                    );
+                    pendingSends.current.set(thread.id, pending);
+                    const sendOnce = async () => {
+                      if (retry && pending.knownIds) {
+                        const seen = await fetchThreadMessages(thread.id);
+                        if (seen.ok && landedAlready(pending, seen.rows)) return { ok: true } as const;
+                      }
+                      // `pending.clientId` goes to the server (Comp A #11, live
+                      // 2026-10-23): a repeat id saves nothing. sendThreadMessage
+                      // falls back to the 2-argument call on a server without it.
+                      return sendThreadMessage(thread.id, pending.body, pending.clientId);
+                    };
+                    runSendIn(thread.id, () =>
+                      sendOnce().then(async (r) => {
+                        if (r.ok && pendingSends.current.get(thread.id) === pending) {
+                          pendingSends.current.delete(thread.id);
+                        }
+                        // `thread` is the one this press was made in.
+                        const draft = drafts.current.get(thread.id);
+                        if (r.ok && draft !== undefined) {
+                          const rest = unsent(draft);
+                          if (rest) drafts.current.set(thread.id, rest);
+                          else drafts.current.delete(thread.id);
+                        }
+                        // Closed or switched while it was out: this answer is about
+                        // a conversation no longer on screen — its error must not
+                        // land on the next one, nor its clear wipe that one's draft.
+                        if (openId.current !== thread.id) return;
+                        if (!r.ok) return setErr(r.error);
+                        setErr(null);
+                        setBody(unsent);
+                        pinToEnd.current = true; // show the message just sent
+                        await load();
+                      }),
+                    );
+                  }}
+                />
+              </View>
+
+              {/* ── SAY THE LIMIT BEFORE THE WALL (owner 2026-09-19) ───────────
+                  Every cap here used to be discovered by hitting it. `allow` is
+                  null when the read failed, and null must read as ALLOWED — the
+                  server is the enforcement, and guessing "blocked" on a dropped
+                  connection would lock someone out of their own conversation. */}
+              {/* SEND is disabled on THREE caps, and only the per-conversation one
+                  had a sentence — the other two produced a dead button and no
+                  explanation. All three windows are ROLLING on the server, so none
+                  of them "resets tomorrow". */}
+              {allow?.awaitingReply ? (
+                <Text style={st.allowance}>
+                  Wait for a reply before sending more.
+                </Text>
+              ) : allow?.messagesLeftThisWeek === 0 ? (
+                <Text style={st.allowance}>
+                  No messages left this week. The oldest frees up 7 days after you sent it.
+                </Text>
+              ) : allow?.messagesLeftToday === 0 ? (
+                <Text style={st.allowance}>
+                  No messages left today across all conversations. The oldest frees up 24 hours
+                  after you sent it.
+                </Text>
+              ) : allow && allow.messagesLeftHereToday <= 3 ? (
+                <Text style={st.allowance}>
+                  {allow.messagesLeftHereToday === 0
+                    ? 'No replies left in this conversation for now. The oldest frees up 24 hours after you sent it.'
+                    : `${allow.messagesLeftHereToday} ${allow.messagesLeftHereToday === 1 ? 'reply' : 'replies'} left in this conversation today.`}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      ) : null}
     </Modal>
   );
 }
 
 const st = StyleSheet.create({
-  allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 6 },
   // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
-  body: { padding: 14, paddingBottom: 40, ...cardColumn },
-  card: {
-    backgroundColor: '#181818',
-    borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 10,
-  },
-  name: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textPrimary },
+  body: { paddingHorizontal: 18, paddingTop: 10, paddingBottom: 40, ...cardColumn },
+  footer: { marginTop: 18 },
+  pressed: { opacity: 0.7 },
+
+  // ── inbox ──
+  sec: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, marginBottom: 2 },
+  secGap: { marginTop: 22 },
+  secText: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.8, color: C.muted },
+  secCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
+  ib: { flexDirection: 'row', gap: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: C.line },
+  ibBody: { flex: 1, minWidth: 0 },
+  topRight: { flexDirection: 'row', alignItems: 'center', gap: 4, marginLeft: 8, marginTop: 3 },
+  time: { fontFamily: fonts.mono, fontSize: 10.5, color: C.muted },
+  // 28 × 24 + a 12-pt slop all round = 52 × 48: the only way to BLOCK / REPORT.
+  more: { minWidth: 28, minHeight: 24, alignItems: 'center', justifyContent: 'center' },
+  moreText: { fontFamily: fonts.barlowSemiBold, fontSize: 18, lineHeight: 20, letterSpacing: 1, color: C.sub },
+  moreTextOn: { color: colors.amber },
+  purpose: { fontFamily: fonts.barlowSemiBold, fontSize: 12, color: colors.amber, marginTop: 1 },
+  preview: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: C.sub, marginTop: 4 },
+  previewNew: { color: C.text },
+  state: { fontFamily: fonts.mono, fontSize: 10.5, letterSpacing: 0.5, color: C.muted, marginTop: 6 },
+  openLink: { alignSelf: 'flex-start', paddingVertical: 6, marginTop: 2 },
+  openLinkText: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber },
+  actions: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  pill: { borderRadius: 10, paddingVertical: 8, paddingHorizontal: 16, borderWidth: 1 },
+  pillYes: { backgroundColor: colors.green, borderColor: colors.green },
+  pillNo: { backgroundColor: 'transparent', borderColor: C.line2 },
+  pillOff: { opacity: 0.45 },
+  pillText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 1.25 },
+  pillTextYes: { color: '#07130a' },
+  pillTextNo: { color: C.sub },
+
+  // ── who ──
+  name: { fontFamily: fonts.oswaldSemiBold, fontSize: 16.5, letterSpacing: 0.3, color: C.text, flexShrink: 1 },
   whoWrap: { gap: 2 },
-  whoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  whoTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  whoRow: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   verifiedTag: {
     borderWidth: 1,
-    borderColor: 'rgba(125,255,161,.55)',
-    backgroundColor: 'rgba(125,255,161,.12)',
-    borderRadius: 4,
+    borderColor: 'rgba(159,180,200,.45)',
+    backgroundColor: 'rgba(159,180,200,.08)',
+    borderRadius: 5,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   verifiedTagText: {
-    fontFamily: fonts.oswaldSemiBold,
+    fontFamily: fonts.mono,
     fontSize: 9.5,
-    letterSpacing: 1,
-    color: '#7dffa1',
+    letterSpacing: 0.8,
+    color: STEEL,
   },
-  whoSite: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub },
-  purpose: { fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber, marginTop: 4 },
-  msg: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginTop: 8 },
-  status: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.textMutedDeep, marginTop: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 6 },
+  whoSite: { fontFamily: fonts.mono, fontSize: 11, color: C.muted },
+  pageLink: { alignSelf: 'flex-start', paddingVertical: 4 },
+  pageLinkText: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, color: colors.amber },
+
+  // ── BLOCK / REPORT row (behind "···") ──
+  row: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 4 },
   link: { minHeight: 44, justifyContent: 'center' },
-  linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.textMuted },
-  pageLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.amber },
+  linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.3, color: C.sub },
+
+  // ── report sheet ──
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
     // Tablet (owner 2026-09-29): the sheet rides centred at the card column
     // instead of spanning a 1024 pt iPad. No-op on a phone.
     ...cardColumn,
-    backgroundColor: '#141414',
+    backgroundColor: C.panel,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     borderWidth: 1,
-    borderColor: colors.hairlineAlt,
+    borderColor: C.line,
     padding: 14,
   },
-  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sheetTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.amberLabel },
-  close: { fontFamily: fonts.barlowMedium, fontSize: 18, color: colors.textSub, padding: 4 },
   input: {
-    backgroundColor: '#101010',
+    backgroundColor: C.bg,
     borderWidth: 1,
-    borderColor: '#2c2c2c',
-    borderRadius: 8,
+    borderColor: C.line2,
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontFamily: fonts.barlowRegular,
     fontSize: 15,
-    color: colors.textPrimary,
+    color: C.text,
     marginTop: 10,
     minHeight: 48,
   },
-  bubble: {
-    backgroundColor: '#101010',
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 8,
-    alignSelf: 'flex-start',
-    maxWidth: '88%',
+
+  // ── conversation ──
+  threadRoot: { flex: 1, backgroundColor: C.bg },
+  thread: { flex: 1, ...cardColumn, backgroundColor: C.bg },
+  thHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: C.line,
   },
-  bubbleMine: { alignSelf: 'flex-end', backgroundColor: '#0d1f14', borderColor: 'rgba(55,224,95,.4)' },
-  bubbleText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  // Never squeezed by a long name or large text (largeTextLayout 2026-10-15).
+  back: { minWidth: 28, minHeight: 44, justifyContent: 'center', flexShrink: 0 },
+  backText: { fontFamily: fonts.barlowMedium, fontSize: 28, lineHeight: 32, color: C.sub },
+  thWho: { flex: 1, minWidth: 0 },
+  thName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.3, color: C.text, flexShrink: 1 },
+  thSub: { fontFamily: fonts.barlowRegular, fontSize: 12, color: C.muted, marginTop: 1 },
+  thMore: { paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: C.line },
+  thBanner: { paddingHorizontal: 16, paddingTop: 10 },
+  msgArea: { flex: 1 },
+  msgs: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14 },
+  pin: {
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.amber,
+    borderRadius: 12,
+    paddingVertical: 11,
+    paddingHorizontal: 13,
+    marginBottom: 6,
+  },
+  pinLabel: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5, color: colors.amber },
+  pinText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: C.sub, marginTop: 4 },
+  day: {
+    alignSelf: 'center',
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    color: C.muted,
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  bubble: {
+    maxWidth: '80%',
+    paddingVertical: 10,
+    paddingHorizontal: 13,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginTop: 8,
+  },
+  bubbleThem: { alignSelf: 'flex-start', backgroundColor: C.raised, borderColor: C.line2, borderBottomLeftRadius: 5 },
+  bubbleMine: { alignSelf: 'flex-end', backgroundColor: C.mineBg, borderColor: C.mineBorder, borderBottomRightRadius: 5 },
+  bubbleText: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 20.5, color: C.text },
+  bubbleTime: { fontFamily: fonts.mono, fontSize: 9.5, color: C.muted, marginTop: 4 },
+  bubbleTimeMine: { textAlign: 'right', color: C.mineTime },
+  composer: {
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: C.line,
+    backgroundColor: C.bg,
+  },
+  composerRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 10 },
+  reply: {
+    flex: 1,
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.line2,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingTop: 11,
+    paddingBottom: 11,
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14.5,
+    color: C.text,
+    minHeight: 44,
+    maxHeight: 132,
+  },
+  send: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: colors.amber,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 1,
+  },
+  sendOff: { backgroundColor: C.line2 },
+  sendArrow: { fontSize: 19, fontWeight: '700', color: '#111', lineHeight: 22 },
+  sendArrowOff: { color: C.muted },
+  allowance: { fontFamily: fonts.mono, fontSize: 10.5, lineHeight: 15, color: C.muted, marginTop: 7, paddingLeft: 4 },
 });

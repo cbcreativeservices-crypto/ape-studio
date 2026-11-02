@@ -16,6 +16,7 @@ import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } fr
 import { colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
+import { ChannelBadge } from './ChannelBadge';
 // The country filter has to normalise a typed code exactly the way the profile
 // editor normalises a stored one, or the filter searches for something no
 // profile can hold — so both ends use the editor's single normaliser.
@@ -53,6 +54,10 @@ const MemberCard = memo(function MemberCard({
   r: DirectoryCard;
   onOpen: (token: string, name?: string) => void;
 }) {
+  // One meta line, as in the mockup: what they do (specialties), then how
+  // they are involved (roles).
+  const meta = [...r.specialties.slice(0, 4), ...r.roles].join(' · ');
+  const where = [r.countryCode, workPrefShort(r.workPref)].filter(Boolean).join(' · ');
   return (
     <Pressable
       onPressIn={() => prefetchPublicProfile(r.publicToken)}
@@ -70,29 +75,37 @@ const MemberCard = memo(function MemberCard({
         .join('. ')}
       accessibilityHint="Opens their profile"
     >
-      <View style={{ flex: 1 }}>
+      {/* The channel badge: green LED = accepts contact requests, dark = does
+          not (Explore's one LED fact — see ChannelBadge). */}
+      <ChannelBadge name={r.displayName} led={r.contactEnabled ? 'green' : 'off'} />
+      <View style={st.cardBody}>
         <Text style={st.cardName}>{r.displayName}</Text>
         {r.primaryArea ? <Text style={st.cardArea}>{r.primaryArea}</Text> : null}
-        {r.specialties.length ? (
-          <Text style={st.cardSpecs} numberOfLines={2}>
-            {r.specialties.slice(0, 4).join(' · ')}
+        {meta ? (
+          <Text style={st.cardMeta} numberOfLines={2}>
+            {meta}
           </Text>
         ) : null}
-        <Text style={st.cardMeta}>
-          {[
-            r.roles.join(' · ') || null,
-            r.countryCode,
-            r.workPref === 'remote' ? 'Remote' : r.workPref === 'local' ? 'Local' : null,
-            r.credentialCount ? `${r.credentialCount} verified` : null,
-          ]
-            .filter(Boolean)
-            .join('  ·  ')}
-        </Text>
+        {r.credentialCount > 0 || where ? (
+          <View style={st.cardFoot}>
+            {r.credentialCount > 0 ? (
+              <View style={st.credPill}>
+                <Text style={st.credText}>{`✓ ${r.credentialCount} VERIFIED`}</Text>
+              </View>
+            ) : null}
+            {where ? <Text style={st.where}>{where}</Text> : null}
+          </View>
+        ) : null}
       </View>
       <Text style={st.chev}>›</Text>
     </Pressable>
   );
 });
+
+/** The card's "where" words: country code and how they like to work. */
+function workPrefShort(w: WorkPref | null): string | null {
+  return w === 'remote' ? 'Remote' : w === 'local' ? 'Local' : w === 'either' ? 'Remote or local' : null;
+}
 
 /**
  * The filter chips. Module-level + memoized for the same reason as MemberCard
@@ -168,7 +181,7 @@ const FilterPanel = memo(function FilterPanel({
         value={f.country ?? ''}
         onChangeText={(t) => setF((prev) => ({ ...prev, country: toCountryCode(t) || undefined }))}
         placeholder="Country code, e.g. US"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={P.muted}
         autoCapitalize="characters"
         maxLength={COUNTRY_CODE_LENGTH}
         accessibilityLabel="Filter by country code"
@@ -371,25 +384,20 @@ export function ExploreView({
 
   return (
     <ScrollView contentContainerStyle={st.body} keyboardShouldPersistTaps="handled">
-      <Text style={st.lede}>
-        Find people working, studying, researching, teaching and creating across audio, acoustics and
-        sound science.
-      </Text>
-
-      <TextInput
-        style={st.input}
-        value={q}
-        onChangeText={setQ}
-        placeholder="Search by name or specialty"
-        placeholderTextColor={colors.textMuted}
-        autoCorrect={false}
-        accessibilityLabel="Search the directory by name or specialty"
-      />
-
-      <View style={st.toolbar}>
+      {/* Search box and FILTERS on one row (owner-approved mockup 2026-11-01). */}
+      <View style={st.searchRow}>
+        <TextInput
+          style={st.searchBox}
+          value={q}
+          onChangeText={setQ}
+          placeholder="Search by name or specialty"
+          placeholderTextColor={P.muted}
+          autoCorrect={false}
+          accessibilityLabel="Search the directory by name or specialty"
+        />
         <Pressable
           onPress={() => setShowFilters((v) => !v)}
-          style={st.filterBtn}
+          style={({ pressed }) => [st.filterBtn, (showFilters || activeCount > 0) && st.filterBtnOn, pressed && st.pressed]}
           accessibilityRole="button"
           accessibilityState={{ expanded: showFilters }}
           aria-expanded={showFilters}
@@ -399,20 +407,24 @@ export function ExploreView({
             FILTERS{activeCount ? ` · ${activeCount}` : ''} {showFilters ? '▾' : '▸'}
           </Text>
         </Pressable>
-        {activeCount || q ? (
+      </View>
+
+      {activeCount || q ? (
+        <View style={st.clearRow}>
           <Pressable
             onPress={() => {
               setQ('');
               setF({});
             }}
-            style={st.filterBtn}
+            hitSlop={6}
+            style={st.clearBtn}
             accessibilityRole="button"
             accessibilityLabel="Clear all filters"
           >
-            <Text style={st.filterBtnText}>CLEAR ALL</Text>
+            <Text style={st.clearText}>CLEAR ALL</Text>
           </Pressable>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
 
       {showFilters && taxErr ? (
         <View>
@@ -421,7 +433,11 @@ export function ExploreView({
         </View>
       ) : null}
 
-      {showFilters && tax ? <FilterPanel tax={tax} f={f} setF={setF} /> : null}
+      {showFilters && tax ? (
+        <View style={st.panel}>
+          <FilterPanel tax={tax} f={f} setF={setF} />
+        </View>
+      ) : null}
 
       {/* A failed search needs a way BACK, not just a notice: the only other way
           to re-run one was to change a filter (network audit 2026-09-11). */}
@@ -482,57 +498,111 @@ export function ExploreView({
   );
 }
 
+/** The approved mockup's palette (Downloads/2026-11-01_COMMUNITY_CHAT_REDESIGN_MOCKUP.html). */
+const P = {
+  panel: '#121318',
+  raised: '#181a21',
+  line: '#24262e',
+  line2: '#2e313b',
+  text: '#f0f0f0',
+  sub: '#a6a6ad',
+  muted: '#7f818a',
+} as const;
+
 const st = StyleSheet.create({
   // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
-  body: { padding: 14, paddingBottom: 40, ...cardColumn },
-  moreWrap: { marginTop: 14 },
-  lede: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
-  input: {
-    backgroundColor: '#101010',
+  body: { paddingHorizontal: 18, paddingTop: 0, paddingBottom: 40, ...cardColumn },
+  moreWrap: { marginTop: 4 },
+  pressed: { opacity: 0.8 },
+  searchRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  searchBox: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 44,
+    backgroundColor: P.panel,
     borderWidth: 1,
-    borderColor: '#2c2c2c',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: P.line,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    color: P.text,
+  },
+  filterBtn: {
+    minHeight: 44,
+    flexShrink: 0,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: P.line,
+    backgroundColor: P.panel,
+  },
+  filterBtnOn: { borderColor: 'rgba(255,198,77,.5)' },
+  filterBtnText: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
+  clearRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: -4, marginBottom: 8 },
+  clearBtn: { minHeight: 32, justifyContent: 'center', paddingHorizontal: 4 },
+  clearText: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2, color: P.sub },
+  // The open filter panel sits in its own quiet panel above the results.
+  panel: {
+    backgroundColor: P.panel,
+    borderWidth: 1,
+    borderColor: P.line,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingBottom: 12,
+    marginBottom: 14,
+  },
+  // The country code box inside the filter panel.
+  input: {
+    backgroundColor: P.raised,
+    borderWidth: 1,
+    borderColor: P.line2,
+    borderRadius: 12,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     fontFamily: fonts.barlowRegular,
-    fontSize: 15,
-    color: colors.textPrimary,
-    marginTop: 10,
+    fontSize: 14,
+    color: P.text,
+    marginTop: 2,
+    marginBottom: 4,
   },
-  toolbar: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  filterBtn: {
-    minHeight: 40,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    backgroundColor: '#141414',
-  },
-  filterBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.amber },
+  // A result count (allowed), in the mockup's mono.
   count: {
-    fontFamily: fonts.oswaldSemiBold,
+    fontFamily: fonts.mono,
     fontSize: 11,
-    letterSpacing: 1.6,
-    color: colors.textMutedDeep,
-    marginTop: 16,
-    marginBottom: 6,
+    letterSpacing: 0.7,
+    textTransform: 'uppercase',
+    color: P.muted,
+    marginTop: 2,
+    marginBottom: 8,
   },
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#181818',
+    alignItems: 'flex-start',
+    gap: 13,
+    backgroundColor: P.panel,
     borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
-    minHeight: 72,
+    borderColor: P.line,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 10,
   },
-  cardPressed: { backgroundColor: '#1f1f1f' },
-  cardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16.5, color: colors.textPrimary },
-  cardArea: { fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber, marginTop: 3 },
-  cardSpecs: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 5 },
-  cardMeta: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMutedDeep, marginTop: 5 },
-  chev: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textMutedDeep, paddingLeft: 8 },
+  cardPressed: { backgroundColor: P.raised },
+  cardBody: { flex: 1, minWidth: 0 },
+  cardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16.5, letterSpacing: 0.3, color: P.text },
+  cardArea: { fontFamily: fonts.barlowSemiBold, fontSize: 13, color: colors.amber, marginTop: 2 },
+  cardMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: P.sub, marginTop: 5 },
+  cardFoot: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 10, rowGap: 6, marginTop: 9 },
+  credPill: {
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.35)',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  credText: { fontFamily: fonts.mono, fontSize: 10.5, letterSpacing: 0.6, color: colors.green },
+  where: { fontFamily: fonts.barlowRegular, fontSize: 12, color: P.muted },
+  chev: { fontFamily: fonts.barlowRegular, fontSize: 18, color: P.muted, alignSelf: 'center', paddingLeft: 2 },
 });

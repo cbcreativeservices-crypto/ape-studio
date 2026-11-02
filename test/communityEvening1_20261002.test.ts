@@ -40,13 +40,17 @@ const between = (s: string, from: string, to: string) => {
 };
 
 describe('evening pass 1 — community / careers / awards', () => {
-  test('E1 the conversation list is shrink-only, never flex: 1, inside the maxHeight sheet', () => {
+  test('E1 the conversation list is shrink-only, never flex: 1, inside the thread', () => {
     const sheet = between(code('src/screens/directory/RequestsView.tsx'), 'function ThreadSheet(', 'const st = StyleSheet.create');
     const list = between(sheet, '<FlatList', 'renderItem=');
     assert.doesNotMatch(list, /style=\{\{\s*flex:\s*1\s*\}\}/, 'flex: 1 lays the list out zero tall in a content-sized sheet');
     assert.match(list, /style=\{\{\s*flexShrink:\s*1\s*\}\}/);
-    // The sheet really is content-sized (only a maxHeight), which is why it matters.
-    assert.match(sheet, /st\.sheet, \{ maxHeight: '88%'/);
+    // Redesign 2026-11-01: the thread is FULL HEIGHT (was a content-sized
+    // sheet with maxHeight 88%), and a flex: 1 wrapper owns the space the
+    // shrink-only list scrolls in, between the header and the composer.
+    assert.match(sheet, /<View style=\{\[st\.thread, \{ paddingTop: insets\.top, paddingBottom: insets\.bottom \}\]\}>/);
+    assert.match(sheet, /<View style=\{st\.msgArea\}>\s*<FlatList/);
+    assert.match(code('src/screens/directory/RequestsView.tsx'), /msgArea: \{ flex: 1 \}/);
   });
 
   test('E2 a stale error is cleared when a NEW attempt starts (pass 2 moved it out of refresh — see communityEvening2 F2)', () => {

@@ -85,6 +85,11 @@ describe('T3-7 the conversation follows the newest message unless the reader scr
     assert.match(sheet, /onScrollBeginDrag=\{\(\) => \{\s*pinToEnd\.current = false;/);
     assert.match(sheet, /pinToEnd\.current = true; \/\/ show the message just sent/);
     // The hooks sit above the early return (rules of hooks).
-    assert.ok(sheet.indexOf('const pinToEnd = useRef(true)') < sheet.indexOf('if (!thread) return null;'));
+    // Since 2026-11-01 there is no early return at all: the Modal stays
+    // mounted (see requestsThreadModalMounted_20261101) — the hooks still sit
+    // above the one return.
+    const ret = sheet.indexOf('<Modal accessibilityViewIsModal visible={thread != null}');
+    assert.ok(ret > 0);
+    assert.ok(sheet.indexOf('const pinToEnd = useRef(true)') < ret);
   });
 });

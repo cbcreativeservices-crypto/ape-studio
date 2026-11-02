@@ -37,6 +37,7 @@ import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import { setSampleDirectory } from '../../features/directory/sampleThreads';
+import { ChannelBadge } from './ChannelBadge';
 
 type Tab = 'explore' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -112,17 +113,19 @@ export function AudioCommunityDirectoryScreen() {
         />
         <View style={st.titleCol}>
           <Text accessibilityRole="header" style={st.title}>
-            AUDIO COMMUNITY DIRECTORY
+            Audio Community
           </Text>
           <Text style={st.sub}>Pro Audio Training Academy</Text>
         </View>
       </View>
 
+      {/* A quiet segmented control (owner-approved mockup 2026-11-01). */}
       <View style={st.tabs} accessibilityRole="tablist">
         {TABS.map((t) => (
           <Pressable
             key={t.key}
             onPress={() => setTab(t.key)}
+            hitSlop={{ top: 4, bottom: 4 }}
             style={[st.tab, tab === t.key && st.tabOn]}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === t.key }}
@@ -135,7 +138,7 @@ export function AudioCommunityDirectoryScreen() {
               <Text style={[st.tabText, tab === t.key && st.tabTextOn]}>{t.label}</Text>
               {/* Pending requests + unread messages (owner 2026-10-04). No
                   badge when the count is unknown — never a false 0. */}
-              {t.key === 'requests' ? <CommunityBadge state={inbox} /> : null}
+              {t.key === 'requests' ? <CommunityBadge state={inbox} style={st.tabBadge} /> : null}
             </View>
           </Pressable>
         ))}
@@ -260,7 +263,16 @@ function MemberSheet({
       <KeyboardAvoidingView style={st.sheetRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
           <View style={st.sheetHead}>
-            <Text accessibilityRole="header" style={st.sheetTitle}>
+            {/* Same channel badge as the card that was tapped (Explore's LED:
+                green = accepts contact requests). */}
+            {p || (!settled && seedName) ? (
+              <ChannelBadge
+                name={p ? p.displayName : seedName ?? ''}
+                led={p?.contactEnabled ? 'green' : 'off'}
+                size={40}
+              />
+            ) : null}
+            <Text accessibilityRole="header" style={[st.sheetTitle, st.memberTitle]}>
               {p ? p.displayName.toUpperCase() : !settled && seedName ? seedName.toUpperCase() : 'MEMBER'}
             </Text>
             <Pressable
@@ -343,7 +355,7 @@ function MemberSheet({
                 <>
                   <Text style={st.credHead}>VERIFIED CREDENTIALS</Text>
                   {data.credentials.map((c, i) => (
-                    <Text key={`${c.credentialName}-${i}`} style={st.cred}>
+                    <Text key={`${c.credentialName}-${i}`} style={[st.cred, st.credItem]}>
                       {c.credentialName}
                       {c.levelOrTier ? ` · ${c.levelOrTier}` : ''}
                     </Text>
@@ -634,73 +646,108 @@ function ReportSheet({
   );
 }
 
+/** The approved mockup's palette (Downloads/2026-11-01_COMMUNITY_CHAT_REDESIGN_MOCKUP.html). */
+const P = {
+  bg: '#0b0c0f',
+  panel: '#121318',
+  raised: '#181a21',
+  line: '#24262e',
+  line2: '#2e313b',
+  text: '#f0f0f0',
+  sub: '#a6a6ad',
+  muted: '#7f818a',
+} as const;
+
 const st = StyleSheet.create({
-  allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 4 },
-  root: { flex: 1, backgroundColor: colors.screenBg },
+  allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: P.sub, marginTop: 4 },
+  root: { flex: 1, backgroundColor: P.bg },
   pane: { flex: 1 },
   paneHidden: { display: 'none' },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
-  back: { minWidth: 44, minHeight: 44, marginRight: 4, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  // ‹ key + title, as in the mockup: the glyph sits on the 18-pt gutter.
+  header: { flexDirection: 'row', alignItems: 'center', paddingLeft: 6, paddingRight: 18, paddingTop: 6, paddingBottom: 12 },
+  back: { minWidth: 44, minHeight: 44, marginRight: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   titleCol: { flex: 1, minWidth: 0 },
-  backGlyph: { fontFamily: fonts.oswaldMedium, fontSize: 26, color: colors.textSub },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
-  sub: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  tabs: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingBottom: 8 },
+  backGlyph: { fontFamily: fonts.barlowRegular, fontSize: 26, color: P.sub },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.76, color: P.text },
+  sub: { fontFamily: fonts.barlowMedium, fontSize: 12, color: P.muted, marginTop: 1 },
+  // The segmented control: one panel, three equal segments, the chosen one raised.
+  tabs: {
+    flexDirection: 'row',
+    marginHorizontal: 18,
+    marginBottom: 14,
+    padding: 3,
+    backgroundColor: P.panel,
+    borderWidth: 1,
+    borderColor: P.line,
+    borderRadius: 12,
+  },
   tab: {
     flex: 1,
-    minHeight: 42,
+    minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    paddingHorizontal: 2,
+    borderRadius: 9,
     borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    backgroundColor: '#141414',
+    borderColor: 'transparent',
   },
-  tabOn: { borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#241a06' },
-  tabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textMuted },
-  tabTextOn: { color: colors.amber },
-  tabLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  tabOn: { backgroundColor: P.raised, borderColor: P.line2 },
+  tabText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 1.25, color: P.muted, textAlign: 'center' },
+  tabTextOn: { color: P.text },
+  tabLabelRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' },
+  // The amber count sits inline after REQUESTS.
+  tabBadge: { marginLeft: 5, minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4 },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
     // Tablet (owner 2026-09-29): the sheet rides centred at the card column
     // instead of spanning a 1024 pt iPad. No-op on a phone.
     ...cardColumn,
     maxHeight: '90%',
-    backgroundColor: '#141414',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    backgroundColor: P.panel,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    padding: 14,
+    borderColor: P.line,
+    paddingHorizontal: 18,
+    paddingTop: 18,
   },
-  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sheetHead: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 4 },
   sheetTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.amberLabel },
-  close: { fontFamily: fonts.barlowMedium, fontSize: 18, color: colors.textSub, padding: 4 },
-  area: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.6, color: colors.amber, marginTop: 8 },
-  about: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginTop: 10 },
-  meta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMutedDeep, marginTop: 8 },
+  // The member's name beside their badge: Oswald, white, like the card name.
+  memberTitle: { flex: 1, minWidth: 0, fontSize: 16.5, letterSpacing: 0.8, color: P.text },
+  close: { fontFamily: fonts.barlowMedium, fontSize: 18, color: P.sub, padding: 4 },
+  area: { fontFamily: fonts.barlowSemiBold, fontSize: 13.5, color: colors.amber, marginTop: 10 },
+  about: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: P.text, marginTop: 10 },
+  meta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: P.sub, marginTop: 8 },
   credHead: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 10.5,
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 11.5,
     letterSpacing: 1.8,
-    color: colors.textMutedDeep,
-    marginTop: 16,
-    marginBottom: 4,
+    color: P.muted,
+    marginTop: 18,
+    marginBottom: 6,
   },
-  cred: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: colors.textPrimary, marginTop: 2 },
+  cred: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: P.text, marginTop: 2 },
+  // A verified credential: a thin green rule, the card pill's colour.
+  credItem: {
+    marginTop: 6,
+    paddingLeft: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(55,224,95,.55)',
+  },
   row: { flexDirection: 'row', gap: 16, marginTop: 8 },
   link: { minHeight: 44, justifyContent: 'center' },
-  linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.textMuted },
+  linkText: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.3, color: P.sub },
   input: {
-    backgroundColor: '#101010',
+    backgroundColor: P.raised,
     borderWidth: 1,
-    borderColor: '#2c2c2c',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: P.line2,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
     fontFamily: fonts.barlowRegular,
-    fontSize: 15,
-    color: colors.textPrimary,
+    fontSize: 14.5,
+    color: P.text,
     marginTop: 10,
     minHeight: 80,
     textAlignVertical: 'top',
