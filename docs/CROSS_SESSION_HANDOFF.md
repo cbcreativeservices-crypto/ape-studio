@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 16:17 · ccode · f7e56926
+changed: must-do D42: lab screen guides audit (4 P1, 75 P2, 141 P3), fixes wait on owner GO
+affects other side: nothing (audit only; no app or server change)
+needs: nothing
+
+
 ### 2026-11-01 15:46 · ccode · 2da0362f
 changed: web: owner-approved mission, academy breadth, employer training + catalog wording (2026-11-01)
 affects other side: nothing (website copy only; Audio Fundamentals shown as required labs, not a topic; quizzes stated as 30 questions)
