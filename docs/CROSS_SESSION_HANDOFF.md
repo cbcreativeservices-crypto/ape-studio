@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-02 08:03 · ccode · 48df7fba
+changed: Home: unpaid accounts keep Membership; Audio Community takes turns with New Messages below it (owner 2026-11-02)
+affects other side: nothing (JS only, rides the launch OTA)
+needs: nothing
+
+
+### 2026-11-02 08:03 · ccode · 49fd922e
+changed: Feedback emails: [APE-<CODE>] subject tag, ref code and APE-DATA line (Comp A 2026-11-02)
+affects other side: Comp A writes the Gmail filters from the sample subject + APE-DATA line (codes BUG/TERM/DEF/IDEA/FIX/HELP; role=employer|instructor only for verified accounts, set once the Profile screen has loaded). Live after the launch OTA.
+needs: nothing
+
+
 ### 2026-11-01 22:24 · ccode · b5a215e9
 changed: must-do D44: owner decisions recorded (who posts, Claude's powers, text only, $50 cap)
 affects other side: nothing yet
