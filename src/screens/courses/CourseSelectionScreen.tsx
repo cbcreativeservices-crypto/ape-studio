@@ -48,7 +48,7 @@ import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } 
 import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { useMemberGate, useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { HOME_SETUP_HIDDEN_FOR_LAUNCH, startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
@@ -1510,6 +1510,8 @@ export function CourseSelectionScreen() {
   const upsell = useUpsellAllowed();
   // New Messages (owner 2026-11-01): the PROFILE tab badge's own count.
   const inbox = useCommunityInbox();
+  // Members get AUDIO COMMUNITY in the Membership corner (owner 2026-11-01).
+  const memberOpen = useMemberGate() === 'open';
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
   const openUpgrade = useCallback(() => setUpgradeOpen(true), []);
@@ -2128,6 +2130,19 @@ export function CourseSelectionScreen() {
           accessibilityLabel="Membership"
         >
           <Text style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>Membership</Text>
+        </Pressable>
+      ) : memberOpen ? (
+        // Members (owner 2026-11-01): the same corner opens the Audio
+        // Community on EXPLORE, where Membership stands for everyone else.
+        // Only on a CONFIRMED membership (useMemberGate 'open').
+        <Pressable
+          style={[styles.membershipBtn, { top: insets.top + 8 }]}
+          onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'explore' })}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Audio Community"
+        >
+          <Text style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>Audio Community</Text>
         </Pressable>
       ) : null}
       {/* New Messages (owner 2026-11-01): a text button on the right, on the
