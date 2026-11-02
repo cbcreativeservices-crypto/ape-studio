@@ -48,7 +48,7 @@ import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } 
 import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate, useUpsellAllowed } from '../../features/commercial/useTier';
+import { useMemberGate, useTier, useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { HOME_SETUP_HIDDEN_FOR_LAUNCH, startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
@@ -1512,6 +1512,11 @@ export function CourseSelectionScreen() {
   const inbox = useCommunityInbox();
   // Members get AUDIO COMMUNITY in the Membership corner (owner 2026-11-01).
   const memberOpen = useMemberGate() === 'open';
+  // A signed-in account that has not paid (owner 2026-11-02): keeps the
+  // Membership button, and gets Audio Community on the row below whenever no
+  // New Messages is showing there. A guest has neither (no account).
+  const homeTier = useTier();
+  const freeAccount = upsell && homeTier === 'free';
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
   const openUpgrade = useCallback(() => setUpgradeOpen(true), []);
@@ -2160,6 +2165,19 @@ export function CourseSelectionScreen() {
           <View style={styles.newMsgDot} />
           <Text style={styles.newMsgText} maxFontSizeMultiplier={HOME_MAX}>New Messages</Text>
         </Pressable>
+      ) : freeAccount ? (
+        // Unpaid accounts (owner 2026-11-02): the same row takes turns —
+        // New Messages while something is waiting, otherwise Audio Community
+        // (members have it in the Membership corner instead).
+        <Pressable
+          style={[styles.newMsgBtn, { top: insets.top + 36 }]}
+          onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'explore' })}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Audio Community"
+        >
+          <Text style={styles.communityText} maxFontSizeMultiplier={HOME_MAX}>Audio Community</Text>
+        </Pressable>
       ) : null}
 
       {/* Home-screen hero: large, centered logo + wordmark, dropped a little
@@ -2460,6 +2478,7 @@ const styles = StyleSheet.create({
   // Red dot (owner 2026-11-01): the house alert red (peak readouts, #ff5a48).
   newMsgDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#ff5a48' },
   newMsgText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.amber },
+  communityText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.amberLabel },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
   // 5 buttons now (user request 2026-07-22) — tighter gap/padding to fit.
