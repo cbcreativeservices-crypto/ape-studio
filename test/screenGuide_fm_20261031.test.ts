@@ -210,7 +210,7 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.equal(bw(220, 2, 2), '2.6 kHz');
     assert.equal(bw(220, 2, 8), '7.9 kHz');
     assert.ok(sticks(220, 440, 8).length > sticks(220, 440, 2).length, 'more sticks as the index rises');
-    assert.match(FM_SCREEN_GUIDES.explore.tryThis[0], /at 0 one green stick, the carrier alone;[\s\S]*BW climbs from 2\.6 kHz at I 2\.0 to 7\.9 kHz/);
+    assert.match(FM_SCREEN_GUIDES.explore.tryThis[0], /I 2\.0: BW 2\.6 kHz\)\. Ride INDEX to 0: one green stick, the carrier alone\.[\s\S]*BW reaches 7\.9 kHz/);
   });
   it('EXPLORE 2: FM reads 220 Hz at RATIO 1 and 310 Hz at 1.41 ✳; sticks on multiples of 220 vs between', () => {
     assert.equal((220 * 1).toFixed(0), '220');

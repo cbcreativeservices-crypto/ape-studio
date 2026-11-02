@@ -71,7 +71,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'It follows Harmonics (a tone built from its harmonics) and comes before Modular Synth (a tone carved by a filter).',
     ],
     tryThis: [
-      'Tap ▶, then ride INDEX from 0 to 8 (FC 220, RATIO 2): at 0 one green stick, the carrier alone; amber pairs grow outward, and BW climbs from 2.6 kHz at I 2.0 to 7.9 kHz.',
+      'Tap ▶ (FC 220, RATIO 2, I 2.0: BW 2.6 kHz). Ride INDEX to 0: one green stick, the carrier alone. Then ride up to 8: amber pairs spread outward and BW reaches 7.9 kHz.',
       'At I 2.0, A/B RATIO 1 and 1.41 ✳: FM reads 220 Hz, then 310 Hz. At 1 the sticks land on multiples of 220 Hz; at 1.41 ✳ they fall between — the tone turns to a clang.',
       'Set RATIO 1.41 ✳ and INDEX to I = 2.4: the green carrier stick vanishes — its Bessel height is almost zero there. More index is not more of every part.',
     ],
@@ -108,7 +108,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
   // ── CHECK — LabShell's understanding check ────────────────────────────────
   check: {
     seeing: [
-      'CHECK YOUR UNDERSTANDING for this lab: four questions — where sidebands sit, what the index changes, what an odd ratio does, and what index 0 leaves.',
+      'CHECK YOUR UNDERSTANDING for this lab: four questions — where sidebands sit, what the index changes, what a not-whole-number ratio (1.41 ✳) does, and what index 0 leaves.',
       'Above them, how many are still to get right. A ✓ replaces a question’s number once it is right.',
       'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
     ],

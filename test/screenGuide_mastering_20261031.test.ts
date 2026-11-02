@@ -279,11 +279,15 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
     assert.equal(`${(1 + 0.5 * 19).toFixed(1)} : 1`, '10.5 : 1');
     assert.equal(law(0, -12, 10.5).toFixed(1), '-10.9');
     assert.equal(law(0, -12, 1).toFixed(1), '0.0');
+    // D42 P3: the gentler ratio TRY THIS rides to — fader step 0.01, so 0.06 → 2.14 : 1.
+    assert.match(m, /min: bipolar \? -1 : 0, max: 1, step: 0\.01/);
+    assert.equal(`${(1 + 0.06 * 19).toFixed(1)} : 1`, '2.1 : 1');
+    assert.equal(law(0, -12, 1 + 0.06 * 19).toFixed(1), '-6.4');
     assert.equal(corr(1).toFixed(2), '0.60');
     assert.equal(corr(2).toFixed(2), '0.00');
     const t = textOf(guideOf('tools', 'shelf'));
     assert.match(t, /×1\.00 up to ×2\.00: CORRELATION falls from 0\.60 to 0\.00/);
-    assert.match(t, /RATIO 10\.5 : 1 turns a 0 dB input into −10\.9 dB\. Ride RATIO down to 1\.0 : 1 and it reads 0\.0 dB/);
+    assert.match(t, /RATIO 10\.5 : 1 turns a 0 dB input into −10\.9 dB\. Ride RATIO down to 2\.1 : 1, nearer the gentle ratios mastering often uses: OUT AT 0 IN reads −6\.4 dB/);
   });
   it('Module 5: TILT −4…+4 in 0.5 steps from +1.5; +4.0 reads “+4.0 dB end to end (±2.0)”; the trim is +2 dB, the SAFETY ceiling −0.3 dBFS', () => {
     const m = code(`${MA}/modules/mod5Workflow.tsx`);

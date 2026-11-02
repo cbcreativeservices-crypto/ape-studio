@@ -79,7 +79,8 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
       'Polarity and phase are not the same: a flip is 180° at every frequency; a delay shifts each frequency by a different angle.',
       'Correlation +1 = safe in mono; −1 = cancels in mono; near 0 = unrelated.',
       'A mono listener hears only L+R, so a mono check catches cancellation.',
-      'It follows Distortion in the Advanced Training Labs; Stereo Imaging uses the same correlation.',
+      'Stereo Imaging reads the same correlation.',
+      'In the Advanced Training Labs list, Phase sits after Modulation.',
     ],
     tryThis: [
       'Play SINE 440 Hz and set POL to INVERTED Ø: CORRELATION (LAB NOTES, under DESIGNED RESPONSE) reads −1.00, ANTI-PHASE. Now FOLD to MONO (L+R): silence, and the OUT trace goes flat.',

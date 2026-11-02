@@ -198,7 +198,9 @@ describe('4. the numbers in the guide are the screen’s own', () => {
       return [Math.round(hz1 * k), Math.round(hz2 * k)];
     };
     assert.deepEqual(pair(1.5, 1.0), [330, 220]);
-    assert.match(SRC, /\$\{Math\.round\(soundNow\.fL\)\} Hz on LEFT, \$\{Math\.round\(soundNow\.fR\)\} Hz on RIGHT/);
+    assert.match(SRC, /\$\{pairHz\(soundNow\.fL\)\} Hz on LEFT, \$\{pairHz\(soundNow\.fR\)\} Hz on RIGHT/);
+    // whole hertz except for a beating pair (D42), so a locked 3:2 still reads 330 / 220
+    assert.match(SRC, /const pairHz = \(hz: number\) => \(beatNear \? hz\.toFixed\(1\) : String\(Math\.round\(hz\)\)\);/);
     assert.match(textOf(GUIDES.explore), /330 Hz on LEFT, 220 Hz on RIGHT/);
     // ROTARY drops the detune from the sound (rot ? 1 : 1 + d) and the platform
     // (n3) never reaches soundPair, so the default ROTARY +1 % plays an exact
@@ -272,5 +274,39 @@ describe('5. wiring and the accuracy-chip decision', () => {
     assert.match(SRC, /badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS'/);
     assert.match(SRC, /dBFS · uncalibrated/);
     assert.doesNotMatch(SRC, /useMic|getUserMedia|micStart|startMic|requestRecordingPermissions/);
+  });
+});
+
+describe('D42 · THE INTERVAL, AS SOUND says BEATING only for tones a few Hz apart', () => {
+  it('beating pair: under BEAT_MAX_HZ apart, shown to one decimal, no "slow" (near 20 Hz it is a fast flutter)', () => {
+    assert.match(SRC, /const BEAT_MAX_HZ = 20;/);
+    assert.match(SRC, /const beatNear = !!soundNow && detune !== 0 && !rotary && Math\.abs\(soundNow\.fL - soundNow\.fR\) < BEAT_MAX_HZ;/);
+    assert.match(SRC, /const beatGapHz = soundNow \? Math\.abs\(Number\(soundNow\.fL\.toFixed\(1\)\) - Number\(soundNow\.fR\.toFixed\(1\)\)\)\.toFixed\(1\) : '';/);
+    assert.match(SRC, /\? beatNear\s*\? `, detune included: the two tones sit \$\{beatGapHz\} Hz apart, so the wah-wah you hear is BEATING — the same drift the figure shows as precession\.`/);
+    assert.doesNotMatch(SRC, /slow wah-wah/);
+  });
+  it('a detuned named interval is "out of tune" (not "slightly"); a custom ratio drifts and never quite closes', () => {
+    assert.match(SRC, /: matched\s*\? `, detune included: the \$\{matched\.interval\.toLowerCase\(\)\} sounds out of tune\. The figure shows that near-miss as a slow drift \(precession\)\.`/);
+    assert.match(SRC, /: `, detune included — a custom ratio, between the simple intervals; the figure drifts and never quite closes\.`/);
+    assert.match(SRC, /: ` — a custom ratio, between the simple intervals; the figure drifts and never quite closes\.`/);
+    assert.doesNotMatch(SRC, /sounds slightly off true/);
+    // The figure side agrees: an unmatched ratio is never "exact", and its WHAT YOU'RE SEEING line says it precesses.
+    assert.match(SRC, /const ratioExact = matched != null && nearRatio/);
+    assert.match(SRC, /Between simple ratios — the figure precesses and never quite closes/);
+  });
+  it('the numbers behind the split, from the screen\'s own soundPair rule (lower tone raised to 220 Hz)', () => {
+    const pair = (a: number, b: number, d: number) => {
+      const f1 = a, f2 = b * (1 + d), k = 220 / Math.min(f1, f2);
+      return { fL: f1 * k, fR: f2 * k };
+    };
+    const u3 = pair(1.5, 1.5, 0.03);
+    assert.equal(u3.fL.toFixed(1), '220.0');
+    assert.equal(u3.fR.toFixed(1), '226.6');
+    assert.equal(Math.abs(Number(u3.fL.toFixed(1)) - Number(u3.fR.toFixed(1))).toFixed(1), '6.6', 'a +3% unison: 6.6 Hz apart, it beats');
+    const fifth = pair(1.5, 1.0, 0.03);
+    assert.ok(Math.abs(fifth.fL - fifth.fR) > 20, 'a detuned fifth is ~100 Hz apart: no beating to hear');
+    // +3% on the fifth: about 51 cents out of tune — "out of tune", not "slightly".
+    const cents = 1200 * Math.log2(1.03);
+    assert.ok(cents > 50 && cents < 52, String(cents));
   });
 });

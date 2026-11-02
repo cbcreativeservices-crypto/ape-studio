@@ -110,7 +110,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'Once clipped, the output stops following the input, and the flat tops carry harmonics the input never had.',
         ],
         teaches: [
-          'An amplifier does not enlarge your signal or create energy: the input steers, the supply pays.',
+          'An amplifier does not stretch your signal or create energy. It builds a bigger copy: the input steers, the supply pays.',
           'Voltage, current and power gain, and their decibel formulas; why a line output cannot drive a speaker alone.',
           'The first module. Module 2 looks at the parts that control the power.',
         ],
@@ -270,7 +270,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         changes: [
           'With little bias each device waits for the signal to pass its threshold, so nothing handles the region around zero: a flat step, crossover distortion.',
           'More bias makes both devices conduct around zero; from 44% the notch is gone.',
-          'Bias also raises idle current and the supply it draws. From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8.1% — just past the 8% limit.',
+          'Bias also raises idle current and the supply it draws. From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8.1%, just past the 8% ceiling that YOUR TASK sets.',
         ],
         teaches: [
           'How two push-pull devices share a waveform, and where crossover distortion comes from.',
@@ -316,7 +316,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'Efficiency figures are theoretical maxima or illustrative, never guaranteed. Module 5 is Class D.',
         ],
         tryThis: [
-          'Class A at the start (LEVEL 80%): EFFIC. reads 16%. Switch CLASS to B: 48%, and DISTORT. reads NOTCH.',
+          'Class A at the start (LEVEL 80%): EFFIC. reads 16%. Switch CLASS to B: 48%, and DISTORT. reads NOTCH. Both are illustrative figures at this level, not specs.',
           'Pick AB and raise AB BIAS from 0% to 50%: DISTORT. turns CLEAN and CONDUCT. rises from 165° to 190°.',
           'Pick C and set TUNE to 1.05×: DISTORT. reads DETUNED. Back at 1.00× it reads CLEAN.',
         ],
@@ -517,7 +517,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'A flat line with input present: protection. A smooth wave below the rails: clean — a filtered Class D output looks the same.',
         ],
         teaches: [
-          'How to tell amplifier faults apart from the output’s shape against the rails.',
+          'What each amplifier fault looks like: the output’s shape against the rails.',
           'It draws on Modules 3, 5 and 6. Choosing an amplifier and the myth review come next.',
         ],
         tryThis: [
@@ -544,7 +544,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'Each myth answer shows the correction and the detail behind it.',
         ],
         teaches: [
-          'How to match an amplifier class to a job and the reasons behind the match.',
+          'Which amplifier class suits which job, and the reasons behind the match.',
           'Why popular claims such as “Class D is digital” do not hold.',
           'The system challenge comes next.',
         ],

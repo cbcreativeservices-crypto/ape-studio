@@ -787,7 +787,7 @@ const flangerConfig: FxLabConfig = {
       ],
       correctIdx: 1,
       reveal:
-        'Feedback re-circulates the delayed copy and sharpens the comb: deeper contrast and taller resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
+        'Feedback re-circulates the delayed copy: the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant: the metallic ring of 70% METALLIC. Rate is untouched — that is the LFO\u2019s job.',
       wrongHint: 'Step FDBK from 0% to 70% METALLIC and watch the peaks between the notches on OUT rise above the dotted input line.',
     },
   ],
@@ -1303,7 +1303,7 @@ const limiterConfig: FxLabConfig = {
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
-    `Sample peaks are held at ${v[P.ceilingDb]} dB (peaks between samples can still poke above — see ⓘ). Source at −20 dBFS → ${
+    `Peaks are turned down to about ${v[P.ceilingDb]} dB. This limiter cannot look ahead, so a sharp hit can slip a few dB over first, and peaks between samples can poke above too (see ⓘ). Source at −20 dBFS → ${
       v[P.ceilingDb] < -20
         ? `${Math.abs(v[P.ceilingDb] + 20)} dB over: on a steady tone, that much constant gain reduction; on a CLICK, GR jumps on each hit and falls back at the RLS speed (watch the meter)`
         : 'under the ceiling, untouched'

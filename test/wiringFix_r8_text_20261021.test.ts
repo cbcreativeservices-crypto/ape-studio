@@ -272,7 +272,9 @@ describe('S3 — FX', () => {
 
   it('R7-FX-06: the limiter caption does not say NEVER', () => {
     assert.doesNotMatch(FX, /Output can NEVER exceed/);
-    assert.match(FX, /Sample peaks are held at \$\{v\[P\.ceilingDb\]\} dB \(peaks between samples can still poke above/);
+    // D42 r2 2026-11-01: "held at" over-claimed — no lookahead, so a sharp hit slips past first.
+    assert.doesNotMatch(FX, /Sample peaks are held at/);
+    assert.match(FX, /Peaks are turned down to about \$\{v\[P\.ceilingDb\]\} dB\. This limiter cannot look ahead, so a sharp hit can slip a few dB over first, and peaks between samples can poke above too/);
   });
 
   it('R7-FX-07: the high-pass is a 12 dB/oct slope (Butterworth biquad), not a cliff', () => {

@@ -90,7 +90,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   spectrum: {
     seeing: [
       'Your room’s live sound from the phone mic in 1/3-octave bars: lows left, highs right; height in dB below full scale, 0 to −90.',
-      'Colour shows level, blue quiet to red loud; a light tick holds each bar’s recent peak. Gray slots can’t be resolved.',
+      'Color shows level, blue quiet to red loud; a light tick holds each bar’s recent peak. Gray slots can’t be resolved.',
       'LOW CUT off: a dashed amber line marks 100 Hz. On: an amber curve shows the filter.',
       'Readouts: HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT, MIC (LIVE, PAUSED or —).',
     ],
@@ -101,7 +101,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'Scroll below the display for the notes and a check question.',
     ],
     changes: [
-      'LOW CUT on: bars below the cutoff drop by the filter’s amount — 3 dB at the cutoff, about 12 dB an octave below (12 dB per octave).',
+      'LOW CUT on: the bars drop by the filter’s amount — 3 dB at the cutoff, about 12 dB one octave below, about 24 dB two octaves below.',
       'Nothing in the room changes: the bars are redrawn as if the sound had passed the filter.',
       'A quiet room still shows energy below 100 Hz: air handling (HVAC), traffic, handling noise, vibration, wind.',
     ],
@@ -109,7 +109,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'A room that seems quiet still carries low-frequency energy.',
       'What a low-cut (high-pass) filter removes, and why mics, consoles, preamps and channel strips have one.',
       'Remove UNWANTED low end, keep useful content — low frequencies are not bad.',
-      'The phone mic is uncalibrated: relative, for learning. Why We Use EQ comes next.',
+      'The phone mic is uncalibrated: relative, for learning. Many phone mics also roll off the deepest bass. Why We Use EQ comes next.',
     ],
     tryThis: [
       'With LOW CUT at OFF, look left of the dashed line at 100 Hz: that energy is your room.',
@@ -121,7 +121,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   // ── 2 ─────────────────────────────────────────────────────────────────────
   whyEq: {
     seeing: [
-      'EQ RESPONSE: one EQ band as a curve — lows left, highs right; above the centre line is boost, below is cut.',
+      'EQ RESPONSE: one EQ band as a curve — lows left, highs right; above the center line is boost, below is cut.',
       'Top right reads the region and the gain, such as 1.00 kHz · +6.0 dB.',
       'The line under the graph names the move: BOOST, CUT / ATTENUATION or FLAT.',
       'A designed response, worked out from the filter’s maths — no sound or microphone is used.',
@@ -145,7 +145,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'At the start — MID, +6.0 dB — the line under the graph reads BOOST.',
-      'Drag GAIN to −6.0 dB: the bell flips below the centre line and the verdict reads CUT / ATTENUATION.',
+      'Drag GAIN to −6.0 dB: the bell flips below the center line and the verdict reads CUT / ATTENUATION.',
       'Set GAIN to 0.0 dB: the curve lies flat and the verdict reads FLAT.',
     ],
   },
@@ -160,7 +160,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     control: [
       'EQ TYPE key: FIXED, SEMI-PARAMETRIC or FULLY PARAMETRIC — the tray explains each.',
       'PAN fader: moves the camera and the bell, 20 Hz to 20 kHz. LOCKED on FIXED.',
-      'ZOOM fader: widens or narrows the view, from 4.00 oct (Q about 0.27; the readout rounds it to 0.3) to 0.25 oct (Q 5.8). LOCKED unless FULLY PARAMETRIC.',
+      'ZOOM fader: widens or narrows the view, from 4.00 oct (Q 0.27) to 0.25 oct (Q 5.76). LOCKED unless FULLY PARAMETRIC.',
       'Tap a LOCKED key to read why it is locked.',
     ],
     changes: [
@@ -177,17 +177,17 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'On FIXED, tap PAN: it is LOCKED, and FREQ stays at 2.00 kHz on the lamp.',
-      'Switch to SEMI and slide PAN: FREQ follows the camera, while Q stays 1.6 and WIDTH 0.89 oct.',
-      'Switch to FULL and slide ZOOM to the top: WIDTH 0.25 oct, Q 5.8 — a tight view, a narrow bell.',
+      'Switch to SEMI and slide PAN: FREQ follows the camera, while Q stays 1.60 and WIDTH 0.89 oct.',
+      'Switch to FULL and slide ZOOM to the top: WIDTH 0.25 oct, Q 5.76 — a tight view, a narrow bell.',
     ],
   },
 
   // ── 4 ─────────────────────────────────────────────────────────────────────
   parametric: {
     seeing: [
-      'One EQ band as a curve, 20 Hz to 20 kHz: boost above the centre line, cut below; a marker shows FREQ.',
+      'One EQ band as a curve, 20 Hz to 20 kHz: boost above the center line, cut below; a marker shows FREQ.',
       'Readouts: FREQ, GAIN, Q and BW — the width as a Q number and in octaves, side by side.',
-      'The curve’s colour follows GAIN: warmer for more boost, blue for a cut.',
+      'The curve’s color follows GAIN: warmer for more boost, blue for a cut.',
     ],
     control: [
       'FREQ fader: where the band sits, 20 Hz to 20 kHz.',
@@ -244,7 +244,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   // ── 6 ─────────────────────────────────────────────────────────────────────
   shapes: {
     seeing: [
-      'One filter as a curve, 20 Hz to 20 kHz: above the centre line is boost, below is cut.',
+      'One filter as a curve, 20 Hz to 20 kHz: above the center line is boost, below is cut.',
       'Readouts: SHAPE, FREQ, GAIN and Q. A dash (—) means that control does not exist on this shape.',
       'On HPF and LPF the line under the display says the curve is drawn at 12 dB/octave.',
     ],
@@ -254,7 +254,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'GAIN fader (−18 to +18 dB) on the bell and shelves only. Q fader on the bell (0.3–12) and the notch (1–12) only.',
     ],
     changes: [
-      'BELL raises or lowers a region around its centre. A SHELF moves everything below (LOW) or above (HIGH) its corner by one amount.',
+      'BELL raises or lowers a region around its center. A SHELF moves everything below (LOW) or above (HIGH) its corner by one amount.',
       'HIGH-PASS keeps the highs and removes the lows; LOW-PASS is its mirror. They have no gain — they only remove.',
       'NOTCH cuts a deep, narrow hole at one frequency and leaves the rest alone.',
     ],
@@ -284,7 +284,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     changes: [
       'Each extra 6 dB/OCT adds one filter pole: the skirt below 80 Hz gets steeper.',
-      'The −3 dB point stays at 80 Hz for every slope; only how fast the cut grows past it changes.',
+      'The −3 dB point stays at 80 Hz for every slope drawn here; only how fast the cut grows past it changes. Many crossover filters sit at −6 dB at the corner instead.',
       'Steeper slopes carve harder but shift phase more near the corner. Gentle slopes are common on channel low-cuts, steep ones in crossovers.',
     ],
     teaches: [
@@ -314,7 +314,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     changes: [
       'A fader changes only its band’s gain; the band’s frequency and width are fixed.',
       'The 1-octave bands are wide (Q about 1.4); the 1/3-octave bands are narrower (Q about 4.3) for finer detail.',
-      'Neighbouring bands overlap, so the curve is their sum, not a copy of the fader caps.',
+      'Neighboring bands overlap, so the curve is their sum, not a copy of the fader caps.',
     ],
     teaches: [
       'Graphic EQ: fixed frequencies, fixed width, adjustable gain — fast, repeatable control.',
@@ -331,8 +331,8 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   // ── 9 ─────────────────────────────────────────────────────────────────────
   multiband: {
     seeing: [
-      'A six-band EQ — HPF, LOW, LMF, HMF, HIGH, LPF — each switched-on band a coloured dot (node); the selected one is larger.',
-      'Thin coloured curves: each band that is boosting, cutting or filtering, on its own (a bell at 0 dB draws none). Bold curve: COMBINED, all bands together; its colour warms with the biggest boost.',
+      'A six-band EQ — HPF, LOW, LMF, HMF, HIGH, LPF — each switched-on band a colored dot (node); the selected one is larger.',
+      'Thin colored curves: each band that is boosting, cutting or filtering, on its own (a bell at 0 dB draws none). Bold curve: COMBINED, all bands together; its color warms with the biggest boost.',
       'Readouts: BAND, FREQ, GAIN (— on HPF/LPF) and EQ — how many bands are ACTIVE, or BYPASS.',
     ],
     control: [
@@ -369,11 +369,11 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     control: [
       'Drag a fader: −12 to +12 dB in 0.5 dB steps.',
       'VIEW key: MAGNITUDE (how much each frequency is boosted or cut) or PHASE (how far each one is shifted in phase).',
-      'FILTERS key: every band’s own bell under the combined curve, each in its own colour.',
+      'FILTERS key: every band’s own bell under the combined curve, each in its own color.',
       'EXAMPLE sets 125 Hz +3, 250 Hz +6 and 500 Hz +3 dB. CLEAR returns every fader to 0 dB.',
     ],
     changes: [
-      'Each band is a real bell with width, so neighbours overlap and their dB add: the actual curve can rise above the highest cap.',
+      'Each band is a real bell with width, so neighbors overlap and their dB add: the actual curve can rise above the highest cap.',
       'PHASE view: a boost shifts phase ahead on one side of its band and behind on the other; the dim 0° line is what the sliders imply.',
       'A conventional (minimum-phase) EQ never changes only the level.',
     ],
@@ -384,7 +384,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap EXAMPLE: the caps top out at +6 dB at 250 Hz, but the actual curve peaks at about +7.1 dB.',
-      'Turn FILTERS on: three coloured bells appear, and the combined curve is their sum.',
+      'Turn FILTERS on: three colored bells appear, and the combined curve is their sum.',
       'With EXAMPLE set, switch VIEW to PHASE: a small but real swing, about ±24° on a ±180° scale, around the 0° line near those bands.',
     ],
   },
@@ -448,14 +448,14 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     tryThis: [
       'On LEVEL 1, slide FREQ until your band sits under the bump, pull GAIN down to about −9 dB, then tap CHECK.',
       'After a PASS, tap NEXT LEVEL › under the result to move up a level.',
-      'On LEVEL 3 the problem is narrow: raise Q as well, or your cut takes the neighbouring frequencies with it.',
+      'On LEVEL 3 the problem is narrow: raise Q as well, or your cut takes the neighboring frequencies with it.',
     ],
   },
 
   // ── 13 ────────────────────────────────────────────────────────────────────
   matchCurve: {
     seeing: [
-      'The thin gray TARGET curve, made from one or two hidden bells, and your EQ as the bold line; its colour follows its gain.',
+      'The thin gray TARGET curve, made from one or two hidden bells, and your EQ as the bold line; its color follows its gain.',
       'Your band’s frequency is marked on the graph.',
       'Readouts: MATCH (HIDDEN until you ask), BANDS (how many the target uses) and BAND (on two-band targets).',
     ],

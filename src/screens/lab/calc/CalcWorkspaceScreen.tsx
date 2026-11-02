@@ -41,7 +41,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 // THIS calculator and calculation (calcScreenGuides.ts); the ✓ VERIFIED chip
 // stays (calculators keep AccuracyNote variant "calc") and the key sits beside it.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, useGuideRegion } from '../../../features/lab/screenGuide';
-import { calcSendTarget, calcWorkspaceGuide, calcWorkspaceGuideTitle, type CalcGuideExample } from './calcScreenGuides';
+import { calcSendReach, calcSendTarget, calcWorkspaceGuide, calcWorkspaceGuideTitle, type CalcGuideExample } from './calcScreenGuides';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -159,6 +159,7 @@ export function CalcWorkspaceScreen() {
       sendable,
       sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) : null,
       steps: r.steps.length > 0,
+      sendAny: ws ? calcSendReach(ws, fn, r.outputs) : null,
     };
   }, [ws, fn, fields]);
   // The pinned answer stage is this screen's display: the guide's reading

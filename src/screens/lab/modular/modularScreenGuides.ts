@@ -66,7 +66,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'It follows FM Synthesis; next, the Sound Envelope & Transients Lab looks at how real sounds rise and fall.',
     ],
     tryThis: [
-      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (LAB NOTES; ▴ HIDE DISPLAY gives room) drops only about 1.5 dB. SAW: bars turn gray.',
+      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (LAB NOTES; ▴ HIDE DISPLAY gives room) drops only about 1.5 dB. On SAW, the filtered bars go gray.',
       'In MOD tap RES MAX: in THE VOICE, AS SOUND (LAB NOTES) the dashed filter curve now peaks about 8 dB above 0 dB at the CUTOFF line. At RES 0 it sits 6 dB below.',
       'PATCH → WOBBLE: LFO reads →CUT and a blue cable runs to the VCF. In MOD tap →PITCH: the cable moves to the VCO, LFO reads →PIT, PATCH reads CUSTOM.',
     ],

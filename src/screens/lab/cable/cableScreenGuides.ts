@@ -79,7 +79,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     tryThis: [
       'Peel BALANCED PAIR to the end: JACKET, SHIELD, INSULATION, then TWISTED PAIR — four layers.',
-      'Peel SPEAKER: just three layers and no SHIELD. Its signal is so large that picked-up noise does not matter.',
+      'Peel SPEAKER: just three layers and no SHIELD. Its signal is strong and its circuit very low resistance (a few ohms), so picked-up noise stays tiny beside it.',
       'Peel COAX: the SHIELD wraps a DIELECTRIC around one CENTER CONDUCTOR — and the shield is also the return path.',
     ],
   },
@@ -219,7 +219,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       'Solve all five questions; wrong picks stay open.',
     ],
     changes: [
-      'The narrow blade is line (hot), the energized conductor. The wide blade is neutral, the return.',
+      'On this North American plug the narrow blade is line (hot), the energized conductor; the wide blade is neutral, the return.',
       'The round pin is protective earth: it gives fault current a safe path, so it is never removed or bypassed.',
       'A DC plug shows nothing about voltage, polarity or current — only the printed labels do. The wrong supply can destroy equipment.',
     ],

@@ -41,7 +41,9 @@ const TEXT: { item: string; file: string; now: string; gone: string }[] = [
   {
     item: '11 flanger reveal',
     file: 'src/screens/lab/fxLabConfigs.tsx',
-    now: 'sharpens the comb: deeper contrast and taller resonant peaks',
+    // D42 r2 (owner GO 2026-11-01): "deeper contrast" was false at MIX 50% — the
+    // notches get SHALLOWER (−∞ → −16.9 → −13.7 dB) while the peaks rise.
+    now: 'the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant',
     gone: 'narrower notches and',
   },
   {

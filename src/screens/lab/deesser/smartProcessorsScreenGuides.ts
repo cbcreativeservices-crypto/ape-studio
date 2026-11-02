@@ -87,7 +87,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     changes: [
       'A vowel’s energy sits low — the body of the voice. An S is almost all hiss, high up. SH and CH sit lower than S.',
-      'The hiss is air turbulence at the teeth, which is why it lands in the 2–10 kHz region, where the ear is sensitive.',
+      'The hiss is air forced through the narrow gap at the teeth. The small space in front of them tunes it high, into the 2–10 kHz region, where the ear is very sensitive.',
     ],
     teaches: [
       'What sibilance is and where it sits: an S mostly 4–10 kHz, SH and CH nearer 2–5 kHz.',
@@ -167,7 +167,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The UNDERSTANDING CHECK at the end: tap an answer; its explanation follows.',
     ],
     changes: [
-      'Above the line the de-esser turns down; below it, nothing (a hard-knee model).',
+      'Above the line the de-esser turns down; below it, nothing at all. There is no gentle in-between zone in this model (a “hard knee”).',
       'Too high and no S crosses. Too low and TH and P cross first, then vowels, then the gaps between words.',
     ],
     teaches: [
@@ -272,7 +272,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     changes: [
       'Pushing harder takes more off each S: tamed, then softened, then blurred, then gone.',
-      'With the range wide open, only the threshold decides how hard it works — how a de-esser ends up lisping.',
+      'With the range wide open, nothing caps the cut: the lower the threshold, the deeper it goes — how a de-esser ends up lisping.',
     ],
     teaches: [
       'More is not better: the symptoms of each stage, from Transparent to Dull and lifeless.',

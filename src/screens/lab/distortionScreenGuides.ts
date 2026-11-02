@@ -65,7 +65,8 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'A sine enters at IN ▸ (“IN = −20 dBFS sine”), passes the green DRIVE stage, leaves at ▸ OUT as the bright wave; colour shows level, blue near the middle, red at the 0 dBFS lines. With PINK NOISE: “NOISE · SINE DRAWN”.',
+      'A sine enters at IN ▸ (“IN = −20 dBFS sine”), passes the green DRIVE stage and leaves at ▸ OUT as the bright wave.',
+      'Color shows level: blue near the middle, red at the 0 dBFS lines. With PINK NOISE: “NOISE · SINE DRAWN”.',
       'Dashed red lines: 0 dBFS, where HARD and SOFT stop. Faint dashed wave: DRIVEN (before clip).',
       'Readouts: TYPE, DRIVE, MIX. LAB NOTES: DESIGNED RESPONSE, one captioned still cycle.',
     ],
@@ -109,7 +110,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     changes: [
       'Nothing here moves — it is the reference for EXPLORE.',
       'The CONTROLS entries match the dock keys: TYPE, DRIVE, OS, MIX. The display entry covers the moving display, then the still drawing in LAB NOTES.',
-      'Each COMMON MISTAKES line gives a mistake and its cause — drive raises level, so match levels before judging.',
+      'Each COMMON MISTAKES line names a mistake and its cause, e.g. drive raises level too, so match levels before judging.',
       'Bitcrush and sample-rate reduction are explained here; EXPLORE does not draw them.',
     ],
     teaches: [
@@ -146,7 +147,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     ],
     tryThis: [
       'Stuck on odd vs even? On EXPLORE, compare HARD CLIP with TUBE (ASYM) at DRIVE +24 dB, then come back.',
-      'Unsure about MIX? Re-read Mix in LEARN: 50% PARALLEL blends a distorted copy with the clean one.',
+      'Unsure about MIX? Re-read Mix in LEARN: parallel blends a distorted copy under the clean one. Here, 50% PARALLEL at +24 dB leaves the clean copy far quieter, so grit stays.',
     ],
   },
 };

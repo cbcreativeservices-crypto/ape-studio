@@ -113,7 +113,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p3: {
     seeing: [
       'THE PRACTICES: Templates, Folders & visibility, Routing maps, Processing order, Resource management.',
-      'THIS SESSION’S ROUTING MAP, drawn as the mixer itself: eight channel strips into RHYTHM BUS, MUSIC BUS and VOCAL BUS, an FX RTN fed by SENDS, all into the MIX BUS and out to a pair of monitors.',
+      'THIS SESSION’S ROUTING MAP, drawn as the mixer itself: eight channel strips into RHYTHM BUS, MUSIC BUS and VOCAL BUS, an FX RTN (effects return) fed by SENDS, all into the MIX BUS and out to a pair of monitors.',
       'A check about insert order, and goal chips.',
     ],
     control: [
@@ -160,7 +160,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Pick ONE BUS COMP, then tap PULL VCA −6 and PULL SUBGROUP −6 in turn, and read what the line says about the compressor.',
-      'Play ONE BUS COMP, then PER-TRACK COMP, and listen for the hat dipping with each kick in the bus version.',
+      'Play ONE BUS COMP, then PER-TRACK COMP: in the bus version, listen for the hi-hat ticks on PERC dipping with each kick.',
     ],
   },
 
@@ -176,8 +176,8 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Answer the check below.',
     ],
     changes: [
-      'Before you open a tool, every path is lit. The first tool you open leaves only its own path bright; each tool after that adds its path. Feedback prevention draws the LOOP nobody should patch, crossed out in red.',
-      'Feedback prevention notes that the reverb return outputs to the mix but has no send of its own — no loop exists unless someone patches one.',
+      'Before you open a tool, every path is lit. The first tool you open leaves only its own path bright; each one after adds its own.',
+      'Feedback prevention draws the LOOP nobody should patch, crossed out in red: the reverb return feeds the mix but has no send of its own, so no loop exists unless someone patches one.',
     ],
     teaches: [
       'The aux system makes copies of anything, sent anywhere, at any level.',
@@ -208,7 +208,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Parallel processing keeps the untouched signal in charge, with a processed copy underneath.',
-      'At the same loudness, crest factor is the punch: an insert crush flattens it, a parallel blend keeps the dry peaks on top.',
+      'At the same loudness, crest factor is a guide to punch: an insert crush shrinks it, a parallel blend keeps the dry peaks on top.',
       'A parallel path adds energy, so bus headroom is checked again.',
     ],
     tryThis: [
@@ -294,7 +294,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     teaches: [
       'Two mics on one source arrive at different times; summed, a comb of cancellations runs through the tone.',
       'The arithmetic predicts exactly where the notches land.',
-      'Polarity mirrors a waveform; it cannot un-delay a signal. A time offset needs alignment.',
+      'Polarity flips a waveform upside down; it cannot un-delay a signal. A time offset needs alignment: moving the mic or delaying one track.',
     ],
     tryThis: [
       'Tap 1 ms: the line reads NOTCHES: 500 · 1.5k · 2.5k Hz — PEAKS: 1.0k · 2.0k · 3.0k Hz.',
@@ -321,7 +321,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Depth is set design: several spaces at different distances, shaped returns, tempo-locked delays.',
-      'Pre-delay acts as a distance dial; filtering a return keeps the room out of the low end.',
+      'Pre-delay is a distance cue: a longer gap before the reverb keeps a part up front. Filtering a return keeps the room out of the low end.',
       'The question is never which reverb is best, but how far away each part should live.',
     ],
     tryThis: [
@@ -588,7 +588,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       '▶ THE HANDOFF plays the flawed mix. Answer THE HANDOFF — YOUR DIAGNOSIS.',
-      'The console: Ø, PAN, MUTE, fader and the solo tape on each channel. HIGH-PASS THE KEYS (220 Hz) toggles a filter on the keys.',
+      'The console: Ø, PAN, MUTE and a fader on each channel; tap a channel’s name tape at its foot to solo it. HIGH-PASS THE KEYS (220 Hz) toggles a filter on the keys.',
       'BACK TO THE FLAWED HANDOFF resets the console.',
       '▶ THE HANDOFF, ▶ YOUR REPAIR and ▶ REPAIR, MONO compare, level-matched. 7 · Deliver is a button you tap on your honor.',
     ],

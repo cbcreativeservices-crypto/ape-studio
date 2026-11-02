@@ -105,7 +105,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     changes: [
       'Seat off center: the nearer speaker arrives first and pulls the image its way. A closer seat or a wider spread widens the angle.',
       'The front wall, nearer side wall, floor and ceiling each send a late copy; half a wavelength late, it cancels: f = c ÷ (2 × extra path), c = speed of sound. L’s list is below.',
-      'With STEREO + SUB: a sub near walls and floor gains bass instead, up to about +6 dB per boundary.',
+      'With STEREO + SUB: a sub very close to walls and floor gains bass, up to about +6 dB per boundary.',
     ],
     teaches: [
       'The stereo triangle, and why matched left and right geometry keeps the center image steady.',
@@ -167,7 +167,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     changes: [
       'On a reflection point, treatment weakens that path: its ✓ appears, TREATED rises.',
-      'Absorption shortens decay. Sabine: RT60 = 0.161 × volume ÷ absorption.',
+      'Absorption shortens decay. Sabine: RT60 = 0.161 × volume ÷ (area × α, summed).',
       'A porous panel absorbs less below about c ÷ (4 × thickness), where c is the speed of sound: 858 Hz at 10 cm. See α at 125 Hz.',
       'Corners hold every mode’s pressure peak: traps there reach the bass, and thick ones soak up mids too. A diffuser scatters.',
     ],

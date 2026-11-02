@@ -619,7 +619,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Mic-level circuits with phantom need proper system design, not improvisation.',
-      'Phantom off and the channel down before patching mic-level points.',
+      'Phantom off (wait a few seconds for it to drain) and the channel down before patching mic-level points.',
       'Mics can live on a patchbay when the system is built for it.',
       'Next: you choose how a bay is wired.',
     ],
@@ -712,7 +712,7 @@ export const PATCHBAY_END_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'Which parts of the lab you have worked through (thru, full- and half-normal, the switching contact, the studio bay, the safety rules) and which you have not met yet.',
-    'Once every page is credited while you are signed in, this lab counts toward your credit.',
+    'Once every page is credited while you are signed in, the whole lab is marked complete on your account.',
     'Nothing is taken away: any page can be opened again for practice.',
   ],
   tryThis: [

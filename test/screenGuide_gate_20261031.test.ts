@@ -260,7 +260,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
   }
   it('the guide states exactly those readings', () => {
     const t = GUIDES.explore.tryThis;
-    assert.match(t[0], /CLICK 90 and pull THRESH down to −50 dB: GR drops toward 0 on each hit and climbs back/);
+    assert.match(t[0], /CLICK 90 and raise THRESH to −20 dB: GR stays at the RANGE floor, as the short click never opens the gate\. Pull it down to −50 dB: GR drops toward 0 on each hit and climbs back/);
     assert.match(t[1], /−50 dB, set RLS to 20 ms CHATTER and step RANGE: between hits GR reaches 20\.0, 40\.0, then 70\.0 dB/);
     assert.match(t[2], /RLS to 500 ms: GR stays at 0\.0\. The sensed level falls so slowly it never drops below −50 dB before the next hit, so the gate never starts to close/);
     assert.doesNotMatch(t[2], /closes so slowly/);

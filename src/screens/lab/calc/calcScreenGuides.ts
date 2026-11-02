@@ -55,6 +55,9 @@ export type CalcGuideExample = {
   sendTo: CalcSendTarget;
   /** ▸ WORKED STEPS shows under the answer. */
   steps: boolean;
+  /** The widest reach of ANY SEND → this answer shows (calcSendReach over
+   *  every output): 'other', 'here', or null when no SEND → appears at all. */
+  sendAny: CalcSendTarget;
 };
 
 /** 'other' — an input in another calculator takes it; 'here' — only another
@@ -77,6 +80,26 @@ export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, q
         here = true;
       }
     }
+  }
+  return here ? 'here' : null;
+}
+
+/** Where the SEND → buttons on this answer can reach, over EVERY output —
+ *  the screen's own rule (CalcWorkspaceScreen sendTakers + its render gate):
+ *  SEND → shows beside a finite, chainable value that calcSendTarget finds a
+ *  taker for. 'other' if any reaches another calculator, else 'here' if any
+ *  reaches another calculation of this one, else null (no SEND → shows). */
+export function calcSendReach(
+  ws: Workspace,
+  fn: CalcFunction,
+  outputs: readonly ({ label: string } & Partial<{ value: number; quantity: QuantityKind; chainable: boolean; meaning: string }>)[],
+): CalcSendTarget {
+  let here = false;
+  for (const o of outputs) {
+    if (typeof o.value !== 'number' || !Number.isFinite(o.value) || o.chainable === false || !o.quantity) continue;
+    const t = calcSendTarget(ws, fn, o.label, o.quantity, o.meaning);
+    if (t === 'other') return 'other';
+    if (t === 'here') here = true;
   }
   return here ? 'here' : null;
 }
@@ -161,7 +184,9 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   const control = [
     fields.some((f) => f.quantity === 'list')
       ? `INPUTS: ${names}. A list box takes several numbers, separated by commas; grey text in an empty box is an example.`
-      : `INPUTS: ${names}. Type a number in each; a grey number in an empty box is an example value.`,
+      : fields.length === 1
+        ? `INPUTS: ${names}. Type a number; a grey number in an empty box is an example value.`
+        : `INPUTS: ${names}. Type a number in each; a grey number in an empty box is an example value.`,
     '⇄ switches a box’s unit; ⓘ says what an input means; a ⚠ under a box flags a value worth a second look.',
     picker,
     'In the answer: tap a number for another unit; SEND → (if an input takes it) passes it on; SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
@@ -183,8 +208,12 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   const changes = [wordsInChanges ? withWords : formulaLine, ...rest];
   const teachRest = [
     'WHY THIS MATTERS, PRACTICAL EXAMPLE and COMMON MISTAKES (scroll down) tie the result to real work.',
-    'SEND → chains answers from one calculator into the next, the way a real system design flows.',
   ];
+  // The SEND line only where a SEND → can show (audit K4, D42): the chain line
+  // when an answer reaches another calculator, a this-page line when only
+  // another calculation here takes it, and nothing when no SEND → appears.
+  if (ex?.sendAny === 'other') teachRest.push('SEND → chains answers from one calculator into the next, the way a real system design flows.');
+  else if (ex?.sendAny === 'here') teachRest.push('SEND → passes an answer to another calculation on this page, where an input takes that kind of value.');
   const teachWords = `What “${fn.name}” works out, and how each input moves it: ${fn.plainFormula ?? ''}`;
   const teaches = [
     !wordsInChanges && fn.plainFormula && [teachWords, ...teachRest].join(' ').length <= SCREEN_GUIDE_BUDGET.low
@@ -196,7 +225,7 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   return {
     seeing: [
       'YOUR ANSWER (top): pinned while you type below, it fills in once every input has a value.',
-      `Under the glass: FUNCTION (“${fn.name}”), SIG FIGS (how many figures show) and FORMULA π KEY.`,
+      `Just under YOUR ANSWER: FUNCTION (“${fn.name}”), SIG FIGS (how many figures show) and FORMULA π KEY.`,
       'Below the inputs: WHAT ARE YOU CALCULATING?, the FORMULA line, WHY THIS MATTERS, PRACTICAL EXAMPLE, COMMON MISTAKES, IN THE GLOSSARY.',
     ],
     control,
@@ -355,7 +384,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'Where every number came from: an imported input shows its source, such as “From … (step 1)”.',
     ],
     tryThis: [
-      'In the Ohm’s Law template, type 40 and 8 on step 1: POWER reads 200 W and CURRENT reads 5 A.',
+      'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A.',
       'Then CONTINUE ›: on step 2, tap ⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS) — CURRENT reads 5 A, the same current worked out from the power.',
     ],
   },

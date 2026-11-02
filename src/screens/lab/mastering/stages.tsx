@@ -1032,9 +1032,20 @@ export const ROOM_FIG_ASPECT = 360 / 200;
  *  so 1 m = 39.2 units; the monitors and diffusers are drawn at that scale. */
 const ROOM_U = 196 / 5.0;
 
+/** Where the listener sits front to back, as a fraction of the room's depth
+ *  from the front wall: the common ≈ 38 % starting point (D42 screen item —
+ *  the old drawing sat the listener 75 % back, about 1.07 m off the rear
+ *  wall, against "away from the walls"). */
+export const ROOM_LISTENER_FRAC = 0.38;
+/** The listening triangle's side, in drawing units (50 ≈ 1.28 m). It is sized
+ *  so the triangle stays EQUILATERAL with the listener at 38 % and the
+ *  cabinets still clear of the front wall's absorber. */
+const ROOM_TRI_SIDE = 50;
+
 /** A treated mastering room from above: the listening triangle, the
  *  first-reflection points on the side walls and ceiling line, bass traps in
- *  the corners, the listener off-centre of the length. Illustration. */
+ *  the corners, the listener on the centre line about 38 % of the way back.
+ *  Illustration. */
 export function RoomDiagram({ width, height }: { width: number; height: number }) {
   const H = 200;
   const rx0 = 30;
@@ -1044,10 +1055,12 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
   const lx0 = 238; // legend swatch column
   const lt = 258; // legend text column (≈ 100 units of room)
   const cx = (rx0 + rx1) / 2;
-  const spkY = ry0 + 46;
-  const lx = cx - 46;
-  const rxp = cx + 46;
-  const listY = spkY + 80;
+  // Listener first (38 % of the depth), then the speakers one equilateral
+  // height in front of them: 1.63 m from the front wall, speakers ≈ 0.52 m.
+  const listY = ry0 + ROOM_LISTENER_FRAC * (ry1 - ry0);
+  const spkY = listY - (ROOM_TRI_SIDE * Math.sqrt(3)) / 2;
+  const lx = cx - ROOM_TRI_SIDE / 2;
+  const rxp = cx + ROOM_TRI_SIDE / 2;
   const refl = (sx: number, wallX: number) => {
     // First reflection on a side wall for a speaker at (sx, spkY) and listener at (cx, listY):
     // mirror the listener across the wall and intersect the straight line.
@@ -1069,8 +1082,8 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       {trap(rx0, ry1, -90)}
       {trap(rx1, ry1, 180)}
       {/* absorption at the first-reflection points + behind the speakers */}
-      <Rect x={rx0} y={lRef - 16} width={5} height={32} fill={ink.amber} opacity={0.8} />
-      <Rect x={rx1 - 5} y={rRef - 16} width={5} height={32} fill={ink.amber} opacity={0.8} />
+      <Rect x={rx0} y={lRef - 13} width={5} height={26} fill={ink.amber} opacity={0.8} />
+      <Rect x={rx1 - 5} y={rRef - 13} width={5} height={26} fill={ink.amber} opacity={0.8} />
       <Rect x={cx - 60} y={ry0} width={120} height={5} fill={ink.amber} opacity={0.5} />
       {/* diffusion on the rear wall: three 1-D quadratic-residue panels
           (N = 7, wells n² mod 7 = 0 1 4 2 2 4 1), each 600 mm wide with

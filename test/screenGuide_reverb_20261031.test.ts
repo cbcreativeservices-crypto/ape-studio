@@ -254,7 +254,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const g0 = onsetAt(0);
     assert.ok(g60 >= 88 && g60 <= 95, `60 ms gap = ${g60}`);
     assert.ok(g0 >= 28 && g0 <= 36, `0 ms gap = ${g0}`);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick after the grey click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
   });
   it('EXPLORE 3: RT60 ≈ 1.5 s with DARK 2k → nearly at the floor by the 1 s mark (NATURAL stays well up); DESIGNED RESPONSE ignores damping', () => {
     for (const rt of [1.4, 1.5, 1.6]) {

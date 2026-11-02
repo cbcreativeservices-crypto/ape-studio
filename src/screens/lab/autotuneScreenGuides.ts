@@ -51,7 +51,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Pitch error is counted in cents: 100 cents to a semitone.',
-      'Correction amount sets how far, retune speed how fast. A fast snap flattens glides and vibrato — the robotic hard-tune effect; a slow one keeps them.',
+      'Correction amount sets how far, retune speed how fast. On a real voice a fast snap flattens glides and vibrato (the robotic hard-tune effect); a slow one keeps them. The demo notes are steady, so here you hear the snap itself.',
       'The singer here is a tone generator, not a microphone. First lab in Pitch & Tuning; the Tuning & Temperament Lab comes next.',
     ],
     tryThis: [

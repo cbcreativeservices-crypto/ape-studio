@@ -609,11 +609,21 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   );
 }
 
+/** M3 STRENGTH → tone level (D42 r2, 2026-11-01). At 0 % — what the lane
+ *  shows as 0 — the tone is SILENT, matching the picture and the guide ("no
+ *  vibration, no wave — and no sound"). It used to bottom out at −44 dBFS, a
+ *  faint tone over a flat graph. The voice stays armed at −120 dBFS (below
+ *  any output's floor), so PLAY stays lit and the tone comes back as STRENGTH
+ *  rises. Finite on purpose: −Infinity is not a safe bridge value.
+ *  Pinned by test/foundationsM3Silence_20261101.test.ts. */
+const M3_SILENT_DB = -120;
+const m3LevelDb = (a: number) => (Math.round(a * 100) <= 0 ? M3_SILENT_DB : -44 + a * 22); // −44 … −22 dBFS
+
 /** M3 — compression/rarefaction slider (particles + pressure, no cone). */
 function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [amt, setAmt] = useState(START_LEVEL_01);
   const [zones, setZones] = useState(true);
-  const levelFor = (a: number) => -44 + a * 22; // −44 … −22 dBFS
+  const levelFor = m3LevelDb;
   const readout = amt < 0.33 ? 'gentle' : amt < 0.66 ? 'medium' : 'strong';
   const params: DockParam[] = [
     {

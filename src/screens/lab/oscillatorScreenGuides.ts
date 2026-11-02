@@ -50,10 +50,10 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'Below the rack, LAB NOTES: what you’re seeing, THE SOUND, two CHECK YOURSELF questions and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
-      'Each bar is a sine at a whole-number multiple of F0; the strip adds them up — the shape IS the recipe.',
+      'Each bar is a sine at a whole-number multiple of F0; added up, they make the shape.',
       'Change WAVE: the bars change, so the shape and the sound (timbre) change; the pitch stays.',
-      'Change F0 (IDEAL view): shape and bars stay; only the pitch moves.',
-      'SPKR: a phone speaker plays deep notes poorly, so the filter shrinks the lowest bars, most at 110 Hz. You hear this on the speaker in either view.',
+      'Change F0 (IDEAL view): only the pitch moves; the wave always shows two cycles, slowed.',
+      'SPKR: a phone speaker plays deep notes poorly, so the filter shrinks the lowest bars, most at 110 Hz. On the speaker you hear it in either view.',
     ],
     teaches: [
       'Every repeating sound is a stack of sines (Fourier). The classic waves differ only in which ones, and how strong.',

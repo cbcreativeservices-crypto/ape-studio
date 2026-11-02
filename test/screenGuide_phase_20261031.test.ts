@@ -181,7 +181,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['dBFS · uncalibrated', FXSCREEN, '−20 dBFS, uncalibrated'], ['LAB NOTES', SHELL], ['CHECK YOURSELF', BITS],
       ['HIDE DISPLAY', RACK], ['FULL SCREEN', RACK], ['ⓘ', RACK], ["'■'", SHELL, '■'], ["'▶'", SHELL, '▶'],
       // where it sits
-      ["name: 'Distortion & Saturation'", CATALOG, 'Distortion'], ["name: 'Stereo Imaging'", CATALOG, 'Stereo Imaging'],
+      // D42 r2: Training Labs sort A→Z, so Phase sits after Modulation (not Distortion).
+      ["name: 'Modulation'", CATALOG, 'Modulation'], ["name: 'Stereo Imaging'", CATALOG, 'Stereo Imaging'],
     ],
     learn: [
       ['LEARN', SHELL], ['EXPLORE', SHELL], ['CHECK', SHELL], ['CONTROLS', SHEET], ['COMMON MISTAKES', SHEET], ['PRO TIPS', SHEET], ['FORMULA / CONCEPT', SHEET],

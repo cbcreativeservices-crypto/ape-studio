@@ -156,7 +156,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(DELAY, /\{ label: '25%', value: 0\.25 \},\s*\{ label: '50%', value: 0\.5 \},/);
     const ex = DELAY_SCREEN_GUIDES.explore.control.join(' ');
     assert.match(ex, /TIME, 80 to 500 ms/);
-    assert.match(ex, /FDBK \(FEEDBACK: 0% to 75%\)/); // the dock abbreviation spelled out once
+    assert.match(ex, /FDBK \(FEEDBACK: 0%, 25%, 50% or 75%\)/); // the dock abbreviation spelled out once, with its four choices
     assert.match(ex, /MIX \(25%, 50%, 100% WET\)/);
     assert.match(ex, /SOURCE \(CLICK 90, PINK NOISE, SINE 220 Hz\)/);
     // dock keys in order: the TIME fader, FDBK, MIX, COLOR (ping-pong + damping folded), SOURCE
@@ -249,7 +249,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const ch = DELAY_SCREEN_GUIDES.explore.changes.join(' ');
     assert.match(ch, /at 100% WET the grey dry click leaves OUT/);
     assert.match(ch, /REPEAT DAMPING dulls every pass after the first/);
-    assert.match(ch, /At 50% each repeat is half the one before/);
+    assert.match(ch, /At 50% each repeat is half as tall \(6 dB down\)/);
     // steady sources: the glass note
     assert.match(ANIM, /'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK'/);
   });

@@ -184,7 +184,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     control: 'SOURCE ANGLE swings the test source from the mic’s front (0°) round to directly behind (180°). TYPE and PATTERN change the mic.',
     changes: 'PICKUP is the pattern’s level at that angle compared with straight ahead. Where the pattern hears nothing, a null appears (DEEP NULL): sound from there cancels at the capsule. Real mics still hear a little from there.',
     tryThis: [
-      'Make the prediction, then sweep SOURCE ANGLE past 100° round the back: the NULL readout shows where this pattern rejects most.',
+      'Make the prediction, then sweep SOURCE ANGLE slowly, front to back: the NULL readout shows where this pattern rejects most.',
       (s) =>
         optsOf(s, 'PATTERN').some(isCardioid)
           ? 'With a cardioid PATTERN, set SOURCE ANGLE all the way round: PICKUP reads DEEP NULL, directly behind.'
@@ -301,7 +301,7 @@ const STAGE_WORDS: Record<PageId, StageWords> = {
   setups: {
     changes: [
       'A distance is measured from a named surface to the mic’s front, so a number only means something with its surface.',
-      'A closer mic hears more of the source and less of the room and its neighbours; a farther one hears more of the whole.',
+      'Closer: more source, less room; a directional mic gains bass up close (proximity effect). Farther: more of the whole.',
     ],
     teaches: 'Several setups can each do the job; seeing them first makes the mic choice and the placement make sense.',
     tryThis: 'Think back to two starting setups: what does each one gain, and what does it give up?',
@@ -316,7 +316,7 @@ const STAGE_WORDS: Record<PageId, StageWords> = {
   },
   placement: {
     changes: [
-      'Distance, height and aim each change what the mic hears: closer gives more of the source and less of the room; aiming away hears less of the source.',
+      'Distance, height and aim each change what the mic hears: closer gives more source, less room; aiming away hears less source, its top end first.',
       'Clearance comes first: the mic stops where it would touch a part, and moving parts and the player keep their space.',
     ],
     teaches: 'A starting point is read from a named surface, aimed and kept clear — then moved by ear.',

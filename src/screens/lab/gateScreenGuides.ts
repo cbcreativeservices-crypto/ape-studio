@@ -77,7 +77,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'It follows Compression in the Dynamics labs; Limiter is next.',
     ],
     tryThis: [
-      'Play CLICK 90 and pull THRESH down to −50 dB: GR drops toward 0 on each hit and climbs back between them — the gate opens, then closes.',
+      'Play CLICK 90 and raise THRESH to −20 dB: GR stays at the RANGE floor, as the short click never opens the gate. Pull it down to −50 dB: GR drops toward 0 on each hit and climbs back between them.',
       'Still at −50 dB, set RLS to 20 ms CHATTER and step RANGE: between hits GR reaches 20.0, 40.0, then 70.0 dB. The click is a clean hit, so this shows depth, not chatter.',
       'Now set RLS to 500 ms: GR stays at 0.0. The sensed level falls so slowly it never drops below −50 dB before the next hit, so the gate never starts to close.',
     ],
@@ -125,7 +125,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'All four right and the lab is complete — passing this check is what counts it toward certificates, and a pass stays passed.',
     ],
     teaches: [
-      'Whether the ideas stuck: the gate turns quiet sound down, range is how far, hold and release stop chatter.',
+      'Whether the ideas stuck: the gate turns quiet sound down, range is how far, and hold or a slower release stops chatter.',
       'Every question is answered by something EXPLORE shows or LEARN says.',
     ],
     tryThis: [

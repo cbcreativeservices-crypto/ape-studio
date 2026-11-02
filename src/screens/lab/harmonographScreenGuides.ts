@@ -54,7 +54,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
     ],
     teaches: [
       'Musical intervals are frequency ratios: 2:1 octave, 3:2 fifth, 4:3 fourth, 5:4 major third.',
-      'Why simple ratios look stable and sound smooth, and what beating looks like.',
+      'Why simple ratios draw stable figures, and why a near-miss ratio slowly drifts — the picture of beating.',
       'The ratio sets the pattern; damping and phase only shape it. The lab sits beside the Cymatics Lab in Sound Visualization.',
     ],
     tryThis: [
@@ -85,7 +85,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
     ],
     tryThis: [
       'Read the PRO TIPS line on detuning, then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
-      'Read the line on damping extremes, then on EXPLORE compare LIGHT and HEAVY.',
+      'Read the COMMON MISTAKES line on damping extremes, then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
     ],
   },
 

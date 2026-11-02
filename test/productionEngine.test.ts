@@ -425,7 +425,8 @@ describe('production packet', () => {
     const p = project();
     const html = buildPacketHtml({ project: p, stages, report: readProject(stages, p) });
     assert.ok(html.includes('Not Ready for Production'));
-    assert.ok(html.includes('0 of'), 'and how many decisions were actually made');
+    assert.ok(html.includes('0 required decisions made'), 'and how many decisions were actually made');
+    assert.ok(!/\d+ of \d+ required/.test(html), 'a progress count never shows its total (owner rule)');
   });
 
   it('prints unanswered required fields as gaps rather than hiding them', () => {

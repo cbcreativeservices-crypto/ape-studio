@@ -56,7 +56,7 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
     'This is planning education: rights, safety and power questions point to qualified people.',
   ],
   tryThis: [
-    'Tap Music recording: the project opens at 0 / 100, Not Ready for Production, and NEXT OUTSTANDING points at Project name in Stage 1 · Define the Project.',
+    'Tap Music recording: the project opens with a readiness score of 0 / 100, Not Ready for Production, and NEXT OUTSTANDING points at Project name in Stage 1 · Define the Project.',
     'Then tap + NEW PROJECT and pick Live performance or event: its Stage 1 asks “Inputs from the stage” where the music project asks “Simultaneous sources to record”.',
   ],
 };
@@ -76,7 +76,7 @@ export const PREPROD_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'The score counts decisions made, not screens opened.',
-    'Each flagged finding costs up to 2 points (20 max); an open blocker keeps it under 100 and Not Ready for Production.',
+    'Flagged findings cost up to 2 points each, 20 max; an open blocker keeps it under 100 and Not Ready for Production.',
     'Fixed or accepted, a blocker clears; accepted ones go to PROCEEDING WITH ACCEPTED CONDITIONS and print in the packet.',
     'Ready With Approved Conditions: every required decision made, no blocker, but a condition accepted or something flagged.',
   ],

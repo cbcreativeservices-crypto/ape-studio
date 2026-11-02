@@ -192,7 +192,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Each signal is a fixed clip, so the meter reads it the same way every time you pick it.',
     ],
     changes: [
-      'Each window answers its own question: momentary (400 ms) "loud right now", short-term (3 s) "this section", integrated "the whole program", with silence left out.',
+      'Each window answers its own question: momentary (400 ms) "loud right now", short-term (3 s) "this section", integrated "the whole program", with silence and quiet gaps left out.',
       'LRA is the spread of the short-term readings: it rises when the level changes from section to section, not because single hits are punchy.',
       'Between two samples the rebuilt wave can rise above both, so TRUE PK reads above SAMPLE PK.',
     ],
@@ -287,7 +287,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Q RING stores energy in the filter itself, so a thin ridge lingers.',
     ],
     teaches: [
-      'Level and decay slope are different things: EQ moves one, absorption the other.',
+      'Level and decay slope are different things: a broad EQ moves level, absorption moves decay.',
       'Decay depends on frequency, so one RT60 number never tells the whole story.',
       'A ridge that outlasts its neighbors is ringing: a room mode, a resonant speaker or a high-Q filter.',
       'Modules 5–6 showed which frequencies, and when; this one shows how long each lasts. Module 8 turns to stereo.',

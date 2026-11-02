@@ -231,7 +231,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     teaches: [
       'A fader sets LEVEL, not quality.',
       'Distortion created upstream cannot be removed by any control downstream.',
-      'Clipping is fixed where it occurs — at the input gain.',
+      'Clipping is fixed where it occurs — here, at the input gain.',
       'It closes the LEARN section; next, Multiple Gain Stages puts these ideas into a full channel strip.',
     ],
     tryThis: [
@@ -318,7 +318,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     ],
     changes: [
       'Every stage upstream of the fault reads −10 dB (the Source itself is −30 dB). A stage that clips reads 0 dB with CLIP under its meter.',
-      'The first stage that shows CLIP is the fault; the ones after it clip only because they inherit its level.',
+      'The CLIP stage nearest the Source is the fault; the ones after it clip only because they inherit its level.',
       'Lower the faulty stage and the whole chain drops back to healthy: STATUS clears and a green frame lights the display.',
     ],
     teaches: [

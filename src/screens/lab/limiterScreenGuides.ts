@@ -24,8 +24,8 @@
  *   SINE 440, CEILING −35 → GR 14.9–15.0 "about 15" (LEARN's own sum).
  * No lookahead: on the CLICK the first rising cycles outrun the 0.1 ms
  * detector, so OUTPUT SAMPLE peaks pass the ceiling by ~2–5 dB (sine +0.05
- * dB). The guide says so instead of "held at once"; the screen's heroCaption
- * ("Sample peaks are held at …") still over-claims — a screen-code item.
+ * dB). The guide says so instead of "held at once", and the screen's
+ * heroCaption says so too (D42, 2026-11-01).
  * Change a label, a default or the source level → update this file;
  * test/screenGuide_limiter_20261031.test.ts pins names + numbers.
  *
@@ -43,7 +43,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Dashed lines on OUT mark the ceiling; the dotted outline is the signal before the limiter.',
+      'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint grey outline is the signal before the limiter.',
       'The GR ladder on the right grows down as the limiter holds the level down.',
       'Readouts: CEIL, RLS and GR — gain reduction, measured live (— dB while stopped).',
       'The drawing is a TEACHING MODEL; CLICK is drawn as a longer DRUM-HIT MODEL.',
@@ -55,7 +55,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     changes: [
       'Over the ceiling, the level is pulled down to it almost at once (an infinite ratio); below it, nothing changes. A sharp click can slip a few dB past first: there is no lookahead.',
-      'GR is how far the input sits over the ceiling: still on a steady tone, a jump then recovery on a click.',
+      'GR is how far the input sits over the ceiling. On a steady tone it holds steady; on a click it jumps, then recovers.',
       'RLS sets how fast GR recovers after a peak, so it barely changes a steady tone.',
     ],
     teaches: [

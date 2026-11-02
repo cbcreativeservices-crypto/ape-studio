@@ -70,7 +70,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'Only level over the threshold is turned down: at 4:1, every 4 dB over comes out as 1 (12 dB over → 3).',
       'ATTACK sets how fast it clamps, RELEASE how fast it lets go. At the start (CLICK 120, THRESH −40 dB, ATTACK 5 ms) GR kicks about 3–5 dB on each hit, then falls back to 0.0.',
       'MAKEUP raises the output afterwards; GR stays the same.',
-      'Every SOURCE peaks near −20 dBFS.',
+      'Every SOURCE peaks near −20 dBFS, so a threshold above that does nothing.',
     ],
     teaches: [
       'Threshold, ratio, attack, release and makeup: the settings every compressor shares, and GR as the proof it is working.',

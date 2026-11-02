@@ -48,7 +48,7 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
     'Not stair steps: the DAC and its filter rebuild a smooth wave.',
     'Clipping at or before the converter is permanent.',
     'Exact math: sample, bit and true-peak numbers. The level, float and jitter scenes are illustrative models, not measurements.',
-    'Follows Sound and Acoustics; leads to Visual Audio Analysis, then Gain Staging.',
+    'Follows Sound and Acoustics; Visual Audio Analysis comes next.',
   ],
   tryThis: [
     'New to digital audio? Take the modules in order — each one uses the last.',
@@ -226,7 +226,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'More INPUT lifts PEAK and SNR together and shrinks HEADROOM: the signal climbs away from a fixed noise floor.',
-      'Just above 0 dB the analog stage rounds the peaks (AN. CLIP); a little higher the converter cuts flat tops (A+D CLIP).',
+      'With INPUT just above 0 dB, the analog stage rounds the peaks (AN. CLIP); a little higher, the converter cuts flat tops (A+D CLIP).',
       'This model lets the preamp clip first; on most interfaces the converter reaches 0 dBFS first.',
     ],
     teaches: [

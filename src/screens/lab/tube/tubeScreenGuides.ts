@@ -50,7 +50,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     teaches: [
       'What each part of a tube does, and why every one is needed.',
-      'The build order: heat, an electron source and a collector make a working diode; each added grid controls that flow.',
+      'The build order: heat, an electron source and a collector make a working diode; the control grid then controls that flow, and the later grids fix its side effects.',
       'The first module of Vacuum Tube Fundamentals, the first lab in Audio Electronics. Electron Flow comes next.',
       'The drawing is an illustrative model, not measured tube data.',
     ],
@@ -65,7 +65,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   flow: {
     seeing: [
       'One tube warming up, slowed and drawn: the heater glows, an electron cloud gathers round the cathode, then streams to the plate.',
-      'Readouts: HEAT (how warm the heater is), STAGE (which warm-up step, out of five) and PLATE I — the plate current, as a share of full.',
+      'Readouts: HEAT (how warm the heater is), STAGE (the warm-up step, 1 to 5) and PLATE I — the plate current, as a share of full.',
       'Below the display, a numbered line describes the step, from 1 · Cold to 5 · Steady current.',
     ],
     control: [
@@ -75,7 +75,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     changes: [
       'Below 15% the heater is cold and nothing moves.',
       'As it warms, the cathode boils off electrons (thermionic emission) and the positive plate collects them: at first a trickle too small to read (PLATE I 0%).',
-      'Above 70% emission climbs steeply and PLATE I with it, to 100% at full heat. Then the cathode boils off more than the plate takes; the extra hangs back as a cloud (space charge) that sets steady current.',
+      'Above 70% emission climbs and PLATE I with it, to 100% at full heat. There the cathode makes more than the plate takes; the extra waits as a cloud (space charge) and the plate voltage sets the current.',
     ],
     teaches: [
       'Why a tube does nothing until it is hot: no heat, no electrons, no current, no sound — the reason tube gear needs warm-up time.',
@@ -124,7 +124,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     seeing: [
       'A small tube stage: a small input wave at the left rides a blue wire into the grid; a large wave leaves the plate on an amber wire at the right.',
       'Inside the glass, the grid dots pulse with the input and the cathode-to-plate electron stream thickens and thins with them.',
-      'Readouts: GAIN ~×7 (the output is drawn about seven times taller), IN GRID and OUT PLATE.',
+      'Readouts: GAIN ~×7 (the output is drawn about seven times taller; real preamp stages often give far more), IN GRID and OUT PLATE.',
     ],
     control: [
       'Nothing to adjust here: this screen is a picture to watch.',
@@ -132,7 +132,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     changes: [
       'Your signal never touches the big current. It wiggles the grid, and the grid gates the much larger stream.',
-      'Grid up → more current; grid down → less. That current flows through a resistor, so the plate voltage follows it — a large copy of the input.',
+      'Grid up → more current; grid down → less. That current flows through a resistor, so the plate voltage swings with it — a large copy of the input.',
       'The copy is upside-down: more current makes the plate voltage drop. That flip is real tube behavior.',
     ],
     teaches: [
@@ -187,7 +187,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     changes: [
       'TRIODE: one control grid. Simple and linear, but the plate’s field reaches back through it, limiting gain.',
-      'TETRODE: a positive screen grid shields the control grid and speeds the stream. But electrons knock secondary electrons off the plate (red), and the screen steals them.',
+      'TETRODE: a positive screen grid shields the control grid and speeds the stream. But when the plate swings below the screen, electrons knocked off the plate (red) are stolen by the screen.',
       'PENTODE: a suppressor grid beside the plate turns those strays back.',
     ],
     teaches: [

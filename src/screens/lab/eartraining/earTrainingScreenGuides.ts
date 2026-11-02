@@ -195,7 +195,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
       '⤢ FULL SCREEN enlarges SEE IT with the ▶ chips under it. FINISH · SEE WHAT’S LEFT › lists what does not count yet.',
     ],
     changes: [
-      'Noise is a slope. White is flat per hertz, so it hisses; pink falls 3 dB per octave; brown about 6 dB per octave, all rumble.',
+      'Noise is a slope. White is flat per hertz, so most of its energy sits up high: hiss. Pink falls 3 dB per octave; brown about 6 dB, mostly rumble.',
       'Each wave shape is a stack of harmonics: a sine has one; a square odd ones (hollow); a sawtooth all of them (bright, buzzy); a triangle odd ones that fade fast (soft).',
       'Each wave gets a new pitch between 200 and 800 Hz, so its color is the clue, not the note.',
     ],
@@ -380,7 +380,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     teaches: [
       'What compression does to a sound’s shape: snap versus sit-down, and pumping.',
       'Why a compressed track can seem better only because it is louder.',
-      'Reading a setting: 2:1 above −18 dBFS means past that level (dB below digital full scale), 2 dB more in gives 1 dB more out; release is how fast it lets go.',
+      'Reading “2:1 above −18 dBFS”: once the level passes −18 dBFS (18 dB under full scale), 2 dB more in gives 1 dB more out. Release is how fast it lets go.',
       'Light compression is meant to be hard to hear. The Compression lab shows the controls behind each setting.',
     ],
     tryThis: [
@@ -433,7 +433,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     changes: [
       'Level 1: identical copies. Flipped, they cancel completely — that clip is silent on purpose, and its level is not matched.',
-      'Level 2: copies 0.2 ms apart; level 3: 0.5 ms apart, one 3 dB quieter. Flipped, the lows cancel — hollow, not silent.',
+      'Level 2: copies 0.2 ms apart; level 3: 0.5 ms apart, one 3 dB quieter. Flipped, the lows cancel — thin, not silent.',
       'Partial cancellation is in polarity but 1.2 ms late: notches from about 400 Hz up, lows intact.',
     ],
     teaches: [

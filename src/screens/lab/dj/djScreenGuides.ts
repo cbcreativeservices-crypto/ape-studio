@@ -39,7 +39,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Each time you switch who you listen as, playback starts LOW again, so a louder feed never arrives at full level.',
-      'The tile’s percentage follows the NIOSH guideline: 85 dBA for 8 hours, the time halving for every 3 dB more — so loudness and time add up.',
+      'The tile’s percentage follows the NIOSH guideline: 85 dBA for 8 hours, and every 3 dB louder halves the safe time — level and time trade off.',
     ],
     teaches: [
       'Safe operation first: low levels to start, STOP within reach, and how quickly a loud booth uses up a day’s hearing allowance.',
@@ -276,7 +276,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Play deck A (DECKS), start deck B with PLAY B when A PHRASE turns to bar 1, then move TEMPO B until B BPM matches A BPM.',
-      'Line the beats up until B vs A is within a sixteenth of a beat, then listen for a flam.',
+      'Line the beats up until B vs A is within a sixteenth of a beat, then listen: a flam (each kick heard twice, a hair apart) means they still need lining up.',
     ],
   },
   // ── 11 ─────────────────────────────────────────────────────────────────
@@ -499,7 +499,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'A mic makes a tiny signal, so its input adds a lot of gain; TALK OVER dips the music while you speak.',
-      'A condenser needs +48 V phantom power; pointed at a monitor, the mic feeds back once the loop passes its limit.',
+      'Most condensers need +48 V phantom power; pointed at a monitor, the mic feeds back once the loop passes its limit.',
     ],
     teaches: [
       'Mic gain, power, talkover, feedback and which feeds carry the mic.',

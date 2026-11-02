@@ -60,7 +60,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Chorus is a short, slowly moving delay mixed with the dry sound; the beating between the two reads as thick and wide.',
-      'Its delay (15–35 ms here) is long, so its comb notches sit too close to hear as a sweep — every 50 Hz at 20 ms.',
+      'Its delay (15–35 ms here) is long, so the cancellation notches it makes sit close together — every 50 Hz at 20 ms — too close to hear as a sweep.',
       'First Modulation lab, after Delay and Reverb; Flanger and Phaser follow. Each picture is a teaching model, not a measurement.',
     ],
     tryThis: [

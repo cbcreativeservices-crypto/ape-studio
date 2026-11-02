@@ -62,7 +62,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
       'A stereo signal splits into MID (what L and R share) and SIDE (what differs). WIDTH scales only the SIDE.',
       'At 0% there is no SIDE: the OUT traces become one line. Past 100% the SIDE is louder than recorded: they pull apart, CORRELATION falls.',
       'MONO CHECK adds L and R: the SIDE cancels and only the MID survives.',
-      'PAN at L or R silences the other side and lifts the kept side 3 dB (constant-power pan).',
+      'PAN at L or R silences the other side and lifts the kept side 3 dB, so total power stays the same.',
     ],
     teaches: [
       'Stereo width is the balance of SIDE against MID: a widener turns up what differs between the channels.',

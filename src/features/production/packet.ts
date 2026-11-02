@@ -206,7 +206,7 @@ export type PacketStage = {
   stageId: string;
   num: number;
   title: string;
-  /** "Under way — 3 of 7 required decisions" (the stage list's own words), or null when unread. */
+  /** "Under way — 3 required decisions made" (the stage list's own words), or null when unread. */
   status: string | null;
   notices: PacketNotice[];
   sections: PacketSection[];
@@ -218,7 +218,7 @@ export type PacketModel = {
   projectName: string;
   control: [string, string][];
   verdict: ReadinessReport['verdict'];
-  /** "Not Ready for Production — 12 of 58 required decisions made" */
+  /** "Not Ready for Production — 12 required decisions made" */
   verdictLine: string;
   blockers: PacketIssue[];
   accepted: { title: string; acceptedBy: string; reason: string }[];
@@ -257,7 +257,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
     verdict: report.verdict,
     verdictLine:
       `${VERDICT_LABEL[project.lab][report.verdict]} — ` +
-      `${report.answeredRequired} of ${report.totalRequired} required decisions made`,
+      `${report.answeredRequired} required decisions made`,
     blockers: report.blockers.map((b) => ({ title: b.title, detail: b.detail })),
     accepted: report.acceptedBlockers.map((b) => ({
       title: b.title,
@@ -271,7 +271,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
         num: stage.num,
         title: stage.title,
         status: sr
-          ? `${STAGE_WORD[sr.state]} — ${sr.answeredRequired} of ${sr.totalRequired} required decisions`
+          ? `${STAGE_WORD[sr.state]} — ${sr.answeredRequired} required decisions made`
           : null,
         notices: stage.notices.map((n) => ({ kind: n.kind, text: n.text })),
         sections: stage.sections.map((section) => ({

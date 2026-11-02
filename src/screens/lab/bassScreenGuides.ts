@@ -58,7 +58,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'The swing is slowed to watch; on one string, a higher fret swings faster.',
     ],
     teaches: [
-      'Pitch follows vibrating length: the frequency goes up exactly as the length goes down — half the length, twice the frequency.',
+      'Pitch follows vibrating length, in inverse proportion: half the length, twice the frequency; two-thirds the length, 1.5 times.',
       'The simple fractions of a string are the consonant intervals: ½ an octave, ⅔ a fifth, ¾ a fourth.',
       'It opens Instruments & Recording, before the Microphone Selection Lab. The Harmonics and Harmonograph labs show the same ratios as spectra and curves.',
     ],

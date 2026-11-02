@@ -240,6 +240,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     teaches: [
       'Musical harmony is about ratios between frequencies, not any one frequency.',
       'What beats are, and why zero beats means in tune.',
+      'Two pure sines a detuned fifth apart beat only faintly; real instruments have matching harmonics, so their beat is plain.',
       'Ratios are a separate subject from plate modes. Module 5; Other Cymatic Systems is next.',
     ],
     tryThis: [
@@ -268,7 +269,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Most visible vibration patterns mark the still places (nodes) of one of the system’s own modes.',
-      'Strings and air columns are harmonic, so they have a clear pitch; membranes, plates, bells and dishes are not.',
+      'Strings and air columns are harmonic, so they have a clear pitch; membranes, plates and bells are not.',
       'Levitated beads hang where the pressure barely changes. Module 6; Evidence vs Myth is next.',
     ],
     tryThis: [
@@ -371,7 +372,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
   liquid: {
     seeing: [
       'A dish of liquid on a shaker (water, 4 mm deep, 100 mm round to start), drawn by VIEW — Liquid surface to start.',
-      'Readouts: DRIVE (shake frequency), RESP (how fast the surface answers; f/2 once patterns form), SHAKE (in g) and a/a꜀ (shake ÷ threshold).',
+      'Readouts: DRIVE (shake frequency), RESP (the rate the surface moves at; f/2 once patterns form), SHAKE (in g) and a/a꜀ (shake ÷ threshold).',
       'LAB NOTES: the stage ladder from FLAT SURFACE up to SPLASHING, the THRESHOLD line, WHAT THIS RIG IS and RIG SAFETY.',
     ],
     control: [

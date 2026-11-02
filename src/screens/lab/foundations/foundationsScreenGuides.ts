@@ -47,7 +47,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
       'The drawing is slowed: real air at 880 Hz rocks 880 times a second.',
     ],
     teaches: [
-      'Sound is a travelling pattern of pressure changes in air — not moving air, not electricity, not a graph.',
+      'Sound is a travelling pattern of pressure changes in air — not a wind, not electricity, not a graph.',
       'Compression and rarefaction are the two halves of every sound wave.',
       'Every animation of sound is a slowed model. Builds on Understanding Level & Amplitude (its blue→red colours mark level here too); Module 2 adds the speaker and the graph.',
     ],
@@ -72,7 +72,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     changes: [
       'Cone moving forward → the air beside it squeezes → THE GRAPH rises. Moving back → it stretches → THE GRAPH dips.',
-      'The squeeze is strongest as the cone passes its middle going forward; once the cone is fully out, it is a quarter-wave away.',
+      'The squeeze is strongest as the cone passes its middle going forward, not when it is fully out.',
       'The squeeze moves right, so THE GRAPH’s wave travels right, born at the speaker.',
       'Molecules only move left and right; nothing in the air is shaped like the wavy line.',
     ],
@@ -112,7 +112,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     tryThis: [
       'Slide STRENGTH from 30 % to the top: the readout goes gentle → medium → strong and both swings of the graph grow.',
-      'Pull STRENGTH to 0 %: the molecules stop and the graph lies flat on the resting line — no vibration, no wave. (PLAY never fully mutes: at 0 % it still plays a faint tone.)',
+      'Pull STRENGTH to 0 %: the molecules stop and the graph lies flat on the resting line — no vibration, no wave — and no sound.',
       'Press PLAY and ride STRENGTH: the tone gets louder and softer, but its pitch never moves.',
     ],
   },
@@ -284,7 +284,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     teaches: [
       'Amplitude is physics; loudness is perception. Equal amplitude is not equal loudness.',
-      'Why quiet playback loses the bass first.',
+      'Why quiet playback loses the bass first: the ear is least sensitive to the lows, so they slip below hearing first.',
       'The curve is an illustration, not measured data. Builds on Module 4; Module 10 turns to two waves meeting.',
     ],
     tryThis: [
@@ -339,7 +339,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     changes: [
       'Adding a harmonic changes the SHAPE of each cycle — the timbre — not the pitch.',
-      'While H1 is on, every layer fits inside its 220 repeats a second, so the pitch stays at 220 Hz. Pull H1 to 0 with only H2 up and the SUM repeats 440 times a second: an octave up.',
+      'While H1 is on, every layer fits inside its 220 repeats a second, so the pitch stays at 220 Hz. With only H2 up, the SUM repeats 440 times a second: an octave up.',
       'Stronger upper harmonics make a brighter, edgier tone; fewer make it purer.',
     ],
     teaches: [

@@ -357,7 +357,7 @@ describe('3. every TRY THIS number is what the screen uses', () => {
     lines.push(...(G.MIKING_END_GUIDE.tryThis as string[]), ...(G.mikingHubGuide().tryThis as string[]));
     // Whole numbers only: a name such as "1ST NOTCH" is a label, not a number.
     const nums = lines.join('\n').match(/\b\d+(?:\.\d+)?\b/g) ?? [];
-    assert.deepEqual([...new Set(nums)].sort(), ['100', '20']);
+    assert.deepEqual([...new Set(nums)].sort(), ['20']); // D42 P3: the Patterns sweep says front to back, not “past 100°”
   });
   it('PAIR: "OVER 20 kHz" is the 1ST NOTCH cell once the first notch passes 20 kHz; it falls as Δt grows and climbs out of hearing as the paths meet (worked)', async () => {
     const tm = await import('../src/screens/lab/miking/engine/physics/twoMic.ts');

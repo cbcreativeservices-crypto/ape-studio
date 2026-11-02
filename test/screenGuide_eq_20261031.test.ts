@@ -247,7 +247,7 @@ describe('4. TRY THIS (and quoted) numbers are what the modules print', () => {
     for (const v of ['BOOST —', 'CUT / ATTENUATION —', 'FLAT —']) assert.ok(W.includes(v), v);
     for (const s of ['MID, +6.0 dB', '−6.0 dB', '0.0 dB']) assert.ok(t('whyEq').includes(s), s);
   });
-  it('Camera Analogy: fixed 2.00 kHz; locked lens 0.89 oct / Q 1.6; ZOOM 4.00 oct (Q 0.3) to 0.25 oct (Q 5.8)', () => {
+  it('Camera Analogy: fixed 2.00 kHz; locked lens 0.89 oct / Q 1.60; ZOOM 4.00 oct (Q 0.27) to 0.25 oct (Q 5.76)', () => {
     const C = mod('CameraAnalogy');
     assert.match(C, /const bwFromZoom = \(z: number\) => 4 - 3\.75 \* z;/);
     assert.match(C, /const LOCKED_ZOOM = 0\.83;/);
@@ -255,15 +255,22 @@ describe('4. TRY THIS (and quoted) numbers are what the modules print', () => {
     assert.match(C, /const ANALOGY_GAIN_DB = 9;/);
     const bw = (z: number) => 4 - 3.75 * z;
     assert.equal(bw(0.83).toFixed(2), '0.89');
-    assert.equal(M.qFromBwOct(bw(0.83)).toFixed(1), '1.6');
-    assert.equal(M.qFromBwOct(bw(1)).toFixed(1), '5.8');
+    assert.equal(M.qFromBwOct(bw(0.83)).toFixed(2), '1.60');
+    assert.equal(M.qFromBwOct(bw(1)).toFixed(2), '5.76');
     assert.equal(bw(1).toFixed(2), '0.25');
-    assert.equal(M.qFromBwOct(bw(0)).toFixed(1), '0.3');
-    assert.equal(M.qFromBwOct(bw(0)).toFixed(2), '0.27'); // the readout rounds 0.27 to 0.3
+    assert.equal(M.qFromBwOct(bw(0)).toFixed(2), '0.27');
     assert.equal(bw(0).toFixed(2), '4.00');
     assert.equal(M.fmtHz(2000), '2.00 kHz');
-    for (const s of ['2.00 kHz', 'Q stays 1.6', 'WIDTH 0.89 oct', 'WIDTH 0.25 oct, Q 5.8']) assert.ok(t('camera').includes(s), s);
-    for (const s of ['4.00 oct (Q about 0.27; the readout rounds it to 0.3)', '0.25 oct (Q 5.8)', '+9 dB']) assert.ok(all('camera').includes(s), s);
+    for (const s of ['2.00 kHz', 'Q stays 1.60', 'WIDTH 0.89 oct', 'WIDTH 0.25 oct, Q 5.76']) assert.ok(t('camera').includes(s), s);
+    for (const s of ['4.00 oct (Q 0.27)', '0.25 oct (Q 5.76)', '+9 dB']) assert.ok(all('camera').includes(s), s);
+  });
+  it('ratchet (D42 2026-11-01): Camera Analogy prints Q to two decimals, as Parametric Controls does — 0.27 at 4.00 oct never reads 0.3', () => {
+    const C = mod('CameraAnalogy');
+    assert.doesNotMatch(C, /q\.toFixed\([01]\)/);
+    assert.match(C, /format: \(\) => `zoom the camera · Q \$\{q\.toFixed\(2\)\}/);
+    assert.match(C, /formatShort: \(\) => `Q\$\{q\.toFixed\(2\)\}`/);
+    assert.match(C, /\{ k: 'Q', v: stage === 0 \? 'FIXED' : q\.toFixed\(2\) \}/);
+    assert.ok(!all('camera').includes('rounds it to 0.3'));
   });
   it('Parametric Controls: Q 0.3–12 → BW 3.70–0.12 oct; GAIN ±18; double-tap home prints +0.0 dB', () => {
     const P = mod('ParametricControls');

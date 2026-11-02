@@ -78,7 +78,7 @@ export function ReadinessMeter({
       <Text style={styles.counts}>
         {unreadable
           ? 'Your saved answers could not be read just now, so no figure is shown.'
-          : `${report.answeredRequired} of ${report.totalRequired} required decisions made`}
+          : `${report.answeredRequired} required decisions made`}
       </Text>
 
       {report.blockers.length > 0 ? (
@@ -131,7 +131,7 @@ export function ReadinessMeter({
 export function stageSignalLabel(stage: StageReadiness | null, unreadable?: boolean): string {
   const sig = stageSignal(unreadable ? null : stage);
   if (sig.pct === null || !stage) return 'progress could not be read just now';
-  const counts = `${stage.answeredRequired} of ${stage.totalRequired} required decisions, ${stage.answeredAll} of ${stage.totalAll} questions answered`;
+  const counts = `${stage.answeredRequired} required decisions made, ${stage.answeredAll} questions answered`;
   // A blocked stage is SAID blocked first, as it is drawn (2026-10-04).
   if (stage.blockers.length > 0) return `Blocked, ${blockerCount(stage)}, ${counts}`;
   return `${sig.pct} percent, ${STAGE_WORD[stage.state]}, ${counts}`;
@@ -184,7 +184,7 @@ export function StageProgressRow({
               <Text style={{ color: tint }}>
                 {stage.blockers.length > 0 ? blockerCount(stage) : STAGE_WORD[sig.state]}
               </Text>
-              {` · ${stage.answeredRequired} of ${stage.totalRequired} required · ${stage.answeredAll} of ${stage.totalAll} answered`}
+              {` · ${stage.answeredRequired} required · ${stage.answeredAll} answered`}
             </>
           ) : (
             'Could not be read just now'

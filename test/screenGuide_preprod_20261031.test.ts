@@ -362,7 +362,7 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(S, /finding: \{[^}]*borderLeftColor: colors\.amber/);
     assert.match(S, /findingBlocker: \{ borderLeftColor: colors\.red \}/);
     const st = g.stages.define as { seeing: string[]; control: string[] };
-    assert.ok(st.seeing.join(' ').includes('amber flagged or optional and blank') && st.seeing.join(' ').includes('dark grey not applicable'));
+    assert.ok(st.seeing.join(' ').includes('amber flagged (or optional, blank)') && st.seeing.join(' ').includes('dark grey not applicable'));
     assert.ok(st.control.join(' ').includes('WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged)'));
   });
   it('SCORE: each attention finding costs 0.02 (2 points), capped at 0.2 and at 40% of what is earned; a blocker caps the score at 99', () => {
@@ -370,7 +370,8 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(R, /const attention = findings\.filter\(\(f\) => f\.severity === 'attention'\)\.length;/);
     assert.match(R, /const penalty = Math\.min\(0\.2, attention \* 0\.02, base \* 0\.4\);/);
     assert.match(R, /export const BLOCKED_CEILING = 99;/);
-    for (const gd of [g.home, G.PRODUCTION_SCREEN_GUIDES.postprod.home]) assert.ok(gd.changes.join(' ').includes('Each flagged finding costs up to 2 points (20 max)'));
+    assert.ok(g.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max; an open blocker keeps it under 100 and Not Approved.'));
   });
   it('START: the input-list exercise is Music and Live only, and the guide says so', () => {
     const only = Object.fromEntries(LABS[LAB].stages.map((s: { stageId: string; activity: { onlyFor?: string[] } }) => [s.stageId, s.activity.onlyFor ?? null]));

@@ -83,7 +83,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p2: {
     seeing: [
       'THE PREP CHECKLIST: seven steps, from Name, order, color to Save the untouched version.',
-      'Under it, a DAW session window that tidies itself as you open each step.',
+      'Under it, a DAW (recording software) session window that tidies itself as you open each step.',
       'SEPARATE THE JOBS: recording, editing, producing, mixing and mastering, each named.',
       'A check about a quiet verse vocal, and goal chips at the foot.',
     ],
@@ -158,7 +158,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     teaches: [
       'Headroom — space between your peaks and the ceiling — matters more than any one number.',
       'Loudness biases judgment, so every comparison that changes level is matched first.',
-      'Every comparison in this lab is level-matched by measured RMS before you judge it.',
+      'Peaks that land together add, so tracks that are fine alone can clip as a pair.',
     ],
     tryThis: [
       'Vote on sound alone before you look at the meters, then play B, MATCHED against MIX A.',
@@ -330,7 +330,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'BONE DRY: the drawing reads NO SENDS: EVERY PART BONE DRY.',
-      'ONE SHARED ROOM: four sends (lead −10, snare −12, guitar −14, backing pad −12 dB) into one plate.',
+      'ONE SHARED ROOM: four sends (lead −10, snare −12, guitar −14, backing pad −12 dB) into one plate; KEYS stays dry.',
       'DROWNED: five sends near full level (0 to +2 dB) into the same plate — depth everywhere is depth nowhere.',
     ],
     teaches: [
@@ -513,7 +513,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Next: the Advanced Mixing lab picks up where this page ends.',
     ],
     tryThis: [
-      'Shape five tracks on YOUR CONSOLE, then play YOUR MIX: steps 2, 4, 5 and 6 tick together.',
+      'Shape five tracks on YOUR CONSOLE: step 2 ticks. Then play YOUR MIX: steps 4, 5 and 6 tick.',
       'Play YOURS, MONO and check that your anchor still leads with everything folded to the center.',
     ],
   },

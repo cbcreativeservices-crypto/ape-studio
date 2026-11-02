@@ -272,7 +272,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the head you are evening; the key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one color and SPREAD is under 10 ¢." />
+              <Landing looking="the head you are evening; the key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one color and SPREAD reads 10 ¢ or less." />
               <DrumStatus playing={tap.playing || strike.playing} pending={tap.pending || strike.pending} failed={tap.failed || strike.failed} rendering={tap.status === 'rendering' || strike.status === 'rendering'} idle="stopped · ▶ TAP a lug, ride TURN, ▶ TAP again; ▶ STRIKE to hear the whole drum" label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
               {shown ? <Feedback tone="info">{shown}</Feedback> : <Feedback tone={even.verdict === 'even' ? 'ok' : even.verdict === 'close' ? 'info' : 'warn'}>{even.message}</Feedback>}
               {guidedLeft ? <KeyButton label={`▶ SHOW ME A MOVE (${GUIDED_MOVES - guided} left)`} onPress={showMe} tint={colors.amber} /> : null}

@@ -268,7 +268,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>The stem contract: summed back together, the stems must REBUILD the approved mix. The proof is a null test — flip one side, sum, and listen to (or measure) what refuses to disappear.</Lead>
+      <Lead>The stem contract: summed back together, the stems must REBUILD the approved mix. The proof is a null test — flip the polarity of one version, sum, and listen to (or measure) what refuses to disappear.</Lead>
       <Card>
         <Eyebrow>RUN IT — REAL MATH ON THE REAL SESSION</Eyebrow>
         <Prompt>Two stems (rhythm · everything else — music and vocals) are rendered and summed, then measured against the full mix — first with a clean mix bus, then with a bus compressor on the FULL mix only.</Prompt>

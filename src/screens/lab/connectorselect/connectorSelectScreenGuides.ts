@@ -101,7 +101,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     ],
     tryThis: [
       'Switch between BALANCED MONO and STEREO PHONES and watch RING: Signal − (inverting, “cold”) becomes Right channel.',
-      'In the check, pick “The number of contacts on the plug”: the count is identical for all three jobs, so it cannot tell you.',
+      'In the check, pick “The number of contacts on the plug”: balanced, stereo and insert jacks all use three, so the count cannot tell you.',
     ],
   },
 
@@ -123,7 +123,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
       'RETENTION tells friction from a real lock — what keeps the plug in.',
     ],
     teaches: [
-      'How to identify the everyday analog connectors and what each may carry.',
+      'What each everyday analog connector looks like and what it may carry.',
       'The most common mistake made with each one.',
       'Builds on the same-plug page; next bench: loudspeaker connections.',
     ],
@@ -151,7 +151,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
       'The legacy 1/4-inch plug looks exactly like an instrument plug — only the cable tells them apart.',
     ],
     teaches: [
-      'How to identify loudspeaker connectors and their safety rules.',
+      'What each loudspeaker connector looks like, and its safety rules.',
       'Why amplifier outputs never go into inputs.',
       'Follows the analog bench; next: digital, data and MIDI.',
     ],
@@ -177,7 +177,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
       'MAY CARRY shows data, audio, power or control — sometimes several on one plug.',
     ],
     teaches: [
-      'How to identify USB, optical, HDMI, network, BNC and MIDI connectors.',
+      'What USB, optical, HDMI, network, BNC and MIDI connectors look like.',
       'Why the protocol decides compatibility.',
       'Ends Station 2; Station 3 asks what each connector really does.',
     ],
@@ -321,7 +321,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
       'SPEAKER OUTPUT INTO AN INPUT fails both signal and safety: it can overdrive and damage the input.',
     ],
     teaches: [
-      'How to feed powered and passive loudspeakers.',
+      'How powered and passive loudspeakers are fed.',
       'Why headphones and headsets differ by one contact.',
       'Next page: sources and data.',
     ],

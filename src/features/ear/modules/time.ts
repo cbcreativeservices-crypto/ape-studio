@@ -229,9 +229,9 @@ export const M12_POLARITY: EarModule = {
   phones: 'recommended',
   playbackNote: 'The low-end loss needs real LF; speaker-room phase is Wave lab turf.',
   // NEW COPY
-  listenFor: 'Both clips are the same two mics summed — in one, a copy is flipped. Listen for the low end going hollow or vanishing.',
+  listenFor: 'Both clips are the same two mics summed — in one, a copy is flipped. Listen for the low end thinning out or vanishing.',
   levels: 3,
-  levelNames: ['Identical copies — dramatic', '0.2 ms offset — hollow', '0.5 ms + 3 dB mismatch — subtle'],
+  levelNames: ['Identical copies — dramatic', '0.2 ms offset — thin', '0.5 ms + 3 dB mismatch — subtle'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const src = drumPattern(1, rng);
@@ -271,7 +271,7 @@ export const M12_POLARITY: EarModule = {
         reveal:
           level === 1
             ? 'One sum had a copy polarity-flipped — identical signals cancel COMPLETELY, so that clip is digital silence (not a playback fault). Level intentionally not re-matched here: the drop IS the lesson.' // NEW COPY
-            : `The flipped sum loses its low end (copies ${offsetMs} ms apart${mismatchDb ? ', 3 dB mismatched' : ''}) — hollow, not silent. A lone flip on ONE signal is rarely audible; the SUM is where polarity bites.`,
+            : `The flipped sum loses its low end (copies ${offsetMs} ms apart${mismatchDb ? ', 3 dB mismatched' : ''}) — thin, not silent. A lone flip on ONE signal is rarely audible; the SUM is where polarity bites.`,
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],

@@ -103,7 +103,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       key: 'listen', title: 'Louder is not better', rack: true,
       guide: {
         seeing: [
-          'The display: the waveform of the version on the glass, a gain-reduction strip, and the limiter faceplate — INPUT, CEILING, RELEASE, GR, or BYP when nothing is processed.',
+          'The display: the waveform of the version on the glass (THE MIX or LOUDER), a gain-reduction strip, and the limiter faceplate — INPUT, CEILING, RELEASE, GR, or BYP when nothing is processed.',
           'The bezel: PEAK, TRUE PK, LUFS, PLR (peak above loudness) and MATCH dB.',
           'The badge: an offline render with estimated meters, heard through an uncalibrated phone output.',
         ],
@@ -115,7 +115,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         changes: [
           'LOUDER’s limiter has its ceiling at −0.3 dBFS. It raises LUFS and shrinks PLR: less distance from peak to average.',
           'With MATCH on, LOUDER is turned down by the difference in loudness (in LU, 1 LU = 1 dB), so only the dynamics differ. MATCH dB shows by how much.',
-          'TRUE PK can read over 0 dBTP here on purpose: this limiter watches samples only, with no look-ahead.',
+          'TRUE PK can read over 0 dBTP here on purpose: this limiter checks only the samples, so peaks that form between samples get through.',
         ],
         teaches: [
           'Louder is not better — only louder. Extra level makes a version seem fuller and brighter.',
@@ -123,7 +123,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
           'Fair comparisons happen at matched loudness.',
         ],
         tryThis: [
-          'With MATCH LEVEL on, play THE MIX, then LOUDER, and listen to the kick and snare hits and the space between them.',
+          'With MATCH LEVEL on, tap ▶ MIX, then ▶ LOUDER, and listen to the kick and snare hits and the space between them.',
           'Compare the PLR cell for each version: LOUDER’s is smaller.',
           'Before switching MATCH off, turn your volume down: the warning card says how far LOUDER steps up.',
         ],
@@ -295,7 +295,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         changes: [
           'The amber pads in the drawing sit at the first-reflection points; corner traps handle the bass.',
-          'The listener sits on the center line, at the third corner of an equilateral triangle with the monitors. Where that falls front to back is found by measurement in each room.',
+          'The listener sits on the center line, at the third corner of an equilateral triangle with the monitors, away from the walls. A common start is about 38% of the way back from the front wall, refined by measuring.',
         ],
         teaches: [
           'The room is the last stage of the monitoring chain, and the first thing to get right.',
@@ -322,7 +322,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         changes: [
           'Lower levels: the ear loses bass (and a little treble) faster than 1 kHz, so the same file reads thin. Louder reads full.',
-          'PER DAY is 8 h+ below 85 dB and halves every 3 dB above it.',
+          'PER DAY is 8 h+ below 85 dB and halves every 3 dB above it. The limit is quoted in dBA; a C reading of music runs a few dB higher, so this errs on the safe side.',
           'READING: QUIET below 70, GOOD to 83, HOT from 84 to 88, UNSAFE from 89.',
         ],
         teaches: [
@@ -461,7 +461,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         tryThis: [
           'Pick STEREO and ride WIDTH from ×1.00 up to ×2.00: CORRELATION falls from 0.60 to 0.00.',
-          'Pick DYNAMICS: RATIO 10.5 : 1 turns a 0 dB input into −10.9 dB. Ride RATIO down to 1.0 : 1 and it reads 0.0 dB.',
+          'Pick DYNAMICS: RATIO 10.5 : 1 turns a 0 dB input into −10.9 dB. Ride RATIO down to 2.1 : 1, nearer the gentle ratios mastering often uses: OUT AT 0 IN reads −6.4 dB.',
         ],
       },
     },
@@ -933,7 +933,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
           'The client’s words set the limits: one record, a quiet song kept quiet, instrumentals for sync.',
         ],
         tryThis: [
-          'Compare Tide Table at −19.8 LUFS with Night Signal at −12.6: a 7.2 LU difference the client wants kept: the quiet song stays quiet.',
+          'Compare Tide Table at −19.8 LUFS with Night Signal at −12.6: a 7.2 LU gap. The client wants it kept, so the quiet song stays quiet.',
           'Find the track whose true peak sits closest to 0 dBTP: Night Signal, at −0.4.',
         ],
       },

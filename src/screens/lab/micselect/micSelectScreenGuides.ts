@@ -50,7 +50,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   // ── LESSON 1 · MEET THE MICROPHONE TYPES ─────────────────────────────────
   types: {
     seeing: [
-      'Twelve microphone types with photos: four named for how they turn sound into signal (dynamic, condenser, electret, ribbon), eight for their design or form, from large-diaphragm to contact.',
+      'Twelve microphone types with photos: four named for how they turn sound into signal (Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon), eight for their design or form, from Large-Diaphragm to Contact.',
       'The amber banner: these are NOT equivalent categories — a shotgun is usually a condenser.',
       'The card under the grid: WHAT IT IS, MAJOR CHARACTERISTICS, TYPICAL APPLICATIONS, IMPORTANT LIMITATION.',
     ],
@@ -216,7 +216,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   // ── LESSON 7 · FORM FACTOR MATTERS ───────────────────────────────────────
   form: {
     seeing: [
-      'Seven rows, each a mic body and its typical jobs: Handheld, Lavalier, Headworn, Shotgun, Boundary, Pencil / SDC, Large-diaphragm studio.',
+      'Seven rows, each a mic body and its typical jobs: Handheld, Lavalier, Headworn, Shotgun, Boundary, Pencil / SDC (small-diaphragm condenser), Large-diaphragm studio.',
       'Below: the lesson banner.',
     ],
     control: [
@@ -344,13 +344,13 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
 // ── The what's-left end screen (with the understanding check) ──────────────
 export const MICSEL_END_GUIDE: ScreenGuide = {
   seeing: [
-    'LAB COMPLETE once every step is opened, the mic locker (marked Optional) included, and the check is passed — its CHECK row is the last on the list. Until then, WHAT’S LEFT listing the rest.',
+    'The title reads WHAT’S LEFT, listing what is still to do, until every step is opened (the mic locker too, though marked Optional) and the check is passed; then it reads LAB COMPLETE. The CHECK row comes last.',
     'CHECK YOUR UNDERSTANDING: four questions on the whole lab — categories, lectern rumble, self-noise, and a label versus the specs.',
     'REVIEW ▾ lists the lessons already opened, and the check once passed.',
   ],
   control: [
     'Tap an answer: CORRECT and why, or NOT QUITE — TRY ANOTHER with the reason; pick again straight away.',
-    'Tap a lesson row to jump to it; the CHECK row moves this screen up to the check, which sits on it. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
+    'Tap a lesson row to jump to it; the CHECK row scrolls this screen to the questions. PRACTICE AGAIN FROM THE START reopens Lesson 1; DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
     'A lesson counts once it is opened — progress on this device, not a grade.',

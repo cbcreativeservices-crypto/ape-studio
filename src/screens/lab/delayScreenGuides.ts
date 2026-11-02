@@ -55,13 +55,13 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     ],
     control: [
       '▶ in the header, or a tap on the glass, plays the source through the delay; ■ stops it. Every control works while it plays.',
-      'The fader is TIME, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0% to 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
+      'The fader is TIME, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
       'Long-press a key or a readout for its lesson entry. The ⓘ at the end of the readouts explains the display.',
       '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES below: DESIGNED RESPONSE (the echo pattern as stems), THE AUDIO PATH, two CHECK YOURSELF questions, ⓘ GUIDED LESSON.',
     ],
     changes: [
       'TIME is the gap from a sound to its first repeat, and between repeats: more TIME, wider spacing.',
-      'FDBK feeds each repeat back in. At 50% each repeat is half the one before, so FDBK sets how long the trail lasts, never the spacing.',
+      'FDBK feeds each repeat back in. At 50% each repeat is half as tall (6 dB down), so FDBK sets how long the trail lasts, never the spacing.',
       'MIX blends dry and repeats: at 100% WET the grey dry click leaves OUT.',
       'REPEAT DAMPING dulls every pass after the first; PING-PONG sends repeats left, right, left.',
     ],
@@ -71,7 +71,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'It builds on the Echo Laboratory in Wave Physics. Chorus and flanger, in Modulation, are very short delays that move.',
     ],
     tryThis: [
-      'With FDBK under 75%, slide TIME to the top: the readout says 500 ms, and the caption under DESIGNED RESPONSE in LAB NOTES names a quarter-note at 120 BPM (60,000 ÷ 500).',
+      'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: the readout says 500 ms; the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
       'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the grey dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
       'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE letters one click’s repeats L, R, L.',
     ],
@@ -97,7 +97,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     teaches: [
       'The words for a delay: delay time, feedback, wet / dry, slapback, ping-pong, damping.',
       'How to turn a tempo into a delay time, for a quarter, an eighth or a dotted eighth note.',
-      'Why repeats are usually kept behind the dry sound, and darker than it.',
+      'Why repeats are usually kept quieter than the dry sound, and darker than it.',
       'The reference behind EXPLORE and the CHECK tab.',
     ],
     tryThis: [

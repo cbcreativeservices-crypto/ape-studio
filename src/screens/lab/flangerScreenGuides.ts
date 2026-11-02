@@ -53,7 +53,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     control: [
       '▶ at the top right (or a tap on the display) plays the noise through the flanger; ■ stops it.',
-      'CENTER fader (0.50–5.0 ms, starts at 2.0 ms): the delay the sweep moves around. Riding it by hand is how tape flanging began.',
+      'CENTER fader (0.50–5.0 ms, starts at 2.0 ms): the delay the sweep moves around. Named for tape: a thumb on a reel’s flange (rim) slowed one of two copies.',
       'SWEEP: RATE (0.1 Hz, 0.2 Hz JET, 1 Hz or 5 Hz WARBLE) is how fast the notches move; DEPTH (30%, 50% or 90%) is how far.',
       'FDBK (FEEDBACK): 0%, 40%, 70% METALLIC or −70% HOLLOW — how much output is fed back in. MIX: 50% EVEN (dry and delayed copy at equal level) or 100%. SOURCE: PINK NOISE or WHITE NOISE.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
@@ -66,7 +66,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     teaches: [
       'A flanger is a very short, moving delay mixed with the dry sound. Its notches are evenly spaced in Hz: spacing = 1 ÷ delay.',
       'A shorter delay spreads them wider; the moving sweep is what you hear as the jet.',
-      'Second Modulation lab: after Chorus (the same idea, longer delay), before Phaser (uneven notches, no delay). Each picture is a teaching model.',
+      'Second Modulation lab: after Chorus (the same idea, longer delay), before Phaser (uneven notches from filters, no delay line). Each picture is a teaching model.',
     ],
     tryThis: [
       'Drag CENTER from 2.0 ms down to 0.50 ms: the caption under DESIGNED RESPONSE goes from notches every 500 Hz to every 2000 Hz, and the notches on OUT spread apart.',

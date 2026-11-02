@@ -56,7 +56,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Tap ⓘ beside any page’s title to have that page explained.',
     ],
     changes: [
-      'Choosing a part lights it in cyan and swaps the colour key in the card for that part’s role.',
+      'Choosing a part lights it in cyan and swaps the color key in the card for that part’s role.',
       'The numbers follow the airflow on purpose: the power (lungs), the pipe (trachea), the source (larynx), the resonators and their valve (throat, soft palate, nose), then the parts that shape the sound.',
       'The next page plays these parts in the same order.',
     ],
@@ -181,7 +181,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The next two pages look closely at plosives and sibilance.',
     ],
     tryThis: [
-      'Tap FRICATIVES, then NASALS: the colour jumps from the top of the picture (hiss) to the bottom (nasal hum).',
+      'Tap FRICATIVES, then NASALS: the color jumps from the top of the picture (hiss) to the bottom (nasal hum).',
       'Tap PLOSIVES: a black gap marked closure, then the burst marked release, then the vowel.',
       'Tap AFFRICATES: closure, then hiss, then vowel. A stop released straight into a fricative.',
     ],
@@ -313,7 +313,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'Spectrum problems add or remove energy: an orange band marks energy that should not be there (EXCESS, HONK); a blue band marks energy lost (LOST).',
       'Waveform problems happen in time: an air blast swamping the voice, sharp single ticks, a shapeless breath rush.',
-      'Every FIX starts before any processing: with the talker or at the microphone (placement, distance, a filter or windscreen, water, how you breathe).',
+      'Every FIX starts before any processing: with the talker or at the microphone (placement, distance, a filter or windscreen, water, breathing).',
     ],
     teaches: [
       'What each common voice problem does to the spectrum or the wave, and the usual first fix for it.',

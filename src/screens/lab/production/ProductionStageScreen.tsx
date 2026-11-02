@@ -367,7 +367,7 @@ export function ProductionStageScreen() {
           <View style={styles.progressRow}>
             <View style={[styles.dot, { backgroundColor: STATE_TINT[report.state] }]} />
             <Text style={styles.progressText}>
-              {`${report.answeredRequired} of ${report.totalRequired} required decisions made · ${report.answeredAll} of ${report.totalAll} questions answered`}
+              {`${report.answeredRequired} required decisions made · ${report.answeredAll} questions answered`}
             </Text>
           </View>
 

@@ -222,7 +222,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Nothing moves here: each card answers the same two questions — does audio pass THROUGH it, and does it SUM channels or COPY them?',
     ],
     teaches: [
-      'Which console tool does which job, and why four of them are confused daily.',
+      'Which console tool does which job, and why Subgroup, DCA / VCA, Auxiliary send and Matrix output are so often confused.',
       'Chapter 4; ROUTE mode puts every one of these on a live console.',
     ],
     tryThis: [
@@ -263,7 +263,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Two subs a room-width apart add down the middle and cancel at some frequencies off to the sides — low notes are meters long.',
-      'Cardioid and end-fire arrays use delay (and, for cardioid, a flipped box) so the glow stops behind the subs and stays in front.',
+      'Cardioid and end-fire arrays use delay (cardioid also turns one box backward and flips its polarity), so the glow stops behind the subs and stays in front.',
     ],
     teaches: [
       'Why sub placement is mostly geometry: fewer separated sources, boundaries used on purpose.',
@@ -371,7 +371,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'LISTENER: 2 m, 10 m or 30 m from the cabinet.',
     ],
     changes: [
-      'Below the band the amplifier is UNDER — pushed to the cabinet’s level it clips, which kills tweeters. Well above it, OVER: safe only with the limiter set.',
+      'Below the band the amplifier is UNDER — pushed to the cabinet’s level it clips, and clipping can burn out tweeters. Well above it, OVER: safe only with the limiter set.',
       'Every doubling of power adds 3 dB; every doubling of distance costs 6 dB. That is why coverage is solved with placement before watts.',
     ],
     teaches: [
@@ -437,7 +437,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'FLOWN: lift the mains. FILLS: add front fills on the stage lip.',
     ],
     changes: [
-      'Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls.',
+      'Narrow coverage puts more level on its axis, so it reaches further and overlaps less; wide coverage fills a wide room and paints the side walls.',
       'Toeing in tightens the overlap into the middle. Flown mains fire over the front rows, so they go dark; front fills bring them back.',
     ],
     teaches: [
@@ -727,7 +727,7 @@ export const SS_BUILD_GUIDES: Record<string, ScreenGuide> = {
     9,
     'a park stage for two thousand, ninety meters deep.',
     'Mains, subs, front fills and delay loudspeakers left and right — ALL through the processor, every passive box amplified.',
-    'Why fills and delays go through the processor: alignment is what makes six boxes one system.',
+    'Why fills and delays go through the processor: alignment is what makes many boxes one system.',
     [
       'Place the delay towers, then cable them from the processor rather than straight from the console.',
       'Read the outputs requirement and give each front fill MTX 2 · FILLS, MAIN MONO or its own side’s main.',
@@ -984,7 +984,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Turning a later stage down only makes the clipped signal quieter — the distortion happened at the preamp.',
-      'The amplifier’s input attenuator at −18 makes the amplifier the last stage to clip.',
+      'In this lab the amplifier’s input attenuator at −18 makes it the last stage to clip; real systems set it from the amplifier and processor specs.',
     ],
     teaches: [
       'How a whole system is set from microphone to loudspeaker: preamp first, unity through the middle, headroom at every stage.',
@@ -1063,7 +1063,7 @@ function faultGroup(title: string, blurb: string, sample: string): ScreenGuide {
       'GRADE: ✓ for the right diagnosis, ✓✓ when every probe also went forward. A probe backward is recorded, but not as a forward walk.',
     ],
     teaches: [
-      `How faults in this group show themselves, and how the source-forward walk finds them — ${sample}`,
+      `How faults in this group show themselves, and how the source-forward walk finds them. ${sample}`,
       'TROUBLESHOOT builds on LEARN’s last chapter, the source-forward method.',
     ],
     tryThis: [
@@ -1094,11 +1094,11 @@ export const SS_TROUBLESHOOT_GUIDES: Record<string, ScreenGuide> = {
       'Say where a walk should start for “one vocal is dead, the band is fine”.',
     ],
   },
-  'Dead signal': faultGroup('Dead signal', 'nothing, or nothing from one place. The walk finds where the signal stops.', 'a station that reads NO SIGNAL right after one that reads OK.'),
-  'Level, noise and distortion': faultGroup('Level, noise and distortion', 'it plays, but wrong: clipping, hum, squash, a rattle.', 'the station where clean turns dirty.'),
-  Routing: faultGroup('Routing', 'the signal exists and arrives somewhere — just not where it should.', 'usually the console, sending to the wrong place.'),
-  'Time, polarity and crossover': faultGroup('Time, polarity and crossover', 'everything is present; the pieces disagree with each other.', 'the processor and the loudspeakers are the stations to read.'),
-  'Digital, network and acoustic': faultGroup('Digital, network and acoustic', 'clicks, dropouts or a ring.', 'solved by discipline, not by swapping boxes.'),
+  'Dead signal': faultGroup('Dead signal', 'nothing, or nothing from one place. The walk finds where the signal stops.', 'Look for a station that reads NO SIGNAL right after one that reads OK.'),
+  'Level, noise and distortion': faultGroup('Level, noise and distortion', 'it plays, but wrong: clipping, hum, squash, a rattle.', 'Look for the station where clean turns dirty.'),
+  Routing: faultGroup('Routing', 'the signal exists and arrives somewhere — just not where it should.', 'The cause is usually the console, sending to the wrong place.'),
+  'Time, polarity and crossover': faultGroup('Time, polarity and crossover', 'everything is present; the pieces disagree with each other.', 'The processor and the loudspeakers are the stations to read.'),
+  'Digital, network and acoustic': faultGroup('Digital, network and acoustic', 'clicks, dropouts or a ring.', 'They are solved by a careful walk, not by swapping boxes.'),
 };
 
 /** The guide for page `index` of a mode, by the page's title (the check page

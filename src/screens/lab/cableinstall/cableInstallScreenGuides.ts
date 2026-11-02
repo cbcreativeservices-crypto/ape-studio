@@ -152,7 +152,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     seeing: [
       'A · BEND RADIUS: one corner, four cables — mic, twisted-pair data, coaxial, fiber-optic — each with its own SIMULATED SPEC card.',
       'The drawing shows the bend; a dashed arc marks the spec minimum. Too tight, it glows red with a strain mark.',
-      'B · PULLING: a tension meter, 0 to 150, limit at 100. C · RESTRAINT: a strap on a four-cable bundle, zone LOOSE, SECURE or EXCESSIVE.',
+      'B · PULLING: a tension meter on a relative scale, 0 to 150, limit at 100. C · RESTRAINT: a strap on a four-cable bundle, zone LOOSE, SECURE or EXCESSIVE.',
     ],
     control: [
       'BEND TIGHTNESS fader per cable, or − EASE / + TIGHTEN (each tap about 1.5 diameters). Its readout: the bend in cable diameters, then the spec.',
@@ -193,7 +193,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Credit: pass the sort and meet the spacing spec.',
     ],
     changes: [
-      'Sag grows fast with the unsupported span (in real cable, with its square). Past the limit the drawing shows its deepest dip and glows strained.',
+      'Sag grows with the square of the unsupported span: double the span, four times the dip. Past the limit the drawing shows its deepest dip and glows strained.',
       'The spec allows at most 4 units between supports; a longer span draws strained. Extra supports pass, but cost hardware.',
       'Pipes, tiles, grid wires and other systems’ conduit are rejected: they belong to another trade or hold up the ceiling.',
     ],
@@ -264,9 +264,9 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Temporary changes the solution, not the standard of care. After Stages 3–5, Stage 8 goes above the ceiling.',
     ],
     tryThis: [
-      'In scenario 2, turn X-RAY WALL VIEW on at the unknown wall: studs appear, but nothing shows a rating. Then pick Verify the assembly before penetrating.',
+      'In scenario 2, turn X-RAY WALL VIEW on at the unknown wall: studs appear, but nothing shows a rating. Then pick “Verify the assembly before penetrating”.',
       'At 3 · THE DOORWAY, before you pick, weigh “Wedge the door open for the event”: if that door is a fire door, a wedge defeats it.',
-      'At 4 · SHARP EDGE, weigh Wrap the edge in tape and move on against Install a bushing / grommet on the opening: tape creeps and quits; the edge stays.',
+      'At 4 · SHARP EDGE, weigh “Wrap the edge in tape and move on” against “Install a bushing / grommet on the opening”: tape creeps and quits; the edge stays.',
     ],
   },
 

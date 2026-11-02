@@ -48,6 +48,9 @@ import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const AUDIO_LOW_HZ = 220; // the lower tone of the raised pair (owner 2026-10-09)
+/** Two pure tones closer than this are heard as BEATING (a slow wah-wah); wider
+ *  apart, a detuned pair is a slightly-off interval with nothing to beat (D42). */
+const BEAT_MAX_HZ = 20;
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
 // Oscillator FREQUENCY range (owner 2026-08-23, tightened same day): each
@@ -377,6 +380,11 @@ export function HarmonographLabScreen() {
 
   // What PLAY sounds right now on a stereo engine (the caption shows it).
   const soundNow = stereoReady ? soundPair(n1, n2, detune, rotary) : null;
+  // A detuned pair close enough to BEAT (D42): the two tones are shown to one
+  // decimal so "220.0 / 226.6 Hz … 6.6 Hz apart" adds up on screen.
+  const beatNear = !!soundNow && detune !== 0 && !rotary && Math.abs(soundNow.fL - soundNow.fR) < BEAT_MAX_HZ;
+  const pairHz = (hz: number) => (beatNear ? hz.toFixed(1) : String(Math.round(hz)));
+  const beatGapHz = soundNow ? Math.abs(Number(soundNow.fL.toFixed(1)) - Number(soundNow.fR.toFixed(1))).toFixed(1) : '';
   const hz1 = ratio.n1 * BASE_F0;
   const hz2 = ratio.n2 * BASE_F0;
   const hz3 = n3 * BASE_F0;
@@ -683,12 +691,21 @@ export function HarmonographLabScreen() {
           <>
             <Text style={styles.caption}>
               {`The pendulums swing below hearing (${fmtHz(hz1)} : ${fmtHz(hz2)}), so PLAY (header ▶) raises BOTH by the same factor into hearing range — ` +
-                `${Math.round(soundNow.fL)} Hz on LEFT, ${Math.round(soundNow.fR)} Hz on RIGHT, hard-panned stereo. The exact ratio the machine is drawing` +
+                `${pairHz(soundNow.fL)} Hz on LEFT, ${pairHz(soundNow.fR)} Hz on RIGHT, hard-panned stereo. The exact ratio the machine is drawing` +
+                // Two PURE tones beat only when they sit a few Hz apart (a
+                // detuned unison: 220 vs 222.2 Hz → 2.2 beats a second; up near
+                // 20 Hz apart it is a fast flutter, so no "slow"). A detuned
+                // fifth or octave has no shared partials to beat: at +3% it is
+                // about 51 cents out of tune, and only the FIGURE drifts (D42).
                 (detune !== 0 && !rotary
-                  ? `, detune included: the slow wah-wah you hear is BEATING — the same drift the rose shows as precession.`
+                  ? beatNear
+                    ? `, detune included: the two tones sit ${beatGapHz} Hz apart, so the wah-wah you hear is BEATING — the same drift the figure shows as precession.`
+                    : matched
+                      ? `, detune included: the ${matched.interval.toLowerCase()} sounds out of tune. The figure shows that near-miss as a slow drift (precession).`
+                      : `, detune included — a custom ratio, between the simple intervals; the figure drifts and never quite closes.`
                   : matched
                     ? ` — a ${matched.interval.toLowerCase()}.`
-                    : ` — a custom ratio, between the simple intervals.`)}
+                    : ` — a custom ratio, between the simple intervals; the figure drifts and never quite closes.`)}
             </Text>
             <Text style={styles.advisory}>
               {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated. Speaker high-pass (${SPEAKER_HPF_HZ} Hz) — use headphones for the full, panned interval.`}

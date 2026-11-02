@@ -57,7 +57,7 @@ export const POSTPROD_START_GUIDE: ScreenGuide = {
     'Every stage asks what a real handover needs written down.',
   ],
   tryThis: [
-    'Tap Podcast or spoken word: the project opens at 0 / 100, Not Approved, and NEXT OUTSTANDING points at Project name in Stage 1 · Receive the Project.',
+    'Tap Podcast or spoken word: the project opens with a readiness score of 0 / 100, Not Approved, and NEXT OUTSTANDING points at Project name in Stage 1 · Receive the Project.',
     'Then tap + NEW PROJECT and pick Music recording: that project’s Stage 1 delivery specification has no Frame rate question.',
   ],
 };
@@ -77,7 +77,7 @@ export const POSTPROD_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'The score counts decisions made, not screens opened.',
-    'Each flagged finding costs up to 2 points (20 max); an open blocker keeps it under 100 and Not Approved.',
+    'Flagged findings cost up to 2 points each, 20 max; an open blocker keeps it under 100 and Not Approved.',
     'Fixed or accepted, a blocker clears; accepted ones go to PROCEEDING WITH ACCEPTED CONDITIONS and print in the package.',
     'Approved With Documented Conditions: every required decision made, no blocker, but a condition accepted or something flagged.',
   ],
@@ -121,7 +121,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     control: CONTROL,
     changes: [
       'Sources wiped or reused before the copy was proven is a blocker; a file count alone never clears it.',
-      'A file count is not verification: a checksum compares every byte; equal sizes catch a truncated file; a full playback catches what is audible.',
+      'A file count is not verification: a checksum (a fingerprint of every byte) catches any change; equal sizes catch truncation; full playback catches audible faults.',
       'One copy is not a backup; mixed sample rates or duplicate filenames are flagged. Corrupted, truncated or missing files with no plan are a blocker.',
     ],
     teaches: [
@@ -210,7 +210,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Many problems that sound like balance problems are routing problems in disguise.',
-      'Prove the stems recombine into the approved mix before anyone else finds out they do not.',
+      'Prove the stems recombine into the approved mix. A null test plays them against the mix with polarity flipped: if they match, the sum is silence.',
       'Stage 6: ends Chapter 2; Stage 7 finishes from this print.',
     ],
     tryThis: [
@@ -353,7 +353,7 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     control: ACTIVITY_CONTROL,
     changes: ACTIVITY_CHANGES,
     teaches: [
-      'More limiting is what made this file too loud and too flat: back it off, then set the level with plain gain.',
+      'Heavy limiting made this file too loud and too flat: ease it off, then set the level with plain gain.',
       'Measure the exported deliverable, not the session.',
       'Practice for Stage 7, Finish to Specification.',
     ],

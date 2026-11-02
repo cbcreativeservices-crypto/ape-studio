@@ -45,8 +45,8 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
   explore: {
     seeing: [
       'Nine units in this rack’s fixed order: EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
-      'Lit units show their setting; dark ones read bypassed. Playing, a lit COMP, GATE or LIMIT shows GR (gain reduction: dB turned down) and lights its LEDs.',
-      'Readouts: SRC, CHAIN (units in), SCENE (scenario short name, e.g. SQUASH, or CUSTOM), OUT (LIVE or IDLE).',
+      'Lit units show their setting; dark ones are bypassed. While it plays, a lit COMP, GATE or LIMIT shows GR (gain reduction: dB turned down) and lights its LEDs.',
+      'Readouts: SRC, CHAIN (units in), SCENE (the scenario, e.g. SQUASH, or CUSTOM), OUT (LIVE or IDLE).',
     ],
     control: [
       '▶ in the header plays the chain; ■ stops it. All bypassed, you hear the source dry. SOURCE key: CLICK 90, PINK NOISE or SINE 220.',

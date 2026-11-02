@@ -322,7 +322,9 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.ok(pp(0.83).idleCurrent <= 0.08 && pp(0.84).idleCurrent > 0.08, 'OVERBIAS from 84%');
     assert.ok(pp(0.9).idleCurrent > 0.08 && !pp(0.9).crossoverNotch);
     const t = guideOf('bias', 'pushpull');
-    assert.match(t.changes.join(' '), /from 44% the notch is gone[\s\S]*From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8\.1% — just past the 8% limit\./);
+    assert.match(t.changes.join(' '), /from 44% the notch is gone[\s\S]*From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8\.1%, just past the 8% ceiling that YOUR TASK sets\./);
+    // ...and YOUR TASK really states that 8% ceiling (D42 P3: the guide names where the limit comes from).
+    assert.match(read('src/screens/lab/amp/modules/mod3Bias.tsx'), /YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region \(idle current ≤ 8% relative\)\./);
     assert.match(t.tryThis.join(' '), /start \(10%\) HANDOFF reads NOTCH[\s\S]*44%: HANDOFF reads CLEAN, with IDLE at 4\.2%[\s\S]*90%: HANDOFF reads OVERBIAS[\s\S]*SUPPLY climbs from 63% to 76%/);
     // Review round 2026-10-31: a whole-number IDLE printed 8% on BOTH sides of
     // the 8% limit (84%–88% read OVERBIAS beside "8%"), so IDLE now shows one

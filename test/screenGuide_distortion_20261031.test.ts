@@ -253,7 +253,7 @@ describe('4. the numbers follow from the lab’s own math', () => {
       assert.ok(Math.max(...cycle('soft', d).map(Math.abs)) <= 1 + 1e-12);
     }
     assert.match(DISTORTION_SCREEN_GUIDES.explore.tryThis[1], /bottom, which edges just past 0 dBFS/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing[1], /0 dBFS, where HARD and SOFT stop/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing[2], /0 dBFS, where HARD and SOFT stop/);
     assert.doesNotMatch(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /the ceiling/);
   });
   it('EXPLORE TRY THIS 3: HARD CLIP +24 dB at 50% PARALLEL peaks near 0.55 — about half the 0 dBFS height', () => {

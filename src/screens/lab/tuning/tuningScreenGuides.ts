@@ -165,7 +165,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     changes: [
       'At 5/4 the two partials meet: 4 × 5/4 = 5. PARTIALS Δ reads 0 Hz — no beating.',
       'Move the third and the partials part. Their difference in hertz is the beat rate: the sound swells and fades that many times a second.',
-      'A small change in the interval makes a larger change up the ladder.',
+      'The same cents gap is more hertz higher up, so higher pairs of partials beat faster.',
     ],
     teaches: [
       'Why one tuning ratio makes upper harmonics coincide and another makes them beat.',
@@ -247,7 +247,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     ],
     changes: [
       'Small ratios give pure chords: C, E, G = 4 : 5 : 6.',
-      'KEEP measures four intervals the new key needs, using the fixed pitches. IMPURE counts the ones that miss.',
+      'KEEP leaves the C-major pitches where they are and tests four intervals the new key needs. IMPURE counts the ones that miss.',
       'RETUNE rebuilds the set: the lower lane shows which notes move and which are new.',
     ],
     teaches: [
@@ -304,7 +304,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'D: NOTES reveals the scale; ▶ SCALE plays it. E: PLAY a normal fifth or the wolf. ■ STOP on every part.',
     ],
     changes: [
-      'Narrow every fifth a little and four of them, less two octaves, make a pure 5/4 third.',
+      'Narrow every fifth a little: stack four of them, drop two octaves, and you land on a pure 5/4 third.',
       'The fifth that does it is ⁴√5, about 5.38 ¢ narrower than pure.',
       'The leftover gathers in one closing fifth: the wolf.',
     ],
@@ -361,7 +361,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'A / B: pick an EXAMPLE and SYSTEM B, then ▶ A, ▶ B or A → B; also HEAR THE SAME NOTE MOVE — E over a fixed C in three systems. ■ STOP silences.',
     ],
     changes: [
-      'Same C, same keys, same sounds: only the ratio given to each note changes.',
+      'Same C, same keys, same instrument tone: only the ratio given to each note changes.',
       'REF moves every hertz together; the ratios and the VS EQUAL bars stay put.',
     ],
     teaches: [

@@ -256,7 +256,7 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     }
     // live: the Nyquist clamp never bites inside the fader range (13.5 × 300 = 4,050 Hz)
     assert.ok(13.5 * 300 < 22050 / 2);
-    assert.match(g.explore.changes[0], /axis follows F0: bands stay put/);
+    assert.match(g.explore.changes[0], /The display rescales with F0, so bands stay put/);
     assert.match(g.live.control[2], /the axis follows it, so the markers keep their places/);
     assert.doesNotMatch(textOf(GUIDES.explore), /F0 slides them/);
   });

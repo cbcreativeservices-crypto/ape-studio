@@ -77,7 +77,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     teaches: [
       'A mic does not hear equally in every direction: its pattern is a map of sensitivity.',
       'A null is a tool — aim it at what you do not want, like a monitor wedge behind a cardioid.',
-      'OMNI has no null: natural sound, no feedback protection.',
+      'OMNI has no null: natural sound, but no direction to aim away from a monitor.',
       'Next, DISTANCE adds the room. HAND GRIP later shows a hand erasing the null.',
     ],
     tryThis: [
@@ -164,7 +164,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'The model adds a cut above 2 kHz that grows with the angle, so @8 kHz falls faster than @100 Hz.',
     ],
     teaches: [
-      'Off-axis sound is duller, not only quieter: the tone changes before the level does.',
+      'Off-axis sound is duller, not only quieter: the highs fall away faster than the lows.',
       'Why a singer drifting off the mic sounds muffled first.',
       'Smooth off-axis behavior is a mark of a good microphone.',
       'Closes the placement arc (POLAR, DISTANCE, PROXIMITY). Next, STEREO uses two mics.',

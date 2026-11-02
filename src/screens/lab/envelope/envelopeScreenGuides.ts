@@ -74,7 +74,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Attack, Decay, Hold and Release set the total length; Sustain does not. Under 15 ms the attack reads as a transient; from 120 ms the sound swells in.',
     ],
     teaches: [
-      'The envelope: a sound’s level over time, from silence back to silence, in four stages.',
+      'The envelope: a sound’s level over time, from silence back to silence, in four stages (Hold here sets how long the sustain lasts).',
       'Attack, decay and release are times; sustain is a level.',
       'Rise time (10→90 %) measures an onset, and is shorter than the attack.',
       'The lab’s first page; the Gallery next shows real sound shapes. It follows Modular Synth, where an ADSR shaped a synth note.',

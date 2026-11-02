@@ -81,7 +81,7 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
   teaches: [
     'What a style’s audience listens for, and where its mix priorities start.',
     'Every value is a suggested starting point, not a rule: match a reference in the style and adjust to the song, the artist and the room.',
-    'Live levels are typical show levels; the WHO note gives the safe-listening limit.',
+    'Live levels are typical show levels; the WHO (World Health Organization) note gives the safe-listening limit.',
   ],
   tryThis: [
     'Open EQ starting points: each row card starts with the source, then Cut, Boost and Notes lines.',

@@ -54,13 +54,13 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'In LAB NOTES, the stems H1–H12: drag one up or down; tap for its card and ▶ SOLO; double-tap to reset it; long-press for phase, POLARITY +180° and MUTE. Then GROUPS & OVERLAYS, SOLO or MUTE ODD and EVEN, NORMALIZE, SNAPSHOT A, A/B GHOST.',
     ],
     changes: [
-      'All harmonics are whole-number multiples of F0 and move with it, but the axis follows F0: bands stay put; their labels and lit keys change.',
+      'Harmonics are whole-number multiples of F0. The display rescales with F0, so bands stay put while their labels and lit keys change.',
       'A preset or stem drag changes the balance — the timbre — and THD, CREST, SLOPE and the wave follow.',
       'Phase shifts a harmonic in time: the wave and CREST change; levels and THD do not.',
       'LIN spaces harmonics evenly; LOG ♪ crowds them upward: intervals shrink up the series.',
     ],
     teaches: [
-      'Timbre is a harmonic recipe: which ones, how strong. Odd only: square family. All: the saw.',
+      'Timbre is a harmonic recipe: which ones, how strong. Odd only: square, triangle. All: the saw.',
       'THD: overtone strength next to the fundamental. CREST: how peaky the wave is. SLOPE: how fast overtones fade — steeper is darker.',
       'The ear follows levels far more than phases: the spectrum shows timbre better than the shape.',
       'After Oscillators and Noise; FM Synthesis is next. Clip recipes preview the Distortion lab.',

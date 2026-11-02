@@ -59,8 +59,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'The glass, in a dB VIEW (level in decibels): grey clicks come in on IN ▸ and pass the green REVERB stage. ▸ OUT redraws from the left at each click; its ruler counts seconds since then.',
-      'On OUT: the grey dry click, then the amber wash falling as a straight slope. Dashed guides sit 30 dB apart; the dimmer line is the sweep before.',
+      'The glass, in a dB VIEW (level in decibels): gray clicks come in on IN ▸ and pass the green REVERB stage. ▸ OUT redraws from the left at each click; its ruler counts seconds since then.',
+      'On OUT: the gray dry click, then the amber wash falling as a straight slope. Dashed guides sit 30 dB apart; the dimmer line is the sweep before.',
       'Readouts: RT60, PRE, MIX. The strip under them says this is a TEACHING MODEL.',
     ],
     control: [
@@ -82,7 +82,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'With SOURCE on CLICK 60, slide RT60 down to 0.40 s: on OUT the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.',
-      'Open PRE-DLY and pick 60 ms: on OUT the wash now jumps up nearly one 100 ms tick after the grey click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
+      'Open PRE-DLY and pick 60 ms: on OUT the wash now jumps up nearly one 100 ms tick after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
       'Bring RT60 back to about 1.5 s, open DAMP and pick DARK 2k: the wash now nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put: it draws RT60 alone.',
     ],
   },
@@ -139,7 +139,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       'The same ideas carry into mixing: placing a sound near or far.',
     ],
     tryThis: [
-      'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the grey click and the amber wash on OUT.',
+      'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the gray click and the amber wash on OUT.',
       'Also on EXPLORE: slide RT60 and watch DESIGNED RESPONSE. On its fixed time axis the marker slides along the dashed −60 line, near the left at 0.40 s and near the right at 6.0 s.',
     ],
   },

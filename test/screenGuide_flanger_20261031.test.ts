@@ -280,7 +280,11 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
     assert.ok(CFG.includes("wrongHint: 'Step FDBK from 0% to 70% METALLIC and watch the peaks between the notches on OUT rise above the dotted input line.'"));
     // the card's answer/reveal follow the maths: peaks grow (0 → +2.5 → +6.7 dB), notches get SHALLOWER
     assert.ok(CFG.includes("'The peaks between the notches grow tall and narrow and ring"));
-    // The CHECK reveal keeps the owner's 2026-10-23 wording ("deeper contrast") pending the owner's call (D41).
+    // D42 r2 (owner GO 2026-11-01): the CHECK reveal follows the maths too — taller,
+    // narrower peaks; never "deeper contrast" or "deeper notches".
+    assert.ok(CFG.includes('the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant'));
+    assert.doesNotMatch(CFG, /deeper contrast/);
+    assert.doesNotMatch(CFG, /deeper notches/);
     assert.doesNotMatch(CFG, /The notches sharpen/);
   });
   it('the lesson’s negative-feedback lines name the full-wet condition', () => {

@@ -224,7 +224,7 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(s, /additive: guardAdditiveForEngine\(additivePayload\(buildPreset\(w\), hz\)\)/);
     const r4 = (110 / 150) ** 4;
     assert.equal((10 * Math.log10(r4 / (1 + r4))).toFixed(1), '-6.5');
-    assert.match(g.explore.changes[3], /You hear this on the speaker in either view\./);
+    assert.match(g.explore.changes[3], /On the speaker you hear it in either view\./);
     assert.doesNotMatch(textOf(GUIDES.explore), /cannot play deep notes/);
   });
   it('LEARN: LAB NOTES says "not in this lab" for FM and AM only; the band-limiting tip has no control here', () => {

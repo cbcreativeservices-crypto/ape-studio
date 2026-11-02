@@ -753,7 +753,7 @@ export const CHALLENGE_BASE = {
   explain:
     'With a boom operator and a distant camera, the shotgun’s directivity reaches the speaker, rejects the traffic, ' +
     'and takes proper wind protection. A wireless lavalier with a windscreen is also a fair choice, and many crews run both. ' +
-    'The LDC is too sensitive to wind and handling; the measurement omni hears the whole street; the handheld would be in the shot.',
+    'The LDC is too sensitive to wind and handling; the measurement omni hears the whole street; the handheld works, but it puts a mic in the shot that the boom makes unnecessary.',
 };
 
 export const CHALLENGE_FACTORS: { key: string; label: string; correct: boolean }[] = [
@@ -775,7 +775,8 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
     accept: ['E'],
     explain:
       'No boom means the mic must live with the speaker: the rugged handheld in the interviewer’s hand is the classic ' +
-      'field answer (the wireless lavalier is also defensible — hands-free, but slower to rig and more clothing-noise risk in wind).',
+      'field answer. Its cardioid capsule, close to the mouth, rejects the traffic and copes with the wind; the price is a mic in the shot. ' +
+      'The wireless lavalier is also defensible — hidden and hands-free, but its omni capsule hears more of the street, it is slower to rig, and clothing noise rises in wind.',
   },
   {
     key: 'studio',

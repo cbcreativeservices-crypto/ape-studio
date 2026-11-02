@@ -21,11 +21,9 @@
  * the screen prints at that setting (the caption is eqConfig.heroCaption).
  * test/screenGuide_equalizer_20261031.test.ts pins the names and numbers.
  *
- * NOT WIRED YET: FxLabConfig (shared FxLabScreen) has no guide / accuracy
- * field and eqConfig lives in the shared fxLabConfigs.tsx — that change is the
- * coordinator's. When it lands: `guide: equalizerScreenGuide` and
- * `accuracy: false` on eqConfig (a concept lab: designed response, teaching
- * model, uncalibrated test audio — no live mic, no real-world measurement).
+ * Wired in fxLabConfigs.tsx: eqConfig carries `guide: equalizerScreenGuide`
+ * and `accuracy: false` (a concept lab: designed response, teaching model,
+ * uncalibrated test audio — no live mic, no real-world measurement).
  *
  * Copy rules: plain language; KNOWLEDGE, never skills; no brand names; no
  * "N of total"; "suggest" never "recommend"; no build notes in learner text.

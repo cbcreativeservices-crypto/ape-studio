@@ -39,7 +39,7 @@ export function stageSeeing(kicker: string, sections: string): string[] {
   return [
     `${kicker}: the stage name, its % or BLOCKED, the intro and WHY THIS MATTERS.`,
     `Sections: ${sections}.`,
-    'Dots: green done, amber flagged or optional and blank, red conflict, grey required and open, dark grey not applicable.',
+    'Dots: green done, amber flagged (or optional, blank), red conflict, grey required and open, dark grey not applicable.',
   ];
 }
 
@@ -49,7 +49,7 @@ export function stageControl(packetName: string): string[] {
     'Answer by typing, tapping chips (some take several) or filling a table: + ADD ROW, ✕ removes a row, UNDO restores it.',
     '“Not applicable to this project”: type why, then SAVE; a justified skip counts as a decision, and UNDO brings it back.',
     'Answers save as you go; if one fails, a red warning stays at the top until a later one saves.',
-    `SEE THEM ↓ jumps to WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged). The last button opens WHAT’S LEFT IN THE WHOLE PLAN · ${packetName.toUpperCase()}.`,
+    `SEE THEM ↓ jumps to WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE PLAN · ${packetName.toUpperCase()}.`,
     `‹ goes back to what opened this stage: the lab home, the packet or an exercise. ${CHIPS_LINE}`,
   ];
 }
@@ -77,5 +77,5 @@ export const ACTIVITY_CONTROL: string[] = [
 export const ACTIVITY_CHANGES: string[] = [
   'The broken plan is a real practice project, kept apart from your own projects. It never counts toward the lab.',
   'You repair it on the ordinary stage screen, so every check and finding works there exactly as on your own plan.',
-  'Each return here re-checks the plan: a ○ turns ✓ only when that repair really landed. Leave mid-way and it waits for you.',
+  'Each return here re-checks the plan: a ○ turns ✓ only when your repair passes that check. Leave mid-way and it waits for you.',
 ];

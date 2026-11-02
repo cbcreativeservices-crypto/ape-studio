@@ -73,7 +73,7 @@ const Panel = await (async () => {
 })();
 
 type Guide = Record<string, string[]>;
-type Ex = { label: string; at4: string; at5: string; next: string | null; at5Next: string | null; sendable: boolean; sendTo: 'other' | 'here' | null; steps: boolean };
+type Ex = { label: string; at4: string; at5: string; next: string | null; at5Next: string | null; sendable: boolean; sendTo: 'other' | 'here' | null; steps: boolean; sendAny: 'other' | 'here' | null };
 const SECTION_KEYS = SCREEN_GUIDE_SECTIONS.map((s: { key: string }) => s.key);
 const textOf = (gd: Guide) => SECTION_KEYS.map((k) => gd[k].join('\n')).join('\n');
 const STATIC = G.CALC_SCREEN_GUIDES as unknown as Record<string, Guide>;
@@ -101,6 +101,7 @@ function exampleFor(ws: any, fn: any): Ex | null {
     sendable,
     sendTo: sendable ? G.calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) : null,
     steps: r.steps.length > 0,
+    sendAny: G.calcSendReach(ws, fn, r.outputs),
   };
 }
 
@@ -406,10 +407,17 @@ describe('4. every TRY THIS number is what the screen prints', () => {
   it('members never read weekly-allowance or membership copy; capped readers get the CALCULATE lines', () => {
     const tier = /\bfree\b|membership|this week|CALCULATE reveals|waits for CALCULATE/i;
     for (const b of BUILT) {
-      assert.doesNotMatch(ownWords(textOf(b.gd), b), tier, `${b.id}: tier copy shown to an uncapped reader`);
+      // The registry's formula-in-words is physics quoted verbatim ("The free-space path loss…",
+      // "free-air resonance"): it is masked here only after checking it holds no tier copy
+      // beyond those physics terms.
+      const pf = b.fn.plainFormula ?? '';
+      assert.doesNotMatch(pf.replace(/\bfree-(space|air)\b/gi, ''), tier, `${b.id}: tier copy in the formula words`);
+      const own = ownWords(textOf(b.gd), b);
+      assert.doesNotMatch(pf ? own.split(pf).join('«»') : own, tier, `${b.id}: tier copy shown to an uncapped reader`);
       assert.match(b.gdCapped.control.join(' '), /On this account, CALCULATE reveals each new answer and uses one of this week’s calculations/);
       assert.match(b.gdCapped.changes.join(' '), /New inputs wait for CALCULATE \(one more of this week’s calculations\)/);
-      assert.doesNotMatch(ownWords(textOf(b.gdCapped), b), /\bfree\b|membership/i, `${b.id}: capped copy stays neutral`);
+      const ownCapped = ownWords(textOf(b.gdCapped), b);
+      assert.doesNotMatch(pf ? ownCapped.split(pf).join('«»') : ownCapped, /\bfree\b|membership/i, `${b.id}: capped copy stays neutral`);
     }
     for (const [id, gd] of Object.entries(STATIC)) assert.doesNotMatch(textOf(gd), /\bfree\b|membership|open to all/i, `${id}: tier copy in a static guide`);
     // The screen's own rule the capped lines describe.
@@ -492,7 +500,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(carried, '200');
     assert.equal(shown, '5 A');
     const t = STATIC.workflowRun.tryThis.join('\n');
-    assert.ok(t.includes('type 40 and 8 on step 1: POWER reads 200 W and CURRENT reads 5 A'));
+    assert.ok(t.includes('type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A'));
     assert.ok(t.includes(`⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS) — CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
     // The import button's words, as drawn.
     assert.match(code('src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), /⤵ USE \{s\.label\.toUpperCase\(\)\} \(STEP \{s\.fromStep \+ 1\}\)/);
@@ -651,5 +659,50 @@ describe('owner 2026-11-01: "166 calculators" everywhere', () => {
     const C = readFileSync(join(process.cwd(), 'src/screens/lab/labCatalog.ts'), 'utf8').replace(/\r\n/g, '\n');
     assert.match(C, /countLabel: \(n\) => `\$\{n\} Calculators`/);
     assert.doesNotMatch(C, /\} Calculations`/);
+  });
+});
+
+describe('D42 · P3 polish pins', () => {
+  const CHAIN = 'SEND → chains answers from one calculator into the next, the way a real system design flows.';
+  const HERE = 'SEND → passes an answer to another calculation on this page, where an input takes that kind of value.';
+  it('K4: the screen hands the guide the reach of EVERY SEND → it shows (its sendTakers + render gate)', () => {
+    const W = code('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
+    assert.match(W, /steps: r\.steps\.length > 0,\s*sendAny: ws \? calcSendReach\(ws, fn, r\.outputs\) : null,/);
+    // sendTakers = calcSendTarget(...) !== null; the button also needs chainable and a finite value.
+    assert.match(W, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) !== null\)/);
+    assert.match(W, /\{sendTakers\.get\(o\.label\) && o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);
+    const G2 = code('src/screens/lab/calc/calcScreenGuides.ts');
+    assert.match(G2, /if \(typeof o\.value !== 'number' \|\| !Number\.isFinite\(o\.value\) \|\| o\.chainable === false \|\| !o\.quantity\) continue;/);
+  });
+  it('K4: a SEND teaches line only where a SEND → can show — chain (another calculator), this page, or none', () => {
+    const n = { other: 0, here: 0, none: 0 };
+    for (const b of BUILT) {
+      const t = b.gd.teaches.join('\n');
+      const reach = b.ex?.sendAny ?? null;
+      if (reach === 'other') {
+        assert.ok(t.includes(CHAIN) && !t.includes(HERE), `${b.id}: chain line`);
+        n.other += 1;
+      } else if (reach === 'here') {
+        assert.ok(t.includes(HERE) && !t.includes(CHAIN), `${b.id}: this-page line`);
+        n.here += 1;
+      } else {
+        assert.doesNotMatch(t, /SEND →/, `${b.id}: no SEND → shows, so no SEND teaches line`);
+        n.none += 1;
+      }
+    }
+    assert.ok(n.other > 0 && n.none > 0, JSON.stringify(n));
+    // The pages the checker named carry no SEND line (no taker for any answer).
+    for (const id of ['wave/speed', 'electronics/xc', 'dose/doseOsha', 'cable/maxlen', 'pitch/interval', 'rflink/budget']) {
+      const b = BUILT.find((x) => x.id === id);
+      if (b) assert.doesNotMatch(b.gd.teaches.join(' '), /SEND →/, id);
+    }
+  });
+  it('K2: a one-input calculation drops "in each"; K3: the bezel is placed under YOUR ANSWER', () => {
+    for (const b of BUILT) {
+      const c0 = b.gd.control[0];
+      if (b.fn.inputs.length === 1 && !/list box/.test(c0)) assert.match(c0, /\. Type a number; a grey number/, b.id);
+      if (b.fn.inputs.length > 1 && !/list box/.test(c0)) assert.match(c0, /Type a number in each;/, b.id);
+      assert.match(b.gd.seeing[1], /^Just under YOUR ANSWER: FUNCTION/, b.id);
+    }
   });
 });

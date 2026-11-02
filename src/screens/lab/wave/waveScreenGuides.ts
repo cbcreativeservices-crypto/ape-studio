@@ -175,7 +175,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Refraction: sound bends when its speed changes with height — the air acts like a lens.',
       'Why sound carries at night and over water: cool air below warm air bends it back down.',
       'Why a show fades on a hot afternoon: warm ground air bends sound up and away.',
-      'Downwind, wind adds to sound’s speed; it blows harder higher up, so the speed grows with height and bends the paths down, as an inversion does.',
+      'Why sound carries farther downwind: the wind blows harder higher up, so it bends sound back down, as an inversion does.',
     ],
     tryThis: [
       'Push GRAD fully to INVERSION: the amber ray curves down and H @150 m reads GROUND.',
@@ -290,7 +290,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Drag the listener through the pattern.',
     ],
     changes: [
-      'Drag the listener: the sound does not change, yet PRESSURE runs from 0 % on a node to 100 % on an antinode (every corner is one).',
+      'Drag the listener: the speaker plays the same, yet PRESSURE runs from 0 % on a node to 100 % on an antinode (every corner is one).',
       'Change WIDTH or DEPTH: the frequency moves. (1,0) fits half a wavelength across, so wider = lower.',
       'Higher mode numbers: higher frequencies, more node lines. Materials do not set these — dimensions do.',
     ],

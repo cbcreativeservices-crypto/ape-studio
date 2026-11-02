@@ -373,7 +373,7 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     // The CHECK row stays on the end screen (the check is drawn there), never back to Lesson 1.
     assert.match(s, /onJump=\{\(id\) => \{ if \(id !== UNDERSTANDING_UNIT\) goTo\(/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'MicSelectLab', key: 'tr_mic_select', completion: 'understanding'/);
-    assert.match(END.seeing[0], /LAB COMPLETE once every step is opened, the mic locker \(marked Optional\) included, and the check is passed/);
+    assert.match(END.seeing[0], /The title reads WHAT’S LEFT, listing what is still to do, until every step is opened \(the mic locker too, though marked Optional\) and the check is passed; then it reads LAB COMPLETE/);
     assert.match(END.seeing[0], /CHECK row/);
   });
   it('the shared kit never shows LAB COMPLETE above an unpassed check (re-derived with labEnd)', async () => {
@@ -402,5 +402,22 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
   });
   it('Microphone Principles is an Audio Fundamentals lab; this lab is not', () => {
     assert.match(END.teaches.join(' '), /one of the Audio Fundamentals labs/);
+  });
+});
+
+describe('D42 · the outdoor-interview brief agrees with itself about the handheld', () => {
+  it('the base brief no longer rejects the handheld outright for being in the shot; the no-boom brief names that same cost', () => {
+    const base = D.CHALLENGE_BASE.explain as string;
+    assert.doesNotMatch(base, /the handheld would be in the shot/);
+    assert.match(base, /the handheld works, but it puts a mic in the shot that the boom makes unnecessary/);
+    const noboom = D.CHALLENGE_VARIANTS.find((v: { key: string }) => v.key === 'noboom') as { explain: string; correct: string; accept: string[] };
+    assert.equal(noboom.correct, 'D');
+    assert.deepEqual(noboom.accept, ['E']);
+    // Why D wins here: a cardioid at the mouth against the traffic, paid for with a mic in the shot;
+    // the omni lavalier (CHALLENGE_MICS E) is the hidden alternative.
+    assert.match(noboom.explain, /cardioid capsule, close to the mouth, rejects the traffic[\s\S]*the price is a mic in the shot/);
+    assert.match(noboom.explain, /hidden and hands-free, but its omni capsule hears more of the street/);
+    assert.ok(D.CHALLENGE_MICS.find((m: { key: string }) => m.key === 'E').specs.includes('Omni miniature capsule'));
+    assert.ok(D.CHALLENGE_MICS.find((m: { key: string }) => m.key === 'D').specs.includes('Cardioid'));
   });
 });

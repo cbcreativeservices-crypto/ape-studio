@@ -420,7 +420,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Tap ▶ SHOW ME A MOVE: the lab moves the furthest-out rod and says how its wedge and SPREAD changed. ▶ TAP it to hear.',
-        'Keep going until SPREAD is under 10 ¢ and the map is one color, then flip to RESO.',
+        'Keep going until SPREAD reads 10 ¢ or less and the map is one color, then flip to RESO.',
       ],
     },
     // REVIEW

@@ -271,8 +271,8 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
       label: 'ZOOM',
       value: zoom,
       onChange: setZoom,
-      format: () => `zoom the camera · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`,
-      formatShort: () => `Q${q.toFixed(1)}`,
+      format: () => `zoom the camera · Q ${q.toFixed(2)} · ${bwOct.toFixed(2)} oct`,
+      formatShort: () => `Q${q.toFixed(2)}`,
       locked: zoomActive ? undefined : 'this lens cannot zoom — only FULLY PARAMETRIC sets Q',
     },
   ];
@@ -288,7 +288,7 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         bezel: [
           { k: 'EQ TYPE', v: STAGE_SHORT[stage], flex: 1.1 },
           { k: 'FREQ', v: fmtHz(eqFreq) },
-          { k: 'Q', v: stage === 0 ? 'FIXED' : q.toFixed(1) },
+          { k: 'Q', v: stage === 0 ? 'FIXED' : q.toFixed(2) },
           { k: 'WIDTH', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
         ],
         // One figure, two pixel-aligned panels: the room over the response, on
