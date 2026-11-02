@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 21:18 · ccode · 163b1299
+changed: Dev visual index: sample unread count on the PROFILE tab (no server)
+affects other side: nothing (dev-only)
+needs: nothing
+
+
 ### 2026-11-01 21:05 · ccode · ef51e63e
 changed: Community directory + member chat redesign (owner approved mockup 2026-11-01)
 affects other side: nothing (app UI only; same RPCs)
