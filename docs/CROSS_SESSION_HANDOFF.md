@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 22:21 · ccode · fdc96fd9
+changed: must-do D44: community forum + Claude moderator (next store build only)
+affects other side: Comp A will receive a server ZIP (forum tables, RLS, moderation edge function, hourly cron, ANTHROPIC_API_KEY secret) once the owner answers the plan's HOLD decisions — nothing to do yet
+needs: nothing yet
+
+
 ### 2026-11-01 22:09 · ccode · a6148c5f
 changed: Home: members see AUDIO COMMUNITY where non-members see Membership
 affects other side: nothing
