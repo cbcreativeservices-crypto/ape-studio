@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 21:05 · ccode · ef51e63e
+changed: Community directory + member chat redesign (owner approved mockup 2026-11-01)
+affects other side: nothing (app UI only; same RPCs)
+needs: nothing. Rides the post-approval OTA (A2).
+
+
 ### 2026-11-01 20:32 · ccode · 80ce8573
 changed: Dev visual index: sample member chat (no accounts, nothing saved)
 affects other side: nothing (dev-only preview, no server calls)
