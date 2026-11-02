@@ -69,6 +69,8 @@ import { StudyAreaExplore } from './StudyAreaExplore';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
+import { useCommunityInbox } from '../../features/directory/CommunityBadge';
+import { badgeA11y, badgeCount } from '../../features/directory/inboxCounts';
 
 /** The STUDY tab's headphones (same bundled art as the nav bar) for buttons that lead into Study. */
 const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -1506,6 +1508,8 @@ export function CourseSelectionScreen() {
   // CM2 — membership entitlement (provider reads server truth).
   const { entitlement, caps, resolved, setEntitlement } = useEntitlement();
   const upsell = useUpsellAllowed();
+  // New Messages (owner 2026-11-01): the PROFILE tab badge's own count.
+  const inbox = useCommunityInbox();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
   const openUpgrade = useCallback(() => setUpgradeOpen(true), []);
@@ -2126,6 +2130,22 @@ export function CourseSelectionScreen() {
           <Text style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>Membership</Text>
         </Pressable>
       ) : null}
+      {/* New Messages (owner 2026-11-01): a text button on the right, on the
+          Replay intro row, ONLY while a contact request or an unread message
+          is waiting (the same server count as the PROFILE tab badge; an
+          unknown count shows nothing). Opens the directory on REQUESTS. */}
+      {(badgeCount(inbox) ?? 0) > 0 ? (
+        <Pressable
+          style={[styles.newMsgBtn, { top: insets.top + 36 }]}
+          onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'requests' })}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`New messages. ${badgeA11y(inbox)}`}
+        >
+          <View style={styles.newMsgDot} />
+          <Text style={styles.newMsgText} maxFontSizeMultiplier={HOME_MAX}>New Messages</Text>
+        </Pressable>
+      ) : null}
 
       {/* Home-screen hero: large, centered logo + wordmark, dropped a little
           lower so this reads as the app's front door, not a small header
@@ -2421,6 +2441,9 @@ const styles = StyleSheet.create({
   replayBtn: { position: 'absolute', left: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 6 },
   replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: REPLAY_GREEN },
   membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
+  newMsgBtn: { position: 'absolute', right: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 4, paddingHorizontal: 6 },
+  newMsgDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.amber },
+  newMsgText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.amber },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
   // 5 buttons now (user request 2026-07-22) — tighter gap/padding to fit.
