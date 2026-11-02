@@ -36,6 +36,7 @@ import {
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { setSampleDirectory } from '../../features/directory/sampleThreads';
 
 type Tab = 'explore' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -73,6 +74,8 @@ export function AudioCommunityDirectoryScreen() {
     if (next.requests) setTab('requests');
     if (next.thread) setOpenThreadId(next.thread);
   }, [params]);
+  // The dev visual index's sample chat ends when the directory closes.
+  useEffect(() => () => setSampleDirectory(false), []);
   const inbox = useCommunityInbox();
   const [memberToken, setMemberToken] = useState<string | null>(null);
   /** The tapped card's display name, so the sheet's title is right from its

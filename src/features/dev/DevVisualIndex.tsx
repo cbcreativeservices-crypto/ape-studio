@@ -24,6 +24,7 @@ import type { LearningIntro } from '../intro/learningIntros';
 import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { openMembershipGate } from '../commercial/MembershipGate';
+import { setSampleDirectory } from '../directory/sampleThreads';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
 const MOCK_SHARE: ShareTermPayload = {
@@ -196,6 +197,21 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
       { label: 'Settings', go: (n) => n.navigate('Settings') },
       { label: 'About / Credits', go: (n) => n.navigate('About') },
       { label: 'Paywall', go: (n) => n.navigate('Paywall') },
+    ],
+  },
+  {
+    // Owner 2026-11-01: see the member chat without accounts. Made-up
+    // members and messages; nothing reaches the live database. Leaving the
+    // directory turns the sample off (sampleThreads.ts).
+    section: 'COMMUNITY',
+    items: [
+      {
+        label: 'Member chat (sample data)',
+        go: (n) => {
+          setSampleDirectory(true);
+          n.navigate('AudioCommunityDirectory', { tab: 'requests' });
+        },
+      },
     ],
   },
   {

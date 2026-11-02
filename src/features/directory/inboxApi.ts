@@ -18,6 +18,7 @@ import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount, type MaybeSession } from '../commercial/realAccount';
 import { isMissingRpc } from '../notifications/communityRules';
 import type { InboxRead } from './inboxCounts';
+import { sampleDirectoryOn } from './sampleThreads.ts';
 
 export async function readInboxCounts(): Promise<InboxRead> {
   try {
@@ -66,6 +67,7 @@ export async function readInboxCounts(): Promise<InboxRead> {
  * this answers false — nothing was stored, so nothing is claimed.
  */
 export async function markThreadRead(requestId: string): Promise<boolean> {
+  if (sampleDirectoryOn()) return true; // dev preview: nothing on the server
   try {
     const { error } = await supabase.rpc('contact_thread_mark_read', { p_request_id: requestId });
     return !error;

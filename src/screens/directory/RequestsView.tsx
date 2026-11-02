@@ -34,6 +34,7 @@ import { refreshCommunityInbox, useCommunityInbox } from '../../features/directo
 import { cardColumn } from '../../theme/readingColumn';
 import * as Crypto from 'expo-crypto';
 import { landedAlready, pendingFor, type PendingSend } from '../../features/directory/sendOnce';
+import { sampleDirectoryOn } from '../../features/directory/sampleThreads';
 
 const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'spam', label: 'Spam' },
@@ -420,6 +421,9 @@ export function RequestsView({
         windowSize={7}
         ListHeaderComponent={
           <>
+            {sampleDirectoryOn() ? (
+              <Banner tone="warn">SAMPLE DATA · development preview. Made-up members and messages; nothing is sent or saved.</Banner>
+            ) : null}
             {err ? <Banner tone="warn">{err}</Banner> : null}
             {/* A REFRESH that failed after a good first load: the list below is
                 stale, so say so rather than letting it look current. */}

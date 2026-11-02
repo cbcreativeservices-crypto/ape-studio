@@ -19,6 +19,16 @@ import { LIMITS, readableError } from './rules';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
 import { employerPageToken } from '../employer/publicPage.ts';
+import {
+  sampleAllowance,
+  sampleBlock,
+  sampleDirectoryOn,
+  sampleMessages,
+  sampleReport,
+  sampleRespond,
+  sampleSend,
+  sampleThreads,
+} from './sampleThreads.ts';
 
 export { LIMITS, readableError };
 
@@ -557,6 +567,7 @@ export type ContactThread = {
 export type ListResult<T> = { ok: true; rows: T[] } | { ok: false; error: string };
 
 export async function fetchContactThreads(): Promise<ListResult<ContactThread>> {
+  if (sampleDirectoryOn()) return sampleThreads(); // dev preview only
   try {
     const { data, error } = await supabase.rpc('contact_threads');
     if (error) return { ok: false, error: readableError(error.message) };
@@ -593,6 +604,7 @@ export async function fetchContactThreads(): Promise<ListResult<ContactThread>> 
 export type ThreadMessage = { id: string; mine: boolean; body: string; createdAt: string };
 
 export async function fetchThreadMessages(requestId: string): Promise<ListResult<ThreadMessage>> {
+  if (sampleDirectoryOn()) return sampleMessages(requestId);
   try {
     const { data, error } = await supabase.rpc('contact_thread_messages', { p_request_id: requestId });
     if (error) return { ok: false, error: readableError(error.message) };
@@ -632,6 +644,7 @@ export async function respondToRequest(
   id: string,
   action: 'accept' | 'decline' | 'withdraw',
 ): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleRespond(id, action);
   try {
     const { error } = await supabase.rpc('contact_request_respond', { p_id: id, p_action: action });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -667,6 +680,7 @@ export type ContactAllowance = {
 };
 
 export async function fetchContactAllowance(requestId?: string): Promise<ContactAllowance | null> {
+  if (sampleDirectoryOn()) return sampleAllowance();
   try {
     const { data, error } = await supabase.rpc('contact_allowance', {
       p_request_id: requestId ?? null,
@@ -692,6 +706,7 @@ export async function fetchContactAllowance(requestId?: string): Promise<Contact
  *  id, so a retry after a lost reply can never double-send. A server without
  *  it (PGRST202 / 42883) gets the original 2-argument call, unchanged. */
 export async function sendThreadMessage(requestId: string, body: string, clientMsgId?: string): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleSend(requestId, body);
   try {
     let error: { code?: string; message: string } | null = null;
     if (clientMsgId) {
@@ -730,6 +745,7 @@ export async function sendThreadMessage(requestId: string, body: string, clientM
  * works for members and employers alike.
  */
 export async function blockThread(requestId: string, on = true): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleBlock(requestId);
   try {
     const { error } = await supabase.rpc('contact_block_thread', {
       p_request_id: requestId,
@@ -766,6 +782,7 @@ export async function reportMember(input: {
   reason: ReportReason;
   detail?: string;
 }): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleReport(input);
   try {
     const { error } = await supabase.rpc('contact_report', {
       p_token: input.token ?? null,
