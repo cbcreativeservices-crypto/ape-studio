@@ -13,6 +13,7 @@ export const WEBSITE_LINKS: readonly (readonly [string, string, string])[] = [
   ['employers', 'FOR EMPLOYERS', 'What Academy training means for a team, and how a credential is earned.'],
   ['verify', 'VERIFY A CREDENTIAL', 'Check any Academy credential by its code.'],
   ['about', 'OUR MISSION', 'Why the Academy exists and what it believes.'],
+  ['founder', 'ABOUT THE FOUNDER', 'Professor Channing Booth, Program Director and Lead Faculty, audio educator since 1999.'],
   ['credentials', 'HOW CREDENTIALS WORK', 'Certificates, programs, and what each one requires.'],
 ];
 

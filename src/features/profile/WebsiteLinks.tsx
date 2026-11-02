@@ -2,7 +2,7 @@
  * WebsiteLinks — "ON THE WEBSITE" on the Profile screen (owner 2026-11-01):
  * direct links to the website pages a learner shows other people — the
  * employer page (what Academy training means, how a credential is earned) and
- * credential verification — plus the mission and how credentials work.
+ * credential verification — plus the mission, the founder and how credentials work.
  * The list and its public-page rule live in siteLinkList.ts.
  *
  * Shown to everyone, guest or member: none of these is an upsell.

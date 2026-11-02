@@ -157,11 +157,12 @@ export function proxy(request: NextRequest) {
     // and Open your students (/instructor). Each needs the applicant's own
     // sign-in or shows only the store links; none sets the gate cookie.
     // Profile › ON THE WEBSITE (owner 2026-11-01): the app links straight to
-    // the employer page, the mission and how credentials work, so those open
+    // the employer page, the mission, the founder and how credentials work, so those open
     // too (exact match; /verify is already public below).
     if (
       legalPublic === "/employers" ||
       legalPublic === "/about" ||
+      legalPublic === "/founder" ||
       legalPublic === "/credentials" ||
       legalPublic === "/employers/apply" ||
       legalPublic === "/api/employers/apply" ||
