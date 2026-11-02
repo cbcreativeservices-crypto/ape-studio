@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 20:32 · ccode · 80ce8573
+changed: Dev visual index: sample member chat (no accounts, nothing saved)
+affects other side: nothing (dev-only preview, no server calls)
+needs: nothing
+
+
 ### 2026-11-01 19:51 · ccode · f053a007
 changed: web: founder page polished (owner approved 2026-11-01)
 affects other side: nothing
