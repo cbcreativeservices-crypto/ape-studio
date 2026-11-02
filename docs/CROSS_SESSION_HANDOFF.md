@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 19:23 · ccode · e8b4adbc
+changed: must-do D43: Profile website links; website gate deploy waits for GO
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-11-01 19:23 · ccode · f9d21752
 changed: Profile: ON THE WEBSITE links (employers, verify, mission, credentials)
 affects other side: nothing on the server; the website gate (web/proxy.ts) opens /employers, /about, /credentials once deployed
