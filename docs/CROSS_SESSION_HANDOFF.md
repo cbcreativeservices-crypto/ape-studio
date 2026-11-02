@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 18:14 · ccode · e20eaadf
+changed: D42 round 2: all P3 polish + 9 screen items (owner: use your recommendations)
+affects other side: nothing (app copy, lab screens and tests; no server change)
+needs: nothing. Reaches phones with the post-approval OTA (A2), owner GO.
+
+
 ### 2026-11-01 17:27 · ccode · 02af00f5
 changed: D42: fix every P1/P2 from the lab screen guide audit, each group independently checked
 affects other side: nothing (app copy + test pins only; no server change)
