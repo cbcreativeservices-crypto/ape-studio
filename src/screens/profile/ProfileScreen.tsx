@@ -50,6 +50,7 @@ import { useMemberGate } from '../../features/commercial/useTier';
 import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { useLowLight } from '../../features/settings/lowLight';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
+import { WebsiteLinks } from '../../features/profile/WebsiteLinks';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList, useTermListUnreadable } from '../../features/flags/flaggedStore';
 import { useBundles, useBundlesHydrated } from '../../features/enrollment/enrolledBundlesStore';
@@ -835,6 +836,7 @@ export function ProfileScreen() {
           </View>
           <LowLightRow />
           <AudioOutputRow />
+          <WebsiteLinks />
           {__DEV__ ? <DevVisualIndex /> : null}
         </KeyboardAwareScrollView>
       </View>
@@ -994,6 +996,8 @@ export function ProfileScreen() {
             name. Not collapsed: muting is a safety control. */}
         <LowLightRow />
         <AudioOutputRow />
+        {/* Direct links to the public website pages (owner 2026-11-01). */}
+        <WebsiteLinks />
 
         {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
             screen + popup. Its own header says "REMOVE before release", but it
