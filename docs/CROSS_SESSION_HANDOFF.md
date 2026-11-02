@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 19:51 · ccode · f053a007
+changed: web: founder page polished (owner approved 2026-11-01)
+affects other side: nothing
+needs: nothing. Live with B6 (site unlock).
+
+
 ### 2026-11-01 19:37 · ccode · 9f43d118
 changed: Profile ON THE WEBSITE: add ABOUT THE FOUNDER (/founder)
 affects other side: nothing
