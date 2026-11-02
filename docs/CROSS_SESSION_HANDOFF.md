@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 19:07 · ccode · 3b59e474
+changed: must-do D42: owner approved the Mastering room drawing
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-11-01 18:14 · ccode · e20eaadf
 changed: D42 round 2: all P3 polish + 9 screen items (owner: use your recommendations)
 affects other side: nothing (app copy, lab screens and tests; no server change)
