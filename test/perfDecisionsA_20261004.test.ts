@@ -113,7 +113,8 @@ const STUBS: Record<string, string> = {
       from: () => ({ select: () => ({ eq: async () => SB().rows() }) }),
     };
   `,
-  'ape-pda:memberStanding': `export function setMemberStanding() {}`,
+  'ape-pda:memberStanding': `export function setMemberStanding() {}
+export function setReportedTier() {}`,
   'ape-pda:localSchedule': `export function requestLocalNotifSync() {}`,
   'ape-pda:settings': `export async function loadLocalSettings() { return {}; }`,
   'ape-pda:localProgress': `export async function clearAllLocalMethodStates() { globalThis.__WIPES__.push(Date.now()); }`,

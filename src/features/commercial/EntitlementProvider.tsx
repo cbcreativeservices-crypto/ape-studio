@@ -26,7 +26,8 @@ import {
   pastOfflineGrace,
   verdictKeepsAccess,
 } from './entitlementExpiry';
-import { setMemberStanding } from './memberStanding';
+import { setMemberStanding, setReportedTier } from './memberStanding';
+import { persistAllowed, tierOf } from './tier';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { loadLocalSettings } from '../settings/store';
 import { clearAllLocalMethodStates } from '../study/localProgress';
@@ -922,6 +923,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // whole run and Settings showed CHECKING… forever.
     [entitlement, resolved, tierKnown, tierReadFailed, setEntitlement, refreshEntitlement],
   );
+
+  // Feedback emails carry the tier in their APE-DATA line (Comp A 2026-11-02).
+  // Only a KNOWN signed-in tier; a guest or an unproduced read writes none, so
+  // a signed-out email has no `tier=` at all.
+  useEffect(() => {
+    setReportedTier(persistAllowed(tierOf(entitlement, tierKnown)) ? entitlement : undefined);
+  }, [entitlement, tierKnown]);
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;
 }

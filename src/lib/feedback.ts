@@ -11,7 +11,18 @@
  */
 import { Linking, Platform } from 'react-native';
 import Constants from 'expo-constants';
+import * as Application from 'expo-application';
+import * as Updates from 'expo-updates';
 import { notify } from './confirm';
+import { reportedTier } from '../features/commercial/memberStanding';
+import { registerLocalStoreReset } from '../features/storage/localStoreRegistry';
+import { buildDataLine, buildFeedbackSubject, clearFeedbackIdentity, getFeedbackIdentity, makeFeedbackRef, type DataField } from './feedbackTags';
+// Re-exported so screens import everything feedback from one place.
+export { setFeedbackIdentity, clearFeedbackIdentity, type FeedbackIdentity } from './feedbackTags';
+
+// Sign-out clears the email identity with the other local stores (the next
+// account must not inherit the student id or role).
+registerLocalStoreReset(clearFeedbackIdentity);
 
 // The academy support inbox — NEVER a personal address (owner rule 2026-09-04).
 // Matches the web site's contact address (web/lib/connect.ts, Footer, etc.).
@@ -32,12 +43,29 @@ const SUBJECT: Record<FeedbackKind, string> = {
   question: 'Question — I need help', // Help hub "Still need help?" (Pillar C)
 };
 
+function safeTimeZone(): string | undefined {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function safeUpdateId(): string {
+  try {
+    return Updates.updateId ?? 'embedded';
+  } catch {
+    return 'embedded';
+  }
+}
+
 /** Open the mail composer for a feedback kind. `tag` auto-labels the subject
  *  (e.g. the glossary term the user is looking at) so it's clear what it's
  *  about; `context` adds a machine-locating details block to the body. */
 export function sendFeedback(kind: FeedbackKind, tag?: string, context?: FeedbackContext): void {
   const version = Constants.expoConfig?.version ?? '0.0.0';
-  const subject = tag ? `${SUBJECT[kind]} — ${tag}` : SUBJECT[kind];
+  const ref = makeFeedbackRef();
+  const subject = buildFeedbackSubject(kind, SUBJECT[kind], ref, tag);
 
   // Locating block — caller-supplied fields first, then platform/version always.
   const detailLines = [
@@ -47,6 +75,27 @@ export function sendFeedback(kind: FeedbackKind, tag?: string, context?: Feedbac
     `Platform: ${Platform.OS}`,
     `App version: v${version}`,
   ];
+  // The machine line Gmail filters + the inbox sweep read. LAST line of the
+  // Details block. `tier` comes ONLY from the identity (set while signed in), so
+  // a signed-out member has no tier= at all; `sid` falls back to a caller's
+  // own studentId (Settings passes it from the same read).
+  const ctx = context ?? {};
+  const identity = getFeedbackIdentity();
+  const dataFields: DataField[] = [
+    ['ref', ref],
+    ['kind', kind],
+    ['src', 'app'],
+    ['os', Platform.OS],
+    ['app', version],
+    ['build', Application.nativeBuildVersion],
+    ['update', safeUpdateId()],
+    ['tier', identity.tier ?? reportedTier()],
+    ['sid', identity.studentId ?? (ctx.studentId as string | undefined)],
+    ['role', identity.role],
+    ['tz', safeTimeZone()],
+    ...Object.entries(ctx).filter(([k]) => k !== 'tier' && k !== 'studentId'),
+  ];
+  detailLines.push(buildDataLine(dataFields));
   const details = `\n\n— Details (please keep so we can locate this) —\n${detailLines.join('\n')}`;
 
   const body =

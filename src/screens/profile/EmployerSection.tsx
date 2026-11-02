@@ -36,6 +36,7 @@ import {
 } from '../../features/employer/api';
 import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifierKind';
 import { InstructorCodeRow } from './InstructorCodeRow';
+import { setFeedbackIdentity } from '../../lib/feedback';
 import { PublicPageRow } from './PublicPageRow';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -123,6 +124,10 @@ export function EmployerSection() {
     // 'unknown' = the check FAILED (null here), never "not verified".
     const isVerified = who === 'unknown' ? null : who !== 'none';
     setVerifierKind(who === 'employer' || who === 'instructor' ? who : null);
+    // Feedback emails carry the verified kind as `role=` so the inbox can route
+    // employers/instructors first (Comp A 2026-11-02). From THIS existing read
+    // only — no new query; a failed read ('unknown') leaves it as it was.
+    if (who !== 'unknown') setFeedbackIdentity({ role: who === 'none' ? undefined : who });
     failedRef.current = isVerified === null || state.state === 'error';
     setVerified(isVerified === true);
     // A FAILED verified-check is not "not verified" (hunt 7, 2026-10-03).

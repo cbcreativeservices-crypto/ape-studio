@@ -38,7 +38,7 @@ import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientati
 import { retryUnsentLabCredit, unsentLabCreditCount } from '../../features/lab/labCompletion';
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
-import { sendFeedback } from '../../lib/feedback';
+import { sendFeedback, setFeedbackIdentity } from '../../lib/feedback';
 import { REDEEM_GRANTED_NOT_REFRESHED, redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
@@ -233,7 +233,12 @@ export function SettingsScreen({ navigation }: Props) {
       .rpc('my_identity')
       .single()
       .then(
-        ({ data }) => setApeId((data as { ape_student_id?: string | null } | null)?.ape_student_id ?? ''),
+        ({ data }) => {
+          const id = (data as { ape_student_id?: string | null } | null)?.ape_student_id ?? '';
+          setApeId(id);
+          // Every feedback email's APE-DATA line carries it from here on (Comp A 2026-11-02).
+          setFeedbackIdentity({ studentId: id || undefined });
+        },
         () => {},
       );
   }, [reloadPrefs]);

@@ -71,7 +71,8 @@ const STUBS: Record<string, string> = {
       from: () => ({ select: () => ({ eq: async () => SB().rows() }) }),
     };
   `,
-  'ape-sss:memberStanding': `export function setMemberStanding() {}`,
+  'ape-sss:memberStanding': `export function setMemberStanding() {}
+export function setReportedTier() {}`,
   'ape-sss:localSchedule': `export function requestLocalNotifSync() {}`,
   'ape-sss:settings': `export async function loadLocalSettings() { return {}; }`,
   'ape-sss:localProgress': `export async function clearAllLocalMethodStates() { globalThis.__WIPES__.push(Date.now()); }`,

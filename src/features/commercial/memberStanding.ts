@@ -26,3 +26,19 @@ export function setMemberStanding(isMember: boolean): void {
 export function memberStanding(): MemberStanding {
   return standing;
 }
+
+/**
+ * The KNOWN signed-in tier, for the feedback email's APE-DATA line (Comp A
+ * 2026-11-02). Written by the provider beside the standing; undefined for a
+ * guest or before a read produced a tier, so a signed-out email has no tier=.
+ * Kept in this leaf so the app-start graph gains no module for it.
+ */
+let reported: string | undefined;
+
+export function setReportedTier(tier: string | undefined): void {
+  reported = tier || undefined;
+}
+
+export function reportedTier(): string | undefined {
+  return reported;
+}
