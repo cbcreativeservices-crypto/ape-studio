@@ -18,9 +18,11 @@ import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount, type MaybeSession } from '../commercial/realAccount';
 import { isMissingRpc } from '../notifications/communityRules';
 import type { InboxRead } from './inboxCounts';
-import { sampleDirectoryOn } from './sampleThreads.ts';
+import { sampleDirectoryOn, sampleInboxCounts, sampleInboxOn } from './sampleThreads.ts';
 
 export async function readInboxCounts(): Promise<InboxRead> {
+  // Dev preview only: the sample chat / sample count (sampleThreads.ts).
+  if (sampleInboxOn() || sampleDirectoryOn()) return sampleInboxCounts();
   try {
     // Unknown session ≠ signed out (K1): a stalled read is 'unknown' — no badge,
     // but nothing claims the person is signed out.

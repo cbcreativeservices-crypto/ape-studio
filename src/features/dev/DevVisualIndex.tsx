@@ -24,7 +24,8 @@ import type { LearningIntro } from '../intro/learningIntros';
 import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { openMembershipGate } from '../commercial/MembershipGate';
-import { setSampleDirectory } from '../directory/sampleThreads';
+import { setSampleDirectory, setSampleInbox } from '../directory/sampleThreads';
+import { refreshCommunityInbox } from '../directory/CommunityBadge';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
 const MOCK_SHARE: ShareTermPayload = {
@@ -210,6 +211,22 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
         go: (n) => {
           setSampleDirectory(true);
           n.navigate('AudioCommunityDirectory', { tab: 'requests' });
+        },
+      },
+      {
+        // The PROFILE tab's count as a member sees it: 2 requests + 1 message.
+        label: 'Home with sample message count',
+        go: (n) => {
+          setSampleInbox(true);
+          void refreshCommunityInbox(true);
+          n.navigate('Home');
+        },
+      },
+      {
+        label: 'Sample message count off',
+        go: () => {
+          setSampleInbox(false);
+          void refreshCommunityInbox(true);
         },
       },
     ],

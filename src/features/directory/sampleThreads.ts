@@ -12,6 +12,7 @@
  * Off in any release build: `sampleDirectoryOn()` needs __DEV__.
  */
 import type { ContactAllowance, ContactThread, ListResult, ReportReason, ThreadMessage } from './api.ts';
+import type { InboxRead } from './inboxCounts.ts';
 
 declare const __DEV__: boolean | undefined;
 
@@ -168,4 +169,24 @@ export function sampleAllowance(): ContactAllowance {
     messageMaxChars: 1000,
     awaitingReply: false,
   };
+}
+
+/**
+ * SAMPLE unread count (owner 2026-11-01: see the PROFILE tab's count on
+ * Home). The visual index turns it on; it stays on until turned off there or
+ * the app restarts. Same __DEV__ guard. Matches the sample chat: two
+ * requests waiting and one unread message from Diego.
+ */
+let inboxEnabled = false;
+
+export function setSampleInbox(on: boolean): void {
+  inboxEnabled = on;
+}
+
+export function sampleInboxOn(): boolean {
+  return typeof __DEV__ !== 'undefined' && __DEV__ === true && inboxEnabled;
+}
+
+export function sampleInboxCounts(): InboxRead {
+  return { ok: true, counts: { pending: 2, unreadMessages: 1, byThread: { [id(3)]: 1 } } };
 }
