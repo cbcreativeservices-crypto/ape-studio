@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 19:23 · ccode · f9d21752
+changed: Profile: ON THE WEBSITE links (employers, verify, mission, credentials)
+affects other side: nothing on the server; the website gate (web/proxy.ts) opens /employers, /about, /credentials once deployed
+needs: nothing. App part rides the post-approval OTA (A2); website part waits for the owner's deploy GO.
+
+
 ### 2026-11-01 19:07 · ccode · 3b59e474
 changed: must-do D42: owner approved the Mastering room drawing
 affects other side: nothing
