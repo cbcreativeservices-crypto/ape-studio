@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 22:09 · ccode · a6148c5f
+changed: Home: members see AUDIO COMMUNITY where non-members see Membership
+affects other side: nothing
+needs: nothing. Rides A2.
+
+
 ### 2026-11-01 21:25 · ccode · 05679aa7
 changed: Home New Messages: red dot (owner 2026-11-01)
 affects other side: nothing
