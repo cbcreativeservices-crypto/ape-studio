@@ -2442,7 +2442,8 @@ const styles = StyleSheet.create({
   replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: REPLAY_GREEN },
   membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   newMsgBtn: { position: 'absolute', right: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 4, paddingHorizontal: 6 },
-  newMsgDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.amber },
+  // Red dot (owner 2026-11-01): the house alert red (peak readouts, #ff5a48).
+  newMsgDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#ff5a48' },
   newMsgText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.amber },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
