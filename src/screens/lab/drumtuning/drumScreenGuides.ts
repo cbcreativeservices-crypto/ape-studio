@@ -92,7 +92,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       changes: [
         'More tension → higher pitch: pitch rises with the square root of tension, so four times the tension is one octave up.',
-        'The overtones sit at odd ratios (about 1 : 1.6 : 2.1 : 2.3), not a harmonic series — so a drum has no single clean note.',
+        'The overtones sit at uneven ratios (about 1 : 1.6 : 2.1 : 2.3), not a harmonic series — so a drum has no single clean note.',
       ],
       teaches: [
         'Tension sets pitch; a bigger or heavier head sits lower at the same tension.',
@@ -190,7 +190,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Before you tap, say your answer — then check it against the explanation.',
-        'Missed the tuner-app card? Go back to Tension and pitch and read the line on odd overtone ratios.',
+        'Missed the tuner-app card? Go back to Tension and pitch and read the line on uneven overtone ratios.',
       ],
     },
     // REVIEW

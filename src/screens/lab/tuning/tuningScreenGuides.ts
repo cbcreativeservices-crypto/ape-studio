@@ -53,8 +53,9 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'The strip: ‹ PREV and NEXT › move between chapters; tap the middle for the chapter list. ⓘ explains each chapter’s screen.',
     ],
     changes: [
-      'The octave is always ×2: 261.63 × 2 = 523.25 Hz. Everyone agrees on that.',
+      'Every system in this lab keeps the octave at exactly ×2: 261.63 × 2 ≈ 523.25 Hz (the hertz are rounded).',
       'Where the notes between go is a choice. Each tuning system answers it differently, keeping some relationships pure and bending others.',
+      'Acoustic pianos may stretch the octave slightly; the Tradeoffs chapter returns to this.',
     ],
     teaches: [
       'The one question every tuning system must answer: where do the notes inside an octave go?',
@@ -276,7 +277,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     changes: [
       'C, D, F and G match: both scales build them from 2 and 3 alone.',
       'E, A and B differ by 81/80, about 21.51 ¢: stacked fifths put them higher than pure thirds do.',
-      'Same note names, same root, same sound — only the ratios change.',
+      'Same note names, same root, same instrument tone — only the ratios change, and with them the pitch of E, A and B.',
     ],
     teaches: [
       'The syntonic comma, 81/80: the gap between a Pythagorean and a Just third.',

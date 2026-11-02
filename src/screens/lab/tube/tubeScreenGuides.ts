@@ -45,7 +45,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     changes: [
       'Hide a part and the readouts — and, in ⚡ E-VIEW, the electrons — show what it was for. The line below names the first part missing, in build order.',
       'No HEATER or CATHODE: nothing boils electrons off, so EMISSION reads OFF.',
-      'No GLASS or VACUUM: air fills the bottle and electrons scatter, so CURRENT reads NONE.',
+      'No GLASS or VACUUM: air fills the space; electrons keep hitting gas molecules, so CURRENT reads NONE.',
       'No PLATE: nothing pulls electrons across. No CONTROL GRID: the flow runs WIDE OPEN.',
     ],
     teaches: [
@@ -56,7 +56,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap CONTROL GRID: CURRENT jumps from METERED to WIDE OPEN — full current, but nothing left to shape it into a signal.',
-      'Tap GLASS: VACUUM goes dark with it. EMISSION stays ON, but CURRENT reads NONE — electrons cannot cross air.',
+      'Tap GLASS: VACUUM goes dark with it. EMISSION stays ON, but CURRENT reads NONE — in air, electrons keep hitting gas molecules and barely get anywhere.',
       'Tap SHOW ALL if it shows, then HIDE ALL, and add parts back in build order, reading what each one fixes in the line below the display.',
     ],
   },
@@ -206,7 +206,8 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   // ── 7 · Bias ────────────────────────────────────────────────────────────
   bias: {
     seeing: [
-      'Left: a transfer curve (grid voltage in, plate current out) with a dot for the idle point riding it. Right: the output wave that results.',
+      'Left: a transfer curve (grid voltage in, plate current out) with a dot for the idle point riding it.',
+      'Right: the plate current that results, drawn right way up — not the flipped plate voltage of Signal Amplification.',
       'Readouts: BIAS (the idle point) and ZONE — CUTOFF, LINEAR or SATURATION.',
       'Below: the zone in words, why biasing a real amp is technician work, and CHECK YOURSELF.',
     ],

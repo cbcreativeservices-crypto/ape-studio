@@ -107,8 +107,8 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   patterns: {
     seeing: [
       'A stage vocal mic from above, aimed at the singer, with neighbors on a ring: Singer · wanted, Drum kit, Audience, Wedge monitor, Reflective wall, HVAC vent.',
-      'The amber outline is the chosen pattern; the dotted ring is full pickup. TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE — teaching shapes, not a real mic’s chart.',
-      'Each tag: ✓ picked up, △ partial, ⚠ picked up, ⚠ missed or ✓ rejected.',
+      'Amber outline: the chosen pattern. Dotted ring: full pickup. TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE — teaching shapes, not a real mic’s chart.',
+      'Tags: ✓ good, ⚠ a problem, △ partial. Singer: ✓ picked up or ⚠ missed. Others: ⚠ picked up or ✓ rejected.',
     ],
     control: [
       'Pattern chips: Omni, Cardioid (shown first), Supercardioid, Hypercardioid, Figure-8.',
@@ -151,7 +151,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'How to read a response curve like a spec sheet: what it lifts, what it cuts, and where that helps.',
       'Flat is not synonymous with better — a shaped curve can be exactly right for the job.',
       'Next, Lesson 5 asks whether the mic can capture the source at all.',
-      'A real mic’s chart is its maker’s measurement: trust it, then your ears in the room.',
+      'A real mic’s chart is its maker’s measurement, usually on-axis, at one distance and smoothed: use it as a guide, then trust your ears in the room.',
     ],
     tryThis: [
       'Pick Low-frequency rolloff: ATTENUATES lists rumble, handling noise, stage wash and HVAC. Then answer the lectern question below.',

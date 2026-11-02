@@ -281,4 +281,12 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
     assert.doesNotMatch(textOf(GUIDES.check), /Modulation set/);
     assert.ok(textOf(GUIDES.check).includes('the Phaser lab, the last in Modulation'));
   });
+  it('lab order (D42 2026-11-01): the Advanced Training menu sorts categories A→Z, so Distortion & Saturation is suggested, never "next"', () => {
+    assert.match(code('src/screens/lab/labCatalog.ts'), /section === 'training' \? \[\.\.\.cats\]\.sort\(\(a, b\) => a\.name\.localeCompare\(b\.name\)\)/);
+    for (const id of ['explore', 'check']) {
+      const t = textOf(GUIDES[id]);
+      assert.ok(t.includes('A good next step: Distortion & Saturation.'), id);
+      assert.doesNotMatch(t, /Saturation (comes|is) next/, id);
+    }
+  });
 });

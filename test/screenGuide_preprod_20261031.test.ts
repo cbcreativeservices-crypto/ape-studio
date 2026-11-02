@@ -339,8 +339,9 @@ describe('Production guides: the challenged claims, checked against the screens 
     const K = code('src/screens/lab/production/ProductionPacketScreen.tsx');
     const at = (s: string) => K.indexOf(s);
     assert.ok(at('WHAT’S LEFT') < at('SHARE AS PDF') && at('SHARE AS PDF') < at('built.model.control.map'));
+    assert.ok(g.packet.seeing[0].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.packet.seeing[0].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
     for (const gd of [g.packet, G.PRODUCTION_SCREEN_GUIDES.postprod.packet]) {
-      assert.ok(gd.seeing[0].includes('Its title, verdict and all below SHARE AS PDF print; the type and WHAT’S LEFT do not.'));
       assert.ok(!gd.seeing.join(' ').includes('what you read here is what prints'));
     }
   });

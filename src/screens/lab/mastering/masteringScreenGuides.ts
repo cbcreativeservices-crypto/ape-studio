@@ -295,7 +295,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         changes: [
           'The amber pads in the drawing sit at the first-reflection points; corner traps handle the bass.',
-          'In the drawing the listener sits about three quarters of the way from the front wall to the rear wall — an example, not a rule.',
+          'The listener sits on the center line, at the third corner of an equilateral triangle with the monitors. Where that falls front to back is found by measurement in each room.',
         ],
         teaches: [
           'The room is the last stage of the monitoring chain, and the first thing to get right.',
@@ -328,7 +328,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         teaches: [
           'A tonal decision made at a different level is partly a decision about the level.',
           'One repeatable, moderate monitoring level protects comparisons, focus and hearing.',
-          'Measure the level with a calibrated meter; headphones hide it.',
+          'Measure the level with a calibrated meter. A room meter cannot read headphone level, and headphones often run louder than they feel.',
         ],
         tryThis: [
           'Ride MONITOR down to 65 dB: BASS reads −5.3 dB and TREBLE −1.1 dB — the same file now sounds thin.',

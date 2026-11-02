@@ -91,7 +91,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Every socket has a direction, a connector, a signal (audio, data or power), a level and a number of channels — the shape alone never proves two things belong together.',
-      'A raw turntable is far quieter than a line source, so it needs a PHONO input; into LINE it sounds tiny and thin.',
+      'A raw turntable is far quieter than a line source, and records are cut with the bass turned down. PHONO adds about 36 dB and restores the bass (the RIAA curve); into LINE it sounds tiny and thin.',
     ],
     teaches: [
       'How to read a socket, and why a mixer has separate PHONO and LINE inputs.',
@@ -533,7 +533,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In VENUE put MASTER L into DJ L and MASTER R into DJ R, with MASTER at its unity mark, ASK THE ENGINEER until FLOOR reads about 95 dBA — this model’s suggested level for a busy floor.',
-      'Try each placement in SETUP and bring 4-HOUR DOSE to 100 % or less.',
+      'Try each placement in SETUP and bring 4-HOUR DOSE to 100 % or less — your dose at the decks from the room alone; headphones add to it.',
     ],
   },
   // ── 21 ─────────────────────────────────────────────────────────────────
@@ -662,15 +662,16 @@ export const DJ_END_GUIDE: ScreenGuide = {
     'REVIEW ▾ on the ✓ DONE line unfolds the finished screens; tap one to open it again. HIDE ▴ folds them away.',
     'PRACTICE AGAIN FROM THE START reopens Screen 1 and clears nothing.',
     'DONE · BACK TO LABS leaves the lab.',
+    'WHAT’S LEFT ▾ at the top opens the list of screens; START OVER (PRACTICE), at its foot, asks first, then clears every ✓ DONE mark and reopens Screen 1 for a fresh run.',
   ],
   changes: [
     'A screen counts once every goal chip on it ticks in one visit: its tasks, its troubleshooting exercise and, on most screens, Pass the check. It marks itself; NEXT never counts it.',
-    'Left: is what your last visit this session missed (every goal, if not opened yet). Chips start empty each visit: a row reading Every goal is met needs them all again.',
+    'Left: is what your last visit this session missed (every goal, if not opened yet). Chips start empty each visit, so a screen counts only when all tick in one visit.',
     'Screens 16–18 are optional and never hold back LAB COMPLETE.',
   ],
   teaches: [
     'Which parts of the DJ booth you have worked through, and which you have not met yet.',
-    'With every required screen done, the lab counts toward the DJ credentials that list it. Reopening a screen to practice never clears its ✓ DONE. START OVER (PRACTICE), at the foot of the list WHAT’S LEFT ▾ opens at the top, asks first, then clears every ✓ DONE mark for a fresh run; credential credit already earned is kept.',
+    'With every required screen done, the lab counts toward the DJ credentials that list it. Reopening a screen to practice never clears its ✓ DONE. A fresh run never takes back credential credit already earned.',
   ],
   tryThis: [
     'Jump to the first screen still listed and tick every goal chip on it in that one visit; its Left: line names the ones your last visit missed.',

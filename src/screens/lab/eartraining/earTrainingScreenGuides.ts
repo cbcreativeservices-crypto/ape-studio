@@ -41,7 +41,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'Modules 1–4: tone. 5: defects. 6: stereo. 7, 10, 14: level, compression, clipping. 8, 9, 12, 13: time — delay, reverb, polarity, comb filtering. 11: pitch.',
-    'Every drill has a level ladder. Only answers since you reached your level count: of the last 20, 80 % moves you up, under 50 % back one.',
+    'Every drill has a level ladder. Only answers since you reached this level are judged: 80 % over your last 20 moves you up; under 50 % drops you back one.',
     'A module counts once you clear level 2 at 80 % over 20 answers. Credit is never taken away.',
   ],
   teaches: [
@@ -106,7 +106,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Where frequencies sit by ear: 1 kHz as the anchor, weight and boom below it, edge and sizzle above.',
-      'The third-octave grid that EQs and analyzers are labeled with. An octave is a doubling of frequency; a third-octave is a third of one.',
+      'The third-octave grid that EQs and analyzers are labeled with. An octave is a doubling of frequency; three third-octave steps (each about ×1.26) make one octave.',
       'Low tones need more level to sound as loud as mid tones.',
       'Module 1 is the base for EQ Recognition and Band Identification.',
     ],
@@ -315,7 +315,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     changes: [
       'Each pluck gets an echo 6 dB down; from 250 ms on, fainter repeats follow.',
-      'Long gaps sound like a separate echo. Near 50 ms the echo starts to blur into the sound; below about 30–50 ms it fuses — that is Comb Filtering, Module 13.',
+      'Long gaps sound like a separate echo. Near 50 ms the echo starts to blur into the sound. Much shorter gaps (under about 10 ms) fuse and color the tone: that is Comb Filtering, Module 13.',
       'Levels: 500 ms, then 250 ms, 100 ms, 50 ms. Up to level 2 a neighboring time earns half credit.',
     ],
     teaches: [

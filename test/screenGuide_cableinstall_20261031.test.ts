@@ -103,9 +103,9 @@ describe('1. every Cable Install screen has a complete guide', () => {
   });
   it('house copy rules: knowledge not skills, no "N of total", no build notes, "suggest" not "recommend", no brands', () => {
     for (const [id, gd] of allGuides) {
-      // The end screen's card is headed MASTERY PROFILE on screen; quoting that
-      // label is naming the screen, not claiming a skill.
-      const t = textOf(gd).replace(/MASTERY PROFILE/g, '');
+      // The end screen's card is headed KNOWLEDGE PROFILE (renamed from
+      // MASTERY PROFILE, D42), so no exemption is needed any more.
+      const t = textOf(gd);
       assert.doesNotMatch(t, /\byou(’|')?ll (master|build|mix|be able)|\bmaster(y)?\b|\byou will learn to\b/i, `${id}: claims a skill`);
       assert.doesNotMatch(t, /\b\d+\s+of\s+\d+\b/i, `${id}: an "N of total"`);
       assert.doesNotMatch(t, /\brecommend/i, `${id}: "recommend" (house word is "suggest")`);
@@ -167,7 +167,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     label: ['SYSTEM', 'A · SERVICE CALL', 'B · ASSIGN IDENTITY', 'C · TRACE TEST', 'D · SERVICE LOOPS', 'THE OTHER HALF OF IDENTITY — THE RECORDS', 'A-012', 'CABLE ', 'ORIGIN — STAGE END', 'DESTINATION — RACK END', 'CABLE ID', 'APPLY LABELS — BOTH ENDS', 'STORED SLACK', 'TOO LITTLE', 'INTENTIONAL', 'EXCESSIVE', 'CONFIRM STORED SLACK', 'R1-PP2-12', 'PB-3'],
     inspect: ['FACILITY WALK', 'STAGE', 'FLOOR', 'WALL / DOOR', 'RACK', 'CEILING / TRAY', 'EQUIP ROOM', 'KNOWLEDGE CHECK', '1 · CLASSIFY', '2 · CORRECT', '▸ FINDINGS LIST', 'Fire / Building', 'Serviceability', 'SIGN OFF THE INSPECTION ✓', 'FINAL INSPECTION COMPLETE', 'AS FOUND ON THE WALK', 'NEW INSPECTION ATTEMPT ↻'],
     myth: ['RULE OR MYTH?', 'TRUE', 'FALSE', '✓ Right', '✕ It’s', 'CONTINUE ›', 'NEXT ›'],
-    complete: ['MASTERY PROFILE · OVERALL', 'CABLE DRESSING & INSTALLATION — ', 'COMPLETE', 'WHAT IS LEFT', 'OVERALL', 'Safety', 'Cable Protection', 'Routing & Support', 'VIEW FIELD CHECK', 'REVIEW RESULTS', 'REPEAT LAB', 'RETURN TO TRAINING', 'STAGE', 'CREDITED'],
+    complete: ['KNOWLEDGE PROFILE · OVERALL', 'CABLE DRESSING & INSTALLATION — ', 'COMPLETE', 'WHAT IS LEFT', 'OVERALL', 'Safety', 'Cable Protection', 'Routing & Support', 'VIEW FIELD CHECK', 'REVIEW RESULTS', 'REPEAT LAB', 'RETURN TO TRAINING', 'STAGE', 'CREDITED'],
     fieldCheck: ['CABLE INSTALLATION FIELD CHECK', 'BEFORE PULLING', 'DURING INSTALLATION', 'DRESSING', 'FINISH', '‹ RETURN TO RESULTS', 'records must match reality'],
   };
   it('a name list for every screen', () => {

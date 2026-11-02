@@ -62,7 +62,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The strip under the title: ⏮ (first page), ‹ PREV, the readout (tap it for the list of every page, ✓ when done), NEXT ›. The ‹ at the top leaves the lab. “When to bring in a pro ›” opens a short note.',
     ],
     changes: [
-      'MOVEMENT redraws the picture as A MIX · THE CHORUS (BARS 3–4), marked LEAD +3 · BGV IN: the lead rides up and the backing pad enters.',
+      'MOVEMENT redraws the picture as A MIX · THE CHORUS (BARS 3–4), marked LEAD +3 · BGV IN: the lead rides up and BGV (backing vocals, a synth pad here) enters.',
       'Every other dimension shows A MIX · THE VERSE (BARS 1–2), marked ALL FIVE AT ONCE.',
       'The focal point is a commitment, not a right answer: page 5 uses it to suggest an anchor track.',
       'Each goal chip turns ✓ when done; with all three ✓ the page counts.',
@@ -303,7 +303,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'FAST and SLOW share threshold −30 dB, ratio 6:1 and release 90 ms; only ATTACK differs: 0.4 ms against 30 ms.',
       'Fast attack clamps the front of the hit, so the crack is flattened; slow attack lets the first crack through before the gain comes down on the body.',
-      'The gain line reads GAIN, dB — DOWN (its deepest dip) dB AT MOST.',
+      'The gain line dips as the compressor turns the snare down; its label gives the deepest dip: GAIN, dB — DOWN … dB AT MOST.',
     ],
     teaches: [
       'A compressor is an automatic fader: it shapes the front (attack) and tail (release) of every note.',
@@ -475,7 +475,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       '48 kHz with 24-BIT: “Session rate, 24-bit — the no-surprises default”. Any other pair is legitimate when a spec asks for it.',
-      '16-BIT adds a reminder to dither on the way down.',
+      '16-BIT turns DITHER ON: a faint noise added when cutting to 16 bits, so the rounding error becomes soft hiss, not grit.',
       'The dialog swaps final_FINAL_2.wav for your built name, and the inspection lists what was checked.',
     ],
     teaches: [

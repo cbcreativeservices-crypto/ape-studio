@@ -238,7 +238,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     changes: 'The longer path arrives later (Δt). Summed, that delay cancels some frequencies — the comb’s notches. Polarity swaps notches and peaks; Δt stays.',
     tryThis: [
       'Flip MIC B POLARITY to − and back: DELAY Δt B−A does not change.',
-      'Move a mic so the paths differ more: Δt grows and 1ST NOTCH drops; bring them nearly equal and it climbs to OVER 20 kHz — while the POLARITY cell’s small line stays the same.',
+      'Move a mic so the paths differ more: Δt grows and 1ST NOTCH drops; nearly equal, it reads OVER 20 kHz. If POLARITY’s lower line leaves “switch”, the sum has flipped and the notch jumps.',
     ],
   },
   'READ|Symptoms': {
@@ -395,6 +395,8 @@ function fit(lines: readonly (Line | null | false | undefined)[], cap: number): 
   const out = lines.filter((l): l is Line => !!l && l.text.length > 0);
   const len = () => out.map((l) => l.text).join(' ').length;
   for (let i = out.length - 1; i >= 0 && len() > cap; i--) if (!out[i].req) out.splice(i, 1);
+  // At most five lines: drop optional lines (last first) before any required one.
+  for (let i = out.length - 1; i >= 0 && out.length > 5; i--) if (!out[i].req) out.splice(i, 1);
   return out.slice(0, 5).map((l) => l.text);
 }
 
@@ -432,7 +434,7 @@ function keyPhrase(k: MikingDockKey, level: 0 | 1 | 2): string {
   }
 }
 
-const STRIP_LINE = 'The strip under the title reads MODULE, and STEP when a module has several: ‹ PREV and NEXT › move one step, then on to the next module (FINISH › at the very end); ⏮ returns to module 1; the middle readout opens the contents. Every module stays open.';
+const STRIP_LINE = 'The strip under the title: ‹ PREV and NEXT › move one step, on into the next module (FINISH › at the very end); ⏮ returns to module 1. Tap the middle readout (MODULE, plus STEP when there are several) for the contents. Every module stays open.';
 /** The header's other ⓘ: the lesson's starting-points note (AccuracyNote). */
 const CHIP_LINE = 'The other ⓘ beside this key opens the lesson’s ABOUT THESE STARTING POINTS note.';
 const FULL_LINE = '⤢ FULL SCREEN shows the drawing at full size with zoom; ▴ HIDE DISPLAY gives the words the whole screen.';

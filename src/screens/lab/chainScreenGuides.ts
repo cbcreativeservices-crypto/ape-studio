@@ -69,7 +69,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
     tryThis: [
       'From an empty chain (SCENARIO → ⟲ CLEAR CHAIN) pick SINE 220, tap ▶ and put in LIMIT alone: its GR holds between −4 and −5 dB — the −20 dB tone sits about 5 dB over the −25 dB ceiling.',
       'Now put DIST in too: LIMIT’s GR jumps to about −16 dB. DIST’s drive +12 dB hands the limiter a signal about 12 dB hotter — the unit before changes the unit after.',
-      'Pick EQ BOOST → COMP, set SOURCE to SINE 220, play: COMP reads about −8 dB. Bypass EQ in MODULES: about −7 (about −6 on the phone speaker) — less boost to react to.',
+      'Pick EQ BOOST → COMP, set SOURCE to SINE 220, play: COMP reads about −8 dB. Bypass EQ in MODULES: about −7 (about −6 on the phone speaker). The 150 Hz shelf lifts a 220 Hz tone under 2 dB.',
     ],
   },
 

@@ -287,7 +287,7 @@ function PagePhase({ ctx }: { ctx: PageCtx }) {
             NOTCHES: {notches.map((f) => (f >= 1000 ? `${(f / 1000).toFixed(1)}k` : Math.round(f))).join(' · ')} Hz — PEAKS: {peaks.map((f) => (f >= 1000 ? `${(f / 1000).toFixed(1)}k` : Math.round(f))).join(' · ')} Hz
           </Text>
         ) : null}
-        {ms != null ? <Body>{ms <= 1 ? 'Short delays notch HIGH — the “hollow phone” tone of a close pair slightly off.' : 'Longer delays pull the first notch down into the body of the sound — the tone thins where it hurts.'} Move a mic ~34 cm and you move the delay ~1 ms.</Body> : null}
+        {ms != null ? <Body>{ms <= 1 ? 'Shorter delays put the first notch higher: 1 kHz at 0.5 ms, 500 Hz at 1 ms.' : 'Longer delays pull the first notch down into the body of the sound — the tone thins where it hurts.'} Move a mic ~34 cm and you move the delay ~1 ms.</Body> : null}
       </Card>
       <Card tone="note">
         <Eyebrow>POLARITY IS NOT DELAY</Eyebrow>

@@ -571,7 +571,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         ],
         changes: [
           'The rig arrives misconfigured: a hot source, a 2 Ω load on a 4 Ω amplifier and blocked vents, which add heat — enough to trip thermal limiting at 4 Ω.',
-          'A lower SOURCE stops upstream clipping; 8 Ω or 4 Ω meets the load rating; bridging halves the load each channel sees.',
+          'A lower SOURCE stops upstream clipping; 8 Ω or 4 Ω meets the load rating. Bridging is no fix: each channel then sees half the impedance, a heavier load.',
           'The target is a clean output between 50% and 85% of full, with no load, thermal or connection faults.',
         ],
         teaches: [

@@ -47,7 +47,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
   explore: {
     seeing: [
       'Signal flow: IN ▸, the green M/S WIDTH stage (MID = what L and R share, SIDE = what differs), ▸ OUT. Amber = L, blue = R.',
-      'IN: a tone whose R lags L, STEREO TEST TONE · L ≠ R (PINK NOISE · MONO: SAME TONE IN L AND R).',
+      'IN draws a stand-in tone: STEREO TEST TONE · L ≠ R (R lags L); SOURCE MONO: SAME TONE IN L AND R.',
       'Readouts: WIDTH, PAN and FOLD (STEREO, or MONO during a mono check).',
       'LAB NOTES, DESIGNED RESPONSE: a goniometer, a picture of L against R (M up, S across), and a CORRELATION meter, −1 to +1.',
     ],

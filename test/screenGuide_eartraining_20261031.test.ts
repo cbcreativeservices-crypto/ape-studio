@@ -504,7 +504,7 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
     assert.deepEqual(EAR_MODULES.filter((m: { realSources?: boolean }) => m.realSources).map((m: { id: string }) => m.id).sort(), ['band', 'eq']);
     assert.ok(EAR_HOME_GUIDE.seeing[0].includes('two can use a recorded piano or guitar chord'));
     assert.match(code('src/features/ear/earProgress.ts'), /\.slice\(-sinceChange\)\s*\.filter\(\(t\) => t\.level === p\.level\)\s*\.slice\(-WINDOW\)/);
-    assert.ok(EAR_HOME_GUIDE.changes[1].includes('Only answers since you reached your level count'));
+    assert.ok(EAR_HOME_GUIDE.changes[1].includes('Only answers since you reached this level are judged'));
   });
   it('drill readouts the guides name are on the screen: the “last 20” pill, the level subtitle, the trial/streak line', () => {
     assert.match(MOD, /<Text style=\{styles\.statSub\}>last 20<\/Text>/);

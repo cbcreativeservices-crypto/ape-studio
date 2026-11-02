@@ -294,7 +294,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   });
   it('vetted: the envelope is the same AT THE SOURCE (the screen’s qualifier is kept)', () => {
     assert.match(s, /A snare’s envelope at the source is the same whether you stand at one meter or twenty/);
-    assert.match(GUIDES.p6.teaches[0], /envelope at the source is the same at one meter or twenty/);
+    assert.match(GUIDES.p6.teaches[0], /envelope at the source is the same whether you stand at one meter or twenty\. Farther away, the room adds more of its own tail on top\./);
   });
 });
 

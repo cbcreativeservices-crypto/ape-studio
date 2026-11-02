@@ -231,7 +231,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     }
     assert.match(GUIDES.explore.changes[0], /pulled down to it almost at once[\s\S]*A sharp click can slip a few dB past first: there is no lookahead/);
     assert.doesNotMatch(GUIDES.explore.changes.join(' '), /held down to it at once/);
-    assert.match(GUIDES.learn.changes.join(' '), /as long as the lookahead covers the attack \(this lab has none\)/);
+    assert.match(GUIDES.learn.changes.join(' '), /only if it sees peaks coming early \(lookahead\); this lab has none/);
     assert.match(LESSON, /out ≤ ceiling, as long as the lookahead covers the attack/);
   });
   it('the guide states exactly those readings', () => {

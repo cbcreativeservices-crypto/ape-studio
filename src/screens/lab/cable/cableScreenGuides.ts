@@ -308,8 +308,8 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     changes: [
       'A continuity tester checks for a path between two contacts: CLOSED means connected, OPEN means not. Every test is de-energized: unplugged from all gear and power.',
-      'DROPS ON FLEX: the path breaks when the cable bends. SPLIT: each pin lands right, but its wires come from two different twisted pairs.',
-      'The pattern of ✕ rows is the fault. A cable that passes audio can still be wired wrong — only the map proves it.',
+      'DROPS ON FLEX: the path breaks when the cable bends. SPLIT: every pin lands right, so plain continuity passes; only the Pair rows catch it.',
+      'The ✕ rows show the fault. A cable that passes audio can still be wired wrong — only the map proves it.',
     ],
     teaches: [
       'How to read a continuity map and name the fault from it.',

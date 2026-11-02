@@ -85,7 +85,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     changes: [
       'Nothing on this page moves — it is the reference for what EXPLORE shows.',
       'The lesson’s ceiling figures (around −1 dBTP) are for a finished master; this lab’s ceilings sit far lower because its sources peak at −20 dBFS.',
-      'FORMULA / CONCEPT: a limiter is a compressor with the ratio taken toward ∞ — out never above the ceiling, as long as the lookahead covers the attack (this lab has none).',
+      'FORMULA / CONCEPT: a limiter is a compressor with the ratio taken toward ∞. It keeps every peak under the ceiling only if it sees peaks coming early (lookahead); this lab has none.',
     ],
     teaches: [
       'The words of limiting: ceiling, drive, release, lookahead, true peak, inter-sample peaks.',

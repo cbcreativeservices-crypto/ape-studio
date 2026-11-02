@@ -78,14 +78,14 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     ],
     changes: [
       'On HARD CLIP, DRIVE +12 dB lifts the sine to −8 dBFS, still round; past +20 dB it is cut flat at 0 dBFS. SOFT and TUBE bend gently long before that.',
-      'Same bend top and bottom (HARD, SOFT): odd harmonics — 660, 1100 Hz… from 220 Hz. TUBE is uneven, adding even ones (440, 880 Hz…).',
-      'MIX 50% blends the clean wave back in, but at +24 dB it sits 20 dB under the driven one: grit stays. OS changes the sound only.',
+      'HARD and SOFT bend both halves alike: odd harmonics (660, 1100 Hz… from 220 Hz). TUBE adds even ones (440, 880 Hz…).',
+      'MIX 50% at +24 dB: the clean wave is 20 dB below the driven one, so grit stays. Real parallel lowers the driven copy. OS changes the sound only.',
     ],
     teaches: [
       'Distortion creates new frequencies; turning up or EQ cannot. The wave’s shape decides which ones.',
       'Symmetric clipping → odd harmonics (hollow, harsh); asymmetric → even ones too, often heard as warm.',
       'Harmonics past half the sample rate fold back off-key (aliasing, from Digital Audio Systems).',
-      'In the Advanced Training Labs it follows Modulation, before Phase.',
+      'One of the Advanced Training Labs, listed under Distortion & Saturation.',
     ],
     tryThis: [
       'TYPE on HARD CLIP, DRIVE at +12 dB: the caption in LAB NOTES reads −8 dBFS — a round wave, just gain. Now +36 dB: the wave sits flat on the ceiling for most of each cycle.',

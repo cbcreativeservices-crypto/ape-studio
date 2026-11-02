@@ -207,7 +207,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     const lat = 1.5 * (220 / 1.01);
     assert.ok(Math.abs(lat - 326.73) < 0.01 && Math.abs(2 * 330 - 3 * 220) === 0);
     assert.match(SRC, /const soundPair = useCallback\(\(a: number, b: number, d: number, rot: boolean\) => \{\s*const f1 = a \* BASE_F0;/);
-    assert.match(textOf(GUIDES.explore), /plays OSC 1 and OSC 2 as sound\. The platform is silent, so DETUNE is heard in LATERAL only\./);
+    assert.match(textOf(GUIDES.explore), /plays OSC 1 and OSC 2 as two tones, both raised by the same factor into hearing \(the lower at 220 Hz\), so the ratio stays exact\. The platform is silent, so DETUNE is heard in LATERAL only\./);
     assert.match(read('src/features/lab/understandingChecks.ts'), /▶ sounds the detune in LATERAL only — in ROTARY it moves the silent platform\./);
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts'), /slowly turning figure and hear it as beating/);
   });
@@ -251,7 +251,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.equal(platOk(false, 1.07, 1.0), true, 'LATERAL ignores PLAT');
     assert.match(SRC, /: ratioExact && !platSimple\s*\? `A clean \$\{ratio\.label\} ratio between the arms, but PLAT is only a complex ratio of OSC 2 — the figure takes many swings to repeat/);
     assert.match(SRC, /: matched\s*\? `Near \$\{ratio\.label\} \(\$\{ratio\.interval\.toLowerCase\(\)\}\) but not exact — the figure slowly precesses/);
-    assert.match(textOf(GUIDES.explore), /An exact simple ratio \(a RATIO chip\), locked, and in ROTARY PLAT OFF or on a simple ratio too: the figure closes\.[\s\S]*Detuned, or off an exact ratio: the figure slowly turns \(precesses\) and never closes/);
+    assert.match(textOf(GUIDES.explore), /The figure closes on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio\.[\s\S]*Detuned, or off an exact ratio, it slowly turns \(precesses\), never closing/);
   });
   it('heavier DAMPING ends the drawing sooner (fewer turns at a smaller end amplitude)', () => {
     assert.match(SRC, /\{ key: 'light', label: 'LIGHT', endAmp: 0\.55 \},\s*\{ key: 'medium', label: 'MEDIUM', endAmp: 0\.25 \},\s*\{ key: 'heavy', label: 'HEAVY', endAmp: 0\.06 \}/);

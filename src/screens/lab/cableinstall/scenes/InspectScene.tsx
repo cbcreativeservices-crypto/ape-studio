@@ -770,7 +770,7 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
         <Reveal style={styles.doneCard}>
           <Text style={styles.doneHead}>FINAL INSPECTION COMPLETE</Text>
           <Text style={styles.lead}>
-            Inspection signed off and knowledge check passed. Press NEXT for your mastery profile and the field-check
+            Inspection signed off and knowledge check passed. Press NEXT for your knowledge profile and the field-check
             reward — or run another inspection attempt (a different defect draw) below.
           </Text>
           <Pressable

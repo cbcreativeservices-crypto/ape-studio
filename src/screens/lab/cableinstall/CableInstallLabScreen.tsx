@@ -694,7 +694,7 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
   const worst = weakestDim(dims);
   return (
     <View style={styles.profileCard}>
-      <Text style={styles.profileHead}>MASTERY PROFILE · OVERALL {overall}</Text>
+      <Text style={styles.profileHead}>KNOWLEDGE PROFILE · OVERALL {overall}</Text>
       <View style={{ gap: 7 }}>
         {rows.map((d, ri) => {
           const v = dims[d] ?? 0;
@@ -714,7 +714,7 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
           );
         })}
       </View>
-      {worst ? <Text style={styles.reviewLine}>Recommended review: {CI_DIM_META[worst].label}</Text> : null}
+      {worst ? <Text style={styles.reviewLine}>Suggested review: {CI_DIM_META[worst].label}</Text> : null}
     </View>
   );
 }

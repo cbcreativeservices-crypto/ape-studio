@@ -177,7 +177,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Consonants are what the mouth does to the air: block it, squeeze it, reroute it, or slide between shapes.',
-      'Where the energy sits explains two microphone problems: the hiss is a job for a de-esser (a processor that turns down only the hiss), the plosive’s air for a pop filter.',
+      'Where the energy sits explains two microphone problems: the hiss is a job for a de-esser (a compressor that acts only while it hears hiss), the plosive’s air for a pop filter.',
       'The next two pages look closely at plosives and sibilance.',
     ],
     tryThis: [
@@ -233,7 +233,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Sibilance is turbulence: air squeezed through a narrow channel and broken up on the teeth. It has no pitch.',
-      'Why bright mics, presence boosts and close placement make it worse, and a suggested order of fixes: placement, gentle EQ, then a de-esser (a compressor that turns down only the hiss band).',
+      'Why bright mics, presence boosts and close placement make it worse, and a suggested order of fixes: placement, gentle EQ, then a de-esser (a compressor that listens only to the hiss band).',
       'The De-Esser & Sibilance Control lab (Dynamics → Smart Processors Lab) shows how that processor decides.',
     ],
     tryThis: [
@@ -256,8 +256,8 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The UNDERSTANDING CHECK at the foot: tap an answer. A wrong pick explains, and you try again.',
     ],
     changes: [
-      'Direct voice and Room are against the voice at 12"; Plosive air against the puff at 12"; Proximity bass is the lift itself; Voice over noise, the gap to the noise floor.',
-      'The direct voice spreads as it travels, so it grows as you move in. Room sound arrives from every side, so it barely changes: closer sounds drier.',
+      'Direct voice and Room read against the direct voice at 12"; Plosive air against the puff at 12"; Proximity bass is the lift itself; Voice over noise, the gap to the noise floor.',
+      'Direct voice spreads as it travels, so it grows as you move in. Room sound comes from all sides and barely changes: closer sounds drier.',
       'Plosive air climbs far faster; Proximity bass, a directional mic’s close-up lift, grows too.',
     ],
     teaches: [

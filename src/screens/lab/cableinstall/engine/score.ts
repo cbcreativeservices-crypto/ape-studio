@@ -120,7 +120,7 @@ export function masteryBlocks(score0to100: number): number {
   return Math.max(0, Math.min(5, Math.round(score0to100 / 20)));
 }
 
-/** The weakest exercised dimension → "Recommended review" target.
+/** The weakest exercised dimension → "Suggested review" target.
  *  Only speaks below 80 (learning pass 2026-08-31): it used to ALWAYS name a
  *  target, so a 94-overall run was told to review its 92/100 dimension —
  *  advice that trains learners to ignore the advice. */

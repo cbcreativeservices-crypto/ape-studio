@@ -54,7 +54,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     changes: [
       'FREQ moves the filter; the dots show which tones it lifts or lowers in OUT.',
       'GAIN sets how far a bell or shelf rises or falls. HIGH-PASS and LOW-PASS ignore it — they cut on a fixed slope.',
-      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff; on HIGH-PASS Q does nothing.',
+      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff; this HIGH-PASS ignores Q.',
       'The pictures come from the same maths the audio runs — a designed response, not a measurement.',
     ],
     teaches: [
@@ -114,7 +114,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     teaches: [
       'It checks the ideas, not the knob positions: width, shape, slope and headroom.',
-      'Passing it completes the EQ Lab too — they share this check. Dynamics comes next in Advanced Training.',
+      'Passing it completes the EQ Lab too — they share this check. A good next step: the Dynamics labs.',
     ],
     tryThis: [
       'Before the Q question, on EXPLORE switch Q from 0.7 WIDE to 8 NARROW and watch the bell.',

@@ -46,7 +46,7 @@ export const CI_HOME_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'Installation is a chain of decisions — route, support, protection, separation, identity, inspection — not neat-looking wire.',
-    'Feedback names its authority: CODE / REGULATION, INDUSTRY STANDARD, MANUFACTURER REQUIREMENT or PROFESSIONAL PRACTICE.',
+    'Each verdict names its authority: CODE / REGULATION, INDUSTRY STANDARD, MANUFACTURER REQUIREMENT or PROFESSIONAL PRACTICE.',
     'It follows the two connector labs (what each cable carries) and comes before the Patchbay and Gain Staging labs.',
   ],
   tryThis: [
@@ -265,7 +265,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'In scenario 2, turn X-RAY WALL VIEW on at the unknown wall: studs appear, but nothing shows a rating. Then pick Verify the assembly before penetrating.',
-      'At 3 · THE DOORWAY, before you pick, ask what Wedge the door open for the event does to a door that may be a fire door: it defeats it.',
+      'At 3 · THE DOORWAY, before you pick, weigh “Wedge the door open for the event”: if that door is a fire door, a wedge defeats it.',
       'At 4 · SHARP EDGE, weigh Wrap the edge in tape and move on against Install a bushing / grommet on the opening: tape creeps and quits; the edge stays.',
     ],
   },
@@ -383,9 +383,9 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Rated work is verified against the listed system and the authority having jurisdiction. Stage 12 makes it all traceable.',
     ],
     tryThis: [
-      'At 1 DUCTED CAVITY spot the trap before answering: A plenum — every ceiling cavity is one. Here the return air runs in a duct; each space must be identified.',
+      'At 1 DUCTED CAVITY, spot the trap answer “A plenum — every ceiling cavity is one”: here the return air runs in a duct, so each space must be identified first.',
       'Tap 2 OPEN-RETURN CAVITY and compare it with space 1: here the cavity itself carries the return air, so what may run in it is limited.',
-      'At question 4, Yes — the label says fire rated is the trap: a label is not a system. Only the listed system matched to this wall and bundle counts.',
+      'At question 4, the answer “Yes — the label says fire rated” is the trap: a label is not a system. Only the listed system matched to this wall and bundle counts.',
     ],
   },
 
@@ -482,7 +482,7 @@ export const CI_MYTH_GUIDE: ScreenGuide = {
 export const CI_COMPLETE_GUIDE: ScreenGuide = {
   seeing: [
     'The end screen: CABLE DRESSING & INSTALLATION — COMPLETE, or WHAT IS LEFT with each unfinished stage listed.',
-    'MASTERY PROFILE · OVERALL and its number, then one row per area scored so far — Safety, Cable Protection, Routing & Support and more — five blocks each.',
+    'KNOWLEDGE PROFILE · OVERALL and its number, then one row per area scored so far — Safety, Cable Protection, Routing & Support and more — five blocks each.',
     'Buttons: VIEW FIELD CHECK, REVIEW RESULTS, REPEAT LAB, RETURN TO TRAINING.',
   ],
   control: [

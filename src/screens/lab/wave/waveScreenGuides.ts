@@ -175,7 +175,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Refraction: sound bends when its speed changes with height — the air acts like a lens.',
       'Why sound carries at night and over water: cool air below warm air bends it back down.',
       'Why a show fades on a hot afternoon: warm ground air bends sound up and away.',
-      'Wind barely changes sound’s speed (12 m/s against about 343 m/s); its increase with height is what bends the paths.',
+      'Downwind, wind adds to sound’s speed; it blows harder higher up, so the speed grows with height and bends the paths down, as an inversion does.',
     ],
     tryThis: [
       'Push GRAD fully to INVERSION: the amber ray curves down and H @150 m reads GROUND.',
@@ -208,7 +208,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Why a pillar in front of a PA dulls the highs behind it while the bass carries on.',
     ],
     tryThis: [
-      'With BARRIER at 4 m, slide FREQ from bottom to top: LOSS goes from under 9 dB to about 28 dB — one wall, three times the loss.',
+      'With BARRIER at 4 m, slide FREQ from bottom to top: LOSS goes from under 9 dB to about 28 dB — about 19 dB more shadow for the highs, from the same wall.',
       'At 1 kHz raise BARRIER from 2 m to 8 m: FRESNEL N climbs and the shadow darkens.',
       'Below the display, compare LOW REF — LOSS @ 80 Hz with HIGH REF — LOSS @ 8 kHz: that gap is the shadow.',
     ],

@@ -58,7 +58,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     seeing: [
       'Sound flows IN ▸ through COMP ▸ OUT; dashed lines mark the threshold, the dotted outline the sound untouched.',
       'Readouts: THRESH, RATIO and live GR, gain reduction (— dB stopped); the ladder at right echoes it.',
-      'A TEACHING MODEL: CLICK is the real 5 ms CLICK. At ATTACK 5 ms the spike passes almost whole (about 1 dB lower): GR peaks as the click ends, after its crest, so the GR kick lands just after each hit.',
+      'The drawing is a TEACHING MODEL. Its 5 ms CLICK is the real click. At ATTACK 5 ms the spike passes almost whole (about 1 dB lower): GR peaks as the click ends, so the GR kick lands just after each hit.',
     ],
     control: [
       '▶ in the header, or a tap on the display, plays the SOURCE through the compressor; ■ stops it. The THRESH fader runs from −50 to −10 dB.',
@@ -67,7 +67,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'Long-press any key or readout for its lesson entry. Below, LAB NOTES: the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [
-      'Only level over the threshold is turned down: each RATIO dB over comes out as 1 dB (4:1 turns 12 dB over into 3).',
+      'Only level over the threshold is turned down: at 4:1, every 4 dB over comes out as 1 (12 dB over → 3).',
       'ATTACK sets how fast it clamps, RELEASE how fast it lets go. At the start (CLICK 120, THRESH −40 dB, ATTACK 5 ms) GR kicks about 3–5 dB on each hit, then falls back to 0.0.',
       'MAKEUP raises the output afterwards; GR stays the same.',
       'Every SOURCE peaks near −20 dBFS.',

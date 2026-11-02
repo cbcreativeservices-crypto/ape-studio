@@ -391,8 +391,8 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
     assert.ok(g('p7', 'teaches').includes('The De-Esser & Sibilance Control lab (Dynamics → Smart Processors Lab)'));
   });
   it('terms defined where the guide uses them: de-esser (p5, p7), presence boost (p7), the capsule’s membrane (p6)', () => {
-    assert.match(g('p5', 'teaches'), /de-esser \(a processor that turns down only the hiss\)/);
-    assert.match(g('p7', 'teaches'), /de-esser \(a compressor that turns down only the hiss band\)/);
+    assert.match(g('p5', 'teaches'), /de-esser \(a compressor that acts only while it hears hiss\)/);
+    assert.match(g('p7', 'teaches'), /de-esser \(a compressor that listens only to the hiss band\)/);
     assert.match(g('p7', 'changes'), /presence boost \(an EQ lift/);
     assert.doesNotMatch(g('p6', 'changes'), /shoves the diaphragm/);
   });

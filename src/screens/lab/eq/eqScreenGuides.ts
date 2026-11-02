@@ -51,7 +51,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
     'EQ changes the balance of frequency content: where (frequency), how much (gain), how wide (Q).',
     'Which filter shape suits which job, and why overlapping filters combine.',
     'Modules 1 and 11 read your phone’s uncalibrated microphone — relative, for learning. The curves are designed responses; the trainers use a synthetic spectrum.',
-    'Builds on Visual Audio Analysis and the one-band Equalizer; Dynamics comes next.',
+    'Builds on Visual Audio Analysis and the one-band Equalizer; try Dynamics next.',
   ],
   tryThis: [
     'New to EQ? Take the modules in order — each one introduces only what the next needs.',
@@ -160,7 +160,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     control: [
       'EQ TYPE key: FIXED, SEMI-PARAMETRIC or FULLY PARAMETRIC — the tray explains each.',
       'PAN fader: moves the camera and the bell, 20 Hz to 20 kHz. LOCKED on FIXED.',
-      'ZOOM fader: widens or narrows the view, Q 0.3 (4.00 oct) to Q 5.8 (0.25 oct). LOCKED unless FULLY PARAMETRIC.',
+      'ZOOM fader: widens or narrows the view, from 4.00 oct (Q about 0.27; the readout rounds it to 0.3) to 0.25 oct (Q 5.8). LOCKED unless FULLY PARAMETRIC.',
       'Tap a LOCKED key to read why it is locked.',
     ],
     changes: [
@@ -531,7 +531,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     teaches: [
       'EQ is about balance: cutting the unwanted region and boosting around it can both improve it.',
       'Boosting raises the overall level, which uses up headroom into the next stage.',
-      'Follows Fix the Signal and closes the EQ Lab; in Advanced Training, Dynamics comes next.',
+      'Follows Fix the Signal and closes the EQ Lab. A good next step: the Dynamics labs (compression, gating, limiting).',
     ],
     tryThis: [
       'Tap CUT THE PROBLEM: the readout shows overall shift ≈ −1.0 dB.',

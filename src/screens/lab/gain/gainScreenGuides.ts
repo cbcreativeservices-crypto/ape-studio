@@ -134,7 +134,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     changes: [
       'PREAMP = source + input gain: at +18 dB, −30 + 18 = −12 dB. HEADROOM shrinks as gain rises.',
       'Too little gain leaves the signal in the blue zone, a small gap above the noise. Too much hits 0 dB: the waveform is clipped flat, HEADROOM 0 dB.',
-      'Hiss rises with gain too: slower than the signal at first (it climbs clear of the preamp’s own noise), then in step — no gain removes hiss that came in with the source.',
+      'Hiss rises with gain too: slowly at first, while the preamp’s own fixed hiss is the louder part, then dB for dB. No gain removes hiss that came in with the source.',
     ],
     teaches: [
       'Input gain is the first, and most important, gain decision in the chain.',
@@ -162,7 +162,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     ],
     changes: [
       'Each stage starts from the level the one before hands it: PROC adds its 6 dB to whatever PREAMP sends.',
-      'A weak preamp setting leaves every later stage closer to the hiss — at best on the bottom edge of HEALTHY.',
+      'A weak preamp leaves later stages near the hiss: at +0 dB, PROC and OUTPUT just reach HEALTHY’s bottom edge.',
       'A hot preamp leaves no room for PROC’s +6 dB: PROC reaches 0 dB and clips, even though the preamp has not.',
       'Once a stage clips, the distortion is part of the signal and rides on to the OUTPUT.',
     ],
@@ -328,7 +328,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'The lab’s final module: it uses everything from LEARN and EXPLORE, and passing it credits the challenge.',
     ],
     tryThis: [
-      'Search from either end: forward from the Preamp, or back from the Bus as the notes suggest. The fault is the first stage in the chain that reads CLIP.',
+      'Search from either end: forward from the Preamp, or back from the Bus as the notes suggest. The fault is the CLIP stage nearest the Source; the rest only inherit it.',
       'Found it? Lower that stage until its meter leaves CLIP and sits in HEALTHY: STATUS turns OK and the green frame appears.',
       'Press TRY AGAIN: a new fault is picked at random, possibly the same stage — Preamp, EQ, Compressor, Channel Fader or Bus.',
     ],

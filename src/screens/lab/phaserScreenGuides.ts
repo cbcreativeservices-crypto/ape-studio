@@ -64,7 +64,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     teaches: [
       'A phaser shifts phase, not time: no delay, no echo, and only a few unevenly spaced dips.',
       'More stages, more dips: about stages ÷ 2.',
-      'Third Modulation lab, after Chorus and Flanger — it contrasts phase with time. Distortion & Saturation comes next in Advanced Training. Each picture is a teaching model.',
+      'Third Modulation lab, after Chorus and Flanger — it contrasts phase with time. A good next step: Distortion & Saturation. Each picture is a teaching model.',
     ],
     tryThis: [
       'Set SWEEP’s DEPTH (SWEEP) to STATIC, then drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one either side of CENTER.',
@@ -117,7 +117,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     teaches: [
       'It checks the ideas: phase not time, notches ≈ stages ÷ 2, uneven spacing, and resonance’s peaks.',
-      'Completing it finishes the Phaser lab, the last in Modulation; Distortion & Saturation is next in Advanced Training.',
+      'Completing it finishes the Phaser lab, the last in Modulation. A good next step: Distortion & Saturation.',
     ],
     tryThis: [
       'Before you start, on EXPLORE set STAGES to 8 and count the dips on OUT.',

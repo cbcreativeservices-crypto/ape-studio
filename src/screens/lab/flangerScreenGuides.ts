@@ -22,11 +22,14 @@
  *     2.0 ms → 500 Hz, 5.0 ms → 200 Hz;
  *   • MIX 50%, peaks between notches: FDBK 0% → 0 dB (on the dotted input
  *     line), 40% → +2.5 dB, 70% → +6.7 dB (well above it);
- *   • MIX 100%, FDBK 40%: only −2.9 / +4.4 dB ripples — no deep notches.
- * Not used in any step, on purpose: FDBK −70% at MIX 50% draws a nearly flat
- * trace (−2.0 / +1.3 dB), and positive FDBK makes the notches SHALLOWER at
- * MIX 50% (−∞ → −16.9 → −13.7 dB) — both listed for the auditors, so no
- * guide line here claims "deeper notches" or a "hollow" picture.
+ *   • MIX 100%, FDBK 40%: only −2.9 / +4.4 dB ripples — no deep notches;
+ *   • MIX 100%, FDBK −70%: +10.5 / −4.6 dB — the resonant, hollow comb. The
+ *     third EXPLORE step says it is hollow ONLY at 100%: at MIX 50% the same
+ *     key draws a nearly flat trace (−2.0 / +1.3 dB), as the screen's caption
+ *     says (D42, 2026-11-01).
+ * Positive FDBK makes the notches SHALLOWER at MIX 50% (−∞ → −16.9 →
+ * −13.7 dB), so no guide line here claims "deeper notches", and none calls
+ * −70% hollow without its 100% condition.
  * test/screenGuide_flanger_20261031.test.ts pins the names and recomputes the
  * numbers. Change a label, range or default → update this file.
  *
@@ -68,7 +71,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     tryThis: [
       'Drag CENTER from 2.0 ms down to 0.50 ms: the caption under DESIGNED RESPONSE goes from notches every 500 Hz to every 2000 Hz, and the notches on OUT spread apart.',
       'Step FDBK from 0% to 70% METALLIC: on OUT the peaks between the notches rise well above the dotted input line and narrow — listen for the comb starting to ring.',
-      'Set MIX to 100%: the deep notches vanish — no dry sound is left to cancel against — and the caption says why. Go back to 50% EVEN for the full comb.',
+      'Set MIX to 100%: the deep notches vanish — no dry sound is left to cancel. Now pick FDBK −70% HOLLOW: it sounds hollow only at 100%; at 50% EVEN it almost cancels the comb out.',
     ],
   },
 

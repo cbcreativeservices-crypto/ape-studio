@@ -87,7 +87,7 @@ export const POSTPROD_HOME_GUIDE: ScreenGuide = {
     'Three chapters: Prepare and Edit, Build and Mix, Finish and Deliver.',
   ],
   tryThis: [
-    'On a fresh project, set Stage 2’s “Do the source cards or drives still hold the material” to No, the sources have been cleared: ONE THING BLOCKS THIS PROJECT here, BLOCKED there.',
+    'On a fresh project, set Stage 2’s “Do the source cards or drives still hold the material” to No, the sources have been cleared. This screen: ONE THING BLOCKS THIS PROJECT; Stage 2 reads BLOCKED.',
     'Tap that blocker, give a name and a reason, RECORD IT: it moves to PROCEEDING WITH ACCEPTED CONDITIONS and Stage 2 is no longer BLOCKED.',
     'Answer any question in a stage and come back: PICK UP WHERE YOU LEFT OFF appears, naming that stage.',
   ],
@@ -105,7 +105,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Post-production starts by writing down what you were given, what the finished thing must be, and what nobody has told you yet.',
-      'The specification sets every later number: sample rate, bit depth, loudness, versions. LUFS is loudness over the whole program; dBTP is the highest peak, including peaks between samples.',
+      'The specification sets every later number: sample rate, bit depth, loudness, versions. Integrated loudness (LUFS) averages the whole program; true peak (dBTP) is the highest peak, even between samples.',
       'Stage 1: Stages 2–8 are checked against it.',
     ],
     tryThis: [
@@ -257,7 +257,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Set “Is the previously approved version preserved” to No: BLOCKED — “Revisions are being made over the approved version”. Pick Yes — saved as a separate version and print: it clears.',
-      'Enter 2 in “How many archive copies exist”: “One copy is not an archive” appears, since a count with no place proves nothing. Fill in “Where they are”: it clears.',
+      'Enter 2 in “How many archive copies exist”, leaving “Where they are” empty: “One copy is not an archive” appears — a count with no place proves nothing. Fill in “Where they are”: it clears.',
       'Tick items under “The archive contains” and set “Has a restore been tested” to Only the file list was checked: “The archive has never been restored”.',
     ],
   },
@@ -381,7 +381,7 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
 
 export const POSTPROD_PACKET_GUIDE: ScreenGuide = {
   seeing: [
-    'The Delivery Package: the whole project as one document. Its title, verdict and all below SHARE AS PDF print; the type and WHAT’S LEFT do not.',
+    'The Delivery Package: the whole project as one document. The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.',
     'At the top: project, type, verdict. WHAT’S LEFT: every open item by stage, blocked stages and blockers first.',
     'Below it: Revision, Revision date, Prepared by, Status; any MUST BE RESOLVED BEFORE PROCEEDING and ACCEPTED CONDITIONS; every stage’s answers.',
   ],

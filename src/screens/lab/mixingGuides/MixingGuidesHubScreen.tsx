@@ -11,7 +11,7 @@
  * filter narrows the grid by style name, mix priority or origin.
  *
  * Each tile: number, style, its "mix priority #1" line and ✓ READ. The count
- * line reads "n of 50 read" — lab-local progress (readProgress.ts). A failed
+ * line reads "n read" (no total; ✓ ALL READ when done) — lab-local progress (readProgress.ts). A failed
  * progress read says so (D51) and every guide still opens. Members-only
  * gating is the navigator's (MemberGated + withMembershipPreview).
  */

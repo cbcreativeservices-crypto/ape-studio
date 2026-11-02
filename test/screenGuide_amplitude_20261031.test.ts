@@ -179,7 +179,7 @@ describe('3. each guide quotes the page’s real names', () => {
       const t = textOf(gd);
       assert.match(t, /RMS averages strength over time/);
       assert.match(t, /dB \(decibels\)/);
-      assert.match(t, /harmonic \(a weaker tone at 3× the pitch\)/);
+      assert.match(t, /harmonic \(a weaker tone at 3× the frequency\)/);
       assert.match(t, /Amplitude is how big the swings are; level is that size read as a number/);
     }
     // The page's harmonic is the 3rd (trace(): 2 and 6 cycles across the card).

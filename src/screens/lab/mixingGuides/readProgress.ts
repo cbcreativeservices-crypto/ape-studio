@@ -1,6 +1,6 @@
 /**
  * Mixing Guides — which guides the learner has READ (lab-local progress, like
- * the other training labs: ✓ per guide, "n of 50 read", the what's-left
+ * the other training labs: ✓ per guide, "n read", the what's-left
  * screen). No certificate, no labCompletion call.
  *
  * On the shared safe store (createLocalStore, AGENTS.md): a failed READ is

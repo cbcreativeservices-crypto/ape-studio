@@ -87,7 +87,8 @@ describe('1. every Equalizer screen has a complete guide', () => {
     assert.ok(eqCat.indexOf("route: 'EqLab'") < eqCat.indexOf("route: 'EqLabHome'"));
     assert.ok(cat.indexOf("id: 'equalization'") < cat.indexOf("id: 'dynamics'"));
     assert.match(GUIDES.explore.teaches.join(' '), /The first lab in Equalization; the EQ Lab follows/);
-    assert.match(GUIDES.check.teaches.join(' '), /Dynamics comes next/);
+    // The Advanced Training menu lists categories A→Z (Dynamics sits BEFORE Equalization): suggest it, never "next".
+    assert.match(GUIDES.check.teaches.join(' '), /A good next step: the Dynamics labs/);
   });
 });
 

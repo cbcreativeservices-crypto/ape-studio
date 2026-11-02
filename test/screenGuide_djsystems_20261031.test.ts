@@ -395,7 +395,7 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     assert.ok(Math.min(...counts) > LEFT_SHOWN, `fewest goals ${Math.min(...counts)}`);
     assert.ok(et.includes('usually with Left: and up to three goals your last visit missed, then + n more'));
     assert.ok(et.includes('Left: is what your last visit this session missed (every goal, if not opened yet).'));
-    assert.ok(et.includes('Chips start empty each visit: a row reading Every goal is met needs them all again.'));
+    assert.ok(et.includes('Chips start empty each visit, so a screen counts only when all tick in one visit.'));
     assert.ok(!/still needs\.|lists all its goals|goals it still needs/.test(et));
     assert.match(code(`${DJ}/bits.tsx`), /const seen = useRef<boolean\[\]>\(visitStart\(goals\.length\)\);/);
     const { DJ_OPTIONAL_NUMBERS } = await import('../src/screens/lab/dj/pages/registry.ts');
@@ -425,6 +425,6 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     assert.match(pl, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(pl, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
     assert.ok(et.includes('Reopening a screen to practice never clears its ✓ DONE.'));
-    assert.ok(et.includes('START OVER (PRACTICE), at the foot of the list WHAT’S LEFT ▾ opens at the top, asks first, then clears every ✓ DONE mark for a fresh run'));
+    assert.ok(et.includes('WHAT’S LEFT ▾ at the top opens the list of screens; START OVER (PRACTICE), at its foot, asks first, then clears every ✓ DONE mark and reopens Screen 1 for a fresh run'));
   });
 });

@@ -209,7 +209,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Envelope: how the source changes over time. Propagation: how sound travels and meets the room.',
     ],
     teaches: [
-      'ADSR describes the source, not the room: a snare’s envelope at the source is the same at one meter or twenty.',
+      'ADSR describes the source, not the room: a snare’s envelope at the source is the same whether you stand at one meter or twenty. Farther away, the room adds more of its own tail on top.',
       'A long reverb tail is not a long release. Release is the source stopping; the tail is the room still returning energy.',
       'Propagation is the subject of the Wave Physics Laboratory, in Audio Fundamentals.',
     ],

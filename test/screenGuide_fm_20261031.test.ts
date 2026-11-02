@@ -267,7 +267,7 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.ok(Math.abs(besselJ(0, 2) + besselJ(1, 2) - 0.801) < 0.001);
     assert.ok(Math.abs(besselJ(1, 2) - besselJ(2, 2) - 0.224) < 0.001);
     assert.match(code('modules/ape-dsp/ios/core/Generator.hpp'), /std::sin\(2\.0 \* kPi \* fmPhC_ \+ I \* std::sin\(2\.0 \* kPi \* fmPhM_\)\)/);
-    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /on a stick, both combine/);
+    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /if it lands on a stick, the two combine/);
     assert.doesNotMatch(FM_SCREEN_GUIDES.explore.seeing.join(' '), /adds to/);
   });
   // Review 2026-10-31 (vetted): STRIKE has no helpKey, so the long-press line

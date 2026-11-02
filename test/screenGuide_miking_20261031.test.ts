@@ -171,6 +171,52 @@ describe('1. every screen a learner reaches has a complete guide', () => {
     assert.ok(n > 100000, `${n} guides built`);
     assert.deepEqual([...new Set(problems)].slice(0, 25), []);
   });
+  it('ratchet (D42 2026-11-01): the strip line never crowds out the other ⓘ, ⤢ FULL SCREEN or the drag line', () => {
+    // A two-line strip once took two of the five control slots and silently dropped these
+    // optional lines on most rack steps (the other ⓘ on TRY, WATCH, LEARN and COMPARE, the
+    // drag line on PAIR, ⤢ FULL SCREEN on a family-page PAIR). Over every input the sweep above
+    // builds, each line shows wherever it showed before that change. The steps below already
+    // dropped one for budget then (a long step note plus a full dock): this list may only SHRINK.
+    const KNOWN_LOSS = new Set([
+      'PLACE · Place the mic|the other ⓘ|engine', 'PLACE · Place the mic|the other ⓘ|family',
+      'PLACE · Place the mic|FULL SCREEN|engine', 'PLACE · Place the mic|the drag line|engine',
+      'LIVE · Aim the rejection|the other ⓘ|engine',
+      'PAIR · Pair and polarity|the other ⓘ|engine', 'PAIR · Pair and polarity|the other ⓘ|family',
+      'PAIR · Pair and polarity|FULL SCREEN|engine',
+    ]);
+    const lost = new Set<string>();
+    let rack = 0, pos = 0;
+    for (const m of Reg.LESSONS) {
+      for (const pg of lessonPages(m.id)) {
+        for (const step of [null, ...STEP_SAMPLES, ...REVIEW_DOCKS] as ({ label: string; layout?: string; dock: { label: string; kind: string }[] } | null)[]) {
+          for (const [first, last] of [[true, false], [false, true], [true, true], [false, false]] as const) {
+            for (const enginePage of [true, false]) {
+              for (const credited of [false, true]) {
+                const gd = G.mikingScreenGuide({ page: pg.page, pageNum: pg.i + 1, pageTitle: pg.title, goal: pg.goal, prevTitle: pg.prev, nextTitle: pg.next, step, first, last, credited, enginePage }) as unknown as Guide;
+                const ctl = gd.control.join(' | ');
+                const miss = (what: string) => {
+                  const k = `${step?.label ?? '—'}|${what}|${enginePage ? 'engine' : 'family'}`;
+                  if (!KNOWN_LOSS.has(k)) lost.add(`${k} (${m.id} ${pg.page})`);
+                };
+                assert.match(ctl, /The strip under the title/, `${m.id} ${pg.page} ${step?.label ?? '—'}`);
+                if (!/The other ⓘ beside this key/.test(ctl)) miss('the other ⓘ');
+                if (step?.layout === 'rack') {
+                  rack++;
+                  if (!/⤢ FULL SCREEN shows the drawing/.test(ctl)) miss('FULL SCREEN');
+                }
+                if (step?.dock.some((k) => k.label === 'POSITION' && k.kind === 'fader')) {
+                  pos++;
+                  if (!/Drag the mic on the display/.test(ctl)) miss('the drag line');
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    assert.ok(rack > 50000 && pos > 5000, `${rack} rack guides, ${pos} with POSITION`);
+    assert.deepEqual([...lost].slice(0, 25), []);
+  });
   it('the Foundations card, for every module it can cover in every lesson', () => {
     const problems: string[] = [];
     for (const m of Reg.LESSONS) {
@@ -214,7 +260,7 @@ describe('2. every hand-written name is on the screen it describes', () => {
     'WATCH|Worked example': [[P('PPlacement')], ['STEP', 'WHERE TO BEGIN', 'THE DISTANCE', 'CLEARANCE', '▸ ', 'FRONT']],
     'PLACE|Place the mic': [[P('PPlacement')], ['START', 'ZONE', 'SETUP', 'MIC TYPE', 'MEASURE FROM', 'POSITION', 'AIM', 'twoZones', 'C.variantKey', '<ZoneCard']],
     'LIVE|Aim the rejection': [[P('PContext')], ['AIM', 'PATTERN', 'MONITOR', 'LIVE', 'STUDIO', 'PICKUP', 'REJECTION', 'IN NULL', 'NULL', 'X.badgeWhere', 'Studio: no monitor.']],
-    'PAIR|Pair and polarity': [[P('PTwoMic')], ['EDIT MIC ${slot}', 'MIC B POLARITY', 'SOURCE', 'PATH Δd B−A', 'DELAY Δt B−A', '1ST NOTCH', 'NO COMB', 'POLARITY', 'OVER 20 kHz', 'rear lobe: −', 'heads: −']],
+    'PAIR|Pair and polarity': [[P('PTwoMic')], ['EDIT MIC ${slot}', 'MIC B POLARITY', 'SOURCE', 'PATH Δd B−A', 'DELAY Δt B−A', '1ST NOTCH', 'NO COMB', 'POLARITY', 'OVER 20 kHz', 'rear lobe: −', 'heads: −', "'switch'"]],
     'READ|Symptoms': [[P('PReadPages'), `${MIKING}/engine/kit.tsx`], ['OBSERVATION', 'a retry is explained, never penalized', 'What do you check first?', '<SymptomCard']],
     'PRACTICE|Set up in order': [[P('PReadPages')], ['A step tapped too early is answered with why it cannot come yet', 'OrderTaskCard']],
     'PRACTICE|Your setup': [[P('PReadPages')], ['Each brief accepts more than one setup', 'tick every reason']],
@@ -503,7 +549,7 @@ describe('7. the 2026-10-31 review: each accepted finding, re-proved from the co
   });
   it('the strip line explains step mode as the strip reads it', () => {
     assert.match(code('src/screens/lab/kit/labNav.ts'), /noun: `MODULE \$\{i \+ 1\} · STEP`,/);
-    assert.match(textOf(guideAt('M01', 'meet', null)), /reads MODULE, and STEP when a module has several/);
+    assert.match(textOf(guideAt('M01', 'meet', null)), /Tap the middle readout \(MODULE, plus STEP when there are several\) for the contents/);
   });
   it('the other ⓘ: named only where the lesson header still carries the starting-points chip (never on the hub)', () => {
     assert.match(code(LESSON_SCREEN), /right=\{<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>\}/);

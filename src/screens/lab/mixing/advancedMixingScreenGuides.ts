@@ -71,7 +71,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'This is a soft gate: NEXT always moves on, and the page is simply listed on the what’s-left screen until its goal is met.',
     ],
     teaches: [
-      'Beginning asked: can you make a clear, balanced stereo mix? Advanced asks: can you manage, refine, troubleshoot and deliver a complex one?',
+      'Beginning Mixing covered how a clear, balanced stereo mix is built. Advanced covers how a complex one is managed, refined, troubleshot and delivered.',
       'The same five dimensions — balance, frequency, pan and width, depth, movement — at the scale of a big session.',
       'The lab runs from planning and routing, through processing and translation, to stems, delivery and a final repair.',
     ],
@@ -288,7 +288,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'The first notch sits at 1 ÷ (2 × delay); the next ones step up by 1 ÷ delay. Peaks sit at whole multiples of 1 ÷ delay.',
-      'Short delays (1 ms or less) notch high; longer ones pull the first notch down into the body of the sound.',
+      'Shorter delays put the first notch higher (0.5 ms: 1 kHz); longer ones pull it down into the body of the sound (4 ms: 125 Hz).',
       'Moving a mic about 34 cm moves the delay about 1 ms.',
     ],
     teaches: [
@@ -348,7 +348,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Matched in level, what remains is the color: density first, then the cost of the hard version — duller transients, a fizzy top.',
     ],
     teaches: [
-      'Saturation adds harmonics that were never played: weight and glue when gentle, distortion when blind.',
+      'Saturation adds harmonics that were never played: weight and glue when gentle, audible distortion when pushed too hard.',
       'Saturation also adds loudness, so it is judged at matched level.',
       'Tape, console and tube are different curves of the same idea.',
     ],
@@ -514,7 +514,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'The stem contract: summed together, the stems must rebuild the approved mix.',
-      'A null test proves it: flip one side, sum, and measure what refuses to disappear.',
+      'A null test proves it: flip the polarity of one version, add the two, and measure what refuses to disappear.',
       'Stem specs must say what happens to mix-bus processing: printed onto each stem, sent separately, or documented.',
     ],
     tryThis: [

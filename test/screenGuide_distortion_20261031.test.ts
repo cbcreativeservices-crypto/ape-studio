@@ -277,7 +277,7 @@ describe('4. the numbers follow from the lab’s own math', () => {
     // the dry is the UN-driven −20 dBFS input (Effects.hpp: inL * (1 - mix)): under 8 % of the output fundamental
     assert.ok(0.05 / harm(half, 1) < 0.08);
     assert.match(DISTORTION_SCREEN_GUIDES.explore.tryThis[2], /About 5 dB quieter, yet nearly as gritty/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /at \+24 dB it sits 20 dB under the driven one: grit stays/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /MIX 50% at \+24 dB: the clean wave is 20 dB below the driven one, so grit stays\. Real parallel lowers the driven copy/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /clean tone|half clean/i, `${id}: promises a clean tone the lab cannot play`);
     // 2026-10-31 (two verifiers): the lab's own copy no longer promises the clean body at 50% —
     // the check, the lesson's Mix entry and the CHECK guide all state the ~20 dB gap at +24 dB.

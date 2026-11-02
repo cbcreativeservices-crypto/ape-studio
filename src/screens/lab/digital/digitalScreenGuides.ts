@@ -163,7 +163,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'Each extra bit doubles LEVELS (2 to the power of the bits) and adds about 6 dB of TH. SNR: 6.02 × bits + 1.76 dB.',
-      'Below full scale the rounding error is at most half a step, so a quiet sine suffers most.',
+      'The rounding error is at most half a step at any level: a big share of a quiet sine.',
       'At low levels the error locks to the signal — distortion, not hiss. Dither adds a little noise first and turns it into a steady, gentle floor.',
       'Bits change level resolution only, never frequency response.',
     ],
@@ -258,7 +258,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     changes: [
       'Float has room above 0 dBFS: an over-zero peak is just a bigger number, so TRIM brings the wave back intact.',
       'Fixed point has no number above full scale: everything over 0 dBFS is cut flat at the render. TRIM after that gives a quieter clipped wave.',
-      'The exponent rescales the ruler by decades, so float stores tiny and huge values.',
+      'The exponent rescales the ruler, so float stores tiny and huge values. This screen counts in decades to keep it readable; real floats use powers of two.',
     ],
     teaches: [
       'Integer (fixed-point) formats stop hard at 0 dBFS; floating point has an enormous range.',
@@ -325,7 +325,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     teaches: [
       'What jitter is, and where it matters.',
-      'One device sets the clock for a whole digital system; the rest follow it by word clock, the clock inside a digital audio cable (AES3 or S/PDIF), or PTP (network timing) on a network.',
+      'One device sets the clock for a whole digital system. The rest follow it: by a word-clock cable, by the clock carried in a digital audio signal (AES3 or S/PDIF), or by PTP timing on a network.',
       'The classic digital-audio myths, each beside what is true.',
       'Draws the lab together; Visual Audio Analysis comes next.',
     ],

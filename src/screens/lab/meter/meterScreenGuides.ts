@@ -104,7 +104,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'More GAIN, a taller wave. Past full scale there is no bigger number to store, so tops are cut flat: CLIP reads OVER.',
       'Height is peak; RMS is average energy. Spiky sounds have a big CREST, steady ones a small one.',
       'DC moves the center. It is silent, but RMS counts it, and one side hits full scale sooner.',
-      'With DC at 0 %, Ø POL flips the wave and only DC’s sign changes. The fader’s offset is not flipped.',
+      'With DC at 0 %, Ø POL flips the wave: every level stays; only the DC readout’s sign flips.',
     ],
     teaches: [
       'Height shows peak level, not loudness.',
@@ -154,7 +154,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   vu: {
     seeing: [
       'A classic VU meter: a needle on an arc scale, plus a PEAK lamp that lights on fast peaks.',
-      'The needle takes about 300 ms to respond — by design, as the badge says. On this face, 0 VU is an average level of about −7.5 dBFS.',
+      'The needle takes about 300 ms to respond — by design, as the badge says. This teaching face puts 0 VU at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
       'Readouts: PEAK (highest sample), RMS (average energy), CREST (their gap) and NDL MAX (the highest a 300 ms average reached, in dBFS).',
     ],
     control: [
@@ -176,7 +176,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     tryThis: [
       'On SNARE: PEAK −1.6, but NDL MAX only −23.0 — more than 21 dB under the peak.',
       'Switch to ORGAN: PEAK −5.7, NDL MAX −11.3 — a lower peak, yet NDL MAX sits almost 12 dB higher, and the PEAK lamp stays dark.',
-      'Pick PINK NOISE: broadband, yet the needle barely moves. Equal energy in every octave makes it the reference for system and room checks.',
+      'Pick PINK NOISE: broadband and steady, so the needle holds almost still. Equal energy in every octave makes it the reference for system and room checks.',
     ],
   },
 
@@ -302,7 +302,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   // ── 8 ─────────────────────────────────────────────────────────────────────
   phase: {
     seeing: [
-      'A phase meter. Top: the CORRELATION bar from −1 to +1 (red, amber, green zones) and its ρ (correlation) reading. Below: the dot cloud on L / R axes.',
+      'A phase meter. Top: the CORRELATION bar from −1 to +1 (red, amber, green zones) and its ρ (correlation) reading. Below: a goniometer dot cloud — L and R run on the diagonals, so mono stands upright.',
       'Under the display, the matching zone lights — MONO-SAFE, WIDE / UNRELATED or MONO-DEATH — over a MONO-FOLD VERDICT.',
       'Readouts: CORR, WIDTH, PHASE and MONO FOLD (the level change when L and R are summed to mono).',
     ],

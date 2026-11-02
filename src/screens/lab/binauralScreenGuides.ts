@@ -92,7 +92,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Read the FORMULA line, then on EXPLORE set AZ to +45°: ITD reads 381 µs — (0.0875 ÷ 343) × (0.785 + 0.707) seconds.',
-      'Read the PRO TIP about −90°, then on EXPLORE park object 1 at −90°, set SRC to TONE, pick 250 under TONE FREQUENCY (Hz), then switch to PINK: the readouts stay put — only the sound changes.',
+      'Read the PRO TIP about −90°, then on EXPLORE park object 1 at −90°, set SRC to TONE, pick 250 under TONE FREQUENCY (Hz), then switch to PINK: same readouts, but the noise is easier to place.',
     ],
   },
 

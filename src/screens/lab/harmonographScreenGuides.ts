@@ -45,12 +45,12 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'OSC 1 and OSC 2 faders: 0.5–10 Hz each, the real swing speed. PLAT fader (ROTARY only): far left is OFF, the platform still.',
       'TUNE: RATIO chips (1:1 UNISON to 5:4 MAJOR 3RD) keep OSC 1 and set OSC 2; DETUNE: LOCKED RATIO, +1% or +3%.',
       'SHAPE: PHASE φ 0° / 45° / 90°, DAMPING LIGHT / MEDIUM / HEAVY, ROTARY or LATERAL, then FREEZE, ⟲ NEW SHEET and ⟲ RESET ALL.',
-      '▶ in the header (or a tap on the machine) plays OSC 1 and OSC 2 as sound. The platform is silent, so DETUNE is heard in LATERAL only. It opens at OSC 1 1.5 Hz, OSC 2 1.0 Hz, PLAT 1.0 Hz, ROTARY, detuned +1%.',
+      '▶ in the header (or a tap on the machine) plays OSC 1 and OSC 2 as two tones, both raised by the same factor into hearing (the lower at 220 Hz), so the ratio stays exact. The platform is silent, so DETUNE is heard in LATERAL only. It opens at OSC 1 1.5 Hz, OSC 2 1.0 Hz, PLAT 1.0 Hz, ROTARY, detuned +1%.',
     ],
     changes: [
-      'An exact simple ratio (a RATIO chip), locked, and in ROTARY PLAT OFF or on a simple ratio too: the figure closes.',
-      'Detuned, or off an exact ratio: the figure slowly turns (precesses) and never closes — the picture of beating. DETUNE acts on OSC 2 in LATERAL, on the platform in ROTARY (so PLAT must be on).',
-      'More DAMPING spirals the figure in faster and ends the drawing sooner. PHASE shapes it, not its ratio.',
+      'The figure closes on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio.',
+      'Detuned, or off an exact ratio, it slowly turns (precesses), never closing: the picture of beating. DETUNE acts on OSC 2 in LATERAL, on the platform in ROTARY (so PLAT must be on).',
+      'More DAMPING spirals the figure in faster and ends the drawing sooner. PHASE changes the shape only.',
     ],
     teaches: [
       'Musical intervals are frequency ratios: 2:1 octave, 3:2 fifth, 4:3 fourth, 5:4 major third.',

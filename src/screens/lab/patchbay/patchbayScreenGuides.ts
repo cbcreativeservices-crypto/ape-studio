@@ -189,7 +189,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'A normal is a spring contact, and a plug physically opens it.',
-      'A plug that opens a normal is called a breaking jack.',
+      'A jack with a contact that a plug opens is called a breaking jack.',
       'The next two pages show where bays put this switch: in both jacks, or in just one.',
     ],
     tryThis: [
@@ -301,7 +301,8 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Tap, split, monitor feed: one move, a copy taken without interrupting.',
-      'A MULT is a separate group of jacks wired together to copy a signal. A PARALLEL pair has no switch: a cord in either jack takes a copy. Feeding a source into it would clash.',
+      'A MULT is a separate group of jacks wired together, used to copy one signal to several places.',
+      'A PARALLEL pair has no switch, so a cord in either jack takes a copy; patching a second source into it would clash.',
       'Half-normal still breaks on the bottom, the jack that replaces a source.',
     ],
     tryThis: [

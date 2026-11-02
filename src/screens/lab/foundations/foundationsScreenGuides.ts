@@ -41,7 +41,8 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
       '⤢ FULL SCREEN enlarges the display. ▾ TEXT, beside the module title, hides or shows the opening paragraphs. Long-press a control or readout for its guided-lesson entry.',
     ],
     changes: [
-      'A higher PITCH: each molecule rocks more often and MODEL rises. Real air carries every pitch at one speed, packing higher ones closer; this picture keeps the spacing fixed, so they look faster. Module 6 shows the real spacing.',
+      'A higher PITCH: each molecule rocks more often, and MODEL rises.',
+      'In real air every pitch travels at one speed, so higher pitches pack their squeezes closer. This picture keeps the spacing fixed; Module 6 shows the real spacing.',
       'Each molecule only rocks around its home and nudges its neighbour. The pattern travels; the air stays put.',
       'The drawing is slowed: real air at 880 Hz rocks 880 times a second.',
     ],
@@ -111,7 +112,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     tryThis: [
       'Slide STRENGTH from 30 % to the top: the readout goes gentle → medium → strong and both swings of the graph grow.',
-      'Pull STRENGTH to 0 %: the molecules stop and the graph lies flat on the resting line — no vibration, no sound wave.',
+      'Pull STRENGTH to 0 %: the molecules stop and the graph lies flat on the resting line — no vibration, no wave. (PLAY never fully mutes: at 0 % it still plays a faint tone.)',
       'Press PLAY and ride STRENGTH: the tone gets louder and softer, but its pitch never moves.',
     ],
   },

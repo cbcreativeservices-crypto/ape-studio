@@ -288,6 +288,9 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
     assert.ok(L.includes('at full wet (100% mix) it gives the hollow "through-a-tube" tone, but at 50/50 it mostly flattens the comb'));
     assert.ok(L.includes('Negative feedback + short delay at full wet (100% mix) = the hollow, resonant "jet"'));
   });
+  it('the guide’s TRY THIS names the full-wet condition too (D42, 2026-11-01)', () => {
+    assert.ok(GUIDES.explore.tryThis.join(' ').includes('pick FDBK −70% HOLLOW: it sounds hollow only at 100%; at 50% EVEN it almost cancels the comb out'));
+  });
 });
 
 describe('8. MIX 50% is EVEN, not always DEEPEST (verified 2026-10-31)', () => {

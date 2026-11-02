@@ -326,7 +326,7 @@ describe('D41 #10: a FRETTED tap picks the fret SPACE, not the nearest wire', ()
     assert.equal(fretForTap(1, NUT), 12);
   });
   it('the guide and caption describe the fret space, not the nearest fret', () => {
-    assert.match(G.fretted.control[0], /the space up to wire n is fret n, so an inlay dot picks its own fret; the nut or headstock is OPEN/);
+    assert.match(G.fretted.control[0], /A fret is the space up to its wire, so an inlay dot picks that fret\. The nut or headstock is OPEN; past fret 12 picks 12/);
     assert.doesNotMatch(G.fretted.control[0], /nearest string and fret/);
     assert.match(src, /exploreCaption="Tap the fretboard — between two frets, or at a node/);
   });

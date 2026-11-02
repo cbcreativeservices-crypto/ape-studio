@@ -168,7 +168,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     changes: [
       'On a reflection point, treatment weakens that path: its ✓ appears, TREATED rises.',
       'Absorption shortens decay. Sabine: RT60 = 0.161 × volume ÷ absorption.',
-      'Rough guide: below c ÷ (4 × thickness) — c is the speed of sound; 858 Hz at 10 cm — a porous panel absorbs less (see α at 125 Hz).',
+      'A porous panel absorbs less below about c ÷ (4 × thickness), where c is the speed of sound: 858 Hz at 10 cm. See α at 125 Hz.',
       'Corners hold every mode’s pressure peak: traps there reach the bass, and thick ones soak up mids too. A diffuser scatters.',
     ],
     teaches: [

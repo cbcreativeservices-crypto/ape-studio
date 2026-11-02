@@ -204,7 +204,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'With the detector at 6.5 kHz and Q 1.4, “s” · 7.0k is heard 98%. Slide Band width to Q 4.0 · narrow: 86% — a narrow band misses an off-centre S.',
-      'Still at 6.5 kHz and Q 4.0, pick “sh” · 4.0k: 24%, Missing it. Under STARTING POINTS, tap the SH button, "SH" rather than "S" · 4.0k: the detector moves to 4.0 kHz and hears 100%.',
+      'Still at 6.5 kHz and Q 4.0, pick “sh” · 4.0k: 24%, Missing it. Under STARTING POINTS, tap the button that reads "SH" rather than "S" · 4.0k: the detector moves to 4.0 kHz and hears 100%.',
       'Before the next page, set the detector back to 6.5 kHz and Q 1.4, where the lab starts: the next pages’ numbers assume it.',
     ],
   },

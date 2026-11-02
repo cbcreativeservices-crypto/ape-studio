@@ -46,7 +46,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'Readouts: NOTE, FREQ, INTERVAL (above the open string) and LENGTH (the share of the string still vibrating).',
     ],
     control: [
-      'Tap the fretboard: the nearest string, and the space up to wire n is fret n, so an inlay dot picks its own fret; the nut or headstock is OPEN. A tap past fret 12 picks fret 12.',
+      'Tap the fretboard for the nearest string and a fret. A fret is the space up to its wire, so an inlay dot picks that fret. The nut or headstock is OPEN; past fret 12 picks 12.',
       '▶ in the header plays a recording of a real bass at that note (if one can’t load, the string model plays instead and the screen says so). While ■ shows, every new pick plays; ■ stops.',
       'MODE key: FRETTED or NATURAL HARMONICS. STRING key: E · 41 Hz, A · 55 Hz, D · 73 Hz or G · 98 Hz.',
       'FRET fader: OPEN, then frets 1 to 12, one step per fret.',
@@ -94,7 +94,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'The Harmonics lab builds tones from this same series; the Harmonograph draws its ratios as curves.',
     ],
     tryThis: [
-      'STRING E, NODE ½: E2, 82.4 Hz — the same as fret 12 in FRETTED. Half the modes instead of half the length.',
+      'STRING E, NODE ½: E2, 82.4 Hz — the same as fret 12 in FRETTED. Here the whole string swings in two halves; fretting made the string half as long.',
       'Step NODE ½ → ⅓ → ¼ → ⅕ on E: 82.4, 123.6, 164.8, 206.0 Hz — 2, 3, 4 and 5 × 41.2, one more lobe each time.',
       'At ⅓ the ring sits right over fret 7 (33.3% from the nut). Same spot, two physics: fretted it is B1 61.7 Hz, the harmonic B2 123.6 Hz — an octave higher.',
     ],

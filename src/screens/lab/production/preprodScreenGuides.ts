@@ -307,7 +307,7 @@ export const PREPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
 
 export const PREPROD_PACKET_GUIDE: ScreenGuide = {
   seeing: [
-    'The Production Packet: the whole plan as one document. Its title, verdict and all below SHARE AS PDF print; the type and WHAT’S LEFT do not.',
+    'The Production Packet: the whole plan as one document. The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.',
     'At the top: project, type, verdict. WHAT’S LEFT: every open item by stage, blocked stages and blockers first.',
     'Below it: Revision, Revision date, Prepared by, Status; any MUST BE RESOLVED BEFORE PROCEEDING and ACCEPTED CONDITIONS; every stage’s answers.',
   ],

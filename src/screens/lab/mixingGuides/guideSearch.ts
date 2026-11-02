@@ -32,7 +32,10 @@ export function filterGuides<T extends Pick<MixingGuideEntry, 'title' | 'line' |
   });
 }
 
-/** "12 of 50 read" — the hub's count line. */
+/**
+ * "12 read" — the hub's count line. Progress shows what the learner HAS read,
+ * never "n of N" (owner rule D117); `total` only marks the finished state.
+ */
 export function readCountLine(read: number, total: number): string {
-  return `${read} of ${total} read`;
+  return total > 0 && read >= total ? '✓ ALL READ' : `${read} read`;
 }

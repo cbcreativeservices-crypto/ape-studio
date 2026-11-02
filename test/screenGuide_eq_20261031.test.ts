@@ -96,8 +96,10 @@ describe('1. every EQ Lab screen has a complete guide', () => {
       if (i > 0) assert.ok(t.includes(titles[i - 1]), `${m.id}: teaches never names the previous module "${titles[i - 1]}"`);
       if (i < titles.length - 1) assert.ok(t.includes(titles[i + 1]), `${m.id}: teaches never names the next module "${titles[i + 1]}"`);
     });
-    assert.match(MODS.challenges.teaches.join(' '), /Dynamics comes next/);
-    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /Dynamics comes next/);
+    // The Advanced Training menu lists categories A→Z (Dynamics sits BEFORE Equalization), so Dynamics is suggested, never 'next'.
+    assert.match(MODS.challenges.teaches.join(' '), /A good next step: the Dynamics labs/);
+    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /try Dynamics next/);
+    for (const gd of [MODS.challenges, EQ_HOME_GUIDE as unknown as Guide]) assert.doesNotMatch(gd.teaches.join(' '), /Dynamics comes next/);
   });
   it('the home guide’s module ranges match the registry’s sections (LEARN 1–8, EXPLORE 9–11, TRAIN 12–14, CHALLENGE 15)', () => {
     const sec = EQ_MODULES.map((m: { section: string }) => m.section);
@@ -257,10 +259,11 @@ describe('4. TRY THIS (and quoted) numbers are what the modules print', () => {
     assert.equal(M.qFromBwOct(bw(1)).toFixed(1), '5.8');
     assert.equal(bw(1).toFixed(2), '0.25');
     assert.equal(M.qFromBwOct(bw(0)).toFixed(1), '0.3');
+    assert.equal(M.qFromBwOct(bw(0)).toFixed(2), '0.27'); // the readout rounds 0.27 to 0.3
     assert.equal(bw(0).toFixed(2), '4.00');
     assert.equal(M.fmtHz(2000), '2.00 kHz');
     for (const s of ['2.00 kHz', 'Q stays 1.6', 'WIDTH 0.89 oct', 'WIDTH 0.25 oct, Q 5.8']) assert.ok(t('camera').includes(s), s);
-    for (const s of ['Q 0.3 (4.00 oct)', 'Q 5.8 (0.25 oct)', '+9 dB']) assert.ok(all('camera').includes(s), s);
+    for (const s of ['4.00 oct (Q about 0.27; the readout rounds it to 0.3)', '0.25 oct (Q 5.8)', '+9 dB']) assert.ok(all('camera').includes(s), s);
   });
   it('Parametric Controls: Q 0.3–12 → BW 3.70–0.12 oct; GAIN ±18; double-tap home prints +0.0 dB', () => {
     const P = mod('ParametricControls');

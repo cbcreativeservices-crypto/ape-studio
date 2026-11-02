@@ -42,7 +42,7 @@ registerHooks({
 const MG = 'src/screens/lab/mixingGuides';
 const { MIXING_GUIDES_HUB_GUIDE, MIXING_GUIDE_READER_GUIDE, MIXING_GUIDES_END_GUIDE } = await import(`../${MG}/mixingGuidesScreenGuides.ts`);
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
-const { filterGuides } = await import(`../${MG}/guideSearch.ts`);
+const { filterGuides, readCountLine } = await import(`../${MG}/guideSearch.ts`);
 const { MIXING_GUIDE_INDEX } = await import(`../${MG}/data/index.ts`);
 
 type Guide = Record<string, string[]>;
@@ -261,5 +261,18 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     // FINISH › on the last style goes straight to the end screen.
     assert.ok(GUIDES.end.tryThis[0].includes('on the last style, FINISH › brings you straight back'));
     assert.doesNotMatch(END, /index order|still new to you/);
+  });
+});
+
+describe('D42 (2026-11-01): the hub’s read count shows what was read, never "n of N"', () => {
+  it('readCountLine: "12 read", "0 read", and ✓ ALL READ when every guide is read', () => {
+    const total = MIXING_GUIDE_INDEX.length;
+    assert.equal(readCountLine(12, total), '12 read');
+    assert.equal(readCountLine(0, total), '0 read');
+    assert.equal(readCountLine(total, total), '✓ ALL READ');
+    for (const n of [0, 1, 12, total]) assert.doesNotMatch(readCountLine(n, total), /\bof\b|\//);
+  });
+  it('the hub guide still describes it as a count of the guides read', () => {
+    assert.ok(GUIDES.hub.seeing.join(' ').includes('a count of the guides you have read'));
   });
 });
