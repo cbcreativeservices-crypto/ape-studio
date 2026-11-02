@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 19:37 · ccode · 9f43d118
+changed: Profile ON THE WEBSITE: add ABOUT THE FOUNDER (/founder)
+affects other side: nothing
+needs: nothing. Rides A2 (OTA) + B6 (site unlock).
+
+
 ### 2026-11-01 19:28 · ccode · e9c4a61b
 changed: must-do D43: no separate site deploy; links go live with B6 gate-off + A2
 affects other side: nothing
