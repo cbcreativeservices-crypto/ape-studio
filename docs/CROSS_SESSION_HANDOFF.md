@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-01 21:25 · ccode · 05679aa7
+changed: Home New Messages: red dot (owner 2026-11-01)
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-11-01 21:25 · ccode · 4ad817d4
 changed: Home: 'New Messages' text button, top right, only while something waits
 affects other side: nothing (reads the existing contact_inbox_counts)
