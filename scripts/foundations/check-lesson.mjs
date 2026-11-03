@@ -41,18 +41,34 @@ const BANNED = [
   'cousin', 'engine', 'gear', 'bits', 'tries', 'ride', 'rides', 'riding', 'grab', 'grabs', 'lid', 'slice', 'slices',
   'punchy', 'punch', 'warm', 'warmer', 'bright', 'brighter', 'harsh', 'harsher', 'fat', 'sweet spot', 'day one',
   'set it off', 'back out', 'use it up', 'uses it up', 'travel together', 'under the hood', 'rule of thumb', 'go-to',
-  'tricky', 'trickier', 'master', 'mastering the', 'be able to', "you'll", 'studies show', 'research shows',
+  'tricky', 'trickier', 'to master', 'will master', "you'll master", 'be able to', "you'll", 'studies show', 'research shows',
 ];
+// The topic's own glossary terms (and title) are content, not style: a banned word or an abbreviation
+// that IS one of the topic's terms may be used (2026-11-03, after the batch 2–25 run removed "MIDI", "DJ", "RF", "warm", "harsh").
+const topicTerms = termsPath ? JSON.parse(readFileSync(termsPath, 'utf8')) : [];
+const termText = (topicTerms.join(' | ') + ' | ' + title).toLowerCase();
+const isTopicTerm = (w) => new RegExp(`(^|[^a-z])${w.toLowerCase().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}([^a-z]|$)`).test(termText);
 // Literal uses that are allowed (batch 1, 2026-11-03): warm/cool air, digital bits.
 const literal = body.replace(/\bwarm(er)? (air|layers?|and cool)\b/gi, '').replace(/\bbits?\b/gi, (m) => (/\bbit depth\b|\bdigital\b/i.test(body) ? '' : m));
 for (const w of BANNED) {
   const re = new RegExp(`\\b${w.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i');
-  if (re.test(literal)) fails.push(`banned word/phrase: "${w}"`);
+  if (re.test(literal) && !isTopicTerm(w)) fails.push(`banned word/phrase: "${w}"`);
 }
 // Similes (batch 1): "like a/an ..." comparisons are not allowed; "like the keys of a piano" style examples are flagged for review.
 for (const m of body.matchAll(/\b(?:like|as if|as though) (?:a|an) [a-z]+(?: [a-z]+)?/gi)) warns.push(`possible simile/comparison: "${m[0]}"`);
 // Abbreviations and regional references (batch 1).
-for (const m of body.matchAll(/\b[A-Z]{2,}s?\b/g)) fails.push(`abbreviation "${m[0]}" (spell it out)`);
+// An abbreviation is allowed once it has been spelled out with it in parentheses or after ", or"
+// ("Musical Instrument Digital Interface (MIDI)"), or when it is in the topic's title or term list.
+const abbrSeen = new Set();
+for (const m of body.matchAll(/\b[A-Z]{2,}s?\b/g)) {
+  const a = m[0].replace(/s$/, '');
+  if (abbrSeen.has(a)) continue;
+  const before = body.slice(0, m.index);
+  const spelled = /\(\s*$/.test(before) || /,? or $/.test(before);
+  if (spelled || isTopicTerm(a)) { abbrSeen.add(a); continue; }
+  fails.push(`abbreviation "${m[0]}" used before it is spelled out (write the full name, then the letters in parentheses)`);
+  abbrSeen.add(a);
+}
 for (const r of ['North America', 'Europe', 'European', 'the United States', 'the US', 'the UK', 'Britain', 'British', 'American']) if (body.includes(r)) warns.push(`regional reference "${r}" (allowed only if the topic is about a region)`);
 if (/\bpicture (a|an|the|your|this)\b/i.test(body)) fails.push('"picture" used as a verb (use "imagine")');
 if (/\bsmooth(er|ly)?\b/i.test(body)) warns.push('"smooth" found: only allowed in a literal, non-sound sense');
@@ -63,7 +79,7 @@ for (const w of UK) if (new RegExp(`\\b${w}`, 'i').test(body)) fails.push(`UK sp
 
 // Brand / company names (starter list; product names in the glossary are intentional but never belong in a lesson).
 const BRANDS = ['Pro Tools', 'Avid', 'Logic Pro', 'Ableton', 'Cubase', 'Shure', 'Neumann', 'Sennheiser', 'Yamaha', 'Apple', 'Microsoft', 'Dolby', 'Fender', 'Gibson', 'Universal Audio', 'Waves', 'iZotope', 'Microflown', 'Teletronix', 'UREI', 'Fairchild', 'Focusrite', 'Behringer', 'Roland', 'Moog', 'Korg', 'JBL', 'Bose', 'Meyer', 'L-Acoustics', 'd&b', 'QSC', 'Crown', 'Steinberg', 'Spotify', 'YouTube', 'Netflix', 'OSHA', 'NIOSH', 'AES', 'IEC', 'ISO', 'EBU', 'ITU'];
-for (const b of BRANDS) if (new RegExp(`\\b${b.replace(/[&]/g, '\\&')}\\b`).test(body)) fails.push(`brand/organization name: "${b}"`);
+for (const b of BRANDS) if (new RegExp(`\\b${b.replace(/[&]/g, '\\&')}\\b`).test(body) && !isTopicTerm(b)) fails.push(`brand/organization name: "${b}"`);
 
 // Capitalized words mid-sentence (possible names) -> warning for the human read.
 const caps = new Set();
