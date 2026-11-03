@@ -10,7 +10,7 @@ This file is the single source for writing every Topic Foundations lesson. Every
 | | |
 |---|---|
 | **Job** | A short lesson read before a topic's flashcards. It gives a beginner the mental picture of the WHOLE topic, so the flashcard terms have somewhere to land. The flashcards teach the details and the vocabulary; the lesson does not. |
-| **Where it appears (owner decisions 2026-11-03)** | First flashcards open: today's Welcome popup, then the Foundations popup. It shows again on each flashcards open until the learner taps "I've read this" ("Later" still lets them study; flashcards are never locked). A "TOPIC FOUNDATIONS — Start here" row above Flashcards on the Study Dashboard reopens it at any time. |
+| **Where it appears (owner decisions 2026-11-03)** | First flashcards open: today's Welcome popup, then the Foundations popup. It shows again on each flashcards open until the learner taps "I've read this" ("Later" still lets them study; flashcards are never locked). A row above Flashcards on the Study Dashboard, labeled "INTRODUCTION · Start here" (owner 2026-11-03: the longer label was cut off), reopens it at any time. |
 | **How many** | Every active topic on the live server: **171** (checked 2026-11-03: 171 active topics, each with Welcome text; all 31,877 term links have plain English). Pilot done: 5. **Remaining: 166.** |
 | **Where the text lives** | A new text column on `achievements` on the server (Comp A adds it and loads the approved text). |
 | **Release** | The app screen rides the A2 update. **A2 is held by the owner until all 171 are written and approved.** |

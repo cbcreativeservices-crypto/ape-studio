@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 12:56 · ccode · ab196a0b
+changed: Topic Foundations (D47): Flashcards popup after the Welcome + Study Dashboard "Start here" row
+affects other side: Comp A will need to add nullable text column achievements.foundations_text before A2; app tolerates its absence [MD:D47]
+needs: nothing yet [MD:D47]
+
+
+### 2026-11-03 12:19 · ccode · 35956a61
+changed: must-do D47: Comp B review package for the 166 Topic Foundations drafts
+affects other side: nothing [MD:D47]
+nothing
+
+
 ### 2026-11-03 10:51 · ccode · 4b72b48e
 changed: Topic Foundations batch 1 (Foundations & Safety, 8 drafts, checked + fixed); writer brief; mechanical check script; batch-1 lessons in the standard
 affects other side: nothing yet — Topic Foundations drafts are repo-only until the owner approves; the server column/load package comes at the end [MD:D47]

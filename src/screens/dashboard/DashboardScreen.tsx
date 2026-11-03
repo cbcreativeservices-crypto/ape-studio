@@ -610,7 +610,7 @@ function GlassCover() {
 }
 
 /**
- * TOPIC FOUNDATIONS — a full rack row ABOVE Flashcards (D47, owner GO
+ * TOPIC FOUNDATIONS — a full rack row ABOVE Flashcards, labeled INTRODUCTION (owner 2026-11-03) (D47, owner GO
  * 2026-11-03): the same frame, screws, icon well, glass label and switch as
  * the method rows. "Start here"; READ until the learner taps I'VE READ THIS
  * in the lesson, then ✓ READ (and the panel seats, like a finished method).
@@ -673,23 +673,23 @@ function FoundationsRow({
               </View>
               <View style={styles.methodLeft}>
                 <GlassScreen
-                  title="TOPIC FOUNDATIONS"
+                  title="INTRODUCTION"
                   value=""
                   valueColor={colors.amber}
                   subtitle="Start here"
                   subtitleColor={colors.amber}
                   complete={read}
-                  a11yLabel={read ? 'Topic Foundations, start here, read' : 'Topic Foundations, start here'}
+                  a11yLabel={read ? 'Introduction, start here, read' : 'Introduction, start here'}
                 />
               </View>
               <SwitchButton
                 label={isLocked ? 'Locked' : read ? '✓ Read' : 'Read'}
                 a11yLabel={
                   isLocked
-                    ? 'Topic Foundations is locked. See how to unlock'
+                    ? 'Introduction is locked. See how to unlock'
                     : read
-                      ? 'Topic Foundations, read. Open the lesson again'
-                      : 'Read Topic Foundations'
+                      ? 'Introduction, read. Open the lesson again'
+                      : 'Read the Introduction'
                 }
                 variant={isLocked ? 'outline' : read ? 'success' : 'primary'}
                 width={89}
