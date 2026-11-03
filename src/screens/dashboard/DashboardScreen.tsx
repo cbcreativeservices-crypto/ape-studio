@@ -2327,7 +2327,7 @@ export function DashboardScreen() {
                       says "CURRENT TOPIC", and MyTopicsIcon hides itself
                       from screen readers, so this adds no second stop. */}
                   <View style={styles.eyebrowRow}>
-                    {dispIsCustom ? <DeckIcon color={colors.customList} size={21} fill="rgba(63,211,230,0.22)" /> : <MyTopicsIcon size={21} />}
+                    <MyTopicsIcon size={21} />
                     <Text style={styles.topicEyebrow}>
                       {dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}
                     </Text>
