@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 08:03 · ccode · d9e0fbce
+changed: must-do: D44 moderator = option 1 (owner Console, $50 cap), setup today; Today section 2026-11-03
+affects other side: moderator = owner's own Anthropic Console account, "Forum Moderator" workspace, $50/month limit; the owner pastes the key to Comp A in chat later today [MD:D44]
+needs: Comp A sets ANTHROPIC_API_KEY on forum-moderate once the owner sends it; forum stays OFF [MD:D44]
+
+
 ### 2026-11-02 23:02 · ccode · 040466b2
 changed: Live snapshot refreshed after forum + add-on apply (232 fns, forum-moderate, 2 forum crons); allowlist forum RPCs [MD:D44]; must-do D44 summary + D45 (launch-OTA extras)
 affects other side: snapshot now matches live after Comp A applied forum + add-on 1; nothing to do
