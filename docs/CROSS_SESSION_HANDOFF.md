@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 10:23 · ccode · 6e4a1096
+changed: must-do D47: Topic Foundations v5 (plain international English)
+affects other side: nothing yet (Topic Foundations v5 under owner review) [MD:D47]
+nothing
+
+
 ### 2026-11-03 09:18 · ccode · 8c228727
 changed: must-do D47: Topic Foundations v3 (one chain of thought; owner: v2 jumped around)
 affects other side: nothing yet (Topic Foundations v3 under owner review) [MD:D47]

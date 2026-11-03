@@ -1,0 +1,42 @@
+[
+  {
+    "gs": 3060,
+    "name": "Pro Audio Safety",
+    "words": 444,
+    "md5": "e6f51ef2997dbd996f7db1211d37306c",
+    "approved": "2026-11-03",
+    "version": "pilot v5"
+  },
+  {
+    "gs": 3970,
+    "name": "DAW Fundamentals & Session Management",
+    "words": 428,
+    "md5": "431529706977c5e31d291e47c9e903d2",
+    "approved": "2026-11-03",
+    "version": "pilot v5"
+  },
+  {
+    "gs": 3350,
+    "name": "Dynamics — Compression, Limiting & Gating (Core)",
+    "words": 469,
+    "md5": "caa2daeccaf9e33b9d7b45385a9cf689",
+    "approved": "2026-11-03",
+    "version": "pilot v5"
+  },
+  {
+    "gs": 3110,
+    "name": "Specialized & Emerging Microphones",
+    "words": 462,
+    "md5": "f214120b02035c92821b3fb20bf00e90",
+    "approved": "2026-11-03",
+    "version": "pilot v5"
+  },
+  {
+    "gs": 4740,
+    "name": "Advanced Dynamics — Processing & Techniques",
+    "words": 470,
+    "md5": "d1d16b5740cf7ee78dd008034ac4e739",
+    "approved": "2026-11-03",
+    "version": "pilot v5"
+  }
+]
