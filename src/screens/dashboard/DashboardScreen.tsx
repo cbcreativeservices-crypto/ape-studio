@@ -676,10 +676,10 @@ function FoundationsRow({
                   title="INTRODUCTION"
                   value=""
                   valueColor={colors.amber}
-                  subtitle="Start here"
-                  subtitleColor={colors.amber}
+                  subtitle={read ? 'Complete' : 'Start here'}
+                  subtitleColor={read ? colors.green : colors.amber}
                   complete={read}
-                  a11yLabel={read ? 'Introduction, start here, read' : 'Introduction, start here'}
+                  a11yLabel={read ? 'Introduction, complete' : 'Introduction, start here'}
                 />
               </View>
               <SwitchButton
