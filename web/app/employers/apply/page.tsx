@@ -27,7 +27,7 @@ export default function Page() {
         <List
           items={[
             "Apply here with your company or school website and your work email.",
-            "If your email is at your company's or school's own domain and the site checks out, you are verified straight away. If not, a person reviews it — you will hear by email.",
+            "Employers: if your email is at your company's own domain and the site checks out, you are verified straight away. If not, a person reviews it. Instructor accounts are always reviewed by a person. Either way, you will hear by email.",
             "Once verified, open the app: choose the areas and roles you are interested in, and contact members directly.",
           ]}
         />

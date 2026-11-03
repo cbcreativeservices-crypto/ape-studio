@@ -39,7 +39,7 @@ export default function Page() {
             Verified employers and instructors can contact members directly through the app. We never publish a
             member’s email or phone number — you send a request, and they decide whether to reply.
             It takes an Academy account and the app; if your work email is at your company’s own
-            domain (or your school&rsquo;s), verification is immediate.
+            domain, employer verification is immediate. Instructor accounts are reviewed by a person.
           </p>
           <a
             href="/employers/apply"

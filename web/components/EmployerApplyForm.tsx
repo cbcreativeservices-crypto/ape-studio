@@ -430,8 +430,17 @@ export default function EmployerApplyForm() {
         {/* Said plainly, because it is the difference between instant and a
             wait — and because a free address is not a refusal. */}
         <p className="mt-1 text-xs text-text-muted">
-          An address at your {isInstr ? "school" : "company"}&rsquo;s own domain verifies instantly. A Gmail or Outlook
-          address is fine too — it just means a person reviews it first.
+          {isInstr ? (
+            <>
+              Instructor accounts are always reviewed by a person, and you will hear by email. Use your
+              school address if you have one; a Gmail or Outlook address is fine too.
+            </>
+          ) : (
+            <>
+              An address at your company&rsquo;s own domain verifies instantly. A Gmail or Outlook
+              address is fine too — it just means a person reviews it first.
+            </>
+          )}
         </p>
       </div>
 
