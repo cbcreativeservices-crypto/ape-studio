@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 08:40 · ccode · e6695faa
+changed: must-do D47 Topic Foundations (owner decisions 2026-11-03); A2 held until all 166 approved
+affects other side: A2 (the launch OTA) is HELD by the owner until all 166 Topic Foundations lessons are approved; Topic Foundations text will live in a new achievements column (brief comes after the pilot) [MD:D47]
+nothing yet; later a column + load package for D47 [MD:D47]
+
+
 ### 2026-11-03 08:03 · ccode · d9e0fbce
 changed: must-do: D44 moderator = option 1 (owner Console, $50 cap), setup today; Today section 2026-11-03
 affects other side: moderator = owner's own Anthropic Console account, "Forum Moderator" workspace, $50/month limit; the owner pastes the key to Comp A in chat later today [MD:D44]
