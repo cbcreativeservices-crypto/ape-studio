@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-02 23:02 · ccode · 040466b2
+changed: Live snapshot refreshed after forum + add-on apply (232 fns, forum-moderate, 2 forum crons); allowlist forum RPCs [MD:D44]; must-do D44 summary + D45 (launch-OTA extras)
+affects other side: snapshot now matches live after Comp A applied forum + add-on 1; nothing to do
+needs: nothing
+
+
 ### 2026-11-02 22:45 · ccode · b43acb74
 changed: Forum welcome: sign as Professor Channing Booth, Founder (owner 2026-11-02)
 affects other side: nothing
