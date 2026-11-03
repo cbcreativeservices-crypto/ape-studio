@@ -169,6 +169,17 @@ picture (as a verb); and these metaphors and informal words: cousin, engine (non
 | Two sibling lessons opened with the same scene; one sentence repeated a sibling | Check A: flags overlap between sibling lessons in the batch |
 | Topics named after a product (DAW: Logic, Ableton Live, Dante) and the slang topic | Brief: the product in the topic's own title may be named; slang terms are the content and are explained literally |
 
+## 8c. Owner decisions after the Comp B review (2026-11-03)
+
+| Decision | Rule |
+|---|---|
+| Title style | Every title uses "and", never "&" ("Topic Foundations: Signal Path and Levels") |
+| Openings that point to an earlier topic | Only for true next-step topics (an advanced or second-part topic that really builds on the earlier one). Learners can study topics in any order; every other lesson starts from an everyday scene |
+| Opening scenes | Sibling lessons in the same field never open with the same kind of scene |
+| Absolutes | Prefer "often", "usually", "mainly" or "can" where a statement has exceptions (Comp B's most common accuracy finding) |
+| Plain parent words | A plain everyday word may be named when a longer form of it is in the topic's term list ("gain" when the list has "Gain rank") |
+| Glossary data errors | Reported to Comp A (must-do D48), never worked around in a lesson |
+
 ## 9. Files
 
 | File | Purpose |

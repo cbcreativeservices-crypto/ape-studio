@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 13:42 · ccode · 9c04f566
+changed: Current Topic: keep the amber icon beside CURRENT TOPIC for My Custom List too (owner)
+affects other side: nothing (app look only) [MD:D47]
+nothing
+
+
 ### 2026-11-03 13:30 · ccode · a9096c37
 changed: Introduction row: sub-label reads Complete (green) once read (owner)
 affects other side: nothing (label only) [MD:D47]

@@ -72,6 +72,15 @@ for (const m of body.matchAll(/\b[A-Z]{2,}s?\b/g)) {
 for (const r of ['North America', 'Europe', 'European', 'the United States', 'the US', 'the UK', 'Britain', 'British', 'American']) if (body.includes(r)) warns.push(`regional reference "${r}" (allowed only if the topic is about a region)`);
 if (/\bpicture (a|an|the|your|this)\b/i.test(body)) fails.push('"picture" used as a verb (use "imagine")');
 if (/\bsmooth(er|ly)?\b/i.test(body)) warns.push('"smooth" found: only allowed in a literal, non-sound sense');
+// Comp B review 2026-11-03: more vague or figurative words a second-language reader may misread.
+for (const w of ['deep', 'fuller', 'dull', 'duller', 'metallic', 'hollow', 'compete', 'competes', 'its own space', 'stereo picture', 'listens', 'listening', 'underneath', 'tell .{1,25} from']) {
+  if (new RegExp(`\\b${w}\\b`, 'i').test(literal) && !isTopicTerm(w)) warns.push(`check literal meaning: "${w}"`);
+}
+if (/\bnamed [A-Z"]/.test(body)) warns.push('"named X" can read as a personal name: prefer "called X"');
+// An abbreviation in the title must be spelled out in the body (Comp B: 4170 "ADR").
+for (const m of title.matchAll(/\b[A-Z]{2,}\b/g)) {
+  if (!new RegExp(`\\(\\s*${m[0]}\\s*\\)|, or ${m[0]}\\b`).test(body)) warns.push(`title abbreviation "${m[0]}" is not spelled out in the body`);
+}
 
 // US spelling (common UK forms).
 const UK = ['colour', 'behaviour', 'centre', 'metre', 'analyse', 'organise', 'recognise', 'realise', 'programme', 'favour', 'labour', 'licence', 'defence', 'travelling', 'modelling', 'labelled', 'grey'];
