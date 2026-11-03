@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-02 22:21 · ccode · a740dad9
+changed: must-do D44: forum add-on 1 applied live (verified read-only); next = app work on forum-next-build
+affects other side: nothing (records Comp A's apply)
+needs: nothing
+
+
 ### 2026-11-02 21:23 · ccode · 719a1bcb
 changed: Website: instructor accounts are reviewed by a person (no more 'instant' promise); must-do D44 decisions
 affects other side: Comp A applies A40 (instructor manual review) from Downloads/2026-11-02_FOR_COMP_A_FORUM_ADDON_1.zip only AFTER the owner says this website text is live
