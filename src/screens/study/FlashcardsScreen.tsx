@@ -38,6 +38,7 @@ import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { TopicWelcomeSheet } from '../../features/intro/TopicWelcomeSheet';
+import { FoundationsAutoPopup } from '../../features/foundations/TopicFoundationsSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
@@ -884,10 +885,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // the afterDialogCloses rule) before it presents. Starts owed: the welcome
   // reports in after its lookup (flagged mode has no welcome — it says so).
   const [welcomeOwed, setWelcomeOwed] = useState(true);
+  // …and the Topic Foundations popup (D47, 2026-11-03), which itself waits
+  // for the T1 intro and the welcome. Starts owed for the same reason.
+  const [foundationsOwed, setFoundationsOwed] = useState(true);
   const introsOwed = flashIntro.owed || welcomeOwed;
+  const firstVisitOwed = introsOwed || foundationsOwed;
   const [introsSettled, setIntrosSettled] = useState(false);
   useEffect(() => {
-    if (introsOwed) {
+    if (firstVisitOwed) {
       setIntrosSettled(false);
       return undefined;
     }
@@ -895,7 +900,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     // stamps the close), never less than one dismiss.
     const t = setTimeout(() => setIntrosSettled(true), Math.max(HOST_DISMISS_MS, rootModalHoldMs()));
     return () => clearTimeout(t);
-  }, [introsOwed]);
+  }, [firstVisitOwed]);
   const tutorialBlocked =
     overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen || timerOpen || !introsSettled;
   const tutorialBlockedRef = useRef(tutorialBlocked);
@@ -1709,6 +1714,25 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         enabled={!flaggedMode}
         hold={flashIntro.owed || !!termList || sessionTimer.configOpen || timerOpen || fullscreen || (!!tutorial && !tutorialBlocked)}
         onOwedChange={setWelcomeOwed}
+      />
+      {/* Topic Foundations (D47, owner 2026-11-03): AFTER the welcome — it
+          holds while the T1 intro or the welcome is up or owed, then waits
+          out the closing fade (rootModalHoldMs). On every open until "I've
+          read this"; LATER keeps the cards usable. A topic with no lesson (or
+          no server column yet) shows nothing. Never locks the cards. */}
+      <FoundationsAutoPopup
+        achievementId={achievementId}
+        enabled={!flaggedMode}
+        hold={
+          flashIntro.owed ||
+          welcomeOwed ||
+          !!termList ||
+          sessionTimer.configOpen ||
+          timerOpen ||
+          fullscreen ||
+          (!!tutorial && !tutorialBlocked)
+        }
+        onOwedChange={setFoundationsOwed}
       />
       <View style={styles.body}>
         {/* Pace timer restored 2026-10-16 (owner): the header timer button opens

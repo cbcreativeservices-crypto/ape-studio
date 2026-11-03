@@ -477,8 +477,10 @@ function GlassScreen({
   subtitleColor,
   complete,
   off = false,
+  a11yLabel,
 }: {
   title: string;
+  /** '' = no value in the header (the TOPIC FOUNDATIONS row). */
   value: string;
   valueColor: string;
   /** Method meter fill (0–21 segments). Omit for the quiz (uses `subtitle`). */
@@ -492,13 +494,15 @@ function GlassScreen({
   /** POWERED OFF (owner 2026-08-11): the screen is dark — title dimmed, no
    *  value/check, LED strip unlit. Its stage of the rack hasn't unlocked yet. */
   off?: boolean;
+  /** The spoken name, when the default "title, value, subtitle" would not fit. */
+  a11yLabel?: string;
 }) {
   return (
     <View
       style={[styles.cutoutMount, styles.glassScreen]}
       accessible
       accessibilityRole="text"
-      accessibilityLabel={`${title}, ${off ? 'powered off' : complete ? 'complete' : value}${subtitle && !off ? `, ${subtitle}` : ''}`}
+      accessibilityLabel={a11yLabel ?? `${title}, ${off ? 'powered off' : complete ? 'complete' : value}${subtitle && !off ? `, ${subtitle}` : ''}`}
     >
       {/* The lit readout, beneath the glass. Now TWO rows (owner 2026-08-06):
           line 1 = title (left) + % / green check (right); line 2 = LED meter or
@@ -528,7 +532,7 @@ function GlassScreen({
             <Text style={styles.glassCheck} accessibilityElementsHidden importantForAccessibility="no">
               ✓
             </Text>
-          ) : (
+          ) : value === '' ? null : (
             <Text
               style={[styles.glassValue, { color: valueColor, textShadowColor: valueColor }]}
               numberOfLines={1}
@@ -602,6 +606,101 @@ function GlassCover() {
           sits just above it. */}
       <View style={styles.glassBottomHighlight} />
     </View>
+  );
+}
+
+/**
+ * TOPIC FOUNDATIONS — a full rack row ABOVE Flashcards (D47, owner GO
+ * 2026-11-03): the same frame, screws, icon well, glass label and switch as
+ * the method rows. "Start here"; READ until the learner taps I'VE READ THIS
+ * in the lesson, then ✓ READ (and the panel seats, like a finished method).
+ *
+ * The data and the popup live in features/foundations/FoundationsDashboardSlot,
+ * require()d from a runSoon callback: this screen is in the app-start graph
+ * (260-module cap, test/perfStartTrim_20261004), and a static import would
+ * add four modules to it. Until it has loaded — and for any topic with no
+ * Foundations text — nothing is drawn.
+ */
+type FoundationsSlotModule = typeof import('../../features/foundations/FoundationsDashboardSlot');
+function FoundationsRow({
+  achievementId,
+  gs,
+  locked,
+  onLocked,
+}: {
+  achievementId: string;
+  gs: number | null;
+  locked: boolean;
+  onLocked: () => void;
+}) {
+  const [mod, setMod] = useState<FoundationsSlotModule | null>(null);
+  useEffect(() => {
+    const task = runSoon(() => {
+      try {
+        setMod(require('../../features/foundations/FoundationsDashboardSlot') as FoundationsSlotModule);
+      } catch {
+        // No module, no row: the rack is exactly as it was before D47.
+      }
+    });
+    return () => task.cancel();
+  }, []);
+  if (!mod) return null;
+  const Slot = mod.FoundationsDashboardSlot;
+  return (
+    <Slot
+      achievementId={achievementId}
+      gs={gs}
+      locked={locked}
+      onLocked={onLocked}
+      renderRow={({ read, locked: isLocked, onPress }) => (
+        <View>
+          <ElevatedFrame depressed={read} contentStyle={styles.methodInner}>
+            <BlackFaceBg />
+            <CornerScrews angles={[90, 4, 4, 90]} />
+            {/* The whole panel answers a tap (the powered-off rows' rule): the
+                switch keeps its own press and its own spoken label. */}
+            <Pressable style={styles.methodRow} onPress={onPress} accessible={false}>
+              <View style={[styles.cutoutMount, styles.iconWell]}>
+                <View style={styles.iconSticker}>
+                  <MethodIcon
+                    method="glossary"
+                    size={RACK_ICON}
+                    color={colors.amber}
+                    glowColor={read ? colors.amber : undefined}
+                  />
+                </View>
+                <GlassCover />
+              </View>
+              <View style={styles.methodLeft}>
+                <GlassScreen
+                  title="TOPIC FOUNDATIONS"
+                  value=""
+                  valueColor={colors.amber}
+                  subtitle="Start here"
+                  subtitleColor={colors.amber}
+                  complete={read}
+                  a11yLabel={read ? 'Topic Foundations, start here, read' : 'Topic Foundations, start here'}
+                />
+              </View>
+              <SwitchButton
+                label={isLocked ? 'Locked' : read ? '✓ Read' : 'Read'}
+                a11yLabel={
+                  isLocked
+                    ? 'Topic Foundations is locked. See how to unlock'
+                    : read
+                      ? 'Topic Foundations, read. Open the lesson again'
+                      : 'Read Topic Foundations'
+                }
+                variant={isLocked ? 'outline' : read ? 'success' : 'primary'}
+                width={89}
+                height={RACK_SWITCH_H}
+                onPress={onPress}
+              />
+            </Pressable>
+          </ElevatedFrame>
+        </View>
+      )}
+    />
   );
 }
 
@@ -2409,6 +2508,16 @@ export function DashboardScreen() {
               Academy membership. <Text style={styles.membersNoticeLink}>How to unlock</Text>
             </Text>
           </Pressable>
+        ) : null}
+        {/* TOPIC FOUNDATIONS — "Start here", above Flashcards (D47). Real
+            topics only; nothing at all for a topic without the lesson. */}
+        {!isCustom && !dispIsCustom ? (
+          <FoundationsRow
+            achievementId={dispTopic.id}
+            gs={dispTopic.global_sequence ?? null}
+            locked={actMembershipLocked}
+            onLocked={() => setUpgradeOpen(true)}
+          />
         ) : null}
         {(isCustom ? METHOD_ORDER.filter((m) => customMethods.includes(m.key)) : METHOD_ORDER).map((m, i) => {
           const isApplicable = isCustom || applicable.has(m.key);
