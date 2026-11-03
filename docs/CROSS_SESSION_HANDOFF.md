@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-02 22:45 · ccode · b43acb74
+changed: Forum welcome: sign as Professor Channing Booth, Founder (owner 2026-11-02)
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-11-02 22:38 · ccode · e64620b3
 changed: Forum welcome message approved (verbatim text for the next-build forum); must-do D44
 affects other side: nothing
