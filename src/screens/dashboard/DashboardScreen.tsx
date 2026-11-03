@@ -49,6 +49,7 @@ import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Lin
 import { A11Y_HIDDEN } from '../../features/settings/a11y';
 import { AppHeader } from '../../components/AppHeader';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
+import { DeckIcon } from '../../components/DeckIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { FundamentalsCreditBanner } from '../../features/lab/FundamentalsCreditBanner';
 import { StudyAccessSheet } from '../../features/commercial/StudyAccessSheet';
@@ -478,6 +479,7 @@ function GlassScreen({
   complete,
   off = false,
   a11yLabel,
+  checkOnly = false,
 }: {
   title: string;
   /** '' = no value in the header (the TOPIC FOUNDATIONS row). */
@@ -496,6 +498,9 @@ function GlassScreen({
   off?: boolean;
   /** The spoken name, when the default "title, value, subtitle" would not fit. */
   a11yLabel?: string;
+  /** Show the green check but keep the title white (the INTRODUCTION row,
+   *  owner 2026-11-03: "turn amber with white text … just add a green checkmark"). */
+  checkOnly?: boolean;
 }) {
   return (
     <View
@@ -514,7 +519,7 @@ function GlassScreen({
               2026-08-06) — matching the check on the right. Dim + unlit when the
               panel is powered off. */}
           <Text
-            style={[styles.glassTitle, complete && styles.glassTitleDone, off && styles.glassTitleOff]}
+            style={[styles.glassTitle, complete && !checkOnly && styles.glassTitleDone, off && styles.glassTitleOff]}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.65}
@@ -665,7 +670,7 @@ function FoundationsRow({
                   <MethodIcon
                     method="glossary"
                     size={RACK_ICON}
-                    color={colors.amber}
+                    color={read ? colors.amber : colors.green}
                     glowColor={read ? colors.amber : undefined}
                   />
                 </View>
@@ -677,13 +682,16 @@ function FoundationsRow({
                   value=""
                   valueColor={colors.amber}
                   subtitle={read ? 'Complete' : 'Start here'}
-                  subtitleColor={read ? colors.green : colors.amber}
+                  // Owner 2026-11-03: GREEN before reading (go), AMBER once
+                  // read, with the white title and a green check.
+                  subtitleColor={read ? colors.amber : colors.green}
                   complete={read}
+                  checkOnly
                   a11yLabel={read ? 'Introduction, complete' : 'Introduction, start here'}
                 />
               </View>
               <SwitchButton
-                label={isLocked ? 'Locked' : read ? '✓ Read' : 'Read'}
+                label={isLocked ? 'Locked' : 'Read'}
                 a11yLabel={
                   isLocked
                     ? 'Introduction is locked. See how to unlock'
@@ -691,7 +699,7 @@ function FoundationsRow({
                       ? 'Introduction, read. Open the lesson again'
                       : 'Read the Introduction'
                 }
-                variant={isLocked ? 'outline' : read ? 'success' : 'primary'}
+                variant={isLocked ? 'outline' : read ? 'primary' : 'success'}
                 width={89}
                 height={RACK_SWITCH_H}
                 onPress={onPress}
@@ -2319,12 +2327,12 @@ export function DashboardScreen() {
                       says "CURRENT TOPIC", and MyTopicsIcon hides itself
                       from screen readers, so this adds no second stop. */}
                   <View style={styles.eyebrowRow}>
-                    <MyTopicsIcon size={21} />
+                    {dispIsCustom ? <DeckIcon color={colors.customList} size={21} fill="rgba(63,211,230,0.22)" /> : <MyTopicsIcon size={21} />}
                     <Text style={styles.topicEyebrow}>
                       {dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}
                     </Text>
                   </View>
-                  <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]} numberOfLines={2}>
+                  <Text style={[styles.topicName, dispIsCustom && styles.topicNameCustom, dispTopicInactive && styles.topicNameDim]} numberOfLines={2}>
                     {dispTopic.name}
                   </Text>
                   <Text style={styles.topicMeta}>
@@ -2398,7 +2406,16 @@ export function DashboardScreen() {
                   iconUrl={topicImagePath(dispTopic.global_sequence) ?? trophyForTopicName(trophies, dispTopic.name) ?? dispTopic.icon_url}
                   size={92}
                   radius={10}
-                  fallback={<View style={styles.topicTrophyEmpty} />}
+                  fallback={
+                    dispIsCustom ? (
+                      // My Custom List has no topic art: its own deck icon, in its blue (owner 2026-11-03).
+                      <View style={[styles.topicTrophyEmpty, styles.topicTrophyCustom]}>
+                        <DeckIcon color={colors.customList} size={64} fill="rgba(63,211,230,0.22)" />
+                      </View>
+                    ) : (
+                      <View style={styles.topicTrophyEmpty} />
+                    )
+                  }
                 />
               </Pressable>
               {/* Jog dial — tap it to open the big wheel, then turn the big
@@ -3398,6 +3415,9 @@ const styles = StyleSheet.create({
   // Behind-glass fuzz (owner 2026-08-06) — the smallest soft halo so the text
   // reads as sitting under the pane, not printed on it (RN <Text> has no true
   // blur; a faint same-tone textShadow is the softening).
+  // My Custom List's own blue (colors.customList), as on its Glossary/Flashcards icon (owner 2026-11-03).
+  topicNameCustom: { color: colors.customList },
+  topicTrophyCustom: { alignItems: 'center', justifyContent: 'center' },
   topicName: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 18,

@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 13:30 · ccode · a9096c37
+changed: Introduction row: sub-label reads Complete (green) once read (owner)
+affects other side: nothing (label only) [MD:D47]
+nothing
+
+
 ### 2026-11-03 12:56 · ccode · ab196a0b
 changed: Topic Foundations (D47): Flashcards popup after the Welcome + Study Dashboard "Start here" row
 affects other side: Comp A will need to add nullable text column achievements.foundations_text before A2; app tolerates its absence [MD:D47]
