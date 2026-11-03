@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 09:18 · ccode · 8c228727
+changed: must-do D47: Topic Foundations v3 (one chain of thought; owner: v2 jumped around)
+affects other side: nothing yet (Topic Foundations v3 under owner review) [MD:D47]
+nothing
+
+
 ### 2026-11-03 08:50 · ccode · 0dfb89d7
 changed: lessons 2026-11-03: glossary_study_v is paywalled (read base tables); product names intentional; check lessons against glossary plain English
 affects other side: nothing (lesson: glossary_study_v hides plain_english for members-only topics when read without a member — by design)
