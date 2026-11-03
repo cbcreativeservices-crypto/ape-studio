@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-03 08:50 · ccode · 0dfb89d7
+changed: lessons 2026-11-03: glossary_study_v is paywalled (read base tables); product names intentional; check lessons against glossary plain English
+affects other side: nothing (lesson: glossary_study_v hides plain_english for members-only topics when read without a member — by design)
+nothing
+
+
 ### 2026-11-03 08:40 · ccode · e6695faa
 changed: must-do D47 Topic Foundations (owner decisions 2026-11-03); A2 held until all 166 approved
 affects other side: A2 (the launch OTA) is HELD by the owner until all 166 Topic Foundations lessons are approved; Topic Foundations text will live in a new achievements column (brief comes after the pilot) [MD:D47]
