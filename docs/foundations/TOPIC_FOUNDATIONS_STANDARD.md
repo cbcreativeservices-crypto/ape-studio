@@ -158,6 +158,17 @@ picture (as a verb); and these metaphors and informal words: cousin, engine (non
 
 ---
 
+## 8b. What batch 1 taught us (2026-11-03, built into the brief, the script and the fixer)
+
+| Found in batch 1 | Change made |
+|---|---|
+| Writers filled the limit: every draft was 471–480 words with 8 paragraphs, so the checks' fixes pushed lessons over 480 and good sentences had to be cut | Brief: aim 420–460 words and 7 paragraphs |
+| A simile ("like a growing bubble"), a regional reference and an abbreviation ("In North America it is called a GFCI") | Brief: no similes, no regional references, spell out abbreviations. Script: fails on abbreviations, warns on similes and regions |
+| "warm air" and digital "bits" were flagged as banned words | Script: literal uses allowed |
+| A safety rule stayed late in the lesson because each check left it to the other | Fixer: owns all order and placement items, including "safety rules early" |
+| Two sibling lessons opened with the same scene; one sentence repeated a sibling | Check A: flags overlap between sibling lessons in the batch |
+| Topics named after a product (DAW: Logic, Ableton Live, Dante) and the slang topic | Brief: the product in the topic's own title may be named; slang terms are the content and are explained literally |
+
 ## 9. Files
 
 | File | Purpose |

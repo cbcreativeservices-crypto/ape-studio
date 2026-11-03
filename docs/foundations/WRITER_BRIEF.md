@@ -17,6 +17,7 @@ from glossary g join glossary_topics gt on gt.glossary_id = g.id
 where gt.achievement_id = '<id>' order by g.term;
 ```
 - Read EVERY term with its plain English (page with limit/offset if needed). NEVER use `glossary_study_v` (it hides text).
+- Save the topic's term names as a JSON array of strings to `<gs>.terms.json` next to your lesson file (used by the mechanical check).
 - Product and company names in the glossary are intentional; do not mention them in the lesson.
 
 ## Step 2 — scope map
@@ -31,7 +32,9 @@ Sort EVERY term into 4–7 groups. Count each group (counts must add up to the t
 - **Level:** a curious 16-year-old who has never studied the topic. Detail, numbers, specifications and lists of variants stay in the flashcards.
 - **Plain international English:** every sentence must make sense read literally by someone who learned English as a second language. No idioms, figures of speech, personification, slang, informal words, cultural references, phrasal verbs with a non-literal meaning, or vague sound adjectives (warm, bright, punchy, harsh, fat, smooth, strong) unless explained literally ("more low frequencies"). Use: imagine (not picture), set level (not line), frequency bands (not slices), equipment (not gear), parts (not bits), attempts (not tries), trigger (not set off), exit routes (not way out).
 - **House rules:** no product, brand or company names; knowledge, not skills (never "you'll master / be able to / build / mix"); technique is common practice or a starting point, never the one correct setting; no citations or authorities; do not repeat the Welcome text; safety topics put the dangers and never-break rules early, inside the chain; simplify, never falsify ("often/usually" where there are exceptions); no numbers (at most one if it truly helps); US spelling; no exclamation marks.
-- **Format:** line 1 `Topic Foundations: <short topic name>`, blank line, then 6–8 plain paragraphs separated by one blank line. 400–480 words in the body. Average sentence 15 words or fewer; split any sentence over 30 words unless it is a plain list. No headings, bullets, bold, links, tables or digits.
+- **Topics named after a product or about slang:** if the topic's own title names a product or system (for example "DAW: Logic", "DAW: Ableton Live", "Dante"), the lesson may use that name, and only that one. If the topic is about slang or jargon, the slang terms are the content: name them and explain each one in literal words.
+- **Batch 1 lessons (2026-11-03):** no similes or comparisons ("like a growing bubble"); no regional references ("in North America") unless the topic itself is about a region; spell out every abbreviation in words (write "ground fault circuit interrupter", not the letters); do not fill the word limit — aim for 420–460 words and 7 paragraphs, like the approved five.
+- **Format:** line 1 `Topic Foundations: <short topic name>`, blank line, then 6–8 plain paragraphs separated by one blank line (7 is normal). 400–480 words in the body, aiming for 420–460. Average sentence 15 words or fewer; split any sentence over 30 words unless it is a plain list. No headings, bullets, bold, links, tables or digits.
 
 ## Deliverable
 Write the lesson to the path given in your task (overwrite). Edit no repo files. Report back, briefly:
