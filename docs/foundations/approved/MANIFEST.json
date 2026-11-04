@@ -18,24 +18,24 @@
   {
     "gs": 3350,
     "name": "Dynamics — Compression, Limiting & Gating (Core)",
-    "words": 469,
-    "md5": "caa2daeccaf9e33b9d7b45385a9cf689",
+    "words": 479,
+    "md5": "c7ecb88bd0b618b37210ef8a977219e5",
     "approved": "2026-11-03",
     "version": "pilot v5"
   },
   {
     "gs": 3110,
     "name": "Specialized & Emerging Microphones",
-    "words": 462,
-    "md5": "f2a8eea12a8ed95590ad19589c2e0043",
+    "words": 478,
+    "md5": "b034474362377290ae97cff42aecb5bd",
     "approved": "2026-11-03",
     "version": "pilot v5"
   },
   {
     "gs": 4740,
     "name": "Advanced Dynamics — Processing & Techniques",
-    "words": 470,
-    "md5": "d1d16b5740cf7ee78dd008034ac4e739",
+    "words": 479,
+    "md5": "0ded8cf2bd304e42bea850735ba84b44",
     "approved": "2026-11-03",
     "version": "pilot v5"
   }
