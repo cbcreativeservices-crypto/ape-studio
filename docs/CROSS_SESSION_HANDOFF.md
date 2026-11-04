@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-04 07:34 · ccode · dc564bc9
+changed: Topic Foundations: checkpoint of the raise-to-4.6 run (113 of 171 at 4.6+); improved drafts, 3 approved lessons re-frozen, live grades
+affects other side: nothing (drafts only; the 3 approved lessons are not loaded to the server yet)
+needs: nothing
+
+
+### 2026-11-03 15:20 · ccode · 0c7aef81
+changed: Topic Foundations: grading rubric + grades (80 A, 91 B); fixed the 5 that needed attention (2 accuracy errors), approved DAW lesson re-frozen
+affects other side: nothing (lesson text + grades, repo only) [MD:D47]
+nothing
+
+
 ### 2026-11-03 13:42 · ccode · 9c04f566
 changed: Current Topic: keep the amber icon beside CURRENT TOPIC for My Custom List too (owner)
 affects other side: nothing (app look only) [MD:D47]
