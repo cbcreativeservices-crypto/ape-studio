@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-04 08:06 · ccode · 5bb93367
+changed: Topic Foundations: final pass to 4.5: 157 of 171 at 4.5+ (146 at 4.6+, average 4.64); all 171 pass the check script
+affects other side: nothing yet (Foundations text not loaded; column not added)
+needs: nothing
+
+
 ### 2026-11-04 07:34 · ccode · dc564bc9
 changed: Topic Foundations: checkpoint of the raise-to-4.6 run (113 of 171 at 4.6+); improved drafts, 3 approved lessons re-frozen, live grades
 affects other side: nothing (drafts only; the 3 approved lessons are not loaded to the server yet)
