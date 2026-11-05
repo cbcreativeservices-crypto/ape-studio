@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 00:15 · ccode · 62b06426
+changed: validate-purchase v21: sandbox purchases buy 24 hours and no tenure, and leave longer access alone; H5 live, snapshot refreshed; two exposure tests no longer age out [MD:D50]
+affects other side: Comp A deploys validate-purchase v21 on the owner's go.
+needs: the v21 deploy [MD:D50]
+
+
 ### 2026-11-04 21:13 · ccode · d0050766
 changed: Mixing Guides: owner's 24 decisions: open questions, safety wording, one rule each for loudness and sub, style made consistent [MD:D49]
 affects other side: nothing.
