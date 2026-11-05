@@ -146,6 +146,9 @@ test('1. a legacy key that could not be removed never wipes measurements saved s
 });
 
 test('2. the history export never passes today off as the whole history', async () => {
+  // Recent days, not fixed dates: fixed ones aged out of the 45-day retention on 2026-11-05.
+  const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  const [d20, d21, d22] = [daysAgo(3), daysAgo(2), daysAgo(1)];
   const exposure = await import('../src/features/audio/exposureMonitor.ts');
   const dayBlob = (date: string, activeSec: number) =>
     JSON.stringify({
@@ -153,23 +156,23 @@ test('2. the history export never passes today off as the whole history', async 
       routeSec: { headphones: activeSec, bluetooth: 0, speaker: 0, external: 0, environmental: 0, unknown: 0 },
       checkins: 0, warnings: 0, sessions: [], longestSessionSec: activeSec,
     });
-  globalThis.__e3AS.set('ape:exposure:v1:days', JSON.stringify(['2026-09-20', '2026-09-21', '2026-09-22']));
-  globalThis.__e3AS.set('ape:exposure:v1:day:2026-09-20', dayBlob('2026-09-20', 600));
-  globalThis.__e3AS.set('ape:exposure:v1:day:2026-09-21', '{damaged');
-  globalThis.__e3AS.set('ape:exposure:v1:day:2026-09-22', dayBlob('2026-09-22', 900));
+  globalThis.__e3AS.set('ape:exposure:v1:days', JSON.stringify([d20, d21, d22]));
+  globalThis.__e3AS.set(`ape:exposure:v1:day:${d20}`, dayBlob(d20, 600));
+  globalThis.__e3AS.set(`ape:exposure:v1:day:${d21}`, '{damaged');
+  globalThis.__e3AS.set(`ape:exposure:v1:day:${d22}`, dayBlob(d22, 900));
   exposure.resetLocal();
   await flush();
 
   // One damaged stored day is skipped on its own.
   const shown = (await exposure.getExposureHistory()).map((d) => d.date);
-  assert.ok(shown.includes('2026-09-20') && shown.includes('2026-09-22'), `the readable days still show (got ${shown})`);
+  assert.ok(shown.includes(d20) && shown.includes(d22), `the readable days still show (got ${shown})`);
 
   // A stored day that cannot be READ fails the export instead of shrinking it.
-  globalThis.__e3ReadFails.add('ape:exposure:v1:day:2026-09-22');
+  globalThis.__e3ReadFails.add(`ape:exposure:v1:day:${d22}`);
   await assert.rejects(exposure.exportExposureHistory(), 'an export missing stored days is not "your history"');
   globalThis.__e3ReadFails.clear();
   const json = JSON.parse(await exposure.exportExposureHistory()) as { days: { date: string }[] };
-  assert.ok(json.days.some((d) => d.date === '2026-09-22'));
+  assert.ok(json.days.some((d) => d.date === d22));
 });
 
 test('3. a settings change the device did not store is said, once', () => {

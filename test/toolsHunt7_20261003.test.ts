@@ -112,6 +112,9 @@ const src = (rel: string) =>
   readFileSync(fileURLToPath(new URL(`../src/${rel}`, import.meta.url)), 'utf8').replace(/\r\n/g, '\n');
 
 test('1a. an exposure history that could not be read is said, not shown as empty', async () => {
+  // Recent days, not fixed dates: fixed ones aged out of the 45-day retention on 2026-11-05.
+  const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  const [d20, d21, d22] = [daysAgo(3), daysAgo(2), daysAgo(1)];
   const exposure = (await import('../src/features/audio/exposureMonitor.ts')) as Record<string, unknown>;
   assert.equal(typeof exposure.readExposureHistory, 'function', 'readExposureHistory exists');
   const read = exposure.readExposureHistory as () => Promise<{ days: { date: string }[]; unreadable: boolean }>;
@@ -121,21 +124,21 @@ test('1a. an exposure history that could not be read is said, not shown as empty
       routeSec: { headphones: 600, bluetooth: 0, speaker: 0, external: 0, environmental: 0, unknown: 0 },
       checkins: 0, warnings: 0, sessions: [], longestSessionSec: 600,
     });
-  globalThis.__h7AS.set('ape:exposure:v1:days', JSON.stringify(['2026-09-20', '2026-09-21']));
-  globalThis.__h7AS.set('ape:exposure:v1:day:2026-09-20', dayBlob('2026-09-20'));
-  globalThis.__h7AS.set('ape:exposure:v1:day:2026-09-21', dayBlob('2026-09-21'));
+  globalThis.__h7AS.set('ape:exposure:v1:days', JSON.stringify([d20, d21]));
+  globalThis.__h7AS.set(`ape:exposure:v1:day:${d20}`, dayBlob(d20));
+  globalThis.__h7AS.set(`ape:exposure:v1:day:${d21}`, dayBlob(d21));
   (exposure.resetLocal as () => void)();
   await flush();
 
   const ok = await read();
   assert.equal(ok.unreadable, false);
-  assert.ok(ok.days.some((d) => d.date === '2026-09-20') && ok.days.some((d) => d.date === '2026-09-21'));
+  assert.ok(ok.days.some((d) => d.date === d20) && ok.days.some((d) => d.date === d21));
 
   globalThis.__h7ReadFails.add('ape:exposure:v1:days');
   const failed = await read();
   globalThis.__h7ReadFails.clear();
   assert.equal(failed.unreadable, true, 'a failed read is reported as unreadable');
-  assert.ok(!failed.days.some((d) => d.date === '2026-09-20'), 'only the in-memory today stands in');
+  assert.ok(!failed.days.some((d) => d.date === d20), 'only the in-memory today stands in');
 });
 
 test('1b. the Exposure screen has the three history faces', () => {

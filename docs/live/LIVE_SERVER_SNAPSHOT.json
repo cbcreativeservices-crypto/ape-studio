@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-11-02T22:00:00-08:00",
-  "taken_by": "ccode session 2026-11-02, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; after Comp A applied forum package + add-on 1 (forum OFF)",
+  "taken_at": "2026-11-05T00:30:00-08:00",
+  "taken_by": "ccode session 2026-11-05, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; after Comp A applied H5",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
@@ -185,6 +185,7 @@
     "member_month_complete",
     "migrate_registry_to_community",
     "moderation_history",
+    "my_employer_public_token",
     "my_identity",
     "my_intro_video_seen",
     "my_verifier_kind",

@@ -39,7 +39,16 @@ type VerifyResult = {
   // true / false when the store said so; null when it could not be read (then
   // will_renew is left as it was — never defaulted to true).
   autoRenew?: boolean | null;
+  // M1 (2026-11-05): the store says no real money moved. Apple's sandbox, or
+  // Google's purchaseType 0. See SANDBOX_ACCESS_MS.
+  sandbox?: boolean;
 };
+
+// M1 (owner 2026-11-05, option b): a sandbox purchase still verifies and still
+// answers ok, because App Review buys in the sandbox against the production
+// build. But it costs nothing, so it buys a day at most and no certificate
+// tenure, and it never changes a row that already holds longer access.
+const SANDBOX_ACCESS_MS = 24 * 60 * 60 * 1000;
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -153,7 +162,7 @@ async function verifyApple(transactionId: string, expectedSku: string, kind: 'su
   if (!hit.signed) return { valid: false, expiresAtMs: null, reason: hit.status === 404 ? 'not_found' : 'store_unreachable' };
   // signedTransactionInfo is a JWS from Apple's authenticated endpoint — decode
   // its payload (transport already authenticated by our TLS + bearer JWT).
-  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number; appAccountToken?: string; originalTransactionId?: string }>(hit.signed);
+  const tx = decodeJwtPayload<{ environment?: string; productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number; appAccountToken?: string; originalTransactionId?: string }>(hit.signed);
   const bundleOk = tx.bundleId === Deno.env.get('APPLE_BUNDLE_ID');
   const skuOk = tx.productId === expectedSku;
   const notRevoked = !tx.revocationDate;
@@ -170,7 +179,8 @@ async function verifyApple(transactionId: string, expectedSku: string, kind: 'su
         : 'expired';
   // Lifetime never renews. A subscription asks Apple (only once it is valid).
   const autoRenew = kind === 'in-app' ? false : valid ? await appleAutoRenew(host, jwt, transactionId, tx.originalTransactionId ?? '') : null;
-  return { valid, expiresAtMs: tx.expiresDate ?? null, reason, accountTag: tx.appAccountToken ?? null, autoRenew };
+  const sandbox = host === APPLE_SANDBOX || tx.environment === 'Sandbox';
+  return { valid, expiresAtMs: tx.expiresDate ?? null, reason, accountTag: tx.appAccountToken ?? null, autoRenew, sandbox };
 }
 
 // ── Google: Play Developer API (OAuth2 service account) ──────────────────────
@@ -249,11 +259,13 @@ async function verifyGoogle(purchaseToken: string, sku: string, kind: 'subs' | '
     acknowledgementState?: number;
     obfuscatedExternalAccountId?: string;
     autoRenewing?: boolean;
+    purchaseType?: number; // 0 = test. Absent on a real purchase.
   };
   const extra = {
     ackState: body.acknowledgementState,
     paymentState: body.paymentState,
     accountTag: body.obfuscatedExternalAccountId ?? null,
+    sandbox: body.purchaseType === 0,
   };
   if (kind === 'subs') {
     const expiresAtMs = body.expiryTimeMillis ? Number(body.expiryTimeMillis) : null;
@@ -353,7 +365,7 @@ Deno.serve(async (req) => {
 
   if (!verified.valid) {
     const reason = verified.reason ?? 'not_found';
-    console.warn('[validate-purchase] not_verified:', { sku, apple: isApple, reason });
+    console.warn('[validate-purchase] not_verified:', { sku, apple: isApple, reason, sandbox: !!verified.sandbox });
     return json({
       ok: false,
       error: 'not_verified',
@@ -390,7 +402,11 @@ Deno.serve(async (req) => {
     }
   }
 
-  const computed = expiresAtFor(plan, verified);
+  const sandbox = verified.sandbox === true;
+  const storeExpiry = expiresAtFor(plan, verified);
+  const computed = sandbox
+    ? new Date(Math.min(Date.parse(storeExpiry), Date.now() + SANDBOX_ACCESS_MS)).toISOString()
+    : storeExpiry;
   // MUST match the entitlements_source_check constraint (app_store / play_store).
   const source = isApple ? 'app_store' : 'play_store';
   // ── store_ref MUST BE THE ID THAT STORE'S REFUND FEED NAMES ────────────────
@@ -448,7 +464,7 @@ Deno.serve(async (req) => {
   // round trip on a path that already made two HTTPS calls to a store.
   let { data: existing, error: readErr } = await admin
     .from('entitlements')
-    .select('id, expires_at, member_since, refunded_at')
+    .select('id, status, expires_at, member_since, refunded_at')
     .eq('user_id', userId)
     .eq('product', ACADEMY_PRODUCT)
     .maybeSingle();
@@ -456,7 +472,7 @@ Deno.serve(async (req) => {
     console.warn('[validate-purchase] prior entitlement read failed, retrying:', readErr.message);
     ({ data: existing, error: readErr } = await admin
       .from('entitlements')
-      .select('id, expires_at, member_since, refunded_at')
+      .select('id, status, expires_at, member_since, refunded_at')
       .eq('user_id', userId)
       .eq('product', ACADEMY_PRODUCT)
       .maybeSingle());
@@ -469,13 +485,27 @@ Deno.serve(async (req) => {
   if (priorUnknown) {
     console.error('[validate-purchase] prior entitlement UNREADABLE — granting access, leaving member_since untouched:', readErr?.message);
   }
+  // M1: nobody was charged, and writing a 24-hour expiry blind could shorten a
+  // comp we could not read. Fail this one; the store and the app retry it.
+  if (sandbox && priorUnknown) {
+    console.warn('[validate-purchase] sandbox purchase with an unreadable prior row — not granting', { sandbox: true });
+    return json({ ok: false, error: 'grant_failed', reason: 'server_error' });
+  }
 
   // Never SHORTEN access a user already has (e.g. a lifetime comp who also
   // buys a month): keep the later expiry.
-  const prior = existing as { id: string; expires_at: string; member_since: string | null; refunded_at: string | null } | null;
+  const prior = existing as { id: string; status: string; expires_at: string; member_since: string | null; refunded_at: string | null } | null;
   const priorMs = prior?.expires_at ? Date.parse(prior.expires_at) : 0;
   const computedMs = Date.parse(computed);
-  const expires_at = priorMs > computedMs ? prior!.expires_at : computed;
+  // M1: a refunded or inactive row holds nothing, so a free test purchase cannot
+  // bring its old end date back.
+  const sandboxIgnoresPrior = sandbox && (prior?.status !== 'active' || !!prior?.refunded_at);
+  const expires_at = priorMs > computedMs && !sandboxIgnoresPrior ? prior!.expires_at : computed;
+  // M1: the row already holds longer real access (a comp, an access code, a paid
+  // plan), so the test purchase leaves it completely alone. Writing even the
+  // source and store_ref here would hand a comp to the store: a sandbox renewal
+  // notice, minutes later, would match that store_ref and replace its expiry.
+  const sandboxLeavesRow = sandbox && !sandboxIgnoresPrior && priorMs > computedMs;
 
   // ── the tenure clock (owner 2026-09-17) ──────────────────────────────────
   // A credential needs one complete month of unbroken membership, so this has
@@ -516,7 +546,9 @@ Deno.serve(async (req) => {
   // the next one (renewal, restore, or app launch) reads the row successfully,
   // sees `member_since` null, and sets it. Late is recoverable; restarted is
   // not.
-  const member_since = priorUnknown
+  //
+  // M1: a sandbox purchase is never tenure, so the key is omitted the same way.
+  const member_since = priorUnknown || sandbox
     ? undefined
     : !prior || !prior.member_since || prior.refunded_at || reallyLapsed
       ? nowIso
@@ -582,7 +614,10 @@ Deno.serve(async (req) => {
   // exists — and a plain insert would hit UNIQUE (user_id, product), fail the
   // grant, and hand the customer "we couldn't verify that purchase" for a
   // purchase that verified perfectly. Upsert lands either way.
-  const write = existing
+  if (sandbox) console.log('[validate-purchase] sandbox purchase:', { sandbox: true, sku, apple: isApple, leftRowAlone: sandboxLeavesRow });
+  const write = sandboxLeavesRow
+    ? { error: null }
+    : existing
     ? await admin.from('entitlements').update(row).eq('id', prior!.id)
     : priorUnknown
       ? await admin
