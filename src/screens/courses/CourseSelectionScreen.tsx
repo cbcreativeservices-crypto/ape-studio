@@ -1465,6 +1465,10 @@ onScreenIntrosReset(() => {
   introVideoLaunched = false;
 });
 
+/** Owner 2026-11-05: hide Audio Community and New Messages on Home until the
+ *  next store build and the forum go live. Set to true then. */
+const SHOW_COMMUNITY_ON_HOME = false;
+
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();
   // The one thing about the deck that genuinely depends on the LIVE window (the
@@ -2144,7 +2148,7 @@ export function CourseSelectionScreen() {
         >
           <Text style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>Membership</Text>
         </Pressable>
-      ) : memberOpen ? (
+      ) : SHOW_COMMUNITY_ON_HOME && memberOpen ? (
         // Members (owner 2026-11-01): the same corner opens the Audio
         // Community on EXPLORE, where Membership stands for everyone else.
         // Only on a CONFIRMED membership (useMemberGate 'open').
@@ -2162,7 +2166,7 @@ export function CourseSelectionScreen() {
           Replay intro row, ONLY while a contact request or an unread message
           is waiting (the same server count as the PROFILE tab badge; an
           unknown count shows nothing). Opens the directory on REQUESTS. */}
-      {(badgeCount(inbox) ?? 0) > 0 ? (
+      {!SHOW_COMMUNITY_ON_HOME ? null : (badgeCount(inbox) ?? 0) > 0 ? (
         <Pressable
           style={[styles.newMsgBtn, { top: insets.top + 36 }]}
           onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'requests' })}

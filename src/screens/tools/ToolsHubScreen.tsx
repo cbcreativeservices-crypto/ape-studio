@@ -1099,6 +1099,8 @@ export function ToolsHubScreen({ navigation }: Props) {
             <HomeOrBackKey onPress={() => safeGoBack(navigation)} />
             <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
             <View style={{ flex: 1 }} />
+            {/* Owner 2026-11-05: it floated over the dosimeter in the hero. */}
+            <AccuracyNote compact />
             <HelpKey search="tool" />
           </View>
         </View>
@@ -1133,9 +1135,6 @@ export function ToolsHubScreen({ navigation }: Props) {
               end={{ x: 0.5, y: 1 }}
               style={StyleSheet.absoluteFill}
             />
-            {/* Accuracy ⓘ — top-right corner of the hero, above the dosimeter
-                (owner 2026-08-17; moved out of the screen header). */}
-            <AccuracyNote compact style={styles.heroAccuracy} />
             <Text style={styles.heroEyebrow}>AUDIO MEASUREMENT TOOLS</Text>
             {/* Title row: title LEFT, dosimeter readout + open control RIGHT
                 (owner 2026-08-12) — the ONE place the user interacts with the
@@ -1321,7 +1320,6 @@ const styles = StyleSheet.create({
     paddingBottom: 11,
     gap: 4,
   },
-  heroAccuracy: { position: 'absolute', top: 10, right: 14, zIndex: 2 },
   heroEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2.2, color: colors.amber },
   heroTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 26, color: colors.textPrimary },
   heroTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },

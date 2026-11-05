@@ -68,6 +68,7 @@ const QUEUE_REASON_LABEL: Record<string, string> = {
 type Kind = 'area' | 'role' | 'open_to';
 
 export function EmployerSection() {
+  const [expanded, setExpanded] = useState(false);
   const [app, setApp] = useState<EmployerApplication | null>(null);
   const [verified, setVerified] = useState(false);
   /** The verified account's kind, from my_verifier_kind() (R1). */
@@ -209,16 +210,32 @@ export function EmployerSection() {
     </View>
   );
 
+  // Owner 2026-11-05: a verified account's section took up too much of Profile,
+  // so it folds and starts closed. An application still in progress stays open:
+  // its status is the reason the section is there.
+  const showBody = !verified || expanded;
+
   return (
     <View style={styles.wrap}>
-      <View style={styles.headRow}>
+      <Pressable
+        style={styles.headRow}
+        onPress={verified ? () => setExpanded((v) => !v) : undefined}
+        disabled={!verified}
+        accessibilityRole={verified ? 'button' : undefined}
+        accessibilityState={verified ? { expanded } : undefined}
+        aria-expanded={verified ? expanded : undefined}
+        accessibilityLabel={verified ? `${copy.accountHead}, ${copy.badgeA11y}, ${expanded ? 'expanded' : 'collapsed'}` : undefined}
+      >
+        {verified ? <Text style={[styles.caret, expanded && styles.caretOpen]}>▸</Text> : null}
         <Text style={styles.head}>{copy.accountHead}</Text>
         {verified ? (
-          <View style={styles.tag} accessible accessibilityLabel={copy.badgeA11y}>
+          <View style={styles.tag}>
             <Text style={styles.tagText}>VERIFIED</Text>
           </View>
         ) : null}
-      </View>
+      </Pressable>
+      {showBody ? (
+        <>
 
       {app ? <Text style={styles.company}>{app.companyName}</Text> : null}
 
@@ -303,6 +320,8 @@ export function EmployerSection() {
           <Text style={styles.linkText}>OPEN MY APPLICATION ON THE WEBSITE ›</Text>
         </Pressable>
       ) : null}
+        </>
+      ) : null}
     </View>
   );
 }
@@ -316,7 +335,9 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
   },
-  headRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 24 },
+  caret: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber },
+  caretOpen: { transform: [{ rotate: '90deg' }] },
   head: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textPrimary },
   tag: {
     borderWidth: 1,
