@@ -7,6 +7,7 @@ export {
   SCREEN_GUIDE_KEY_LABEL,
   SCREEN_GUIDE_HINT_TEXT,
   SCREEN_GUIDE_BUDGET,
+  SCREEN_GUIDES_ON,
   screenGuideStepLabel,
   type ScreenGuide,
   type ScreenGuideSectionKey,

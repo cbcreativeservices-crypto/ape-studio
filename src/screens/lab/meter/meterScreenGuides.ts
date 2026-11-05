@@ -47,10 +47,9 @@ export const METER_HOME_GUIDE: ScreenGuide = {
     'The order builds: Modules 1–4 are level (each a different "how loud?"), 5–7 frequency, 8–10 stereo and raw voltage, and Module 11 mixes them.',
   ],
   teaches: [
-    'You’ll see what a display’s axes say, and which question each of its numbers answers.',
-    'Peak, average and loudness meters disagree on the same sound, on purpose, and you’ll see why.',
-    'This lab follows Digital Audio Systems (dBFS, clipping) and comes before Signal Chain Builder.',
-    'Every display here runs on built-in teaching signals, not your microphone or a real room.',
+    'Each display answers a different question about the same sound: how high it peaks, how loud it feels, which frequencies it holds, how long they last, whether it survives mono.',
+    'Peak, average and loudness meters disagree on the same sound on purpose, because each measures something different.',
+    'You read any display by starting with its axes: what runs across, what runs up, and what each number measures.',
   ],
   tryThis: [
     'Work in order, starting with Waveform. Each module reuses what the last one showed you.',
@@ -78,9 +77,9 @@ export const METER_END_GUIDE: ScreenGuide = {
     'Going back into a module takes nothing away, so its ✓ stays.',
   ],
   teaches: [
-    'You can see which displays you’ve read, and which you haven’t met yet.',
-    'A ✓ here means you opened the module. The check questions inside are there for you and don’t change this list.',
-    'Nothing is ever taken away: you can open any module again for practice.',
+    'Every meter answers one question. Peak: will it clip? VU and LUFS: how loud does it feel? Spectrum: which frequencies? Correlation: will it survive mono?',
+    'No single meter tells the whole story. A sound can pass on one display and fail on another, so engineers read several together.',
+    'A reading only means something once you know what the display measures and how fast it reacts.',
   ],
   tryThis: [
     'Jump to a module you haven’t opened and read its display before you touch a control. What can you tell from the picture alone?',
@@ -112,7 +111,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Don’t read a tall wave as a loud one. Height shows peak level, not loudness.',
       'Flat tops are clipping, and turning down afterwards can’t rebuild them. That part of the wave was never stored.',
       'Spot a flat line off the center and you’ve found DC offset. True silence sits on the zero line.',
-      'Modules 2 and 3 pick up from the gap between peak and average (crest factor, CF in the picture).',
     ],
     tryThis: [
       'On SPEECH, raise GAIN to +2.0 dB: CLIP still says CLEAN (PEAK −0.6). At +3.0 dB it reads +0.4 OVER and the wave turns red.',
@@ -143,7 +141,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'A peak meter answers one question: will it clip? Don’t ask it how loud a sound feels.',
       'If the OVER lamp is lit, you’re too late: full scale was already hit, and those samples are flat.',
       'Two sounds with the same peak can carry very different average energy.',
-      'Module 1 drew peak and average in one picture; this meter watches the peak. That gap is why the next module’s VU needle exists.',
     ],
     tryThis: [
       'On KICK DRUM, raise GAIN from −6.0 dB to +0.0 dB: PEAK reads +1.6 OVR, OVERS reads 4 and the lamp lights.',
@@ -173,7 +170,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'That’s peak vs average at a glance: the needle reads average level, which is closer to how loud a sound feels.',
       'If the needle seems broken on drums, it isn’t. A slow needle is a design choice.',
       'Don’t read 0 VU as a ceiling. It’s a reference (nominal) level with headroom above it.',
-      'Module 2 watched the peak; Module 4 swaps the needle for LUFS, a loudness average weighted like the ear.',
     ],
     tryThis: [
       'On SNARE: PEAK −1.6, but NDL MAX only −23.0. The needle stays more than 21 dB under the peak.',
@@ -203,7 +199,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'LUFS (loudness units, weighted like the ear; 1 LU = 1 dB) is the number streaming and broadcast match programs by.',
       'LRA tells you how dynamic a program is, not how loud.',
       '"No clipped samples" is not "no clipping": delivery specs set a true-peak ceiling, often −1 dBTP (true-peak level).',
-      'Modules 1–3 measured level; this one measures loudness. Module 5 turns to "which frequencies".',
     ],
     tryThis: [
       'On MUSIC MIX: INTEGRATED −15.9 LUFS, TP GAP +0.9 dB. Switch to SPEECH: −23.7 LUFS, and a gap of only +0.4 dB.',
@@ -233,7 +228,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Read the shape, not each bar: where the energy sits, smooth or spiky, what sticks up.',
       'Beginners call any tall spike hum. Hum is a family of spikes at the mains frequency and its multiples; feedback is one spike that grows.',
       'A finished mix usually slopes down like pink noise, not flat.',
-      'Modules 1–4 asked how loud; this one asks which frequencies. Module 6 films it over time.',
     ],
     tryThis: [
       'Switch between MAINS HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.7 kHz (the plot’s marker says 1.75 kHz). You go from a low family to one lone spike.',
@@ -263,7 +257,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Axes first: time across, frequency up, level as color.',
       'The most common mistake is reading it like a waveform, where up means loud. Here, up means higher pitch.',
       'A steady line is usually a tone. A line that keeps getting hotter is feedback.',
-      'Module 5 showed one moment; this one shows the moments in a row. Module 7 adds decay: how long each frequency lasts.',
     ],
     tryThis: [
       'Compare WHISTLE and FEEDBACK: both draw one thin line, but only FEEDBACK grows hotter as it runs right. That growth is the danger sign.',
@@ -295,7 +288,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Taller doesn’t mean longer. Level and decay slope are different things: a broad EQ moves level, absorption moves decay.',
       'Decay depends on frequency, so one RT60 number never tells the whole story.',
       'Any ridge that outlasts its neighbors is ringing: a room mode, a resonant speaker or a high-Q filter.',
-      'Modules 5–6 showed which frequencies, and when; here you see how long each lasts. Module 8 turns to stereo.',
     ],
     tryThis: [
       'At the start, tap Q RING on: RIDGE jumps to 1.2 kHz and VS NEARBY to 3.0×. The filter itself rings. Tap it off again.',
@@ -325,7 +317,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'The bar’s green zone and the SAFE verdict start at +0.5. Below that, check the mix in mono.',
       'Near −1 a mix can sound huge on speakers and collapse on a mono PA or a phone, so don’t trust the stereo sound alone.',
       'Width borrowed from out-of-phase tricks is paid back in mono.',
-      'Modules 1–7 read one signal; this one compares two. Module 9 shows them as Mid and Side.',
     ],
     tryThis: [
       'At the start: CORR +0.91, MONO FOLD −0.2 dB — SAFE. Drag PHASE to 180°: CORR −0.91, MONO FOLD −13.6 dB — CANCELLATION.',
@@ -356,7 +347,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Width is the ratio of Side to Mid, not a separate effect you add.',
       'Wide is a position, not a quality: what the sides gain, the center loses.',
       'That’s why the anchors of a mix (vocal, bass, kick) usually stay in the Mid.',
-      'Module 8 measured how alike L and R are; Module 10 shows the raw voltage, plus an X-Y view of a stereo pair.',
     ],
     tryThis: [
       'Step from MONO to NARROW to WIDE: MID (SHARED) reads 100 %, then ≈85 %, then ≈55 %, as SIDE (DIFF) grows.',
@@ -386,7 +376,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'You’re seeing what the signal does right now, the rawest view.',
       'Flat tops a wave wasn’t born with mean it clipped here or earlier, whatever later meters say. SQUARE is born flat; SINE isn’t.',
       'A studio goniometer (Module 8) turns this plot 45°, so mono stands upright there. Same data, two conventions.',
-      'Modules 1–9 summed the signal up; this one draws it raw. Module 11 puts seven of these displays to work.',
     ],
     tryThis: [
       'Switch between SINE and SQUARE: one smooth curve, then flat shelves with near-vertical edges.',
@@ -416,7 +405,6 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Each fault leaves its own picture, and one display shows it best.',
       'Faults live in level, frequency, time or stereo, and each needs its own display.',
       'Not every odd reading is a problem: a needle and a peak lamp that disagree can both be honest.',
-      'Everything here draws on Modules 1–10. The measurement tools then show you the same pictures on real sound.',
     ],
     tryThis: [
       'Before you answer WHAT METER IS THIS?, say what runs across and what runs up. The axes and markings name the meter.',

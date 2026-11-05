@@ -59,6 +59,13 @@ export function screenGuideStepLabel(i: number): string {
  *  the test. */
 export const SCREEN_GUIDE_BUDGET = { low: 410, high: 700, tryItem: 200 } as const;
 
+/**
+ * Owner 2026-11-05: the lab help buttons and their hint are OFF for launch. The
+ * guides are written but do not meet the student-voice standard yet (D52). Turn
+ * this on after launch, once they do. Every guide file stays in place.
+ */
+export const SCREEN_GUIDES_ON = false;
+
 /** The header key's accessible label (one wording everywhere). */
 export const SCREEN_GUIDE_KEY_LABEL = 'Explain this screen';
 

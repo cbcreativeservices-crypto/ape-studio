@@ -64,6 +64,7 @@ import {
   SCREEN_GUIDE_HINT_TEXT,
   SCREEN_GUIDE_KEY_LABEL,
   SCREEN_GUIDE_SECTIONS,
+  SCREEN_GUIDES_ON,
   screenGuideStepLabel,
   type ScreenGuide,
 } from './types';
@@ -412,6 +413,10 @@ export function ScreenGuidePopup({
 // ──────────────────────────────────────────────────────────── the header key ──
 
 export function ScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuide }) {
+  return SCREEN_GUIDES_ON ? <LiveScreenGuideKey title={title} guide={guide} /> : null;
+}
+
+function LiveScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuide }) {
   const host = useContext(HostContext);
   const [open, setOpen] = useState(false);
   // Fallback path only — AccuracyNote's lesson (bug hunt 2026-09-29): if iOS
@@ -492,7 +497,7 @@ export function useScreenGuideHintVisible(): boolean {
 export function ScreenGuideHintAnchor({ children, off = false }: { children: ReactNode; off?: boolean }) {
   // `off`: a shared shell keeps the anchor mounted (so its header never
   // remounts) on a tab/page that has no guide — no key there, so no hint.
-  const visible = useScreenGuideHintVisible() && !off;
+  const visible = useScreenGuideHintVisible() && !off && SCREEN_GUIDES_ON;
   return (
     <View style={visible ? styles.anchorOnTop : undefined}>
       {children}
