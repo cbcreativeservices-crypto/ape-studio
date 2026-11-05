@@ -24,9 +24,9 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences expect brassy excitement, a crisp percussive piano, a bass felt in the hips, and a sonero (lead improvising singer) whose inspiraciones (improvised sung lines) come through clearly, word by word.",
   "glance": {
     "origin": "New York City, mid-1960s–1970s (Fania era), rooted in Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s",
-    "tempo": "About 160–220 BPM counted in quarter notes (felt in cut time, roughly 80–110); romántica (smooth romantic salsa) sits at the slower end; descargas (jam sessions) and Cali-style tunes push past 220",
+    "tempo": "About 160–220 BPM counted in quarter notes (felt in cut time, roughly 80–110); romántica sits at the slower end; descargas (jam sessions) and Cali-style tunes push past 220",
     "ensemble": "10–16 piece orquesta (dance orchestra): piano, baby bass, timbales (two metal-shelled drums with cymbal and cowbells), congas, bongó (small pair of hand drums; the player doubles on campana, the hand-held cowbell), 2–3 trumpets, 2–3 trombones (sometimes sax), lead singer (sonero) plus 2–4 coro (vocal chorus) singers",
-    "priority": "The rhythm-section lock of piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas and bells, with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
+    "priority": "The rhythm-section lock of piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas and bells, with the sonero (lead improvising singer) and coro clearly on top",
     "liveSpl": "94–100 dBA LAeq,15min in dance halls; 98–102 dBA at festivals and arenas; about 108–115 dBC LCeq",
     "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic Fania reissues around −13 to −10); most streaming services normalize to about −14 LUFS, some to −16"
   },
@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "area": "Inputs",
-        "live": "45–72 channels for a large orquesta (dance orchestra); 30+ open percussion and horn mics create heavy bleed",
+        "live": "30–48 channels for a large orquesta (dance orchestra); 15–20 open percussion and horn mics create heavy bleed",
         "studio": "Isolated booths or overdubs; percussion often tracked separately"
       },
       {
@@ -364,7 +364,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Walk the dance floor; front fills often need more bell, bass and vocal than expected.",
+      "text": "Walk the dance floor; it often needs more bell, bass and vocal than expected.",
       "bullet": true
     },
     {

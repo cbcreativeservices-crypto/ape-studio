@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Studio sertanejo is polished and fairly compressed, but the live show has wide macro-dynamics: intimate verses at 92–95 dBA, choruses at 102–105, and crowd sing-along sections where the band drops 10–15 dB. Preserve those drops—they are the emotional climax—while keeping the vocals dense and stable. Ride the duo by phrase rather than squashing them."
+      "text": "Studio sertanejo is polished and fairly compressed, but the live show has wide macro-dynamics: intimate verses at 92–95 dBA, choruses at 102–105, and crowd sing-along sections where the band drops 10–15 dB. Preserve those drops — they are the emotional climax — while keeping the vocals dense and stable. Ride the duo by phrase rather than squashing them."
     }
   ],
   "balance": [
@@ -106,7 +106,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare / electronic pads",
         "cut": "HPF 90 Hz; −2–3 dB ring at 600 Hz–1 kHz",
         "boost": "+2 dB at 180–220 Hz; +2 dB at 5–6 kHz",
-        "notes": "Electronic claps often layered—EQ as one"
+        "notes": "Electronic claps often layered — EQ as one"
       },
       {
         "source": "Bass",
@@ -136,7 +136,7 @@ export const GUIDE: MixingGuide = {
         "source": "Electric guitar",
         "cut": "HPF 100 Hz; LPF 10–12 kHz",
         "boost": "+2 dB at 1.5–2.5 kHz",
-        "notes": "Clean tones easily mask vocals—carve 2–3 kHz"
+        "notes": "Clean tones easily mask vocals — carve 2–3 kHz"
       },
       {
         "source": "Keys / pads",
@@ -208,7 +208,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess both voices at 6–8 kHz for 3–5 dB; the vibrato and bright Portuguese sibilants (“s”, “ch”) get harsh at arena levels. Gate toms and percussion lightly live; do not gate vocals—use an expander (−8 to −10 dB range) instead, because the duo often steps off-mic to let the crowd sing. Live, a limiter on the vocal bus (−1 dB ceiling, 3–4 dB max reduction) catches screams on the big notes."
+        "text": "De-ess both voices at 6–8 kHz for 3–5 dB; the vibrato and bright Portuguese sibilants (“s”, “ch”) get harsh at arena levels. Gate toms and percussion lightly live; do not gate vocals — use an expander (−8 to −10 dB range) instead, because the duo often steps off-mic to let the crowd sing. Live, a limiter on the vocal bus (−1 dB ceiling, 3–4 dB max reduction) catches screams on the big notes."
       }
     ]
   },
@@ -236,7 +236,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Separate reverb per voice",
         "appliedTo": "Primeira vs segunda voz (lead vs harmony voice)",
         "setting": "Two plates differing by 0.2–0.4 s or pre-delay",
-        "amount": "Subtle—separates without splitting"
+        "amount": "Subtle — separates without splitting"
       },
       {
         "effect": "Room / short reverb",
@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Crowd",
-        "live": "Part of the show—drop the band for sing-alongs",
+        "live": "Part of the show — drop the band for sing-alongs",
         "studio": "On “ao vivo” (live) records, crowd mics are a main element and are edited, aligned and sometimes layered"
       },
       {
@@ -328,7 +328,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Piezo violão (acoustic guitar) and viola (ten-string country guitar) get quacky and harsh at volume—tame 1–2 kHz and 4–6 kHz rather than adding top.",
+      "text": "Piezo violão (acoustic guitar) and viola (ten-string country guitar) get quacky and harsh at volume — tame 1–2 kHz and 4–6 kHz rather than adding top.",
       "bullet": true
     },
     {
@@ -336,7 +336,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "On mixed bills—sertanejo, forró (northeastern Brazilian dance music), piseiro (keyboard-driven forró), funk—recheck sub level per act; agronejo (farm-life sertanejo) and funknejo (sertanejo-funk blend) tracks need far more 40–60 Hz than ballad sets.",
+      "text": "On mixed bills — sertanejo, forró (northeastern Brazilian dance music), piseiro (keyboard-driven forró), funk — recheck sub level per act; agronejo (farm-life sertanejo) and funknejo (sertanejo-funk blend) tracks need far more 40–60 Hz than ballad sets.",
       "bullet": true
     }
   ],

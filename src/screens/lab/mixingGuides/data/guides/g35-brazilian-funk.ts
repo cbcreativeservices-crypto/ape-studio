@@ -14,10 +14,10 @@ export const GUIDE: MixingGuide = {
   "expects": "The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back.",
   "glance": {
     "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s, when Miami bass and electro filled sound-system bailes (dance parties); Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s",
-    "tempo": "125–135 BPM (classic Volt Mix/tamborzão, 130 the historic standard); 148–152 BPM (Rio “150” since 2018); rasteirinha (slower, laid-back funk) 90–105; mandelão (stripped, distorted São Paulo funk)/automotivo (car-sound-system funk) 130–150",
+    "tempo": "125–135 BPM (classic Volt Mix/tamborzão, 130 the historic standard); 148–152 BPM (Rio “150” since 2018); rasteirinha (slower, laid-back funk) 90–105; mandelão/automotivo (car-sound-system funk) 130–150",
     "ensemble": "DJ + 1–3 MCs over playback; pop-funk headliners add dancers, a percussionist or small band, and backing tracks",
-    "priority": "The beat’s low end—kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808—hitting hard and clean in mono, with the MC’s hook clear on top",
-    "liveSpl": "Bailes (dance parties) and paredões (walls of speakers) often 105–115+ dBA with 125–135 dBC near the stacks; managed venues and festivals 100–103 dBA LAeq,15min (common safe-listening limit 100)",
+    "priority": "The beat’s low end — kick, surdo-like tamborzão hits and 808 — hitting hard and clean in mono, with the MC’s hook clear on top",
+    "liveSpl": "Bailes and paredões (walls of speakers) often 105–115+ dBA with 125–135 dBC near the stacks; managed venues and festivals 100–103 dBA LAeq,15min (common safe-listening limit 100)",
     "studioLoudness": "Masters commonly −7 to −4 LUFS-I (mandelão even hotter, deliberately clipped); pop-funk around −8 to −6; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "808 / grave:",
-      "text": "long, tuned, often distorted sub that locks to the kick—the genre’s fingerprint, especially in funk paulista (São Paulo funk) and mandelão (stripped, distorted São Paulo funk).",
+      "text": "long, tuned, often distorted sub that locks to the kick — the genre’s fingerprint, especially in funk paulista (São Paulo funk) and mandelão (stripped, distorted São Paulo funk).",
       "bullet": true
     },
     {
@@ -64,12 +64,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are small and created by arrangement: drops, mutes and breakdowns rather than performance swells. Expect only 2–4 dB between breakdown and drop in the finished master. Preserve the silence before the drop—the sudden mute is the dynamic event. Micro-dynamics should be crushed and consistent: beat peaks clipped flat, 808 sustaining evenly, MC level steady. Live, the engineer’s job is to control the MC (who shouts, whispers and swallows the mic) and protect the system from the hottest DJ files, not to add dynamic range."
+      "text": "Macro-dynamics are small and created by arrangement: drops, mutes and breakdowns rather than performance swells. Expect only 2–4 dB between breakdown and drop in the finished master. Preserve the silence before the drop — the sudden mute is the dynamic event. Micro-dynamics should be crushed and consistent: beat peaks clipped flat, 808 sustaining evenly, MC level steady. Live, the engineer’s job is to control the MC (who shouts, whispers and swallows the mic) and protect the system from the hottest DJ files, not to add dynamic range."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: kick/tamborzão low hits and 808 (together), MC lead hook, claps/snare, percussion layers, stabs and synths, backing MCs and crowd shouts, FX. The low-end relationship is key: the kick owns the attack (2–5 kHz click plus 50–70 Hz punch); the 808 owns 35–60 Hz sustain and gets its audibility from saturation harmonics at 100–300 Hz. Duck the 808 2–4 dB under each kick if they are not already the same sample. Everything below about 100–120 Hz stays mono. The MC sits dead center and loud—about level with the clap. Percussion, shakers and stabs spread moderately; the mix is not wide. Many crowds hear it on mono paredões (walls of speakers) and phone speakers, so check mono and small speakers constantly."
+      "text": "Hierarchy, loudest to quietest: kick/tamborzão low hits and 808 (together), MC lead hook, claps/snare, percussion layers, stabs and synths, backing MCs and crowd shouts, FX. The low-end relationship is key: the kick owns the attack (2–5 kHz click plus 50–70 Hz punch); the 808 owns 35–60 Hz sustain and gets its audibility from saturation harmonics at 100–300 Hz. Duck the 808 2–4 dB under each kick if they are not already the same sample. Everything below about 100–120 Hz stays mono. The MC sits dead center and loud — about level with the clap. Percussion, shakers and stabs spread moderately; the mix is not wide. Many crowds hear it on mono paredões (walls of speakers) and phone speakers, so check mono and small speakers constantly."
     }
   ],
   "eq": {
@@ -113,7 +113,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Bruxaria (“witchcraft”: eerie, noisy funk) high synths / “tuin”",
         "cut": "LPF 14–16 kHz; tame 3–5 kHz resonances",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Can be piercing on big systems; check at volume"
       },
       {
@@ -171,7 +171,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "0.5–2 ms / 60–120 ms",
         "gainReduction": "2–4 dB",
-        "notes": "Tempo-dependent—shorter release at 150 BPM"
+        "notes": "Tempo-dependent — shorter release at 150 BPM"
       },
       {
         "source": "Drum bus",
@@ -208,7 +208,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Short room / plate",
         "appliedTo": "MC lead",
         "setting": "0.4–0.8 s decay, 10–30 ms pre-delay, HPF 300 Hz",
-        "amount": "Subtle—dry is the norm"
+        "amount": "Subtle — dry is the norm"
       },
       {
         "effect": "Tempo delay / echo throws",
@@ -245,7 +245,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The MC is a percussion instrument as much as a singer: short, repeatable phrases with the heaviest syllables on the kick. Keep the lead loud, center and dry—about level with the clap and clearly above the 808’s harmonics. Tone is bright and forward with midrange bite; Portuguese consonants and slang must be intelligible because the crowd sings back every word. Real-time pitch correction is common and accepted in funk melody, funk paulista (São Paulo funk) and pop-funk (hard tune for effect in many trap-influenced tracks); classic carioca (from Rio) MCs are often left raw. Doubles and ad-libs (“vai”, “joga”, call-and-response chants) sit 6–10 dB under, sometimes panned slightly. Live, MCs cup handhelds: use a rugged dynamic, high-pass hard, notch the 1–3 kHz howl that cupping creates, and expect them to wander in front of the paredão (wall of speakers)."
+      "text": "The MC is a percussion instrument as much as a singer: short, repeatable phrases with the heaviest syllables on the kick. Keep the lead loud, center and dry — about level with the clap and clearly above the 808’s harmonics. Tone is bright and forward with midrange bite; Portuguese consonants and slang must be intelligible because the crowd sings back every word. Real-time pitch correction is common and accepted in funk melody, funk paulista (São Paulo funk) and pop-funk (hard tune for effect in many trap-influenced tracks); classic carioca (from Rio) MCs are often left raw. Doubles and ad-libs (“vai”, “joga”, call-and-response chants) sit 6–10 dB under, sometimes panned slightly. Live, MCs cup handhelds: use a rugged dynamic, high-pass hard, notch the 1–3 kHz howl that cupping creates, and expect them to wander in front of the paredão (wall of speakers)."
     }
   ],
   "loudness": [
@@ -315,7 +315,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Watch high synths in bruxaria (“witchcraft”: eerie, noisy funk)—piercing 3–5 kHz content at 110 dBA hurts.",
+      "text": "Watch high synths in bruxaria (“witchcraft”: eerie, noisy funk) — piercing 3–5 kHz content at 110 dBA hurts.",
       "bullet": true
     }
   ],

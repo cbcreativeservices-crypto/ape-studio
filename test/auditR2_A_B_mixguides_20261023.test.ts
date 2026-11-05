@@ -93,7 +93,7 @@ describe('mixing guides: Round A single fixes', () => {
     ['g02-hip-hop-rap', 'cap at 100–103 dBA over 15 minutes or 100 dBA over 60', '105 dBA over 15'],
     ['g07-latin-pop', 'some artists use handheld condensers and others dynamic mics', 'artists use premium handheld condensers'],
     ['g09-regional-mexican', 'Fast retune (about 0–20 ms) on tumbados', 'Fast retune (10–30 ms)'],
-    ['g10-k-pop', 'have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow', 'a target few venue limits allow'],
+    ['g10-k-pop', 'have peaked at 108–109 dBA and about 130 dBC from 50-plus subs — levels few venue limits allow', 'a target few venue limits allow'],
     ['g15-classical-orchestral', 'HPF 60–100 Hz (tuba and bass trombone about 30–40 Hz)', '"cut": "HPF 60–100 Hz; −2–3 dB'],
     ['g17-trap', 'on beat 3 of each bar at the session tempo (2 and 4 if you count the half-time feel)', '(2 and 4 at double time)'],
     ['g20-gospel', 'HPF about 25 Hz, just under the low B fundamental', 'HPF 30–35 Hz (low B'],

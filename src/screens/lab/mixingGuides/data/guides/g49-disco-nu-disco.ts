@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "United States, early–mid 1970s: Philadelphia soul (MFSB), New York underground clubs and DJs, Munich (Moroder); nu-disco and disco-pop revival from the 2000s (Europe, US, UK, Australia)",
     "tempo": "100–130 BPM (classic disco ~112–128; nu-disco/disco house 115–125; disco-pop 100–124)",
-    "ensemble": "Classic: 8–20+ (drums, bass, 2 guitars, keys, percussion, 3–5 horns, strings, 2–4 backing vocals, lead); revival: 4-piece band + BVs + tracks, or DJ/producer + playback",
+    "ensemble": "Classic: 8–20+ (drums, bass, 2 guitars, keys, percussion, 3–5 horns, strings, 2–4 backing vocals, lead); revival: 4-piece band + BGVs + tracks, or DJ/producer + playback",
     "priority": "The four-on-the-floor kick and the octave-jumping bass locked as one pulse, with the open hi-hat driving the offbeat",
     "liveSpl": "97–102 dBA LAeq,15min; roughly 112–120 dBC; club/DJ settings often sit 96–100 dBA",
     "studioLoudness": "Classic remasters around −12 to −9 LUFS-I; modern disco-pop/nu-disco masters commonly −9 to −6 LUFS-I; most streaming services normalize to about −14 LUFS, some to −16"
@@ -237,7 +237,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Hall / chamber",
-        "appliedTo": "Strings, horns, BVs",
+        "appliedTo": "Strings, horns, BGVs",
         "setting": "1.8–2.5 s decay, 30–60 ms pre-delay",
         "amount": "Moderate–heavy on strings"
       },
@@ -280,7 +280,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Disco vocals are big, confident and slightly above the band — roughly 2–4 dB above the rhythm section by perceived level — because they ride over dense sixteenth-note activity. Expect “diva” belts (Gaynor, Summer), falsetto stacks (Bee Gees), group chants (Chic) and breathy modern pop tones (Dua Lipa, Kylie). Choruses are commonly doubled and harmonized. Pitch correction is normal in revival pop (often transparent, sometimes stylized or vocoded, as with Daft Punk); keep it subtle on classic tribute acts. Pan BV harmonies wide and compress them harder than the lead. Live, handheld condensers suit polished pop singers; dynamic mics suit belters on loud stages. Watch harshness at 2–4 kHz when a belt meets bright strings and hats."
+      "text": "Disco vocals are big, confident and slightly above the band — roughly 2–4 dB above the rhythm section by perceived level — because they ride over dense sixteenth-note activity. Expect “diva” belts (Gaynor, Summer), falsetto stacks (Bee Gees), group chants (Chic) and breathy modern pop tones (Dua Lipa, Kylie). Choruses are commonly doubled and harmonized. Pitch correction is normal in revival pop (often transparent, sometimes stylized or vocoded, as with Daft Punk); keep it subtle on classic tribute acts. Pan BGV harmonies wide and compress them harder than the lead. Live, handheld condensers suit polished pop singers; dynamic mics suit belters on loud stages. Watch harshness at 2–4 kHz when a belt meets bright strings and hats."
     }
   ],
   "loudness": [
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Most streaming services normalize to about −14 LUFS, some to −16; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). Aim for a PLR of roughly 8–11 dB so the kick transient survives (at −2 dBTP that means a master at about −10 LUFS-I or quieter); DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
+      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Most streaming services normalize to about −14 LUFS, some to −16; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). For more punch, aim for a PLR of roughly 8–11 dB so the kick transient survives (at −2 dBTP that means a master at about −10 LUFS-I or quieter); DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
     }
   ],
   "liveStudio": {
@@ -312,7 +312,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Vocals",
-        "live": "Watch gain before feedback; single compressor plus plate; BVs balanced in real time",
+        "live": "Watch gain before feedback; single compressor plus plate; BGVs balanced in real time",
         "studio": "Stacks, comping, automation of every phrase"
       },
       {
@@ -364,7 +364,7 @@ export const GUIDE: MixingGuide = {
     "Bee Gees, “Stayin’ Alive”, 1977",
     "Donna Summer, “I Feel Love”, 1977",
     "Gloria Gaynor, “I Will Survive”, 1978",
-    "MFSB, “TSOP (The Sound of Philadelphia)”, 1974",
+    "MFSB, “TSOP (The Sound of Philadelphia)”, 1973",
     "Sister Sledge, “We Are Family”, 1979",
     "Daft Punk feat. Pharrell Williams and Nile Rodgers, “Get Lucky”, 2013",
     "Dua Lipa, “Don’t Start Now”, 2019"

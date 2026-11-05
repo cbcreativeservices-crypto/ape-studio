@@ -18,7 +18,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "Deejay (rhythmic chanting MC) or singer with a selector (sound-system DJ) or DJ on playback; touring acts add a 4–6-piece band (drums, bass, keys, guitar, 1–2 backing vocalists or a hype man)",
     "priority": "The riddim’s (backing track’s) kick-and-bass weight with the deejay’s (chanting MC’s) voice cutting through clearly on top",
     "liveSpl": "98–104 dBA LAeq,15min at shows; 120–130 dBC is common because the sub is the point; street dances run louder and less controlled",
-    "studioLoudness": "Masters commonly −8 to −6 LUFS-I; older digital-era riddims (instrumental backing tracks) −11 to −9; most streaming services normalize to about −14 LUFS, some to −16"
+    "studioLoudness": "Masters commonly −8 to −6 LUFS-I; older digital-era riddims −11 to −9; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -125,7 +125,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Sirens / horns / FX samples",
         "cut": "HPF 200 Hz; LPF 8–10 kHz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Often very loud on the file; trim before the show"
       }
     ],
@@ -192,8 +192,8 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Playback stems (live)",
         "use": "No",
-        "ratio": "—",
-        "attackRelease": "—",
+        "ratio": " — ",
+        "attackRelease": " — ",
         "gainReduction": "0 dB",
         "notes": "Tracks are mastered; protect with a gentle limiter only"
       }
@@ -263,11 +263,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Concerts and festivals typically run 98–104 dBA LAeq,15min at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20 dB or more is normal here, and that means serious low-frequency exposure. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. NIOSH advises no more than about 15 minutes a day at 100 dBA: offer earplugs and protect your own ears."
+      "text": "Concerts and festivals typically run 98–104 dBA LAeq,15min at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20–25 dB is normal here, and that means serious low-frequency exposure; more usually means too much sub. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. NIOSH advises no more than about 15 minutes a day at 100 dBA: offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and softens the kick. Aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the style can be dense, but the kick needs its transients."
+      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and softens the kick. For more punch, aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the style can be dense, but the kick needs its transients."
     }
   ],
   "liveStudio": {

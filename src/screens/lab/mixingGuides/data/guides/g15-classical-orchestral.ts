@@ -146,8 +146,8 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Main array",
         "use": "No",
-        "ratio": "—",
-        "attackRelease": "—",
+        "ratio": " — ",
+        "attackRelease": " — ",
         "gainReduction": "0 dB",
         "notes": "Ride faders by hand, slowly"
       },
@@ -194,9 +194,9 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Gates / expanders",
         "use": "No",
-        "ratio": "—",
-        "attackRelease": "—",
-        "gainReduction": "—",
+        "ratio": " — ",
+        "attackRelease": " — ",
+        "gainReduction": " — ",
         "notes": "They would cut off natural decay and room tone"
       }
     ],

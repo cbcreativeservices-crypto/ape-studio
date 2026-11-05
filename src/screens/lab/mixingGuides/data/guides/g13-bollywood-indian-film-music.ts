@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Melodic instruments:",
-      "text": "bansuri flute, sitar (long-necked plucked lute), santoor (hammered dulcimer), sarangi (bowed fiddle), shehnai (double-reed horn), harmonium, veena (South Indian lute); violin and string sections play the long unison lines heard in classic songs.",
+      "text": "bansuri flute, sitar (long-necked plucked lute), santoor (hammered dulcimer), sarangi (bowed fiddle), shehnai (double-reed oboe), harmonium, veena (South Indian lute); violin and string sections play the long unison lines heard in classic songs.",
       "bullet": true
     },
     {
@@ -107,7 +107,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Keep separate from dholak low head"
       },
       {
-        "source": "Bansuri / shehnai (double-reed horn)",
+        "source": "Bansuri / shehnai (double-reed oboe)",
         "cut": "HPF 200–300 Hz; −2–3 dB at 2–3 kHz if piercing",
         "boost": "+1–2 dB at 6–10 kHz (breath)",
         "notes": "Shehnai is loud and nasal — cut 1–1.5 kHz before adding level"

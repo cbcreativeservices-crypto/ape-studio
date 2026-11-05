@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Alternative and indie rock grew out of punk’s do-it-yourself ethic: bands on small labels, played on student-run college radio, charted by CMJ and showcased on MTV’s 120 Minutes. Fans listen closely, know every lyric and value authenticity and quirk over polish. Audiences expect the band’s recorded personality: the specific fuzz pedal, the jangly chord, the off-kilter vocal. Listeners notice at once when the mix sounds like generic arena rock (scooped guitars, triggered drums, glossy vocal), when the words vanish where the band wants them heard, or when a raw, roomy record comes out sterile. At the same time, a shoegaze or noise-pop act may want the vocal to sit inside the guitars—know the band’s records before you start."
+      "text": "Alternative and indie rock grew out of punk’s do-it-yourself ethic: bands on small labels, played on student-run college radio, charted by CMJ and showcased on MTV’s 120 Minutes. Fans listen closely, know every lyric and value authenticity and quirk over polish. Audiences expect the band’s recorded personality: the specific fuzz pedal, the jangly chord, the off-kilter vocal. Listeners notice at once when the mix sounds like generic arena rock (scooped guitars, triggered drums, glossy vocal), when the words vanish where the band wants them heard, or when a raw, roomy record comes out sterile. At the same time, a shoegaze or noise-pop act may want the vocal to sit inside the guitars — know the band’s records before you start."
     }
   ],
   "instruments": [
@@ -38,7 +38,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electric guitars:",
-      "text": "the genre’s signature—jangle (bright 12-string or clean single-coil with compression and chorus), fuzz from classic fuzz pedals, offset guitars with tremolo, heavy reverb and delay pedals, alternate tunings and feedback.",
+      "text": "the genre’s signature — jangle (bright 12-string or clean single-coil with compression and chorus), fuzz from classic fuzz pedals, offset guitars with tremolo, heavy reverb and delay pedals, alternate tunings and feedback.",
       "bullet": true
     },
     {
@@ -54,12 +54,12 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "A typical stage has drums center upstage, bass beside the drummer, guitarist(s) on either side with pedalboards, a keys/synth position, and a singer who often also plays guitar—meaning the vocal mic picks up a loud amp a few meters away. Rhythm is shared between drums and bass; guitars carry both harmony and much of the “hook” through riffs or textures rather than solos. Indie arrangements favor the quiet-loud contrast popularized by Pixies and Nirvana: a hushed, sparse verse explodes into a distorted chorus. Other subgenres build gradually (post-rock, shoegaze) or ride one steady groove (garage and post-punk revival); codas may end in feedback."
+      "text": "A typical stage has drums center upstage, bass beside the drummer, guitarist(s) on either side with pedalboards, a keys/synth position, and a singer who often also plays guitar — meaning the vocal mic picks up a loud amp a few meters away. Rhythm is shared between drums and bass; guitars carry both harmony and much of the “hook” through riffs or textures rather than solos. Indie arrangements favor the quiet-loud contrast popularized by Pixies and Nirvana: a hushed, sparse verse explodes into a distorted chorus. Other subgenres build gradually (post-rock, shoegaze) or ride one steady groove (garage and post-punk revival); codas may end in feedback."
     }
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are wide by rock standards: quiet-loud songs can jump 10–15 dB between verse and chorus, and a full set may span whispered solo numbers to fuzz-drenched closers. Preserve that contrast—it is often the point of the song. Control micro-dynamics with fader rides and moderate compression; crushing the loud sections makes the chorus feel smaller. Many indie producers record live to tape with minimal editing, and that push and pull of tempo and level should survive the mix."
+      "text": "Macro-dynamics are wide by rock standards: quiet-loud songs can jump 10–15 dB between verse and chorus, and a full set may span whispered solo numbers to fuzz-drenched closers. Preserve that contrast — it is often the point of the song. Control micro-dynamics with fader rides and moderate compression; crushing the loud sections makes the chorus feel smaller. Many indie producers record live to tape with minimal editing, and that push and pull of tempo and level should survive the mix."
     }
   ],
   "balance": [
@@ -214,7 +214,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gate toms live with gentle settings (range 10–15 dB, 50 ms hold, 150 ms release) so the kit still breathes; in the studio, edit the toms or leave the bleed in. De-ess at 5–8 kHz for 2–3 dB—recording to tape can soften sibilance enough that less is needed. Keep final limiting to 2–3 dB."
+        "text": "Gate toms live with gentle settings (range 10–15 dB, 50 ms hold, 150 ms release) so the kit still breathes; in the studio, edit the toms or leave the bleed in. De-ess at 5–8 kHz for 2–3 dB — recording to tape can soften sibilance enough that less is needed. Keep final limiting to 2–3 dB."
       }
     ]
   },
@@ -224,7 +224,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Tape echo / slap",
         "appliedTo": "Lead vocal",
         "setting": "90–140 ms, 5–15% feedback, filtered 200 Hz–4 kHz, slight wow/flutter",
-        "amount": "Moderate—a signature indie vocal sound"
+        "amount": "Moderate — a signature indie vocal sound"
       },
       {
         "effect": "Spring reverb",
@@ -242,7 +242,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Large hall / shimmer",
         "appliedTo": "Shoegaze and dream-pop guitars and vocals",
         "setting": "3–6 s decay, 0–30 ms pre-delay, darkened above 6 kHz",
-        "amount": "Heavy—the wash is the arrangement"
+        "amount": "Heavy — the wash is the arrangement"
       },
       {
         "effect": "Tempo delay",
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Indie vocals are personal and characterful—breathy, deadpan, conversational or yelped—and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern mic (a supercardioid dynamic, or a condenser with strong off-axis rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
+      "text": "Indie vocals are personal and characterful — breathy, deadpan, conversational or yelped — and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern mic (a supercardioid dynamic, or a condenser with strong off-axis rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
     }
   ],
   "loudness": [
@@ -338,7 +338,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Keep the room sound and some imperfection—bleed and tape grit are part of the style.",
+      "text": "Keep the room sound and some imperfection — bleed and tape grit are part of the style.",
       "bullet": true
     },
     {

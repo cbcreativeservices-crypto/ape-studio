@@ -28,7 +28,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Strings:",
-      "text": "the emotional core—long legato (smooth, connected) lines, ostinatos (repeated figures; Zimmer-style spiccato cells, short and bounced), tremolo for tension.",
+      "text": "the emotional core — long legato (smooth, connected) lines, ostinatos (repeated figures; Zimmer-style spiccato cells, short and bounced), tremolo for tension.",
       "bullet": true
     },
     {
@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Percussion:",
-      "text": "timpani, orchestral bass drum, cymbals, plus “epic” ensembles—taiko (big Japanese drums), toms, anvils, metal hits.",
+      "text": "timpani, orchestral bass drum, cymbals, plus “epic” ensembles — taiko (big Japanese drums), toms, anvils, metal hits.",
       "bullet": true
     },
     {
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On the scoring stage the orchestra sits in a classical layout—violins left, violas and cellos center-right, basses back right, winds center, brass behind, percussion at the rear—so the three-omni tree captures a natural image. Arrangement is driven by picture: sparse pads and solo instruments under dialogue scenes, full tutti (full ensemble) for action or emotional climaxes, and stingers at hard cuts. In games, music is built in vertical layers (the same cue with ambient, tension and combat stems that fade in) or horizontal segments that branch on gameplay, so each layer must sound complete on its own and in any combination."
+      "text": "On the scoring stage the orchestra sits in a classical layout — violins left, violas and cellos center-right, basses back right, winds center, brass behind, percussion at the rear — so the three-omni tree captures a natural image. Arrangement is driven by picture: sparse pads and solo instruments under dialogue scenes, full tutti (full ensemble) for action or emotional climaxes, and stingers at hard cuts. In games, music is built in vertical layers (the same cue with ambient, tension and combat stems that fade in) or horizontal segments that branch on gameplay, so each layer must sound complete on its own and in any combination."
     }
   ],
   "dynamics": [
@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then the rhythm engine—string ostinato (repeated figure) and percussion—then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub—synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz, though the lowest bass notes reach about 41 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds mostly for room and reverb, rarely for primary instruments."
+      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then the rhythm engine — string ostinato (repeated figure) and percussion — then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub — synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz, though the lowest bass notes reach about 41 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds mostly for room and reverb, rarely for primary instruments."
     }
   ],
   "eq": {
@@ -89,7 +89,7 @@ export const GUIDE: MixingGuide = {
         "source": "Violins / violas (spots)",
         "cut": "HPF 80–120 Hz; −2–3 dB around 200 Hz; narrow dips at 2.5, 4.6 or 7 kHz if strident",
         "boost": "+1–2 dB at 2.2–3.3 kHz (articulation)",
-        "notes": "Sample strings often have a 2.5 kHz bump—dip it narrowly"
+        "notes": "Sample strings often have a 2.5 kHz bump — dip it narrowly"
       },
       {
         "source": "Celli / basses",
@@ -101,7 +101,7 @@ export const GUIDE: MixingGuide = {
         "source": "French horns",
         "cut": "HPF 60–80 Hz; −2 dB around 3 kHz if blatty",
         "boost": "+1–2 dB at 300–500 Hz (warmth); gentle shelf at 10 kHz",
-        "notes": "Horns radiate backward—most tone is in the room mics"
+        "notes": "Horns radiate backward — most tone is in the room mics"
       },
       {
         "source": "Trumpets / trombones",
@@ -125,7 +125,7 @@ export const GUIDE: MixingGuide = {
         "source": "Timpani",
         "cut": "HPF 30 Hz; −2 dB at 200–300 Hz",
         "boost": "+2 dB at 80–100 Hz; +1 dB at 3 kHz",
-        "notes": "Tuned notes—check they don’t clash with sub hits"
+        "notes": "Tuned notes — check they don’t clash with sub hits"
       },
       {
         "source": "Synth pads / bass",
@@ -227,7 +227,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Surround reverb",
         "appliedTo": "Rear channels / height objects",
         "setting": "Same algorithm as front, longer pre-delay (40–80 ms)",
-        "amount": "Moderate—creates envelopment"
+        "amount": "Moderate — creates envelopment"
       },
       {
         "effect": "Short room / chamber",
@@ -245,7 +245,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Haas/delay widening",
         "appliedTo": "Synths, surround spread",
         "setting": "10–25 ms offset between channels",
-        "amount": "Subtle—moves energy off center without panning"
+        "amount": "Subtle — moves energy off center without panning"
       },
       {
         "effect": "Tempo delay",
@@ -257,7 +257,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Saturation / tape",
         "appliedTo": "Synth bass, percussion stem, celli",
         "setting": "1–3 dB of drive",
-        "amount": "Subtle—adds harmonics audible on small speakers"
+        "amount": "Subtle — adds harmonics audible on small speakers"
       }
     ],
     "notes": [
@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer—your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music mostly out of the center channel. In live-to-picture shows, dialogue and effects come from playback stems; engineers often send extra dialogue level to the front fills to counter the acoustic orchestra, and ride each line because source levels vary."
+      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer — your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music mostly out of the center channel. In live-to-picture shows, dialogue and effects come from playback stems; engineers often send extra dialogue level to the front fills to counter the acoustic orchestra, and ride each line because source levels vary."
     }
   ],
   "loudness": [
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Listen to the temp dialogue and effects while mixing—a cue that sounds great alone may mask key lines.",
+      "text": "Listen to the temp dialogue and effects while mixing — a cue that sounds great alone may mask key lines.",
       "bullet": true
     },
     {

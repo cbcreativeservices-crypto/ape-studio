@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Acoustic guitar:",
-      "text": "the center of the style—steel-string flat-top (dreadnought for strumming, smaller parlor/OM bodies for fingerpicking), often in open or alternate tunings, sometimes nylon-string or 12-string. Live it arrives as a pickup (undersaddle piezo, soundhole magnetic, or internal mic blend) plus, ideally, a small-diaphragm condenser.",
+      "text": "the center of the style — steel-string flat-top (dreadnought for strumming, smaller parlor/OM bodies for fingerpicking), often in open or alternate tunings, sometimes nylon-string or 12-string. Live it arrives as a pickup (undersaddle piezo, soundhole magnetic, or internal mic blend) plus, ideally, a small-diaphragm condenser.",
       "bullet": true
     },
     {
@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal, primary acoustic guitar or piano, harmony vocals, bass, featured solo instrument (fiddle, mandolin) when soloing, percussion/drums, pads and ambience. The vocal should sit clearly on top—every consonant understandable—without sounding pasted onto the front. Low end is gentle: the guitar’s body (100–200 Hz) and the bass share space, so high-pass the guitar higher when a bass is present. Drums are kept small; a kick that dominates is the most common complaint at acoustic shows. Pan the lead vocal center; in a solo studio mix the guitar can sit center or slightly off-center, or be spread with a stereo mic pair. Live, avoid hard-panning the only guitar—most of the audience is off-axis. Harmonies sit slightly left and right; fiddle and mandolin opposite each other."
+      "text": "Hierarchy, loudest to quietest: lead vocal, primary acoustic guitar or piano, harmony vocals, bass, featured solo instrument (fiddle, mandolin) when soloing, percussion/drums, pads and ambience. The vocal should sit clearly on top — every consonant understandable — without sounding pasted onto the front. Low end is gentle: the guitar’s body (100–200 Hz) and the bass share space, so high-pass the guitar higher when a bass is present. Drums are kept small; a kick that dominates is the most common complaint at acoustic shows. Pan the lead vocal center; in a solo studio mix the guitar can sit center or slightly off-center, or be spread with a stereo mic pair. Live, avoid hard-panning the only guitar — most of the audience is off-axis. Harmonies sit slightly left and right; fiddle and mandolin opposite each other."
     }
   ],
   "eq": {
@@ -212,7 +212,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess the vocal at 5–8 kHz for 2–4 dB—close-miked intimate singing exaggerates sibilance—and de-ess the reverb send harder than the dry vocal. Gates are rarely used; a gentle expander (2:1, 6–10 dB range) on a guitar mic can reduce bleed in a band. Live, a dynamic EQ or multiband on the piezo at 1–3 kHz is often more useful than a compressor. Keep master limiting to 1–3 dB."
+        "text": "De-ess the vocal at 5–8 kHz for 2–4 dB — close-miked intimate singing exaggerates sibilance — and de-ess the reverb send harder than the dry vocal. Gates are rarely used; a gentle expander (2:1, 6–10 dB range) on a guitar mic can reduce bleed in a band. Live, a dynamic EQ or multiband on the piezo at 1–3 kHz is often more useful than a compressor. Keep master limiting to 1–3 dB."
       }
     ]
   },
@@ -269,13 +269,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal is the record. It sits clearly in front, typically 2–4 dB above the guitar in perceived level for solo material, and the listener should hear breath, lip and texture without harshness. Tone is natural and warm: control proximity build-up at 200–350 Hz, avoid aggressive presence boosts, and add air gently. Pitch correction should be minimal and manual—small note fixes only; audible tuning is a credibility killer in this genre. Doubles are uncommon in traditional folk but central in indie folk (stacked unisons and close harmonies, often with slight timing differences). Harmonies should be tucked 4–8 dB below the lead and blended so they feel like one voice. Studio: large-diaphragm condensers, ribbons for darker voices, or a broadcast-style dynamic for close intimacy. Figure-8 mics with nulls aimed at the other source give useful voice/guitar separation, though a real room makes the nulls shallower than on paper. Live: a handheld condenser or supercardioid dynamic."
+      "text": "The vocal is the record. It sits clearly in front, typically 2–4 dB above the guitar in perceived level for solo material, and the listener should hear breath, lip and texture without harshness. Tone is natural and warm: control proximity build-up at 200–350 Hz, avoid aggressive presence boosts, and add air gently. Pitch correction should be minimal and manual — small note fixes only; audible tuning is a credibility killer in this genre. Doubles are uncommon in traditional folk but central in indie folk (stacked unisons and close harmonies, often with slight timing differences). Harmonies should be tucked 4–8 dB below the lead and blended so they feel like one voice. Studio: large-diaphragm condensers, ribbons for darker voices, or a broadcast-style dynamic for close intimacy. Figure-8 mics with nulls aimed at the other source give useful voice/guitar separation, though a real room makes the nulls shallower than on paper. Live: a handheld condenser or supercardioid dynamic."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Solo and duo shows sound best around 80–90 dBA LAeq at FOH, with C-weighted levels about 5–10 dB higher; band shows reach 88–96 dBA, with peaks near 100–102 dBA. Many listening rooms and theaters prefer the lower end; folk festivals with tents and noisy crowds push toward the top. Sub content is minimal—many acoustic shows run without subs or with subs well down, and a C-minus-A gap above about 12–15 dB usually signals boom. In small rooms the PA should only fill in what the room cannot carry; feedback, not hearing safety, is usually the main limit."
+      "text": "Solo and duo shows sound best around 80–90 dBA LAeq at FOH, with C-weighted levels about 5–10 dB higher; band shows reach 88–96 dBA, with peaks near 100–102 dBA. Many listening rooms and theaters prefer the lower end; folk festivals with tents and noisy crowds push toward the top. Sub content is minimal — many acoustic shows run without subs or with subs well down, and a C-minus-A gap above about 12–15 dB usually signals boom. In small rooms the PA should only fill in what the room cannot carry; feedback, not hearing safety, is usually the main limit."
     },
     {
       "label": "Studio / streaming:",
@@ -336,7 +336,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Tell the band to play to the quietest instrument—no EQ fixes a drummer louder than the singer.",
+      "text": "Tell the band to play to the quietest instrument — no EQ fixes a drummer louder than the singer.",
       "bullet": true
     },
     {

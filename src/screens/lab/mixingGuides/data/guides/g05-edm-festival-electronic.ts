@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "126–132 BPM (big room, electro, progressive house); 124–128 for melodic progressive; occasional 150 BPM “festival trap/hardstyle” switch-ups inside sets",
     "ensemble": "Solo DJ/producer or duo on DJ media players/laptop + stereo or stem playback; sometimes a live vocalist, MC, or guest instrumentalist",
     "priority": "Kick-and-sub relationship: a short, tuned, punchy kick that the bass ducks around, translating to a massive sub array without mud",
-    "liveSpl": "About 98–103 dBA LAeq-15 min at FOH, often 115–121 dBC; respect local caps (e.g. 100 or 103 dBA)",
+    "liveSpl": "About 98–103 dBA LAeq,15min at FOH, often 115–121 dBC; respect local caps (e.g. 100 or 103 dBA)",
     "studioLoudness": "Club/release masters commonly −7 to −5 LUFS short-term at the drop (−8 to −6 LUFS-I); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -216,7 +216,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Big festival main stages typically run around 98–103 dBA LAeq over 15 minutes at FOH, with peaks to 110–115 dBA. Dance music carries far more low end than other genres — a C-minus-A difference of about 18 dB at 98 dBA is typical, so expect roughly 115–121 dBC at FOH. Common caps: the WHO safe-listening limit of 100 dBA LAeq-15 min; 103 dBA LAeq-15 min in some countries (with health bodies pushing for 100 or lower); 100 dBA over 60 min with a 125 dBA maximum in others. Some festivals add a dBC cap, and offsite limits often bind first because sub energy travels. Run about 3 dB under the cap, use directional sub arrays, and keep the kick short."
+      "text": "Big festival main stages typically run around 98–103 dBA LAeq,15min at FOH, with peaks to 110–115 dBA. Dance music carries far more low end than other genres — a C-minus-A difference of about 18 dB at 98 dBA is typical, so expect roughly 115–121 dBC at FOH. Common caps: the WHO safe-listening limit of 100 dBA LAeq,15min; 103 dBA LAeq,15min in some countries (with health bodies pushing for 100 or lower); 100 dBA over 60 min with a 125 dBA maximum in others. Some festivals add a dBC cap, and offsite limits often bind first because sub energy travels. Run about 3 dB under the cap, use directional sub arrays, and keep the kick short."
     },
     {
       "label": "Studio / streaming:",
@@ -302,14 +302,14 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Swedish House Mafia — “Don’t You Worry Child” (2012)",
-    "Avicii — “Levels” (2011)",
-    "Martin Garrix — “Animals” (2013)",
-    "Hardwell — “Spaceman” (2012)",
-    "Sebastian Ingrosso & Alesso feat. Ryan Tedder — “Calling (Lose My Mind)” (2012)",
-    "Zedd feat. Foxes — “Clarity” (2012)",
-    "Dimitri Vegas & Like Mike vs Tujamo & Felguk — “Nova” (2014)",
-    "Martin Garrix & Brooks — “Byte” (2017)"
+    "Swedish House Mafia, “Don’t You Worry Child”, 2012",
+    "Avicii, “Levels”, 2011",
+    "Martin Garrix, “Animals”, 2013",
+    "Hardwell, “Spaceman”, 2012",
+    "Sebastian Ingrosso & Alesso feat. Ryan Tedder, “Calling (Lose My Mind)”, 2012",
+    "Zedd feat. Foxes, “Clarity”, 2012",
+    "Dimitri Vegas & Like Mike vs Tujamo & Felguk, “Nova”, 2014",
+    "Martin Garrix & Brooks, “Byte”, 2017"
   ],
   "empty": []
 };

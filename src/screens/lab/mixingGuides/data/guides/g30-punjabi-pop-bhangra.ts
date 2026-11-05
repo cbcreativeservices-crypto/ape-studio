@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Bhangra began as harvest-season dance music in rural Punjab, tied to Vaisakhi, weddings and village fairs, and that purpose has never left it: it exists to make people dance, shout and celebrate together. In the diaspora it became a badge of identity, from 1980s UK “daytimer” parties to today’s sold-out O2 and Canadian arena shows, and every wedding sangeet (pre-wedding music night) and baraat (groom’s wedding procession) still runs on it. Listeners expect a chest-thumping dhol (big two-headed barrel drum), a ringing tumbi (one-string plucked lute) hook, and a singer whose Punjabi words and “hoi/balle balle” calls are clear and proud. They will say “that sounded wrong” if the dhol (big two-headed barrel drum) is thin or buried under an 808, the tumbi is shrill and painful, the vocal is lost in reverb, or the drop lands without impact. Expect the crowd to sing every word, so leave space for them."
+      "text": "Bhangra began as harvest-season dance music in rural Punjab, tied to Vaisakhi, weddings and village fairs, and that purpose has never left it: it exists to make people dance, shout and celebrate together. In the diaspora it became a badge of identity, from 1980s UK “daytimer” parties to today’s sold-out O2 and Canadian arena shows, and every wedding sangeet (pre-wedding music night) and baraat (groom’s wedding procession) still runs on it. Listeners expect a chest-thumping dhol (big two-headed barrel drum), a ringing tumbi (one-string plucked lute) hook, and a singer whose Punjabi words and “hoi/balle balle” calls are clear and proud. They will say “that sounded wrong” if the dhol is thin or buried under an 808, the tumbi is shrill and painful, the vocal is lost in reverb, or the drop lands without impact. Expect the crowd to sing every word, so leave space for them."
     }
   ],
   "instruments": [
@@ -264,7 +264,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness costs dhol transients for no gain. Aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above)."
+      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness costs dhol transients for no gain. For more punch, aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above)."
     }
   ],
   "liveStudio": {

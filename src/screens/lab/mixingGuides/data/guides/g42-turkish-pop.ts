@@ -61,16 +61,16 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "common at large shows for synths, layered percussion, extra strings and BVs.",
+      "text": "common at large shows for synths, layered percussion, extra strings and BGVs.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "The singer is front center, BVs to one side; drums and darbuka (goblet drum)/percussion share a riser so they lock, bass beside them. Strings sit to one side, bağlama (long-necked Turkish lute), kanun (plucked zither) and clarinet to the other, keys at the back."
+      "text": "The singer is front center, BGVs to one side; drums and darbuka (goblet drum)/percussion share a riser so they lock, bass beside them. Strings sit to one side, bağlama (long-necked Turkish lute), kanun (plucked zither) and clarinet to the other, keys at the back."
     },
     {
-      "text": "Kick, bass and darbuka carry the groove, the darbuka’s düm-tek (low-and-sharp stroke) syncopation marking it as Turkish dance music. Keys hold fairly simple harmony so the makam (Turkish melodic mode) melody can move freely. Strings and bağlama play the instrumental hook in unison or octaves and answer the vocal. A typical song: intro hook on strings or bağlama, light verse, full chorus with BVs, then an instrumental break for darbuka and a soloist, sometimes shifting into a 9/8 roman havası (Romani 9/8 dance tune). Arabesk-leaning ballads open with a free-time taksim (improvised solo) before the band enters."
+      "text": "Kick, bass and darbuka carry the groove, the darbuka’s düm-tek (low-and-sharp stroke) syncopation marking it as Turkish dance music. Keys hold fairly simple harmony so the makam (Turkish melodic mode) melody can move freely. Strings and bağlama play the instrumental hook in unison or octaves and answer the vocal. A typical song: intro hook on strings or bağlama, light verse, full chorus with BGVs, then an instrumental break for darbuka and a soloist, sometimes shifting into a 9/8 roman havası (Romani 9/8 dance tune). Arabesk-leaning ballads open with a free-time taksim (improvised solo) before the band enters."
     }
   ],
   "dynamics": [
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
       "text": "The lead vocal sits clearly above the band, about 3–5 dB above the instrumental hook by perceived level, every syllable intelligible because the audience sings along. Tone should be warm and present; many stars have a husky low register that needs 150–250 Hz kept. Ornaments (gırtlak turns, slides, glottal breaks) are the emotional core, so avoid compression that flattens them and de-essing so heavy it makes the singer lisp."
     },
     {
-      "text": "Pitch correction is the trickiest point. Makam (Turkish melodic mode) intervals fall between Western semitones, so 12-tone automatic pitch correction “corrects” intentional notes into wrong ones. Tune graphically, fixing only obvious misses, and never hard-tune an arabesk (melancholic Arab-influenced style) melody unless the artist wants that effect. Chorus doubles sit 6–10 dB under the lead; BVs are usually unison or octaves rather than dense harmonies, panned moderately wide. Live, a good handheld dynamic or condenser suits most singers, with a 2–4 kHz dynamic band and a tap delay in reach."
+      "text": "Pitch correction is the trickiest point. Makam (Turkish melodic mode) intervals fall between Western semitones, so 12-tone automatic pitch correction “corrects” intentional notes into wrong ones. Tune graphically, fixing only obvious misses, and never hard-tune an arabesk (melancholic Arab-influenced style) melody unless the artist wants that effect. Chorus doubles sit 6–10 dB under the lead; BGVs are usually unison or octaves rather than dense harmonies, panned moderately wide. Live, a good handheld dynamic or condenser suits most singers, with a 2–4 kHz dynamic band and a tap delay in reach."
     }
   ],
   "loudness": [

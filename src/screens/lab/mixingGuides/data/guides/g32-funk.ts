@@ -14,7 +14,7 @@ export const GUIDE: MixingGuide = {
   "expects": "Crowds expect to move, sing the hooks and answer the band’s call-and-response.",
   "glance": {
     "origin": "United States, mid-1960s: James Brown’s band, Sly & the Family Stone (Bay Area), the Meters (New Orleans); P-Funk (Detroit/New Jersey) and big-band funk (Earth, Wind & Fire, Tower of Power, Kool & the Gang) in the 1970s; electro-funk, go-go and modern revival funk followed",
-    "tempo": "90–120 BPM (slow grinds 80–90; up-tempo and go-go 105–125), almost always on a straight or lightly swung 16th-note grid",
+    "tempo": "90–120 BPM (slow grinds 80–90; go-go about 90–110; up-tempo 105–125), almost always on a straight or lightly swung 16th-note grid",
     "ensemble": "6–12 piece band: drums, bass, 1–2 guitars, keys (clav, electric piano, organ, synth), 2–5 horns, percussion, lead vocal plus 2–4 backing vocals",
     "priority": "The interlocking groove: kick, snare/ghost notes, hi-hat and bass landing hard on “the one,” with every rhythm part audible as its own voice",
     "liveSpl": "95–102 dBA LAeq,15min; roughly 110–118 dBC",
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "area": "Channel count",
-        "live": "Large bands need 40–100+ inputs (pop-funk tours 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, BVs",
+        "live": "Large bands need 40–100+ inputs (pop-funk tours 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, BGVs",
         "studio": "Fewer tracks; some revival records use one mic on drums and one on the horn section"
       },
       {

@@ -16,9 +16,9 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer.",
   "glance": {
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
-    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) runs faster (130–160 BPM) and feels busier because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
+    "tempo": "Classic dangdut 120–140 BPM; koplo runs faster (130–160 BPM) and feels busier because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
     "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; or the smaller “organ tunggal” (one-keyboardist band): keyboardist, kendang and singer",
-    "priority": "The kendang (hand drums): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "priority": "The kendang: the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
     "liveSpl": "96–102 dBA LAeq,15min for village stages and festivals; 112–120 dBC LCeq; East Java caps static systems at 120 dBA (2025 rule)",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); most streaming services normalize to about −14 LUFS, some to −16"
   },
@@ -71,7 +71,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On a typical OM stage the kendang (hand drums) sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling (bamboo flute) near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo (fast East-Java style) reverses this, fills each bar with five or more strokes, and adds a “reff” (chorus) where the drums double up and the crowd sings. Guitar or suling solos between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
+      "text": "On a typical OM stage the kendang (hand drums) sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling (bamboo flute) near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo (fast East-Java style) fills each bar with five or more strokes, and adds a “reff” (chorus) where the drums double up and the crowd sings. Guitar or suling solos come between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
     }
   ],
   "dynamics": [

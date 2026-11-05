@@ -185,8 +185,8 @@ export const GUIDE: MixingGuide = {
       {
         "source": "De-esser (all vocals)",
         "use": "Yes",
-        "ratio": "—",
-        "attackRelease": "—",
+        "ratio": " — ",
+        "attackRelease": " — ",
         "gainReduction": "2–4 dB at 5–8 kHz",
         "notes": "Close mics exaggerate sibilance, especially headsets"
       }

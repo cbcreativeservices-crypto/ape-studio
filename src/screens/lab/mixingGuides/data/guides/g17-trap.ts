@@ -207,7 +207,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Real-time pitch correction (hard)",
         "appliedTo": "Lead and ad-libs",
         "setting": "Retune speed 0–5 ms, key or chromatic, natural-transition mode off",
-        "amount": "Heavy—part of the sound in melodic trap and rage"
+        "amount": "Heavy — part of the sound in melodic trap and rage"
       },
       {
         "effect": "Real-time pitch correction (melodic)",
@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq,15min with 118–125 dBC; arena shows can reach around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20 dB or more is common and signals heavy sub energy that the A-weighted reading does not show. NIOSH advises no more than about 15 minutes a day at 100 dBA; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
+      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq,15min with 118–125 dBC; arena shows can reach around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20–25 dB is common and signals heavy sub energy that the A-weighted reading does not show. NIOSH advises no more than about 15 minutes a day at 100 dBA; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
     },
     {
       "label": "Studio / streaming:",

@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "source": "Rhythm guitars",
         "cut": "HPF 80–100 Hz; LPF 8–12 kHz; −2–3 dB at 200–300 Hz; narrow notch for fizz 3.5–5 kHz",
         "boost": "+1–3 dB at 1–2 kHz (crunch); +1–2 dB at 2.5–4 kHz (bite)",
-        "notes": "Do not scoop the mids—hard rock tone lives at 500 Hz–2 kHz"
+        "notes": "Do not scoop the mids — hard rock tone lives at 500 Hz–2 kHz"
       },
       {
         "source": "Lead guitar / solos",
@@ -115,7 +115,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–120 Hz; −2–3 dB at 250–400 Hz; dynamic dip 2.5–5 kHz on belted notes",
         "boost": "+2–3 dB at 2–4 kHz (presence); +2 dB shelf at 10 kHz (air)",
-        "notes": "Belting singers get harsh at the top of their range—use a dynamic EQ, not a static cut"
+        "notes": "Belting singers get harsh at the top of their range — use a dynamic EQ, not a static cut"
       },
       {
         "source": "Backing vocal stack",
@@ -224,7 +224,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Slap delay",
         "appliedTo": "Lead vocal",
         "setting": "100–140 ms, single repeat, HPF 300 Hz / LPF 4 kHz",
-        "amount": "Moderate—a classic hard rock signature"
+        "amount": "Moderate — a classic hard rock signature"
       },
       {
         "effect": "Tempo delay",
@@ -242,7 +242,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Room / ambience",
         "appliedTo": "Drums",
         "setting": "0.8–1.2 s, gated or short",
-        "amount": "Moderate—arena size without washing riffs"
+        "amount": "Moderate — arena size without washing riffs"
       },
       {
         "effect": "Hall reverb",
@@ -252,7 +252,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Stereo widener / short delay",
-        "appliedTo": "Rhythm guitars, BV stacks",
+        "appliedTo": "Rhythm guitars, BGV stacks",
         "setting": "10–20 ms offset or pitch ±5–10 cents",
         "amount": "Subtle; check mono"
       },
@@ -329,7 +329,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid scooping guitar mids—it makes the riff vanish in a full band and on phones.",
+      "text": "Avoid scooping guitar mids — it makes the riff vanish in a full band and on phones.",
       "bullet": true
     },
     {

@@ -114,7 +114,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano",
         "cut": "HPF 100–150 Hz; −2 dB at 250–300 Hz",
         "boost": "+2 dB at 2–4 kHz",
-        "notes": "Doubles the skank—give it a different tonal spot"
+        "notes": "Doubles the skank — give it a different tonal spot"
       },
       {
         "source": "Horns",
@@ -232,7 +232,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Sweeping HPF / filter",
         "appliedTo": "Riddim (instrumental backing track), horns, skank",
         "setting": "80 Hz to 1–2 kHz and back over 1–4 bars",
-        "amount": "Dub signature (Tubby, Scientist)"
+        "amount": "Signature dub move"
       },
       {
         "effect": "Phaser / flanger",
@@ -276,7 +276,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Skank (offbeat chord chop) & bubble",
-        "live": "Easy to bury under stage wash—push presence, not level",
+        "live": "Easy to bury under stage wash — push presence, not level",
         "studio": "Pan opposite piano/organ; echo on skank for movement"
       },
       {

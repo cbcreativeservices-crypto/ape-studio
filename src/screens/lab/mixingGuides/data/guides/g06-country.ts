@@ -316,7 +316,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Playback",
-        "live": "Click and tracks for strings, loops, extra BVs",
+        "live": "Click and tracks for strings, loops, extra BGVs",
         "studio": "Layered production, loops and programmed drums"
       },
       {

@@ -114,7 +114,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Noise / FX / risers",
         "cut": "HPF 200–400 Hz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Keep below hats; automate for builds"
       },
       {

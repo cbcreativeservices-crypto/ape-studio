@@ -17,8 +17,8 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat",
     "tempo": "100–115 BPM (median around 108–110; mellow Ghanaian and R&B-leaning cuts 93–100)",
-    "ensemble": "Solo artist + tracks (most common); touring headliners carry 6–10 piece bands plus percussion section, horns, BVs and sometimes a choir",
-    "priority": "The percussion groove—rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern—bright and forward, with the lead vocal hook riding on it",
+    "ensemble": "Solo artist + tracks (most common); touring headliners carry 6–10 piece bands plus percussion section, horns, BGVs and sometimes a choir",
+    "priority": "The percussion groove — rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern — bright and forward, with the lead vocal hook riding on it",
     "liveSpl": "96–102 dBA LAeq,15min; roughly 112–120 dBC LCeq in clubs and arenas",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I; most streaming services normalize to about −14 LUFS, some to −16"
   },
@@ -66,7 +66,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "live shows usually run stems for programmed drums, pads and stacked BVs under the live band.",
+      "text": "live shows usually run stems for programmed drums, pads and stacked BGVs under the live band.",
       "bullet": true
     }
   ],
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
       "text": "In the studio the producer’s beat is the arrangement: intro (4–8 bars, often with a producer tag), verse (16), hook (8), verse, hook, sometimes a “dance break,” outro. Percussion carries the rhythm and is often the lead character; bass carries much of the harmony; guitar and keys fill gaps; the vocal hook carries melody. Sections change by adding or muting percussion layers and dropping the kick, not by big dynamic swings."
     },
     {
-      "text": "On stage, a headline show is large: a stadium setup can run about 120 inputs, with a core band of drums, bass, guitar, two keys and sax, plus three-piece brass, three BVs, a choir and eight to ten percussionists on talking drums and omele (small support drums). Typical layout: drums center, percussion riser to one side, horns on the other, BVs upstage, dancers downstage. Live arrangements extend dance breaks and medley hits."
+      "text": "On stage, a headline show is large: a stadium setup can run about 120 inputs, with a core band of drums, bass, guitar, two keys and sax, plus three-piece brass, three BGVs, a choir and eight to ten percussionists on talking drums and omele (small support drums). Typical layout: drums center, percussion riser to one side, horns on the other, BGVs upstage, dancers downstage. Live arrangements extend dance breaks and medley hits."
     }
   ],
   "dynamics": [
@@ -85,10 +85,10 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal and rimshot/snare roughly level, then kick and bass, shakers and percussion (often brighter and more forward than Western pop would place them), guitar and keys, pads, BVs and ad-libs, FX returns. This audience wants fast, upper-mid percussion up front, at times even above the vocal. Western engineers often bury it; resist that."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal and rimshot/snare roughly level, then kick and bass, shakers and percussion (often brighter and more forward than Western pop would place them), guitar and keys, pads, BGVs and ad-libs, FX returns. This audience wants fast, upper-mid percussion up front, at times even above the vocal. Western engineers often bury it; resist that."
     },
     {
-      "text": "Low end: the kick is short and punchy (50–80 Hz thump, quick decay), while the bass or 808 is melodic and sustained. Sidechain bass from kick for 2–4 dB of ducking, and keep bass harmonics at 100–200 Hz audible, since a bass that exists only at 40 Hz vanishes on phones. Pan shakers and secondary percussion off-center (20–60%), with congas and talking drum placed opposite each other; guitar off-center opposite keys; kick, snare/rim, bass and lead vocal centered; BV stacks wide."
+      "text": "Low end: the kick is short and punchy (50–80 Hz thump, quick decay), while the bass or 808 is melodic and sustained. Sidechain bass from kick for 2–4 dB of ducking, and keep bass harmonics at 100–200 Hz audible, since a bass that exists only at 40 Hz vanishes on phones. Pan shakers and secondary percussion off-center (20–60%), with congas and talking drum placed opposite each other; guitar off-center opposite keys; kick, snare/rim, bass and lead vocal centered; BGV stacks wide."
     }
   ],
   "eq": {
@@ -125,7 +125,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Bass / 808",
-        "cut": "HPF 25–35 Hz (about 60 Hz on a busy track)",
+        "cut": "HPF 25–35 Hz",
         "boost": "+2 dB at 60–80 Hz; saturation or +2 dB at 700 Hz–1 kHz for phone translation",
         "notes": "Melody must survive small speakers"
       },
@@ -166,7 +166,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Clip-gain rides first, then compress lightly"
       },
       {
-        "source": "BV stacks",
+        "source": "BGV stacks",
         "use": "Yes",
         "ratio": "4:1",
         "attackRelease": "5 ms / auto",
@@ -236,7 +236,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Ping-pong delay",
-        "appliedTo": "BVs, hook stacks",
+        "appliedTo": "BGVs, hook stacks",
         "setting": "1/16 to 1/8 note, 20–30% feedback",
         "amount": "Moderate"
       },
@@ -260,7 +260,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Hard-tune pitch correction",
-        "appliedTo": "Lead and BVs",
+        "appliedTo": "Lead and BGVs",
         "setting": "Very fast retune (about 0–20 ms) when the artist uses it as a sound",
         "amount": "As produced"
       }
@@ -273,7 +273,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal is mid-forward, warm and intimate, sitting into the groove: roughly level with the rimshot and only 1–2 dB above percussion. Intelligibility matters, but accents, Pidgin and code-switching are features, not problems; don’t EQ them thin. Pitch correction is standard and often audible as an effect; match the demo, which is usually the intended sound. Hooks are stacked with doubles, octaves and harmonies, with call-and-response BVs and ad-libs panned wide. Keep producer tags. Live, drop the lead 3–6 dB when the crowd takes the hook and keep a tap-tempo delay ready."
+      "text": "The lead vocal is mid-forward, warm and intimate, sitting into the groove: roughly level with the rimshot and only 1–2 dB above percussion. Intelligibility matters, but accents, Pidgin and code-switching are features, not problems; don’t EQ them thin. Pitch correction is standard and often audible as an effect; match the demo, which is usually the intended sound. Hooks are stacked with doubles, octaves and harmonies, with call-and-response BGVs and ad-libs panned wide. Keep producer tags. Live, drop the lead 3–6 dB when the crowd takes the hook and keep a tap-tempo delay ready."
     }
   ],
   "loudness": [
@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial masters typically land at −10 to −7 LUFS-I with a −2 dBTP ceiling (−1 dBTP is enough for masters at or below −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and costs percussion snap. Aim for a PLR of roughly 8–10 dB (about −12 to −10 LUFS-I at −2 dBTP, at or below the quiet end of the typical range) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
+      "text": "Commercial masters typically land at −10 to −7 LUFS-I with a −2 dBTP ceiling (−1 dBTP is enough for masters at or below −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and costs percussion snap. For more punch, aim for a PLR of roughly 8–10 dB (about −12 to −10 LUFS-I at −2 dBTP, at or below the quiet end of the typical range) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
     }
   ],
   "liveStudio": {
@@ -300,13 +300,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Vocals",
-        "live": "Wireless handheld, minimal chain, crowd sing-backs, BV and choir mic management",
+        "live": "Wireless handheld, minimal chain, crowd sing-backs, BGV and choir mic management",
         "studio": "Comping, tuning, stacks, detailed clip-gain rides"
       },
       {
         "area": "Input count",
         "live": "Up to 100–120 inputs on large consoles",
-        "studio": "Stems from producer; often 100+ BV tracks to group and print"
+        "studio": "Stems from producer; often 100+ BGV tracks to group and print"
       },
       {
         "area": "Effects",

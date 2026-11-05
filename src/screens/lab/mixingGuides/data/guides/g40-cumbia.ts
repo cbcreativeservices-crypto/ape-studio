@@ -16,10 +16,10 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences expect a relaxed but unstoppable sway, a melody they can sing back, and the lead line (accordion, keyboard or guitar) bright and present.",
   "glance": {
     "origin": "Caribbean coast of Colombia (Magdalena River basin, Depresión Momposina), documented by the early 1800s; urbanized by Discos Fuentes-era orchestras in the 1940s–60s, then spread into Mexican sonidera (Mexican sound-system style) and tecnocumbia (keyboard-driven cumbia), Peruvian chicha (psychedelic cumbia, late 1960s) and Argentine villera (shantytown cumbia, 1999)",
-    "tempo": "80–110 BPM, felt in 2; rebajada/sonidera (slowed-down / sound-system styles) can drop to 70–85; villera (Argentine shantytown cumbia) and tecnocumbia (keyboard-driven cumbia) often 95–110",
+    "tempo": "80–110 BPM, felt in 2; rebajada/sonidera (slowed-down / sound-system styles) can drop to 70–85; villera (Argentine shantytown cumbia) and tecnocumbia often 95–110",
     "ensemble": "6–14 piece: accordion or keys/keytar, bass, güiro/guacharaca (gourd and cane scrapers), congas, timbales (two metal-shelled drums with cymbal and cowbells), optional kit, guitar, 1–3 vocalists, sometimes horns; or a sonidero (sound-system DJ) with turntables/laptop plus MC mic",
     "priority": "The bass-and-güiro groove: the bass on 1 and the “and” of 2, with the scraper’s steady chop always audible",
-    "liveSpl": "94–100 dBA LAeq,15min; about 110–120 dBC; sonidero (sound-system DJ) street parties often run hotter in the subs",
+    "liveSpl": "94–100 dBA LAeq,15min; about 110–120 dBC; sonidero street parties often run hotter in the subs",
     "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (vintage reissues −14 to −11); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -373,7 +373,7 @@ export const GUIDE: MixingGuide = {
     "Andrés Landero, “La Pava Congona”, 1960s",
     "Los Destellos, “Elsa”, 1970",
     "Los Mirlos, “Sonido Amazónico”, 1973",
-    "La Sonora Dinamita, “Que Bello”, 1982",
+    "La Sonora Dinamita, “Qué Bello”",
     "Los Ángeles Azules, “El Listón de tu Pelo”, 1996",
     "Celso Piña y su Ronda Bogotá, “Cumbia sobre el río”, 2001",
     "Damas Gratis, “Se te ve la tanga”, 2000",

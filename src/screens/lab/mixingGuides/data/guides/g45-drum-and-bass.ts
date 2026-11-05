@@ -18,7 +18,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "DJ + MC (most common); producer duo with tracks; live bands such as Pendulum, Rudimental or Reprazent (drums, bass, keys, guitar, vocalists, MC, playback)",
     "priority": "Sub bass and drums coexisting: a clean, mono, controlled sub under a snare that cracks through on beats 2 and 4",
     "liveSpl": "100–105 dBA LAeq,15min, peaks 106–110 dBA; roughly 120–130 dBC on big sub arrays",
-    "studioLoudness": "Club masters commonly −7 to −5 LUFS-I (drops around −6 LUFS short-term); streaming normalizes to about −14"
+    "studioLoudness": "Club masters commonly −7 to −5 LUFS-I (drops about 1–2 dB louder short-term); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -89,7 +89,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare (layered)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 400–600 Hz if boxy",
         "boost": "+2–4 dB at 180–250 Hz (body/fundamental); +3 dB at 2–5 kHz (crack); shelf +2 dB at 10 kHz",
-        "notes": "The snare’s fundamental is often weaker than its overtones—lift it"
+        "notes": "The snare’s fundamental is often weaker than its overtones — lift it"
       },
       {
         "source": "Breakbeat loop (under layers)",
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Most streaming services normalize to about −14 LUFS, some to −16; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a very low PLR in drops (at −2 dBTP, a −7 to −5 LUFS-I master leaves only 3–5 dB) but needs breakdown-to-drop contrast."
+      "text": "Club masters typically land at −7 to −5 LUFS-I, with drops about 1–2 dB louder short-term (some liquid nearer −9 to −8). Most streaming services normalize to about −14 LUFS, some to −16; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a very low PLR in drops (at −2 dBTP, a −7 to −5 LUFS-I master leaves only 3–5 dB) but needs breakdown-to-drop contrast."
     }
   ],
   "liveStudio": {

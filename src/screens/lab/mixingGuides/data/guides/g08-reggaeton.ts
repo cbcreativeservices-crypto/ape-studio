@@ -90,7 +90,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare / clap / timbal (timbale-drum sound)",
         "cut": "HPF 120–200 Hz; notch ring if any",
         "boost": "+2–3 dB at 200–400 Hz (the boxy reggaeton body); +2 dB at 1–3 kHz for snap",
-        "notes": "The pattern carries the genre identity—make it audible but not piercing"
+        "notes": "The pattern carries the genre identity — make it audible but not piercing"
       },
       {
         "source": "Hi-hats / shakers",
@@ -114,7 +114,7 @@ export const GUIDE: MixingGuide = {
         "source": "Guitar (nylon/electric)",
         "cut": "HPF 100–150 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 2–4 kHz for pluck",
-        "notes": "Often the main hook—keep it bright but behind the vocal"
+        "notes": "Often the main hook — keep it bright but behind the vocal"
       },
       {
         "source": "Lead vocal",
@@ -312,7 +312,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Keep the snare/timbal pattern clearly audible—it is the genre’s signature, not decoration.",
+      "text": "Keep the snare/timbal pattern clearly audible — it is the genre’s signature, not decoration.",
       "bullet": true
     },
     {

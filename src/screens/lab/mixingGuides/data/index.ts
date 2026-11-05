@@ -111,7 +111,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "afrobeats",
     "num": 14,
     "title": "Afrobeats",
-    "line": "The percussion groove—rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern—bright and forward, with the lead vocal hook riding on it",
+    "line": "The percussion groove — rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern — bright and forward, with the lead vocal hook riding on it",
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat"
   },
   {
@@ -258,7 +258,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "brazilian-funk",
     "num": 35,
     "title": "Brazilian Funk (Baile Funk)",
-    "line": "The beat’s low end—kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808—hitting hard and clean in mono, with the MC’s hook clear on top",
+    "line": "The beat’s low end — kick, surdo-like tamborzão hits and 808 — hitting hard and clean in mono, with the MC’s hook clear on top",
     "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s, when Miami bass and electro filled sound-system bailes (dance parties); Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s"
   },
   {
@@ -279,14 +279,14 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "salsa",
     "num": 38,
     "title": "Salsa",
-    "line": "The rhythm-section lock of piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas and bells, with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
+    "line": "The rhythm-section lock of piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas and bells, with the sonero (lead improvising singer) and coro clearly on top",
     "origin": "New York City, mid-1960s–1970s (Fania era), rooted in Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s"
   },
   {
     "id": "bachata",
     "num": 39,
     "title": "Bachata",
-    "line": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper) and bass pulse that dancers can feel",
+    "line": "The lead vocal and the requinto trading phrases on top of a steady güira and bass pulse that dancers can feel",
     "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero (slow romantic song) and son (Cuban roots song style) traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s"
   },
   {
@@ -314,7 +314,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "dangdut",
     "num": 43,
     "title": "Dangdut",
-    "line": "The kendang (hand drums): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "line": "The kendang: the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s"
   },
   {

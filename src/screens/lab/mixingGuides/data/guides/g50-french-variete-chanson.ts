@@ -147,7 +147,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Synth bass / pads (variété)",
         "cut": "HPF 30 Hz; cut 1–4 kHz on pads",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Pads are the most common vocal masker"
       }
     ],

@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "85–95 BPM (boom bap); 90–100 (G-funk); 130–145 BPM with half-time feel (trap, drill)",
     "ensemble": "Rapper + DJ/playback, often with 1–2 hype/backing vocalists; sometimes a live band (drums, keys, bass, guitar)",
     "priority": "Lead vocal intelligibility riding on a kick/808 low end that hits hard but stays clean",
-    "liveSpl": "98–103 dBA LAeq-15 min; 115–125 dBC LCeq is common in clubs and arenas",
+    "liveSpl": "98–103 dBA LAeq,15min; 115–125 dBC LCeq is common in clubs and arenas",
     "studioLoudness": "Masters commonly −9 to −7 LUFS-I, true peak −1 to 0 dBTP; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -242,7 +242,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena hip-hop typically runs 98–103 dBA LAeq-15 min at FOH, with 115–125 dBC LCeq because of heavy sub content. Common hearing-safety advice is to stay below 100 dBA LAeq-15 min, with peaks under 140 dB LCpeak; some European countries and festivals cap at 100–103 dBA over 15 minutes or 100 dBA over 60. US venues set their own limits, often for neighbors rather than hearing. Many large tours fly some or all of the subs to spread the bass evenly without crushing the front rows. Offer earplugs, watch the dBC number, and keep 10 dB of headroom on the vocal channel for crowd moments."
+      "text": "Club and arena hip-hop typically runs 98–103 dBA LAeq,15min at FOH, with 115–125 dBC LCeq because of heavy sub content. Common hearing-safety advice is to stay below 100 dBA LAeq,15min, with peaks under 140 dB LCpeak; some European countries and festivals cap at 100–103 dBA over 15 minutes or 100 dBA over 60. US venues set their own limits, often for neighbors rather than hearing. Many large tours fly some or all of the subs to spread the bass evenly without crushing the front rows. Offer earplugs, watch the dBC number, and keep 10 dB of headroom on the vocal channel for crowd moments."
     },
     {
       "label": "Studio / streaming:",
@@ -311,14 +311,14 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Dr. Dre feat. Snoop Dogg — “Still D.R.E.” (1999)",
-    "Kendrick Lamar — “HUMBLE.” (2017)",
-    "Travis Scott — “SICKO MODE” (2018)",
-    "Nas — “N.Y. State of Mind” (1994)",
-    "Drake — “God’s Plan” (2018)",
-    "Polo G — “RAPSTAR” (2021)",
-    "OutKast — “B.O.B.” (2000)",
-    "Kanye West — “Black Skinhead” (2013)"
+    "Dr. Dre feat. Snoop Dogg, “Still D.R.E.”, 1999",
+    "Kendrick Lamar, “HUMBLE.”, 2017",
+    "Travis Scott, “SICKO MODE”, 2018",
+    "Nas, “N.Y. State of Mind”, 1994",
+    "Drake, “God’s Plan”, 2018",
+    "Polo G, “RAPSTAR”, 2021",
+    "OutKast, “B.O.B.”, 2000",
+    "Kanye West, “Black Skinhead”, 2013"
   ],
   "empty": []
 };

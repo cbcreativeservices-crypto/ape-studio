@@ -131,7 +131,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Reverb returns",
         "cut": "HPF 200–300 Hz; LPF 6–8 kHz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Filtering keeps a big wash from turning to mud or fizz"
       }
     ],

@@ -108,7 +108,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Hammond bottom (rotor)",
-        "cut": "HPF 50–70 Hz; −2–4 dB at 200–300 Hz",
+        "cut": "HPF 50–70 Hz unless the organ carries the bass; −2–4 dB at 200–300 Hz",
         "boost": "+2 dB at 80–100 Hz if thin",
         "notes": "Kick-style mic about 3 in. from the opening, angled out of the wind"
       },

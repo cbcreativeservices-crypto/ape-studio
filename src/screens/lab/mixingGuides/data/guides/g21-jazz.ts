@@ -184,7 +184,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Trombone / brass bus",
         "use": "Light",
-        "ratio": "1.4:1–2:1 (bone up to 5:1)",
+        "ratio": "1.4:1–2:1",
         "attackRelease": "Medium / medium",
         "gainReduction": "1–3 dB",
         "notes": "Leveling only"

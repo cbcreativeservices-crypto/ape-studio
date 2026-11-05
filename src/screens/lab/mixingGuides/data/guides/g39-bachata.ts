@@ -16,7 +16,7 @@ export const GUIDE: MixingGuide = {
     "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero (slow romantic song) and son (Cuban roots song style) traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s",
     "tempo": "120–140 BPM for dance tracks (romantic ballads 110–120; fast mambo-heavy or merengue-tinged tracks up to 150+)",
     "ensemble": "Classic quintet of requinto (lead guitar), segunda (rhythm guitar), bass, bongó (small hand drums) and güira (metal scraper), plus lead vocal; urban and arena acts add keys, programmed drums, 1–2 backing vocals and playback",
-    "priority": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper) and bass pulse that dancers can feel",
+    "priority": "The lead vocal and the requinto trading phrases on top of a steady güira and bass pulse that dancers can feel",
     "liveSpl": "95–100 dBA LAeq,15min in clubs and dance socials; 98–102 dBA in arenas; roughly 110–118 dBC",
     "studioLoudness": "Modern urban masters commonly −10 to −8 LUFS-I, traditional and acoustic releases around −12 to −10; most streaming services normalize to about −14 LUFS, some to −16"
   },

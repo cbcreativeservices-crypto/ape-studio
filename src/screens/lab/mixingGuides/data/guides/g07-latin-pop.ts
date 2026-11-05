@@ -63,7 +63,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "common (click, pads, BV stacks, electronic percussion).",
+      "text": "common (click, pads, BGV stacks, electronic percussion).",
       "bullet": true
     }
   ],
@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top—more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales (two metal-shelled drums with cymbal and cowbells) or shaker (30–60 percent), guitars opposite each other, strings and BVs wide. Percussion is sparkle and motion, not volume."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top — more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales (two metal-shelled drums with cymbal and cowbells) or shaker (30–60 percent), guitars opposite each other, strings and BGVs wide. Percussion is sparkle and motion, not volume."
     }
   ],
   "eq": {
@@ -118,7 +118,7 @@ export const GUIDE: MixingGuide = {
         "source": "Timbales (metal-shelled drums) / campana (hand-held cowbell)",
         "cut": "HPF 150–250 Hz; dip 1–2 kHz if clangy",
         "boost": "+1–2 dB at 8–10 kHz",
-        "notes": "Very loud transients—control with level, not EQ alone"
+        "notes": "Very loud transients — control with level, not EQ alone"
       },
       {
         "source": "Shaker / güiro (scraped gourd)",
@@ -301,13 +301,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Low end",
-        "live": "Fight room buildup; separate subs from playback",
+        "live": "Fight room buildup; give playback its own sub send",
         "studio": "Kick/bass carving, sidechain, sample layering"
       },
       {
         "area": "Crowd",
         "live": "Huge sing-alongs; audience mics feed in-ears and recordings",
-        "studio": "Absent—intimacy and detail rule"
+        "studio": "Absent — intimacy and detail rule"
       },
       {
         "area": "Effects",

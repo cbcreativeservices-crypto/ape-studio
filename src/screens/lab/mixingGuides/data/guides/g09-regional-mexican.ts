@@ -17,8 +17,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "Polka/norteño 2/4 at 100–130 BPM (felt in 2); cumbia 90–105; rancheras (Mexican country ballads) and boleros (slow romantic songs) 60–90; sones (Mexican folk dance songs) and huapangos (falsetto-led Huasteca songs) in 6/8 (dotted quarter ≈ 60–80); tumbados (trap-flavored corridos) mostly 6/8 or 3/4 around 120–150 BPM",
     "ensemble": "Norteño/tumbado (northern accordion / trap-flavored corrido) 4–6 piece; mariachi 7–12; banda sinaloense (Sinaloa-style brass band) 14–20 plus 1–3 singers; stadium acts 17–24 on stage",
     "priority": "The lead singer’s words and emotion on top of a firmly locked low end (tuba, tololoche (upright bass), guitarrón (large acoustic bass) or bass)",
-    "liveSpl": "Mariachi/norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda (Mexican brass band) and arena shows 98–103 dBA, about 112–120 dBC",
-    "studioLoudness": "Banda (Mexican brass band) and norteño (northern Mexican accordion music) masters commonly −10 to −8 LUFS-I; tumbados (trap-flavored corridos) −9 to −7; mariachi −14 to −11; most streaming services normalize to about −14 LUFS, some to −16"
+    "liveSpl": "Mariachi/norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda and arena shows 98–103 dBA, about 112–120 dBC",
+    "studioLoudness": "Banda and norteño masters commonly −10 to −8 LUFS-I; tumbados −9 to −7; mariachi −14 to −11; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -339,7 +339,7 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Los Tigres del Norte, “Contrabando y traición”, 1972",
+    "Los Tigres del Norte, “Contrabando y traición”, 1974",
     "Vicente Fernández, “Volver, volver”, 1972",
     "Linda Ronstadt, Canciones de mi padre, 1987",
     "Jenni Rivera, La Gran Señora, 2009",

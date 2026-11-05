@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "minimal—click to in-ears, occasional pads or strings on larger tours; drum samples often reinforce kick and snare in the studio.",
+      "text": "minimal — click to in-ears, occasional pads or strings on larger tours; drum samples often reinforce kick and snare in the studio.",
       "bullet": true
     }
   ],
@@ -59,7 +59,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Rock has moderate macro-dynamics: a quiet verse to full chorus can span 6–10 dB in performance, and the arrangement does much of that work. Preserve the section contrast—it is the genre’s drama—while controlling micro-dynamics (snare hits, vocal peaks, bass notes) so everything stays audible. Ride faders rather than over-compressing; small automation moves (chorus up 0.5–1 dB, cymbals nudged up in choruses, guitars slightly wider) create lift without squashing. Loudness-maximized masters that flatten the verse/chorus contrast are a known complaint in this genre."
+      "text": "Rock has moderate macro-dynamics: a quiet verse to full chorus can span 6–10 dB in performance, and the arrangement does much of that work. Preserve the section contrast — it is the genre’s drama — while controlling micro-dynamics (snare hits, vocal peaks, bass notes) so everything stays audible. Ride faders rather than over-compressing; small automation moves (chorus up 0.5–1 dB, cymbals nudged up in choruses, guitars slightly wider) create lift without squashing. Loudness-maximized masters that flatten the verse/chorus contrast are a known complaint in this genre."
     }
   ],
   "balance": [
@@ -91,7 +91,7 @@ export const GUIDE: MixingGuide = {
         "source": "Overheads / room",
         "cut": "HPF 150–300 Hz (overheads), 60–100 Hz (room); dip 2–4 kHz if harsh",
         "boost": "Gentle shelf +1–2 dB at 10–12 kHz",
-        "notes": "Rooms bring the “band in a room” feel—compress them hard and tuck under"
+        "notes": "Rooms bring the “band in a room” feel — compress them hard and tuck under"
       },
       {
         "source": "Bass",
@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "source": "Rhythm guitars",
         "cut": "HPF 80–120 Hz; LPF 12–15 kHz; −2–3 dB at 200–400 Hz",
         "boost": "+1–3 dB at 2–4 kHz (presence)",
-        "notes": "Avoid scooping mids—the 500 Hz–2 kHz body is the rock guitar tone"
+        "notes": "Avoid scooping mids — the 500 Hz–2 kHz body is the rock guitar tone"
       },
       {
         "source": "Lead guitar",
@@ -236,7 +236,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Room / chamber",
         "appliedTo": "Drums, whole band",
         "setting": "0.6–1.2 s decay",
-        "amount": "Moderate—shared “space” for cohesion"
+        "amount": "Moderate — shared “space” for cohesion"
       },
       {
         "effect": "Stereo slap / Haas",
@@ -265,13 +265,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal leads, but sits slightly into the band rather than floating above it as in pop—roughly 1–3 dB above the guitars by perceived level, with every word intelligible. Tone is mid-forward and present, with grit acceptable; avoid excessive air or brittle top. Pitch correction should be light and selective, fixing only obvious problems; audible tuning reads as fake in rock. Doubles are common on choruses (tucked 6–10 dB under the lead, panned center or slightly split), and harmony backing vocals are usually panned wide and compressed harder. Ride the vocal line by line in the studio. Live, use a rugged dynamic mic and a short chain: HPF, EQ, compression, maybe a slap; notch bleed on drummer vocal mics (around 500 Hz and 3 kHz)."
+      "text": "The vocal leads, but sits slightly into the band rather than floating above it as in pop — roughly 1–3 dB above the guitars by perceived level, with every word intelligible. Tone is mid-forward and present, with grit acceptable; avoid excessive air or brittle top. Pitch correction should be light and selective, fixing only obvious problems; audible tuning reads as fake in rock. Doubles are common on choruses (tucked 6–10 dB under the lead, panned center or slightly split), and harmony backing vocals are usually panned wide and compressed harder. Ride the vocal line by line in the studio. Live, use a rugged dynamic mic and a short chain: HPF, EQ, compression, maybe a slap; notch bleed on drummer vocal mics (around 500 Hz and 3 kHz)."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater rock typically runs 96–102 dBA LAeq-15 at FOH, arenas and festivals 100–105 dBA, with C-weighted LCeq around 112–120 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at FOH, and some also cap C-weighted peaks (such as 135 dBC). Rock needs moderate sub, not EDM-level sub. NIOSH advises no more than about 15 minutes a day at 100 dBA—offer earplugs and protect your own ears."
+      "text": "Club and theater rock typically runs 96–102 dBA LAeq,15min at FOH, arenas and festivals 100–105 dBA, with C-weighted LCeq around 112–120 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at FOH, and some also cap C-weighted peaks (such as 135 dBC). Rock needs moderate sub, not EDM-level sub. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
@@ -287,7 +287,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Guitars",
-        "live": "Stage amps already loud—often you add little; mic choice shapes tone",
+        "live": "Stage amps already loud — often you add little; mic choice shapes tone",
         "studio": "Double-tracked, panned hard, layered for width"
       },
       {

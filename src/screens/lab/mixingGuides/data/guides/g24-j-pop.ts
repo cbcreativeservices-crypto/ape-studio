@@ -13,7 +13,7 @@ export const GUIDE: MixingGuide = {
   "id": "j-pop",
   "num": 24,
   "title": "J-pop",
-  "expects": "The words matter enormously—songs are tied to drama themes, anime storylines and commercials—so the audience expects to hear every syllable.",
+  "expects": "The words matter enormously — songs are tied to drama themes, anime storylines and commercials — so the audience expects to hear every syllable.",
   "glance": {
     "origin": "Japan; grew out of kayōkyoku (postwar Japanese pop), 1970s “new music” and city pop, and YMO-era technopop; the term “J-pop” took hold around 1990, with idol, anison (anime song) and band-style J-rock branches",
     "tempo": "120–180 BPM for up-tempo idol and anime openings (many sit around 160–180); ballads 65–90; band J-pop 130–160",
@@ -24,7 +24,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "J-pop is music for identification and devotion: fans follow a singer, group or anime franchise for years, buy physical singles, learn every lyric, and treat concerts as communal celebrations. The words matter enormously—songs are tied to drama themes, anime storylines and commercials—so the audience expects to hear every syllable. The Japanese market demands a “big vocal” even over a huge backing track. Idol audiences participate actively: penlights colored for each member, shouted “calls,” and rhythmic “mix” chants in intros and instrumental breaks, all traditionally avoided in slow, emotional songs. Anison crowds sing along to choruses and expect the record-exact sound of the TV opening. The fastest way to hear “that sounded wrong” is a vocal buried under guitars and synths, harsh sibilance, a dull or muffled top end, or a live show that sounds nothing like the bright, polished CD."
+      "text": "J-pop is music for identification and devotion: fans follow a singer, group or anime franchise for years, buy physical singles, learn every lyric, and treat concerts as communal celebrations. The words matter enormously — songs are tied to drama themes, anime storylines and commercials — so the audience expects to hear every syllable. The Japanese market demands a “big vocal” even over a huge backing track. Idol audiences participate actively: penlights colored for each member, shouted “calls,” and rhythmic “mix” chants in intros and instrumental breaks, all traditionally avoided in slow, emotional songs. Anison crowds sing along to choruses and expect the record-exact sound of the TV opening. The fastest way to hear “that sounded wrong” is a vocal buried under guitars and synths, harsh sibilance, a dull or muffled top end, or a live show that sounds nothing like the bright, polished CD."
     }
   ],
   "instruments": [
@@ -55,13 +55,13 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "extensive—click, synths, string beds, backing vocals and, for idols, often full instrumental and partial vocal tracks. Vocaloid-derived songs may carry heavily processed or synthetic vocal lines.",
+      "text": "extensive — click, synths, string beds, backing vocals and, for idols, often full instrumental and partial vocal tracks. Vocaloid-derived songs may carry heavily processed or synthetic vocal lines.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "J-pop songs follow a recognizable form: intro, A-melo (verse), B-melo (pre-chorus), sabi (chorus), often with a key change and an “ochi-sabi” (stripped chorus) before the last big chorus. Arrangements are notoriously dense—strings, synths, guitars and countermelodies can all play at once—and frequently modulate. Anime openings are written around a roughly 89–90-second TV edit, so the full version front-loads hooks. On stage, solo artists use a band with keys and a manipulator (playback operator) position; idol groups of many members sing and dance across wide stages and long runways over tracks; bands keep a classic rock layout with sequenced extras."
+      "text": "J-pop songs follow a recognizable form: intro, A-melo (verse), B-melo (pre-chorus), sabi (chorus), often with a key change and an “ochi-sabi” (stripped chorus) before the last big chorus. Arrangements are notoriously dense — strings, synths, guitars and countermelodies can all play at once — and frequently modulate. Anime openings are written around a roughly 89–90-second TV edit, so the full version front-loads hooks. On stage, solo artists use a band with keys and a manipulator (playback operator) position; idol groups of many members sing and dance across wide stages and long runways over tracks; bands keep a classic rock layout with sequenced extras."
     }
   ],
   "dynamics": [
@@ -71,7 +71,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, more than in rock), kick and snare, bass, main synth/guitar hook, strings and pads, backing vocals and harmonies, cymbals and effects. Low end is tight rather than huge: kick owns 50–80 Hz punch, bass owns 80–250 Hz and its melodic mids; sub should support, not dominate. Keep the top bright and clear—J-pop mixes typically carry more 3–12 kHz energy than Western rock. Vocal, kick, snare and bass in the center; double rhythm guitars hard left/right; strings and pads wide; synth arps panned or stereo. For idol groups, keep all members near center with slight spreads so the unison sounds like one voice."
+      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, more than in rock), kick and snare, bass, main synth/guitar hook, strings and pads, backing vocals and harmonies, cymbals and effects. Low end is tight rather than huge: kick owns 50–80 Hz punch, bass owns 80–250 Hz and its melodic mids; sub should support, not dominate. Keep the top bright and clear — J-pop mixes typically carry more 3–12 kHz energy than Western rock. Vocal, kick, snare and bass in the center; double rhythm guitars hard left/right; strings and pads wide; synth arps panned or stereo. For idol groups, keep all members near center with slight spreads so the unison sounds like one voice."
     }
   ],
   "eq": {
@@ -205,7 +205,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess lead vocals at 6–9 kHz for 3–6 dB; Japanese “s,” “sh” and “ts” sounds pile up in fast phrases. Multiband or dynamic EQ on the vocal at 200–400 Hz keeps proximity-heavy headset and handheld mics clean. Gate toms live; use a dynamic EQ or sidechain to dip pads and guitars 1–3 dB in the 2–5 kHz band when the vocal is present. Mastering often applies 6–10 dB of limiting—avoid baking that into the mix."
+        "text": "De-ess lead vocals at 6–9 kHz for 3–6 dB; Japanese “s,” “sh” and “ts” sounds pile up in fast phrases. Multiband or dynamic EQ on the vocal at 200–400 Hz keeps proximity-heavy headset and handheld mics clean. Gate toms live; use a dynamic EQ or sidechain to dip pads and guitars 1–3 dB in the 2–5 kHz band when the vocal is present. Mastering often applies 6–10 dB of limiting — avoid baking that into the mix."
       }
     ]
   },
@@ -262,13 +262,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly above the band—roughly 3–5 dB louder in perceived level than it would in a rock mix—with every mora (syllable-like sound unit) intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handheld condensers or dynamics; dancing idols use headset or handheld wireless, sometimes over a backing vocal track—keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
+      "text": "The lead vocal sits clearly above the band — roughly 3–5 dB louder in perceived level than it would in a rock mix — with every mora (syllable-like sound unit) intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handheld condensers or dynamics; dancing idols use headset or handheld wireless, sometimes over a backing vocal track — keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Hall shows typically run 92–98 dBA LAeq,15min at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighborhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Hall shows typically run 92–98 dBA LAeq,15min at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighborhood noise management. Idol crowds often include young fans — keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
@@ -284,8 +284,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Playback",
-        "live": "Multitrack stems from manipulator; strings, synths and BV tracks to match the record",
-        "studio": "All parts are the arrangement—carve with EQ and automation"
+        "live": "Multitrack stems from manipulator; strings, synths and BGV tracks to match the record",
+        "studio": "All parts are the arrangement — carve with EQ and automation"
       },
       {
         "area": "Density",
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Space",
-        "live": "Runways put singers ahead of the PA—watch feedback; immersive systems increasingly common",
+        "live": "Runways put singers ahead of the PA — watch feedback; immersive systems increasingly common",
         "studio": "Wide stereo strings and synths"
       },
       {
@@ -321,11 +321,11 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Get the stem split from the manipulator in advance (drums, bass, synths, strings, BVs separately) so you can fight density live.",
+      "text": "Get the stem split from the manipulator in advance (drums, bass, synths, strings, BGVs separately) so you can fight density live.",
       "bullet": true
     },
     {
-      "text": "Do not let supersaw pads and distorted guitars occupy 2–5 kHz with the vocal—use dynamic EQ or sidechain ducking.",
+      "text": "Do not let supersaw pads and distorted guitars occupy 2–5 kHz with the vocal — use dynamic EQ or sidechain ducking.",
       "bullet": true
     },
     {

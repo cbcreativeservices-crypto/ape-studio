@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–130 BPM (ballads 60–80; dance-pop 118–128)",
     "ensemble": "Solo artist + playback/tracks, often with a 3–6 piece band, 2–4 backing singers and dancers",
     "priority": "The lead vocal: upfront, intelligible, consistent from first word to last chorus",
-    "liveSpl": "95–100 dBA LAeq-15 min (common safe-listening cap 100 dBA); 105–115 dBC with sub-heavy material",
+    "liveSpl": "95–100 dBA LAeq,15min (common safe-listening cap 100 dBA); 105–115 dBC with sub-heavy material",
     "studioLoudness": "Masters commonly −9 to −7 LUFS-I (range −11 to −6); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -225,13 +225,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Stereo widener / micro-pitch",
-        "appliedTo": "Lead vocal, BVs",
+        "appliedTo": "Lead vocal, BGVs",
         "setting": "±5–10 cents detune, 10–20 ms offsets",
-        "amount": "Subtle on lead, moderate on BVs"
+        "amount": "Subtle on lead, moderate on BGVs"
       },
       {
         "effect": "Hall / large room",
-        "appliedTo": "BVs, pads, snare",
+        "appliedTo": "BGVs, pads, snare",
         "setting": "2–3 s decay, 20–40 ms pre-delay",
         "amount": "Moderate; more in ballads"
       },
@@ -353,14 +353,14 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Michael Jackson — “Billie Jean” (1982)",
-    "Taylor Swift — “Shake It Off” (2014)",
-    "Mark Ronson feat. Bruno Mars — “Uptown Funk” (2014)",
-    "Billie Eilish — “bad guy” (2019)",
-    "Dua Lipa — “Levitating” (2020)",
-    "The Weeknd — “Blinding Lights” (2019)",
-    "Ariana Grande — “7 rings” (2019)",
-    "Adele — “Hello” (2015), ballad reference"
+    "Michael Jackson, “Billie Jean”, 1982",
+    "Taylor Swift, “Shake It Off”, 2014",
+    "Mark Ronson feat. Bruno Mars, “Uptown Funk”, 2014",
+    "Billie Eilish, “bad guy”, 2019",
+    "Dua Lipa, “Levitating”, 2020",
+    "The Weeknd, “Blinding Lights”, 2019",
+    "Ariana Grande, “7 rings”, 2019",
+    "Adele, “Hello”, 2015 (ballad reference)"
   ],
   "empty": []
 };

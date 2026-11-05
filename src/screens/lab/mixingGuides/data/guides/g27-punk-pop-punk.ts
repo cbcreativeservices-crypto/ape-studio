@@ -20,7 +20,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Punk is music for release, defiance and belonging. It began as a mid-1970s DIY reaction against bloated rock; hardcore made it faster and all-ages, while pop-punk and emo-pop added big melodic choruses about suburban life and heartbreak. The audience does not stand and listen: they sing every word, crowd-surf, stage-dive and circle-pit. They expect relentless drive, a guitar wall, a cracking snare and a singer they can shout along with. “That sounded wrong” means a vocal lost under guitars, fizzy or thin guitars, a soft or boomy kick that blurs at 190 BPM, or—at the pop-punk end—a polished mix that has lost its aggression. Punk forgives sloppiness; it does not forgive lack of energy."
+      "text": "Punk is music for release, defiance and belonging. It began as a mid-1970s DIY reaction against bloated rock; hardcore made it faster and all-ages, while pop-punk and emo-pop added big melodic choruses about suburban life and heartbreak. The audience does not stand and listen: they sing every word, crowd-surf, stage-dive and circle-pit. They expect relentless drive, a guitar wall, a cracking snare and a singer they can shout along with. “That sounded wrong” means a vocal lost under guitars, fizzy or thin guitars, a soft or boomy kick that blurs at 190 BPM, or — at the pop-punk end — a polished mix that has lost its aggression. Punk forgives sloppiness; it does not forgive lack of energy."
     }
   ],
   "instruments": [
@@ -57,7 +57,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are narrow: most songs run near full tilt, with contrast created by palm-muting, a guitar dropping out, a half-time breakdown or a quiet intro. Expect perhaps 3–6 dB between verse and chorus. Micro-dynamics on drums are wide (hard-hitting players with fast fills), so control peaks while keeping the snare crack. Preserve the arrangement drops—a stop before the last chorus is the genre’s drama—and use automation (chorus up 1 dB, gang vocals up) instead of more limiting; over-squashed mixes at 200 BPM lose their pulse."
+      "text": "Macro-dynamics are narrow: most songs run near full tilt, with contrast created by palm-muting, a guitar dropping out, a half-time breakdown or a quiet intro. Expect perhaps 3–6 dB between verse and chorus. Micro-dynamics on drums are wide (hard-hitting players with fast fills), so control peaks while keeping the snare crack. Preserve the arrangement drops — a stop before the last chorus is the genre’s drama — and use automation (chorus up 1 dB, gang vocals up) instead of more limiting; over-squashed mixes at 200 BPM lose their pulse."
     }
   ],
   "balance": [
@@ -89,7 +89,7 @@ export const GUIDE: MixingGuide = {
         "source": "Overheads / hats",
         "cut": "HPF 200–400 Hz; dip 2–4 kHz if harsh; LPF 15 kHz",
         "boost": "Slight +1–2 dB at 10–12 kHz",
-        "notes": "Open-hat wash builds quickly at fast tempos—keep cymbals controlled"
+        "notes": "Open-hat wash builds quickly at fast tempos — keep cymbals controlled"
       },
       {
         "source": "Bass",
@@ -113,7 +113,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 100–150 Hz; −2–3 dB at 200–400 Hz; notch harsh 2.5–4 kHz if shouting",
         "boost": "+2–3 dB at 2–5 kHz (presence); +1–2 dB shelf at 8–10 kHz",
-        "notes": "Shouted vocals get harsh fast—use dynamic EQ on 3 kHz"
+        "notes": "Shouted vocals get harsh fast — use dynamic EQ on 3 kHz"
       },
       {
         "source": "Gang / backing vocals",
@@ -256,11 +256,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high—sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq,15min and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. The WHO safe-listening standard for venues sets 100 dBA LAeq,15min as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
+      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high — sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq,15min and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. The WHO safe-listening standard for venues sets 100 dBA LAeq,15min as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness gains nothing and costs punch. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
+      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness gains nothing and costs punch. For more punch, aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
     }
   ],
   "liveStudio": {
@@ -317,7 +317,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t bury the vocal or the hooks—pop-punk audiences sing every word and notice when they can’t hear them.",
+      "text": "Don’t bury the vocal or the hooks — pop-punk audiences sing every word and notice when they can’t hear them.",
       "bullet": true
     },
     {

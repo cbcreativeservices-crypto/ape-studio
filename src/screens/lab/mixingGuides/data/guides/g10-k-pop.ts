@@ -55,7 +55,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "the backbone of nearly every K-pop show—instrument stems, backing vocals, sometimes a guide or full “AR” vocal.",
+      "text": "the backbone of nearly every K-pop show — instrument stems, backing vocals, sometimes a guide or full “AR” vocal.",
       "bullet": true
     }
   ],
@@ -66,12 +66,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics come from arrangement: a near-empty rap verse can sit 8–12 dB below the chorus before it slams back. Micro-dynamics are tightly controlled—K-pop masters are among pop’s loudest. In the studio, keep section contrast with automation (filter sweeps, a beat drop before the hook). Live, playback is already dense, so the dynamic work is on vocals: headset levels swing 15–20 dB between whispered intros and belting while dancing. Ride every vocal fader; don’t rely on compression alone."
+      "text": "Macro-dynamics come from arrangement: a near-empty rap verse can sit 8–12 dB below the chorus before it slams back. Micro-dynamics are tightly controlled — K-pop masters are among pop’s loudest. In the studio, keep section contrast with automation (filter sweeps, a beat drop before the hook). Live, playback is already dense, so the dynamic work is on vocals: headset levels swing 15–20 dB between whispered intros and belting while dancing. Ride every vocal fader; don’t rely on compression alone."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: the active lead vocal line, kick/808, the chorus group vocal stack, snare/clap, lead synth or hook element, bass, pads and backing-vocal playback, effects returns. The kick provides the click and short punch (50–80 Hz thump, 2–5 kHz attack); the 808 or sub owns 35–60 Hz sustain—sidechain the sub to the kick 2–4 dB. Keep everything below about 120 Hz mono. Lead vocals and raps sit dead center no matter where the member is standing on stage; don’t pan by position. Backing-vocal stacks and harmonies go wide (doubles 60–100% L/R), synth layers and guitars spread wide, and ad-libs float slightly off-center. The track should feel wide and expensive; the vocal should feel close."
+      "text": "Hierarchy, loudest to quietest: the active lead vocal line, kick/808, the chorus group vocal stack, snare/clap, lead synth or hook element, bass, pads and backing-vocal playback, effects returns. The kick provides the click and short punch (50–80 Hz thump, 2–5 kHz attack); the 808 or sub owns 35–60 Hz sustain — sidechain the sub to the kick 2–4 dB. Keep everything below about 120 Hz mono. Lead vocals and raps sit dead center no matter where the member is standing on stage; don’t pan by position. Backing-vocal stacks and harmonies go wide (doubles 60–100% L/R), synth layers and guitars spread wide, and ad-libs float slightly off-center. The track should feel wide and expensive; the vocal should feel close."
     }
   ],
   "eq": {
@@ -110,7 +110,7 @@ export const GUIDE: MixingGuide = {
         "source": "Live keys / guitar",
         "cut": "HPF 100–150 Hz; −2 dB at 250–400 Hz",
         "boost": "+1–2 dB at 2–3 kHz only in solos",
-        "notes": "Doubles the tracks—often low-cut more live"
+        "notes": "Doubles the tracks — often low-cut more live"
       },
       {
         "source": "Lead vocal (each member)",
@@ -132,8 +132,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Playback stems (live)",
-        "cut": "High shelf −2–3 dB above 6 kHz on BV stems",
-        "boost": "—",
+        "cut": "High shelf −2–3 dB above 6 kHz on BGV stems",
+        "boost": " — ",
         "notes": "Leaves room for live voices to cut"
       }
     ],
@@ -273,13 +273,13 @@ export const GUIDE: MixingGuide = {
       "text": "Vocals are the product: clearly above the track (roughly 2–4 dB more than in rock by perceived level), bright, airy and close, with each member’s timbre distinct. Korean studios record each member line by line on a tube condenser, often into a transformer-coupled preamp and an optical compressor; an in-house vocal director then comps and tunes every phrase. Tight tuning and grid-edited timing are expected, not hidden. Start with the main hook vocal and match every member to it, riding so a quiet sub-vocal line reads as clearly as the main vocal’s high note. Process backing vocals differently (more compression and saturation, crunchier) so leads stay in front. The soft consonants and final stops of Korean need presence at 3–5 kHz and careful de-essing, especially around English hooks."
     },
     {
-      "text": "Live, members use headsets or handheld wireless. Expect a blend of fully live vocals, “MR” (live singing over a track with backing vocals) and recorded vocal support during heavy choreography. Agree which lines are live, keep the vocal-support stem on its own fader, and ride it down as live voices carry—fans notice heavy “AR.”"
+      "text": "Live, members use headsets or handheld wireless. Expect a blend of fully live vocals, “MR” (live singing over a track with backing vocals) and recorded vocal support during heavy choreography. Agree which lines are live, keep the vocal-support stem on its own fader, and ride it down as live voices carry — fans notice heavy “AR.”"
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater shows run 96–102 dBA LAeq,15min; arenas and stadiums 100–106 dBA. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
+      "text": "Theater shows run 96–102 dBA LAeq,15min; arenas and stadiums 100–106 dBA. That is above the WHO’s 100 dBA LAeq,15min guideline, so keep to the low end where you can. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs — levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
     },
     {
       "label": "Studio / streaming:",
@@ -295,7 +295,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Playback",
-        "live": "Stems (drums, bass, music, BVs, vocal support) mixed at FOH; ride BV/vocal stems against live voices",
+        "live": "Stems (drums, bass, music, BGVs, vocal support) mixed at FOH; ride BGV/vocal stems against live voices",
         "studio": "The production is the arrangement; 150+ tracks are common"
       },
       {
@@ -305,7 +305,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Crowd",
-        "live": "Fanchants and screams are part of the show—leave gaps, mic the audience for IEMs",
+        "live": "Fanchants and screams are part of the show — leave gaps, mic the audience for IEMs",
         "studio": "No audience; leave space where chants will go"
       },
       {
@@ -328,7 +328,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Split stems properly: vocal-support and BV stems separate from music, so you can balance live against recorded.",
+      "text": "Split stems properly: vocal-support and BGV stems separate from music, so you can balance live against recorded.",
       "bullet": true
     },
     {
@@ -356,7 +356,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Check studio mixes on phones and earbuds—where most fans listen.",
+      "text": "Check studio mixes on phones and earbuds — where most fans listen.",
       "bullet": true
     }
   ],

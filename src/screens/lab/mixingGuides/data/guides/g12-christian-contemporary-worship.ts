@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Worship is arranged around large macro-dynamics: a stripped bridge to a full final chorus can span 10–15 dB of perceived level. Preserve this—the build is the emotional and spiritual point—but cap the top so the loudest chorus still lets people hear their own voices. Start lower than you think, ramp through walk-in and the build, and drop back for prayer and speaking. Ride the mix by section rather than compressing it flat; sub rides on the build and BGV pushes in the big chorus sell the moment."
+      "text": "Worship is arranged around large macro-dynamics: a stripped bridge to a full final chorus can span 10–15 dB of perceived level. Preserve this — the build is the emotional and spiritual point — but cap the top so the loudest chorus still lets people hear their own voices. Start lower than you think, ramp through walk-in and the build, and drop back for prayer and speaking. Ride the mix by section rather than compressing it flat; sub rides on the build and BGV pushes in the big chorus sell the moment."
     }
   ],
   "balance": [
@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare",
         "cut": "HPF 100 Hz; notch ring 600 Hz–1 kHz",
         "boost": "+2 dB at 180–220 Hz; +2 dB at 5 kHz",
-        "notes": "Drum shields add boxiness—cut 400–800 Hz on overheads"
+        "notes": "Drum shields add boxiness — cut 400–800 Hz on overheads"
       },
       {
         "source": "Toms (floor)",
@@ -126,7 +126,7 @@ export const GUIDE: MixingGuide = {
         "source": "Electric guitar (ambient)",
         "cut": "HPF 100–150 Hz; LPF 8–10 kHz",
         "boost": "+1–2 dB at 1–1.5 kHz",
-        "notes": "Long delays and reverb trails stack up mud—filter returns"
+        "notes": "Long delays and reverb trails stack up mud — filter returns"
       },
       {
         "source": "Keys / pads",
@@ -174,7 +174,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "10–20 ms / 100 ms",
         "gainReduction": "3–6 dB",
-        "notes": "Volunteer players vary—even it out"
+        "notes": "Volunteer players vary — even it out"
       },
       {
         "source": "Acoustic guitar",
@@ -321,7 +321,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never send click or guide cues to the house—triple-check the tracks routing at every rehearsal.",
+      "text": "Never send click or guide cues to the house — triple-check the tracks routing at every rehearsal.",
       "bullet": true
     },
     {

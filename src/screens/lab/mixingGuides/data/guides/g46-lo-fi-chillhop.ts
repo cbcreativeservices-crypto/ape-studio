@@ -92,7 +92,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Hats / shakers",
         "cut": "HPF 300–500 Hz; LPF 7–10 kHz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Keep 1–2 dB under where they first feel right; brightness tires listeners"
       },
       {
@@ -128,13 +128,13 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Crackle / rain textures",
         "cut": "HPF 200–500 Hz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Keep 15–25 dB below the main loop"
       },
       {
         "source": "Master",
         "cut": "HPF 25–30 Hz; optional gentle high shelf, −1 to −3 dB above 10–12 kHz",
-        "boost": "—",
+        "boost": " — ",
         "notes": "Master-bus top roll-off is a common genre choice"
       }
     ],

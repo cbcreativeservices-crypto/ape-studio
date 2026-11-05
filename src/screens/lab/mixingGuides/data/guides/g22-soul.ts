@@ -51,7 +51,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Horns:",
-      "text": "trumpet, tenor and baritone sax, trombone—section hits and pads, the Memphis Horns template.",
+      "text": "trumpet, tenor and baritone sax, trombone — section hits and pads, the Memphis Horns template.",
       "bullet": true
     },
     {
@@ -61,7 +61,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Percussion:",
-      "text": "tambourine, handclaps, finger snaps, congas, shaker—tambourine on the backbeat is a Motown fingerprint.",
+      "text": "tambourine, handclaps, finger snaps, congas, shaker — tambourine on the backbeat is a Motown fingerprint.",
       "bullet": true
     },
     {
@@ -82,7 +82,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul—let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split left and right, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: some classic Motown stereo mixes put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul — let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split left and right, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: some classic Motown stereo mixes put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
     }
   ],
   "eq": {
@@ -91,7 +91,7 @@ export const GUIDE: MixingGuide = {
         "source": "Kick",
         "cut": "HPF 30–40 Hz; −3 to −6 dB at 300–500 Hz",
         "boost": "+2–3 dB at 60–80 Hz; small lift at 2–3 kHz only if needed",
-        "notes": "Retro kicks are dead and round—little beater click"
+        "notes": "Retro kicks are dead and round — little beater click"
       },
       {
         "source": "Snare",
@@ -109,7 +109,7 @@ export const GUIDE: MixingGuide = {
         "source": "Bass (DI + amp)",
         "cut": "HPF 35–40 Hz; −2 dB at 200–250 Hz if woofy",
         "boost": "+2 dB at 80–100 Hz; +2–3 dB at 700 Hz–1 kHz (note definition)",
-        "notes": "Flatwounds lack top—don’t force it above 4 kHz"
+        "notes": "Flatwounds lack top — don’t force it above 4 kHz"
       },
       {
         "source": "Clean guitar",
@@ -229,7 +229,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Chamber reverb (Motown style)",
         "appliedTo": "Vocals, drums, horns, tambourine (not bass)",
         "setting": "1.2–2.0 s, bright decay, 10–30 ms pre-delay",
-        "amount": "Moderate—a defining color in retro mixes"
+        "amount": "Moderate — a defining color in retro mixes"
       },
       {
         "effect": "Plate reverb",
@@ -276,13 +276,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits in front, roughly 2–4 dB above the band by perceived level, with every word clear and every breath and growl intact. Serial compression plus steady fader riding is standard. Tone should be warm and midrange-rich; let grit and rasp through rather than EQing them away. Pitch correction is light or absent in retro-soul—audible tuning destroys credibility—while neo-soul and modern soul accept transparent correction. Backing vocals are gospel-style stacks: three or more parts, compressed as a group, panned wide, and tucked 4–8 dB under the lead, with call-and-response lines pushed up when answering. Doubles are rare; harmonies do that job. Live mics: a rugged dynamic or a quality condenser handheld. Retro studio choices include ribbons and vintage dynamics; neo-soul favors tube condensers and more air."
+      "text": "The lead vocal sits in front, roughly 2–4 dB above the band by perceived level, with every word clear and every breath and growl intact. Serial compression plus steady fader riding is standard. Tone should be warm and midrange-rich; let grit and rasp through rather than EQing them away. Pitch correction is light or absent in retro-soul — audible tuning destroys credibility — while neo-soul and modern soul accept transparent correction. Backing vocals are gospel-style stacks: three or more parts, compressed as a group, panned wide, and tucked 4–8 dB under the lead, with call-and-response lines pushed up when answering. Doubles are rare; harmonies do that job. Live mics: a rugged dynamic or a quality condenser handheld. Retro studio choices include ribbons and vintage dynamics; neo-soul favors tube condensers and more air."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater soul shows typically run 92–98 dBA LAeq,15min at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 18 dB usually means too much sub for soul. NIOSH advises no more than about an hour a day at 94 dBA—offer earplugs and protect the band’s ears."
+      "text": "Club and theater soul shows typically run 92–98 dBA LAeq,15min at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 18 dB usually means too much sub for soul. NIOSH advises no more than about an hour a day at 94 dBA — offer earplugs and protect the band’s ears."
     },
     {
       "label": "Studio / streaming:",
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t quantize, sample-replace or over-gate a live soul drummer—ghost notes and late snares are the feel.",
+      "text": "Don’t quantize, sample-replace or over-gate a live soul drummer — ghost notes and late snares are the feel.",
       "bullet": true
     },
     {
@@ -351,7 +351,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Leave headroom for the vamp—it should be the biggest moment.",
+      "text": "Leave headroom for the vamp — it should be the biggest moment.",
       "bullet": true
     },
     // Owner-approved 2026-10-16 (keyboard low-end pass).
