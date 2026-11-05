@@ -1373,7 +1373,7 @@ ${LOCAL_LOSS}`
       </ScrollView>
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
-      <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
+      <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => { if (redeemBusy) return; setRedeemOpen(false); }}>
         {/* Scrim is NOT an accessible button (QA night 2026-09-01): as one it
             wrapped the card's real buttons — invalid nesting + SR trap. */}
         {/**

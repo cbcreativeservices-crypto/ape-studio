@@ -175,7 +175,7 @@ function FlipCards({ group }: { group: TermGroupId | 'all' }) {
         onPress={() => setFlipped(!flipped)}
         style={[styles.flipCard, flipped && styles.flipCardBack]}
         accessibilityRole="button"
-        accessibilityLabel={flipped ? `${t?.term}: ${t?.def}. Tap to see the word again` : `${t?.term}. Tap to flip and see the meaning`}
+        accessibilityLabel={flipped ? `${t?.term}: ${t?.def} Tap to see the word again` : `${t?.term}. Tap to flip and see the meaning`}
       >
         <Text style={styles.flipEyebrow}>{flipped ? 'MEANING' : 'WORD · TAP TO FLIP'}</Text>
         {flipped ? (

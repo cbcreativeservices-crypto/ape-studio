@@ -675,6 +675,7 @@ const WS_DOSE: Workspace = {
         'Adds a day of mixed levels into a single dose under the NIOSH criterion (DHHS/NIOSH 98-126). Each interval spends a share of the daily allowance — its duration over the time allowed at that level — and 100% is the full day’s allowance. NIOSH counts sound from 80 to 140 dBA, so intervals below 80 dBA add nothing. Loud intervals dominate.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Intervals pair by position: first level with first duration. Intervals below 80 dBA are not counted (NIOSH integrates 80–140 dBA). 100% = the full daily allowance under this criterion.',
+      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
@@ -753,6 +754,7 @@ const WS_DOSE: Workspace = {
         'The same day scored under OSHA 29 CFR 1910.95 (90 dBA criterion, 5 dB exchange). OSHA scores it TWICE with different floors: the permissible exposure limit (PEL, Table G-16) counts only sound at 90 dBA or more, and the hearing-conservation action level (Appendix A) counts everything from 80 dBA up. 100% PEL dose is the legal limit; 50% action-level dose (an 85 dBA 8-hour average) is where a hearing conservation program is required. Comparing with the NIOSH result shows how much the criterion choice changes the answer.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Thresholds: the PEL dose leaves out intervals below 90 dBA; the action-level dose leaves out intervals below 80 dBA. 90 dBA for 8 h = 100% on both; 85 dBA for 8 h = 0% PEL, 50% action level.',
+      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
@@ -841,6 +843,7 @@ const WS_DOSE: Workspace = {
         'The single steady level carrying the same total energy as the varying intervals. It weights each interval’s energy by its duration — criterion-free, pure energy math — so the loudest intervals dominate the average. Arithmetic dB averaging would badly under-read it.',
       keySymbols: ['·', 'log₁₀', 'Σ', 'x²', '/', 'x₁'],
       note: 'The single steady level that carries the same total energy as the varying intervals. Criterion-free — pure energy math.',
+      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);

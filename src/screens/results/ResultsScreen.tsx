@@ -30,7 +30,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
 /** Render any F4 answer shape for the review list. */
 function fmtAnswer(v: unknown): string {
-  if (v == null) return '(no answer)';
+  if (v == null || v === '') return '(no answer)'; // a skip records ''
   if (typeof v === 'string') return v;
   if (Array.isArray(v)) {
     if (v.length > 0 && Array.isArray(v[0])) {

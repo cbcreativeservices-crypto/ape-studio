@@ -424,7 +424,11 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   if (items && items.length === 0) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>This topic has no fill-in-the-blank items yet.</Text>
+        <Text style={styles.errorText}>
+          {customMode
+            ? 'None of the terms in My Custom List have fill-in-the-blank items yet. Add more terms from the Glossary, or study your list with the other methods.'
+            : 'This topic has no fill-in-the-blank items yet.'}
+        </Text>
         <View style={{ width: 180 }}>
           <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>

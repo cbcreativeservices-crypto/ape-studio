@@ -1722,7 +1722,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   if (items.length === 0) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>This topic has no flashcards yet.</Text>
+        <Text style={styles.errorText}>
+          {flaggedMode
+            ? 'My Custom List has no terms yet. Add terms from the Glossary to study them here.'
+            : 'This topic has no flashcards yet.'}
+        </Text>
         <View style={{ width: 180 }}>
           <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>

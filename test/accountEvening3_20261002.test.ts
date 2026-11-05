@@ -20,8 +20,8 @@ test('employer interests: a FAILED read of the stored choices never offers chips
   );
   // Each save writes a kind's WHOLE list from `picked`, so the chips render
   // only once the stored choices are known; the failure says so instead.
-  assert.match(s, /\{verified && tax && !interestsFailed \? \(\s*<>\s*<Row kind="area"/);
+  assert.match(s, /\{verified && tax && !interestsFailed \? \(\s*<>\s*\{row\('area'/);
   assert.match(s, /\{verified && tax && interestsFailed \? \(\s*<Text style=\{styles\.warn\}>/);
   // No other chip render path.
-  assert.equal((s.match(/<Row kind="area"/g) ?? []).length, 1);
+  assert.equal((s.match(/\{row\('area'/g) ?? []).length, 1);
 });

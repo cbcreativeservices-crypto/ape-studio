@@ -86,7 +86,7 @@ function Words({ title, items }: { title: string; items: [string, string][] }) {
 /* ── page 1: explorer ───────────────────────────────────────────────────── */
 
 function PageExplorer({ ctx }: { ctx: PageCtx }) {
-  const [loaded] = useState(() => { const h = handoff; handoff = null; return h; });
+  const [loaded, setLoaded] = useState(() => { const h = handoff; handoff = null; return h; });
   const [adsr, setAdsr] = useState<Adsr>(() => loaded?.adsr ?? DEFAULT);
   const touch = useTouch(ctx);
   // FUNCTIONAL updates only: the shared ControlSlider's PanResponder keeps the
@@ -129,7 +129,7 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
       <Row>
         <Btn label={snap ? 'ATTACK: SNAP' : 'ATTACK: LINEAR'} a11y={`Attack curve: ${snap ? 'snap' : 'linear'}. Tap to switch.`} onPress={() => { setAdsr((p) => ({ ...p, attackShape: p.attackShape === 'exponential' ? 'linear' : 'exponential' })); touch(); }} />
         <Btn label={natural ? 'DECAY: NATURAL' : 'DECAY: LINEAR'} a11y={`Decay curve: ${natural ? 'natural' : 'linear'}. Tap to switch.`} onPress={() => { setAdsr((p) => ({ ...p, decayShape: p.decayShape === 'exponential' ? 'linear' : 'exponential' })); touch(); }} />
-        <Btn label="RESET" a11y="Reset the sliders to the starting shape" onPress={() => setAdsr(DEFAULT)} />
+        <Btn label="RESET" a11y="Reset the sliders to the starting shape" onPress={() => { setAdsr(DEFAULT); setLoaded(null); }} />
       </Row>
       <Card>
         <Eyebrow>READOUT · FROM THE DRAWN SHAPE</Eyebrow>

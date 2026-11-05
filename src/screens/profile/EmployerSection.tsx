@@ -194,7 +194,7 @@ export function EmployerSection() {
     }
   };
 
-  const Row = ({ kind, title, items }: { kind: Kind; title: string; items: { slug: string; label: string }[] }) => (
+  const row = (kind: Kind, title: string, items: { slug: string; label: string }[]) => (
     <View style={styles.block}>
       <Text style={styles.blockHead}>{title}</Text>
       <ChipWrap>
@@ -290,9 +290,9 @@ export function EmployerSection() {
 
       {verified && tax && !interestsFailed ? (
         <>
-          <Row kind="area" title={copy.areaHead} items={tax.areas} />
-          <Row kind="role" title={copy.roleHead} items={tax.roles} />
-          <Row kind="open_to" title={copy.offerHead} items={tax.openTo} />
+          {row('area', copy.areaHead, tax.areas)}
+          {row('role', copy.roleHead, tax.roles)}
+          {row('open_to', copy.offerHead, tax.openTo)}
         </>
       ) : null}
 

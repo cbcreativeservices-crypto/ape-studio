@@ -490,6 +490,7 @@ export function QuizScreen({ navigation, route }: Props) {
   );
 
   const toggleMulti = useCallback((idx: number) => {
+    if (pickedRef.current) return; // confirmed: the saved answer is final
     setMultiSel((cur) => {
       const next = new Set(cur);
       if (next.has(idx)) next.delete(idx);
@@ -499,7 +500,8 @@ export function QuizScreen({ navigation, route }: Props) {
   }, []);
 
   const confirmMulti = useCallback(() => {
-    if (!question || multiSel.size === 0) return;
+    if (!question || pickedRef.current || multiSel.size === 0) return;
+    pickedRef.current = true;
     // Preserve served order for determinism (grading is set-based server-side);
     // map the selected INDICES back to their value strings.
     const opts = Array.isArray(question.options) ? (question.options as string[]) : [];
