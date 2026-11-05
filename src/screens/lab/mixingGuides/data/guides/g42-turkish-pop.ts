@@ -11,18 +11,18 @@ export const GUIDE: MixingGuide = {
   "id": "turkish-pop",
   "num": 42,
   "title": "Turkish Pop",
-  "expects": "Fans sing whole songs back, clap along, and get up to dance (shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines) the moment a darbuka (goblet drum) break or 9/8 section starts.",
+  "expects": "Fans sing whole songs back, clap along, and get up to dance the moment a darbuka (goblet drum) break or 9/8 section starts: shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines.",
   "glance": {
-    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1970s aranjman (Turkish-lyric cover songs) era; reshaped by arabesk (melancholic Arab-influenced style, late 1960s–80s) and the 1990s pop boom of Sezen Aksu, Tarkan and their producers",
+    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1960s–70s aranjman (Turkish-lyric cover songs) era; reshaped by arabesk (melancholic Arab-influenced style, late 1960s–80s) and the 1990s pop boom led by Sezen Aksu and Tarkan",
     "tempo": "95–130 BPM for dance-pop and fantezi (lighter arabesk-pop); 9/8 roman havası (Romani 9/8 dance tune) sections felt at roughly 110–140 BPM (quarter-note pulse); arabesk (melancholic Arab-influenced style) ballads 60–85 BPM",
     "ensemble": "Star singer plus 8–14 piece band: drums, bass, keys/programming, guitar, bağlama (long-necked Turkish lute), darbuka (goblet drum)/percussion, 3–6 strings (or keyboard strings), kanun (plucked zither) or clarinet, 2–3 backing vocals; often with tracks",
     "priority": "The lead vocal, with every ornament and word clear, riding over a darbuka-and-kick groove that makes people dance",
-    "liveSpl": "96–102 dBA LAeq-15 min for open-air and arena shows; roughly 112–120 dBC; club and gazino (music-hall nightclub) shows 92–98 dBA",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (dance-pop) and −11 to −8 (ballads, arabesk-pop); streaming normalizes to about −14"
+    "liveSpl": "96–102 dBA LAeq,15min for open-air and arena shows; roughly 112–120 dBC; club and gazino (music-hall nightclub) shows 92–98 dBA",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (dance-pop) and −11 to −8 (ballads, arabesk-pop); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Turkish pop is singing music first and dance music a close second. Its central theme is love: longing, jealousy and the bittersweet pain inherited from arabesk (melancholic Arab-influenced style), delivered by a star whose voice the audience knows intimately. Fans sing whole songs back, clap along, and get up to dance (shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines) the moment a darbuka (goblet drum) break or 9/8 section starts. Weddings, gazino (music-hall nightclub) nightclubs, summer open-air theaters like Istanbul’s Harbiye and arenas are all normal homes for it."
+      "text": "Turkish pop is singing music first and dance music a close second. Its central theme is love: longing, jealousy and the bittersweet pain inherited from arabesk (melancholic Arab-influenced style), delivered by a star whose voice the audience knows intimately. Fans sing whole songs back, clap along, and get up to dance the moment a darbuka (goblet drum) break or 9/8 section starts: shoulder shimmies, göbek atmak (belly-dance shimmy), halay (folk line dance) lines. Its natural homes are weddings, gazinos (music-hall nightclubs), summer open-air theaters such as Istanbul’s Harbiye, and arenas."
     },
     {
       "text": "The audience will say “that sounded wrong” if the vocal is not clearly on top, if melismas smear into mush, if the darbuka is buried in the dance break, or if the strings sound thin when they should weep. A Western-pop mix that treats the Turkish instruments as background seasoning misses the point."
@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Bağlama / saz:",
-      "text": "long-necked lute with three double or triple courses and 17-ish frets per octave giving near-quarter-tone pitches. Played with a pick (tezene) or finger-tapping (şelpe). Electric bağlamas with magnetic pickups are common on stage.",
+      "text": "long-necked lute with three double or triple courses and about 17 frets per octave, giving pitches between Western semitones. Played with a pick (tezene) or finger-tapping (şelpe). Electric bağlamas with magnetic pickups are common on stage.",
       "bullet": true
     },
     {
@@ -56,7 +56,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Kit, bass, keys, guitars, synths:",
-      "text": "the Western pop chassis; 1990s house-pop and 2010s EDM/trap influences mean programmed kicks, 808s and arpeggiators.",
+      "text": "the Western pop foundation; 1990s house-pop and 2010s EDM/trap influences mean programmed kicks, 808s and arpeggiators.",
       "bullet": true
     },
     {
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Recorded Turkish pop is dense and loud like modern Western pop, but choruses still lift 3–6 dB in perceived energy and instrumental breaks hit hard. Live, the range is wider: a taksim (improvised solo) or a cappella intro may sit 15–20 dB below the full chorus, and the crowd can outsing the PA in quiet passages. Preserve those soft openings; the hush before the band enters is part of the drama. Control micro-dynamics firmly on the darbuka (huge tek (sharp rim stroke) peaks), the lead vocal (whispered lows to belted ornaments) and the strings (bow attacks and swells)."
+      "text": "Recorded Turkish pop is dense and loud like modern Western pop, but choruses still lift 3–6 dB in perceived energy and instrumental breaks hit hard. Live, the range is wider: a taksim (improvised solo) or a cappella intro may sit 15–20 dB below the full chorus, and the crowd can outsing the PA in quiet passages. Preserve those soft openings; the hush before the band enters is part of the drama. Control micro-dynamics firmly on the darbuka (big peaks on the tek, the sharp rim stroke), the lead vocal (whispered lows to belted ornaments) and the strings (bow attacks and swells)."
     }
   ],
   "balance": [
@@ -230,7 +230,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Plate or vocal hall",
         "appliedTo": "Lead vocal",
         "setting": "1.6–2.4 s decay, 40–80 ms pre-delay, HPF 250 Hz",
-        "amount": "Moderate (heavier on ballads and arabesk (melancholic Arab-influenced style))"
+        "amount": "Moderate; heavier on ballads and arabesk (melancholic Arab-influenced style)"
       },
       {
         "effect": "Tempo delay",
@@ -248,7 +248,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Short room / ambience",
         "appliedTo": "Darbuka (goblet drum), percussion",
         "setting": "0.5–0.9 s decay",
-        "amount": "Subtle; keeps the drum present but alive"
+        "amount": "Subtle; adds life without pushing the drum back"
       },
       {
         "effect": "Slap or short delay",
@@ -265,26 +265,26 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Arabesk-style ballads tolerate far more vocal reverb than Western pop; uptempo dance-pop stays drier and uses delay throws."
+        "text": "Arabesk-style ballads tolerate far more vocal reverb than Western pop; up-tempo dance-pop stays drier and uses delay throws."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly above the band, about 3–5 dB above the instrumental hook by perceived level, every syllable intelligible because the audience sings along. Tone should be warm and present; many stars have a husky low register that needs 150–250 Hz kept. Ornaments (gırtlak turns, slides, glottal breaks) are the emotional core, so avoid compression that flattens them and de-essers so aggressive they lisp."
+      "text": "The lead vocal sits clearly above the band, about 3–5 dB above the instrumental hook by perceived level, every syllable intelligible because the audience sings along. Tone should be warm and present; many stars have a husky low register that needs 150–250 Hz kept. Ornaments (gırtlak turns, slides, glottal breaks) are the emotional core, so avoid compression that flattens them and de-essing so heavy it makes the singer lisp."
     },
     {
-      "text": "Pitch correction is the trickiest point. Makam (Turkish melodic mode) intervals fall between Western semitones, so 12-tone auto-tune “corrects” intentional notes into wrong ones. Tune graphically and only obvious misses, and never hard-tune an arabesk (melancholic Arab-influenced style) melody unless the artist wants that effect. Chorus doubles sit 6–10 dB under the lead; BVs are usually unison or octaves rather than dense harmonies, panned moderately wide. Live, a premium dynamic or handheld condenser suits most singers, with a 2–4 kHz dynamic band and a tap delay in reach."
+      "text": "Pitch correction is the trickiest point. Makam (Turkish melodic mode) intervals fall between Western semitones, so 12-tone automatic pitch correction “corrects” intentional notes into wrong ones. Tune graphically, fixing only obvious misses, and never hard-tune an arabesk (melancholic Arab-influenced style) melody unless the artist wants that effect. Chorus doubles sit 6–10 dB under the lead; BVs are usually unison or octaves rather than dense harmonies, panned moderately wide. Live, a good handheld dynamic or condenser suits most singers, with a 2–4 kHz dynamic band and a tap delay in reach."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Open-air theaters and arenas run around 96–102 dBA LAeq-15 at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino (music-hall nightclub) and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA over 60 minutes or 102–103 dBA LAeq-15. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
+      "text": "Open-air theaters and arenas run around 96–102 dBA LAeq,15min at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino (music-hall nightclub) and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA LAeq,60min or 102–103 dBA LAeq,15min. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance-pop masters typically reach −9 to −6 LUFS-I, ballads and arabesk-pop −11 to −8. Most streaming services normalize to −14 LUFS; keep true peaks below −1 dBTP (below −2 dBTP for masters louder than −14). Because playback is normalized, a slightly more open master (PLR 8–10 dB, LRA 4–7 LU) keeps the darbuka (goblet drum) and string attacks alive."
+      "text": "Dance-pop masters typically reach −9 to −6 LUFS-I, ballads and arabesk-pop −11 to −8. Most streaming services normalize to about −14 LUFS, some to −16; keep true peaks below −1 dBTP (below −2 dBTP for masters louder than −14). Because playback is normalized, a slightly more open master (PLR 8–10 dB, LRA 4–7 LU) keeps the darbuka (goblet drum) and string attacks alive."
     }
   ],
   "liveStudio": {
@@ -296,7 +296,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Darbuka (goblet drum)",
-        "live": "One close mic (a dynamic at the rim, 15–25 cm) plus maybe a port mic; fight cymbal bleed",
+        "live": "One close mic (a dynamic at the rim, 15–25 cm) plus an optional port mic; fight cymbal bleed",
         "studio": "Top small condenser (~20 cm) plus bottom dynamic (~15 cm), phase-aligned, layered with samples"
       },
       {
@@ -312,7 +312,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Low end",
         "live": "Moderate sub; keep the darbuka düm (low center stroke) audible in the room",
-        "studio": "808s and sidechain carve detailed space"
+        "studio": "808s and sidechaining carve out precise space"
       },
       {
         "area": "Effects",
@@ -321,7 +321,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "96–102 dBA LAeq-15, venue limits",
+        "live": "96–102 dBA LAeq,15min, within venue limits",
         "studio": "−9 to −6 LUFS-I (dance-pop), −2 dBTP"
       }
     ],
@@ -333,7 +333,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t bury the darbuka, bağlama (long-necked Turkish lute) or strings; they are the music’s identity, not decoration.",
+      "text": "Don’t bury the darbuka, bağlama (long-necked Turkish lute) or strings; they define the style.",
       "bullet": true
     },
     {
@@ -341,7 +341,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid blanket 12-tone auto-tune on makam (Turkish melodic mode) melodies unless the artist wants that effect.",
+      "text": "Avoid blanket 12-tone automatic pitch correction on makam (Turkish melodic mode) melodies unless the artist wants that effect.",
       "bullet": true
     },
     {
@@ -358,7 +358,7 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Ajda Pekkan, “Bambaşka Biri”, 1975",
+    "Ajda Pekkan, “Bambaşka Biri”, 1979",
     "Orhan Gencebay, “Batsın Bu Dünya”, 1975",
     "Sezen Aksu, “Hadi Bakalım”, 1991",
     "Tarkan, “Şımarık”, 1997",

@@ -69,13 +69,13 @@ describe('mixing guides: typical dBA/dBC pairs fit each guide\'s own C-minus-A r
     ['g03-rock', 'C-weighted LCeq around 112–120 dBC', 'C-weighted levels around 115–125 dBC'],
     ['g14-afrobeats', 'C-weighted LCeq around 112–120 dBC', '115–124 dBC'],
     ['g19-heavy-metal', 'C-weighted LCeq around 115–124 dBC', '118–128 dBC'],
-    ['g37-amapiano', 'C-weighted LCeq of about 115–122 dBC', '118–128 dBC'],
+    ['g37-amapiano', 'C-weighted levels of about 115–122 dBC LCeq', '118–128 dBC'],
     ['g38-salsa', 'C-weighted LCeq around 108–115 dBC', 'hearing-risk flag'],
     ['g43-dangdut', 'C-weighted LCeq around 112–120 dBC', '115–125 dBC'],
     ['g20-gospel', 'a C-weighted Leq about 10–20 dB above the A level is normal', '110–120 dBC'],
     ['g34-folk-singer-songwriter', 'C-weighted levels about 5–10 dB higher', '95–100 dBC'],
     ['g45-drum-and-bass', 'in D&B a C-minus-A gap of about 20–25 dB is normal', 'a C-minus-A gap above about 20–25 dB means'],
-    ['g16-film-video-game-score', 'Compare like with like', 'a C-minus-A gap above 20 dB signals too much sub'],
+    ['g16-film-video-game-score', 'over the same period', 'a C-minus-A gap above 20 dB signals too much sub'],
   ];
   for (const [name, now, old] of PAIRS) {
     it(name, () => {
@@ -91,7 +91,7 @@ describe('mixing guides: Round A single fixes', () => {
     ['g01-pop', 'a −7 LUFS-I master only 5 dB. For more punch, aim for 7–9 dB', 'of around 7–9 dB is typical'],
     ['g01-pop', 'HPF the sidechain at about 60–120 Hz so the kick and sub don’t drive it', 'HPF the sidechain at 30–60 Hz'],
     ['g02-hip-hop-rap', 'cap at 100–103 dBA over 15 minutes or 100 dBA over 60', '105 dBA over 15'],
-    ['g07-latin-pop', 'many artists use top handheld condensers and many use top dynamics', 'artists use premium handheld condensers'],
+    ['g07-latin-pop', 'some artists use handheld condensers and others dynamic mics', 'artists use premium handheld condensers'],
     ['g09-regional-mexican', 'Fast retune (about 0–20 ms) on tumbados', 'Fast retune (10–30 ms)'],
     ['g10-k-pop', 'have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow', 'a target few venue limits allow'],
     ['g15-classical-orchestral', 'HPF 60–100 Hz (tuba and bass trombone about 30–40 Hz)', '"cut": "HPF 60–100 Hz; −2–3 dB'],
@@ -99,7 +99,7 @@ describe('mixing guides: Round A single fixes', () => {
     ['g20-gospel', 'HPF about 25 Hz, just under the low B fundamental', 'HPF 30–35 Hz (low B'],
     ['g20-gospel', 'so place wedges there, not straight behind it', 'Use a supercardioid handheld, since'],
     ['g21-jazz', 'Avoid gating brushes or the ride', 'Never gate brushes'],
-    ['g27-punk-pop-punk', 'found the first mix unsatisfying, and had it remixed', 'first mixed with almost no reverb'],
+    ['g27-punk-pop-punk', 'were unhappy with the first mix and had it remixed', 'first mixed with almost no reverb'],
     ['g28-reggae', 'selectors (who pick and play the records)', 'selectors (sound-system DJs)'],
     ['g30-punjabi-pop-bhangra', '+1–2 dB at the 808’s own note, below the kick', '+1–2 dB at 50–60 Hz'],
     ['g31-blues', 'feedback at 2–4 kHz still needs the notches', 'kills hiss and squeal'],

@@ -13,18 +13,18 @@ export const GUIDE: MixingGuide = {
   "id": "k-pop",
   "num": 10,
   "title": "K-pop",
-  "expects": "On record they expect a dense, glossy, hyper-polished mix where every member gets a recognizable moment; live, the record’s impact plus real voices and their own fandom chanting back.",
+  "expects": "On record they expect a dense, glossy, hyper-polished mix where every member gets a recognizable moment; live, they want the record’s impact plus real voices, with their own fandom chanting back.",
   "glance": {
     "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; “Hallyu” (Korean pop-culture) wave across Asia from the late 1990s, going global in the 2010s",
     "tempo": "95–130 BPM for most title tracks (ballads 60–80; hip-hop cuts 80–100 half-time; EDM and dance-break sections 120–140)",
-    "ensemble": "Idol group of usually 4–13 vocalists/rappers on headset or handheld wireless, plus playback tracks; larger tours add a 4–6 piece live band and 10–20 dancers",
+    "ensemble": "Idol group of usually 4–13 vocalists/rappers on headset or handheld wireless, plus playback tracks; larger tours add a 4–6-piece live band and 10–20 dancers",
     "priority": "Every member’s voice identifiable and on top of a hard, bright, fully produced track, with the low end punching underneath",
-    "liveSpl": "Arena/stadium 100–106 dBA LAeq-15; peaks to 108–109 dBA and roughly 125–130 dBC on large tours; crowd screams alone can exceed 100 dBA",
-    "studioLoudness": "Title-track masters commonly −8 to −5 LUFS-I (B-sides and ballads −10 to −8); streaming normalizes to about −14"
+    "liveSpl": "Arena/stadium 100–106 dBA LAeq,15min; peaks to 108–109 dBA and roughly 125–130 dBC on large tours; crowd screams alone can exceed 100 dBA",
+    "studioLoudness": "Title-track masters commonly −8 to −5 LUFS-I (B-sides and ballads −10 to −8); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "K-pop is pop built as a total package: song, choreography, visual concept and fandom are designed together by an entertainment agency. It is music for dancing, watching and belonging. Fans (“ARMY”, “BLINK”, “ONCE”, “CARAT”) follow every comeback, buy official light sticks, learn fanchants and treat concerts as shared ritual. On record they expect a dense, glossy, hyper-polished mix where every member gets a recognizable moment; live, the record’s impact plus real voices and their own fandom chanting back. Fans say “that sounded wrong” if a member’s line disappears, if playback obviously overpowers live singing, if the dance break lacks punch, or if the mix is harsh enough to fatigue a young crowd over a three-hour show."
+      "text": "K-pop is pop built as a total package: song, choreography, visual concept and fandom are designed together by an entertainment agency. It is music for dancing, watching and belonging. Fans (“ARMY,” “BLINK,” “ONCE,” “CARAT”) follow every comeback, buy official light sticks, learn fanchants and treat concerts as a shared ritual. On record they expect a dense, glossy, hyper-polished mix where every member gets a recognizable moment; live, they want the record’s impact plus real voices, with their own fandom chanting back. Fans notice at once when a member’s line disappears, playback obviously overpowers live singing, the dance break lacks punch, or the mix is harsh enough to fatigue a young crowd over a three-hour show."
     }
   ],
   "instruments": [
@@ -45,12 +45,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Live band (on tour):",
-      "text": "drums, bass, guitar, 1–2 keyboards reinforcing the tracks (BTS, SEVENTEEN, DAY6-style band acts).",
+      "text": "drums, bass, guitar, 1–2 keyboards reinforcing the tracks (as on BTS and SEVENTEEN tours, or bands such as DAY6).",
       "bullet": true
     },
     {
       "label": "Occasional Korean color:",
-      "text": "gayageum (Korean zither), daegeum (bamboo flute), buk (barrel) drums or janggu (hourglass drum) samples appear in “Korean-concept” songs (traditional-fusion stages); treat as featured textures.",
+      "text": "gayageum (Korean zither), daegeum (bamboo flute), buk (barrel) drums or janggu (hourglass drum) samples appear in “Korean-concept” songs (traditional-fusion stages); treat them as featured textures.",
       "bullet": true
     },
     {
@@ -66,7 +66,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics come from arrangement: a near-empty rap verse can drop 8–12 dB in density before the chorus slams back. Micro-dynamics are tightly controlled—K-pop masters are among pop’s loudest. In the studio, keep section contrast with automation (filter sweeps, a beat drop before the hook). Live, playback is already dense, so the dynamic work is on vocals: headset levels swing 15–20 dB between whispered intros and belting while dancing. Ride every vocal fader; don’t rely on compression alone."
+      "text": "Macro-dynamics come from arrangement: a near-empty rap verse can sit 8–12 dB below the chorus before it slams back. Micro-dynamics are tightly controlled—K-pop masters are among pop’s loudest. In the studio, keep section contrast with automation (filter sweeps, a beat drop before the hook). Live, playback is already dense, so the dynamic work is on vocals: headset levels swing 15–20 dB between whispered intros and belting while dancing. Ride every vocal fader; don’t rely on compression alone."
     }
   ],
   "balance": [
@@ -98,7 +98,7 @@ export const GUIDE: MixingGuide = {
         "source": "Synth leads / plucks",
         "cut": "HPF 150–250 Hz; −2–3 dB at 2–4 kHz when vocals sing",
         "boost": "+1–2 dB at 6–10 kHz",
-        "notes": "Dynamic EQ keyed from vocal bus works well"
+        "notes": "Dynamic EQ keyed from the vocal bus works well"
       },
       {
         "source": "Pads / chords",
@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal (each member)",
         "cut": "HPF 90–150 Hz (higher for female voices); −2–3 dB at 250–400 Hz; notch harsh 2.5–4 kHz",
         "boost": "+2–3 dB at 3–5 kHz; +3–5 dB high shelf from 10–12 kHz",
-        "notes": "Bright, airy top is the house sound"
+        "notes": "A bright, airy top is the genre’s signature"
       },
       {
         "source": "Rap vocal",
@@ -152,7 +152,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1–8:1",
         "attackRelease": "10–30 ms / 50–80 ms",
         "gainReduction": "4–7 dB",
-        "notes": "Slower attack keeps consonants; a FET-style unit works well this way"
+        "notes": "Slower attack lets consonants through before the FET grabs"
       },
       {
         "source": "Lead vocal (stage 2, opto)",
@@ -198,7 +198,7 @@ export const GUIDE: MixingGuide = {
         "source": "Music (non-drum) parallel bus",
         "use": "Yes",
         "ratio": "4:1–8:1",
-        "attackRelease": "FET-style fast / medium",
+        "attackRelease": "Fast / medium",
         "gainReduction": "6–10 dB, blended 20–30%",
         "notes": "Density without killing transients"
       },
@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
   "fx": {
     "rows": [
       {
-        "effect": "Pitch-shift doubler (micro-shift type)",
+        "effect": "Pitch-shift doubler (micro-pitch)",
         "appliedTo": "Lead vocal",
         "setting": "±8–12 cents, 10–20 ms",
         "amount": "Subtle–moderate (send)"
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Vocals are the product: clearly above the track (roughly 2–4 dB more than in rock by perceived level), bright, airy and close, with each member’s timbre distinct. Korean studios record each member line by line on a tube condenser, often into a transformer-coupled preamp and an optical compressor; an in-house vocal director then comps and tunes every phrase. Tight tuning and grid-edited timing are expected, not hidden. Start with the main hook vocal and match every member to it, riding so a quiet sub-vocal line reads as clearly as the main vocal’s high note. Process backing vocals differently (more compression and saturation, crunchier) so leads stay in front. Korean’s soft consonants and final stops need presence at 3–5 kHz and careful de-essing, especially around English hooks."
+      "text": "Vocals are the product: clearly above the track (roughly 2–4 dB more than in rock by perceived level), bright, airy and close, with each member’s timbre distinct. Korean studios record each member line by line on a tube condenser, often into a transformer-coupled preamp and an optical compressor; an in-house vocal director then comps and tunes every phrase. Tight tuning and grid-edited timing are expected, not hidden. Start with the main hook vocal and match every member to it, riding so a quiet sub-vocal line reads as clearly as the main vocal’s high note. Process backing vocals differently (more compression and saturation, crunchier) so leads stay in front. The soft consonants and final stops of Korean need presence at 3–5 kHz and careful de-essing, especially around English hooks."
     },
     {
       "text": "Live, members use headsets or handheld wireless. Expect a blend of fully live vocals, “MR” (live singing over a track with backing vocals) and recorded vocal support during heavy choreography. Agree which lines are live, keep the vocal-support stem on its own fader, and ride it down as live voices carry—fans notice heavy “AR.”"
@@ -279,11 +279,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater shows run 96–102 dBA LAeq-15; arenas and stadiums 100–106 dBA. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
+      "text": "Theater shows run 96–102 dBA LAeq,15min; arenas and stadiums 100–106 dBA. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Title tracks often land at −8 to −5 LUFS-I; chart pop generally measures −9 to −7. For masters louder than −14 LUFS, a common streaming recommendation is a true peak of −2 dBTP. Most streaming services normalize to about −14 LUFS (some −16), so very loud masters get turned down. A PLR of about 7–9 dB protects kick and vocal transients; at −2 dBTP that means about −9 LUFS-I or quieter, below the loudest title tracks. Loudness range is only 3–6 LU; contrast lives in the arrangement."
+      "text": "Title tracks often land at −8 to −5 LUFS-I; chart pop generally measures −9 to −7. For masters louder than −14 LUFS, a common streaming recommendation is a true peak of −2 dBTP. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters get turned down. A PLR of about 7–9 dB protects kick and vocal transients; at −2 dBTP that means about −9 LUFS-I or quieter, below the loudest title tracks. Loudness range is only 3–6 LU; contrast lives in the arrangement."
     }
   ],
   "liveStudio": {
@@ -296,7 +296,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Playback",
         "live": "Stems (drums, bass, music, BVs, vocal support) mixed at FOH; ride BV/vocal stems against live voices",
-        "studio": "The track is the arrangement; 150+ tracks are common"
+        "studio": "The production is the arrangement; 150+ tracks are common"
       },
       {
         "area": "Low end",

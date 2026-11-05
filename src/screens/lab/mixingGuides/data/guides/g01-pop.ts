@@ -18,11 +18,11 @@ export const GUIDE: MixingGuide = {
     "ensemble": "Solo artist + playback/tracks, often with a 3–6 piece band, 2–4 backing singers and dancers",
     "priority": "The lead vocal: upfront, intelligible, consistent from first word to last chorus",
     "liveSpl": "95–100 dBA LAeq-15 min (common safe-listening cap 100 dBA); 105–115 dBC with sub-heavy material",
-    "studioLoudness": "Masters commonly −9 to −7 LUFS-I (range −11 to −6); streaming normalizes to about −14 (some services −16)"
+    "studioLoudness": "Masters commonly −9 to −7 LUFS-I (range −11 to −6); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Pop exists to connect instantly with a broad audience. Songs are short (roughly 2.5–3.5 minutes), built on verse–chorus forms and repeated hooks, and most listeners hear them first on phones, earbuds, car systems and smart speakers. The audience wants to sing along, dance, and feel close to the artist. They expect a voice that sounds intimate yet huge, a chorus that lifts noticeably above the verse, and low end that feels modern without blurring the vocal. Top pop mixers put the song’s emotional impact first and technique second. Listeners will say “that sounded wrong” if the vocal disappears behind the band, the lyrics are unclear, the chorus doesn’t get bigger, or the low end booms and swallows everything. Live, they’ll also notice if the show doesn’t sound like the record."
+      "text": "Pop exists to connect instantly with a broad audience. Songs are short (roughly 2.5–3.5 minutes), built on verse–chorus forms and repeated hooks, and most listeners hear them first on phones, earbuds, car systems and smart speakers. The audience wants to sing along, dance, and feel close to the artist. They expect a voice that sounds intimate yet huge, a chorus that lifts noticeably above the verse, and low end that feels modern without blurring the vocal. A good pop mix puts the song’s emotional impact ahead of technique. Listeners notice at once when the vocal disappears behind the band, the lyrics are unclear, the chorus doesn’t get bigger, or the low end booms and swallows everything. Live, they’ll also notice if the show doesn’t sound like the record."
     }
   ],
   "instruments": [
@@ -53,13 +53,13 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Live:",
-      "text": "much of this comes from playback stems (playback rigs on redundant computers), with live drums, keys, guitar and bass playing on top. Expect 16–32 track channels plus click and cues.",
+      "text": "much of this comes from playback stems run from two redundant computers, with live drums, keys, guitar and bass on top. Expect 16–32 playback channels plus click and cues.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "The artist is center stage with a wireless vocal mic, backing singers on one side, and band risers behind (drums center, keys and guitar on the wings). The drums and bass carry the groove, keys and pads fill in the harmony, and the lead vocal carries the melody. Backing vocals, vocal stacks and synth hooks act as counter-melodies. Arrangements follow a set shape. Verses are sparse (often just kick, bass and a single texture), pre-choruses build with risers and filters, and choruses add stacked vocals, wider synths and fuller drums. Many pop songs strip back for a bridge, then come back in for a final chorus with extra layers. Everything is made to keep space open around the vocal."
+      "text": "The artist is center stage with a wireless vocal mic, backing singers on one side, and band risers behind (drums center, keys and guitar on the wings). The drums and bass carry the groove, keys and pads fill in the harmony, and the lead vocal carries the melody. Backing vocals, vocal stacks and synth hooks act as counter-melodies. Arrangements follow a set shape. Verses are sparse (often just kick, bass and a single texture), pre-choruses build with risers and filters, and choruses add stacked vocals, wider synths and fuller drums. Many pop songs strip back for a bridge, then come back in for a final chorus with extra layers. Every part is arranged to leave room around the vocal."
     }
   ],
   "dynamics": [
@@ -70,7 +70,7 @@ export const GUIDE: MixingGuide = {
   "balance": [
     {
       "label": "Hierarchy (loudest → quietest):",
-      "text": "lead vocal → kick and snare/clap → bass/sub → main hook (synth or vocal chop) → backing vocals → keys/guitars/pads → percussion and FX. Low end: pick one element to own the lowest octave. If the 808 or sub carries 40–60 Hz, let the kick live at 60–100 Hz for punch with a clear click at 2–4 kHz. Sidechain the bass from the kick (fast attack, short release) so they take turns. Front vs. back: the vocal, kick and snare sit centered and dry-ish up front. Pads, reverbs and doubles sit behind. Stereo: kick, snare, bass and lead vocal stay in mono at center. Spread doubles and harmonies hard L/R, along with hats/percussion and stereo synths. Check mono compatibility, since phones and many club and venue systems sum the low end to mono."
+      "text": "lead vocal → kick and snare/clap → bass/sub → main hook (synth or vocal chop) → backing vocals → keys/guitars/pads → percussion and FX. Low end: pick one element to own the lowest octave. If the 808 or sub carries 40–60 Hz, let the kick live at 60–100 Hz for punch with a clear click at 2–4 kHz. Sidechain the bass from the kick (fast attack, short release) so they take turns. Front vs. back: the vocal, kick and snare sit centered and dry-ish up front. Pads, reverbs and doubles sit behind. Stereo: kick, snare, bass and lead vocal stay in mono at center. Pan harmony stacks hard L/R, and spread hats/percussion and stereo synths wide. Check mono compatibility, since phones and many club and venue systems sum the low end to mono."
     }
   ],
   "eq": {
@@ -190,7 +190,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Mix bus",
         "use": "Yes",
-        "ratio": "2:1 (VCA bus-style)",
+        "ratio": "2:1 (VCA-style)",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "1–3 dB (up to 4)",
         "notes": "HPF the sidechain at about 60–120 Hz so the kick and sub don’t drive it"
@@ -199,7 +199,7 @@ export const GUIDE: MixingGuide = {
     "notes": [
       {
         "label": "Other dynamics:",
-        "text": "De-ess lead vocals at 5–8 kHz (female) or 4–6 kHz (male), 3–6 dB of reduction on “s” sounds. Gate or expand live toms and kick mics. Use a multiband compressor or dynamic EQ on the vocal at 200–400 Hz to control proximity boom. Final limiting belongs to mastering. In the studio, mix into a limiter for client approvals, but bypass it on stems you deliver."
+        "text": "De-ess lead vocals at 5–8 kHz (female) or 4–6 kHz (male), 3–6 dB of reduction on “s” sounds. Gate or expand live toms and kick mics. Use a multiband compressor or dynamic EQ on the vocal at 200–400 Hz to control proximity boom. Final limiting belongs to mastering. In the studio, mix into a limiter for client approvals, but bypass it on the mixes and stems you send to mastering."
       }
     ]
   },
@@ -252,17 +252,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits roughly 3–6 dB above the dense part of the arrangement on the meter, but loudness is really about what you hear: it should be clearly on top and read like a close-up. Tone is bright, present and smooth, with a lot of air, little harshness and controlled low-mids. Pitch correction is standard. Use transparent note-by-note (graphical) correction for most pop. Fast-retune, audible pitch correction is a stylistic choice that the artist and producer decide on. Doubles are tucked 6–10 dB under the lead and panned or kept center. Harmony stacks get panned wide. Ad-libs are filtered or panned and often get delay. Intelligibility comes first: consonants must cut through at 2–5 kHz. In the studio, typical mics are large-diaphragm condensers. Live, most artists use handheld dynamics or condensers on wireless chosen for consistency at changing distances. On a headset mic for choreography, expect more gain-before-feedback problems and lean harder on EQ. Make sure the pitch correction can be switched off or adjusted easily."
+      "text": "The lead vocal sits roughly 3–6 dB above the dense part of the arrangement on the meter, but judge it by ear: it should sit clearly on top and feel close-up. Tone is bright, present and smooth, with plenty of air, little harshness and controlled low-mids. Pitch correction is standard. Use transparent note-by-note (graphical) correction for most pop; fast-retune, audible correction is a stylistic choice for the artist and producer. Doubles are tucked 6–10 dB under the lead and panned or kept center. Harmony stacks are panned wide. Ad-libs are filtered or panned and often get delay. Intelligibility comes first: consonants must cut through at 2–5 kHz. In the studio, large-diaphragm condensers are typical. Live, most artists use wireless handheld dynamics or condensers chosen for consistency as mic distance changes. A headset mic for choreography brings more gain-before-feedback problems, so lean harder on EQ. If you run live pitch correction, make sure it can be bypassed or adjusted quickly."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq over 15 minutes at FOH, and some shows peak higher when the crowd sings along. A packed, singing house can push the level several dB above the soundcheck level. Low end usually measures 105–115 dBC LCeq. Keep the sub energy controlled so the vocal stays clear. The WHO safe-listening limit for venues is 100 dBA LAeq-15 min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the loudest seats away from subs, and remember that many pop audiences include children and teenagers."
+      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq,15min at FOH. A packed house singing along can push the level several dB above what you measured at soundcheck. Low end usually measures 105–115 dBC LCeq; keep the sub energy controlled so the vocal stays clear. The WHO safe-listening limit for venues is 100 dBA LAeq,15min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the audience back from the subs, and remember that many pop audiences include children and teenagers."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −10.7 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are turned down and only gain density, not extra volume. PLR (peak-to-loudness ratio) is the true peak minus the loudness: at −2 dBTP, a −9 LUFS-I master has a PLR of 7 dB, and a −7 LUFS-I master only 5 dB. For more punch, aim for 7–9 dB, which means about −9 LUFS-I or quieter. Ballads can sit at −11 to −10 LUFS."
+      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −11 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are simply turned down: they end up denser, not louder. PLR (peak-to-loudness ratio) is the true peak minus the loudness: at −2 dBTP, a −9 LUFS-I master has a PLR of 7 dB, and a −7 LUFS-I master only 5 dB. For more punch, aim for 7–9 dB, which means about −9 LUFS-I or quieter. Ballads can sit at −11 to −10 LUFS."
     }
   ],
   "liveStudio": {
@@ -313,7 +313,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Check on small speakers.",
-      "text": "Use phone, earbuds and a mono single speaker. If the 808 vanishes, add harmonics. Don’t add more sub.",
+      "text": "Use a phone, earbuds and a single mono speaker. If the 808 vanishes, add harmonics. Don’t add more sub.",
       "bullet": true
     },
     {

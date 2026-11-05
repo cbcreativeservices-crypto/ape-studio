@@ -16,26 +16,26 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences expect an unbroken, physical groove: a kick that hits the chest steadily, a bass line you can sing, hi-hats that shimmer, and a lush, glamorous top of strings, horns and soaring vocals.",
   "glance": {
     "origin": "United States, early–mid 1970s: Philadelphia soul (MFSB), New York underground clubs and DJs, Munich (Moroder); nu-disco and disco-pop revival from the 2000s (Europe, US, UK, Australia)",
-    "tempo": "110–130 BPM (classic disco ~112–128; nu-disco/disco house 115–125; disco-pop 100–124)",
+    "tempo": "100–130 BPM (classic disco ~112–128; nu-disco/disco house 115–125; disco-pop 100–124)",
     "ensemble": "Classic: 8–20+ (drums, bass, 2 guitars, keys, percussion, 3–5 horns, strings, 2–4 backing vocals, lead); revival: 4-piece band + BVs + tracks, or DJ/producer + playback",
     "priority": "The four-on-the-floor kick and the octave-jumping bass locked as one pulse, with the open hi-hat driving the offbeat",
-    "liveSpl": "97–102 dBA LAeq-15 min; roughly 112–120 dBC; club/DJ settings often sit 96–100 dBA",
-    "studioLoudness": "Classic remasters around −12 to −9 LUFS-I; modern disco-pop/nu-disco masters commonly −9 to −6 LUFS-I; streaming normalizes to about −14"
+    "liveSpl": "97–102 dBA LAeq,15min; roughly 112–120 dBC; club/DJ settings often sit 96–100 dBA",
+    "studioLoudness": "Classic remasters around −12 to −9 LUFS-I; modern disco-pop/nu-disco masters commonly −9 to −6 LUFS-I; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Disco is music for the dance floor first. It grew out of DJ-led underground clubs serving Black, gay and Latino dancers in early-1970s New York, and that community and release are still central. Tom Moulton’s extended mixes held dancers in long “suites,” using breaks to reset tension. Audiences expect an unbroken, physical groove: a kick that hits the chest steadily, a bass line you can sing, hi-hats that shimmer, and a lush, glamorous top of strings, horns and soaring vocals. The modern revival (Daft Punk, Dua Lipa, Kylie, Jessie Ware) adds tighter low end and sidechain pump. Listeners say “that sounded wrong” when the kick is soft or wanders in level, the bass blurs into the kick, the hats are dull, the strings are harsh or buried, or the energy dips between sections."
+      "text": "Disco is music for the dance floor first. It grew out of DJ-led underground clubs serving Black, gay and Latino dancers in early-1970s New York, and that sense of community and release is still central. The first extended club mixes held dancers in long “suites,” using breaks to reset tension. Audiences expect an unbroken, physical groove: a kick that hits the chest steadily, a bass line you can sing, hi-hats that shimmer, and a lush, glamorous top of strings, horns and soaring vocals. The modern revival (Daft Punk, Dua Lipa, Kylie, Jessie Ware) adds tighter low end and sidechain pump. Listeners say “that sounded wrong” when the kick is soft or wanders in level, the bass blurs into the kick, the hats are dull, the strings are harsh or buried, or the energy dips between sections."
     }
   ],
   "instruments": [
     {
       "label": "Drums:",
-      "text": "kit played straight four-on-the-floor, snare/clap on 2 and 4, open hi-hat on the “and” — the Earl Young Philadelphia pattern. Classic records used deadened, close-miked 1970s kits; Stayin’ Alive famously ran on a two-bar tape loop. Nu-disco often uses drum machines (909 or vintage drum-machine style) or samples.",
+      "text": "kit played straight four-on-the-floor, snare/clap on 2 and 4, open hi-hat on the “and” — the Earl Young Philadelphia pattern. Classic records used deadened, close-miked 1970s kits; “Stayin’ Alive” famously ran on a two-bar tape loop. Nu-disco often uses drum machines (909 or other vintage machines) or samples.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric bass (often DI) playing octave-skipping eighth notes or melodic Chic-style lines; analog synth bass in Munich disco (I Feel Love) and nu-disco.",
+      "text": "electric bass (often DI) playing octave-skipping eighth notes or melodic Chic-style lines; analog synth bass in Munich disco (“I Feel Love”) and nu-disco.",
       "bullet": true
     },
     {
@@ -45,7 +45,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys:",
-      "text": "electric piano, clavinet, piano, string machines (classic string ensembles), synth pads and arpeggios.",
+      "text": "electric piano, clavinet, piano, string machines (vintage string synthesizers), synth pads and arpeggios.",
       "bullet": true
     },
     {
@@ -65,7 +65,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "common on revival tours (strings, synth layers, vocal stacks), click and sequencers in-ear.",
+      "text": "common on revival tours (strings, synth layers, vocal stacks), with click and sequencer cues in the in-ears.",
       "bullet": true
     }
   ],
@@ -107,7 +107,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Bass (DI / synth)",
         "cut": "HPF 30–40 Hz; −2–3 dB at 200–300 Hz if muddy",
-        "boost": "+2 dB at 80–100 Hz; +2–3 dB at 700 Hz–1.2 kHz (punch); 2–3 kHz (pluck)",
+        "boost": "+2 dB at 80–100 Hz; +2–3 dB at 700 Hz–1.2 kHz (punch) and 2–3 kHz (pluck)",
         "notes": "Midrange is what makes octave lines audible on small speakers"
       },
       {
@@ -117,16 +117,16 @@ export const GUIDE: MixingGuide = {
         "notes": "Clean and thin is correct; it’s a percussion instrument here"
       },
       {
-        "source": "electric piano / clav",
+        "source": "Electric piano / clav",
         "cut": "HPF 80–120 Hz; −2 dB at 250–400 Hz",
         "boost": "+1–2 dB at 1–3 kHz (clav bite)",
-        "notes": "Keep out of vocal presence zone"
+        "notes": "Keep it out of the vocal presence range"
       },
       {
         "source": "Strings",
         "cut": "HPF 100–150 Hz (violins 200 Hz); −2–3 dB at 2.5–4 kHz if steely",
         "boost": "+1–2 dB shelf at 8–12 kHz (air); +1 dB at 250 Hz on cellos",
-        "notes": "Harsh close-miked fiddles are the most common disco mix problem"
+        "notes": "Harsh, close-miked violins are a very common disco mix problem"
       },
       {
         "source": "Horns",
@@ -160,9 +160,9 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "use": "Yes",
         "ratio": "3:1–4:1 (FET into opto)",
-        "attackRelease": "3–10 ms / 60–150 ms or program",
+        "attackRelease": "3–10 ms / 60–150 ms or program-dependent",
         "gainReduction": "3–6 dB",
-        "notes": "Classic chain is FET or optical; many disco vocals went through a FET at about 4:1"
+        "notes": "Classic chain: FET at about 4:1, then optical for smoothing"
       },
       {
         "source": "Bass",
@@ -170,7 +170,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "10–30 ms / 100 ms (opto)",
         "gainReduction": "4–6 dB",
-        "notes": "opto-style evenness; consistent level is vital"
+        "notes": "Opto-style evenness; consistent level is vital"
       },
       {
         "source": "Kick",
@@ -207,7 +207,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Sidechain duck (nu-disco)",
         "use": "Yes",
-        "ratio": "4:1+ or LFO tool",
+        "ratio": "4:1+ or LFO volume shaper",
         "attackRelease": "~0 ms / 1/8–1/4 note",
         "gainReduction": "2–6 dB on bass/pads",
         "notes": "Key from kick; subtle on vocals (10–40% depth at most)"
@@ -218,7 +218,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "1–3 dB",
-        "notes": "Diode-bridge or VCA bus-style glue; slight pump is welcome"
+        "notes": "Diode-bridge or VCA bus compressor; slight pump is welcome"
       }
     ],
     "notes": [
@@ -232,7 +232,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Plate reverb",
         "appliedTo": "Lead vocal, strings, snare",
-        "setting": "1.4–2.2 s decay, 20–40 ms pre-delay (classic plate style)",
+        "setting": "1.4–2.2 s decay, 20–40 ms pre-delay",
         "amount": "Moderate"
       },
       {
@@ -248,14 +248,14 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle–moderate"
       },
       {
-        "effect": "Chorus / dimension-style chorus",
+        "effect": "Chorus / dimension-style ensemble",
         "appliedTo": "Rhythm guitar, electric piano",
         "setting": "Subtle fixed-mode stereo chorus, or 0.5–1 Hz rate",
         "amount": "Moderate (often on a parallel bus)"
       },
       {
         "effect": "Phaser",
-        "appliedTo": "electric piano, string machine, guitar",
+        "appliedTo": "Electric piano, string machine, guitar",
         "setting": "Slow rate 0.2–0.5 Hz",
         "amount": "Moderate as part of the tone"
       },
@@ -286,11 +286,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and arena disco-pop typically runs 97–102 dBA LAeq-15 at FOH, with C-weighted levels around 112–120 dBC; club nights and DJ sets average around 96–100 dBA. The kick and bass need solid sub, but disco wants punch more than EDM-style sub weight, so keep C-minus-A gaps under about 18–20 dB. Respect venue and festival limits (often 100 dBA over 15–60 minutes) and keep peaks below about 115 dBA. A 96 dBA club over four hours is far past NIOSH advice (85 dBA for 8 hours, halving the time for every 3 dB above that) and past the US legal limit (OSHA: 90 dBA with a 5 dB rule); offer earplugs and protect staff."
+      "text": "Theater and arena disco-pop typically runs 97–102 dBA LAeq,15min at FOH, with C-weighted levels around 112–120 dBC; club nights and DJ sets average around 96–100 dBA. The kick and bass need solid sub, but disco wants punch more than EDM-style sub weight, so keep C-minus-A gaps under about 18–20 dB. Respect venue and festival limits (often 100 dBA over 15–60 minutes) and keep peaks below about 115 dBA. A 96 dBA club over four hours is far past NIOSH advice (85 dBA for 8 hours, halving the time for every 3 dB above that) and past the US legal limit (OSHA: 90 dBA with a 5 dB rule); offer earplugs and protect staff."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Streaming normalizes to about −14 LUFS-I; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). Aim for a PLR of roughly 8–11 dB so the kick transient survives (at −2 dBTP that means a master at about −10 LUFS-I or quieter); DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
+      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Most streaming services normalize to about −14 LUFS, some to −16; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). Aim for a PLR of roughly 8–11 dB so the kick transient survives (at −2 dBTP that means a master at about −10 LUFS-I or quieter); DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
     }
   ],
   "liveStudio": {
@@ -307,12 +307,12 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Horns",
-        "live": "Close dynamics or ribbons on a riser; compress the bus",
+        "live": "Close dynamic or ribbon mics on a riser; compress the bus",
         "studio": "Ribbon mics 2–4 ft from bells, section blend"
       },
       {
         "area": "Vocals",
-        "live": "Gain-before-feedback, single compressor plus plate; BVs balanced in real time",
+        "live": "Watch gain before feedback; single compressor plus plate; BVs balanced in real time",
         "studio": "Stacks, comping, automation of every phrase"
       },
       {
@@ -327,7 +327,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "97–102 dBA Leq",
+        "live": "97–102 dBA LAeq,15min",
         "studio": "−9 to −6 LUFS-I modern, −2 dBTP"
       }
     ],
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Build the mix from kick, bass and hi-hat; if that loop doesn’t groove solo’d, nothing on top will fix it.",
+      "text": "Build the mix from kick, bass and hi-hat; if that loop doesn’t groove soloed, nothing on top will fix it.",
       "bullet": true
     },
     {

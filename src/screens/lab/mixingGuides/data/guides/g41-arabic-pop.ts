@@ -14,15 +14,15 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences expect a commanding, larger-than-life voice, warm strings answering it, and percussion that makes people dance.",
   "glance": {
     "origin": "Cairo and Beirut from the 1970s (out of Egyptian film music and the firqa orchestra tradition); Gulf “Khaleeji” pop rising strongly since about 2000",
-    "tempo": "90–130 BPM for maqsum/baladi (Egyptian dance rhythms) dance songs; ballads 60–80; Khaleeji (Gulf Arab) 6/8 and 12/8 feels; malfuf (fast two-beat rhythm) intros and wedding medleys up to 140+",
+    "tempo": "90–130 BPM for songs in maqsum/baladi (Egyptian dance rhythms); ballads 60–80; Khaleeji (Gulf Arab) 6/8 and 12/8 feels; malfuf (fast two-beat rhythm) intros and wedding medleys up to 140+",
     "ensemble": "Star singer plus 8–20 musicians: drums, bass, keys/oriental keyboard, guitar, oud (fretless lute), qanun (plucked zither), nay (end-blown reed flute), darbuka/tabla (goblet drum), riq (Arabic tambourine), 4–12 strings, 2–4 backing singers; weddings often a 3–5 piece with keyboard and tracks",
     "priority": "The lead vocal, with every ornament, microtone and word clear, riding on a locked darbuka (goblet drum)/kick groove",
-    "liveSpl": "97–102 dBA LAeq-15 for arenas and festivals; wedding halls frequently run 100–105 dBA unless managed",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (ballads −11 to −9); streaming services normalize to roughly −14"
+    "liveSpl": "97–102 dBA LAeq,15min for arenas and festivals; wedding halls often hit 100–105 dBA unless managed (aim for 90–96)",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (ballads −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Arabic pop exists for romance, celebration and shared emotion: weddings (zaffa (wedding) processions, dabke (Levantine line dance) lines, belly-dance sets), summer coast festivals, and stadium shows where tens of thousands sing every line. Beneath the pop gloss lives tarab, a state of enchantment singer and audience build together, listeners cheering ornaments and calling out as the vocalist stretches a phrase. Audiences expect a commanding, larger-than-life voice, warm strings answering it, and percussion that makes people dance. It sounds wrong when ornaments are smeared by reverb or tuned into Western scale steps, the darbuka (goblet drum) is thin, or the strings screech."
+      "text": "Arabic pop is music for romance, celebration and shared emotion: weddings, with zaffa (wedding) processions, dabke (Levantine line dance) lines and belly-dance sets; summer seaside festivals; and stadium shows where tens of thousands sing every line. Beneath the pop production lies tarab, the state of enchantment that singer and audience build together: listeners cheer ornaments and call out as the vocalist stretches a phrase. Audiences expect a commanding, larger-than-life voice, warm strings answering it, and percussion that makes people dance. It sounds wrong when ornaments are smeared by reverb or tuned into Western scale steps, the darbuka (goblet drum) is thin, or the strings screech."
     }
   ],
   "instruments": [
@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On stage the singer is front center. Backing singers stand to one side, and strings sit in a block on risers. Oud (fretless lute), qanun (plucked zither) and nay (end-blown reed flute) are near the front, with two to four percussionists beside the drummer. The oriental percussion often carries the groove more than the kit does. Strings and qanun play near-unison lines that answer each vocal phrase. Typical form: a free-time intro (a taqsim, which is a free-time solo on nay or oud, or a mawwal, a free-time sung improvisation over a drone), then the groove, a verse, a “lazma” (instrumental hook) on strings, a big sing-along chorus, and solo breaks. Live, songs stretch as the singer extends phrases, and the percussion pushes into malfuf (fast two-beat rhythm) for the finale."
+      "text": "On stage the singer is front center. Backing singers stand to one side, and strings sit in a block on risers. Oud (fretless lute), qanun (plucked zither) and nay (end-blown reed flute) sit near the front, with two to four percussionists beside the drummer. The oriental percussion often carries the groove more than the kit does. Strings and qanun play near-unison lines that answer each vocal phrase. Typical form: a free-time intro (a taqsim, an instrumental solo on nay or oud, or a mawwal, a sung improvisation over a drone), then the groove, a verse, a “lazma” (instrumental hook) on strings, a big sing-along chorus, and solo breaks. Live, songs stretch as the singer extends phrases, and the percussion pushes into malfuf (fast two-beat rhythm) for the finale."
     }
   ],
   "dynamics": [
@@ -140,7 +140,7 @@ export const GUIDE: MixingGuide = {
         "source": "Violins",
         "cut": "HPF 150–200 Hz; −2–4 dB at 2.5–4 kHz (scratch, piezo bite)",
         "boost": "+1–2 dB at 8–12 kHz (silk); +1 dB at 300–500 Hz for warmth",
-        "notes": "Ribbons or small condensers without presence peaks; violin harmonics run to 10 kHz"
+        "notes": "Ribbons or small condensers without presence peaks; violin harmonics extend past 10 kHz"
       },
       {
         "source": "Cellos / violas",
@@ -165,7 +165,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "3–5 ms / 50–80 ms",
         "gainReduction": "3–5 dB on peaks",
-        "notes": "Catches belted held notes; leave ornaments readable"
+        "notes": "Catches belted held notes; keep ornaments clear"
       },
       {
         "source": "Lead vocal (stage 2, opto)",
@@ -173,7 +173,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "Program-dependent",
         "gainReduction": "2–4 dB",
-        "notes": "Smooths the long mawwal (free-time sung improvisation) phrases; plus manual rides"
+        "notes": "Smooths long mawwal (free-time sung improvisation) phrases; ride the fader too"
       },
       {
         "source": "Darbuka (goblet drum)",
@@ -271,23 +271,23 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Long pre-delay keeps ornaments clear while the tail adds grandeur; ducking the vocal reverb 3–5 dB under the voice stops melisma smearing."
+        "text": "Long pre-delay keeps ornaments clear while the tail adds size; ducking the vocal reverb 3–5 dB while the singer sings keeps melisma from smearing."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The vocal sits clearly on top, roughly 3–6 dB above the band by feel, more forward than in Western rock. Tone is warm and full, with presence for diction. Egyptian, Levantine and Gulf dialects lean on guttural and emphatic consonants that must stay clear. Pitch correction is the biggest trap. Maqamat (melodic modes) such as rast, bayati and saba use some notes about 50 cents (a quarter tone) away from Western pitches, and intonation varies by region. Pitch correction set to a Western chromatic scale drags those notes to the wrong pitch. Tune note by note in a graphical editor or with a custom microtonal scale and slow retune, leaving ornaments and slides alone. The obvious robotic effect appears in some modern Khaleeji (Gulf Arab) and Maghrebi pop; use it only when the artist chooses it. Backing vocals are usually unison or octave answers, compressed harder and spread wide. Live, a quality handheld suits singers who drift off-axis; give them plenty of themselves in monitors, since they pitch microtones by ear."
+      "text": "The vocal sits clearly on top, roughly 3–6 dB above the band by feel, more forward than in Western rock. Tone is warm and full, with presence for diction. Egyptian, Levantine and Gulf dialects lean on guttural and emphatic consonants that must stay clear. Pitch correction is the biggest trap. Maqamat (melodic modes) such as rast, bayati and saba use some notes about 50 cents (a quarter tone) away from Western pitches, and intonation varies by region. Pitch correction set to a Western chromatic scale drags those notes to the wrong pitch. Tune note by note in a graphical editor or with a custom microtonal scale and slow retune, leaving ornaments and slides alone. The hard-tuned robotic effect appears in some modern Khaleeji (Gulf Arab) and Maghrebi pop; use it only when the artist chooses it. Backing vocals are usually unison or octave answers, compressed harder and spread wide. Live, a handheld with smooth off-axis response suits singers who drift off the mic; give them plenty of themselves in monitors, since they pitch microtones by ear."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Stadium and coast-festival shows (large line arrays with delay towers for 25,000–50,000 people) typically run 97–102 dBA LAeq-15 at FOH and about 112–120 dBC LCeq, peaks 110–115 dBA. The style needs solid low-mid and moderate sub; a C-minus-A gap above 18–20 dB suggests too much. Wedding halls are the risk zone: reflective rooms, guests of all ages near the PA for 4–6 hours. Aim for 90–96 dBA LAeq there and leave the already-loud zaffa (wedding procession) drums barely reinforced. NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Stadium and seaside-festival shows (large line arrays with delay towers for 25,000–50,000 people) typically run 97–102 dBA LAeq,15min at FOH and about 112–120 dBC LCeq, peaks 110–115 dBA. The style needs solid low-mid and moderate sub; a C-minus-A gap above 18–20 dB suggests too much sub. Wedding halls are the risk zone: reflective rooms, guests of all ages near the PA for 4–6 hours. Aim for 90–96 dBA LAeq there and leave the already-loud zaffa (wedding procession) drums barely reinforced. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Services normalize to about −14 LUFS, so over-limiting gains nothing and costs string swells and darbuka (goblet drum) punch. A PLR of 8–11 dB and a loudness range of 5–9 LU keep the intro-to-chorus contrast; at −2 dBTP that PLR means about −10 LUFS-I or quieter, a little below the common up-tempo range."
+      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and costs string swells and darbuka (goblet drum) punch. A PLR of 8–11 dB and a loudness range of 5–9 LU keep the intro-to-chorus contrast; at −2 dBTP that PLR means about −10 LUFS-I or quieter, a little below the common up-tempo range."
     }
   ],
   "liveStudio": {
@@ -319,7 +319,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "97–102 dBA LAeq-15; halls 90–96 dBA",
+        "live": "97–102 dBA LAeq,15min; halls 90–96 dBA",
         "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid running a chromatic auto-tuner on maqam (melodic mode) vocals without a correct microtonal scale, unless the artist wants the robotic sound.",
+      "text": "Avoid running automatic pitch correction on maqam (melodic mode) vocals without a correct microtonal scale, unless the artist wants the robotic sound.",
       "bullet": true
     },
     {

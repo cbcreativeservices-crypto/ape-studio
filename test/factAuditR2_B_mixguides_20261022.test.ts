@@ -48,7 +48,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
     assert.match(s, /from about 40 \(largo\)/);
     assert.doesNotMatch(s, /40 \(adagio\)/);
     assert.doesNotMatch(s, /mallets and harp/);
-    assert.match(s, /The harp \(a plucked string\) often sits nearby/);
+    assert.match(s, /The harp, a plucked string instrument, often sits nearby/);
     assert.doesNotMatch(s, /5–7 dB louder/);
   });
   it('sertanejo: Barretos arena about 35,000 seats; violão glossed as acoustic guitar', () => {
@@ -67,7 +67,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
   it('crest factor, bongos, reggae bass band, lo-fi gain, Hamilton, Larry Graham', () => {
     assert.match(g('g35-brazilian-funk'), /a very low crest factor \(only a few dB\)/);
     assert.doesNotMatch(g('g35-brazilian-funk'), /near-zero crest factor/);
-    assert.match(g('g39-bachata'), /Bongos are already bright and high-pitched/);
+    assert.match(g('g39-bachata'), /Bongó is already bright and high-pitched/);
     assert.match(g('g28-reggae'), /the midrange lift helps small speakers/);
     assert.match(g('g46-lo-fi-chillhop'), /set the texture level at the source or on its own track/);
     assert.doesNotMatch(g('g46-lo-fi-chillhop'), /manage with input gain/);

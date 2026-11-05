@@ -22,8 +22,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–120 BPM (ballads 55–75; fingerpicked mid-tempo 80–100; strummed “stomp” indie folk to 130)",
     "ensemble": "Solo voice + acoustic guitar or piano; duo; up to a 4–6 piece band (bass, light drums/percussion, keys, fiddle, mandolin, harmony singers)",
     "priority": "The lyric: a clear, natural, close-feeling lead vocal with the acoustic instrument wrapped around it",
-    "liveSpl": "80–90 dBA Leq (LAeq-15 min) solo/duo; 88–96 dBA with a band; C-weighted about 5–10 dB higher",
-    "studioLoudness": "Masters commonly −16 to −11 LUFS-I (sparse solo records often −18 to −14); streaming normalizes to about −14"
+    "liveSpl": "80–90 dBA LAeq,15min solo/duo; 88–96 dBA with a band; C-weighted about 5–10 dB higher",
+    "studioLoudness": "Masters −16 to −11 LUFS-I (sparse solo often −18 to −14); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -167,7 +167,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "15–30 ms / fast–auto",
         "gainReduction": "2–5 dB",
-        "notes": "Slower attack keeps pick attack natural"
+        "notes": "Slower attack keeps pick transients natural"
       },
       {
         "source": "Acoustic guitar (piezo)",
@@ -191,7 +191,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "5–10 ms / auto",
         "gainReduction": "3–6 dB",
-        "notes": "Firmer than the lead so blend stays steady"
+        "notes": "Firmer than the lead so the blend stays steady"
       },
       {
         "source": "Upright / electric bass",
@@ -207,7 +207,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "1.5:1–2:1",
         "attackRelease": "30 ms / auto",
         "gainReduction": "0.5–1.5 dB",
-        "notes": "Barely touching; or none"
+        "notes": "Barely touching, or none"
       }
     ],
     "notes": [
@@ -279,7 +279,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Folk tolerates and needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −11. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Solo masters often keep a PLR of 12–16 dB; louder band masters have less. Aim for a loudness range of 6–12 LU. Because services normalize to around −14 LUFS, a loud master gains nothing and loses the quiet details the genre lives on."
+      "text": "Folk needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −11. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Solo masters often keep a PLR of 12–16 dB; louder band masters have less. Aim for a loudness range of 6–12 LU. Because most streaming services normalize to about −14 LUFS, some to −16, a loud master gains nothing and loses the quiet details the genre lives on."
     }
   ],
   "liveStudio": {
@@ -297,12 +297,12 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Bleed",
         "live": "Guitar and vocal mics hear each other; keep few mics open",
-        "studio": "Figure-8 nulls, separation or embrace a single-mic blend"
+        "studio": "Figure-8 nulls for separation, or a single-mic blend"
       },
       {
         "area": "Monitors",
         "live": "Wedges low and aimed into each mic’s null (its rejection angle), or IEMs; often DI only in wedges",
-        "studio": "N/A; headphone mix for the singer"
+        "studio": "Headphone mix for the singer"
       },
       {
         "area": "Room",
@@ -316,7 +316,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "80–96 dBA Leq",
+        "live": "80–96 dBA LAeq,15min",
         "studio": "−16 to −11 LUFS-I, −1 dBTP (−2 if louder than −14)"
       }
     ],
@@ -324,7 +324,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "If the guitar has a pickup, most engineers take a DI from it as well, even when the player wants only a mic; ask the player first. It saves you when feedback starts.",
+      "text": "If the guitar has a pickup, take a DI from it as well, even when the player prefers the mic sound; ask the player first. It saves you when feedback starts.",
       "bullet": true
     },
     {
@@ -348,7 +348,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "In theaters, check the balcony and the under-balcony seats; a mix that feels right at FOH can be bass-heavy at the front.",
+      "text": "In theaters, check the front rows, the balcony and the under-balcony seats; a mix that feels right at FOH can be bass-heavy at the front and dull under the balcony.",
       "bullet": true
     }
   ],

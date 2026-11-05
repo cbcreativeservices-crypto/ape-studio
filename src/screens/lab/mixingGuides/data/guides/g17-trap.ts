@@ -15,12 +15,12 @@ export const GUIDE: MixingGuide = {
     "tempo": "130–160 BPM felt in half time (65–80 BPM); rage often 150–170",
     "ensemble": "Solo rapper or duo/trio + hype man/backup vocalist, DJ or playback rig; occasionally a live drummer or keys player",
     "priority": "The 808–kick relationship: a pitched, sustained sub that rattles car trunks without swallowing the kick or the vocal",
-    "liveSpl": "100–104 dBA Leq (LAeq-15 min); 120–130 dBC at arena scale; C-minus-A often 20–25 dB",
-    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (rage and club cuts the loudest); streaming normalizes to about −14"
+    "liveSpl": "100–104 dBA LAeq,15min; 120–130 dBC at arena scale; C-minus-A often 20–25 dB",
+    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (rage and club cuts the loudest); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Trap began as street reportage from Atlanta’s “trap houses” and became the dominant sound of global rap. Its job is physical: to shake a car, a club or an arena with sub-bass while the rapper’s cadence and persona sit on top. Melodic trap (Future, Young Thug, Lil Baby, Gunna, Juice WRLD) shifts the emphasis to sung, pitch-processed hooks and mood; rage (Playboi Carti, Lil Uzi Vert, Trippie Redd, Ken Carson, Yeat) turns the show into a mosh pit, with distorted, stereo-wide synth leads and crowd chants. Audiences know the records intimately, usually from phones, earbuds and car systems. They will say “that sounded wrong” if the 808 is weak or missing on small speakers, if the 808 notes are inaudible as pitches, if the hi-hat rolls are dull, if the vocal sounds dry and un-tuned when the record is tuned, or if the hook drop does not hit harder than the verse."
+      "text": "Trap began as street reportage from Atlanta’s “trap houses” and became the dominant sound of global rap. Its job is physical: to shake a car, a club or an arena with sub-bass while the rapper’s cadence and persona sit on top. Melodic trap (Future, Young Thug, Lil Baby, Gunna, Juice WRLD) shifts the emphasis to sung, pitch-processed hooks and mood; rage (Playboi Carti, Lil Uzi Vert, Trippie Redd, Ken Carson, Yeat) turns the show into a mosh pit, with distorted, stereo-wide synth leads and crowd chants. Audiences know the records intimately, usually from phones, earbuds and car systems. Listeners notice at once when the 808 is weak or missing on small speakers, its notes do not read as pitches, the hi-hat rolls are dull, the vocal sounds dry and untuned when the record is tuned, or the hook drop does not hit harder than the verse."
     }
   ],
   "instruments": [
@@ -50,7 +50,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Almost everything is electronic and pre-produced; live, it arrives as a stereo or stem playback.",
+      "text": "Almost everything is electronic and pre-produced; live, it arrives as stereo or stem playback.",
       "bullet": true
     }
   ],
@@ -61,12 +61,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are small and arrangement-driven: mutes, filter sweeps and 808 drop-outs rather than performance swells. Masters are dense, with crest factors often 6–8 dB. Micro-dynamics matter more: the kick transient must survive the 808, and the hats must stay crisp. Cut incoming track levels deeply to make headroom; avoid trading the song’s dynamics for a louder 808. Live, keep 6–10 dB of headroom so drops can hit; the DJ often supplies the dynamics by cutting the music for crowd sing-alongs."
+      "text": "Macro-dynamics are small and arrangement-driven: mutes, filter sweeps and 808 drop-outs rather than performance swells. Masters are dense, with crest factors often 6–8 dB. Micro-dynamics matter more: the kick transient must survive the 808, and the hats must stay crisp. Bring incoming track levels well down to leave headroom, and don’t trade the song’s dynamics for a louder 808. Live, keep 6–10 dB of headroom so drops can hit; the DJ often supplies the dynamics by cutting the music for crowd sing-alongs."
     }
   ],
   "balance": [
     {
-      "text": "Loudest to quietest: 808 and lead vocal (roughly equal), kick, snare/clap, hi-hats, melodic loop, ad-libs and doubles, FX. The 808 owns 30–60 Hz plus harmonics up to 100–200 Hz; the kick gets a short, tight punch (often 50–70 Hz plus a 2–5 kHz click) and should be tuned or EQ’d so it does not fight the 808’s fundamental. Shorten the kick decay and duck the 808 under the kick by sidechain or dynamic EQ. 808, kick, snare and lead vocal sit dead center and mono below about 120 Hz. Hats can be widened with a few ms of sample delay on one side; ad-libs are thrown left and right; rage synth leads are pushed very wide but checked for mono compatibility."
+      "text": "Loudest to quietest: 808 and lead vocal (roughly equal), kick, snare/clap, hi-hats, melodic loop, ad-libs and doubles, FX. The 808 owns 30–60 Hz plus harmonics up to 100–200 Hz; the kick gets a short, tight punch (often 50–70 Hz plus a 2–5 kHz click) and should be tuned or EQ’d so it does not fight the 808’s fundamental. Shorten the kick decay and duck the 808 under the kick by sidechain or dynamic EQ. 808, kick, snare and lead vocal sit dead center; keep everything mono below about 120 Hz. Hats can be widened with a few ms of sample delay on one side; ad-libs are thrown left and right; rage synth leads are pushed very wide but checked for mono compatibility."
     }
   ],
   "eq": {
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
         "source": "808",
         "cut": "HPF 25–30 Hz; narrow −2–4 dB at resonances around 150–200 Hz",
         "boost": "Usually none on the fundamental; add harmonics via saturation",
-        "notes": "Tune to the song’s key; check notes across the range sit at even level"
+        "notes": "Tune to the song’s key; check that notes across the range sit at an even level"
       },
       {
         "source": "808 (parallel distortion copy)",
@@ -87,7 +87,7 @@ export const GUIDE: MixingGuide = {
         "source": "Kick",
         "cut": "HPF 30 Hz; −3 dB at 200–400 Hz; dip its own 40–60 Hz if it fights the 808",
         "boost": "+2–3 dB at 60–80 Hz; +2–4 dB at 3–5 kHz",
-        "notes": "Short decay; transient shaper rather than level"
+        "notes": "Keep the decay short; use a transient shaper rather than more level"
       },
       {
         "source": "Snare / clap",
@@ -105,7 +105,7 @@ export const GUIDE: MixingGuide = {
         "source": "Melodic loop / pads",
         "cut": "HPF 150–250 Hz; −2–3 dB at 2–4 kHz (vocal space)",
         "boost": "Gentle air at 10 kHz if dull",
-        "notes": "Zaytoven-style: keep the midrange open for the rap"
+        "notes": "With Zaytoven-style keys, keep the midrange open for the rap"
       },
       {
         "source": "Rage synth lead",
@@ -117,7 +117,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–120 Hz; −2–3 dB at 200–350 Hz",
         "boost": "+2–4 dB shelf above about 5 kHz; presence at 3–4 kHz",
-        "notes": "De-ess after the top boost (a common chain shelves up above roughly 5 kHz)"
+        "notes": "De-ess after the high-shelf boost so the added sibilance is caught"
       },
       {
         "source": "Ad-libs / doubles",
@@ -157,7 +157,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Hi-hats",
         "use": "Optional",
-        "ratio": "FET-style fast, 8:1+",
+        "ratio": "8:1 or higher (FET-style)",
         "attackRelease": "Fastest / fastest",
         "gainReduction": "3–5 dB",
         "notes": "Adds grit and aggression"
@@ -262,11 +262,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq-15 with 118–125 dBC; arena tours have reported around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20 dB or more is common and signals hearing-risk sub energy. NIOSH advises no more than about 15 minutes a day at 100 dBA; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
+      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq,15min with 118–125 dBC; arena shows can reach around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20 dB or more is common and signals heavy sub energy that the A-weighted reading does not show. NIOSH advises no more than about 15 minutes a day at 100 dBA; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Trap masters are among the loudest in pop: −8 to −6 LUFS-I is typical, with rage cuts sometimes near −5. Most streaming services normalize to −14 LUFS; keep true peak below −2 dBTP for masters louder than −14. Because loudness costs punch after normalization, many engineers favor clipping over heavy limiting and keep enough crest factor that the kick still snaps. Check the 808 on phone speakers, earbuds and a car system."
+      "text": "Trap masters are among the loudest in pop: −8 to −6 LUFS-I is typical, with rage cuts sometimes near −5. Most streaming services normalize to about −14 LUFS, some to −16; keep true peak below −2 dBTP for masters louder than −14. Because loudness costs punch after normalization, many engineers favor clipping over heavy limiting and keep enough crest factor that the kick still snaps. Check the 808 on phone speakers, earbuds and a car system."
     }
   ],
   "liveStudio": {
@@ -311,7 +311,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Get the 808 and kick right first; everything else fits around them. Solo the 808 and play every note: uneven notes are the commonest flaw.",
+      "text": "Get the 808 and kick right first; everything else fits around them. Solo the 808 and play every note: uneven notes are the most common flaw.",
       "bullet": true
     },
     {

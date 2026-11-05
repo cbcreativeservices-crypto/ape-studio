@@ -11,22 +11,22 @@ export const GUIDE: MixingGuide = {
   "title": "Lo-fi / Chillhop",
   "expects": "Listeners want a steady, warm, nostalgic mood that never demands attention: dusty jazz or soul chords, vinyl crackle, rain, a lazy behind-the-beat groove.",
   "glance": {
-    "origin": "Instrumental hip-hop beat scenes of the late 1990s–2000s (J Dilla and Madlib in the US, Nujabes in Tokyo); grew into a streaming genre from about 2013–2017 (24/7 streams from France, a key label in Rotterdam)",
+    "origin": "Instrumental hip-hop beat scenes of the late 1990s–2000s (J Dilla and Madlib in the US, Nujabes in Tokyo); grew into a streaming genre from about 2013–2017, driven by a French 24/7 livestream and a Rotterdam label",
     "tempo": "70–95 BPM (some chillhop up to 100), heavily swung 16ths",
     "ensemble": "Solo producer with sampler/laptop; live sets 1–2 people (sampler + keys), occasionally a 3–5 piece band (keys, guitar, bass, drums, horn)",
     "priority": "The warm, swung drum-and-keys pocket: a soft, round kick and dusty snare under a mellow, filtered chord loop, with nothing harsh",
-    "liveSpl": "85–98 dBA Leq (LAeq-15 min); roughly 100–110 dBC; café/lounge sets 75–85 dBA",
-    "studioLoudness": "Masters commonly −14 to −10 LUFS-I, true peak −1 dBTP (−2 if louder than −14); streaming normalizes to about −14"
+    "liveSpl": "85–98 dBA LAeq,15min; roughly 100–110 dBC; café/lounge sets 75–85 dBA",
+    "studioLoudness": "Masters commonly −14 to −10 LUFS-I, true peak −1 dBTP (−2 if louder than −14); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Lo-fi is functional background music for studying, working, gaming and winding down. Its huge audience mostly hears it through 24/7 livestreams and playlists (the best-known 24/7 stream started in 2017 and became a cultural symbol) or seasonal label compilations. Listeners want a steady, warm, nostalgic mood that never demands attention: dusty jazz or soul chords, vinyl crackle, rain, a lazy behind-the-beat groove. Imperfection is the point, borrowed from J Dilla’s unquantized sampler drums and Nujabes’ rolled-off jazz samples. What sounds “wrong” here: brittle hi-hats, a clicky modern kick, loud sudden transients, wide jumps in level between tracks on a playlist, sub bass that rattles laptop speakers, a vocal sample that jumps out, or noise so heavy the music feels broken rather than worn."
+      "text": "Lo-fi is functional background music for studying, working, gaming and winding down. Its huge audience mostly hears it through 24/7 livestreams and playlists (the best-known 24/7 stream launched in 2017 and became the genre’s public face) or seasonal label compilations. Listeners want a steady, warm, nostalgic mood that never demands attention: dusty jazz or soul chords, vinyl crackle, rain, a lazy behind-the-beat groove. Imperfection is the point, borrowed from J Dilla’s unquantized sampler drums and Nujabes’ rolled-off jazz samples. What sounds “wrong” here: brittle hi-hats, a clicky modern kick, loud sudden transients, wide jumps in level between tracks on a playlist, sub bass that rattles laptop speakers, a vocal sample that jumps out, or noise so heavy the music feels broken rather than worn."
     }
   ],
   "instruments": [
     {
       "label": "Drums:",
-      "text": "sampled breaks or soft one-shots (often from old records, vintage-sampler style), kick and snare rounded, hats and shakers low-passed; brushes and rimshots common.",
+      "text": "sampled breaks or soft one-shots often lifted from old records or run through a vintage sampler; kick and snare rounded, hats and shakers low-passed; brushes and rimshots common.",
       "bullet": true
     },
     {
@@ -36,12 +36,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Guitar:",
-      "text": "clean jazz or nylon-string guitar, chorus-y electric licks.",
+      "text": "clean jazz or nylon-string guitar, chorused electric licks.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "upright or electric bass samples, filtered sample-basslines, or a soft sine/808 sub.",
+      "text": "upright or electric bass samples, filtered sampled bass lines, or a soft sine/808 sub.",
       "bullet": true
     },
     {
@@ -50,8 +50,8 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "label": "Hardware/plugins as instruments:",
-      "text": "compact performance samplers (lo-fi, vinyl and cassette sims, a built-in compressor), pad samplers and vintage 12-bit-style samplers; vinyl, lo-fi and tape emulation plug-ins.",
+      "label": "Hardware/plug-ins as instruments:",
+      "text": "compact performance samplers with built-in lo-fi, vinyl and cassette effects and a compressor; pad samplers and vintage 12-bit samplers; vinyl, lo-fi and tape-emulation plug-ins.",
       "bullet": true
     },
     {
@@ -117,7 +117,7 @@ export const GUIDE: MixingGuide = {
         "source": "Guitar",
         "cut": "HPF 150–200 Hz; LPF 6–8 kHz",
         "boost": "+1–2 dB at 1–2 kHz",
-        "notes": "Keep it out of the keys’ 300–600 Hz zone"
+        "notes": "Keep it out of the keys’ 400–800 Hz warmth"
       },
       {
         "source": "Vocal chop / dialogue sample",
@@ -201,7 +201,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Many producers deliberately over-compress the 2-bus or use a compact sampler’s built-in compressor on the whole beat; aim for warmth and density, not pumping you notice. Parallel drum compression (8:1, 8–10 dB, blended 20–30%) adds weight to quiet breaks. Gates are rarely used; noise and bleed are part of the sound. Master limiting should take 1–3 dB at most."
+        "text": "Many producers deliberately over-compress the 2-bus or run the whole beat through a compact sampler’s built-in compressor; aim for warmth and density, not audible pumping. Parallel drum compression (8:1, 8–10 dB, blended 20–30%) adds weight to quiet breaks. Gates are rarely used; noise and bleed are part of the sound. Keep master limiting to 1–3 dB of gain reduction."
       }
     ]
   },
@@ -210,7 +210,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tape saturation / wow & flutter",
         "appliedTo": "Keys, guitar, whole mix",
-        "setting": "Drive to 1–3% THD feel; wow 0.3–1 Hz, depth a few cents; flutter faint",
+        "setting": "Drive to about 1–3% THD; wow 0.3–1 Hz, depth a few cents; flutter faint",
         "amount": "Moderate on keys; subtle on mix bus"
       },
       {
@@ -245,7 +245,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Chorus / phaser / rotary",
-        "appliedTo": "electric piano, guitar",
+        "appliedTo": "Electric piano, guitar",
         "setting": "0.3–0.8 Hz rate, low depth",
         "amount": "Part of the tone"
       }
@@ -264,11 +264,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Lo-fi shows run from café and record-store sets (75–85 dBA) to club and festival beat sets (90–98 dBA LAeq-15), with C-weighted levels around 100–110 dBC. The crowd often sits or sways; the goal is an immersive, warm level where people can still talk at the bar. Keep C-minus-A under about 15 dB: a sine sub that sounds polite on earbuds can boom in a room, so HPF the PA around 35–40 Hz and watch 50–80 Hz. Samplers often output consumer-level signals (−10 dBV) with noisy floors; take them through good DIs and set gain so the crackle does not become hiss. Peaks rarely need to exceed 105 dBA."
+      "text": "Lo-fi shows run from café and record-store sets (75–85 dBA) to club and festival beat sets (90–98 dBA LAeq,15min), with C-weighted levels around 100–110 dBC. The crowd often sits or sways; the goal is an immersive, warm level where people can still talk at the bar. Keep C-minus-A under about 15 dB: a sine sub that sounds polite on earbuds can boom in a room, so HPF the PA around 35–40 Hz and watch 50–80 Hz. Samplers often output consumer-level signals (−10 dBV) with noisy floors; take them through good DIs and set gain so the crackle does not become hiss. Peaks rarely need to exceed 105 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Most releases land at −14 to −10 LUFS-I, with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS); a few catalog tracks run quieter (−16). Since streaming services normalize to about −14, mastering hotter buys nothing and costs softness. Because playlists matter so much, match loudness across an album or compilation within about 1 LU. PLR of 9–13 dB and LRA of 3–6 LU are typical; the genre tolerates little dynamic range but hates squashed, clipped transients."
+      "text": "Most releases land at −14 to −10 LUFS-I, with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS); a few catalog tracks run quieter (−16). Most streaming services normalize to about −14 LUFS, some to −16, so mastering hotter gains nothing and costs the softness the style needs. Because playlists matter so much, match loudness across an album or compilation within about 1 LU. PLR of 9–13 dB and LRA of 3–6 LU are typical; the genre works with little dynamic range but suffers from squashed, clipped transients."
     }
   ],
   "liveStudio": {
@@ -300,7 +300,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "85–98 dBA Leq; seated/lounge sets lower",
+        "live": "85–98 dBA LAeq,15min; seated/lounge sets lower",
         "studio": "−14 to −10 LUFS-I, matched across release"
       },
       {
@@ -337,7 +337,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Watch levels between beats in a live set; uneven sampler patches are the biggest problem.",
+      "text": "Watch levels between beats in a live set; uneven levels between sampler patterns are the most common problem.",
       "bullet": true
     }
   ],

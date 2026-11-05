@@ -18,12 +18,12 @@ export const GUIDE: MixingGuide = {
   "title": "Latin Pop",
   "expects": "Fans expect an intimate, expensive-sounding voice, a lush but tidy band, and audible Latin flavor (percussion, nylon guitar, a tropical or urban groove).",
   "glance": {
-    "origin": "Spain and Latin America from the 1960s–70s (balada romántica, Brazilian pop); Miami became the production hub in the 1980s–90s, followed by the global crossover boom of 1999 onward",
+    "origin": "Spain and Latin America from the 1960s–70s (balada romántica, Brazilian pop); Miami became the production hub in the 1980s–90s, followed by the global crossover boom from 1999 onward",
     "tempo": "Ballads 60–80 BPM; mid-tempo and dance-pop 90–125 BPM (reggaeton-flavored pop near 90–100)",
-    "ensemble": "Solo star plus a 6–10 piece band (drums, bass, two keys, electric and nylon/acoustic guitar, Latin percussion), 2–4 backing vocalists, often tracks; horns or strings on bigger tours",
+    "ensemble": "Solo star plus a 6–10-piece band (drums, bass, two keyboard players, electric and nylon/acoustic guitar, Latin percussion), 2–4 backing vocalists, often tracks; horns or strings on bigger tours",
     "priority": "A clear, warm, emotionally forward lead vocal in which every Spanish or Portuguese word is understood",
-    "liveSpl": "96–102 dBA Leq (LAeq-15 min), roughly 112–120 dBC; crowd singing often pushes measured peaks well past 105 dBA",
-    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (ballads −12 to −9); streaming normalizes to about −14"
+    "liveSpl": "96–102 dBA LAeq,15min, roughly 112–120 dBC; crowd singing often pushes measured peaks well past 105 dBA",
+    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (ballads −12 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -33,12 +33,12 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Drums and programming:",
-      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, reggaeton-influenced songs carry the dembow (reggaeton's core drum pattern).",
+      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, and reggaeton-influenced songs carry the dembow (reggaeton's core drum pattern).",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric or synth bass, typically playing tumbao-like (salsa-bass-style) anticipated figures in tropical songs and long sustains in ballads.",
+      "text": "electric or synth bass, typically playing anticipated, tumbao-like (salsa-bass-style) figures in tropical songs and long sustains in ballads.",
       "bullet": true
     },
     {
@@ -130,7 +130,7 @@ export const GUIDE: MixingGuide = {
         "source": "Nylon guitar",
         "cut": "HPF 80–100 Hz; −2–3 dB at 180–250 Hz (boom)",
         "boost": "+2 dB at 2–4 kHz (pluck); gentle shelf at 8–10 kHz",
-        "notes": "Piezo pickups need a cut near 1–2 kHz quack"
+        "notes": "Piezo pickups often need a cut at 1–2 kHz (quack)"
       },
       // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
@@ -261,30 +261,30 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Chorus",
-        "appliedTo": "electric piano, clean guitar, pads",
+        "appliedTo": "Electric piano, clean guitar, pads",
         "setting": "0.5–1 Hz rate",
-        "amount": "As tone"
+        "amount": "Part of the tone"
       }
     ],
     "notes": [
       {
-        "text": "Automated ear candy grabs the listener from the first note. Live, emulations of classic plates, digital halls and ambience units can recreate the record while the vocal stays out front in every style."
+        "text": "In the studio, automated ear candy holds the listener’s attention. Live, the console’s plate, hall and short-ambience effects can recreate the record’s spaces while the vocal stays out front."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, many artists use top handheld condensers and many use top dynamics; with dancing singers on thrust stages, ring out every vocal position. When the singer works near the PA, ride the vocal down between lines at the desk. Keep a spare mic on a mirrored channel."
+      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, some artists use handheld condensers and others dynamic mics; with dancing singers on thrust stages, ring out every vocal position. When the singer works near the PA, ride the vocal down between lines at the desk. Keep a spare mic on a mirrored channel."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and arena shows usually run 96–102 dBA LAeq-15 at FOH with C-weighted levels near 112–120 dBC; dance-pop segments carry more sub, ballads less. Audience singing is extremely loud: arena shows have measured around 112–113 dBA at the console. Don’t chase the crowd; the audience is part of the mix. The WHO safe-listening limit caps average levels at 100 dBA LAeq-15, and NIOSH advises no more than about 15 minutes a day at 100 dBA. Provide earplugs and protect your own hearing."
+      "text": "Theater and arena shows usually run 96–102 dBA LAeq,15min at FOH with C-weighted levels near 112–120 dBC; dance-pop segments carry more sub, ballads less. Audience singing is extremely loud: arena shows have measured around 112–113 dBA at the console. Don’t chase the crowd; the audience is part of the mix. The WHO safe-listening limit caps average levels at 100 dBA LAeq,15min, and NIOSH advises no more than about 15 minutes a day at 100 dBA. Provide earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance-oriented Latin pop masters typically land at −10 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to −14 LUFS, so overly loud masters only lose punch. Played back at matched loudness, a louder, more limited version usually sounds less punchy and narrower."
+      "text": "Dance-oriented Latin pop masters typically land at −10 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to about −14 LUFS, some to −16, so an over-limited master is simply turned down and, at matched loudness, sounds less punchy and narrower."
     }
   ],
   "liveStudio": {
@@ -341,7 +341,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t bury the percussion, the cultural fingerprint, but keep timbales (two metal-shelled drums with cymbal and cowbells) and campana (hand-held cowbell) below the vocal.",
+      "text": "Don’t bury the percussion, which carries the Latin identity, but keep timbales (two metal-shelled drums with cymbal and cowbells) and campana (hand-held cowbell) below the vocal.",
       "bullet": true
     },
     {

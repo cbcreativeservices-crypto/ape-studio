@@ -14,21 +14,21 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences come for the singer, so they expect to hear vocal detail (breaths, falsetto, melisma, ad-libs) floating over a warm, heavy bottom and smooth, polished harmony.",
   "glance": {
     "origin": "United States (urban Black music scenes), late 1970s–early 1980s; reshaped by hip-hop, new jack swing, neo-soul and today’s alternative R&B",
-    "tempo": "Most songs 80–120 BPM (often around 109); slow jams 60–80 BPM, often felt half-time",
+    "tempo": "Most songs 80–120 BPM; slow jams 60–80 BPM, often felt half-time",
     "ensemble": "Solo singer + tracks and 2–3 BGVs; or 5–8 piece band (drums, bass/keys bass, 2 keys, guitar, MD/playback) + 3 BGVs",
     "priority": "The lead vocal: intimate, upfront, every breath and run audible, sitting on a deep but controlled low end",
     "liveSpl": "94–100 dBA LAeq-15 min (keep the average under 100); 110–118 dBC with heavy 808/sub",
-    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (ballads −12 to −9); −2 dBTP; streaming normalizes to about −14 (some services −16)"
+    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (ballads −12 to −9), −2 dBTP; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Contemporary R&B is music about intimacy: love, desire, heartbreak, self-worth and reconciliation, delivered by a voice that feels close enough to touch. It serves late-night listening, headphone and car playback, slow dancing, club sets and big arena sing-alongs. Audiences come for the singer, so they expect to hear vocal detail (breaths, falsetto, melisma, ad-libs) floating over a warm, heavy bottom and smooth, polished harmony. Top R&B mixers work from emotion first and make the most of the one special thing in each song. What sounds “wrong” to this audience: a buried or harsh vocal, a thin or flabby 808, brittle hi-hats, obvious pumping, or background stacks that smear the lead’s lyric."
+      "text": "Contemporary R&B is music about intimacy: love, desire, heartbreak, self-worth and reconciliation, delivered by a voice that feels close enough to touch. It serves late-night listening, headphone and car playback, slow dancing, club sets and big arena sing-alongs. Audiences come for the singer, so they expect to hear vocal detail (breaths, falsetto, melisma, ad-libs) floating over a warm, heavy bottom and smooth, polished harmony. A good R&B mix puts emotion first and builds around the one special element in each song. What sounds “wrong” to this audience: a buried or harsh vocal, a thin or flabby 808, brittle hi-hats, obvious pumping, or background stacks that smear the lead’s lyric."
     }
   ],
   "instruments": [
     {
       "label": "Drums:",
-      "text": "programmed (808s, pad-sampler drums, trap hi-hats, finger snaps, rimshots) or live kit re-aligned to programmed grooves; claps and snaps often replace a full snare.",
+      "text": "programmed (808s, sampler drums, trap hi-hats, finger snaps, rimshots) or live kit re-aligned to programmed grooves; claps and snaps often replace a full snare.",
       "bullet": true
     },
     {
@@ -118,7 +118,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Fast trap rolls get harsh quickly"
       },
       {
-        "source": "electric piano / piano",
+        "source": "Electric piano / piano",
         "cut": "HPF 80–100 Hz; −2–3 dB at 300–500 Hz",
         "boost": "+1–2 dB at 1–2 kHz",
         "notes": "Carve a 2–4 kHz dip if masking vocal"
@@ -191,7 +191,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–4:1",
         "attackRelease": "30 ms / auto",
         "gainReduction": "2–3 dB",
-        "notes": "VCA bus-style glue, often in parallel"
+        "notes": "VCA-style glue, often in parallel"
       },
       {
         "source": "Mix bus",
@@ -255,13 +255,13 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Many engineers lean on delay over reverb for clarity. Signature effects (reverse reverb, pitched vocal chops, filtered intros) are part of the record’s identity and must be reproduced live."
+        "text": "Many engineers favor delay over reverb for clarity. Signature effects (reverse reverb, pitched vocal chops, filtered intros) are part of the record’s identity and should be recreated live."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The lead sits clearly on top: roughly 2–4 dB hotter than you would place it in rock, dry-ish and forward. Tone should be warm with silky air, never brittle. Pitch correction is standard: transparent, note-by-note tuning for most artists, an audible hard-tune effect where it is part of the artist’s sound. Clean up breaths only partially, since breaths carry intimacy. Stacks are tight and edited, with doubles and octaves panned wide; ad-libs are panned and given their own throws. Every word must be intelligible, so automate the lead into the gaps rather than raising it everywhere. Mic choice: studio large-diaphragm condensers (solid-state or tube); live, dynamic or supercardioid condenser handheld capsules. Live chains often still use optical or FET-style compression for a natural sound."
+      "text": "The lead sits clearly on top: roughly 2–4 dB hotter than you would place it in rock, dry-ish and forward. Tone should be warm with silky air, never brittle. Pitch correction is standard: transparent, note-by-note tuning for most artists, an audible hard-tune effect where it is part of the artist’s sound. Clean up breaths only partially, since breaths carry intimacy. Stacks are tight and edited, with doubles and octaves panned wide; ad-libs are panned and given their own throws. Every word must be intelligible, so automate the lead into the gaps rather than raising it everywhere. Mic choice: in the studio, large-diaphragm condensers (solid-state or tube); live, handheld dynamics or supercardioid condensers. Live chains often still use optical or FET-style compression for a natural sound."
     }
   ],
   "loudness": [
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −10 to −7 LUFS for uptempo songs and −12 to −9 for ballads, with a true peak at −2 dBTP, a common streaming recommendation for masters louder than −14 LUFS. Most streaming services normalize to about −14, some to −16, so overly crushed masters only lose punch. The genre tolerates more dynamic range than trap or EDM; PLR around 8–10 dB keeps vocals breathing (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
+      "text": "Typical integrated loudness is −10 to −7 LUFS for uptempo songs and −12 to −9 for ballads, with a true peak at −2 dBTP, a common streaming recommendation for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so overly crushed masters only lose punch. The genre tolerates more dynamic range than trap or EDM; PLR around 8–10 dB keeps vocals breathing (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {
@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Vocal",
-        "live": "Ride by hand every phrase; more compression for feedback headroom",
+        "live": "Ride every phrase by hand; more compression for feedback headroom",
         "studio": "Edited, tuned, automated syllable by syllable"
       },
       {
@@ -328,7 +328,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Split lead vocal by section when tone or mic distance changes.",
+      "text": "Split the lead vocal by section when tone or mic distance changes.",
       "bullet": true
     },
     {
@@ -348,7 +348,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Mistake: brittle, over-boosted hats and claps fatiguing ears at loud volumes.",
+      "text": "Mistake: brittle, over-boosted hats and claps that tire the ears at high levels.",
       "bullet": true
     },
     {

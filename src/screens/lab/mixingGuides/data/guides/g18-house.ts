@@ -15,8 +15,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "118–128 BPM (deep house 118–124; classic Chicago 120–126; tech house 124–128)",
     "ensemble": "Usually one or two DJs plus a club system; sometimes a live PA (1–3 people with drum machines, synths, keys) and a guest vocalist",
     "priority": "A tight, full four-on-the-floor kick locked with the bassline, clean and undistorted at volume for hours",
-    "liveSpl": "96–103 dBA Leq (LAeq-15 min); roughly 112–122 dBC; many careful clubs start near 95 dBA and peak at 100–103",
-    "studioLoudness": "Club masters commonly −9 to −6 LUFS-I (tech house at the loud end, deep house −10 to −8); streaming normalizes to about −14"
+    "liveSpl": "96–103 dBA LAeq,15min; roughly 112–122 dBC; many careful clubs start near 95 dBA and peak at 100–103",
+    "studioLoudness": "Club masters commonly −10 to −6 LUFS-I (tech house at the loud end, deep house −10 to −8); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -26,7 +26,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Drum machines:",
-      "text": "the classic 909 (kick, clap, open and closed hats) and 808, plus 707/727 and other vintage drum-machine sounds; now mostly samples. Shakers, congas, bongos and rimshots carry the Latin and Afro-Caribbean swing.",
+      "text": "the classic 909 (kick, clap, open and closed hats) and 808, plus other vintage drum-machine sounds; now mostly samples. Shakers, congas, bongos and rimshots carry the Latin and Afro-Caribbean swing.",
       "bullet": true
     },
     {
@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Harmony:",
-      "text": "electric pianos, piano stabs (the “house piano” of the mid-1980s anthems), organ (digital organ bass and Hammond-style), analog-polysynth pads, minor 7th and 9th chord stabs.",
+      "text": "electric pianos, piano stabs (the “house piano” of the late-1980s anthems), organ (Hammond-style, plus the classic digital organ-bass preset), analog-polysynth pads, minor 7th and 9th chord stabs.",
       "bullet": true
     },
     {
@@ -52,12 +52,12 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The standard club setup is a DJ booth with two to four players and a mixer feeding the house system, with booth monitors beside the DJ. For live PA acts, the drum machine and sequencer sit center, keys to one side, a vocalist out front on a handheld mic, and often a percussionist. Tracks are built in 8-, 16- and 32-bar blocks: a DJ-friendly intro of drums only, the bass entering, then hats and percussion, chords or vocals, a breakdown that strips out the kick, and a drop when the kick returns. Outros mirror intros so the next record can be mixed in. Over a set, the DJ’s blends are the real arrangement: two records may overlap for one to three minutes."
+      "text": "The standard club setup is a DJ booth with two to four decks and a mixer feeding the house system, with booth monitors beside the DJ. For live PA acts, the drum machine and sequencer sit center, keys to one side, a vocalist out front on a handheld mic, and often a percussionist. Tracks are built in 8-, 16- and 32-bar blocks: a DJ-friendly intro of drums only, the bass entering, then hats and percussion, chords or vocals, a breakdown that strips out the kick, and a drop when the kick returns. Outros mirror intros so the next record can be mixed in. Over a set, the DJ’s blends are the real arrangement: two records may overlap for one to three minutes."
     }
   ],
   "dynamics": [
     {
-      "text": "Inside a track, house has little dynamic range: the kick is constant, so energy shifts come from adding and removing elements, filter sweeps and the breakdown, where the kick drops and the floor lifts when it returns. The engineer’s job is headroom: the DJ supplies the dynamics, so the system must stay clean. Raise the room slowly over the night (for example start near 95 dBA and reach 100–103 dBA at peak time) rather than slamming it from the first track. In the studio, keep 1–3 dB more space in the breakdowns than the drops so the return of the kick feels like a release."
+      "text": "Inside a track, house has little dynamic range: the kick is constant, so energy shifts come from adding and removing elements, filter sweeps and the breakdown, where the kick drops and the floor lifts when it returns. The engineer’s job is headroom: the DJ supplies the dynamics, so the system must stay clean. Raise the room slowly over the night (for example start near 95 dBA and reach 100–103 dBA at peak time) rather than slamming it from the first track. In the studio, leave the breakdowns 1–3 dB lower than the drops so the return of the kick feels like a release."
     }
   ],
   "balance": [
@@ -98,7 +98,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Keep them low but present; level makes the groove"
       },
       {
-        "source": "electric piano / piano stabs",
+        "source": "Electric piano / piano stabs",
         "cut": "HPF 120–200 Hz; −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 1–3 kHz",
         "notes": "Keep stabs out of the vocal’s 2–4 kHz zone"
@@ -106,7 +106,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Pads / chords",
         "cut": "HPF 150–250 Hz; LPF 6–10 kHz (deep house)",
-        "boost": "Small lift at 600 Hz–1 kHz for warmth",
+        "boost": "Small lift at 600 Hz–1 kHz for body",
         "notes": "Deep house often low-passes pads heavily"
       },
       {
@@ -138,7 +138,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1–6:1",
         "attackRelease": "1–3 ms / 80–120 ms",
         "gainReduction": "4–6 dB per kick",
-        "notes": "Classic pump; time release to the groove at the tempo"
+        "notes": "Classic pump; time the release to the tempo"
       },
       {
         "source": "Kick",
@@ -178,7 +178,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–4:1",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "2–4 dB",
-        "notes": "VCA bus-style glue is common in house"
+        "notes": "VCA-style bus glue is common in house"
       },
       {
         "source": "DJ/FOH system limiter",
@@ -191,7 +191,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Volume-shaping “ducking” tools often replace a sidechain compressor for consistency. De-ess vocals at 5–8 kHz by 2–4 dB. On the master, 3–6 dB of limiting is normal for club masters; beyond that the kick loses its attack."
+        "text": "Volume-shaping “ducking” tools often replace a sidechain compressor for consistency. De-ess vocals at 5–8 kHz by 2–4 dB. On club masters, 3–6 dB of limiting is normal; beyond that the kick loses its attack."
       }
     ]
   },
@@ -254,11 +254,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club studies show averages around 96 dBA, with busy peak hours at 100–105 dBA and C-weighted levels near 112–122 dBC; a C-minus-A gap above about 20 dB is a sign of too much sub. UK guidance tops out near 107 dBA for audiences with a 140 dBC peak, but well-run clubs aim lower: one London venue starts near 95 dBA and peaks at 102–103 dBA with live meters in view of the DJ, and some booths post a 100 dB ceiling. Clarity sells volume: keep the DJ mixer in the green, because red lights only add distortion, and a distorting rig clears a floor. Watch booth monitor levels too — loud booths push DJs to overdrive the mains. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and wear your own."
+      "text": "Club measurements typically average around 96 dBA, with busy peak hours at 100–105 dBA and C-weighted levels near 112–122 dBC; a C-minus-A gap above about 20 dB is a sign of too much sub. UK guidance tops out near 107 dBA for audiences with a 140 dBC peak, but well-run clubs aim lower: many start near 95 dBA and peak at 102–103 dBA with live meters in view of the DJ, and some booths post a 100 dBA ceiling. Stay clean: keep the DJ mixer in the green, because red lights only add distortion, and a distorting rig clears a floor. Watch booth monitor levels too: loud booths push DJs to overdrive the mains. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and wear your own."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (Toolroom- and Dirtybird-style tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to −14 LUFS, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy; at −2 dBTP that means about −9 LUFS-I or quieter, so the loud end of the club range trades some punch for level."
+      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (the loudest tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy; at −2 dBTP that means about −9 LUFS-I or quieter, so the loud end of the club range trades some punch for level."
     }
   ],
   "liveStudio": {

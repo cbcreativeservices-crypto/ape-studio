@@ -16,7 +16,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "Solo DJ/producer or duo on DJ media players/laptop + stereo or stem playback; sometimes a live vocalist, MC, or guest instrumentalist",
     "priority": "Kick-and-sub relationship: a short, tuned, punchy kick that the bass ducks around, translating to a massive sub array without mud",
     "liveSpl": "About 98–103 dBA LAeq-15 min at FOH, often 115–121 dBC; respect local caps (e.g. 100 or 103 dBA)",
-    "studioLoudness": "Club/release masters commonly −7 to −5 LUFS short-term at the drop (−8 to −6 LUFS-I); streaming normalizes to about −14 LUFS"
+    "studioLoudness": "Club/release masters commonly −7 to −5 LUFS short-term at the drop (−8 to −6 LUFS-I); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Kick",
         "cut": "−2 to −4 dB at 250–400 Hz (boxiness)",
-        "boost": "+2 dB at 55–70 Hz (body); +2 dB at 2–5 kHz (beater click); small lift 7–10 kHz",
+        "boost": "+2 dB at 55–70 Hz (body); +2 dB at 2–5 kHz (click); small lift 7–10 kHz",
         "notes": "Tune tail to key; HPF ~25–30 Hz to protect limiter and subs"
       },
       {
@@ -67,7 +67,7 @@ export const GUIDE: MixingGuide = {
         "source": "Supersaw / lead stack",
         "cut": "HPF 150–250 Hz; −2 to −4 dB at 2.5–4 kHz if harsh; dynamic EQ on resonances",
         "boost": "+1.5 dB air shelf at 10–12 kHz",
-        "notes": "Harshness at high SPL is the #1 festival complaint"
+        "notes": "Harshness at high SPL is a common festival complaint"
       },
       {
         "source": "Clap / snare",
@@ -152,12 +152,12 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1 glue then clipper + limiter",
         "attackRelease": "3–30 ms / auto",
         "gainReduction": "1–3 dB glue; limiter 2–5 dB at drop",
-        "notes": "Low-band multiband at no more than ~2 dB per band"
+        "notes": "If using multiband, keep each band to about 2 dB"
       }
     ],
     "notes": [
       {
-        "text": "Gates are rarely needed (no open mics), except on MC and live vocal mics. Live, run a bus compressor or multiband plus a safety limiter on the DJ mixer input — never rely on the DJ’s red-lined mixer output."
+        "text": "Gates are rarely needed, since almost every source is line level; the exceptions are MC and live vocal mics. Live, run a bus compressor or multiband plus a safety limiter on the DJ mixer input — never rely on the DJ’s red-lined mixer output."
       }
     ]
   },
@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Streaming services normalize to about −14 LUFS, so over-limiting gives no loudness advantage there. A common streaming recommendation is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a version at or below −2 dBTP for streaming. The genre tolerates very little short-term dynamic range (PLR ~6–8 dB at the drop) but needs macro contrast between sections."
+      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gives no loudness advantage there. A common streaming recommendation is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a version at or below −2 dBTP for streaming. Short-term dynamic range is very small (PLR about 6–8 dB at the drop), but the sections still need macro contrast."
     }
   ],
   "liveStudio": {
@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Signal chain",
         "live": "Use the DJ mixer’s digital output, keep headroom, limiter as safety",
-        "studio": "Gain-stage kick/bass around −10 dBFS before buss processing"
+        "studio": "Gain-stage kick/bass around −10 dBFS before bus processing"
       }
     ],
     "notes": []
@@ -273,7 +273,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "High-pass everything that isn’t kick or bass, usually anywhere from 100–150 Hz up.",
+      "text": "High-pass everything that isn’t kick or bass, usually at 100–150 Hz or higher.",
       "bullet": true
     },
     {
@@ -285,7 +285,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Mistake: stereo or phasey sub — collapses on mono festival sub arrays.",
+      "text": "Mistake: a stereo or phasey sub, which collapses on mono festival sub arrays.",
       "bullet": true
     },
     {
@@ -306,8 +306,8 @@ export const GUIDE: MixingGuide = {
     "Avicii — “Levels” (2011)",
     "Martin Garrix — “Animals” (2013)",
     "Hardwell — “Spaceman” (2012)",
-    "Sebastian Ingrosso & Alesso ft. Ryan Tedder — “Calling (Lose My Mind)” (2012)",
-    "Zedd ft. Foxes — “Clarity” (2012)",
+    "Sebastian Ingrosso & Alesso feat. Ryan Tedder — “Calling (Lose My Mind)” (2012)",
+    "Zedd feat. Foxes — “Clarity” (2012)",
     "Dimitri Vegas & Like Mike vs Tujamo & Felguk — “Nova” (2014)",
     "Martin Garrix & Brooks — “Byte” (2017)"
   ],

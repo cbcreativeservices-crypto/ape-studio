@@ -32,7 +32,7 @@ const PINS: Array<[string, string, string]> = [
   ['g48-musical-theatre', 'underscore can sit 30 dB or more below the finale', 'peaks at +10 dB'],
   ['g48-musical-theatre', 'on the digital receiver or console input meter', 'so peaks sit near −12 dBFS.'],
   ['g48-musical-theatre', 'Pitch correction is rarely used live', 'Pitch correction is not used live'],
-  ['g47-bluegrass-americana', 'Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH; C-weighted', 'one major acoustic tour'],
+  ['g47-bluegrass-americana', 'Acoustic bluegrass sounds best around 85–92 dBA LAeq,15min at FOH; C-weighted', 'one major acoustic tour'],
   ['g47-bluegrass-americana', 'Delay the pickup about 0.5–2 ms to line it up with the mic', 'Align pickup and mic (0.5–2 ms delay)'],
   ['g46-lo-fi-chillhop', 'counter-melody panned 20–40% to one side', 'opposite the keys'],
   ['g46-lo-fi-chillhop', '"cut": "HPF 25–30 Hz; optional gentle high shelf, −1 to −3 dB above 10–12 kHz"', '"boost": "Optional gentle shelf'],

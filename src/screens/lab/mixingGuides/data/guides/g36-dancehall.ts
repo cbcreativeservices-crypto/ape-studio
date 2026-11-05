@@ -13,22 +13,22 @@ export const GUIDE: MixingGuide = {
   "title": "Dancehall",
   "expects": "Listeners expect bass they feel in the chest, a kick that knocks, and every word of the patois (Jamaican Creole) lyric understood, because wordplay and quotable lines are the currency.",
   "glance": {
-    "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the 2000s",
-    "tempo": "Mostly 85–110 BPM (classic and “bashment” (hard party dancehall) 90–100; uptempo riddims (instrumental backing tracks) 100–120; trap-dancehall often has a half-time feel of about 70–80)",
-    "ensemble": "Deejay (rhythmic chanting MC)/singer + selector (sound-system DJ)/DJ and playback; touring acts add a 4–6 piece band (drums, bass, keys, guitar, 1–2 backing vocals/hype man)",
+    "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the early 1990s, peaking in the 2000s",
+    "tempo": "Mostly 85–110 BPM: classic and “bashment” (hard party dancehall) 90–100; uptempo riddims (instrumental backing tracks) 100–120; trap-dancehall often has a half-time feel of about 70–80",
+    "ensemble": "Deejay (rhythmic chanting MC) or singer with a selector (sound-system DJ) or DJ on playback; touring acts add a 4–6-piece band (drums, bass, keys, guitar, 1–2 backing vocalists or a hype man)",
     "priority": "The riddim’s (backing track’s) kick-and-bass weight with the deejay’s (chanting MC’s) voice cutting through clearly on top",
-    "liveSpl": "98–104 dBA LAeq-15 min at shows; 120–130 dBC common because sub is the point; street dances run louder and less controlled",
-    "studioLoudness": "Masters commonly −8 to −6 LUFS-I (older digital-era riddims (instrumental backing tracks) −11 to −9); streaming normalizes to about −14"
+    "liveSpl": "98–104 dBA LAeq,15min at shows; 120–130 dBC is common because the sub is the point; street dances run louder and less controlled",
+    "studioLoudness": "Masters commonly −8 to −6 LUFS-I; older digital-era riddims (instrumental backing tracks) −11 to −9; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Dancehall is party music built for a crowd under speaker stacks: dancing, flexing, courtship, rivalry and celebration of the deejay’s personality. It grew out of Kingston’s sound systems, where a selector (sound-system DJ) plays records, a deejay (rhythmic chanting MC) chats over them, and rival crews meet in sound clashes armed with exclusive dubplates (exclusive one-off recordings). The audience is not passive. They shout, blow whistles and horns, flash lighters or phone lights, and demand a “pull up” (rewind) when a tune hits; a selector who reads them wrong gets called a soundboy (weak rival sound system). Listeners expect bass they feel in the chest, a kick that knocks, and every word of the patois (Jamaican Creole) lyric understood, because wordplay and quotable lines are the currency. The target is round bass, a chest-felt kick and crisp vocals that translate everywhere. The crowd will say “that sounded wrong” if the bass is boomy instead of round, the voice is buried or harsh, the riddim (instrumental backing track) feels slow or soft, or a rewind lands late and kills the moment."
+      "text": "Dancehall is party music built for a crowd under speaker stacks: dancing, flexing, courtship, rivalry and celebration of the deejay’s personality. It grew out of Kingston’s sound systems, where a selector (sound-system DJ) plays records, a deejay (rhythmic chanting MC) chats over them, and rival crews meet in sound clashes armed with dubplates (exclusive one-off recordings). The audience is not passive. They shout, blow whistles and horns, flash lighters or phone lights, and demand a “pull up” (rewind) when a tune hits; a selector who reads them wrong gets called a soundboy (weak rival sound system). Listeners expect bass they feel in the chest, a kick that knocks, and every word of the patois (Jamaican Creole) lyric understood, because wordplay and quotable lines are the currency. The crowd notices at once when the bass is boomy instead of round, the voice is buried or harsh, the riddim (instrumental backing track) feels slow or soft, or a rewind lands late and kills the moment."
     }
   ],
   "instruments": [
     {
       "label": "Programmed drums:",
-      "text": "drum machine or DAW kicks, rimshots, claps and snares in syncopated patterns rather than reggae’s one drop; hand claps (the Diwali riddim (instrumental backing track) made them a signature), shakers and congas layered on top.",
+      "text": "drum machine or DAW kicks, rimshots, claps and snares in syncopated patterns rather than reggae’s one drop; hand claps, a signature since the Diwali riddim (instrumental backing track), with shakers and congas layered on top.",
       "bullet": true
     },
     {
@@ -53,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "most shows are a selector (sound-system DJ) or DJ playing instrumentals and dubplates (exclusive one-off recordings); even live bands usually run tracks for synths, claps and sound effects.",
+      "text": "most shows run on a selector (sound-system DJ) or DJ playing instrumentals and dubplates (exclusive one-off recordings); even live bands usually run tracks for synths, claps and sound effects.",
       "bullet": true
     }
   ],
@@ -84,7 +84,7 @@ export const GUIDE: MixingGuide = {
         "source": "Synth / 808 bass",
         "cut": "HPF 25–30 Hz; −2–3 dB at 200–300 Hz",
         "boost": "Fundamental 40–60 Hz; light saturation for 100–200 Hz harmonics",
-        "notes": "Round not boomy; harmonics help it read on small speakers"
+        "notes": "Round, not boomy; harmonics help it read on small speakers"
       },
       {
         "source": "Rimshot / snare / clap",
@@ -101,7 +101,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Keys / organ stabs",
         "cut": "HPF 120–200 Hz; −2–3 dB at 2–4 kHz",
-        "boost": "+1–2 dB at 800 Hz–1.2 kHz for body",
+        "boost": "+1–2 dB at 800 Hz–1.2 kHz for definition",
         "notes": "Carve space for the deejay’s presence band"
       },
       {
@@ -200,7 +200,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Parallel compression on drums (8:1+, 10 dB reduction, blended 20–30%) adds thump to thinner older riddims (instrumental backing tracks). De-ess lead vocals at 5–8 kHz for 3–5 dB; deejays (rhythmic chanting MCs) spit hard consonants. Live, insert a dynamic EQ or multiband on the vocal at 2.5–4 kHz to catch harshness when the artist screams the mic."
+        "text": "Parallel compression on drums (8:1+, 10 dB reduction, blended 20–30%) adds thump to thinner older riddims (instrumental backing tracks). De-ess lead vocals at 5–8 kHz for 3–5 dB; deejays (rhythmic chanting MCs) spit hard consonants. Live, insert a dynamic EQ or multiband on the vocal at 2.5–4 kHz to catch harshness when the artist screams into the mic."
       }
     ]
   },
@@ -251,23 +251,23 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Delay throws are a dub inheritance and the deejay’s (chanting MC’s) best friend: echo the last word of a line or a “brrrap” ad-lib, then pull the send back. Put a filter and a limiter on high-feedback echo returns so they never run away."
+        "text": "Delay throws come from dub and suit the deejay’s (chanting MC’s) delivery: echo the last word of a line or a “brrrap” ad-lib, then pull the send back. Put a filter and a limiter on high-feedback echo returns so they never run away."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly on top, roughly 2–4 dB above the riddim (instrumental backing track) in perceived level, dry, forward and bright, with all consonants intact so patois (Jamaican Creole) wordplay is intelligible to fans who know every line. Tone is mid-forward with strong 3–5 kHz presence; chatting is rhythmic and percussive, so think of it partly as a drum. Pitch correction varies by era and artist: classic deejays (rhythmic chanting MCs) are untuned; modern singjays (half-sung, half-chanted vocalists) and trap-influenced artists often use audible pitch correction as a style (fast retune), so ask the artist and match the record. Doubles and stacked hooks are common on choruses; hype vocals and ad-libs (“yeah,” “brrrap,” name checks) are panned slightly and delayed. Live, use a rugged dynamic or wireless cardioid because artists cup, eat and shout into the mic; leave plenty of input headroom (set gain on the loudest shout, not soundcheck chat). Have a hype man and an MC mic ready; the selector’s (sound-system DJ’s) talkover mic needs its own channel, with HPF at 120 Hz and a compressor."
+      "text": "The lead vocal sits clearly on top, roughly 2–4 dB above the riddim (instrumental backing track) in perceived level, dry, forward and bright, with all consonants intact so patois (Jamaican Creole) wordplay is intelligible to fans who know every line. Tone is mid-forward with strong 3–5 kHz presence; chatting is rhythmic and percussive, so think of it partly as a drum. Pitch correction varies by era and artist: classic deejays (rhythmic chanting MCs) are untuned; modern singjays (half-sung, half-chanted vocalists) and trap-influenced artists often use audible pitch correction as a style (fast retune), so ask the artist and match the record. Doubles and stacked hooks are common on choruses; hype vocals and ad-libs (“yeah,” “brrrap,” name checks) are panned slightly and delayed. Live, use a rugged dynamic or wireless cardioid because artists cup, eat and shout into the mic; leave plenty of input headroom (set gain on the loudest shout, not soundcheck chat). Have mics ready for the hype man and the MC; the selector’s (sound-system DJ’s) talkover mic needs its own channel, with HPF at 120 Hz and a compressor."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Concerts and festivals typically run 98–104 dBA LAeq-15 at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20 dB or more is normal here, and that means serious low-frequency exposure. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. NIOSH advises no more than about 15 minutes a day at 100 dBA: offer earplugs and protect your own ears."
+      "text": "Concerts and festivals typically run 98–104 dBA LAeq,15min at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20 dB or more is normal here, and that means serious low-frequency exposure. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. NIOSH advises no more than about 15 minutes a day at 100 dBA: offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Streaming normalizes to about −14 LUFS, so over-limiting gains nothing and softens the kick. Aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the genre tolerates density but needs kick transients."
+      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and softens the kick. Aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the style can be dense, but the kick needs its transients."
     }
   ],
   "liveStudio": {
@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Low end",
         "live": "Sub-heavy, often the loudest element; watch room modes and C-weighted limits",
-        "studio": "Shape bass harmonics so it translates to earbuds; sidechain kick/bass"
+        "studio": "Shape bass harmonics so the bass translates to earbuds; sidechain kick/bass"
       },
       {
         "area": "Source material",
@@ -328,15 +328,15 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Wayne Smith, “(Under Me) Sleng Teng”, 1985",
+    "Wayne Smith, “Under Mi Sleng Teng”, 1985",
     "Shabba Ranks, “Mr. Loverman”, 1992",
     "Beenie Man, “Who Am I (Sim Simma)”, 1997",
     "Sean Paul, “Get Busy”, 2003",
     "Elephant Man, “Pon De River, Pon De Bank”, 2003",
-    "Popcaan, “Everything Nice”, 2014",
+    "Popcaan, “Everything Nice”, 2013",
     "Vybz Kartel, “Fever”, 2016",
     "Rihanna feat. Drake, “Work”, 2016",
-    "Shenseea, “Blessed” (feat. Tyga), 2021"
+    "Shenseea, “Blessed” (feat. Tyga), 2019"
   ],
   "empty": []
 };

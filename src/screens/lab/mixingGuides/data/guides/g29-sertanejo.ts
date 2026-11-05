@@ -11,18 +11,18 @@ export const GUIDE: MixingGuide = {
   "id": "sertanejo",
   "num": 29,
   "title": "Sertanejo",
-  "expects": "The audience does not just listen; it sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad.",
+  "expects": "The audience sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad.",
   "glance": {
     "origin": "Brazilian interior (São Paulo, Minas Gerais, Goiás, Paraná, Mato Grosso do Sul), from 1920s música caipira (rural folk music); electrified in the late 1960s, romantic-pop in the 1980s–90s, “sertanejo universitário” (“college” sertanejo) from the mid-2000s",
     "tempo": "Ballads and arrocha (slow, romantic Bahian style) 64–85 BPM; mid-tempo pop sertanejo 90–115; vanerão/vaneira (fast southern-Brazilian dance) and “bailão” (big dance party) feels 120–150",
     "ensemble": "Singing duo (or solo singer) plus 6–9 piece band: drums, percussion, bass, 1–2 acoustic guitars, electric guitar, accordion, keys, viola caipira (ten-string Brazilian country guitar) or fiddle as guests, plus playback",
     "priority": "The two lead voices in tight, intelligible harmony on top of a crowd that sings every word",
-    "liveSpl": "Arenas and rodeo festivals 100–105 dBA LAeq-15; roughly 118–126 dBC; clubs (“baladas sertanejas”) 98–102 dBA",
-    "studioLoudness": "Masters commonly −9 to −7 LUFS-I (ballads −10 to −8); streaming normalizes to about −14"
+    "liveSpl": "Arenas and rodeo festivals 100–105 dBA LAeq,15min; roughly 118–126 dBC; clubs (“baladas sertanejas”) 98–102 dBA",
+    "studioLoudness": "Masters commonly −9 to −7 LUFS-I (ballads −10 to −8); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Sertanejo is Brazil’s mass-market heart music: songs about love, betrayal, drinking away heartbreak (“sofrência”), the countryside, pickup trucks and nightlife. It is the most-streamed genre in the country, and its artists headline agricultural fairs and rodeos such as the Festa do Peão de Barretos, where a rodeo arena with about 35,000 seats fills night after night. The audience does not just listen; it sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad. Live recordings (“ao vivo”) are a major way Brazilian fans hear the music, so the “show” sound is the genre’s reference sound. Listeners will say “that sounded wrong” if they cannot understand the lyrics, if the duo’s harmony sounds like two separate singers instead of one voice, if the accordion is missing on the hook, or if the crowd feels absent from a live record."
+      "text": "Sertanejo is Brazil’s mass-market music of the heart: songs about love, betrayal, drinking away heartbreak (“sofrência”), the countryside, pickup trucks and nightlife. It is the most-streamed genre in the country, and its artists headline agricultural fairs and rodeos such as the Festa do Peão de Barretos, where a rodeo arena with about 35,000 seats fills night after night. The audience sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad. Live recordings (“ao vivo”) are a major way Brazilian fans hear the music, so the “show” sound is the genre’s reference sound. Listeners will say “that sounded wrong” if they cannot understand the lyrics, if the duo’s harmony sounds like two separate singers instead of one voice, if the accordion is missing on the hook, or if the crowd feels absent from a live record."
     }
   ],
   "instruments": [
@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead duo (as one block), kick and bass, snare, accordion (hooks pushed up), acoustic guitar, electric guitar, keys/pads, percussion, viola (the ten-string country guitar, pushed in its features), reverb returns, audience mics. Kick and bass share the bottom: in ballads the bass sustains (60–200 Hz) and the kick is softer and shorter; in arrocha (slow, romantic Bahian style) and funknejo (sertanejo-funk blend) the kick or 808 dominates 45–70 Hz, so high-pass the bass slightly higher and let it sit around 80–120 Hz. Pan the duo near center (about 5–15% left/right, matching their stage positions); acoustic guitar and accordion opposite each other at 30–50%; electric guitar and keys wider. A double-tracked violão (acoustic guitar) can go hard left and right in the studio."
+      "text": "Hierarchy, loudest to quietest: lead duo (as one block), kick and bass, snare, accordion (hooks pushed up), acoustic guitar, electric guitar, keys/pads, percussion, viola (the ten-string country guitar, pushed up when featured), reverb returns, audience mics. Kick and bass share the bottom: in ballads the bass sustains (60–200 Hz) and the kick is softer and shorter; in arrocha (slow, romantic Bahian style) and funknejo (sertanejo-funk blend) the kick or 808 dominates 45–70 Hz, so high-pass the bass slightly higher and let it sit around 80–120 Hz. Pan the duo near center (about 5–15% left/right, matching their stage positions); acoustic guitar and accordion opposite each other at 30–50%; electric guitar and keys wider. A double-tracked violão (acoustic guitar) can go hard left and right in the studio."
     }
   ],
   "eq": {
@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Tighter and clickier for vanerão (fast southern-Brazilian dance), rounder for ballads"
       },
       {
-        "source": "Snare / pads",
+        "source": "Snare / electronic pads",
         "cut": "HPF 90 Hz; −2–3 dB ring at 600 Hz–1 kHz",
         "boost": "+2 dB at 180–220 Hz; +2 dB at 5–6 kHz",
         "notes": "Electronic claps often layered—EQ as one"
@@ -267,18 +267,18 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Rodeo arenas and agricultural-fair stages are huge outdoor spaces with delay towers; at Barretos the 140 × 140 m arena uses main line arrays, down-fills, front-fills and long-throw delays, with sub coverage still solid 70 m from the stage. Typical FOH levels run 100–105 dBA LAeq-15 (a constant 110 dBA across a big New Year’s show is the high extreme), with C-weighted levels 118–126 dBC; keep the C–A gap under about 20 dB unless the set leans heavily on 808-based party tracks. Peaks can exceed 115 dBA when the crowd screams. NIOSH advises no more than about 15 minutes a day at 100 dBA; long nights with several acts warrant earplugs for crew."
+      "text": "Rodeo arenas and agricultural-fair stages are huge outdoor spaces with delay towers; a site of about 140 × 140 m, as at Barretos, needs main line arrays, down-fills, front-fills and long-throw delays, with sub coverage still solid 70 m from the stage. Typical FOH levels run 100–105 dBA LAeq,15min (a sustained 110 dBA at a big New Year’s show is the extreme), with C-weighted levels of 118–126 dBC; keep the C-minus-A gap under about 20 dB unless the set leans heavily on 808-based party tracks. Peaks can exceed 115 dBA when the crowd screams. NIOSH advises no more than about 15 minutes a day at 100 dBA; long nights with several acts warrant earplugs for crew."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS, to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads often land a little lower, about −10 to −8 LUFS-I; a PLR of 9–11 dB (about −11 to −13 LUFS-I at −2 dBTP) gives them even more room; “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
+      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so excess loudness buys nothing. Ballads often land a little lower, about −10 to −8 LUFS-I; a PLR of 9–11 dB (about −11 to −13 LUFS-I at −2 dBTP) gives them even more room; “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Vocals",
-        "live": "Two open handhelds, expanders, wide crowd pickup; riding phrase by phrase",
+        "live": "Two open handhelds, expanders, wide crowd pickup; rides phrase by phrase",
         "studio": "Comped, tuned, aligned duo with doubles and detailed rides"
       },
       {
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Effects",
         "live": "One plate, one hall, tapped delay",
-        "studio": "Per-section automation, distinct verbs per voice"
+        "studio": "Per-section automation, distinct reverbs per voice"
       },
       {
         "area": "Loudness",
@@ -336,7 +336,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "On mixed bills (sertanejo, forró (northeastern Brazilian dance music), piseiro (keyboard-driven forró), funk), recheck sub level per act; agronejo (farm-life sertanejo) and funknejo (sertanejo-funk blend) tracks need far more 40–60 Hz than ballad sets.",
+      "text": "On mixed bills—sertanejo, forró (northeastern Brazilian dance music), piseiro (keyboard-driven forró), funk—recheck sub level per act; agronejo (farm-life sertanejo) and funknejo (sertanejo-funk blend) tracks need far more 40–60 Hz than ballad sets.",
       "bullet": true
     }
   ],
@@ -347,7 +347,7 @@ export const GUIDE: MixingGuide = {
     "Michel Teló, “Ai Se Eu Te Pego”, 2011",
     "Gusttavo Lima, “Balada”, 2011",
     "Marília Mendonça, “Infiel”, 2016",
-    "Henrique & Juliano, “Cuida Bem Dela”, 2017",
+    "Henrique & Juliano, “Cuida Bem Dela”, 2014",
     "Ana Castela, “Pipoco” (with Melody and DJ Chris no Beat), 2022"
   ],
   "empty": []

@@ -16,11 +16,11 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences expect a relaxed but unstoppable sway, a melody they can sing back, and the lead line (accordion, keyboard or guitar) bright and present.",
   "glance": {
     "origin": "Caribbean coast of Colombia (Magdalena River basin, Depresión Momposina), documented by the early 1800s; urbanized by Discos Fuentes-era orchestras in the 1940s–60s, then spread into Mexican sonidera (Mexican sound-system style) and tecnocumbia (keyboard-driven cumbia), Peruvian chicha (psychedelic cumbia, late 1960s) and Argentine villera (shantytown cumbia, 1999)",
-    "tempo": "80–110 BPM, felt in 2 (rebajada/sonidera (slowed-down / sound-system styles) can drop to 70–85; villera (Argentine shantytown cumbia) and tecnocumbia (keyboard-driven cumbia) often 95–110)",
+    "tempo": "80–110 BPM, felt in 2; rebajada/sonidera (slowed-down / sound-system styles) can drop to 70–85; villera (Argentine shantytown cumbia) and tecnocumbia (keyboard-driven cumbia) often 95–110",
     "ensemble": "6–14 piece: accordion or keys/keytar, bass, güiro/guacharaca (gourd and cane scrapers), congas, timbales (two metal-shelled drums with cymbal and cowbells), optional kit, guitar, 1–3 vocalists, sometimes horns; or a sonidero (sound-system DJ) with turntables/laptop plus MC mic",
     "priority": "The bass-and-güiro groove: the bass on 1 and the “and” of 2, with the scraper’s steady chop always audible",
-    "liveSpl": "94–100 dBA Leq (LAeq-15 min); about 110–120 dBC; sonidero (sound-system DJ) street parties often run hotter in the subs",
-    "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (vintage reissues −14 to −11); streaming normalizes to about −14"
+    "liveSpl": "94–100 dBA LAeq,15min; about 110–120 dBC; sonidero (sound-system DJ) street parties often run hotter in the subs",
+    "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (vintage reissues −14 to −11); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -35,7 +35,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Accordion:",
-      "text": "diatonic button accordion, played treble side for melody and bass buttons for punctuation; central to Colombian vallenato-tinged (Colombian accordion-flavored) cumbia and to Monterrey’s colombiana (Colombian-style cumbia) scene.",
+      "text": "diatonic button accordion, with the treble side for melody and the bass buttons for punctuation; central to Colombian vallenato-tinged (Colombian accordion-flavored) cumbia and to Monterrey’s colombiana (Colombian-style cumbia) scene.",
       "bullet": true
     },
     {
@@ -45,12 +45,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Latin percussion:",
-      "text": "congas, timbales (two metal-shelled drums with cymbal and cowbells) with cowbell, bongó (small pair of hand drums), sometimes kit or electronic drums.",
+      "text": "congas, timbales (two metal-shelled drums with cymbal and cowbells), bongó (small pair of hand drums), sometimes kit or electronic drums.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric (or synth in tecnocumbia (keyboard-driven cumbia)/villera), carrying root–fifth figures.",
+      "text": "electric, or synth in tecnocumbia (keyboard-driven cumbia) and villera, carrying root–fifth figures.",
       "bullet": true
     },
     {
@@ -65,7 +65,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Horns:",
-      "text": "trumpets, saxes, clarinets in big-band “música tropical” (Latin dance-band music).",
+      "text": "trumpets, saxes and clarinets in big-band “música tropical” (Latin dance-band music).",
       "bullet": true
     },
     {
@@ -86,7 +86,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal (or MC), lead instrument (accordion/keys/guitar) during its spots, bass, güiro (scraped gourd), congas, timbales (two metal-shelled drums with cymbal and cowbells), kick (if present), horns, backing vocals, pads, effects. Low end: the bass owns 60–200 Hz; the kick, when used, should be short and tucked (cumbia is not a four-on-the-floor kick genre) and the tambora (two-headed bass drum) or conga bass tone sits around 80–120 Hz. Keep the bass articulate at 700 Hz–1 kHz so the bounce reads on small speakers. Pan the güiro 10–25% off center, always felt. Congas and timbales on opposite sides to match the stage; accordion or keys near center; horns spread moderately. Lead vocal and bass dead center."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal (or MC), lead instrument (accordion/keys/guitar) during its spots, bass, güiro (scraped gourd), congas, timbales (two metal-shelled drums with cymbal and cowbells), kick (if present), horns, backing vocals, pads, effects. Low end: the bass owns 60–200 Hz; the kick, when used, should be short and tucked (cumbia is not a four-on-the-floor kick genre) and the tambora (two-headed bass drum) or conga bass tone sits around 80–120 Hz. Keep the bass articulate at 700 Hz–1 kHz so the bounce reads on small speakers. Pan the güiro 10–25% off center, where it stays clearly audible. Put congas and timbales on opposite sides to match the stage; accordion or keys near center; horns spread moderately. Lead vocal and bass dead center."
     }
   ],
   "eq": {
@@ -137,7 +137,7 @@ export const GUIDE: MixingGuide = {
         "source": "Chicha (Peruvian psychedelic cumbia) guitar",
         "cut": "HPF 100 Hz; LPF 10–12 kHz; dip fuzz at 3–4 kHz",
         "boost": "+2 dB at 1–1.5 kHz",
-        "notes": "Keep the surf twang; tape-ish top roll-off sounds right"
+        "notes": "Keep the surf twang; a tape-style top roll-off suits it"
       },
       {
         "source": "Lead vocal",
@@ -291,11 +291,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Halls, ballrooms and festival stages typically run 94–100 dBA LAeq-15 at FOH with peaks to 108–110 dBA; C-weighted levels around 110–120 dBC. Crowds span children to grandparents; 96–98 dBA is usually plenty. Sonidero (sound-system DJ) street systems lean on subs; a C-minus-A gap above 20 dB signals that low frequencies may be excessive. NIOSH advises no more than about 15 minutes a day at 100 dBA, and every 3 dB more halves that; parties often run 4–6 hours, so offer earplugs and watch your own exposure."
+      "text": "Halls, ballrooms and festival stages typically run 94–100 dBA LAeq,15min at FOH with peaks to 108–110 dBA; C-weighted levels around 110–120 dBC. Crowds range from children to grandparents; 96–98 dBA is usually plenty. Sonidero (sound-system DJ) street systems lean on subs; a C-minus-A gap above 20 dB signals that low frequencies may be excessive. NIOSH advises no more than about 15 minutes a day at 100 dBA, and every 3 dB more halves that; parties often run 4–6 hours, so offer earplugs and watch your own exposure."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern cumbia and tecnocumbia (keyboard-driven cumbia) masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so very loud masters gain nothing. At −2 dBTP those masters have a PLR of only 6–8 dB; a PLR of 9–11 dB, meaning about −11 to −13 LUFS-I, keeps the bass bounce and güiro (scraped gourd) transients more alive. Vintage-style productions (Ondatrópica, chicha (Peruvian psychedelic cumbia) revival) sit happily at −12 to −11."
+      "text": "Modern cumbia and tecnocumbia (keyboard-driven cumbia) masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters gain nothing. At −2 dBTP those masters have a PLR of only 6–8 dB; a PLR of 9–11 dB, meaning about −11 to −13 LUFS-I, keeps the bass bounce and güiro (scraped gourd) transients more alive. Vintage-style productions, such as Ondatrópica or the chicha (Peruvian psychedelic cumbia) revival, usually sit at −12 to −11 LUFS-I."
     }
   ],
   "liveStudio": {
@@ -307,7 +307,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Accordion",
-        "live": "Clip-on mics (e.g., stereo clip kit) or a dynamic at 30–45 cm; watch feedback around 2–4 kHz",
+        "live": "A stereo pair of clip-on mics or a dynamic at 30–45 cm; watch feedback around 2–4 kHz",
         "studio": "Two condensers, one each side, 30–60 cm; blend treble and bass sides"
       },
       {
@@ -344,7 +344,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t treat cumbia like reggaetón or EDM: a big sustained kick and sub boom smother the root–fifth bass pattern.",
+      "text": "Don’t treat cumbia like reggaeton or EDM: a big sustained kick and sub boom smother the root–fifth bass pattern.",
       "bullet": true
     },
     {
@@ -371,7 +371,7 @@ export const GUIDE: MixingGuide = {
   "references": [
     "Lucho Bermúdez y su Orquesta, “Prende la vela”, 1950s (Colombian big-band cumbia)",
     "Andrés Landero, “La Pava Congona”, 1960s",
-    "Los Destellos, “Elsa”, 1968",
+    "Los Destellos, “Elsa”, 1970",
     "Los Mirlos, “Sonido Amazónico”, 1973",
     "La Sonora Dinamita, “Que Bello”, 1982",
     "Los Ángeles Azules, “El Listón de tu Pelo”, 1996",

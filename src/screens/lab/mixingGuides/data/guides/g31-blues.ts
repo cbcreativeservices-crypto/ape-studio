@@ -20,12 +20,12 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–80 BPM slow blues (12/8 feel); 90–140 BPM shuffles; boogies and up-tempo jumps to 160+",
     "ensemble": "Solo singer-guitarist (Delta/acoustic); 4–6 piece electric band: drums, bass, 1–2 guitars, harmonica and/or piano/organ, vocal; occasional horn section",
     "priority": "The singer’s voice and the lead instrument (guitar or harp) in conversation, riding on a loose, swinging rhythm section",
-    "liveSpl": "Clubs 92–98 dBA LAeq-15; festival main stages 96–102 dBA; roughly 108–118 dBC",
-    "studioLoudness": "Masters commonly −12 to −9 LUFS-I (traditional and acoustic often −14 to −11); streaming normalizes to about −14"
+    "liveSpl": "Clubs 92–98 dBA LAeq,15min; festival main stages 96–102 dBA, roughly 108–118 dBC",
+    "studioLoudness": "Masters −14 to −9 LUFS-I (traditional and acoustic −14 to −11); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Blues is music for testimony and release: hardship, desire and humor told in the first person, with the band answering the singer. It grew from work songs, field hollers and spirituals among Black laborers in the Deep South, became juke-joint dance music and, in Chicago, a loud city sound. Club and festival audiences shout encouragement after a good line, applaud mid-tune after a solo, and expect the soloist to take the room from a whisper to a roar. They want warmth, grit and the sound of amps in a room. They will say “that sounded wrong” if the vocal is buried during a solo trade, the guitar is shrill or fizzy, the harmonica squeals with feedback, the shuffle feels stiff, or the mix is so polished and compressed that the dynamics and the bleed-glued “band in a room” character are gone."
+      "text": "Blues is music for testimony and release: hardship, desire and humor told in the first person, with the band answering the singer. It grew from work songs, field hollers and spirituals among Black laborers in the Deep South, became juke-joint dance music and, in Chicago, a loud electric city sound. Club and festival audiences shout encouragement after a good line, applaud mid-tune after a solo, and expect the soloist to take the room from a whisper to a roar. They want warmth, grit and the sound of amps in a room. They will say “that sounded wrong” if the vocal is buried during a solo trade, the guitar is shrill or fizzy, the harmonica squeals with feedback, the shuffle feels stiff, or the mix is so polished and compressed that the dynamics and the “band in a room” feel, glued by bleed, are gone."
     }
   ],
   "instruments": [
@@ -36,17 +36,17 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electric guitar:",
-      "text": "the lead voice: single-coil, solid-body humbucker or semi-hollow guitars into vintage-style tube combos at the edge of breakup; tone lives at 500 Hz–2.5 kHz.",
+      "text": "the lead voice. Solid-body (single-coil or humbucker) or semi-hollow guitars into vintage-style tube combos at the edge of breakup; the tone lives at 500 Hz–2.5 kHz.",
       "bullet": true
     },
     {
       "label": "Harmonica (“harp”):",
-      "text": "diatonic harp, acoustic into a vocal mic or cupped to a bullet-style harmonica mic into a small overdriven tube amp, the saxophone-like sound Little Walter pioneered in 1950s Chicago.",
+      "text": "diatonic harp, played acoustically into a vocal mic or cupped around a bullet-shaped harmonica mic into a small overdriven tube amp: the saxophone-like sound Little Walter pioneered in 1950s Chicago.",
       "bullet": true
     },
     {
       "label": "Piano and organ:",
-      "text": "barrelhouse and boogie-woogie piano (Otis Spann’s role with Muddy Waters); Hammond organ with rotating speaker in soul-blues and blues-rock.",
+      "text": "barrelhouse and boogie-woogie piano (Otis Spann’s role with Muddy Waters); Hammond organ with a rotating speaker in soul-blues and blues-rock.",
       "bullet": true
     },
     {
@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Use dynamic EQ on guitar upper mids (2–5 kHz) to catch harshness only when the player digs in. Gentle expanders (6–10 dB range) reduce vocal-mic bleed without choking the stage. De-ess 5–8 kHz by 2–3 dB; keep master limiting to 2–3 dB."
+        "text": "(note) Use dynamic EQ on guitar upper mids (2–5 kHz) to catch harshness only when the player digs in. Gentle expanders (6–10 dB range) reduce bleed in vocal mics without chopping the singer’s phrases. De-ess 5–8 kHz by 2–3 dB; keep master limiting to 2–3 dB."
       }
     ]
   },
@@ -248,7 +248,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Room / chamber",
         "appliedTo": "Whole band",
         "setting": "0.6–1.2 s, warm, rolled-off top",
-        "amount": "Moderate; recreates the Chess echo-chamber feel"
+        "amount": "Moderate; recreates the 1950s Chicago echo-chamber feel"
       },
       {
         "effect": "Tempo delay",
@@ -257,7 +257,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle; mainly blues-rock"
       },
       {
-        "effect": "rotating speaker",
+        "effect": "Rotating speaker",
         "appliedTo": "Hammond, occasionally guitar",
         "setting": "Slow/fast rotor",
         "amount": "Part of the tone"
@@ -271,17 +271,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal is the storyteller and sits clearly on top, about 2–4 dB above the band by perceived level; during solos the lead instrument takes that place. Voices range from hoarse Delta shouting to smooth soul-blues; capture grit and chest tone, avoid hyped air. Pitch correction is basically off-limits: blue notes, bends between minor and major thirds and slides into pitches are intentional. Doubles are rare; backing vocals are gospel-style responses tucked behind. Many classic records kept the live vocal or comped from two takes. Live, use a dynamic or hypercardioid mic, HPF, light compression and a touch of slap; control amp bleed with EQ and a gentle expander rather than more gain. Harp players on the vocal mic should stay about 2 in away and back off when the PA is hot."
+      "text": "The vocal is the storyteller and sits clearly on top, about 2–4 dB above the band by perceived level; during solos the lead instrument takes that place. Voices range from hoarse Delta shouting to smooth soul-blues; capture grit and chest tone, and avoid hyped air. Pitch correction is effectively off-limits: blue notes, bends between minor and major thirds and slides into pitches are intentional. Doubles are rare; backing vocals are gospel-style responses tucked behind. Many classic records kept the live vocal or comped from two takes. Live, use a cardioid or hypercardioid dynamic mic, HPF, light compression and a touch of slap; control amp bleed with EQ and a gentle expander rather than more gain. Harp players on the vocal mic should stay about 2 in away and back off when the PA is hot."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Small clubs and bars usually run 92–98 dBA LAeq-15 at FOH; theater and festival shows 96–102 dBA, with C-weighted levels around 108–118 dBC. Sub demand is moderate; a C-minus-A gap above 20 dB means too much low end for the style. Stage volume often sets the floor: two cranked tube amps can push 100 dBA onstage before the PA adds anything, so in small rooms you may only reinforce vocals, harp and kick. Solo peaks reach 105–110 dBA. NIOSH advises no more than about 15 minutes a day at 100 dBA; blues crowds skew older and prefer warm to punishing. Large festivals use line arrays plus delays for long throws at controlled level."
+      "text": "Small clubs and bars usually run 92–98 dBA LAeq,15min at FOH; theater and festival shows 96–102 dBA, with C-weighted levels around 108–118 dBC. Sub demand is moderate; a C-minus-A gap above 20 dB means too much low end for the style. Stage volume often sets the floor: two cranked tube amps can push 100 dBA onstage before the PA adds anything, so in small rooms you may only reinforce vocals, harp and kick. Solo peaks reach 105–110 dBA. NIOSH advises no more than about 15 minutes a day at 100 dBA; blues crowds skew older and prefer warmth to punishment. Large festivals use line arrays plus delay towers to cover long throws at a controlled level."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so heavy limiting buys nothing. For traditional masters, aim for a PLR of 11–15 dB; at −2 dBTP that means about −13 LUFS-I or quieter, the quiet end of the usual range. Louder electric masters land nearer 7–9 dB. Use a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
+      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at or below −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so heavy limiting buys nothing. For traditional masters, aim for a PLR of 11–15 dB; at −2 dBTP that means about −13 LUFS-I or quieter, the quiet end of the usual range. Louder electric masters land nearer 7–9 dB. Target a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
     }
   ],
   "liveStudio": {
@@ -318,7 +318,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "92–102 dBA LAeq-15",
+        "live": "92–102 dBA LAeq,15min",
         "studio": "−14 to −9 LUFS-I, −1 dBTP (−2 if louder than −14)"
       }
     ],
@@ -359,7 +359,7 @@ export const GUIDE: MixingGuide = {
     }
   ],
   "references": [
-    "Robert Johnson, “Cross Road Blues”, 1936",
+    "Robert Johnson, “Cross Road Blues”, 1937",
     "Muddy Waters, “Hoochie Coochie Man”, 1954",
     "Little Walter, “Juke”, 1952",
     "Howlin’ Wolf, “Smokestack Lightnin’”, 1956",

@@ -17,18 +17,18 @@ export const GUIDE: MixingGuide = {
     "tempo": "120–135 BPM classic Detroit and Berlin; dub (echo-heavy remix style) techno 115–125; peak-time 128–138; hard/industrial 140–160+",
     "ensemble": "Solo DJ (2–4 decks, mixer) or solo/duo live act (drum machine, synths, sampler/laptop, effects, DJ-style mixer)",
     "priority": "The kick and the low end: a mono, solid, physical four-on-the-floor that never distorts over hours",
-    "liveSpl": "Dancefloor typically 98–103 dBA Leq (LAeq-15 to 30 min), 115–125 dBC; German venues capped at 99 dBA LAeq-30 (German rules)",
-    "studioLoudness": "Club masters commonly −9 to −6 LUFS-I (hard techno louder); vinyl around −9 LUFS short-term max; streaming normalizes to about −14"
+    "liveSpl": "Dancefloor typically 98–103 dBA LAeq,15min, 115–125 dBC; German rules cap the loudest audience position at 99 dBA LAeq,30min",
+    "studioLoudness": "Club masters commonly −9 to −6 LUFS-I (hard techno louder); vinyl around −9 LUFS short-term max; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Techno is functional dance music for long nights: a DJ or live act holds a room for two to eight hours, and at Berghain a party can run from Saturday night to Monday morning. Its roots are political and futurist. The Belleville Three fused Kraftwerk, electro and funk in post-industrial Detroit, and Underground Resistance framed techno as resistance and self-ownership. Berlin added post-reunification warehouse culture: bunkers and power stations, camera stickers, no photos, an inward-looking dancefloor. The audience wants hypnosis, repetition and a body-felt kick, not a show. They hear “wrong” when the kick distorts or loses weight, the system turns harsh at 2–5 kHz after hour three, the low end doubles up in a transition, a live act jumps in level over the previous DJ, or the room is loud but not deep."
+      "text": "Techno is functional dance music for long nights: a DJ or live act holds a room for two to eight hours, and at Berghain a party can run from Saturday night to Monday morning. Its roots are political and futurist. The Belleville Three fused Kraftwerk, electro and funk in post-industrial Detroit, and Underground Resistance framed techno as resistance and self-ownership. Berlin added post-reunification warehouse culture: bunkers and power stations, stickers over phone cameras, an inward-looking dancefloor. The audience wants hypnosis, repetition and a body-felt kick, not a show. Listeners notice at once when the kick distorts or loses weight, the system turns harsh at 2–5 kHz after hour three, the low end doubles up in a transition, a live act jumps in level over the previous DJ, or the room is loud but not deep."
     }
   ],
   "instruments": [
     {
       "label": "Drum machines:",
-      "text": "the 909 (kick, clap, hats, ride) is the signature, with 808, 606, 707 and modern drum-machine units alongside. Jeff Mills plays the 909 as a live instrument.",
+      "text": "the 909 (kick, clap, hats, ride) is the signature, with the 808, other vintage drum machines and modern units alongside. Jeff Mills plays the 909 as a live instrument.",
       "bullet": true
     },
     {
@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback formats:",
-      "text": "vinyl remains respected, but most DJs play files via DJ media players/USB or controllers. Live acts run hardware into a mixer, often with a DAW on a laptop.",
+      "text": "vinyl remains respected, but most DJs play files from USB on DJ media players, or from a laptop through a controller. Live acts run hardware into a mixer, often with a DAW on a laptop.",
       "bullet": true
     }
   ],
@@ -77,7 +77,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Rumble / reverb bass",
-        "cut": "HPF 20–25 Hz; LPF 150–200 Hz; notch boxiness around 120–140 Hz",
+        "cut": "HPF 20–25 Hz; LPF 150–200 Hz; notch any resonance around 120–140 Hz",
         "boost": "Slight +1–2 dB near 100 Hz if thin",
         "notes": "Mono below 120 Hz; duck it hard on every kick"
       },
@@ -250,11 +250,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Large-club dancefloors commonly sit at 98–103 dBA LAeq with 115–125 dBC; a C-minus-A gap above about 20 dB means the sub is doing most of the work, which suits techno up to a point. Nightclubs commonly average about 96 dBA. Hearing is most easily harmed at about 1–4 kHz, so harsh upper mids cost the most. German rules set 99 dBA LAeq-30 at the loudest audience position and 135 dBC peak. Small venues may use cut-off limiters set at 85–100 dB, so check before the night. Keep booth monitors low; they leak into the room and push DJs to redline. Nights of 6–10 hours make cumulative dose the real risk: offer earplugs and run quieter at opening and closing."
+      "text": "Large-club dancefloors commonly sit at 98–103 dBA LAeq with 115–125 dBC; a C-minus-A gap above about 20 dB means the sub is doing most of the work, which suits techno up to a point. Smaller nightclubs often average nearer 96 dBA. The ear is most sensitive, and most easily harmed, around 2–5 kHz, so harsh upper mids cost the most. German rules set 99 dBA LAeq,30min at the loudest audience position and a 135 dBC peak. Small venues may use cut-off limiters set at 85–100 dBA, so check before the night. Keep booth monitors low; they leak into the room and push DJs to redline. Nights of 6–10 hours make cumulative dose the real risk: offer earplugs and run quieter at opening and closing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −9 to −6 LUFS-I with a true peak of −1 dBTP, or −2 dBTP for streaming (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Streaming normalizes to about −14 LUFS (some services about −16), so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB, so the kick still hits after limiting (at −1 dBTP that means a master at about −8 LUFS-I or quieter)."
+      "text": "Club masters typically land at −9 to −6 LUFS-I with true peak at or below −1 dBTP, or −2 dBTP for streaming (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Most streaming services normalize to about −14 LUFS, some to −16, so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB so the kick still hits after limiting (at −1 dBTP that means a master at about −8 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {
@@ -286,12 +286,12 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Duration",
-        "live": "Sets of 2–8 hours in nights of up to 10; ear fatigue and harshness creep up over time",
+        "live": "Sets of 2–8 hours in nights of up to 10 hours; ear fatigue and harshness creep up over time",
         "studio": "6–8 minute tracks built for mixing, with DJ-friendly intro/outro beats"
       },
       {
         "area": "Loudness",
-        "live": "98–103 dBA LAeq, legal caps such as 99 dBA LAeq-30",
+        "live": "98–103 dBA LAeq; legal caps such as 99 dBA LAeq,30min",
         "studio": "Often −9 to −6 LUFS-I; aim near −8 or quieter at −1 dBTP (−2 for streaming); vinyl and streaming versions may differ"
       }
     ],
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
     "Robert Hood, “Minimal Nation”, 1994",
     "Jeff Mills, “The Bells”, 1997",
     "Ben Klock, “Subzero”, 2009",
-    "Paula Temple, “Colonized”, 2015"
+    "Paula Temple, “Colonized”, 2013"
   ],
   "empty": []
 };

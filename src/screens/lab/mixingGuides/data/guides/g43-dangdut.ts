@@ -16,11 +16,11 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer.",
   "glance": {
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
-    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) feels faster (130–160 BPM) because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
-    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” (one-keyboardist band) keyboardist + kendang + singer",
+    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) runs faster (130–160 BPM) and feels busier because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
+    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; or the smaller “organ tunggal” (one-keyboardist band): keyboardist, kendang and singer",
     "priority": "The kendang (hand drums): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
-    "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 112–120 dBC LCeq; East Java caps static systems at 120 dBA (2025 rule)",
-    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); streaming services normalize to about −14"
+    "liveSpl": "96–102 dBA LAeq,15min for village stages and festivals; 112–120 dBC LCeq; East Java caps static systems at 120 dBA (2025 rule)",
+    "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -30,7 +30,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Kendang / gendang (ketipung):",
-      "text": "paired hand drums, wood or PVC. The larger head (~20 cm) gives the low, pitch-bent “dhut” (like a tabla bayan (the bass tabla drum)); the small head (~15 cm) the sharp “tak.” East Java koplo (fast East-Java style) may add bem and sabet drums. This is the lead rhythm voice.",
+      "text": "paired hand drums, wood or PVC. The larger head (~20 cm) gives the low, pitch-bent “dhut,” much like a tabla bayan (the bass tabla drum); the small head (~15 cm) gives the sharp “tak.” East Java koplo (fast East-Java style) may add bem and sabet drums. This is the lead rhythm voice.",
       "bullet": true
     },
     {
@@ -40,7 +40,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keyboards:",
-      "text": "arranger workstations (home arranger keyboards are iconic) for strings, brass, organ, melodic leads and sometimes drum/bass patterns; in organ tunggal (one-keyboardist band) one keyboardist covers everything.",
+      "text": "arranger keyboards (a signature dangdut sound) for strings, brass, organ, melodic leads and sometimes drum/bass patterns; in organ tunggal (one-keyboardist band) one keyboardist covers everything.",
       "bullet": true
     },
     {
@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Kendang – tak (small head)",
         "cut": "HPF 150–200 Hz; notch ring 800 Hz–1.5 kHz if it honks",
         "boost": "+2–3 dB at 3–5 kHz (crack); shelf +1–2 dB at 8–10 kHz",
-        "notes": "Don’t let 4 kHz turn painful on big PA; dynamic EQ helps"
+        "notes": "Don’t let 4 kHz turn painful on a big PA; dynamic EQ helps"
       },
       {
         "source": "Suling (bamboo flute)",
@@ -170,7 +170,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "6:1–8:1",
         "attackRelease": "3–10 ms / 80 ms",
         "gainReduction": "8–10 dB, blended 20–30%",
-        "notes": "Thickens the dhut on large PA"
+        "notes": "Thickens the dhut on a large PA"
       },
       {
         "source": "Lead vocal",
@@ -237,7 +237,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Room / short plate",
         "appliedTo": "Kendang (two-headed hand drum)",
         "setting": "0.6–1.0 s decay, 10–20 ms pre-delay",
-        "amount": "Subtle; adds “resonance” without smearing strokes"
+        "amount": "Subtle; adds resonance without smearing strokes"
       },
       {
         "effect": "Hall reverb",
@@ -255,7 +255,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Harmonic exciter",
         "appliedTo": "Mandolin, bass (studio)",
         "setting": "Light upper-harmonic or sub enhancer",
-        "amount": "Subtle; used in Indonesian studio practice"
+        "amount": "Subtle; common in Indonesian studios"
       }
     ],
     "notes": [
@@ -272,18 +272,18 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, C-weighted LCeq around 112–120 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. NIOSH advises no more than about 15 minutes a day at 100 dBA, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
+      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq,15min at FOH, peaks 110–115 dBA, C-weighted LCeq around 112–120 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. NIOSH advises no more than about 15 minutes a day at 100 dBA, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang (hand drums) punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP, the quiet end of that range or below) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
+      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, and most streaming services normalize to about −14 LUFS, some to −16, so very loud masters just lose kendang (hand drums) punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP, at or below the quiet end of the usual range) and an LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Kendang (two-headed hand drum)",
-        "live": "Two close dynamics on tak and dhut heads, 3–8 cm; protect from keyboard and vocal bleed",
+        "live": "Two close dynamic mics on tak and dhut heads, 3–8 cm; protect from keyboard and vocal bleed",
         "studio": "Add a condenser 30–60 cm above for natural tone; parallel bus for weight"
       },
       {
@@ -313,7 +313,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "96–102 dBA LAeq-15, local caps (e.g., 120 dBA East Java static systems)",
+        "live": "96–102 dBA LAeq,15min, local caps (e.g., 120 dBA East Java static systems)",
         "studio": "Often −10 to −7 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
@@ -329,11 +329,11 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t let the kit kick or sub replace the dhut; the kendang is the genre’s identity.",
+      "text": "Don’t let the kit kick or sub replace the dhut; the kendang defines the genre.",
       "bullet": true
     },
     {
-      "text": "Tame 3–5 kHz on the tak through big PA; long outdoor shows tire ears fast.",
+      "text": "Tame 3–5 kHz on the tak through a big PA; long outdoor shows tire ears fast.",
       "bullet": true
     },
     {

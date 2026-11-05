@@ -17,8 +17,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–140 BPM (power ballads 60–80; shuffles and fast rockers 150–170)",
     "ensemble": "4–5 piece band: drums, bass, 1–2 electric guitars, lead vocal (keys optional) plus 1–3 backing vocals; modern acts often add click and backing tracks",
     "priority": "The riff: big, mid-forward guitars locked to kick, snare and bass, with a lead vocal that cuts through without being buried",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min); about 112–122 dBC LCeq; regulated venues often 99–102 dBA",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (classic-era remasters −12 to −9); streaming normalizes to about −14"
+    "liveSpl": "98–103 dBA LAeq,15min; about 112–122 dBC LCeq; regulated venues often 99–102 dBA",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (classic-era remasters −12 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -38,7 +38,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electric guitars:",
-      "text": "the core. Humbuckers into overdriven tube amps (British-style tube crunch is the archetype), power chords, pentatonic riffs, solos with wah, delay and whammy.",
+      "text": "the core. Humbuckers into overdriven tube amps (British-style crunch is the archetype), power chords, pentatonic riffs, solos with wah, delay and whammy.",
       "bullet": true
     },
     {
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Loudest to quietest: lead vocal, snare, rhythm guitar pair, kick and bass, lead guitar (near vocal level in solos), toms, backing vocals, overheads/room, keys, effects returns. Low end: kick owns 50–80 Hz thump and 2–5 kHz click; bass owns sustained 60–200 Hz and its 700 Hz–1.5 kHz growl; guitars are high-passed to stay out of both. Kick, snare, bass and lead vocal dead center. Rhythm guitars hard left and right; one strong mono take per side often beats heavy layering, and quad-tracked parts go hard plus 70–80%. Solos center or slightly off; backing stacks wide."
+      "text": "Loudest to quietest: lead vocal, snare, rhythm guitar pair, kick and bass, lead guitar (near vocal level in solos), toms, backing vocals, overheads/room, keys, effects returns. Low end: kick owns 50–80 Hz thump and 2–5 kHz click; bass owns sustained 60–200 Hz and its 700 Hz–1.5 kHz growl; guitars are high-passed to stay out of both. Kick, snare, bass and lead vocal dead center. Rhythm guitars hard left and right; one strong mono take per side often beats heavy layering. With quad-tracked parts, pan one pair hard and the other 70–80%. Solos center or slightly off; backing stacks wide."
     }
   ],
   "eq": {
@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Bass",
         "cut": "HPF 35–40 Hz; −2–3 dB at 200–300 Hz",
-        "boost": "+2 dB at 60–80 Hz; +2–4 dB at 800 Hz–1.2 kHz; 2–3 kHz for pick",
+        "boost": "+2 dB at 60–80 Hz; +2–4 dB at 800 Hz–1.2 kHz; lift 2–3 kHz for pick",
         "notes": "DI for lows, amp or drive layer for the midrange that glues to guitars"
       },
       {
@@ -115,13 +115,13 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–120 Hz; −2–3 dB at 250–400 Hz; dynamic dip 2.5–5 kHz on belted notes",
         "boost": "+2–3 dB at 2–4 kHz (presence); +2 dB shelf at 10 kHz (air)",
-        "notes": "Belting singers get harsh at top of range—use a dynamic EQ, not a static cut"
+        "notes": "Belting singers get harsh at the top of their range—use a dynamic EQ, not a static cut"
       },
       {
         "source": "Backing vocal stack",
         "cut": "HPF 150–200 Hz; scoop −3 dB at 400–800 Hz",
         "boost": "+2–3 dB shelf at 8–10 kHz",
-        "notes": "Thinned and brightened so the stack sits behind but above the guitars"
+        "notes": "Thinned and brightened so the stack sits behind the lead but above the guitars"
       },
       {
         "source": "Hammond / keys",
@@ -145,7 +145,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1–8:1",
         "attackRelease": "1–3 ms / 50–80 ms",
         "gainReduction": "4–7 dB on belts",
-        "notes": "Fast FET-style catches screams; studio often adds a limiter before it"
+        "notes": "A fast FET-style unit catches screams; studios often add a limiter before it"
       },
       {
         "source": "Lead vocal (stage 2, opto/VCA)",
@@ -209,7 +209,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "2–3 dB",
-        "notes": "VCA bus-style comp is standard in this genre"
+        "notes": "A VCA-style bus compressor is standard in this genre"
       }
     ],
     "notes": [
@@ -277,11 +277,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater hard rock commonly runs 98–102 dBA LAeq-15 at FOH; arena tours 100–104 dBA, with peaks around 110–115 dBA and C-weighted LCeq of 112–122 dBC. Backline can exceed 120 dB on stage, so in small rooms the PA may add only vocals, kick and low end. Sub is moderate: a C-minus-A gap above 20 dB is too much. German rules set 99 dBA over 30 minutes and 135 dBC peak; UK and EU festivals often run 100–105 dBA LAeq-15. Some top FOH engineers mix near 98 dBA and rely on compression and clarity for power. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Club and theater hard rock commonly runs 98–102 dBA LAeq,15min at FOH; arena tours 100–104 dBA, with peaks around 110–115 dBA and C-weighted LCeq of 112–122 dBC. Backline can exceed 120 dB on stage, so in small rooms the PA may add only vocals, kick and low end. Sub is moderate: a C-minus-A gap above 20 dB is too much. German rules set 99 dBA over 30 minutes and 135 dBC peak; UK and EU festivals often run 100–105 dBA LAeq,15min. Many experienced FOH mixes sit near 98 dBA and rely on compression and clarity for power. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern active rock masters land around −9 to −6 LUFS-I; a recent rock/alternative chart analysis averaged about −8 LUFS-I with loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); services normalize to about −14, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting; at −2 dBTP that means about −10 LUFS-I or quieter, nearer the classic-styled range than modern masters."
+      "text": "Modern active rock masters land around −9 to −6 LUFS-I, often near −8 LUFS-I with a loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); most streaming services normalize to about −14 LUFS, some to −16, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting; at −2 dBTP that means about −10 LUFS-I or quieter, nearer the classic-styled range than modern masters."
     }
   ],
   "liveStudio": {

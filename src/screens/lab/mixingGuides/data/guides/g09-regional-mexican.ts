@@ -13,12 +13,12 @@ export const GUIDE: MixingGuide = {
   "title": "Regional Mexican",
   "expects": "Fans sing every line, shout gritos (festive shouts) in the gaps, and expect the singer’s voice to be big, close and fully intelligible.",
   "glance": {
-    "origin": "Mexico and the US borderlands: banda (Mexican brass band) from Sinaloa brass bands (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño (northern Mexican accordion music) from Nuevo León/Texas (late 1800s–1930s), corridos tumbados (laid-back, trap-flavored corridos) from Sinaloa, Sonora and Los Angeles (late 2010s)",
+    "origin": "Mexico and the US borderlands: banda (Mexican brass band) from Sinaloa (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño (northern Mexican accordion music) from Nuevo León/Texas (late 1800s–1930s), corridos tumbados (laid-back, trap-flavored corridos) from Sinaloa, Sonora and Los Angeles (late 2010s)",
     "tempo": "Polka/norteño 2/4 at 100–130 BPM (felt in 2); cumbia 90–105; rancheras (Mexican country ballads) and boleros (slow romantic songs) 60–90; sones (Mexican folk dance songs) and huapangos (falsetto-led Huasteca songs) in 6/8 (dotted quarter ≈ 60–80); tumbados (trap-flavored corridos) mostly 6/8 or 3/4 around 120–150 BPM",
     "ensemble": "Norteño/tumbado (northern accordion / trap-flavored corrido) 4–6 piece; mariachi 7–12; banda sinaloense (Sinaloa-style brass band) 14–20 plus 1–3 singers; stadium acts 17–24 on stage",
     "priority": "The lead singer’s words and emotion on top of a firmly locked low end (tuba, tololoche (upright bass), guitarrón (large acoustic bass) or bass)",
-    "liveSpl": "Mariachi/norteño (northern Mexican accordion music) 92–98 dBA LAeq-15; banda (Mexican brass band) and arena shows 98–103 dBA, about 112–120 dBC",
-    "studioLoudness": "Banda (Mexican brass band) and norteño (northern Mexican accordion music) masters commonly −10 to −8 LUFS-I; tumbados (trap-flavored corridos) −9 to −7; mariachi −14 to −11; streaming normalizes to about −14"
+    "liveSpl": "Mariachi/norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda (Mexican brass band) and arena shows 98–103 dBA, about 112–120 dBC",
+    "studioLoudness": "Banda (Mexican brass band) and norteño (northern Mexican accordion music) masters commonly −10 to −8 LUFS-I; tumbados (trap-flavored corridos) −9 to −7; mariachi −14 to −11; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -28,7 +28,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Banda sinaloense (Sinaloa-style brass band):",
-      "text": "3–4 trumpets, 3–4 Bb clarinets (singing melodic lines that often double the voice), 2–3 valve trombones, 2 Eb alto horns (charchetas, playing off-beat chord “chucks”), sousaphone/tuba carrying the walking, arpeggiated bass line, tambora (20–26 in bass drum with a cymbal on top, played by one person) and tarola (snare, timbales, cowbell, hats).",
+      "text": "3–4 trumpets, 3–4 B-flat clarinets (singing melodic lines that often double the voice), 2–3 valve trombones, 2 E-flat alto horns (charchetas, playing off-beat chord “chucks”), sousaphone/tuba carrying the walking, arpeggiated bass line, tambora (20–26-inch bass drum with a cymbal on top, played by one person) and tarola (snare, timbales, cowbell, hats).",
       "bullet": true
     },
     {
@@ -91,7 +91,7 @@ export const GUIDE: MixingGuide = {
         "source": "Trumpets",
         "cut": "HPF 150–200 Hz; −2–4 dB at 2.5–4 kHz if piercing",
         "boost": "+1–2 dB at 1–1.5 kHz (body)",
-        "notes": "Mic 30–50 cm and off-axis to warm; avoid presence-peak vocal mics"
+        "notes": "Mic at 30–50 cm and off-axis for warmth; avoid presence-peak vocal mics"
       },
       {
         "source": "Clarinets",
@@ -109,7 +109,7 @@ export const GUIDE: MixingGuide = {
         "source": "Accordion",
         "cut": "HPF 80–100 Hz (treble side); −2–3 dB at 300–500 Hz; dip 2–4 kHz if reedy",
         "boost": "+1–2 dB at 1–2 kHz",
-        "notes": "Separate bass-side mic, HPF 60 Hz; dynamics pick up less button noise"
+        "notes": "Separate bass-side mic, HPF 60 Hz; dynamic mics pick up less button noise"
       },
       {
         "source": "Bajo sexto (12-string bass-rhythm guitar) / 12-string / vihuela (small strummed guitar)",
@@ -125,7 +125,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Violins",
-        "cut": "HPF 200–250 Hz; −2 dB at 2–3 kHz if scratchy",
+        "cut": "HPF 150–200 Hz; −2 dB at 2–3 kHz if scratchy",
         "boost": "+1–2 dB at 5–7 kHz; small lift at 300 Hz for warmth",
         "notes": "Clip-on condensers; watch feedback around 1–3 kHz"
       },
@@ -139,7 +139,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–100 Hz (male), 120 Hz (female); −2 dB at 250–350 Hz",
         "boost": "+2–3 dB at 2.5–4 kHz; shelf +1–2 dB at 10 kHz",
-        "notes": "Space for the vocal at 2–4 kHz by dipping brass 1–2 dB there"
+        "notes": "Make space for the vocal at 2–4 kHz by dipping the brass 1–2 dB there"
       }
     ],
     "notes": []
@@ -247,7 +247,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Pitch correction",
         "appliedTo": "Tumbado (trap-flavored corrido) and modern banda (Mexican brass band) vocals",
         "setting": "Fast retune (about 0–20 ms) on tumbados (trap-flavored corridos); slow/transparent elsewhere",
-        "amount": "Audible on tumbados is genre-appropriate; inaudible on mariachi"
+        "amount": "Audible on tumbados, as part of the style; inaudible on mariachi"
       },
       {
         "effect": "Saturation",
@@ -260,30 +260,30 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The singer is the star and sits clearly in front, often 3–6 dB above the band by perceived level, closer to pop than rock. Rancheras (Mexican country ballads) and banda (Mexican brass band) ballads feature huge sustained notes, sobbing vibrato and falsetto breaks (huapango); leave headroom and ride the fader so climaxes are thrilling but not painful. Spanish diction must be clear: consonants live at 2–5 kHz, so carve that space out of the trumpets. Gritos (festive shouts) from the band or singer are part of the music; keep a channel or ambient mic open to catch them. Multiple featured singers are common (big tours can carry seven); set each one’s gain and EQ individually. Tumbado (trap-flavored corrido) vocals are delivered in a laid-back, conversational flow, often doubled and tuned. Live, use a robust dynamic or handheld condenser on wireless; singers often walk to the stage edge, so watch feedback at 2–4 kHz."
+      "text": "The singer is the star and sits clearly in front, often 3–6 dB above the band by perceived level, closer to pop than rock. Rancheras (Mexican country ballads) and banda (Mexican brass band) ballads feature huge sustained notes, sobbing vibrato and falsetto breaks (huapango); leave headroom and ride the fader so climaxes are thrilling but not painful. Spanish diction must be clear: consonants live at 2–5 kHz, so carve that space out of the trumpets. Gritos (festive shouts) from the band or singer are part of the music; keep a channel or ambient mic open to catch them. Several featured singers are common in big bandas; set each one’s gain and EQ individually. Tumbado (trap-flavored corrido) vocals are delivered in a laid-back, conversational flow, often doubled and tuned. Live, use a robust dynamic or handheld condenser on wireless; singers often walk to the stage edge, so watch feedback at 2–4 kHz."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq-15; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that, so it allows about 15 minutes a day at 100 dBA; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Offer earplugs and wear your own."
+      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that, so it allows about 15 minutes a day at 100 dBA; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Offer earplugs and wear your own."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming recommendation). Streaming normalizes to about −14 LUFS, so excess limiting only dulls the brass. On mariachi and traditional recordings, aim for a PLR of 9–12 dB to keep horn transients alive; louder banda masters at −2 dBTP leave only 6–8 dB."
+      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so excess limiting only dulls the brass. On mariachi and traditional recordings, aim for a PLR of 9–12 dB to keep horn transients alive; louder banda masters at −2 dBTP leave only 6–8 dB."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Brass",
-        "live": "Clip-on mics (small clip-on condensers) on each horn; heavy stage bleed, group to 2–4 VCAs",
+        "live": "Clip-on condensers on each horn; heavy stage bleed, group to 2–4 VCAs",
         "studio": "Distant section mics (1–3 m) plus spots for a fuller, smoother tone"
       },
       {
         "area": "Low end",
         "live": "Tuba and tambora (cymbal-topped bass drum) plus room buildup; HPF other sources hard",
-        "studio": "Fine tune tuba/tambora or 808/tololoche relationship, sidechain if needed"
+        "studio": "Fine-tune the tuba/tambora or 808/tololoche relationship; sidechain if needed"
       },
       {
         "area": "Vocals",
@@ -302,7 +302,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–103 dBA LAeq, venue limits",
+        "live": "92–103 dBA LAeq,15min, venue limits",
         "studio": "−10 to −8 LUFS-I typical, −2 dBTP"
       }
     ],
@@ -314,7 +314,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t let the tambora’s (bass drum’s) boom swamp the tuba; the bass line is the harmony.",
+      "text": "Don’t let the tambora’s (bass drum’s) boom swamp the tuba; the bass line carries the harmony.",
       "bullet": true
     },
     {

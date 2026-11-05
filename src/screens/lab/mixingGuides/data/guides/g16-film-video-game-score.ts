@@ -18,7 +18,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "40–100-piece orchestra plus choir, overdubbed percussion (taiko, toms, anvils), synths and sound-design layers; live “in concert” shows 45–100 players plus band and playback",
     "priority": "Serving the picture: clarity of the main theme without masking dialogue, and stems that the dub stage or game engine can actually use",
     "liveSpl": "Film-in-concert 85–92 dBA Leq with crescendos to about 100 dBA; arena hybrid score shows average near 90 dBA",
-    "studioLoudness": "Theatrical and streaming mixes are dialogue-anchored (a major streaming spec: −27 LKFS dialogue-gated, −2 dBTP); games −24 LUFS console / −16 to −18 mobile, −1 dBTP; soundtrack albums −16 to −10 LUFS-I, streaming normalizes to about −14"
+    "studioLoudness": "Theatrical and streaming mixes are dialogue-anchored (a major streaming spec: −27 LKFS dialogue-gated, −2 dBTP); games −24 LUFS console / −16 to −18 mobile, −1 dBTP; soundtrack albums −16 to −10 LUFS-I; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -69,18 +69,18 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Score has one of the widest dynamic ranges of any commercial music—from a solo flute at pianissimo (very soft) to 100-piece tutti (full ensemble) with taiko (big Japanese drums) is easily 30–40 dB acoustically. In film the dub stage controls the final dynamics, so the score mixer should preserve range and deliver stems with headroom rather than limiting them; a squashed stem forces the re-recording mixer to fight it. Games need moderated dynamics because players hear the music for hours on TV speakers; aim for a loudness range of 10–15 LU on mobile and under about 20 LU on console."
+      "text": "Score has one of the widest dynamic ranges of any commercial music: the span from a solo flute at pianissimo (very soft) to a 100-piece tutti (full ensemble) with taiko (big Japanese drums) is easily 30–40 dB acoustically. In film the dub stage controls the final dynamics, so the score mixer should preserve range and deliver stems with headroom rather than limiting them; a squashed stem forces the re-recording mixer to fight it. Games need moderated dynamics because players hear the music for hours on TV speakers; aim for a loudness range of 10–15 LU on mobile and under about 20 LU on console."
     }
   ],
   "balance": [
     {
-      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then rhythm engine (string ostinato (repeated figure), percussion), then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub—synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz, though the lowest bass notes reach about 41 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds mostly for room and reverb, rarely for primary instruments."
+      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then the rhythm engine—string ostinato (repeated figure) and percussion—then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub—synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz, though the lowest bass notes reach about 41 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds mostly for room and reverb, rarely for primary instruments."
     }
   ],
   "eq": {
     "rows": [
       {
-        "source": "three-omni tree / room mics",
+        "source": "Three-omni tree / room mics",
         "cut": "HPF 25–40 Hz; −1–2 dB at 250 Hz if the hall is thick",
         "boost": "+1–2 dB shelf at 8 or 12 kHz",
         "notes": "The tree is the mix; spots only add detail"
@@ -89,7 +89,7 @@ export const GUIDE: MixingGuide = {
         "source": "Violins / violas (spots)",
         "cut": "HPF 80–120 Hz; −2–3 dB around 200 Hz; narrow dips at 2.5, 4.6 or 7 kHz if strident",
         "boost": "+1–2 dB at 2.2–3.3 kHz (articulation)",
-        "notes": "Sample strings often carry a bump near 2.5 kHz—cut it"
+        "notes": "Sample strings often have a 2.5 kHz bump—dip it narrowly"
       },
       {
         "source": "Celli / basses",
@@ -111,7 +111,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Choir",
-        "cut": "HPF 100–150 Hz; −2 dB at 300 Hz",
+        "cut": "HPF 80–120 Hz; −2 dB at 300 Hz",
         "boost": "+1–2 dB at 3–5 kHz (diction); air shelf at 12 kHz",
         "notes": "Diction matters less than blend unless text is featured"
       },
@@ -190,7 +190,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1",
         "attackRelease": "20 ms / auto",
         "gainReduction": "1–3 dB",
-        "notes": "Opto style; leave dynamics to the singers"
+        "notes": "Opto-style; leave dynamics to the singers"
       },
       {
         "source": "Score mix bus (album)",
@@ -268,17 +268,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer—your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music mostly out of the center channel. In live-to-picture shows, dialogue and effects come from playback stems; engineers often push extra dialogue level to the front of the audience to counter the acoustic orchestra, and ride each line because source levels vary."
+      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer—your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music mostly out of the center channel. In live-to-picture shows, dialogue and effects come from playback stems; engineers often send extra dialogue level to the front fills to counter the acoustic orchestra, and ride each line because source levels vary."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Film-in-concert and game-music shows usually average 85–92 dBA Leq at FOH, with tutti (full ensemble) peaks near 100 dBA and sub-heavy cues touching 110–115 dBC. Compare like with like: if the C-weighted Leq runs more than about 20 dB above the A-weighted Leq, there is too much sub. Time-align fills to the orchestra (big arena shows have used 15–17 delay zones) so the PA reinforces rather than replaces the acoustic sound."
+      "text": "Film-in-concert and game-music shows usually average 85–92 dBA LAeq,15min at FOH, with tutti (full ensemble) peaks near 100 dBA and sub-heavy cues touching 110–115 dBC. If the C-weighted Leq runs more than about 20 dB above the A-weighted Leq over the same period, there is too much sub. Time-align fills to the orchestra (big arena shows can need many delay zones) so the PA reinforces rather than replaces the acoustic sound."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Cinema screen channels are calibrated to 85 dBC each at reference (surrounds lower, usually 82 dBC); mixes rely on dialogue level, and many theaters play below reference. A major streaming delivery spec asks for −27 LKFS dialogue-gated (±2 LU) with −2 dBTP and a mix loudness range of 4–18 LU, mixed near-field at around 79 dB SPL. Games target −24 LUFS integrated (±2 LU) on console and −16 to −18 LUFS on mobile, −1 dBTP, measured over at least 30 minutes of representative play. Soundtrack albums commonly land −16 to −12 LUFS-I (hybrid action scores up to about −10); streaming normalizes to about −14 LUFS with −1 dBTP recommended."
+      "text": "Cinema screen channels are calibrated to 85 dBC each at reference (surrounds lower, usually 82 dBC); mixes are balanced around dialogue level, and many theaters play below reference. A major streaming delivery spec asks for −27 LKFS dialogue-gated (±2 LU) with −2 dBTP and a mix loudness range of 4–18 LU, mixed near-field at around 79 dB SPL. Games target −24 LUFS integrated (±2 LU) on console and −16 to −18 LUFS on mobile, −1 dBTP, measured over at least 30 minutes of representative play. Soundtrack albums commonly land −16 to −12 LUFS-I (hybrid action scores up to about −10); most streaming services normalize to about −14 LUFS, some to −16, with −1 dBTP recommended."
     }
   ],
   "liveStudio": {
@@ -286,7 +286,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Microphones",
         "live": "Clip-on condensers on every player; few room mics",
-        "studio": "three-omni tree, outriggers, room and surround mics carry the sound; spots for detail"
+        "studio": "Three-omni tree, outriggers, room and surround mics carry the sound; spots for detail"
       },
       {
         "area": "Low end",
@@ -295,13 +295,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Dialogue",
-        "live": "Playback stem ridden live, extra to front fills",
+        "live": "Playback stem ridden live, with extra level to front fills",
         "studio": "Belongs to the dub stage; score leaves space"
       },
       {
         "area": "Synths & playback",
         "live": "Timecode-locked playback with separate bus and processing",
-        "studio": "Printed stems from composer’s rig, often pre-EQ’d on returns"
+        "studio": "Stems printed from the composer’s rig, often already EQ’d"
       },
       {
         "area": "Monitoring",
@@ -323,7 +323,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Organize stems by “food group” (strings, brass, winds, percussion, choir, synths, FX), each with its own reverb, and print a stereo fold-down and dialogue reference slug.",
+      "text": "Organize stems by “food group” (strings, brass, winds, percussion, choir, synths, FX), each with its own reverb, and print a stereo fold-down and a dialogue reference track.",
       "bullet": true
     },
     {
@@ -343,7 +343,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Live, mix in eight-bar moves to steer focus with the picture rather than setting one static balance.",
+      "text": "Live, ride the mix cue by cue to steer focus with the picture rather than setting one static balance.",
       "bullet": true
     }
   ],

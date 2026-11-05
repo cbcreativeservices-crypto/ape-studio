@@ -19,15 +19,15 @@ export const GUIDE: MixingGuide = {
     "tempo": "Ballads 60–80 BPM (the core of the repertoire); mid-tempo pop/R&B 85–110; dance and idol pop 110–128",
     "ensemble": "Solo singer with 5–8 piece band (drums, bass, 2 guitars, 2 keys) plus 2–4 backing vocalists; arena shows add strings and 1–3 Chinese instrumentalists; TV and smaller shows run on backing tracks",
     "priority": "A clear, intimate, fully intelligible lead vocal; every lyric must be understood",
-    "liveSpl": "94–100 dBA LAeq-15 for arenas and stadiums (ballad sections lower, 88–94); about 110–118 dBC",
-    "studioLoudness": "Ballads commonly −11 to −9 LUFS-I, dance and idol pop −8 to −6; streaming normalizes to about −14"
+    "liveSpl": "94–100 dBA LAeq,15min for arenas and stadiums (ballad sections lower, 88–94); about 110–118 dBC",
+    "studioLoudness": "Ballads commonly −11 to −9 LUFS-I, dance and idol pop −8 to −6; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "C-pop is above all a singer’s and a lyricist’s music. Its emotional center is the love ballad (qingge): songs of longing, regret and nostalgia that listeners sing in KTV rooms, in the car and at concerts. Teresa Teng’s soft, close-mic’d delivery set a template of intimacy that still defines the genre, and lyricists such as Vincent Fang and Lin Xi are stars in their own right. Mandarin and Cantonese are tonal, so a muffled consonant or buried vowel can change meaning, not just tone."
+      "text": "C-pop is above all a singer’s and a lyricist’s music. Its emotional center is the love ballad (qingge): songs of longing, regret and nostalgia that listeners sing in KTV rooms, in the car and at concerts. Teresa Teng’s soft, close-miked delivery set a template of intimacy that still defines the genre, and lyricists such as Vincent Fang and Lin Xi are stars in their own right. Mandarin and Cantonese are tonal languages, so a muffled consonant or a buried vowel can change the meaning of a word."
     },
     {
-      "text": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard. The audience will say “that sounded wrong” if the vocal is buried, sibilant, or swimming in reverb; if the ballad sections are loud and harsh; or if a famous intro (a piano figure, an erhu (two-string fiddle) line) is missing or thin."
+      "text": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard. Listeners notice at once when the vocal is buried, sibilant or swimming in reverb, when the ballad sections are loud and harsh, or when a famous intro, such as a piano figure or an erhu (two-string fiddle) line, is missing or thin."
     }
   ],
   "instruments": [
@@ -53,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "common. TV and award shows often use full tracks; arena tours run strings, choirs and ethnic-instrument stems from timecode.",
+      "text": "common. TV and award shows often use full tracks; arena tours run strings, choirs and Chinese-instrument stems from timecode.",
       "bullet": true
     }
   ],
@@ -100,7 +100,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Pipa (plucked lute)",
-        "cut": "HPF 100–120 Hz; −2–4 dB at 2–4 kHz if pick attack is spiky",
+        "cut": "HPF 80–100 Hz; −2–4 dB at 2–4 kHz if the nail attack is spiky",
         "boost": "+1–2 dB at 400–800 Hz (body)",
         "notes": "Miking too close gives all pluck and no resonance; ~60 cm works in studio"
       },
@@ -158,7 +158,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "~3:1",
         "attackRelease": "Program-dependent",
         "gainReduction": "2–3 dB",
-        "notes": "Smooth, transparent; ballads need warmth not grab"
+        "notes": "Smooth, transparent; ballads need warmth, not grab"
       },
       {
         "source": "Backing vocals",
@@ -256,7 +256,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Listeners raised on KTV echo accept more ballad reverb than Western pop; duck the vocal reverb 2–4 dB under active singing to keep words clear."
+        "text": "Listeners raised on KTV echo accept more ballad reverb than Western pop listeners do; duck the vocal reverb 2–4 dB under active singing to keep words clear."
       }
     ]
   },
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and stadium C-pop typically runs 94–100 dBA LAeq-15 at FOH, with ballad sections 88–94 dBA and up-tempo encores to about 102 dBA, around 110–118 dBC. Some tours run loud and bass-rich, but sub should never mask the vocal. Fans singing famous choruses can rival the PA; pull the band slightly rather than push the vocal into feedback. In Hong Kong, outdoor events are limited to 10 dBA above background at nearby residences (LAeq-15) before 11 p.m. and must be inaudible after; cardioid subs help. NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Arena and stadium C-pop typically runs 94–100 dBA LAeq,15min at FOH, with ballad sections 88–94 dBA and up-tempo encores to about 102 dBA, around 110–118 dBC. Some tours run loud and bass-rich, but sub should never mask the vocal. Fans singing famous choruses can rival the PA; pull the band slightly rather than push the vocal into feedback. In Hong Kong, outdoor events are limited to 10 dBA above background at nearby residences, measured as LAeq,15min, before 11 p.m. and must be inaudible after; cardioid subs help. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
@@ -288,7 +288,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Chinese instruments",
         "live": "Pickups or clip-on condensers for isolation; often playback stems",
-        "studio": "Large-diaphragm or small condensers at 30–60 cm; under the guzheng (plucked zither), at the erhu (two-string fiddle) soundbox"
+        "studio": "Large- or small-diaphragm condensers at 30–60 cm; under the guzheng (plucked zither), at the erhu (two-string fiddle) soundbox"
       },
       {
         "area": "Low end",
@@ -307,12 +307,12 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Playback",
-        "live": "Timecoded strings, choirs and ethnic stems; check blend with live band",
+        "live": "Timecoded strings, choirs and Chinese-instrument stems; check blend with live band",
         "studio": "Real sessions or sample libraries mixed as one space"
       },
       {
         "area": "Loudness",
-        "live": "94–100 dBA LAeq-15",
+        "live": "94–100 dBA LAeq,15min",
         "studio": "−11 to −6 LUFS-I by style, −2 dBTP"
       }
     ],

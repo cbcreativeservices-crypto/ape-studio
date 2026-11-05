@@ -11,16 +11,16 @@ export const GUIDE: MixingGuide = {
   "title": "Bluegrass / Americana",
   "expects": "Its audience includes many pickers who know every lick, so they listen for the instrument breaks, the tight trio harmony and the “high lonesome” tenor above the lead.",
   "glance": {
-    "origin": "Bluegrass: Appalachian roots, crystallized by Bill Monroe’s Blue Grass Boys on the Grand Ole Opry, Nashville, December 1945. Americana: U.S. roots umbrella named mid-1990s; AMA founded 1999",
+    "origin": "Bluegrass: Appalachian roots, crystallized by Bill Monroe’s Blue Grass Boys on the Grand Ole Opry, Nashville, December 1945. Americana: U.S. roots umbrella named in the mid-1990s; Americana Music Association founded 1999",
     "tempo": "Bluegrass breakdowns 120–160 BPM in cut time (fast instrumentals 170+ BPM in cut feel); waltzes and gospel numbers 80–110 BPM; Americana songs 70–130 BPM",
     "ensemble": "Bluegrass: 4–6 acoustic players (guitar, mandolin, banjo, fiddle, upright bass, often dobro), 2–4 singers. Americana: duo to 6-piece with drums, electric guitar, pedal steel, keys",
     "priority": "Vocal harmony and lyric intelligibility over a clear, uncluttered acoustic ensemble that still sounds like real wood and strings",
-    "liveSpl": "Bluegrass/listening rooms 85–92 dBA Leq (LAeq-15 min), only a few dB higher in dBC; Americana with drums 92–98 dBA; festival main stages 90–96 dBA",
-    "studioLoudness": "Bluegrass and acoustic masters commonly −14 to −11 LUFS-I; Americana band records −11 to −9; streaming normalizes to about −14"
+    "liveSpl": "Bluegrass/listening rooms 85–92 dBA LAeq,15min, only a few dB higher in dBC; Americana with drums 92–98 dBA; festival main stages 90–96 dBA",
+    "studioLoudness": "Bluegrass and acoustic masters commonly −14 to −11 LUFS-I; Americana band records −11 to −9; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Bluegrass is ensemble music for close listening, jamming and community. Its audience includes many pickers who know every lick, so they listen for the instrument breaks, the tight trio harmony and the “high lonesome” tenor above the lead. In this form the band itself is the star: fiddle matters as much as mandolin. Festival parking-lot jams, Sunday gospel sets and seated listening rooms set the tone: people want wood, fingers and breath, not a rock PA. Americana is song-first storytelling with roots instrumentation; audiences expect the lyric to read clearly and the band to feel organic and played together. “Wrong” means a stinging banjo, booming or missing bass, a buried break, smeared harmonies, a tuned-sounding vocal, or simply too loud."
+      "text": "Bluegrass is ensemble music for close listening, jamming and community. Its audience includes many pickers who know every lick, so they listen for the instrument breaks, the tight trio harmony and the “high lonesome” tenor above the lead. The band itself is the star, and every instrument gets its turn. Festival parking-lot jams, Sunday gospel sets and seated listening rooms set the tone: people want wood, fingers and breath, not a rock PA. Americana is song-first storytelling with roots instrumentation; audiences expect the lyric to read clearly and the band to feel organic and played together. “Wrong” means a stinging banjo, booming or missing bass, a buried break, smeared harmonies, a tuned-sounding vocal, or a mix that is simply too loud."
     }
   ],
   "instruments": [
@@ -46,12 +46,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Upright (double) bass:",
-      "text": "root-fifth on the downbeats; almost always acoustic, sometimes with pickup.",
+      "text": "root-fifth on the downbeats; almost always acoustic, sometimes with a pickup.",
       "bullet": true
     },
     {
       "label": "Resonator guitar (dobro):",
-      "text": "slide lead and fills, usually via pickup and pedalboard live.",
+      "text": "slide lead and fills; live, usually through a pickup and pedalboard.",
       "bullet": true
     },
     {
@@ -72,7 +72,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal (and harmony stack in choruses); the featured soloist during a break; upright bass; guitar; mandolin chop; banjo rolls (tucked, they read easily); fiddle fills; dobro fills; reverb. There is no kick drum in traditional bluegrass, so the upright bass owns the low end alone—roughly 40–250 Hz for fundamentals, 700 Hz–1.5 kHz for the attack that lets it be heard on small speakers. In Americana with drums, keep the kick small and soft (60–80 Hz thump, little click) under the bass. In the studio, pan to mirror the stage line (banjo and fiddle 30–50% opposite, mandolin and guitar inside, bass and vocal center). Live, most engineers run near-mono."
+      "text": "Hierarchy, loudest to quietest: lead vocal (and harmony stack in choruses); the featured soloist during a break; upright bass; guitar; mandolin chop; banjo rolls (tucked low, they still cut through); fiddle fills; dobro fills; reverb. There is no kick drum in traditional bluegrass, so the upright bass owns the low end alone—roughly 40–250 Hz for fundamentals, 700 Hz–1.5 kHz for the attack that lets it be heard on small speakers. In Americana with drums, keep the kick small and soft (60–80 Hz thump, little click) under the bass. In the studio, pan to mirror the stage line (banjo and fiddle 30–50% opposite, mandolin and guitar inside, bass and vocal center). Live, most engineers run near-mono."
     }
   ],
   "eq": {
@@ -99,7 +99,7 @@ export const GUIDE: MixingGuide = {
         "source": "Fiddle",
         "cut": "HPF 150–200 Hz; −2–3 dB at 1.2–1.5 kHz (pickup nasal, feedback); dip 3–4 kHz if scratchy",
         "boost": "+1–2 dB shelf at 8–10 kHz for bow air",
-        "notes": "Mic ~20 cm above bridge; aim at f-holes for warmth, neck for thinner"
+        "notes": "Mic ~20 cm above bridge; aim at f-holes for warmth, toward the neck for a thinner tone"
       },
       {
         "source": "Acoustic guitar",
@@ -156,7 +156,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "5–15 ms / 80–150 ms",
         "gainReduction": "2–4 dB",
-        "notes": "Some top bluegrass FOH engineers skip it entirely for naturalness"
+        "notes": "Some bluegrass FOH engineers skip it entirely for a natural sound"
       },
       {
         "source": "Harmony vocals (bus)",
@@ -240,7 +240,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tape saturation",
         "appliedTo": "Banjo, bass, vocal (studio)",
-        "setting": "Light, 1–2% THD feel",
+        "setting": "Light, about 1–2% THD",
         "amount": "Subtle; rounds transients"
       }
     ],
@@ -252,13 +252,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Vocals lead, and the harmony stack is the emotional peak. The lead should sit 2–4 dB above the instruments, with harmonies tucked 2–4 dB under the lead and blended so the trio sounds like one chord. The tenor part often sits above the lead and can get piercing; ride it or use dynamic EQ instead of pulling it out. Pitch correction, if any, should be inaudible; audible tuning is a serious breach of the genre’s authenticity, and many bluegrass records use none. Doubles are rare in bluegrass but common in Americana choruses. Live, multi-mic bands use rugged dynamics; single-mic bands and a cappella gospel numbers use an LDC at mouth height, singers moving in and out to balance."
+      "text": "Vocals lead, and the harmony stack is the emotional peak. The lead should sit 2–4 dB above the instruments, with harmonies tucked 2–4 dB under the lead and blended so the trio sounds like one chord. The tenor part often sits above the lead and can get piercing; ride it or use dynamic EQ instead of pulling it out. Pitch correction, if any, should be inaudible; audible tuning sounds fake to this audience, and many bluegrass records use none. Doubles are rare in bluegrass but common in Americana choruses. Live, multi-mic bands use rugged dynamic mics; single-mic bands and a cappella gospel numbers use an LDC at mouth height, with singers moving in and out to balance."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH; C-weighted levels sit only a few dB higher, since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Sub-woofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across a big field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs and pickups-to-wedges (mics to FOH) help."
+      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq,15min at FOH; C-weighted levels sit only a few dB higher, since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Subwoofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across the field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs help, as does sending pickups to the wedges and mics to FOH."
     },
     {
       "label": "Studio / streaming:",
@@ -284,7 +284,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Vocals",
-        "live": "Dynamics or LDC, little compression, careful feedback notches",
+        "live": "Dynamic mics or an LDC, little compression, careful feedback notches",
         "studio": "Large-diaphragm condensers, light compression, no audible tuning"
       },
       {
@@ -327,13 +327,13 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Delay the pickup about 0.5–2 ms to line it up with the mic, then check polarity: flip it and keep the setting that sounds fuller. This audience complains about loud long before quiet.",
+      "text": "Delay the pickup about 0.5–2 ms to line it up with the mic, then check polarity: flip it and keep the setting that sounds fuller. Keep levels modest: this audience complains about too loud long before too quiet.",
       "bullet": true
     }
   ],
   "references": [
-    "Bill Monroe and His Blue Grass Boys, “Blue Moon of Kentucky”, 1946",
-    "Flatt & Scruggs, “Foggy Mountain Breakdown”, 1949",
+    "Bill Monroe and His Blue Grass Boys, “Blue Moon of Kentucky”, 1947",
+    "Flatt & Scruggs, “Foggy Mountain Breakdown”, 1950",
     "Alison Krauss & Union Station, “Live”, 2002",
     "Gillian Welch, “Time (The Revelator)”, 2001",
     "Del McCoury Band, “It’s Just the Night”, 2003",

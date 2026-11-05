@@ -18,16 +18,16 @@ export const GUIDE: MixingGuide = {
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat",
     "tempo": "100–115 BPM (median around 108–110; mellow Ghanaian and R&B-leaning cuts 93–100)",
     "ensemble": "Solo artist + tracks (most common); touring headliners carry 6–10 piece bands plus percussion section, horns, BVs and sometimes a choir",
-    "priority": "The percussion groove (rimshot, shakers, clave (a one- or two-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
-    "liveSpl": "96–102 dBA LAeq-15 min; roughly 112–120 dBC LCeq in clubs and arenas",
-    "studioLoudness": "Masters commonly −10 to −7 LUFS-I; streaming normalizes to about −14"
+    "priority": "The percussion groove—rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern—bright and forward, with the lead vocal hook riding on it",
+    "liveSpl": "96–102 dBA LAeq,15min; roughly 112–120 dBC LCeq in clubs and arenas",
+    "studioLoudness": "Masters commonly −10 to −7 LUFS-I; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
       "text": "Afrobeats is dance and celebration music: owambe (lavish Yoruba) parties, weddings, clubs, Detty December (the December party season) concerts in Lagos and Accra, and diaspora nights in London and Houston. Lyrics (Nigerian or Ghanaian English, Pidgin, Yoruba, Igbo, Twi) cover love, joy and hustle. Audiences sing every hook and expect a relaxed, warm, bouncy groove, never an aggressive one."
     },
     {
-      "text": "Note the link and the gap with Afrobeat (no “s”). Fela Kuti’s Afrobeat was a big live band (horns, interlocking guitars, Tony Allen’s drums) playing long, political, jazz-funk pieces. Afrobeats is a commercial pop umbrella, mostly assembled in a DAW, three-to-four-minute songs, vocal-led from the first bar, fusing highlife, jùjú (Yoruba guitar-band music), fuji (Yoruba percussion music), hiplife, dancehall, R&B and house. Many artists (Burna Boy especially) sample and honor Fela, but a guide for one does not fit the other. Amapiano’s log-drum sound has crossed over heavily since about 2020; it has its own guide (Amapiano)."
+      "text": "Afrobeats is related to, but different from, Afrobeat (no “s”). Fela Kuti’s Afrobeat was a big live band (horns, interlocking guitars, Tony Allen’s drums) playing long, political, jazz-funk pieces. Afrobeats is a commercial pop umbrella: three- to four-minute songs, mostly built in a DAW and vocal-led from the first bar, fusing highlife, jùjú (Yoruba guitar-band music), fuji (Yoruba percussion music), hiplife, dancehall, R&B and house. Many artists (Burna Boy especially) sample and honor Fela, but a mix approach for one does not fit the other. Amapiano’s log-drum sound has crossed over heavily since about 2020; it has its own guide (Amapiano)."
     },
     {
       "text": "What sounds wrong to this audience: percussion buried behind the vocal, a muddy or boomy low end that hides the bass melody, a harsh 6–8 kHz shaker that fatigues, or a vocal that is dry and stuck on top instead of floating in the groove."
@@ -56,7 +56,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys and synths:",
-      "text": "electric piano, soft pads, plucks, bells, marimba and kalimba-like mallets.",
+      "text": "electric piano, soft pads, plucks, bells, marimba and kalimba-like tones.",
       "bullet": true
     },
     {
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
       "text": "In the studio the producer’s beat is the arrangement: intro (4–8 bars, often with a producer tag), verse (16), hook (8), verse, hook, sometimes a “dance break,” outro. Percussion carries the rhythm and is often the lead character; bass carries much of the harmony; guitar and keys fill gaps; the vocal hook carries melody. Sections change by adding or muting percussion layers and dropping the kick, not by big dynamic swings."
     },
     {
-      "text": "On stage, a headline show is large: a stadium setup can run about 120 inputs (core band of drums, bass, guitar, two keys and sax; three-piece brass; three BVs; a choir; eight to ten percussionists on talking drums and omele (small support drums)). Typical layout: drums center, percussion riser to one side, horns on the other, BVs upstage, dancers downstage. Live arrangements extend dance breaks and medley hits."
+      "text": "On stage, a headline show is large: a stadium setup can run about 120 inputs, with a core band of drums, bass, guitar, two keys and sax, plus three-piece brass, three BVs, a choir and eight to ten percussionists on talking drums and omele (small support drums). Typical layout: drums center, percussion riser to one side, horns on the other, BVs upstage, dancers downstage. Live arrangements extend dance breaks and medley hits."
     }
   ],
   "dynamics": [
@@ -85,7 +85,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal and rimshot/snare roughly level, then kick and bass, shakers and percussion (often brighter and more forward than Western pop would place them), guitar and keys, pads, BVs and ad-libs, FX returns. This audience wants fast, upper-mid percussion upfront, at times even above the vocal. Western engineers often bury it; resist that."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal and rimshot/snare roughly level, then kick and bass, shakers and percussion (often brighter and more forward than Western pop would place them), guitar and keys, pads, BVs and ad-libs, FX returns. This audience wants fast, upper-mid percussion up front, at times even above the vocal. Western engineers often bury it; resist that."
     },
     {
       "text": "Low end: the kick is short and punchy (50–80 Hz thump, quick decay), while the bass or 808 is melodic and sustained. Sidechain bass from kick for 2–4 dB of ducking, and keep bass harmonics at 100–200 Hz audible, since a bass that exists only at 40 Hz vanishes on phones. Pan shakers and secondary percussion off-center (20–60%), with congas and talking drum placed opposite each other; guitar off-center opposite keys; kick, snare/rim, bass and lead vocal centered; BV stacks wide."
@@ -109,7 +109,7 @@ export const GUIDE: MixingGuide = {
         "source": "Claps / snaps",
         "cut": "HPF 200–300 Hz; dip 2–3 kHz if clashing with vocal",
         "boost": "+1–2 dB at 8–10 kHz",
-        "notes": "Removing 2–3 kHz on snaps and widening them works well"
+        "notes": "Dip 2–3 kHz on snaps and widen them to clear the vocal"
       },
       {
         "source": "Shakers / shekere",
@@ -145,7 +145,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–100 Hz; −2 dB at 250–400 Hz; notch resonances",
         "boost": "+2–3 dB at 4–5 kHz; +1–2 dB at 12–14 kHz",
-        "notes": "Common vocal lifts sit around 4–5 kHz and 12–14 kHz"
+        "notes": "Mid-forward and warm; lift only presence and air"
       }
     ],
     "notes": [
@@ -211,7 +211,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "1–2 dB",
-        "notes": "Groove glue; keep bus compression at 1–2 dB"
+        "notes": "Groove glue; never dull the percussion transients"
       }
     ],
     "notes": [
@@ -249,7 +249,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Short delay / chorus",
         "appliedTo": "Highlife guitar",
-        "setting": "1/16 delay 10–15% fb; chorus 0.5 Hz, 15% depth",
+        "setting": "1/16 delay, 10–15% feedback; chorus 0.5 Hz, 15% depth",
         "amount": "Subtle"
       },
       {
@@ -259,7 +259,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle, tucked"
       },
       {
-        "effect": "Hard-tune pitch correction (effect)",
+        "effect": "Hard-tune pitch correction",
         "appliedTo": "Lead and BVs",
         "setting": "Very fast retune (about 0–20 ms) when the artist uses it as a sound",
         "amount": "As produced"
@@ -267,23 +267,23 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Delays feeding a reverb give the airy “ocean of space” these records have without washing out the vocal or the percussion."
+        "text": "Delays feeding a reverb give these records their airy sense of space without washing out the vocal or the percussion."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The lead vocal is mid-forward, warm and intimate, sitting into the groove: roughly level with the rimshot and only 1–2 dB above percussion. Intelligibility matters, but accents, Pidgin and code-switching are features, not problems; don’t EQ them thin. Pitch correction is standard and often audible as an effect; match the demo, which is usually the intended sound. Hooks are stacked with doubles, octaves and harmonies, with call-and-response BVs and ad-libs panned wide. Keep producer tags. Live, drop the lead 3–6 dB when the crowd takes the hook and keep a tempo-synced delay on a tap."
+      "text": "The lead vocal is mid-forward, warm and intimate, sitting into the groove: roughly level with the rimshot and only 1–2 dB above percussion. Intelligibility matters, but accents, Pidgin and code-switching are features, not problems; don’t EQ them thin. Pitch correction is standard and often audible as an effect; match the demo, which is usually the intended sound. Hooks are stacked with doubles, octaves and harmonies, with call-and-response BVs and ad-libs panned wide. Keep producer tags. Live, drop the lead 3–6 dB when the crowd takes the hook and keep a tap-tempo delay ready."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and diaspora party shows run about 96–100 dBA LAeq-15 at FOH; arena and festival headliners 100–102 dBA, with C-weighted LCeq around 112–120 dBC. Afrobeats wants solid but warm sub, less than EDM, more than rock; a C-minus-A gap above 20 dB signals excessive low end. Many UK/EU venues cap around 100 dBA LAeq-15. NIOSH advises no more than about 15 minutes a day at 100 dBA; where no limits are enforced, self-police and protect your ears. Plan for unstable mains power at some venues (UPS on consoles and racks)."
+      "text": "Club and diaspora party shows run about 96–100 dBA LAeq,15min at FOH; arena and festival headliners 100–102 dBA, with C-weighted LCeq around 112–120 dBC. Afrobeats wants solid but warm sub, less than EDM, more than rock; a C-minus-A gap above 20 dB signals excessive low end. Many UK/EU venues cap around 100 dBA LAeq,15min. NIOSH advises no more than about 15 minutes a day at 100 dBA; where no limits are enforced, self-police and protect your ears. Plan for unstable AC power at some venues (UPS on consoles and racks)."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP for masters louder than −14, a common streaming recommendation). Platforms normalize to about −14 LUFS, so extra loudness buys nothing and costs percussion snap. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, the quiet end of that range or below) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
+      "text": "Commercial masters typically land at −10 to −7 LUFS-I with a −2 dBTP ceiling (−1 dBTP is enough for masters at or below −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and costs percussion snap. Aim for a PLR of roughly 8–10 dB (about −12 to −10 LUFS-I at −2 dBTP, at or below the quiet end of the typical range) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
     }
   ],
   "liveStudio": {
@@ -320,7 +320,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "96–102 dBA LAeq-15",
+        "live": "96–102 dBA LAeq,15min",
         "studio": "Often −10 to −7 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],

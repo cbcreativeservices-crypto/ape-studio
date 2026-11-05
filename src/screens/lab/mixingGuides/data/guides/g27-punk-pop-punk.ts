@@ -15,8 +15,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "Mostly 140–200 BPM (classic punk 150–180; skate punk and hardcore 180–240+; pop-punk choruses often 160–200 with half-time breakdowns)",
     "ensemble": "3–5 piece: drums, bass, 1–2 electric guitars, lead vocal, with band members singing backing and gang vocals",
     "priority": "A tight, driving drums-guitars wall with the lead vocal and its hooks always intelligible on top",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min) in theaters and festivals; small clubs often 100–106 dBA; roughly 112–122 dBC; common safe-listening guidance and many festivals cap at 100 dBA LAeq-15",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (1990s CD-era records around −10 to −8); streaming normalizes to about −14"
+    "liveSpl": "98–103 dBA LAeq,15min in theaters and festivals; small clubs often 100–106 dBA; roughly 112–122 dBC; common safe-listening guidance and many festivals cap at 100 dBA LAeq,15min",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (1990s CD-era records around −10 to −8); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -26,17 +26,17 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Drums:",
-      "text": "simple acoustic kit. Defining patterns: the fast “skate” beat (snare on every upbeat, kick doubles), hardcore’s D-beat, sloshy open hats, and pop-punk half-time breakdowns.",
+      "text": "simple acoustic kit. Defining patterns: the fast “skate” beat (kick on the beat, snare on every upbeat), hardcore’s D-beat, sloshy open hats, and pop-punk half-time breakdowns.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric bass played with a pick, often driven through an overdriven amp or an amp-simulator DI pedal; it doubles guitar roots and supplies grind as much as low end.",
+      "text": "electric bass played with a pick, often through an overdriven amp or an amp-simulator DI pedal; it doubles guitar roots and supplies grind as much as low end.",
       "bullet": true
     },
     {
       "label": "Electric guitars:",
-      "text": "humbucker or single-coil guitars into crunchy British-style amps with medium (not metal) gain, often tuned down a half step. Power chords, palm-muted verses and open choruses.",
+      "text": "humbucker or single-coil guitars, often tuned down a half step, into crunchy British-style amps with medium (not metal) gain. Power chords, palm-muted verses and open choruses.",
       "bullet": true
     },
     {
@@ -244,7 +244,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Classic punk runs fairly dry, but not bone-dry: the band wanted Dookie dry, found the first mix unsatisfying, and had it remixed. Long tails turn fast songs to mush."
+        "text": "Punk runs fairly dry, but not bone-dry: Green Day wanted Dookie dry, were unhappy with the first mix and had it remixed. Long tails turn fast songs to mush."
       }
     ]
   },
@@ -256,11 +256,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high—sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq-15 and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. The WHO safe-listening standard for venues sets 100 dBA LAeq-15 as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
+      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high—sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq,15min and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. The WHO safe-listening standard for venues sets 100 dBA LAeq,15min as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so extreme loudness gains nothing and costs punch. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
+      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness gains nothing and costs punch. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
     }
   ],
   "liveStudio": {
@@ -297,7 +297,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "98–104 dBA Leq, venue or festival limits",
+        "live": "98–103 dBA LAeq,15min; venue or festival limits",
         "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
@@ -317,7 +317,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t bury the vocal or the hooks—pop-punk audiences sing every word and notice when they can’t hear it.",
+      "text": "Don’t bury the vocal or the hooks—pop-punk audiences sing every word and notice when they can’t hear them.",
       "bullet": true
     },
     {

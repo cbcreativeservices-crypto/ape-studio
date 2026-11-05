@@ -13,16 +13,16 @@ export const GUIDE: MixingGuide = {
   "title": "Amapiano",
   "expects": "The crowd expects to feel the log drum physically, hear jazzy keys float over it, and shout back the hooks.",
   "glance": {
-    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito (South African township house), deep house, Bacardi and jazz; national breakout 2019",
+    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito (South African township house), deep house, Bacardi (Pretoria township house) and jazz; national breakout 2019",
     "tempo": "108–115 BPM (112 is a common default); “private school” piano sits at the slower end",
     "ensemble": "DJ/producer plus 1–4 vocalists and hype MCs; often a featured sax, keys or guitar player; dancers on stage; bigger shows add a band or orchestra",
     "priority": "The log drum: weighty in the sub, woody and pitched in the mids, landing between the kicks without masking them",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min), roughly 115–122 dBC LCeq; sub-heavy, so watch the C-minus-A gap",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (soulful/private school around −10 to −8); streaming normalizes to about −14"
+    "liveSpl": "98–103 dBA LAeq,15min, roughly 115–122 dBC LCeq; sub-heavy, so watch the C-minus-A gap",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (soulful/private school around −10 to −8); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Amapiano (“the pianos” in isiZulu) is dance music born in tavern and township party culture (Mamelodi’s Jack Budha tavern, street parties, taxis), with tracks spreading on messaging apps before radio. It is for long, unhurried dancing — routines such as Dakiwe and uMlando, plus social-video challenges — and for collective joy and township pride. The crowd expects to feel the log drum physically, hear jazzy keys float over it, and shout back the hooks. A mellow listening side also exists (“private school” piano, associated with Kelvin Momo). Listeners will say “that sounded wrong” if the log drum is thin, distorted to mush or buried under the kick; if the shakers are missing or harsh; if the tempo feels rushed; or if the mix sounds like over-bright, over-pumped EDM."
+      "text": "Amapiano (“the pianos” in isiZulu) is dance music born in tavern and township party culture (Mamelodi’s Jack Budah tavern, street parties, taxis), with tracks spreading on messaging apps before radio. It is for long, unhurried dancing — routines such as Dakiwe and uMlando, plus social-video challenges — and for collective joy and township pride. The crowd expects to feel the log drum physically, hear jazzy keys float over it, and shout back the hooks. A mellow listening side also exists (“private school” piano, associated with Kelvin Momo). Listeners notice at once when the log drum is thin, distorted to mush or buried under the kick; when the shakers are missing or harsh; when the tempo feels rushed; or when the mix sounds like over-bright, over-pumped EDM."
     }
   ],
   "instruments": [
@@ -43,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Piano/keys:",
-      "text": "Electric piano and acoustic piano looping 7th and 9th chords; warm pads.",
+      "text": "electric and acoustic piano looping 7th and 9th chords; warm pads.",
       "bullet": true
     },
     {
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Most shows are DJ-led: the DJ upstage center at decks, vocalists and hype men front, dancers across the stage, sometimes a sax or keys player beside the booth. Larger concerts (stadium shows, and in 2024 a show with a 33-piece orchestra) add a full band. In the track, kick and shakers set the floor, the log drum carries bass and groove, keys and pads supply harmony, and vocals sit inside the groove. Arrangements are long and DJ-friendly: 8–16 bar intro, 16-bar foundation, a 16–32 bar “log drum section”, a breakdown (log drum out, keys and vocals exposed) and a return. Tracks of 6–8 minutes are normal; the biggest moment is usually the log drum coming back after a drop-out."
+      "text": "Most shows are DJ-led: the DJ upstage center at decks, vocalists and hype men front, dancers across the stage, sometimes a sax or keys player beside the booth. Larger concerts, up to stadium shows, add a full band or even an orchestra. In the track, kick and shakers set the floor, the log drum carries bass and groove, keys and pads supply harmony, and vocals sit inside the groove. Arrangements are long and DJ-friendly: an 8–16-bar intro, a 16-bar foundation, a 16–32-bar “log drum section”, a breakdown (log drum out, keys and vocals exposed) and a return. Tracks of 6–8 minutes are normal; the biggest moment is usually the log drum coming back after a drop-out."
     }
   ],
   "dynamics": [
@@ -110,7 +110,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Fills gaps around the log drum; keep thin"
       },
       {
-        "source": "electric piano / piano",
+        "source": "Electric piano / piano",
         "cut": "HPF 100–150 Hz; −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 2–3 kHz for definition",
         "notes": "Tape-style warmth over bright EQ; leave the log drum’s low mids alone"
@@ -249,7 +249,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Chorus / tape wobble",
-        "appliedTo": "electric piano",
+        "appliedTo": "Electric piano",
         "setting": "0.3–0.8 Hz rate, light depth",
         "amount": "Subtle"
       }
@@ -262,17 +262,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Amapiano vocals sit inside the groove, roughly level with the log drum’s midrange rather than floating 3–4 dB above everything as in pop. Hooks are often chants and call-and-response, so the phrase must read clearly even if not every word is front and center. Lyrics in isiZulu, Sesotho, Setswana and township slang carry wordplay; check intelligibility at 2–5 kHz and ask the artist which lines matter most. Lead tone is warm and soulful, with strong R&B and gospel influence (e.g. the stacked harmonies on Tyla’s “Water”). Pitch correction is common but usually transparent. Backing stacks pan wide and compress as a group. Live, expect several vocalists and MCs over playback: give each a dynamic mic, set hype-mic HPFs around 150 Hz, and mute playback vocals when the live singer takes the line to avoid phasing."
+      "text": "Amapiano vocals sit inside the groove, roughly level with the log drum’s midrange rather than floating 3–4 dB above everything as in pop. Hooks are often chants and call-and-response, so the phrase must read clearly even if not every word is front and center. Lyrics in isiZulu, Sesotho, Setswana and township slang carry wordplay; check intelligibility at 2–5 kHz and ask the artist which lines matter most. Lead tone is warm and soulful, with strong R&B and gospel influence (e.g., the stacked harmonies on Tyla’s “Water”). Pitch correction is common but usually transparent. Backing stacks pan wide and compress as a group. Live, expect several vocalists and MCs over playback: give each a dynamic mic, set hype-mic HPFs around 150 Hz, and mute playback vocals when the live singer takes the line to avoid phasing."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club, tavern and festival amapiano typically runs 98–103 dBA LAeq-15 at FOH, peaking at 108–112 dBA on log drum returns. Being sub-led, C-weighted LCeq of about 115–122 dBC is common, close to 20 dB above the A level; a C-minus-A gap above 20 dB at already-high A levels means the sub is too hot. Cardioid sub arrays keep the log drum tight and off the stage and neighbors. NIOSH advises no more than about 15 minutes a day at 100 dBA, and amapiano nights run for hours — offer earplugs and check venue or municipal limits."
+      "text": "Club, tavern and festival amapiano typically runs 98–103 dBA LAeq,15min at FOH, peaking at 108–112 dBA on log drum returns. Because the music is sub-led, C-weighted levels of about 115–122 dBC LCeq are common, close to 20 dB above the A level; a C-minus-A gap above 20 dB at already-high A levels means the sub is too hot. Cardioid sub arrays keep the log drum tight and its energy off the stage and away from neighbors. NIOSH advises no more than about 15 minutes a day at 100 dBA, and amapiano nights run for hours — offer earplugs and check venue or municipal limits."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Services normalize to about −14 LUFS, so extra loudness buys nothing and can flatten the log drum’s bounce. For more bounce than the club norm, aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
+      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and can flatten the log drum’s bounce. For more bounce than the club norm, aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
     }
   ],
   "liveStudio": {
@@ -351,10 +351,10 @@ export const GUIDE: MixingGuide = {
   ],
   "references": [
     "Samthing Soweto, Sha Sha, DJ Maphorisa & Kabza De Small, “Akulaleki”, 2019",
-    "Busta 929 & Mpura feat. Zuma, Mr JazziQ, Lady Du & Reece Madlisa, “Umsebenzi Wethu”, 2019",
+    "Busta 929 & Mpura feat. Zuma, Mr JazziQ, Lady Du & Reece Madlisa, “Umsebenzi Wethu”, 2020",
     "Focalistic & Vigro Deep, “Ke Star”, 2020",
     "Young Stunna feat. Kabza De Small & DJ Maphorisa, “Adiwele”, 2021",
-    "Kelvin Momo, Amukelani (album), 2021",
+    "Kelvin Momo, Amukelani (album), 2022",
     "Uncle Waffles, Tman Xpress, Sino Msolo & Boibizza, “Tanzania”, 2022",
     "Tyla, “Water”, 2023"
   ],

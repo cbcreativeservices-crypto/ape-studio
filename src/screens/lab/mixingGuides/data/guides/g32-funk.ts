@@ -13,12 +13,12 @@ export const GUIDE: MixingGuide = {
   "title": "Funk",
   "expects": "Crowds expect to move, sing the hooks and answer the band’s call-and-response.",
   "glance": {
-    "origin": "United States, mid-1960s: James Brown’s band, Sly & the Family Stone (Bay Area), the Meters (New Orleans); P-Funk (Detroit/New Jersey) and big-band funk (Earth, Wind & Fire, Tower of Power, Kool & the Gang) in the 1970s; electro-funk, go-go and modern revival funk after",
+    "origin": "United States, mid-1960s: James Brown’s band, Sly & the Family Stone (Bay Area), the Meters (New Orleans); P-Funk (Detroit/New Jersey) and big-band funk (Earth, Wind & Fire, Tower of Power, Kool & the Gang) in the 1970s; electro-funk, go-go and modern revival funk followed",
     "tempo": "90–120 BPM (slow grinds 80–90; up-tempo and go-go 105–125), almost always on a straight or lightly swung 16th-note grid",
     "ensemble": "6–12 piece band: drums, bass, 1–2 guitars, keys (clav, electric piano, organ, synth), 2–5 horns, percussion, lead vocal plus 2–4 backing vocals",
     "priority": "The interlocking groove: kick, snare/ghost notes, hi-hat and bass landing hard on “the one,” with every rhythm part audible as its own voice",
-    "liveSpl": "95–102 dBA Leq (LAeq-15 min); roughly 110–118 dBC",
-    "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic catalog and revival records −14 to −11); streaming normalizes to about −14"
+    "liveSpl": "95–102 dBA LAeq,15min; roughly 110–118 dBC",
+    "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic catalog and revival records −14 to −11); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -64,12 +64,12 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Drums sit center upstage with bass near the hi-hat side, guitars and keys flanking, percussion on a riser, and a horn line in a row (often on a riser) facing out. Every part is a rhythm part: drums and bass set the pocket, guitar fills 16th subdivisions, clav plays a counter-riff, horns punctuate. On “Superstition” a signature clav sits on one side and a counterpoint clav on the other, the counter-part doing as much work as the hook. Arrangements are vamps that add layers every 4–8 bars, drop to a breakdown (bass and drums, or drums alone) and return with horns. Bandleaders cue hits and stops live, so expect sudden full-band stops."
+      "text": "Drums sit center upstage with bass near the hi-hat side, guitars and keys flanking, percussion on a riser, and a horn line in a row (often on a riser) facing out. Every part is a rhythm part: drums and bass set the pocket, guitar fills 16th subdivisions, clav plays a counter-riff, horns punctuate. On “Superstition” a signature clav sits on one side and a counterpoint clav on the other, and the counterpart does as much work as the hook. Arrangements are vamps that add layers every 4–8 bars, drop to a breakdown (bass and drums, or drums alone) and return with horns. Bandleaders cue hits and stops live, so expect sudden full-band stops."
     }
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics come from arrangement density: breakdowns may fall 6–10 dB below the full-horn vamp. Micro-dynamics are the lifeblood — ghost note versus backbeat, slap versus pop, stab versus silence. Control peaks but keep transients sharp with slow attacks and modest gain reduction; heavy master limiting kills funk’s snap. Live, ride horns and percussion by section and pull reverb returns during stops."
+      "text": "Macro-dynamics come from arrangement density: breakdowns may fall 6–10 dB below the full-horn vamp. Micro-dynamics carry the groove: ghost note versus backbeat, slap versus pop, stab versus silence. Control peaks but keep transients sharp with slow attacks and modest gain reduction; heavy master limiting kills funk’s snap. Live, ride horns and percussion by section and pull reverb returns during stops."
     }
   ],
   "balance": [
@@ -118,7 +118,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Rhythm guitar (clean)",
         "cut": "HPF 150–200 Hz; −2 dB at 300–500 Hz",
-        "boost": "+2–3 dB at 2–4 kHz; slight 6–8 kHz",
+        "boost": "+2–3 dB at 2–4 kHz; slight lift at 6–8 kHz",
         "notes": "Thin is correct; it lives above the bass and clav"
       },
       {
@@ -273,24 +273,24 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Funk vocals range from James Brown’s shouts and screams to falsetto (Prince, Philip Bailey) and P-Funk’s many-voiced chants. The lead sits only 1–3 dB above the band but must be intelligible over horns and clav; add 3–5 kHz presence and carve competing keys rather than adding level. Shouts need a fast limiter catching 6–10 dB on peaks. Keep pitch correction minimal (grit and blue notes are the style), though pop-funk is tuned tighter. Backing chants and harmony stacks are compressed harder and panned wider; call-and-response hooks must be loud enough for the crowd to sing back. Treat talk box and vocoder as instruments. Live, use a rugged dynamic or a supercardioid capsule, and keep horn bells away from vocal mics."
+      "text": "Funk vocals range from James Brown’s shouts and screams to falsetto (Prince, Philip Bailey) and P-Funk’s many-voiced chants. The lead sits only 1–3 dB above the band but must be intelligible over horns and clav; add 3–5 kHz presence and carve competing keys rather than adding level. Shouts need a fast limiter catching 6–10 dB on peaks. Keep pitch correction minimal (grit and blue notes are the style), though pop-funk is tuned tighter. Backing chants and harmony stacks are compressed harder and panned wider; call-and-response hooks must be loud enough for the crowd to sing back. Treat talk box and vocoder as instruments. Live, use a rugged cardioid or supercardioid dynamic mic, and keep horn bells away from vocal mics."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Clubs and theaters run 95–100 dBA LAeq-15 at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs."
+      "text": "Clubs and theaters run 95–100 dBA LAeq,15min at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern funk and pop-funk masters land around −10 to −8 LUFS-I, revival records −13 to −11, true peak −1 dBTP (−2 dBTP if louder than −14 LUFS). Services normalize to about −14, so extra loudness only costs snap. For more snap, keep a peak-to-loudness ratio of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter, below the loud modern range)."
+      "text": "Modern funk and pop-funk masters land around −10 to −8 LUFS-I, revival records −13 to −11, with true peak at or below −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness only costs snap. For more snap, keep a peak-to-loudness ratio of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter, below the loud modern range)."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Channel count",
-        "live": "Big bands mean 40–100+ inputs (big pop-funk tours run 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, BVs",
+        "live": "Large bands need 40–100+ inputs (pop-funk tours 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, BVs",
         "studio": "Fewer tracks; some revival records use one mic on drums and one on the horn section"
       },
       {
@@ -320,7 +320,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–102 dBA Leq",
+        "live": "95–102 dBA LAeq,15min",
         "studio": "−10 to −8 LUFS-I (modern), −2 dBTP"
       }
     ],
@@ -360,7 +360,7 @@ export const GUIDE: MixingGuide = {
     "Tower of Power, “What Is Hip?”, 1973",
     "Parliament, “Flash Light”, 1977",
     "Chic, “Good Times”, 1979",
-    "Mark Ronson ft. Bruno Mars, “Uptown Funk”, 2014"
+    "Mark Ronson feat. Bruno Mars, “Uptown Funk”, 2014"
   ],
   "empty": []
 };

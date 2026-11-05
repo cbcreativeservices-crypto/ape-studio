@@ -15,10 +15,10 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero (slow romantic song) and son (Cuban roots song style) traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s",
     "tempo": "120–140 BPM for dance tracks (romantic ballads 110–120; fast mambo-heavy or merengue-tinged tracks up to 150+)",
-    "ensemble": "Classic quintet (requinto (lead guitar), segunda (rhythm guitar), bass, bongó (small hand drums), güira (metal scraper)) plus lead vocal; urban/arena acts add keys, programmed drums, 1–2 backing vocals and playback",
-    "priority": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper)–bass pulse dancers can feel",
-    "liveSpl": "95–100 dBA LAeq-15 in clubs and dance socials; 98–102 dBA in arenas; roughly 110–118 dBC",
-    "studioLoudness": "Modern urban masters commonly −10 to −8 LUFS-I, traditional and acoustic releases around −12 to −10; streaming normalizes to about −14"
+    "ensemble": "Classic quintet of requinto (lead guitar), segunda (rhythm guitar), bass, bongó (small hand drums) and güira (metal scraper), plus lead vocal; urban and arena acts add keys, programmed drums, 1–2 backing vocals and playback",
+    "priority": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper) and bass pulse that dancers can feel",
+    "liveSpl": "95–100 dBA LAeq,15min in clubs and dance socials; 98–102 dBA in arenas; roughly 110–118 dBC",
+    "studioLoudness": "Modern urban masters commonly −10 to −8 LUFS-I, traditional and acoustic releases around −12 to −10; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -64,12 +64,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Bachata has modest dynamic range (about 4–8 dB from derecho (steady verse feel) to mambo (instrumental guitar break)) because dancers need a constant pulse; lift comes from density and percussion changes more than level. Preserve the step from derecho to majao (marked chorus feel) to mambo. Control micro-dynamics firmly (güira peaks, bongó (small pair of hand drums) slaps, requinto (lead guitar) pick spikes) and ride the vocal from whispers to falsetto belts. Voice-and-guitar breakdowns should feel truly quiet."
+      "text": "Bachata has modest dynamic range, about 4–8 dB from derecho (steady verse feel) to mambo (instrumental guitar break), because dancers need a constant pulse; lift comes from density and percussion changes more than level. Preserve the step from derecho to majao (marked chorus feel) to mambo. Firmly control micro-dynamics such as güira peaks, bongó (small pair of hand drums) slaps and requinto (lead guitar) pick spikes, and ride the vocal from whispers to falsetto belts. Voice-and-guitar breakdowns should feel truly quiet."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal, requinto (lead guitar; near vocal level in fills, 3–5 dB under while singing), bass, güira (metal scraper), bongó (small pair of hand drums), segunda (rhythm guitar), keys/pads, backing vocals, effects returns. The bass owns 50–200 Hz; traditional groups have no kick, so bass and tumba (low conga) strokes carry the floor. With a programmed kick, keep it short and tuned (50–60 Hz) under sustained bass. Vocal and bass sit center; in the studio pan requinto 10–30% one side, segunda 30–50% the other, bongó and güira split, pads wide. Live, keep the requinto near center."
+      "text": "Hierarchy, loudest to quietest: lead vocal, requinto (lead guitar; near vocal level in fills, 3–5 dB under the vocal lines), bass, güira (metal scraper), bongó (small pair of hand drums), segunda (rhythm guitar), keys/pads, backing vocals, effects returns. The bass owns 50–200 Hz; traditional groups have no kick, so bass and tumba (low conga) strokes carry the floor. With a programmed kick, keep it short and tuned (50–60 Hz) under sustained bass. Vocal and bass sit center; in the studio pan requinto 10–30% one side, segunda 30–50% the other, bongó and güira split, pads wide. Live, keep the requinto near center."
     }
   ],
   "eq": {
@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Bongó (small pair of hand drums)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 300–500 Hz (boxy)",
         "boost": "+2–3 dB at 150–250 Hz (macho/hembra body: the small and large drums); +2 dB at 4–6 kHz (slap)",
-        "notes": "Bongos are already bright and high-pitched, so don’t over-push the top"
+        "notes": "Bongó is already bright and high-pitched, so don’t over-push the top"
       },
       {
         "source": "Tumba (low conga) / floor tom (majao: chorus feel)",
@@ -261,11 +261,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Dance socials, clubs and festivals usually run 95–100 dBA LAeq-15 at FOH, with arena concerts at 98–102 dBA and peaks around 108–112 dBA during mambos (instrumental guitar breaks) and crowd singalongs. Bachata needs warm low end but not EDM-level sub: aim for a C-minus-A difference of about 12–18 dB (roughly 110–118 dBC); 20 dB or more means too much sub. Crowd singalongs can add several dB to the reading; for dance events, even floor coverage matters more than raw level. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and protect your own ears."
+      "text": "Dance socials, clubs and festivals usually run 95–100 dBA LAeq,15min at FOH, with arena concerts at 98–102 dBA and peaks around 108–112 dBA during mambos (instrumental guitar breaks) and crowd singalongs. Bachata needs warm low end but not EDM-level sub: aim for a C-minus-A difference of about 12–18 dB (roughly 110–118 dBC); 20 dB or more means too much sub. Crowd singalongs can add several dB to the reading; for dance events, even floor coverage matters more than raw level. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Services normalize to about −14 LUFS, so very loud masters gain nothing and lose the requinto’s (lead guitar’s) transient detail. A PLR of about 9–12 dB and a loudness range of 4–7 LU suit the style; at −2 dBTP that PLR means about −11 LUFS-I or quieter, a bit quieter than the urban range."
+      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters gain nothing and lose the requinto’s (lead guitar’s) transient detail. A PLR of about 9–12 dB and a loudness range of 4–7 LU suit the style; at −2 dBTP that PLR means about −11 LUFS-I or quieter, a bit quieter than the urban range."
     }
   ],
   "liveStudio": {
@@ -277,8 +277,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Güira (metal scraper)",
-        "live": "Bleeds into every mic; dynamic EQ or cuts at 5–7 kHz; often less in PA than you expect",
-        "studio": "Close-mic’d small condenser; level automated by section"
+        "live": "Bleeds into every mic; dynamic EQ or cuts at 5–7 kHz; often needs less PA than you expect",
+        "studio": "Close-miked small condenser; level automated by section"
       },
       {
         "area": "Percussion",
@@ -302,7 +302,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–102 dBA LAeq-15, sub controlled",
+        "live": "95–102 dBA LAeq,15min, sub controlled",
         "studio": "−10 to −8 LUFS-I (urban), −2 dBTP"
       }
     ],
@@ -338,7 +338,7 @@ export const GUIDE: MixingGuide = {
     "José Manuel Calderón, “Borracho de Amor”, 1962",
     "Blas Durán, “Consejo a las Mujeres”, 1987",
     "Juan Luis Guerra y 4.40, “Burbujas de Amor”, 1990",
-    "Aventura, “Obsesión”, 2001",
+    "Aventura, “Obsesión”, 2002",
     "Aventura, “Dile al Amor”, 2009",
     "Prince Royce, “Stand By Me”, 2010",
     "Romeo Santos, “Propuesta Indecente”, 2013",

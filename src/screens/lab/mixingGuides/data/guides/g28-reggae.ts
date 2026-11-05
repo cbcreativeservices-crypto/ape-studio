@@ -17,8 +17,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–85 BPM half-time feel (120–170 counted in double time); lovers rock 65–80",
     "ensemble": "6–10 piece band: drums, bass, rhythm (skank) guitar, lead guitar, organ, piano/keys, percussion, 2–3 horns, lead vocal plus 2–3 harmony singers",
     "priority": "Drum and bass: a deep, round, melodic bass line locked to a dry one-drop kick, with the lead vocal clear on top",
-    "liveSpl": "97–103 dBA LAeq-15 min; 118–128 dBC (sub-heavy, C-minus-A gap often 20–25 dB); sound-system dances run louder in the low end",
-    "studioLoudness": "Roots/lovers masters commonly −12 to −9 LUFS-I (modern roots-revival pop crossover −9 to −7); streaming normalizes to about −14"
+    "liveSpl": "97–103 dBA LAeq,15min; 118–128 dBC (sub-heavy, C-minus-A gap often 20–25 dB); sound-system dances run louder in the low end",
+    "studioLoudness": "Roots/lovers masters commonly −12 to −9 LUFS-I (modern roots-revival and pop crossover −9 to −7); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -28,7 +28,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Drums:",
-      "text": "small kit, snare tuned very high (near timbale pitch; a timbale is a metal-shelled drum), often played as cross-stick rim clicks; kick tight and short; hi-hat carries the variation; timbale and syn-drum fills.",
+      "text": "small kit, snare tuned very high (near timbale pitch; a timbale is a metal-shelled drum), often played as cross-stick rim clicks; kick tight and short; hi-hat carries the variation; timbale and electronic-drum fills.",
       "bullet": true
     },
     {
@@ -102,7 +102,7 @@ export const GUIDE: MixingGuide = {
         "source": "Skank (offbeat chord chop) guitar",
         "cut": "HPF 150–250 Hz; −2 dB at 300–500 Hz",
         "boost": "+2–3 dB at 2–3 kHz; shelf +1–2 dB at 6–8 kHz",
-        "notes": "Should “chick” through without level"
+        "notes": "Should “chick” through on tone, not level"
       },
       {
         "source": "Organ bubble",
@@ -198,7 +198,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gate kick and toms live (50–80 ms hold). De-ess at 5–8 kHz for 2–3 dB. Classic Jamaican and Black Ark records used tape as the compressor; a tape emulation on bass and drum bus is a good stand-in. Limit the master by 3 dB at most."
+        "text": "Gate kick and toms live (50–80 ms hold). De-ess at 5–8 kHz for 2–3 dB. Classic Jamaican studio records used tape as the compressor; a tape emulation on bass and drum bus is a good stand-in. Limit the master by 3 dB at most."
       }
     ]
   },
@@ -255,11 +255,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and festival reggae typically runs 97–103 dBA LAeq-15 at FOH with 118–128 dBC; a C-minus-A gap of 20–25 dB is normal here, and more usually means boom. Peaks 108–112 dBA. Sound-system dances push the sub harder, so cardioid or end-fire sub arrays (10–15 dB less rear energy) and trimming 40–63 Hz rather than the master help meet boundary limits of about 55–65 dBA. Reggae needs more sub than rock but less top; outdoors, a high-shelf trim after dark may help. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs."
+      "text": "Theater and festival reggae typically runs 97–103 dBA LAeq,15min at FOH with 118–128 dBC; a C-minus-A gap of 20–25 dB is normal here, and more usually means boom. Peaks reach 108–112 dBA. Sound-system dances push the sub harder, so cardioid or end-fire sub arrays (10–15 dB less rear energy) and trimming 40–63 Hz rather than the master help meet boundary limits of about 55–65 dBA. Reggae needs more sub than rock but less top; outdoors, a high-shelf trim after dark may help. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, with true peak at −2 dBTP, since they are louder than −14. Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light and distortion low so the bass stays round: at −2 dBTP, −12 to −9 LUFS-I is a PLR of 7–10 dB, and a PLR of 10–13 dB (−12 to −15 LUFS-I) keeps more punch. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
+      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, with true peak at −2 dBTP, since they are louder than −14. Most streaming services normalize to about −14 LUFS, some to −16, so loud masters gain nothing. Keep limiting light and distortion low so the bass stays round: at −2 dBTP, −12 to −9 LUFS-I is a PLR of 7–10 dB, and a PLR of 10–13 dB (−12 to −15 LUFS-I) keeps more punch. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
     }
   ],
   "liveStudio": {
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
   "references": [
     "Bob Marley & The Wailers, “Exodus”, 1977",
     "Burning Spear, “Marcus Garvey”, 1975",
-    "The Congos, “Fisherman”, 1977 (Black Ark, Lee “Scratch” Perry)",
+    "The Congos, “Fisherman”, 1977 (produced by Lee “Scratch” Perry)",
     "Augustus Pablo / King Tubby, “King Tubbys Meets Rockers Uptown”, 1976",
     "Scientist, “Scientist Rids the World of the Evil Curse of the Vampires”, 1981",
     "Janet Kay, “Silly Games”, 1979 (Dennis Bovell production)",

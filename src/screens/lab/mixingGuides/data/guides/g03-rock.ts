@@ -17,8 +17,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "100–150 BPM (ballads 65–90; shuffles and up-tempo rockers to 160+)",
     "ensemble": "4–6 piece band: drums, bass, 1–2 electric guitars, keys, lead vocal plus 1–3 backing vocals",
     "priority": "The drums-and-bass engine with the lead vocal riding clearly on top",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min); roughly 112–120 dBC LCeq; many festivals cap at 100–105 dBA",
-    "studioLoudness": "Modern masters commonly −10 to −7 LUFS-I (classic catalog remasters around −12 to −9); streaming normalizes to about −14"
+    "liveSpl": "98–103 dBA LAeq,15min; roughly 112–120 dBC LCeq; many festivals cap at 100–103 dBA",
+    "studioLoudness": "Modern masters commonly −10 to −7 LUFS-I (classic catalog remasters around −12 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -54,7 +54,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Classic stage layout: drums center upstage, bass on one side near the drummer, guitars split stage left/right, keys to one side, lead vocal front center. Drums and bass lock the groove; rhythm guitar fills harmonic width; keys glue the mids; lead guitar answers the vocal and takes the solo. Verses are often sparser (single guitar, hi-hat, palm muting), pre-choruses build, and choruses open up with crashes, doubled or added guitars and backing harmonies. Bridges and solos frequently drop out then come back for a final, biggest chorus."
+      "text": "Classic stage layout: drums center upstage, bass on one side near the drummer, guitars split stage left/right, keys to one side, lead vocal front center. Drums and bass lock the groove; rhythm guitar fills harmonic width; keys glue the mids; lead guitar answers the vocal and takes the solo. Verses are often sparser (single guitar, hi-hat, palm muting), pre-choruses build, and choruses open up with crashes, doubled or added guitars and backing harmonies. The band often drops down for the bridge or solo, then comes back for a final, biggest chorus."
     }
   ],
   "dynamics": [
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal and snare (roughly equal), kick and bass, rhythm guitars, lead guitar/solos (pushed up in their spots), keys, backing vocals, overheads/room, effects returns. Low end: let the bass own the sustained low end (roughly 60–250 Hz) and the kick own the attack and a narrow thump (50–100 Hz); a frequent mistake is too much kick and not enough bass, which makes the bottom feel short and light. Lead vocal, kick, snare and bass sit dead center. Pan double-tracked rhythm guitars hard left and right, a second pair partway in if present; keys and lead guitar off-center opposite each other. Drums panned from the audience or drummer perspective—just be consistent."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal and snare (roughly equal), kick and bass, rhythm guitars, lead guitar/solos (pushed up in their spots), keys, backing vocals, overheads/room, effects returns. Low end: let the bass own the sustained low end (roughly 60–250 Hz) and the kick own the attack and a narrow thump (50–100 Hz); a frequent mistake is too much kick and not enough bass, which makes the bottom feel short and light. Lead vocal, kick, snare and bass sit dead center. Pan double-tracked rhythm guitars hard left and right, with a second pair partway in if present; place keys and lead guitar off-center, opposite each other. Pan the drums from the audience’s or the drummer’s perspective; just be consistent."
     }
   ],
   "eq": {
@@ -144,7 +144,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Lead vocal (stage 2, opto)",
         "use": "Yes",
-        "ratio": "~3:1 (program)",
+        "ratio": "~3:1",
         "attackRelease": "Program-dependent",
         "gainReduction": "2–3 dB steady, up to 5 dB",
         "notes": "Smooths overall level; single compressor live is fine"
@@ -251,7 +251,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Moderate"
       },
       {
-        "effect": "rotating speaker / chorus",
+        "effect": "Rotating speaker / chorus",
         "appliedTo": "Organ, clean guitars",
         "setting": "Slow/fast rotor; chorus 0.5–1 Hz rate",
         "amount": "As part of the tone"
@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14 to avoid codec clipping). Most streaming services normalize to about −14 LUFS, so very loud masters gain nothing on playback and lose punch. Rock tolerates and benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB (about −11 to −14 LUFS-I at −2 dBTP, quieter than the range above); a loudness range of 5–8 LU keeps verse/chorus contrast alive."
+      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14 to avoid codec clipping). Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters gain nothing on playback and lose punch. Rock benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB (about −11 to −14 LUFS-I at −2 dBTP, quieter than the range above); a loudness range of 5–8 LU keeps the verse/chorus contrast alive."
     }
   ],
   "liveStudio": {
@@ -302,7 +302,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Effects",
-        "live": "Fewer, tapped-tempo delays and one or two reverbs",
+        "live": "Fewer effects: tap-tempo delays and one or two reverbs",
         "studio": "Multiple delays and reverbs automated by section"
       },
       {
@@ -343,12 +343,12 @@ export const GUIDE: MixingGuide = {
   "references": [
     "Bruce Springsteen, “Born in the U.S.A.”, 1984",
     "Tom Petty and the Heartbreakers, “Refugee”, 1979",
-    "Fleetwood Mac, “Go Your Own Way”, 1977",
+    "Fleetwood Mac, “Go Your Own Way”, 1976",
     "The Rolling Stones, “Gimme Shelter”, 1969",
     "Led Zeppelin, “When the Levee Breaks”, 1971",
     "Foo Fighters, “Everlong”, 1997",
     "The Black Crowes, “Hard to Handle”, 1990",
-    "The Killers, “Mr. Brightside”, 2004"
+    "The Killers, “Mr. Brightside”, 2003"
   ],
   "empty": []
 };

@@ -19,8 +19,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "120–180 BPM for up-tempo idol and anime openings (many sit around 160–180); ballads 65–90; band J-pop 130–160",
     "ensemble": "Solo singer + 5–7 piece band (often with strings or horns on tour); idol groups of 3–20+ singers over tracks; 4–5 piece bands with sequenced synths and strings",
     "priority": "A big, bright, fully intelligible lead vocal on top of a dense arrangement",
-    "liveSpl": "Halls 92–98 dBA LAeq-15; arenas/domes 96–102 dBA; roughly 110–118 dBC; J-rock and anison festivals push toward the upper end",
-    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (among the loudest in the world); streaming normalizes to about −14; Japanese TV uses −24 LKFS"
+    "liveSpl": "Halls 92–98 dBA LAeq,15min; arenas/domes 96–102 dBA; roughly 110–118 dBC; J-rock and anison festivals push toward the upper end",
+    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (among the loudest anywhere); most streaming services normalize to about −14 LUFS, some to −16; Japanese TV uses −24 LKFS"
   },
   "purpose": [
     {
@@ -40,7 +40,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Guitars:",
-      "text": "clean funk-style cutting, crunchy rhythm and fast shred-style leads; J-rock and anison use dense, layered distorted guitars.",
+      "text": "clean funk-style “cutting” (muted, choppy strumming), crunchy rhythm and fast shred-style leads; J-rock and anison use dense, layered distorted guitars.",
       "bullet": true
     },
     {
@@ -61,7 +61,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "J-pop songs follow a recognisable form: intro, A-melo (verse), B-melo (pre-chorus), sabi (chorus), with a key change and a final “ochi-sabi” (stripped chorus) before the last big chorus. Arrangements are notoriously dense—strings, synths, guitars and countermelodies can all play at once—and frequently modulate. Anime openings are written around a roughly 89–90-second TV edit, so the full version front-loads hooks. On stage, solo artists use a band with keys and a manipulator (playback operator) position; idol groups of many members sing and dance across wide stages and long runways over tracks; bands keep a classic rock layout with sequenced extras."
+      "text": "J-pop songs follow a recognizable form: intro, A-melo (verse), B-melo (pre-chorus), sabi (chorus), often with a key change and an “ochi-sabi” (stripped chorus) before the last big chorus. Arrangements are notoriously dense—strings, synths, guitars and countermelodies can all play at once—and frequently modulate. Anime openings are written around a roughly 89–90-second TV edit, so the full version front-loads hooks. On stage, solo artists use a band with keys and a manipulator (playback operator) position; idol groups of many members sing and dance across wide stages and long runways over tracks; bands keep a classic rock layout with sequenced extras."
     }
   ],
   "dynamics": [
@@ -122,7 +122,7 @@ export const GUIDE: MixingGuide = {
         "source": "Strings (track or live)",
         "cut": "HPF 100–150 Hz; −2 dB at 300–500 Hz",
         "boost": "+1–2 dB at 6–10 kHz",
-        "notes": "Live strings need high-mid lift to cut through band"
+        "notes": "Live strings need a top-end lift to cut through the band"
       },
       {
         "source": "Lead vocal",
@@ -250,7 +250,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Vocoder / formant",
         "appliedTo": "Technopop leads",
-        "setting": "As the artistic sound",
+        "setting": "To taste (signature sound)",
         "amount": "Heavy where part of the style"
       }
     ],
@@ -262,17 +262,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly above the band—roughly 3–5 dB louder in perceived level than it would in a rock mix—with every mora (syllable-like sound unit) intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handhelds (often condenser or premium dynamic capsules); dancing idols use headset or handheld wireless, sometimes over a backing vocal track—keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
+      "text": "The lead vocal sits clearly above the band—roughly 3–5 dB louder in perceived level than it would in a rock mix—with every mora (syllable-like sound unit) intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handheld condensers or dynamics; dancing idols use headset or handheld wireless, sometimes over a backing vocal track—keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Hall shows typically run 92–98 dBA LAeq-15 at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighborhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
+      "text": "Hall shows typically run 92–98 dBA LAeq,15min at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighborhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Japanese CD masters are among the loudest anywhere, often −8 to −5 LUFS-I with very small PLR. Streaming normalizes to about −14 LUFS (−11 on some services’ loud setting), so extreme loudness just costs punch; keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14. A loudness range of 4–6 LU is typical. Deliver a separate TV-size edit for anime use, which Japanese broadcasters normalize to −24 LKFS."
+      "text": "Japanese CD masters are among the loudest anywhere, often −8 to −5 LUFS-I with very small PLR. Most streaming services normalize to about −14 LUFS, some to −16 (−11 on some loud settings), so extreme loudness just costs punch; keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14. A loudness range of 4–6 LU is typical. Deliver a separate TV-size edit for anime use, which Japanese broadcasters normalize to −24 LKFS."
     }
   ],
   "liveStudio": {
@@ -289,7 +289,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Density",
-        "live": "Thin pads and doubled guitars 2–4 dB so vocal survives the room",
+        "live": "Pull pads and doubled guitars down 2–4 dB so the vocal survives the room",
         "studio": "Dense layering is the signature sound"
       },
       {
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Space",
-        "live": "Runways put singers ahead of PA—watch feedback; immersive systems increasingly common",
+        "live": "Runways put singers ahead of the PA—watch feedback; immersive systems increasingly common",
         "studio": "Wide stereo strings and synths"
       },
       {
@@ -329,7 +329,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Leave space in intros and instrumental breaks: idol fans shout calls and mixes there, and that crowd energy is part of the show.",
+      "text": "Leave space in intros and instrumental breaks: idol fans shout calls and “mix” chants there, and that crowd energy is part of the show.",
       "bullet": true
     },
     {

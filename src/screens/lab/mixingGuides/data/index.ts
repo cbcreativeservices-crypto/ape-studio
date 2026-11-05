@@ -28,7 +28,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 2,
     "title": "Hip-Hop / Rap",
     "line": "Lead vocal intelligibility riding on a kick/808 low end that hits hard but stays clean",
-    "origin": "South Bronx, New York, 1973 (DJ Kool Herc’s breakbeat parties); now global, with major regional scenes in Atlanta, LA, Houston, Chicago, London"
+    "origin": "The Bronx, New York, 1973 (DJ Kool Herc’s breakbeat parties); now global, with major regional scenes in Atlanta, LA, Houston, Chicago, London"
   },
   {
     "id": "rock",
@@ -56,20 +56,20 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 6,
     "title": "Country",
     "line": "The lead vocal and every word of the lyric, with the band supporting the story",
-    "origin": "U.S. South and Appalachia, 1920s (Anglo-Celtic ballads, string bands, blues); honky-tonk in the 1940s, the Nashville Sound and Bakersfield in the late 1950s–60s, outlaw and neotraditional waves after; modern Nashville since the 2000s"
+    "origin": "U.S. South and Appalachia, 1920s (Anglo-Celtic ballads, string bands, blues); honky-tonk in the 1940s, the Nashville Sound and Bakersfield in the late 1950s–60s, outlaw in the 1970s and neotraditional in the 1980s; modern Nashville since the 2000s"
   },
   {
     "id": "latin-pop",
     "num": 7,
     "title": "Latin Pop",
     "line": "A clear, warm, emotionally forward lead vocal in which every Spanish or Portuguese word is understood",
-    "origin": "Spain and Latin America from the 1960s–70s (balada romántica, Brazilian pop); Miami became the production hub in the 1980s–90s, followed by the global crossover boom of 1999 onward"
+    "origin": "Spain and Latin America from the 1960s–70s (balada romántica, Brazilian pop); Miami became the production hub in the 1980s–90s, followed by the global crossover boom from 1999 onward"
   },
   {
     "id": "reggaeton",
     "num": 8,
     "title": "Reggaeton",
-    "line": "The dembow (reggaeton's core drum pattern) pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
+    "line": "The dembow (reggaeton's core drum pattern) pulse of kick, sub and snare/timbal, locked and huge, with a clear, upfront Spanish lead vocal riding on it",
     "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap growing out of Puerto Rico from the mid-2000s and breaking through in the mid-2010s"
   },
   {
@@ -77,7 +77,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 9,
     "title": "Regional Mexican",
     "line": "The lead singer’s words and emotion on top of a firmly locked low end (tuba, tololoche (upright bass), guitarrón (large acoustic bass) or bass)",
-    "origin": "Mexico and the US borderlands: banda (Mexican brass band) from Sinaloa brass bands (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño (northern Mexican accordion music) from Nuevo León/Texas (late 1800s–1930s), corridos tumbados (laid-back, trap-flavored corridos) from Sinaloa, Sonora and Los Angeles (late 2010s)"
+    "origin": "Mexico and the US borderlands: banda (Mexican brass band) from Sinaloa (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño (northern Mexican accordion music) from Nuevo León/Texas (late 1800s–1930s), corridos tumbados (laid-back, trap-flavored corridos) from Sinaloa, Sonora and Los Angeles (late 2010s)"
   },
   {
     "id": "k-pop",
@@ -111,7 +111,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "afrobeats",
     "num": 14,
     "title": "Afrobeats",
-    "line": "The percussion groove (rimshot, shakers, clave (a one- or two-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
+    "line": "The percussion groove—rimshot, shakers and the clave (a one- or two-bar rhythm key) pattern—bright and forward, with the lead vocal hook riding on it",
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat"
   },
   {
@@ -119,7 +119,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 15,
     "title": "Classical (Orchestral)",
     "line": "A natural, believable picture of the ensemble in its hall: the conductor’s balance, true timbre and full dynamic range",
-    "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in 18th–19th century Vienna, Germany, France and Italy"
+    "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in Austria, Germany, France and Italy in the 18th and 19th centuries"
   },
   {
     "id": "film-video-game-score",
@@ -154,7 +154,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 20,
     "title": "Gospel",
     "line": "Lead vocal and choir intelligible and on top of a loud, busy rhythm section — the words are the point",
-    "origin": "African American churches of the United States; Thomas A. Dorsey’s Chicago gospel of the 1930s, grown from spirituals, hymns and Holiness-Pentecostal worship; urban contemporary gospel from the late 1960s–1980s onward"
+    "origin": "African American churches of the United States; Thomas A. Dorsey’s Chicago gospel of the 1930s, grown from spirituals, hymns and Holiness-Pentecostal worship; urban contemporary gospel from the late 1960s onward"
   },
   {
     "id": "jazz",
@@ -238,7 +238,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 32,
     "title": "Funk",
     "line": "The interlocking groove: kick, snare/ghost notes, hi-hat and bass landing hard on “the one,” with every rhythm part audible as its own voice",
-    "origin": "United States, mid-1960s: James Brown’s band, Sly & the Family Stone (Bay Area), the Meters (New Orleans); P-Funk (Detroit/New Jersey) and big-band funk (Earth, Wind & Fire, Tower of Power, Kool & the Gang) in the 1970s; electro-funk, go-go and modern revival funk after"
+    "origin": "United States, mid-1960s: James Brown’s band, Sly & the Family Stone (Bay Area), the Meters (New Orleans); P-Funk (Detroit/New Jersey) and big-band funk (Earth, Wind & Fire, Tower of Power, Kool & the Gang) in the 1970s; electro-funk, go-go and modern revival funk followed"
   },
   {
     "id": "techno",
@@ -258,35 +258,35 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "brazilian-funk",
     "num": 35,
     "title": "Brazilian Funk (Baile Funk)",
-    "line": "The beat’s low end (kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808) hitting hard and clean in mono, with the MC’s hook shouting clearly on top",
-    "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s (Miami bass and electro at sound-system bailes (dance parties)), Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; São Paulo funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s"
+    "line": "The beat’s low end—kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808—hitting hard and clean in mono, with the MC’s hook clear on top",
+    "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s, when Miami bass and electro filled sound-system bailes (dance parties); Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s"
   },
   {
     "id": "dancehall",
     "num": 36,
     "title": "Dancehall",
     "line": "The riddim’s (backing track’s) kick-and-bass weight with the deejay’s (chanting MC’s) voice cutting through clearly on top",
-    "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the 2000s"
+    "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the early 1990s, peaking in the 2000s"
   },
   {
     "id": "amapiano",
     "num": 37,
     "title": "Amapiano",
     "line": "The log drum: weighty in the sub, woody and pitched in the mids, landing between the kicks without masking them",
-    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito (South African township house), deep house, Bacardi and jazz; national breakout 2019"
+    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito (South African township house), deep house, Bacardi (Pretoria township house) and jazz; national breakout 2019"
   },
   {
     "id": "salsa",
     "num": 38,
     "title": "Salsa",
-    "line": "The rhythm-section lock (piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas, bells) with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
-    "origin": "New York City, mid-1960s–1970s (Fania era), built on Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s"
+    "line": "The rhythm-section lock of piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas and bells, with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
+    "origin": "New York City, mid-1960s–1970s (Fania era), rooted in Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s"
   },
   {
     "id": "bachata",
     "num": 39,
     "title": "Bachata",
-    "line": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper)–bass pulse dancers can feel",
+    "line": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper) and bass pulse that dancers can feel",
     "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero (slow romantic song) and son (Cuban roots song style) traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s"
   },
   {
@@ -308,7 +308,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 42,
     "title": "Turkish Pop",
     "line": "The lead vocal, with every ornament and word clear, riding over a darbuka-and-kick groove that makes people dance",
-    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1970s aranjman (Turkish-lyric cover songs) era; reshaped by arabesk (melancholic Arab-influenced style, late 1960s–80s) and the 1990s pop boom of Sezen Aksu, Tarkan and their producers"
+    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1960s–70s aranjman (Turkish-lyric cover songs) era; reshaped by arabesk (melancholic Arab-influenced style, late 1960s–80s) and the 1990s pop boom led by Sezen Aksu and Tarkan"
   },
   {
     "id": "dangdut",
@@ -322,7 +322,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 44,
     "title": "MPB / Bossa Nova",
     "line": "The voice and the nylon-string guitar as an equal, intimate pair, with every word of Portuguese clear",
-    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; samba and pagode (informal party samba) roots in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)"
+    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)"
   },
   {
     "id": "drum-and-bass",
@@ -336,14 +336,14 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 46,
     "title": "Lo-fi / Chillhop",
     "line": "The warm, swung drum-and-keys pocket: a soft, round kick and dusty snare under a mellow, filtered chord loop, with nothing harsh",
-    "origin": "Instrumental hip-hop beat scenes of the late 1990s–2000s (J Dilla and Madlib in the US, Nujabes in Tokyo); grew into a streaming genre from about 2013–2017 (24/7 streams from France, a key label in Rotterdam)"
+    "origin": "Instrumental hip-hop beat scenes of the late 1990s–2000s (J Dilla and Madlib in the US, Nujabes in Tokyo); grew into a streaming genre from about 2013–2017, driven by a French 24/7 livestream and a Rotterdam label"
   },
   {
     "id": "bluegrass-americana",
     "num": 47,
     "title": "Bluegrass / Americana",
     "line": "Vocal harmony and lyric intelligibility over a clear, uncluttered acoustic ensemble that still sounds like real wood and strings",
-    "origin": "Bluegrass: Appalachian roots, crystallized by Bill Monroe’s Blue Grass Boys on the Grand Ole Opry, Nashville, December 1945. Americana: U.S. roots umbrella named mid-1990s; AMA founded 1999"
+    "origin": "Bluegrass: Appalachian roots, crystallized by Bill Monroe’s Blue Grass Boys on the Grand Ole Opry, Nashville, December 1945. Americana: U.S. roots umbrella named in the mid-1990s; Americana Music Association founded 1999"
   },
   {
     "id": "musical-theatre",
@@ -364,6 +364,6 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 50,
     "title": "French Variété / Chanson",
     "line": "The lead vocal and every word of the French text — clear, natural, and in front",
-    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)"
+    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 19th-century cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)"
   }
 ];

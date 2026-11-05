@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "170–175 BPM (174 is the modern default; early jungle 155–165; half-time sections feel like 87)",
     "ensemble": "DJ + MC (most common); producer duo with tracks; live bands such as Pendulum, Rudimental or Reprazent (drums, bass, keys, guitar, vocalists, MC, playback)",
     "priority": "Sub bass and drums coexisting: a clean, mono, controlled sub under a snare that cracks through on beats 2 and 4",
-    "liveSpl": "100–105 dBA Leq (LAeq-15 min), peaks 106–110 dBA; roughly 120–130 dBC on big sub arrays",
+    "liveSpl": "100–105 dBA LAeq,15min, peaks 106–110 dBA; roughly 120–130 dBC on big sub arrays",
     "studioLoudness": "Club masters commonly −7 to −5 LUFS-I (drops around −6 LUFS short-term); streaming normalizes to about −14"
   },
   "purpose": [
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The usual “ensemble” is a DJ at DJ media players and a mixer with one or two MCs; FOH receives a stereo DJ feed plus MC mics. Live-band shows put drums center upstage, keys and guitar to the sides, vocalist and MC front, with redundant playback for sub, synths and FX. Tracks are built for DJs: a 16–32 bar mix-in intro, a build with risers and filtered breaks, the drop (full sub, bass and drums), a breakdown (pads, vocal, often half-time drums), a second drop, and a 16–32 bar outro. Drums and sub carry rhythm; mid-bass or vocal carries the hook; pads and pianos hold harmony. During DJ blends two subs can stack and clash unless the DJ cuts lows on one channel."
+      "text": "The usual “ensemble” is a DJ with two or more media players and a mixer with one or two MCs; FOH receives a stereo DJ feed plus MC mics. Live-band shows put drums center upstage, keys and guitar to the sides, vocalist and MC front, with redundant playback for sub, synths and FX. Tracks are built for DJs: a 16–32 bar mix-in intro, a build with risers and filtered breaks, the drop (full sub, bass and drums), a breakdown (pads, vocal, often half-time drums), a second drop, and a 16–32 bar outro. Drums and sub carry rhythm; mid-bass or vocal carries the hook; pads and pianos hold harmony. During DJ blends two subs can stack and clash unless the DJ cuts lows on one channel."
     }
   ],
   "dynamics": [
@@ -89,7 +89,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare (layered)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 400–600 Hz if boxy",
         "boost": "+2–4 dB at 180–250 Hz (body/fundamental); +3 dB at 2–5 kHz (crack); shelf +2 dB at 10 kHz",
-        "notes": "The snare’s fundamental is often weaker than its harmonic—lift it"
+        "notes": "The snare’s fundamental is often weaker than its overtones—lift it"
       },
       {
         "source": "Breakbeat loop (under layers)",
@@ -190,7 +190,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1–6:1",
         "attackRelease": "2–5 ms / 80–150 ms",
         "gainReduction": "4–8 dB",
-        "notes": "MCs swing from whisper to shout; add a de-esser 5–8 kHz"
+        "notes": "MCs swing from whisper to shout; add a de-esser at 5–8 kHz"
       },
       {
         "source": "Mix bus",
@@ -206,7 +206,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "Brickwall",
         "attackRelease": "Fast",
         "gainReduction": "Only on rare peaks",
-        "notes": "Set by the system tech; never ride it constantly"
+        "notes": "Set by the system tech; don’t drive into it constantly"
       }
     ],
     "notes": [
@@ -264,17 +264,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "In liquid and crossover D&B the sung vocal sits on top like a pop vocal: bright, heavily compressed, doubled or tripled on hooks, with tempo delays and big reverbs in breakdowns and drier treatment in drops; moderate pitch correction is accepted. Jungle uses sampled ragga (digital dancehall) and dancehall phrases with dub (echo-heavy remix style) delay. The MC hosts: hyping drops, calling rewinds, chatting over intros and breakdowns. Give MCs a rugged dynamic, capsule close to the mouth, no cupped grille, wedges in the mic’s null, and ring the mic out at soundcheck. Pull the MC down slightly during crowd call-and-response; aim for roughly 3–6 dB above the music’s midrange by perception, never overpowering the drop. A monitor mix heavy on their own voice stops them pushing into feedback. Studio tracking typically uses a large-diaphragm condenser and a clean take, with character added later."
+      "text": "In liquid and crossover D&B the sung vocal sits on top like a pop vocal: bright, heavily compressed, doubled or tripled on hooks, with tempo delays and big reverbs in breakdowns and drier treatment in drops; moderate pitch correction is accepted. Jungle uses sampled ragga (digital dancehall) and dancehall phrases with dub (echo-heavy remix style) delay. The MC hosts: hyping drops, calling rewinds, chatting over intros and breakdowns. Give MCs a rugged dynamic, capsule close to the mouth, no cupped grille, wedges in the mic’s null, and ring the mic out at soundcheck. Pull the MC down slightly during crowd call-and-response; aim for roughly 3–6 dB above the music’s midrange by perceived level, never overpowering the drop. A monitor mix heavy on their own voice stops them pushing into feedback. Studio tracking typically uses a large-diaphragm condenser and a clean take, with character added later."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC LCeq; in D&B a C-minus-A gap of about 20–25 dB is normal, and a wider gap means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbors and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA unprotected."
+      "text": "Club and arena D&B typically runs 100–105 dBA LAeq,15min at FOH, with peaks to about 106–110 dBA; long all-night arena events often average nearer 102 dBA, with peaks near 106 dBA. Large sub arrays reach roughly 120–130 dBC LCeq; in D&B a C-minus-A gap of about 20–25 dB is normal, and a wider gap means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbors and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA unprotected."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Streaming normalizes to about −14 LUFS; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a very low PLR in drops (at −2 dBTP, a −7 to −5 LUFS-I master leaves only 3–5 dB) but needs breakdown-to-drop contrast."
+      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Most streaming services normalize to about −14 LUFS, some to −16; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a very low PLR in drops (at −2 dBTP, a −7 to −5 LUFS-I master leaves only 3–5 dB) but needs breakdown-to-drop contrast."
     }
   ],
   "liveStudio": {
@@ -306,7 +306,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "100–105 dBA Leq, venue caps and dBC limits",
+        "live": "100–105 dBA LAeq,15min, venue caps and dBC limits",
         "studio": "−7 to −5 LUFS-I club master, −2 dBTP"
       }
     ],

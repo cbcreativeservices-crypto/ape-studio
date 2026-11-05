@@ -17,28 +17,28 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–140 BPM (slowcore and ballads 60–85; post-punk and garage revival 140–170)",
     "ensemble": "3–5 piece band: drums, bass, 1–2 guitars, often synth/keys, singer-guitarist; larger collectives (6–10) with strings, horns, multi-instrumentalists",
     "priority": "Character and texture of the guitars and the singer’s voice, with a natural-sounding drum kit holding it together",
-    "liveSpl": "94–100 dBA Leq (LAeq-15 min) in clubs and theaters; roughly 110–118 dBC LCeq; outdoor ordinances often cap at 95 dBA",
-    "studioLoudness": "Masters commonly −11 to −8 LUFS-I (lo-fi and folk-leaning records −14 to −11); streaming normalizes to about −14"
+    "liveSpl": "94–100 dBA LAeq,15min in clubs and theaters; roughly 110–118 dBC LCeq; outdoor ordinances often cap at 95 dBA",
+    "studioLoudness": "Masters commonly −11 to −8 LUFS-I (lo-fi and folk-leaning records −14 to −11); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Alternative and indie rock grew out of punk’s do-it-yourself ethic: bands on small labels, played on student-run college radio, tracked by CMJ charts and MTV’s 120 Minutes. The music is for close listening, identification and catharsis—fans know every lyric and value authenticity and quirk over polish. Audiences expect the band’s recorded personality: the specific fuzz pedal, the jangly chord, the off-kilter vocal. They will say “that sounded wrong” if the mix sounds like generic arena rock (scooped guitars, triggered drums, glossy vocal), if the words vanish when the band wants them heard, or if a raw, roomy record comes out sterile. Conversely, a shoegaze or noise-pop act may want the vocal to sit inside the guitars—know the band’s records before you start."
+      "text": "Alternative and indie rock grew out of punk’s do-it-yourself ethic: bands on small labels, played on student-run college radio, charted by CMJ and showcased on MTV’s 120 Minutes. Fans listen closely, know every lyric and value authenticity and quirk over polish. Audiences expect the band’s recorded personality: the specific fuzz pedal, the jangly chord, the off-kilter vocal. Listeners notice at once when the mix sounds like generic arena rock (scooped guitars, triggered drums, glossy vocal), when the words vanish where the band wants them heard, or when a raw, roomy record comes out sterile. At the same time, a shoegaze or noise-pop act may want the vocal to sit inside the guitars—know the band’s records before you start."
     }
   ],
   "instruments": [
     {
       "label": "Drums:",
-      "text": "acoustic kit, frequently vintage or lightly damped; open, roomy sound with fewer close mics is part of the aesthetic. Drum machines and samples appear in post-punk and synth-indie.",
+      "text": "acoustic kit, frequently vintage or lightly damped; an open, roomy sound with fewer close mics is part of the aesthetic. Drum machines and samples appear in post-punk and synth-indie.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric bass, often picked and driven (a passive bass into a tube bass amp), sometimes melodic and high on the neck (post-punk), sometimes fuzz-overdriven.",
+      "text": "electric bass, often picked and driven (a passive bass into a tube bass amp), sometimes melodic and high on the neck (post-punk), sometimes run through fuzz.",
       "bullet": true
     },
     {
       "label": "Electric guitars:",
-      "text": "the genre’s signature—jangle (bright 12-string or single-coil clean with compression and chorus), fuzz (classic fuzz-pedal style), offset guitars with tremolo, heavy reverb and delay pedals, alternate tunings and feedback.",
+      "text": "the genre’s signature—jangle (bright 12-string or clean single-coil with compression and chorus), fuzz from classic fuzz pedals, offset guitars with tremolo, heavy reverb and delay pedals, alternate tunings and feedback.",
       "bullet": true
     },
     {
@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Extras:",
-      "text": "strings, horns, banjo, acoustic and lap steel in orchestral or folk-leaning indie; some acts run pads, but many play everything live.",
+      "text": "strings, horns, banjo, acoustic guitar and lap steel in orchestral or folk-leaning indie; some acts run backing tracks, but many play everything live.",
       "bullet": true
     }
   ],
@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal and the main guitar (often near-equal), snare, kick and bass, second guitar or synth, overheads/room, keys and extras, backing vocals, effects returns. Indie mixes frequently sit the vocal slightly lower than pop or classic rock, but it must stay intelligible unless the band’s style is explicitly a wash. Low end: let the bass carry warmth (60–200 Hz) and the kick provide a rounder, less clicky punch than in metal or pop-punk. Pan double-tracked guitars wide; with two distinct guitarists, pan each 60–100% to their stage side, keys off-center opposite. Overheads and room mics carry much of the kit image and sit louder than in mainstream rock."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal and the main guitar (often near-equal), snare, kick and bass, second guitar or synth, overheads/room, keys and extras, backing vocals, effects returns. Indie mixes often sit the vocal slightly lower than pop or classic rock, but it must stay intelligible unless the band’s style is explicitly a wash. Low end: let the bass carry warmth (60–200 Hz) and the kick provide a rounder, less clicky punch than in metal or pop-punk. Pan double-tracked guitars wide; with two distinct guitarists, pan each 60–100% to their stage side and place keys slightly off-center. Overheads and room mics carry much of the kit image and sit louder than in mainstream rock."
     }
   ],
   "eq": {
@@ -85,7 +85,7 @@ export const GUIDE: MixingGuide = {
         "source": "Overheads / room",
         "cut": "HPF 100–150 Hz (overheads); broad −2–3 dB at 350 Hz",
         "boost": "+1–2 dB shelf at 10 kHz",
-        "notes": "Ribbon overheads (classic figure-8 ribbons) give a dark, natural kit picture"
+        "notes": "Figure-8 ribbon overheads give a dark, natural kit picture"
       },
       {
         "source": "Bass",
@@ -177,7 +177,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "10–20 ms / 100 ms",
         "gainReduction": "3–6 dB",
-        "notes": "Valve or vari-mu style for smooth leveling"
+        "notes": "Tube or vari-mu compressor for smooth leveling"
       },
       {
         "source": "Clean guitars",
@@ -201,7 +201,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "6:1–10:1",
         "attackRelease": "5–10 ms / 50–100 ms",
         "gainReduction": "8–12 dB, blended 20–40%",
-        "notes": "vari-mu tube-style color on the parallel path is common"
+        "notes": "Vari-mu tube color on the parallel path is common"
       },
       {
         "source": "Mix bus",
@@ -214,7 +214,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gate toms live with gentle settings (range 10–15 dB, 50 ms hold, 150 ms release) so the kit still breathes; in the studio edit or leave bleed in. De-ess at 5–8 kHz for 2–3 dB—recording to tape can soften sibilance enough that less is needed. Keep final limiting to 2–3 dB."
+        "text": "Gate toms live with gentle settings (range 10–15 dB, 50 ms hold, 150 ms release) so the kit still breathes; in the studio, edit the toms or leave the bleed in. De-ess at 5–8 kHz for 2–3 dB—recording to tape can soften sibilance enough that less is needed. Keep final limiting to 2–3 dB."
       }
     ]
   },
@@ -253,14 +253,14 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Chorus / vibrato / tremolo",
         "appliedTo": "Clean guitars, keys, backing vocals",
-        "setting": "0.5–1.5 Hz rate, low depth",
+        "setting": "Chorus 0.5–1.5 Hz; vibrato/tremolo 3–7 Hz; low depth",
         "amount": "As part of the tone"
       },
       {
         "effect": "Saturation / amp re-amping",
         "appliedTo": "Vocals, drums, synths",
-        "setting": "Drive a tube preamp or amp to edge of breakup",
-        "amount": "Subtle–moderate; adds mid-range bite"
+        "setting": "Drive a tube preamp or amp to the edge of breakup",
+        "amount": "Subtle–moderate; adds midrange bite"
       }
     ],
     "notes": [
@@ -271,17 +271,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Indie vocals are personal and characterful—breathy, deadpan, conversational or yelped—and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern mic (a supercardioid dynamic or condenser capsule chosen for background rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
+      "text": "Indie vocals are personal and characterful—breathy, deadpan, conversational or yelped—and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern mic (a supercardioid dynamic, or a condenser with strong off-axis rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater shows typically run 94–100 dBA LAeq-15 at FOH, with louder fuzz and noise acts reaching 100–103 dBA and C-weighted LCeq around 110–118 dBC. Indie needs moderate sub—most energy is in the guitars and midrange; a C-minus-A gap above roughly 18–20 dB means the sub is too hot for the genre. Outdoor city parks commonly enforce limits around 95 dBA, and crowd singalongs can measure louder than the band. Shoegaze and noise-rock crowds expect volume as an experience; offer earplugs and watch your own exposure."
+      "text": "Club and theater shows typically run 94–100 dBA LAeq,15min at FOH, with louder fuzz and noise acts reaching 100–103 dBA and C-weighted LCeq around 110–118 dBC. Indie needs only moderate sub, since most of the energy is in the guitars and midrange; a C-minus-A gap above roughly 18–20 dB means the sub is too hot for the genre. Outdoor city parks commonly enforce limits around 95 dBA, and crowd singalongs can measure louder than the band. Shoegaze and noise-rock crowds expect volume as part of the experience; offer earplugs and watch your own exposure."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming recommendation. The genre tolerates and rewards dynamics: aim for a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
+      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming recommendation. The genre rewards dynamics: where the band allows, aim for a PLR of 10–13 dB (at −2 dBTP that means about −12 LUFS-I or quieter, below the typical range) and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
     }
   ],
   "liveStudio": {
@@ -313,12 +313,12 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "94–100 dBA Leq, ordinance limits outdoors",
+        "live": "94–100 dBA LAeq,15min; ordinance limits outdoors",
         "studio": "−11 to −8 LUFS-I, −2 dBTP"
       },
       {
         "area": "Playback",
-        "live": "Many bands play everything live; some run pads and click",
+        "live": "Many bands play everything live; some run backing tracks and click",
         "studio": "Overdubs, strings, synth layers, deliberate lo-fi elements"
       }
     ],

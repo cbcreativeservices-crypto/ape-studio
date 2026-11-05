@@ -16,9 +16,9 @@ export const GUIDE: MixingGuide = {
     "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap growing out of Puerto Rico from the mid-2000s and breaking through in the mid-2010s",
     "tempo": "Reggaeton 88–100 BPM (classic perreo (close, hip-led dance) 90–96; “romántico” (slow romantic style) 80–90; Dominican dembow (a separate, faster style from the Dominican Republic) 110–130); Latin trap 60–80 BPM, often felt in double time (120–160)",
     "ensemble": "Solo artist or duo + DJ and full playback; arena tours add a drummer/percussionist, keys, guitar, 2–4 backing vocalists and dancers",
-    "priority": "The dembow (reggaeton's core drum pattern) pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
-    "liveSpl": "98–103 dBA LAeq-15 min in clubs and arenas; 118–128 dBC; C-minus-A gap often 18–22 dB",
-    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (Latin trap −9 to −6); streaming normalizes to about −14"
+    "priority": "The dembow (reggaeton's core drum pattern) pulse of kick, sub and snare/timbal, locked and huge, with a clear, upfront Spanish lead vocal riding on it",
+    "liveSpl": "98–103 dBA LAeq,15min in clubs and arenas; 118–128 dBC; C-minus-A gap often 18–22 dB",
+    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (Latin trap −9 to −6); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -43,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Guitar:",
-      "text": "nylon-string or reggaeton-pop guitar hooks (the “Despacito” lineage), sometimes electric rock textures.",
+      "text": "nylon-string hooks in reggaeton-pop (the “Despacito” lineage), sometimes electric rock textures.",
       "bullet": true
     },
     {
@@ -59,7 +59,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Most shows are artist plus DJ and tracks, often on a thrust or B-stage; tours add a drummer and percussionist upstage, keys and guitar to the sides, backing vocalists stage left or right, and frequent guest vocalists. The drums and sub own the groove, synths and guitar give harmony and hooks, and the lead vocal carries melody and rhythm (fast rap flows as well as sung coros (choruses)). Arrangements are loop-based: an intro with filtered or no drums, a verse with the full dembow, a pre-coro (pre-chorus) that strips back or adds risers, and a coro (chorus) that adds layers, doubles and ad-libs. Breakdowns drop the kick entirely before a big return; modern productions change the beat pattern or tempo halfway through, and Latin trap sections can sit inside a reggaeton song."
+      "text": "Most shows are artist plus DJ and tracks, often on a thrust or B-stage; tours add a drummer and percussionist upstage, keys and guitar to the sides, backing vocalists stage left or right, and frequent guest vocalists. The drums and sub own the groove, synths and guitar give harmony and hooks, and the lead vocal carries melody and rhythm (fast rap flows as well as sung coros (choruses)). Arrangements are loop-based: an intro with filtered or no drums, a verse with the full dembow, a pre-coro (pre-chorus) that strips back or adds risers, and a coro (chorus) that adds layers, doubles and ad-libs. Breakdowns drop the kick entirely before a big return; many modern productions switch the beat pattern or tempo partway through, and Latin trap sections can sit inside a reggaeton song."
     }
   ],
   "dynamics": [
@@ -69,7 +69,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal and kick (near equal), sub/808, snare/timbal pattern, ad-libs and doubles, hi-hats and percussion, synth/guitar hooks, pads and effects. The low end is a kick-versus-sub negotiation: the kick should own a short punch around 50–70 Hz and the sub fills the space between hits. Sidechain or dynamic EQ (ducking the bass by 2–4 dB around 60 Hz when the kick hits) keeps the boom readable; on 808-led trap songs often the 808 is the kick and gets a top click layer. Keep kick, sub, snare and lead vocal mono and centered. Hats, shakers and percussion spread 20–50% left and right; doubles split wide; ad-libs placed off-center or bounced with panning delays. Synth pads and chorus layers can be wide, but check mono for club and phone playback."
+      "text": "Hierarchy, loudest to quietest: lead vocal and kick (near equal), sub/808, snare/timbal pattern, ad-libs and doubles, hi-hats and percussion, synth/guitar hooks, pads and effects. The low end is a kick-versus-sub negotiation: the kick should own a short punch around 50–70 Hz and the sub fills the space between hits. Sidechain or dynamic EQ (ducking the bass by 2–4 dB around 60 Hz when the kick hits) keeps the boom readable; on 808-led trap songs the 808 often doubles as the kick and gets a click layer on top. Keep kick, sub, snare and lead vocal mono and centered. Hats, shakers and percussion spread 20–50% left and right; doubles split wide; ad-libs go off-center or bounce between sides with panning delays. Synth pads and chorus layers can be wide, but check mono for club and phone playback."
     }
   ],
   "eq": {
@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Hi-hats / shakers",
         "cut": "HPF 300–500 Hz; dip 3–6 kHz if harsh",
         "boost": "Gentle shelf +1–2 dB at 10–12 kHz",
-        "notes": "Hats should sparkle, not dominate the vocal’s sibilance"
+        "notes": "Hats should sparkle without competing with the vocal’s sibilance"
       },
       {
         "source": "Congas / bongos / güiro (scraped gourd)",
@@ -240,7 +240,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Filter sweeps / risers",
         "appliedTo": "Full mix or beat bus into drops",
         "setting": "HPF 200 Hz–1 kHz sweep over 1–4 bars",
-        "amount": "As arrangement effect"
+        "amount": "As an arrangement effect"
       },
       {
         "effect": "Tape / tube saturation",
@@ -259,11 +259,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq-15 at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure, worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. NIOSH advises no more than about 15 minutes a day at 100 dBA; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at festivals) and protect your own ears across long sets."
+      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq,15min at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure and is worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. NIOSH advises no more than about 15 minutes a day at 100 dBA; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at festivals) and protect your own ears across long sets."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros (choruses); Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow (reggaeton's core drum pattern) overshoots in lossy codecs. Most streaming services normalize to −14 LUFS, so extreme loudness buys nothing there. The genre tolerates a very low PLR (peak minus loudness): at −2 dBTP, a −8 to −5 LUFS-I master leaves only 3–6 dB. Keep a loudness range of 3–6 LU, but keep the drop contrast."
+      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros (choruses); Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow (reggaeton's core drum pattern) overshoots in lossy codecs. Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness buys nothing there. The genre tolerates a very low PLR (peak-to-loudness ratio): at −2 dBTP, a −8 to −5 LUFS-I master leaves only 3–6 dB. Expect a loudness range of 3–6 LU, but preserve the drop contrast."
     }
   ],
   "liveStudio": {
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Low end",
         "live": "Cardioid subs, HPF ~30 Hz, dynamic EQ ducking bass at ~63 Hz under the kick",
-        "studio": "Kick/808 sidechain, tuning and saturation fine-tuned for phones and clubs"
+        "studio": "Kick/808 sidechain; tuning and saturation checked on phones and in clubs"
       },
       {
         "area": "Drums",
@@ -300,7 +300,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "98–103 dBA LAeq-15, venue limits",
+        "live": "98–103 dBA LAeq,15min, venue limits",
         "studio": "−8 to −5 LUFS-I, −2 dBTP"
       }
     ],

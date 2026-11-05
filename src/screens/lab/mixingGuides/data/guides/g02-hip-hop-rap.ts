@@ -11,16 +11,16 @@ export const GUIDE: MixingGuide = {
   "title": "Hip-Hop / Rap",
   "expects": "Fans know the lyrics and often rap along, so a buried or smeared vocal is the fastest way to lose a crowd. They also expect to feel the low end in the chest.",
   "glance": {
-    "origin": "South Bronx, New York, 1973 (DJ Kool Herc’s breakbeat parties); now global, with major regional scenes in Atlanta, LA, Houston, Chicago, London",
+    "origin": "The Bronx, New York, 1973 (DJ Kool Herc’s breakbeat parties); now global, with major regional scenes in Atlanta, LA, Houston, Chicago, London",
     "tempo": "85–95 BPM (boom bap); 90–100 (G-funk); 130–145 BPM with half-time feel (trap, drill)",
     "ensemble": "Rapper + DJ/playback, often with 1–2 hype/backing vocalists; sometimes a live band (drums, keys, bass, guitar)",
     "priority": "Lead vocal intelligibility riding on a kick/808 low end that hits hard but stays clean",
     "liveSpl": "98–103 dBA LAeq-15 min; 115–125 dBC LCeq is common in clubs and arenas",
-    "studioLoudness": "Masters commonly −9 to −7 LUFS-I, true peak −1 to 0 dBTP; streaming normalizes to about −14"
+    "studioLoudness": "Masters commonly −9 to −7 LUFS-I, true peak −1 to 0 dBTP; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Hip-hop began as party music: Kool Herc looped drum breaks on two turntables so dancers could stay in the most exciting part of a record. It grew into a storytelling, boasting, protest and club form, but the two pillars never changed: the words and the beat. Fans know the lyrics and often rap along, so a buried or smeared vocal is the fastest way to lose a crowd. They also expect to feel the low end in the chest. A hip-hop audience will say “that sounded wrong” when the 808 is weak or farting out, when the rapper is drowned by the track, or when the live show sounds noticeably smaller than the record they streamed on the way in."
+      "text": "Hip-hop began as party music: Kool Herc looped drum breaks on two turntables so dancers could stay in the most exciting part of a record. It grew into a storytelling, boasting, protest and club form, but it still rests on two things: the words and the beat. Fans know the lyrics and often rap along, so a buried or smeared vocal is the fastest way to lose a crowd. They also expect to feel the low end in the chest. A hip-hop audience notices at once when the 808 is weak or farting out, when the rapper is drowned by the track, or when the live show sounds noticeably smaller than the record they streamed on the way in."
     }
   ],
   "instruments": [
@@ -56,7 +56,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The core lineup is a rapper on a handheld wireless mic, a DJ upstage center, and one or two hype men. Bigger tours add a band; a big arena run can blend DJ stems with drums, two keyboard players, guitar and backing vocals across three dozen inputs. Rhythm is carried by drums and 808; harmony by a sample or synth loop; melody is usually the vocal hook. Arrangements are sparse by design: verses strip back so the lyrics carry, hooks add layers, doubles and ad-libs, and drops or beat switches often mute the 808 for a bar before slamming back in. Leave room for those mutes; they are part of the impact."
+      "text": "The core lineup is a rapper on a handheld wireless mic, a DJ upstage center, and one or two hype men. Bigger tours add a band; an arena show can blend DJ stems with drums, two keyboard players, guitar and backing vocals across three dozen inputs. Rhythm is carried by drums and 808; harmony by a sample or synth loop; melody is usually the vocal hook. Arrangements are sparse by design: verses strip back so the lyrics carry, hooks add layers, doubles and ad-libs, and drops or beat switches often mute the 808 for a bar before slamming back in. Leave room for those mutes; they are part of the impact."
     }
   ],
   "dynamics": [
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–100 Hz; −2 to −4 dB at 200–350 Hz; narrow cuts on resonances",
         "boost": "+2 to +3 dB at 3–5 kHz; +1 to +2 dB shelf at 10–12 kHz",
-        "notes": "Ear is most sensitive at about 2.5–5 kHz; de-ess before or after the presence boost, then check the S sounds"
+        "notes": "The ear is most sensitive around 2.5–5 kHz; de-ess before or after the presence boost, then recheck the S sounds"
       },
       {
         "source": "Kick",
@@ -105,7 +105,7 @@ export const GUIDE: MixingGuide = {
         "source": "Sample / melodic loop",
         "cut": "HPF 100–200 Hz; −2 to −4 dB at 2–4 kHz",
         "boost": "Minimal",
-        "notes": "Carve the vocal’s pocket out of the beat, not the other way round"
+        "notes": "Carve the vocal’s pocket out of the beat, not the other way around"
       },
       {
         "source": "Ad-libs / doubles",
@@ -175,15 +175,15 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Mix bus",
         "use": "Yes",
-        "ratio": "2:1–4:1 (VCA bus-style)",
+        "ratio": "2:1–4:1 (VCA-style)",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "1–3 dB",
-        "notes": "Then limiter for references"
+        "notes": "Then a limiter, for reference bounces only"
       }
     ],
     "notes": [
       {
-        "text": "De-essers are essential: rap is closer to speech, so sibilants (S sounds) stand out more than in sung music. Many top engineers run two de-essers (one before and one after the presence boost) plus a multiband or dynamic EQ dipping 200–400 Hz on the vocal. Commercial rap vocals are often processed through many stages — sometimes several compressors in series on one lead vocal. Gates are rarely needed in the studio; live, an expander on the hype-man mic helps when they are not talking."
+        "text": "De-essing matters more than in sung styles: rap is closer to speech, so sibilants (S sounds) stand out. Many engineers run two de-essers (one before and one after the presence boost) plus a multiband compressor or dynamic EQ dipping 200–400 Hz on the vocal. Several compressors in series on one lead vocal are common in commercial rap. Gates are rarely needed in the studio; live, an expander on the hype-man mic helps when they are not talking."
       }
     ]
   },
@@ -226,7 +226,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Moderate"
       },
       {
-        "effect": "Hard-tune pitch correction (effect)",
+        "effect": "Hard-tuned pitch correction",
         "appliedTo": "Melodic rap leads",
         "setting": "Fast retune (0–20 ms) for the hard-tuned sound",
         "amount": "Style dependent"
@@ -246,7 +246,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Hip-hop and trap masters commonly land at −9 to −7 LUFS-I, true peak often near −1 to 0 dBTP, though streaming guides advise −1 dBTP, or −2 dBTP for masters this loud. Most streaming services normalize to about −14 LUFS, so loud masters are turned down; a master at −9 with punchy transients often beats a −6 master after normalization. The genre tolerates a short-term dynamic range of only about 5–7 dB."
+      "text": "Hip-hop and trap masters commonly land at −9 to −7 LUFS-I, with true peak often near −1 to 0 dBTP, though −1 dBTP is safer, or −2 dBTP for masters this loud. Most streaming services normalize to about −14 LUFS, some to −16, so loud masters are turned down; after normalization, a −9 master with punchy transients often sounds bigger than a −6 master. The genre tolerates a short-term dynamic range of only about 5–7 dB."
     }
   ],
   "liveStudio": {
@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "FX",
-        "live": "Snapshots per song; slap and tempo delay on mutes or tap tempo",
+        "live": "Snapshots per song; slap and tempo delays on mute groups, tapped to tempo",
         "studio": "Automated throws, edited ad-lib tracks"
       },
       {
@@ -278,7 +278,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Consistency",
-        "live": "Snapshots matched to album sounds help night to night",
+        "live": "Per-song snapshots matched to the album keep shows consistent",
         "studio": "Mix revisions, often on tight release deadlines"
       }
     ],
@@ -286,7 +286,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Get a show file of stems from the artist’s team: separate vocals, ad-libs, 808 and beat give you real control over the playback.",
+      "text": "Get the playback stems from the artist’s team: separate vocals, ad-libs, 808 and beat give you real control over the playback.",
       "bullet": true
     },
     {
@@ -298,7 +298,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Pre-ring the room for the vocal mic at the levels the rapper will actually use, including cupped grip.",
+      "text": "Ring out the PA and monitors for the vocal mic at the levels the rapper will actually use, including a cupped grip.",
       "bullet": true
     },
     {
@@ -317,7 +317,7 @@ export const GUIDE: MixingGuide = {
     "Nas — “N.Y. State of Mind” (1994)",
     "Drake — “God’s Plan” (2018)",
     "Polo G — “RAPSTAR” (2021)",
-    "Outkast — “B.O.B.” (2000)",
+    "OutKast — “B.O.B.” (2000)",
     "Kanye West — “Black Skinhead” (2013)"
   ],
   "empty": []

@@ -15,8 +15,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "50–220+ BPM (doom 50–80; traditional 100–150; thrash 160–220; blast beats feel like 200–280+; djent often mid-tempo 90–140 with odd-meter riffs)",
     "ensemble": "4–6 piece: drums (usually double kick), bass, 1–2 rhythm/lead guitars, lead vocal (sung, screamed or growled), sometimes keys or backing tracks",
     "priority": "Note definition in the low end: kick, palm-muted guitars and bass must stay distinct at speed, with the vocal still audible on top",
-    "liveSpl": "100–106 dBA Leq (LAeq-15 min); roughly 115–124 dBC LCeq; large open-air festivals have run near 110 dBA at FOH",
-    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (some extreme releases louder); streaming normalizes to about −14"
+    "liveSpl": "100–106 dBA LAeq,15min; roughly 115–124 dBC LCeq; large open-air festivals have run near 110 dBA at FOH",
+    "studioLoudness": "Masters commonly −8 to −5 LUFS-I (some extreme releases louder); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -57,7 +57,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Metal performance is mostly loud, with micro-dynamics more important than broad section contrast. Clean intros and interludes can drop 10–15 dB. The engineer usually controls hard: kick and snare are made consistent with samples or compression, bass is compressed heavily, and guitars are already compressed by amp distortion. Preserve contrast where it exists, but heavy sections should be a solid wall. Over-limiting is a known risk: Metallica’s “Death Magnetic” (2008) drew wide criticism for audible clipping."
+      "text": "Metal performance is mostly loud, with micro-dynamics more important than broad section contrast. Clean intros and interludes can drop 10–15 dB. The engineer usually keeps dynamics tightly controlled: kick and snare are made consistent with samples or compression, bass is compressed heavily, and guitars are already compressed by amp distortion. Preserve contrast where it exists, but heavy sections should be a solid wall. Over-limiting is a known risk: Metallica’s “Death Magnetic” (2008) drew wide criticism for audible clipping."
     }
   ],
   "balance": [
@@ -175,7 +175,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Lead vocal (screams)",
         "use": "Yes (heavy)",
-        "ratio": "8:1–limiting",
+        "ratio": "8:1 to limiting",
         "attackRelease": "Very fast / fast",
         "gainReduction": "10–15 dB peaks",
         "notes": "Add a second, gentler stage (3:1, 3–5 dB) for consistency"
@@ -250,7 +250,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Metal runs drier than rock; duck reverbs from the source so tails bloom only in gaps."
+        "text": "Metal runs drier than rock; duck reverbs under the dry signal so tails bloom only in the gaps."
       }
     ]
   },
@@ -262,11 +262,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater metal often runs 100–104 dBA LAeq-15 at FOH, with arenas and festivals at 102–106 dBA and C-weighted LCeq around 115–124 dBC. Large open-air events have reported around 110 dBA at FOH with 100 dB delivered 100 m back. Peaks easily reach 115–120 dBA. Many European venues cap levels at 100–103 dBA LAeq over 15–60 minutes, so aim for density and clarity, not volume. A C-minus-A gap above 20 dB usually means sub mud that kills kick definition. NIOSH advises no more than about 15 minutes a day at 100 dBA; encourage earplugs and protect your own hearing."
+      "text": "Club and theater metal often runs 100–104 dBA LAeq,15min at FOH, with arenas and festivals at 102–106 dBA and C-weighted LCeq around 115–124 dBC. Large open-air events have run around 110 dBA at FOH, with about 100 dBA still reaching 100 m back. Peaks easily reach 115–120 dBA. Many European venues cap levels at 100–103 dBA LAeq over 15–60 minutes, so aim for density and clarity, not volume. A C-minus-A gap above 20 dB usually means sub mud that kills kick definition. NIOSH advises no more than about 15 minutes a day at 100 dBA; encourage earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern metal masters typically land at −8 to −5 LUFS-I; at −2 dBTP that leaves a PLR (peak minus loudness) of only about 3–6 dB. Traditional and doom records sit more naturally around −10 to −8. Keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14 LUFS to avoid codec clipping. Streaming normalizes to around −14 LUFS, so extreme loudness brings no playback advantage and costs punch."
+      "text": "Modern metal masters typically land at −8 to −5 LUFS-I; at −2 dBTP that leaves a PLR (peak minus loudness) of only about 3–6 dB. Traditional and doom records sit more naturally around −10 to −8. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, to avoid codec clipping. Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness brings no playback advantage and costs punch."
     }
   ],
   "liveStudio": {
@@ -278,13 +278,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Guitars",
-        "live": "Loud amps or modelers via DI/IR; little extra level needed; HPF hard to control wash",
+        "live": "Loud amps or modelers via DI/IR; little extra level needed; high-pass firmly to control low-end wash",
         "studio": "Double- or quad-tracked, reamped, panned wide with detailed EQ"
       },
       {
         "area": "Bass",
-        "live": "Often DI only, split clean/drive at console",
-        "studio": "Up to four bracketed tracks (DI low, amp mid, drive, top)"
+        "live": "Often DI only, split clean/drive at the console",
+        "studio": "Up to four layered tracks (DI low, amp mid, drive, top)"
       },
       {
         "area": "Vocals",

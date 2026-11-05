@@ -20,11 +20,11 @@ const g = (name: string) => read(`${DATA}/guides/${name}.ts`);
 
 // [guide file, new wording that must be present, old wording that must be gone]
 const PINS: Array<[string, string, string]> = [
-  ['g01-pop', 'A packed, singing house can push the level several dB above the soundcheck level.', 'can rise past 110 dB with a packed, singing house'],
+  ['g01-pop', 'A packed house singing along can push the level several dB above what you measured at soundcheck.', 'can rise past 110 dB with a packed, singing house'],
   ['g02-hip-hop-rap', 'often plays the bassline and can also act as the kick', 'functions as both kick and bassline'],
-  ['g02-hip-hop-rap', 'de-ess before or after the presence boost, then check the S sounds', '2.5–5 kHz; de-ess after the presence boost"'],
-  ['g02-hip-hop-rap', 'streaming guides advise −1 dBTP, or −2 dBTP for masters this loud', 'true peak around −1 to 0 dBTP.'],
-  ['g02-hip-hop-rap', 'sometimes several compressors in series on one lead vocal', 'dozens of compressors'],
+  ['g02-hip-hop-rap', 'de-ess before or after the presence boost, then recheck the S sounds', '2.5–5 kHz; de-ess after the presence boost"'],
+  ['g02-hip-hop-rap', '−1 dBTP is safer, or −2 dBTP for masters this loud', 'true peak around −1 to 0 dBTP.'],
+  ['g02-hip-hop-rap', 'Several compressors in series on one lead vocal', 'dozens of compressors'],
   ['g02-hip-hop-rap', 'Many rappers cup and eat the mic', '"Rappers cup and eat the mic'],
   ['g05-edm-festival-electronic', 'a common cause of muddy big-room drops', 'the main cause of muddy big-room drops'],
   ['g08-reggaeton', 'threshold just under the singer’s quietest line', 'threshold around −55 to −60 dBFS'],
@@ -39,7 +39,7 @@ const PINS: Array<[string, string, string]> = [
   ['g22-soul', 'some classic Motown stereo mixes put drums on one side', 'I Heard It Through the Grapevine'],
   ['g28-reggae', 'Barrett used big bass cabinets for depth', '18-inch and 4x15 cabinets'],
   ['g31-blues', 'comped from two takes.', 'Stevie Ray Vaughan sang each song twice'],
-  ['g34-folk-singer-songwriter', 'If the guitar has a pickup, most engineers take a DI from it as well', '"Always get a DI from the guitar'],
+  ['g34-folk-singer-songwriter', 'If the guitar has a pickup, take a DI from it as well', '"Always get a DI from the guitar'],
   ['g38-salsa', 'brings no stage bleed, though its left hand still adds low end', 'brings no mud at all'],
   ['g45-drum-and-bass', 'Loudest to quietest in a drop', 'kick around −18 to −12 dBFS'],
   ['g47-bluegrass-americana', 'C-weighted levels sit only a few dB higher', 'with a small C–A gap'],

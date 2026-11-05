@@ -20,23 +20,23 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–130 BPM (ballads 60–75; neo-soul grooves 70–95; Motown stompers and Philly dance tracks 110–125)",
     "ensemble": "6–12 piece: drums, bass, guitar, keys, 2–4 horns, lead vocal plus 2–3 backing singers; Philly-style shows add strings; neo-soul often a 5–6 piece with keys and backing vocals",
     "priority": "The lead vocal, warm and fully intelligible, riding a pocket of drums and bass that feels human",
-    "liveSpl": "92–98 dBA Leq (LAeq-15 min); roughly 108–115 dBC; theaters and supper clubs often 90–95 dBA",
-    "studioLoudness": "Masters commonly −11 to −8 LUFS-I (retro-soul and catalog nearer −13 to −10); streaming normalizes to about −14"
+    "liveSpl": "92–98 dBA LAeq,15min, roughly 108–115 dBC; theaters and supper clubs often 90–95 dBA",
+    "studioLoudness": "Masters commonly −11 to −8 LUFS-I (retro-soul and catalog nearer −13 to −10); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Soul is music of testimony: gospel fervor carried into secular love songs, heartbreak and social messages. It is for dancing, slow-dancing and catharsis; audiences often know every word and horn line. Neo-soul (D’Angelo, Erykah Badu, Jill Scott) added hip-hop timing and a looser, more introspective mood. Listeners expect the singer’s breath and grit, a bass line they can follow, a backbeat in the pocket, and horns that punch without stabbing. Wrong to this crowd: a buried or over-tuned vocal, a quantized or sample-replaced drum feel on a live band, harsh brass, a hyped modern low end on a vintage-style tune, and a mix that batters the audience—the aim is to immerse fans, not pummel them."
+      "text": "Soul is music of testimony: gospel fervor carried into secular love songs, heartbreak and social messages. It is for dancing, slow-dancing and catharsis; audiences often know every word and horn line. Neo-soul (D’Angelo, Erykah Badu, Jill Scott) added hip-hop timing and a looser, more introspective mood. Listeners expect the singer’s breath and grit, a bass line they can follow, a backbeat in the pocket, and horns that punch without stabbing. Soul fans notice at once when the vocal is buried or over-tuned, a live band’s drums are quantized or sample-replaced, the brass is harsh, a vintage-style tune gets a hyped modern low end, or the mix batters the audience."
     }
   ],
   "instruments": [
     {
       "label": "Drums:",
-      "text": "acoustic kit with a dead, muffled kick (Motown stuffed blankets inside) and a fat, dark snare; neo-soul favors dry, close sounds and behind-the-beat Questlove/J Dilla timing.",
+      "text": "acoustic kit with a dead, muffled kick (Motown stuffed it with blankets) and a fat, dark snare; neo-soul favors dry, close sounds and the behind-the-beat timing of Questlove and J Dilla.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric bass, classically recorded direct (Motown’s custom DI under James Jamerson’s melodic lines); neo-soul adds synth and sub bass.",
+      "text": "electric bass, classically recorded direct (Motown ran James Jamerson’s melodic lines through a custom DI); neo-soul adds synth and sub bass.",
       "bullet": true
     },
     {
@@ -77,12 +77,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Soul has wide dynamics for popular music. A ballad can run from a near-whispered verse to a full-throated belt 15–20 dB louder at the mic, and a ten-piece band swings from a hi-hat-and-bass breakdown to a full horn shout. Preserve this contrast: it is where the emotion lives. Control peaks with compression; shape the arc with fader rides. The classic soul engineers rode faders by hand at mixdown, and good FOH engineers “perform” the dynamics with the band. Over-limited masters that flatten the vamp’s build are a common complaint."
+      "text": "Soul has wide dynamics for popular music. A ballad can run from a near-whispered verse to a full-throated belt 15–20 dB louder at the mic, and a ten-piece band swings from a hi-hat-and-bass breakdown to a full horn shout. Preserve this contrast; it carries the emotion. Control peaks with compression; shape the arc with fader rides. Classic soul records were mixed with hand fader rides, and good FOH engineers “perform” the dynamics with the band. Over-limited masters that flatten the vamp’s build are a common complaint."
     }
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul—let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split across, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: some classic Motown stereo mixes put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul—let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split left and right, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: some classic Motown stereo mixes put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
     }
   ],
   "eq": {
@@ -101,9 +101,9 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Overheads / single drum mic",
-        "cut": "HPF 100–150 Hz; dip 2–4 kHz if splashy",
+        "cut": "HPF 100–150 Hz (one mic: ~50 Hz); dip 2–4 kHz if splashy",
         "boost": "LPF 8–12 kHz for vintage tone",
-        "notes": "Daptone often uses one or two mics on the whole kit"
+        "notes": "Retro-soul sessions often use one or two mics on the whole kit"
       },
       {
         "source": "Bass (DI + amp)",
@@ -158,7 +158,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "1–5 ms / 50–100 ms",
         "gainReduction": "3–6 dB on peaks",
-        "notes": "Catches belts; famous retro-soul vocals took about 10 dB from a fast FET compressor"
+        "notes": "Catches belts; some retro-soul vocals take up to 10 dB from a fast FET-style compressor"
       },
       {
         "source": "Lead vocal (stage 2, opto/vari-mu)",
@@ -166,7 +166,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "Program / slow",
         "gainReduction": "2–4 dB",
-        "notes": "Optical or vari-mu tube-style smoothing; tube compression flatters soul voices"
+        "notes": "Smooth, program-dependent leveling; tube color flatters soul voices"
       },
       {
         "source": "Bass",
@@ -198,7 +198,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1",
         "attackRelease": "10–20 ms / 100 ms",
         "gainReduction": "2–4 dB",
-        "notes": "Tames stabs; vari-mu tube-style group comp in retro mixes"
+        "notes": "Tames stabs; vari-mu-style group compression in retro mixes"
       },
       {
         "source": "Backing vocal bus",
@@ -241,7 +241,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Spring reverb",
         "appliedTo": "Vocals, guitar, drums (retro)",
         "setting": "Short, boingy, HPF 200 Hz / LPF 6 kHz",
-        "amount": "Moderate; Daptone and “Rehab” both lean on it"
+        "amount": "Moderate; many retro-soul records lean on it"
       },
       {
         "effect": "Tape slap",
@@ -256,7 +256,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle, automated"
       },
       {
-        "effect": "rotating speaker / chorus",
+        "effect": "Rotating speaker / chorus",
         "appliedTo": "Organ, electric piano, occasionally vocals",
         "setting": "Slow/fast rotor; chorus 0.3–0.8 Hz",
         "amount": "As part of the tone; neo-soul has even run vocals through a rotating speaker"
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Ride reverb sends by section: keep a drum spring dry in verses and push it in choruses."
+        "text": "Ride reverb sends by section: keep the drum spring send low in verses and push it up in choruses."
       }
     ]
   },
@@ -282,19 +282,19 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater soul shows typically run 92–98 dBA LAeq-15 at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 18 dB usually means too much sub for soul. NIOSH advises no more than about an hour a day at 94 dBA—offer earplugs and protect the band’s ears."
+      "text": "Club and theater soul shows typically run 92–98 dBA LAeq,15min at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 18 dB usually means too much sub for soul. NIOSH advises no more than about an hour a day at 94 dBA—offer earplugs and protect the band’s ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming recommendation. Services normalize to about −14 LUFS, so extra loudness buys nothing. Soul benefits from a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below the modern range) and a loudness range of 6–9 LU so ballads breathe and vamps build."
+      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming recommendation. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing. Soul benefits from a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below the modern range) and a loudness range of 6–9 LU so ballads breathe and vamps build."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Horns",
-        "live": "One dynamic or clip-on per player (small dynamics or clip-on condensers), tame bleed and stage wash",
-        "studio": "Single section mic about 4 ft back (Daptone) or close ribbons plus a room pair"
+        "live": "One small dynamic or clip-on condenser per player; tame bleed and stage wash",
+        "studio": "Single section mic about 4 ft back (retro) or close ribbons plus a room pair"
       },
       {
         "area": "Drums",

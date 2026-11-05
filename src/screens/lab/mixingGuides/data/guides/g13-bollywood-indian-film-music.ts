@@ -17,12 +17,12 @@ export const GUIDE: MixingGuide = {
     "tempo": "70–100 BPM for romantic ballads; 100–130 BPM for dance and “item” numbers; qawwali-style (Sufi devotional-song) builds accelerate to 140+",
     "ensemble": "Studio: programmed bed plus session players and string sections; live: 8–20 piece band (drums, Indian percussion, keys, guitars, bass, flute/strings) with 2–4 singers and tracks",
     "priority": "The playback vocal — melody and lyric — clear, polished and in front at all times",
-    "liveSpl": "95–102 dBA LAeq-15 in arenas and stadiums; 110–120 dBC; outdoor shows in India face boundary limits of 75 dB(A) or lower and a 10 pm curfew",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (ballads −11 to −9); streaming normalizes to about −14"
+    "liveSpl": "95–102 dBA LAeq,15min in arenas and stadiums; 110–120 dBC; outdoor shows in India face boundary limits of 75 dB(A) or lower and a 10 pm curfew",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (ballads −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Film songs carry the story, compressing a romance, separation or wedding into four or five minutes. Released ahead of the film, they become hits on their own and live on at weddings, sangeet (pre-wedding music) nights, festivals and reality-TV contests. The multigenerational audience knows every word, follows favorite playback singers for decades, and sings the mukhda (refrain) back at full volume. They will say “that sounded wrong” if the vocal is buried or harsh, the lyric unclear, the dholak (two-headed folk drum) or tabla (pair of hand drums) thin, or the melodic hooks (flute, sarangi (bowed fiddle), strings) missing."
+      "text": "Film songs carry the story, compressing a romance, separation or wedding into four or five minutes. Released ahead of the film, they become hits on their own and live on at weddings, sangeet (pre-wedding music) nights, festivals and reality-TV contests. The multigenerational audience knows every word, follows favorite playback singers for decades, and sings the mukhda (refrain) back at full volume. Listeners notice at once when the vocal is buried or harsh, the lyric unclear, the dholak (two-headed folk drum) or tabla (pair of hand drums) thin, or the melodic hooks on flute, sarangi (bowed fiddle) or strings missing."
     }
   ],
   "instruments": [
@@ -49,7 +49,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The classic form is mukhda (refrain), then two or three antaras (verses), each ending in a connecting line that drops back into the mukhda. Instrumental interludes between sections are their own small compositions: a string swell, a flute or sitar (long-necked plucked lute) solo, a percussion break. Male–female duets trade lines and meet for the final mukhda. Older songs were recorded live with large orchestras; modern ones are layered by a programmer, with singers recorded separately. On stage, singers stand front center, percussion (dholak, tabla, octapad) to one side, keys and programmer on the other, kit and bass upstage. Sections build to the last refrain; dance numbers add percussion breakdowns, and Sufi-style songs accelerate toward the end."
+      "text": "The classic form is mukhda (refrain), then two or three antaras (verses), each ending in a connecting line that drops back into the mukhda. Instrumental interludes between sections are their own small compositions: a string swell, a flute or sitar (long-necked plucked lute) solo, a percussion break. Male–female duets trade lines and meet for the final mukhda. Older songs were recorded live with large orchestras; modern ones are layered by a programmer, with singers recorded separately. On stage, singers stand front center, percussion (dholak, tabla, electronic drum pads) to one side, keys and programmer on the other, kit and bass upstage. Sections build to the last refrain; dance numbers add percussion breakdowns, and Sufi-style songs accelerate toward the end."
     }
   ],
   "dynamics": [
@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Tabla dayan (treble drum)",
         "cut": "HPF 150–200 Hz; −2 dB at 400–600 Hz if boxy",
-        "boost": "+2–3 dB at 2–4 kHz (stroke); +1–2 dB at 8–10 kHz (ring)",
+        "boost": "+2–3 dB at 2–4 kHz (stroke); +1–2 dB at 8–10 kHz (sparkle)",
         "notes": "The ringing tuned pitch is the sound — do not notch it out"
       },
       {
@@ -143,7 +143,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1 (program)",
         "attackRelease": "Program-dependent",
         "gainReduction": "3–5 dB",
-        "notes": "Smooth, glossy level; plus detailed fader rides"
+        "notes": "Smooth, glossy leveling, plus detailed fader rides"
       },
       {
         "source": "Lead vocal (multiband, studio)",
@@ -188,7 +188,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess female vocals at 6–9 kHz and male at 5–7 kHz for 3–5 dB; Hindi, Urdu and Punjabi sibilants (s, sh, ch) can be pronounced. Gate kit toms live (30–50 ms hold); avoid gating tabla — it loses its ring and resonant glides. Mastering limiters on dance numbers often do 3–5 dB; keep ballads to 1–3 dB."
+        "text": "De-ess female vocals at 6–9 kHz and male at 5–7 kHz for 3–5 dB; sibilants in Hindi, Urdu and Punjabi (s, sh, ch) can be prominent. Gate kit toms live (30–50 ms hold); avoid gating tabla — it loses its ring and resonant glides. Mastering limiters on dance numbers often do 3–5 dB; keep ballads to 1–3 dB."
       }
     ]
   },
@@ -245,17 +245,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The playback singer is the star: the vocal sits clearly on top so the audience catches the poetry of the lyric (often Hindi–Urdu with Punjabi or English lines). Tone is warm and sweet with polished top, never harsh; studio work means many comped takes, line-by-line rides and EQ automation. Pitch correction is common in modern productions, but respected playback singers have criticized heavy pitch correction for making voices sound alike; aim for transparent tuning that preserves meend (slides) and gamak (ornaments), which are melodic content, not errors. Do not hard-snap ornaments to the scale. Backing choruses and group “hey” chants sit 6–10 dB under the lead, panned wide. Duets need matched tone and level between partners. Live, some FOH engineers give a star singer three mics (headset, wireless and wired handheld) for different tonal zones. Expect singers to pull off-mic on high notes and point the mic at the crowd for the refrain; ride accordingly and keep an ambience mic open."
+      "text": "The playback singer is the star: the vocal sits clearly on top so the audience catches the poetry of the lyric (often Hindi–Urdu with Punjabi or English lines). Tone is warm and sweet with a polished top end, never harsh; studio work means many comped takes, line-by-line rides and EQ automation. Pitch correction is common in modern productions, but respected playback singers have criticized heavy pitch correction for making voices sound alike; aim for transparent tuning that preserves meend (slides) and gamak (ornaments), which are melodic content, not errors. Do not hard-snap ornaments to the scale. Backing choruses and group “hey” chants sit 6–10 dB under the lead, panned wide. Duets need matched tone and level between partners. Live, some FOH engineers give a star singer three mics (headset, wireless and wired handheld) for different tonal zones. Expect singers to pull off-mic on high notes and point the mic at the crowd for the refrain; ride accordingly and keep an ambience mic open."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq-15 at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000 cap loudspeakers at the boundary at 10 dB(A) above the area’s ambient standard or 75 dB(A), whichever is lower, and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
+      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq,15min at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000, cap loudspeakers at the boundary at 10 dB(A) above the area’s ambient standard or 75 dB(A), whichever is lower, and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance and item numbers commonly master at −8 to −6 LUFS-I; ballads at −11 to −9 LUFS-I. Keep true peak at −1 dBTP, or −2 dBTP for loud masters, because lossy streaming files can push peaks higher and distort; streaming services then turn songs down to about −14 LUFS. Check on phone speakers, where most listeners first hear these songs; theatrical 5.1/immersive versions keep wider dynamics."
+      "text": "Dance and item numbers commonly master at −8 to −6 LUFS-I; ballads at −11 to −9 LUFS-I. Keep true peak at −1 dBTP, or −2 dBTP for loud masters, because lossy streaming files can push peaks higher and distort; most streaming services then normalize to about −14 LUFS, some to −16. Check on phone speakers, where most listeners first hear these songs; theatrical 5.1/immersive versions keep wider dynamics."
     }
   ],
   "liveStudio": {
@@ -267,7 +267,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Percussion",
-        "live": "Dholak (two-headed folk drum), tabla (pair of hand drums) and octapad live plus kit — manage bleed and phase on stage",
+        "live": "Dholak (two-headed folk drum), tabla (pair of hand drums) and electronic drum pads live plus kit — manage bleed and phase on stage",
         "studio": "Live percussion layered with sampled loops, time-aligned"
       },
       {
@@ -292,7 +292,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–102 dBA LAeq, boundary limit of 75 dB(A) or lower and curfew in India",
+        "live": "95–102 dBA LAeq,15min; boundary limit of 75 dB(A) or lower and curfew in India",
         "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
@@ -304,11 +304,11 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Program artist scenes in advance; multi-singer showcases prepare sessions days ahead.",
+      "text": "Program artist scenes in advance; for multi-singer showcases, prepare sessions days ahead.",
       "bullet": true
     },
     {
-      "text": "Don’t treat tabla (pair of hand drums) or dholak (two-headed folk drum) like a kick or snare — over-gating and over-cutting kills their tone and pitch glides.",
+      "text": "Don’t treat tabla (pair of hand drums) or dholak (two-headed folk drum) like a kick or snare — over-gating and over-cutting kill their tone and pitch glides.",
       "bullet": true
     },
     {

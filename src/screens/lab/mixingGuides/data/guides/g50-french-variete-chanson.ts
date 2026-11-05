@@ -18,12 +18,12 @@ export const GUIDE: MixingGuide = {
   "title": "French Variété / Chanson",
   "expects": "The audience treats the text as the point: the French public expects to understand the lyrics, because the songs follow the rhythms of the language and are valued for their writing.",
   "glance": {
-    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)",
+    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 19th-century cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)",
     "tempo": "Mostly 60–130 BPM (ballads 60–80; valse musette (accordion waltz) in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
-    "ensemble": "From solo voice + piano or guitar, to a 3–5 piece chanson band (piano, accordion, double bass, guitar, light drums), to a 7–12 piece variété touring band with backing vocals, strings or brass",
+    "ensemble": "From solo voice + piano or guitar, to a 3–5-piece chanson band (piano, accordion, double bass, guitar, light drums), to a 7–12-piece variété touring band with backing vocals, strings or brass",
     "priority": "The lead vocal and every word of the French text — clear, natural, and in front",
-    "liveSpl": "Theater/concert-hall chanson 85–92 dBA LAeq-15; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC LAeq-15",
-    "studioLoudness": "Acoustic chanson masters often −14 to −11 LUFS-I; modern variété-pop −10 to −8; streaming normalizes to about −14"
+    "liveSpl": "Theater/concert-hall chanson 85–92 dBA LAeq,15min; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC over 15 minutes",
+    "studioLoudness": "Acoustic chanson masters often −14 to −11 LUFS-I; modern variété-pop −10 to −8; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -43,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Accordion:",
-      "text": "the signature color of musette (accordion dance-hall style) and realist chanson, revived by the nouvelle scène (new generation: Les Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
+      "text": "the signature color of musette (accordion dance-hall style) and realist chanson, revived by the nouvelle scène (new generation: Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
       "bullet": true
     },
     {
@@ -106,7 +106,7 @@ export const GUIDE: MixingGuide = {
         "source": "Accordion",
         "cut": "HPF 80–100 Hz (treble side), 50–60 Hz (bass side); −2–3 dB at 1–2 kHz if nasal/honky",
         "boost": "+1–2 dB at 3–5 kHz for reed definition",
-        "notes": "Dip bellows/key clatter by placement, not EQ"
+        "notes": "Reduce bellows/key clatter by placement, not EQ"
       },
       {
         "source": "Double bass",
@@ -128,7 +128,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Snare / brushes",
-        "cut": "HPF 100 Hz; −2 dB at ring",
+        "cut": "HPF 100 Hz; −2 dB at the ring frequency",
         "boost": "+1–2 dB at 5–8 kHz for brush texture",
         "notes": "Brushes are quiet: watch bleed and gain"
       },
@@ -166,7 +166,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Lead vocal (variété-pop)",
         "use": "Yes, serial",
-        "ratio": "4:1 (FET) then 2–3:1 (opto)",
+        "ratio": "4:1 (FET) then 2:1–3:1 (opto)",
         "attackRelease": "1–5 ms / 50 ms; program-dependent",
         "gainReduction": "3–6 dB total",
         "notes": "FET into opto is common in the studio"
@@ -193,7 +193,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "15–25 ms / 100 ms",
         "gainReduction": "3–5 dB",
-        "notes": "Evens uneven notes"
+        "notes": "Evens out note-to-note level"
       },
       {
         "source": "Strings bus",
@@ -265,24 +265,24 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The voice is the mix. Place it clearly in front, with every syllable understood, including the mute “e” that chanson singers often pronounce as a sung syllable. Tone should be natural and warm with present but not edgy consonants; many classic records sound slightly dark on top rather than airy. French sibilants and nasal vowels (an, on, in) need care: too much cut at 300–800 Hz thins nasal vowels, too much 2–4 kHz makes “s” and “ch” piercing. Pitch correction should be transparent and sparing in chanson — slight imperfection is expressive and accepted — while modern variété-pop often uses fuller tuning. Backing vocals are tucked well below the lead. Live, condenser handhelds or headset/capsule mics suit quieter theater stages; a simple chain of capsule, preamp, compressor, de-esser and EQ is often enough. In seated theaters keep the vocal near natural size — realism is lost when voices are far louder than life."
+      "text": "The voice is the mix. Place it clearly in front, with every syllable understood, including the mute “e” that chanson singers often pronounce as a sung syllable. Tone should be natural and warm with present but not edgy consonants; many classic records sound slightly dark on top rather than airy. French sibilants and nasal vowels (an, on, in) need care: too much cut at 300–800 Hz thins nasal vowels, too much 2–4 kHz makes “s” and “ch” piercing. Pitch correction should be transparent and sparing in chanson — slight imperfection is expressive and accepted — while modern variété-pop often uses fuller tuning. Backing vocals are tucked well below the lead. Live, handheld condensers or headset and miniature mics suit quieter theater stages; a simple chain of mic, preamp, compressor, de-esser and EQ is often enough. In seated theaters keep the vocal near natural size — realism is lost when voices are far louder than life."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret (decree) 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theaters."
+      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq,15min at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret (decree) 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the mix position. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theaters."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a wide PLR (at −2 dBTP, a −14 to −11 LUFS-I master leaves 9–12 dB) and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so a dynamic chanson master loses nothing and keeps its emotion."
+      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a wide PLR (a −14 to −11 LUFS-I master leaves roughly 9–13 dB) and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to about −14 LUFS, some to −16, so a dynamic chanson master loses nothing and keeps its emotion."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Vocal",
-        "live": "Gain-before-feedback limits EQ on quiet singers; close condensers, constant fader rides",
+        "live": "Gain before feedback limits EQ on quiet singers; close condensers, constant fader rides",
         "studio": "Large-diaphragm condensers (classic tube types), serial compression, line-by-line rides"
       },
       {
@@ -292,7 +292,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Piano",
-        "live": "Close mics under lid, bleed from monitors; HPF more",
+        "live": "Close mics under the lid; watch monitor bleed and HPF higher",
         "studio": "Stereo pair plus room, fuller low end"
       },
       {
@@ -312,7 +312,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "85–100 dBA, legal 102 dBA / 118 dBC",
+        "live": "85–100 dBA; legal limit 102 dBA / 118 dBC",
         "studio": "−14 to −8 LUFS-I depending on sub-style"
       }
     ],

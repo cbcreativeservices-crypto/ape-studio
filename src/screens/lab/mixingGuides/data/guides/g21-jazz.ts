@@ -20,8 +20,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "Ballads 50–80 BPM; medium swing 120–180; up-tempo bebop 220–320+",
     "ensemble": "Small group: 3–6 piece (piano or guitar, upright bass, drums, 1–3 horns); big band: 16–18 piece (5 saxes, 4 trumpets, 4 trombones, rhythm section) plus vocalist",
     "priority": "Natural, believable acoustic balance, with the ride cymbal and walking bass carrying time and the soloist clearly in front",
-    "liveSpl": "Clubs 80–90 dBA Leq (LAeq-15 min); big band and festivals 88–96 dBA; roughly 95–105 dBC",
-    "studioLoudness": "Acoustic jazz masters commonly −18 to −14 LUFS-I (some modern releases near −11 to −9); streaming normalizes to about −14"
+    "liveSpl": "Clubs 80–90 dBA LAeq,15min; big bands and festivals 88–96 dBA, roughly 95–105 dBC",
+    "studioLoudness": "Acoustic jazz masters commonly −18 to −14 LUFS-I (some modern releases −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -31,7 +31,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Upright bass:",
-      "text": "piezo or bridge pickup blended with a mic; walks quarter notes and anchors harmony. Electric bass mainly in fusion and smooth jazz.",
+      "text": "a pickup (usually a bridge piezo) blended with a mic; walks quarter notes and anchors harmony. Electric bass appears mainly in fusion and smooth jazz.",
       "bullet": true
     },
     {
@@ -51,7 +51,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Vocals and playback:",
-      "text": "standards singers and scat. Playback is rare; fusion and smooth jazz add synths, programmed drums and sometimes tracks.",
+      "text": "standards singers, often with scat. Playback is rare; fusion and smooth jazz add synths, programmed drums and sometimes backing tracks.",
       "bullet": true
     }
   ],
@@ -104,7 +104,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Overheads / ride",
-        "cut": "HPF 100–200 Hz; −2–5 dB at 150–300 Hz (kit mud)",
+        "cut": "HPF 60–100 Hz; −2–5 dB at 150–300 Hz (kit mud)",
         "boost": "+1–2 dB shelf at 8–12 kHz only if dull",
         "notes": "The ride’s “ping” lives around 3–6 kHz; avoid harshness"
       },
@@ -163,7 +163,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1 (opto)",
         "attackRelease": "Program-dependent",
         "gainReduction": "2–4 dB",
-        "notes": "opto-style smoothing; ride faders for the rest"
+        "notes": "Opto-style smoothing; ride faders for the rest"
       },
       {
         "source": "Piano",
@@ -179,7 +179,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "10–20 ms / 100 ms",
         "gainReduction": "2–3 dB on peaks",
-        "notes": "Live: protects the PA on loud high notes"
+        "notes": "Live: tames peaks on loud high notes"
       },
       {
         "source": "Trombone / brass bus",
@@ -208,7 +208,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Avoid gates: bleed is part of the sound, and gates chop brushes and ride wash. A vocal de-esser (5–8 kHz, 2–3 dB) is often a minimalist live engineer’s only plug-in. Gentle parallel compression on a trio’s rhythm section (around 1.7:1, fast attack, blended in) adds density without pumping. Keep master limiting to 1–3 dB."
+        "text": "Avoid gates: bleed is part of the sound, and gates chop brushes and ride wash. Live, a vocal de-esser (5–8 kHz, 2–3 dB) is often the only insert a minimal mix needs. Gentle parallel compression on a trio’s rhythm section (around 1.7:1, fast attack, blended in) adds density without pumping. Keep master limiting to 1–3 dB."
       }
     ]
   },
@@ -229,7 +229,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Club convolution IR",
         "appliedTo": "Small group, studio",
-        "setting": "1.5–3 s “empty club” IR, HPF 200 Hz, −2 dB at ~5 kHz",
+        "setting": "0.8–1.5 s “empty club” IR, HPF 200 Hz, −2 dB at ~5 kHz",
         "amount": "Subtle"
       },
       {
@@ -247,7 +247,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Room-mic delay",
         "appliedTo": "Room pair to deepen space",
-        "setting": "Delay room mics ~10 ms behind closes",
+        "setting": "Delay room mics ~10 ms behind close mics",
         "amount": "As needed"
       }
     ],
@@ -259,17 +259,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Jazz vocals sit inside the band, about 2–4 dB above the accompaniment, and singers often shape dynamics with mic technique. Tone is warm and intimate, with every word of the standard intelligible. Pitch correction is very rare: bends, blue notes and scoops are intentional. Doubles are almost never used; backing vocals appear mainly in vocal groups and smooth jazz. Live, a quality condenser or premium dynamic (handheld condenser or high-end dynamic) with HPF, light compression and a de-esser covers most shows. Ride scat passages like a horn solo."
+      "text": "Jazz vocals sit inside the band, about 2–4 dB above the accompaniment, and singers often shape dynamics with mic technique. Tone is warm and intimate, with every word of the standard intelligible. Pitch correction is very rare: bends, blue notes and scoops are intentional. Doubles are almost never used; backing vocals appear mainly in vocal groups and smooth jazz. Live, a good handheld condenser or high-end dynamic with HPF, light compression and a de-esser covers most shows. Ride scat passages like a horn solo."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "An acoustic drummer playing out reaches about 90 dB a few meters away, so in small clubs the PA mostly brings bass, piano and vocals up to the drums. FOH averages of 80–90 dBA LAeq are typical, with peaks of 100–105 dBA on fills and shout choruses. Big bands at festivals run 88–96 dBA, at about 95–105 dBC. A C-minus-A gap under 12–15 dB is normal because jazz needs little sub; clubs often use one or two full-range boxes and a small sub set low. Players in front of the trumpet section are exposed to high levels, so encourage risers, baffles and musicians’ earplugs."
+      "text": "An acoustic drummer playing out reaches about 90 dBA a few meters away, so in small clubs the PA mostly brings bass, piano and vocals up to the drums. FOH averages of 80–90 dBA LAeq,15min are typical, with peaks of 100–105 dBA on fills and shout choruses. Big bands at festivals run 88–96 dBA, at about 95–105 dBC. A C-minus-A gap under 12–15 dB is normal because jazz needs little sub; clubs often use one or two full-range boxes and a small sub set low. Players in front of the trumpet section are exposed to high levels, so encourage risers, baffles and musicians’ earplugs."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Acoustic jazz is usually mastered to −16 to −14 LUFS-I at −1 dBTP true peak. Trio and ballad records often go quieter, around −18, which avoids normalization reduction. Aim for a PLR of 12–16 dB and a loudness range of 8–15 LU. Brass and cymbals distort easily under heavy limiting and lossy codecs; modern releases mastered at −11 to −9 LUFS often sound flatter."
+      "text": "Acoustic jazz is usually mastered to −16 to −14 LUFS-I at −1 dBTP. Trio and ballad records often go quieter, around −18, to keep more dynamic range. Aim for a PLR of 12–16 dB and a loudness range of 8–15 LU. Brass and cymbals distort easily under heavy limiting and lossy codecs; modern releases mastered at −11 to −9 LUFS often sound flatter."
     }
   ],
   "liveStudio": {
@@ -287,7 +287,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Drums",
         "live": "Kick, snare, overhead or two at most; cymbals rarely need help",
-        "studio": "Full kit set, ribbon overheads, careful phase alignment"
+        "studio": "Full close-mic set, ribbon overheads, careful phase alignment"
       },
       {
         "area": "Piano",
@@ -348,7 +348,7 @@ export const GUIDE: MixingGuide = {
     "Bill Evans Trio, “Gloria’s Step” (Sunday at the Village Vanguard), 1961",
     "John Coltrane, “Acknowledgement” (A Love Supreme), 1965",
     "Art Blakey and the Jazz Messengers, “Moanin’”, 1958",
-    "Count Basie Orchestra, “April in Paris”, 1955",
+    "Count Basie Orchestra, “April in Paris”, 1956",
     "Thad Jones/Mel Lewis Orchestra, “Central Park North”, 1969",
     "Brad Mehldau Trio, “Blackbird” (Art of the Trio Vol. 1), 1997",
     "Cécile McLorin Salvant, “Wild Women Don’t Have the Blues” (Dreams and Daggers), 2017",

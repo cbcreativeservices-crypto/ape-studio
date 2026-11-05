@@ -18,12 +18,12 @@ export const GUIDE: MixingGuide = {
   "title": "Classical (Orchestral)",
   "expects": "They expect the sound of real acoustic instruments in a real room: rich strings, woodwinds placed behind them, brass and timpani with weight but not glare.",
   "glance": {
-    "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in 18th–19th century Vienna, Germany, France and Italy",
+    "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in Austria, Germany, France and Italy in the 18th and 19th centuries",
     "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (largo) to 180+ (presto), often with rubato (flexible, push-pull tempo)",
     "ensemble": "Chamber groups of 2–10; chamber orchestra 15–40; full symphony orchestra 60–100+, sometimes plus chorus and soloists",
     "priority": "A natural, believable picture of the ensemble in its hall: the conductor’s balance, true timbre and full dynamic range",
     "liveSpl": "Unamplified halls: about 75–80 dBA Leq across a concert (quiet stretches 60–70), fortissimo (very loud) peaks near 95–100 dBA. Amplified outdoor concerts: usually 75–88 dBA Leq, kept close to acoustic level",
-    "studioLoudness": "Masters commonly −23 to −16 LUFS-I with peaks at −1 dBTP; loudness range often 15–25 LU. Normalization at −14 can turn quiet albums up, so album mode matters"
+    "studioLoudness": "Masters commonly −23 to −16 LUFS-I with peaks at −1 dBTP; loudness range often 15–25 LU. Most streaming services normalize to about −14 LUFS, some to −16, and may turn quiet albums up, so album mode matters"
   },
   "purpose": [
     {
@@ -43,12 +43,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Brass:",
-      "text": "horns (whose bells face backwards, so their sound relies on reflections), trumpets, trombones, tuba.",
+      "text": "horns (whose bells face backward, so their sound relies on reflections), trumpets, trombones, tuba.",
       "bullet": true
     },
     {
       "label": "Percussion:",
-      "text": "timpani first; then bass drum, cymbals, snare and mallets. Short transients with very high peaks. The harp (a plucked string) often sits nearby.",
+      "text": "timpani first; then bass drum, cymbals, snare and mallets, all with short transients and very high peaks. The harp, a plucked string instrument, often sits nearby.",
       "bullet": true
     },
     {
@@ -99,7 +99,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Viola / cello spots",
-        "cut": "HPF 50–70 Hz; −2 dB at 250–400 Hz if chesty",
+        "cut": "HPF 40–60 Hz; −2 dB at 250–400 Hz if chesty",
         "boost": "None typical",
         "notes": "Just for inner-voice clarity"
       },
@@ -111,7 +111,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Woodwind spots",
-        "cut": "HPF 100–150 Hz (bassoon and bass clarinet about 40–50 Hz); −2 dB at 3–5 kHz if key or breath noise",
+        "cut": "HPF 100–150 Hz (bassoon and bass clarinet about 40–50 Hz); −2 dB at 3–5 kHz if key or breath noise intrudes",
         "boost": "+1 dB at 1–2 kHz for presence if needed",
         "notes": "Most likely spots to need help coming forward"
       },
@@ -202,7 +202,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "For most of this section, the answer is minimal or none, and that is the correct approach. The style’s dynamic range is the musical content: pumping, flattening or added density would ruin both the music and the hall.",
+        "text": "For most sources in this table, the right answer is little or no compression. The style’s dynamic range is the musical content: pumping, flattening or added density would ruin both the music and the hall.",
         "before": true
       },
       {
@@ -257,11 +257,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "In an unamplified hall, the audience typically hears about 75–80 dBA Leq across a concert, with long stretches around 60–70 dBA and fortissimo (very loud) peaks of 95–100 dBA. Musicians on stage hear more, around 84–92 dBA Leq, with peaks above 120 dBC near timpani, percussion and brass, so hearing protection is a real occupational issue for players. When an orchestra is amplified outdoors, match acoustic levels instead of exceeding them: about 75–88 dBA Leq at FOH, peaks under about 100 dBA, C-weighted readings roughly 10–15 dB above A-weighted. Subwoofers are often left out entirely; a well-designed system needs very little reinforcement below about 50 Hz. Large outdoor orchestral venues use delay-matrix and imaging rather than volume to make the orchestra feel present."
+      "text": "In an unamplified hall, the audience typically hears about 75–80 dBA Leq across a concert, with long stretches around 60–70 dBA and fortissimo (very loud) peaks of 95–100 dBA. Musicians on stage hear more, around 84–92 dBA Leq, with peaks above 120 dBC near timpani, percussion and brass, so hearing protection is a real occupational issue for players. When an orchestra is amplified outdoors, match acoustic levels instead of exceeding them: about 75–88 dBA Leq at FOH, peaks under about 100 dBA, C-weighted readings roughly 10–15 dB above A-weighted. Subwoofers are often left out entirely; a well-designed system needs very little reinforcement below about 50 Hz. Large outdoor orchestral venues use delay-matrix imaging systems rather than volume to make the orchestra feel present."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Classical masters commonly land at −23 to −16 LUFS-I with true peak at −1 dBTP, and a loudness range of 15–25 LU or more is normal. Do not limit hard to reach −14. Several streaming services (some at −16) use album normalization, which keeps the movements’ relative levels intact. On track-normalized services a quiet slow movement can be raised relative to the loud finale, which is one reason labels prefer whole-album delivery. Watch for positive gain on −20 LUFS masters: some services will turn them up only as far as the peaks allow."
+      "text": "Classical masters commonly land at −23 to −16 LUFS-I with true peak at −1 dBTP, and a loudness range of 15–25 LU or more is normal. Do not limit hard to reach −14. Most streaming services normalize to about −14 LUFS, some to −16, and several offer album normalization, which keeps the movements’ relative levels intact. On track-normalized services a quiet slow movement can be raised relative to the loud finale, which is one reason labels prefer whole-album delivery. Watch for positive gain on −20 LUFS masters: some services will turn them up only as far as the peaks allow."
     }
   ],
   "liveStudio": {
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Main mics",
         "live": "Spots dominate for gain-before-feedback; main pair for reference or broadcast",
-        "studio": "three-omni tree or AB main is the primary source; spots support it"
+        "studio": "Three-omni tree or AB main is the primary source; spots support it"
       },
       {
         "area": "Processing",
@@ -341,12 +341,12 @@ export const GUIDE: MixingGuide = {
   "references": [
     "Berlin Philharmonic / Herbert von Karajan, Beethoven Symphony No. 9, 1963",
     "London Symphony Orchestra / Pierre Monteux, Ravel Daphnis et Chloé, 1959",
-    "Chicago Symphony Orchestra / Fritz Reiner, Bartók Concerto for Orchestra, 1955",
-    "Vienna Philharmonic / Georg Solti, Wagner Das Rheingold, 1958",
-    "Minnesota Orchestra / Osmo Vänskä, Sibelius Symphonies Nos. 2 & 5, 2011",
+    "Chicago Symphony Orchestra / Fritz Reiner, Bartók Concerto for Orchestra, 1956",
+    "Vienna Philharmonic / Georg Solti, Wagner Das Rheingold, 1959",
+    "Minnesota Orchestra / Osmo Vänskä, Sibelius Symphonies Nos. 2 & 5, 2012",
     "Boston Symphony Orchestra / Andris Nelsons, Shostakovich Symphony No. 10, 2015",
     "Emerson String Quartet, Beethoven The String Quartets, 1997",
-    "San Francisco Symphony / Michael Tilson Thomas, Mahler Symphony No. 5, 2005"
+    "San Francisco Symphony / Michael Tilson Thomas, Mahler Symphony No. 5, 2006"
   ],
   "empty": []
 };

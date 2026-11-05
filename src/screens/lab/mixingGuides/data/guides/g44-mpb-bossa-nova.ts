@@ -13,18 +13,18 @@ export const GUIDE: MixingGuide = {
   "id": "mpb-bossa-nova",
   "num": 44,
   "title": "MPB / Bossa Nova",
-  "expects": "Audiences listen to the words, and Brazilian crowds sing along—in a pagode roda (samba circle) that is the point.",
+  "expects": "Audiences listen to the words, and Brazilian crowds sing along; in a pagode roda (samba circle), singing along is the point.",
   "glance": {
-    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; samba and pagode (informal party samba) roots in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)",
+    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)",
     "tempo": "Bossa nova 120–145 BPM (felt “in two” at 60–72); MPB ballads and samba-canção (slow, torch-song samba) 60–90; samba/pagode roughly 90–110 in 2/4",
     "ensemble": "Voice and violão (nylon-string guitar) alone; trio/quartet (guitar, piano, upright or electric bass, brushes/percussion); MPB tours 6–10 piece; pagode (informal party samba) 5–8 players who all sing",
     "priority": "The voice and the nylon-string guitar as an equal, intimate pair, with every word of Portuguese clear",
-    "liveSpl": "Bossa/voice-and-guitar 82–90 dBA LAeq-15; MPB theater 88–95 dBA; pagode (informal party samba)/samba shows 95–100 dBA, about 110–118 dBC",
-    "studioLoudness": "Bossa/MPB masters commonly −16 to −12 LUFS-I; modern pagode (informal party samba) −10 to −8; streaming normalizes to about −14"
+    "liveSpl": "Bossa/voice-and-guitar 82–90 dBA LAeq,15min; MPB theater 88–95 dBA; pagode (informal party samba)/samba shows 95–100 dBA, about 110–118 dBC",
+    "studioLoudness": "Bossa/MPB masters commonly −16 to −12 LUFS-I; modern pagode (informal party samba) −10 to −8; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Bossa nova was born as apartment and small-club music: a seated singer with a guitar (the “banquinho e violão” (stool and guitar) image). João Gilberto’s idea was to put a whole samba percussion section into the right hand of a guitar and to sing softly, almost speaking, instead of the operatic radio style that preceded him. MPB, which followed in the mid-1960s with Elis Regina, Chico Buarque, Caetano Veloso, Gilberto Gil, Milton Nascimento and Gal Costa, is song-first music: sophisticated harmony and poetry, often carrying political meaning written in metaphor to slip past military-era censors. Audiences listen to the words, and Brazilian crowds sing along—in a pagode roda (samba circle) that is the point."
+      "text": "Bossa nova was born as apartment and small-club music: a seated singer with a guitar, the “banquinho e violão” (stool and guitar) image. João Gilberto’s idea was to put a whole samba percussion section into the right hand of a guitar and to sing softly, almost speaking, instead of the operatic radio style that preceded him. MPB, which followed in the mid-1960s with Elis Regina, Chico Buarque, Caetano Veloso, Gilberto Gil, Milton Nascimento and Gal Costa, is song-first music: sophisticated harmony and poetry, often carrying political meaning written in metaphor to slip past military-era censors. Audiences listen to the words, and Brazilian crowds sing along; in a pagode roda (samba circle), singing along is the point."
     },
     {
       "text": "What sounds wrong to this audience: a voice that is loud and hyped rather than close and warm; a guitar that is boomy, quacky or buried; sibilant, brittle Portuguese; percussion that turns a gentle swing into a pounding backbeat; and too much reverb smearing harmony and syncopation. A mix that is loud in a seated theater is a failure."
@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Violão (nylon-string guitar):",
-      "text": "the heart of the style. The thumb plays the surdo-like (like the samba bass drum) bass on beats while the fingers pluck syncopated chords (the batida). Warm tone, fast decay; often an acoustic-electric with piezo in live MPB.",
+      "text": "the heart of the style. The thumb plays bass notes on the beats, like a surdo (samba bass drum), while the fingers pluck syncopated chords (the batida). Warm tone, fast decay; often an acoustic-electric with a piezo pickup in live MPB.",
       "bullet": true
     },
     {
@@ -63,7 +63,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Pagode additions:",
-      "text": "cavaquinho (small four-string, bright and percussive), banjo tuned like a cavaquinho, tantã (a low hand-played drum that replaces the surdo), repique de mão, 7-string violão carrying bass counterlines.",
+      "text": "cavaquinho (small four-string guitar), bright and percussive; banjo tuned like a cavaquinho; tantã (a low hand-played drum that replaces the surdo); repique de mão; 7-string violão carrying bass counterlines.",
       "bullet": true
     },
     {
@@ -82,12 +82,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Bossa nova is soft and narrow in level but rich in micro-dynamics: the difference between a ghosted thumb note and an accented chord is the groove. Over-compressing the guitar flattens the batida (the guitar's rhythm pattern) and kills the swing. MPB macro-dynamics can be wide—Elis Regina could go from whisper to belt within a phrase—so ride the vocal by hand rather than clamp it. Samba and pagode (informal party samba) are steadier and louder, building through the set as the crowd joins in; leave headroom for the last 30 minutes."
+      "text": "Bossa nova is soft and narrow in level but rich in micro-dynamics: the difference between a ghosted thumb note and an accented chord is the groove. Over-compressing the guitar flattens the batida (the guitar’s rhythm pattern) and kills the swing. MPB macro-dynamics can be wide—Elis Regina could go from whisper to belt within a phrase—so ride the vocal by hand rather than clamp it. Samba and pagode (informal party samba) are steadier and louder, building through the set as the crowd joins in; leave headroom for the last 30 minutes."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy for bossa and MPB, loudest to quietest: lead voice, violão (nylon-string guitar, within 1–3 dB of the voice; Gilberto’s 1958 Odeon sessions used separate mics so voice and guitar were picked up equally), piano/keys, bass, solo instrument in its spot, brushes/rimclick, small percussion, reverb returns. Low end: the guitarist’s thumb and the bass share the bottom—keep the guitar’s lows filtered so the bass owns 40–120 Hz, and favor upright bass note definition over boom. Kick is light or absent. Pan voice, guitar and bass center (or guitar slightly off center if a second guitar is present). Piano in stereo but narrow, percussion panned 20–60% to place the shaker and tamborim (small high drum) opposite each other, strings wide."
+      "text": "Hierarchy for bossa and MPB, loudest to quietest: lead voice, violão (nylon-string guitar, within 1–3 dB of the voice; João Gilberto’s 1958 sessions used separate mics so voice and guitar were picked up equally), piano/keys, bass, solo instrument in its spot, brushes/rimclick, small percussion, reverb returns. Low end: the guitarist’s thumb and the bass share the bottom—keep the guitar’s lows filtered so the bass owns 40–120 Hz, and favor upright bass note definition over boom. Kick is light or absent. Pan voice, guitar and bass center (or guitar slightly off center if a second guitar is present). Piano in stereo but narrow, percussion panned 20–60% to place the shaker and tamborim (small high drum) opposite each other, strings wide."
     },
     {
       "text": "For pagode (informal party samba) the hierarchy changes: lead singer, group chorus, cavaquinho (small four-string guitar) and banjo, pandeiro (Brazilian tambourine), tantã (low hand drum)/surdo, repique (high lead drum), then 7-string and bass. The surdo (deep samba bass drum)/tantã on beat 2 is the pulse; the bass should sit just above it."
@@ -169,7 +169,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "use": "Yes (light)",
         "ratio": "2:1–3:1 (opto)",
-        "attackRelease": "10–20 ms / program or 100–200 ms",
+        "attackRelease": "10–20 ms / program-dependent or 100–200 ms",
         "gainReduction": "2–4 dB",
         "notes": "Ride the fader first; add a 4:1 fast stage only for belters"
       },
@@ -203,7 +203,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "10–20 ms / 80–100 ms",
         "gainReduction": "2–3 dB",
-        "notes": "Light group compression, as on intimate bossa tours"
+        "notes": "Light group compression suits intimate bossa shows"
       },
       {
         "source": "Pandeiro (Brazilian tambourine) / cavaquinho (pagode)",
@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Slap / short delay",
-        "appliedTo": "Vocal (MPB, pagode (informal party samba))",
+        "appliedTo": "MPB and pagode (informal party samba) vocals",
         "setting": "80–120 ms, 0–10% feedback, filtered",
         "amount": "Subtle"
       },
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Tremolo / chorus",
-        "appliedTo": "electric piano, clean electric guitar",
+        "appliedTo": "Electric piano, clean electric guitar",
         "setting": "Slow rate (0.5–2 Hz)",
         "amount": "Part of the tone"
       }
@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The voice sits on top but close, not floating above the band like pop. In bossa nova, voice and guitar sit nearly level; in MPB the voice leads by roughly 2–4 dB of perceived level. Tone should be warm and present with little air hype; soft singers like Gilberto, Nara Leão or Bebel Gilberto rely on proximity, so manage the 150–300 Hz buildup instead of pushing highs. Pitch correction is used sparingly and should never be audible—the slightly behind-the-beat, speech-like phrasing is the style, so don’t quantize or tighten timing. Doubles are rare; pagode (informal party samba) choruses are a unison block tucked 3–6 dB under the lead."
+      "text": "The voice sits on top but close, not floating above the band like pop. In bossa nova, voice and guitar sit nearly level; in MPB the voice leads by roughly 2–4 dB of perceived level. Tone should be warm and present without hyped air; soft singers like João Gilberto, Nara Leão or Bebel Gilberto rely on proximity, so manage the 150–300 Hz buildup instead of pushing highs. Pitch correction is used sparingly and should never be audible—the slightly behind-the-beat, speech-like phrasing is the style, so don’t quantize or tighten timing. Doubles are rare; pagode (informal party samba) choruses are a unison block tucked 3–6 dB under the lead."
     },
     {
       "text": "Live, a handheld condenser with a light chain helps soft voices. A dynamic mic works for louder pagode singers. Intelligibility in Portuguese depends on 1–4 kHz and on nasal vowels; don’t cut too deep around 1 kHz."
@@ -292,11 +292,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq-15 at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode (informal party samba) and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo (deep samba bass drum) and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. NIOSH advises no more than about 30 minutes a day at 97 dBA, so offer earplugs at pagode shows."
+      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq,15min at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode (informal party samba) and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo (deep samba bass drum) and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. NIOSH advises no more than about 30 minutes a day at 97 dBA, so offer earplugs at pagode shows."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Bossa and MPB masters typically land at −16 to −12 LUFS-I with a peak-to-loudness ratio of about 11–15 dB and true peak at −1 dBTP; classic reissues are often quieter. Modern pagode and samba-pop masters run −10 to −8 LUFS-I, true peak −2 dBTP. Most streaming services normalize to about −14, so a loud bossa master gains nothing and loses the batida’s (guitar rhythm’s) detail. A loudness range of 6–10 LU is normal for MPB."
+      "text": "Bossa and MPB masters typically land at −16 to −12 LUFS-I with a peak-to-loudness ratio of about 11–15 dB and true peak at −1 dBTP; classic reissues are often quieter. Modern pagode and samba-pop masters run −10 to −8 LUFS-I, true peak −2 dBTP. Most streaming services normalize to about −14 LUFS, some to −16, so a loud bossa master gains nothing and loses the batida’s (guitar rhythm’s) detail. A loudness range of 6–10 LU is normal for MPB."
     }
   ],
   "liveStudio": {
@@ -309,7 +309,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Vocals",
         "live": "Handheld condenser, minimal FX, careful feedback control",
-        "studio": "Close large-diaphragm condenser; figure-8 nulls when singer plays guitar"
+        "studio": "Close large-diaphragm condenser; figure-8 nulls when the singer plays guitar"
       },
       {
         "area": "Percussion",
@@ -353,7 +353,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Bossa nova is not a rock band: no punchy kick or snapping snare.",
+      "text": "Bossa nova is not rock: no punchy kick or snapping snare.",
       "bullet": true
     },
     {

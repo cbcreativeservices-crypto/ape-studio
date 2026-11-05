@@ -13,22 +13,22 @@ export const GUIDE: MixingGuide = {
   "title": "Brazilian Funk (Baile Funk)",
   "expects": "The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back.",
   "glance": {
-    "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s (Miami bass and electro at sound-system bailes (dance parties)), Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; São Paulo funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s",
+    "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s, when Miami bass and electro filled sound-system bailes (dance parties); Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s",
     "tempo": "125–135 BPM (classic Volt Mix/tamborzão, 130 the historic standard); 148–152 BPM (Rio “150” since 2018); rasteirinha (slower, laid-back funk) 90–105; mandelão (stripped, distorted São Paulo funk)/automotivo (car-sound-system funk) 130–150",
     "ensemble": "DJ + 1–3 MCs over playback; pop-funk headliners add dancers, a percussionist or small band, and backing tracks",
-    "priority": "The beat’s low end (kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808) hitting hard and clean in mono, with the MC’s hook shouting clearly on top",
-    "liveSpl": "Bailes (dance parties) and paredões (walls of speakers) often 105–115+ dBA with 125–135 dBC near the stacks; managed venues and festivals 100–103 dBA LAeq-15 (common safe-listening limit 100)",
-    "studioLoudness": "Masters commonly −7 to −4 LUFS-I (mandelão even hotter, deliberately clipped); pop-funk around −8 to −6; streaming normalizes to about −14"
+    "priority": "The beat’s low end—kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808—hitting hard and clean in mono, with the MC’s hook clear on top",
+    "liveSpl": "Bailes (dance parties) and paredões (walls of speakers) often 105–115+ dBA with 125–135 dBC near the stacks; managed venues and festivals 100–103 dBA LAeq,15min (common safe-listening limit 100)",
+    "studioLoudness": "Masters commonly −7 to −4 LUFS-I (mandelão even hotter, deliberately clipped); pop-funk around −8 to −6; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Baile funk (funk from Rio's dance parties) is party music for the body: rebolar (hip-rolling), passinho footwork and all-night dancing at favela (hillside neighborhood) bailes (dance parties) that can draw 20,000–40,000 people, as the biggest bailes did in 2018. For residents it is release, pride and a counter to stigma. The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back. They will call it wrong if the low end is soft, polite or wobbly, if the beat loses its syncopated swing, if the MC’s words get buried, or if the mix is washed in reverb like EDM. Grit, saturation and “too loud” are features; weak bass is the cardinal sin."
+      "text": "Baile funk (funk from Rio’s dance parties) is party music for the body: rebolar (hip-rolling), passinho footwork and all-night dancing at favela (hillside neighborhood) bailes (dance parties), the biggest of which have drawn 20,000–40,000 people. For residents it is release, pride and a counter to stigma. The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back. They will call it wrong if the low end is soft, polite or wobbly, if the beat loses its syncopated swing, if the MC’s words get buried, or if the mix is washed in reverb like EDM. Grit, saturation and “too loud” are features; weak bass is the worst mistake."
     }
   ],
   "instruments": [
     {
       "label": "Beat (base):",
-      "text": "programmed drums. The Volt Mix (from the 1988 “8 Volt Mix” loop, 808 kick, claps, cowbell, vocal “volts”) ruled the 1990s; DJ Luciano Oliveira’s tamborzão (1998, built on a drum machine, inspired by Afro-Brazilian atabaque (tall Afro-Brazilian hand drum) and samba-school drumming) defines the 2000s.",
+      "text": "programmed drums. The Volt Mix (from the 1988 “8 Volt Mix” loop: 808 kick, claps, cowbell, vocal “volts”) ruled the 1990s; DJ Luciano Oliveira’s tamborzão, built on a drum machine in 1998 and inspired by atabaque (tall Afro-Brazilian hand drum) and samba-school drumming, defined the 2000s.",
       "bullet": true
     },
     {
@@ -53,13 +53,13 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Live playback:",
-      "text": "DJ runs DJ software or media players; MCs rap over instrumentals or vocal-up stems. Bands are rare outside pop-funk tours.",
+      "text": "the DJ plays from a laptop or DJ media players; MCs rap over instrumentals or vocal-up stems. Bands are rare outside pop-funk tours.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "At a baile (dance party) the DJ booth sits center or on a riser in front of the paredão (wall of speakers), with MCs out front on handhelds and the crowd pressed to the stage. Tracks are short (2–3 min) and loop-based: intro with DJ tag, the beat drops, MC verse and hook alternate, often with a full-bar mute or filter sweep before each drop. The tamborzão (the funk drum-machine beat) carries the rhythm; harmony is minimal and the 808 often plays the “melody”. DJs mix fast, layer acapellas over beats and push tempos up through the night. São Paulo mandelão (stripped, distorted São Paulo funk) strips arrangements to beat, distorted bass and a repeated vocal phrase; bruxaria (“witchcraft”: eerie, noisy funk) adds piercing high synths and noise bursts."
+      "text": "At a baile (dance party) the DJ booth sits center or on a riser in front of the paredão (wall of speakers), with MCs out front on handhelds and the crowd pressed to the stage. Tracks are short (2–3 min) and loop-based: intro with DJ tag, the beat drops, MC verse and hook alternate, often with a full-bar mute or filter sweep before each drop. The tamborzão (the funk drum-machine beat) carries the rhythm; harmony is minimal and the 808 often plays the “melody.” DJs mix fast, layer a cappellas over beats and push tempos up through the night. Mandelão (stripped, distorted São Paulo funk) cuts arrangements down to beat, distorted bass and a repeated vocal phrase; bruxaria (“witchcraft”: eerie, noisy funk) adds piercing high synths and noise bursts."
     }
   ],
   "dynamics": [
@@ -102,7 +102,7 @@ export const GUIDE: MixingGuide = {
         "source": "Tamborim (small high drum) / agogô (two-tone bell) / shakers",
         "cut": "HPF 300–600 Hz",
         "boost": "+1–3 dB at 5–8 kHz",
-        "notes": "Small but drive the swing; watch harshness at 3 kHz"
+        "notes": "Small, but they drive the swing; watch harshness at 3 kHz"
       },
       {
         "source": "Synth stabs / horns / samples",
@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Heavy reverb + delay wash",
         "appliedTo": "Automotivo (car-sound-system funk) vocal chops, intros",
         "setting": "1.5–2.5 s decay, filtered",
-        "amount": "Heavy but in breakdowns"
+        "amount": "Heavy, but only in breakdowns"
       },
       {
         "effect": "Pitch / formant shift",
@@ -251,11 +251,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Favela (hillside neighborhood) bailes (dance parties) and street paredões (walls of speakers) routinely exceed any regulation: 105–115 dBA and 125–135+ dBC near ground-stacked walls are common, and sub exposure in the front rows is a serious hearing risk. In managed venues and festivals, run 100–103 dBA LAeq-15 (the WHO safe-listening limit is 100 dBA LAeq-15) with C-weighted levels around 120–128 dBC; a C-minus-A gap of 20–25 dB is typical for this genre, more signals excessive sub. Brazilian cities increasingly restrict paredões (Fortaleza, for example, applies 70 dB day and 60 dB night limits outside venues, with seizures and fines), so respect curfew and boundary limits. Fly or cardioid-array subs where possible, offer earplugs, and limit your own exposure."
+      "text": "Favela (hillside neighborhood) bailes (dance parties) and street paredões (walls of speakers) routinely exceed any regulation: 105–115 dBA and 125–135+ dBC near ground-stacked walls are common, and sub exposure in the front rows is a serious hearing risk. Managed venues and festivals typically run 100–103 dBA LAeq,15min with C-weighted levels around 120–128 dBC; the WHO safe-listening limit is 100 dBA LAeq,15min, so keep to the low end of that range. A C-minus-A gap of 20–25 dB is typical for this genre; more signals excessive sub. Brazilian cities increasingly restrict paredões (Fortaleza, for example, applies 70 dB day and 60 dB night limits outside venues, with seizures and fines), so respect curfew and boundary limits. Fly or cardioid-array subs where possible, offer earplugs, and limit your own exposure."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at −1 dBTP at most; −2 dBTP is recommended for masters louder than −14 LUFS. Normalization to −14 LUFS turns hot masters down, so the clipping must sound intentional. LRA of 2–4 LU is normal, and PLR is very low: at −2 dBTP, a −7 to −4 LUFS-I master leaves only 2–5 dB."
+      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at or below −1 dBTP; −2 dBTP is recommended for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so hot masters get turned down and the clipping must sound intentional. LRA of 2–4 LU is normal, and PLR is very low: at −2 dBTP, a −7 to −4 LUFS-I master leaves only 2–5 dB."
     }
   ],
   "liveStudio": {
@@ -287,7 +287,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "100–103 dBA LAeq-15 in regulated venues; far higher at street bailes (dance parties)",
+        "live": "100–103 dBA LAeq,15min in regulated venues; far higher at street bailes (dance parties)",
         "studio": "−7 to −4 LUFS-I, −2 dBTP"
       }
     ],

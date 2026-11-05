@@ -17,18 +17,18 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–110 BPM for most modern Punjabi pop and trap-leaning tracks; classic bhangra/chaal grooves 150–180 BPM (often felt in half time); ballads 70–85",
     "ensemble": "Wedding/club: singer + dhol (big two-headed barrel drum) player + DJ or tracks. Touring pop: lead singer, 1–2 dhol, tumbi (one-string plucked lute)/guitar/keys, drummer, bass, 2–3 backing vocals plus timecoded playback (40–60 inputs)",
     "priority": "Dhol-driven groove locked to the low end (808 or bass), with the Punjabi lead vocal riding clearly on top",
-    "liveSpl": "98–104 dBA Leq (LAeq-15 min) at arena/stadium shows, peaks regularly past 108 dBA; 115–122 dBC LCeq; weddings and banquet halls 92–100 dBA",
-    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (older bhangra catalog around −11 to −9); streaming normalizes to about −14"
+    "liveSpl": "98–104 dBA LAeq,15min at arena/stadium shows, peaks regularly past 108 dBA; 115–122 dBC LCeq; weddings and banquet halls 92–100 dBA",
+    "studioLoudness": "Masters commonly −9 to −6 LUFS-I (older bhangra catalog around −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Bhangra began as harvest-season dance music in rural Punjab, tied to Vaisakhi, weddings and village fairs, and that purpose has never left it: it exists to make people dance, shout and celebrate together. In the diaspora it became a badge of identity, from 1980s UK “daytimer” parties to today’s sold-out O2 and Canadian arena shows, and every wedding sangeet (pre-wedding music night) and baraat (groom's wedding procession) still runs on it. Listeners expect a chest-thumping dhol (big two-headed barrel drum), a ringing tumbi (one-string plucked lute) hook, and a singer whose Punjabi words and “hoi/balle balle” calls are clear and proud. They will say “that sounded wrong” if the dhol (big two-headed barrel drum) is thin or buried under an 808, the tumbi is shrill and painful, the vocal is lost in reverb, or the drop lands without impact. Expect the crowd to sing every word, so leave space for them."
+      "text": "Bhangra began as harvest-season dance music in rural Punjab, tied to Vaisakhi, weddings and village fairs, and that purpose has never left it: it exists to make people dance, shout and celebrate together. In the diaspora it became a badge of identity, from 1980s UK “daytimer” parties to today’s sold-out O2 and Canadian arena shows, and every wedding sangeet (pre-wedding music night) and baraat (groom’s wedding procession) still runs on it. Listeners expect a chest-thumping dhol (big two-headed barrel drum), a ringing tumbi (one-string plucked lute) hook, and a singer whose Punjabi words and “hoi/balle balle” calls are clear and proud. They will say “that sounded wrong” if the dhol (big two-headed barrel drum) is thin or buried under an 808, the tumbi is shrill and painful, the vocal is lost in reverb, or the drop lands without impact. Expect the crowd to sing every word, so leave space for them."
     }
   ],
   "instruments": [
     {
       "label": "Dhol:",
-      "text": "wooden barrel drum, two heads. The thick bass head (struck with the bent dagga stick) gives a booming, pitched low note; the thin treble head (thapi, played with the flexible teeli (thin cane stick)) gives a crackling slap. It is the genre’s identity and is loud enough to be heard across a field unamplified.",
+      "text": "wooden barrel drum, two heads. The thick bass head (struck with the bent dagga stick) gives a booming, pitched low note; the thin treble head (thapi), played with the flexible teeli (thin cane stick), gives a crackling slap. It is the genre’s identity and is loud enough to be heard across a field unamplified.",
       "bullet": true
     },
     {
@@ -54,12 +54,12 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "At weddings the dholi (dhol player) stands by the DJ or roams the crowd; on tour, one or two dhol (big two-headed barrel drum) players sit downstage, with band and singers upstage. The dhol plays the core chaal (bhangra's bouncing rhythm) and kaharva-type eight-beat grooves, often doubled by a kick/clap pattern; the 808 or bass carries the root; tumbi (one-string plucked lute) or algoza (paired folk flutes) answers the vocal with short hooks between lines. Typical form: tumbi or vocal intro (often free-time alaap (improvised vocal opening) or a shouted boli (folk couplet)), verse with sparse beat, a pre-hook build of dhol rolls, then the hook with the full dhol, claps and crowd shout. Breakdowns strip everything back to dhol and voice before the last hook; this “dhol-only” moment is a highlight and must hit hard."
+      "text": "At weddings the dholi (dhol player) stands by the DJ or roams the crowd; on tour, one or two dhol (big two-headed barrel drum) players sit downstage, with band and singers upstage. The dhol plays the core chaal (bhangra’s bouncing rhythm) and kaharva-type eight-beat grooves, often doubled by a kick/clap pattern; the 808 or bass carries the root; tumbi (one-string plucked lute) or algoza (paired folk flutes) answers the vocal with short hooks between lines. Typical form: tumbi or vocal intro (often free-time alaap (improvised vocal opening) or a shouted boli (folk couplet)), verse with sparse beat, a pre-hook build of dhol rolls, then the hook with the full dhol, claps and crowd shout. Breakdowns strip everything back to dhol and voice before the last hook; this “dhol-only” moment is a highlight and must hit hard."
     }
   ],
   "dynamics": [
     {
-      "text": "The music is mostly high-energy with moderate macro-dynamics: about 6–9 dB between a sparse verse and a full hook, and big contrast at intros, breakdowns and acapella boliyan (folk couplets). Micro-dynamics are extreme on the dhol (big two-headed barrel drum): the dagga (bass-head stick) stroke can peak 15–20 dB above its average. Preserve the attack (the slap is the excitement) but control the bass head’s boom so it doesn’t swamp the PA. Ride the vocal through the free-time intros, which are often sung softer and higher. Live, leave about 6 dB of headroom for the final hook and the drop."
+      "text": "The music is mostly high-energy with moderate macro-dynamics: about 6–9 dB between a sparse verse and a full hook, and big contrast at intros, breakdowns and a cappella boliyan (folk couplets). Micro-dynamics are extreme on the dhol (big two-headed barrel drum): the dagga (bass-head stick) stroke can peak 15–20 dB above its average. Preserve the attack (the slap is the excitement) but control the bass head’s boom so it doesn’t swamp the PA. Ride the vocal through the free-time intros, which are often sung softer and higher. Live, leave about 6 dB of headroom for the final hook and the drop."
     }
   ],
   "balance": [
@@ -85,7 +85,7 @@ export const GUIDE: MixingGuide = {
         "source": "808 / sub bass",
         "cut": "HPF 25–30 Hz; dip 2–3 dB at kick fundamental (often 55–65 Hz)",
         "boost": "Saturation for 100–200 Hz harmonics; +1–2 dB at the 808’s own note, below the kick (often 40–50 Hz)",
-        "notes": "Keep mono below 120 Hz so it translates to phones"
+        "notes": "Keep mono below 120 Hz; saturation harmonics carry it on phones"
       },
       {
         "source": "Kick (programmed or acoustic)",
@@ -146,7 +146,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal (stage 2, opto)",
         "use": "Yes",
         "ratio": "2:1–3:1",
-        "attackRelease": "Program",
+        "attackRelease": "Program-dependent",
         "gainReduction": "2–4 dB",
         "notes": "Smooths long sustained notes"
       },
@@ -260,11 +260,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and stadium Punjabi pop shows run hot. At big Punjabi stadium tours, peaks often pass 108 dBA, and stadium shows in India now deploy large flown-plus-ground sub arrays for 75,000-plus crowds. As a sensible target, run 98–104 dBA LAeq-15 at FOH with C-weighted LCeq of 115–122 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a meter, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
+      "text": "Arena and stadium Punjabi pop shows run hot. On big Punjabi stadium tours, peaks often pass 108 dBA, and stadium shows in India now use large flown and ground-stacked sub arrays for crowds of 75,000 or more. As a sensible target, run 98–104 dBA LAeq,15min at FOH with C-weighted LCeq of 115–122 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a meter, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so extreme loudness costs dhol transients for no gain. Aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above)."
+      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness costs dhol transients for no gain. Aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above)."
     }
   ],
   "liveStudio": {
@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "98–104 dBA LAeq-15, peaks above 108 dBA",
+        "live": "98–104 dBA LAeq,15min, peaks above 108 dBA",
         "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
@@ -309,7 +309,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Talk to the dholi (dhol player) before the show: ask which songs get solos and rolls, and where they will stand. Mic the bass head 10–20 cm off-axis with a dynamic kick or tom mic and the treble head with a classic dynamic or small condenser; a wireless clip-on is useful for players who move through the crowd.",
+      "text": "Talk to the dholi (dhol player) before the show: ask which songs get solos and rolls, and where they will stand. Mic the bass head 10–20 cm off-axis with a dynamic kick or tom mic and the treble head with a standard instrument dynamic or small condenser; a wireless clip-on is useful for players who move through the crowd.",
       "bullet": true
     },
     {

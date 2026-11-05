@@ -20,10 +20,10 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "Broadway (New York) and London’s West End, from operetta and vaudeville roots in the early 1900s; radio-mic’d “megamusical” sound from the 1980s; now worldwide touring and resident productions",
     "tempo": "Wide: 60–90 BPM ballads, 100–140 BPM up-tempo and dance numbers, frequent rubato (flexible, push-pull tempo), tempo changes and spoken-over underscore within a single song",
-    "ensemble": "15–40 cast on body mics (principals often double-mic’d) plus a 6–25 piece pit orchestra or band; 100–140+ inputs on a large show",
+    "ensemble": "15–40 cast members on body mics (principals often double-mic’d) plus a 6–25-piece pit orchestra or band; 100–140+ inputs on a large show",
     "priority": "Every word intelligible — lyrics and dialogue carry the story — with voices that seem to come from the actor, not the speakers",
     "liveSpl": "Book/legit shows roughly 80–88 dBA LAeq over an act, big numbers peaking 95–100 dBA; rock/pop-score musicals 90–96 dBA LAeq with peaks near 105 dBA (approximate industry ranges, not published limits)",
-    "studioLoudness": "Cast albums commonly −16 to −9 LUFS-I (traditional orchestral scores −16 to −13; pop/hip-hop scores −11 to −9); streaming normalizes to about −14"
+    "studioLoudness": "Cast albums commonly −16 to −9 LUFS-I (traditional orchestral scores −16 to −13; pop/hip-hop scores −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
@@ -48,18 +48,18 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "Show-control or DAW cues for effects, atmospheres and stems; click to the drummer; character voice processing.",
+      "text": "show-control or DAW cues for effects, atmospheres and stems; click to the drummer; character voice processing.",
       "bullet": true
     },
     {
-      "label": "Floats:",
+      "label": "Float mics:",
       "text": "occasional front-of-stage pickups for dance taps.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "The cast moves freely across a proscenium stage; the orchestra sits in a pit, a back-stage band room or on set, often watching the conductor on video monitors. Principals carry melody and dialogue; the ensemble adds harmony and weight; the orchestra plays underscore under dialogue, then swells for songs. A number typically moves from scene with underscore into verse, build and “button” (the final chord that cues applause). The mixer works from a marked script showing every mic pickup, and console scenes reassign DCA/VCA faders scene by scene so the same physical fader might control a different actor every few minutes."
+      "text": "The cast moves freely across a proscenium stage; the orchestra sits in a pit, a backstage band room or on set, often watching the conductor on video monitors. Principals carry melody and dialogue; the ensemble adds harmony and weight; the orchestra plays underscore under dialogue, then swells for songs. A number typically moves from scene with underscore into verse, build and “button” (the final chord that cues applause). The mixer works from a marked script showing every mic pickup, and console snapshots reassign DCA/VCA faders scene by scene, so the same physical fader might control a different actor every few minutes."
     }
   ],
   "dynamics": [
@@ -69,7 +69,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: the speaking or singing principal, other principals in a duet, ensemble vocals, melodic orchestra lines that answer the voice, rhythm section, sustained strings and pads, effects and atmospheres. Low end is gentle by rock standards: the bass and kick support the groove without dominating, and the subs are used for weight in big moments, not constantly. Voices sit center and, ideally, image to the actor through delay; on high-end systems (delay-matrix and object-based systems) each mic is time-aligned so the natural voice reaches listeners about 10–20 ms before the reinforcement, letting the precedence effect pull the image to the performer. The orchestra keeps a natural pit spread across left-center-right arrays. Cast albums usually keep the band more present than a pop mix, where the vocal sits further on top."
+      "text": "Hierarchy, loudest to quietest: the speaking or singing principal, other principals in a duet, ensemble vocals, melodic orchestra lines that answer the voice, rhythm section, sustained strings and pads, effects and atmospheres. Low end is gentle by rock standards: the bass and kick support the groove without dominating, and the subs are used for weight in big moments, not constantly. Voices sit center and, ideally, image to the actor through delay; on high-end delay-matrix or object-based systems, each mic is time-aligned so the natural voice reaches listeners about 10–20 ms before the reinforcement, letting the precedence effect pull the image to the performer. The orchestra keeps a natural pit spread across left-center-right arrays. Cast albums usually keep the band more present than a pop mix, where the vocal sits further on top."
     }
   ],
   "eq": {
@@ -115,7 +115,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano / keys",
         "cut": "HPF 60–80 Hz, but nothing above rumble when a keyboard part covers the bass line (common in reduced orchestrations); −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 3–5 kHz",
-        "notes": "Keep synth pads out of 1–4 kHz vocal zone. Talk with the keyboardist first, or know their music."
+        "notes": "Keep synth pads out of the 1–4 kHz vocal zone. Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Bass",
@@ -183,12 +183,12 @@ export const GUIDE: MixingGuide = {
         "notes": "Even level under dialogue"
       },
       {
-        "source": "Sung-dialogue de-esser",
+        "source": "De-esser (all vocals)",
         "use": "Yes",
         "ratio": "—",
         "attackRelease": "—",
         "gainReduction": "2–4 dB at 5–8 kHz",
-        "notes": "Close lavs exaggerate sibilance, especially headsets"
+        "notes": "Close mics exaggerate sibilance, especially headsets"
       }
     ],
     "notes": [
@@ -232,14 +232,14 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Character FX",
         "appliedTo": "Ghosts, villains, offstage voices, “Wizard” voices",
-        "setting": "Pitch shift, filtering, long verb, modulation",
+        "setting": "Pitch shift, filtering, long reverb, modulation",
         "amount": "Heavy, cued by snapshot"
       },
       {
         "effect": "System alignment delay",
         "appliedTo": "Every vocal output",
         "setting": "The amplified voice arrives 10–20 ms after the natural sound",
-        "amount": "Always on — not an effect, but essential"
+        "amount": "Always on; part of the system, not a creative effect"
       }
     ],
     "notes": [
@@ -250,7 +250,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The voice is king. Mix line by line: bring each actor’s fader up quickly just before they speak and pull it down when they finish, so only one or two mics are open at once. That avoids comb filtering between nearby actors and lowers noise and feedback risk. Use faders, not mutes — an actor can whisper one line and shout the next. Learn the script nearly word for word, including each performer’s habits. Placement beats EQ: the forehead/hairline is most natural, ear and cheek positions add boom and lose top. Principals often wear two mics with a backup receiver patched to a spare fader. Pitch correction is rarely used live in traditional book shows; cast albums use light, transparent tuning. For fast patter (Sondheim, Hamilton’s rap) and dialogue over underscore, dip the band 2–4 dB rather than pushing the vocal."
+      "text": "The voice comes first. Mix line by line: bring each actor’s fader up quickly just before they speak and pull it down when they finish, so only one or two mics are open at once. That avoids comb filtering between nearby actors and lowers noise and feedback risk. Use faders, not mutes — an actor can whisper one line and shout the next. Learn the script nearly word for word, including each performer’s habits. Placement beats EQ: the forehead/hairline is most natural; ear and cheek positions add boom and lose top. Principals often wear two mics with a backup receiver patched to a spare fader. Pitch correction is rarely used live in traditional book shows; cast albums use light, transparent tuning. For fast patter (Sondheim, Hamilton’s rap) and dialogue over underscore, dip the band 2–4 dB rather than pushing the vocal."
     }
   ],
   "loudness": [
@@ -260,7 +260,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Cast albums are mastered gentler than pop: traditional orchestral scores often land around −16 to −13 LUFS-I, contemporary pop and hip-hop scores −11 to −9, with true peak at −1 dBTP. Streaming services normalize to about −14 LUFS, so over-limiting gains nothing. Keep a loudness range (LRA) of roughly 8–14 LU on orchestral albums — the dynamics are part of the drama."
+      "text": "Cast albums are mastered more gently than pop: traditional orchestral scores often land around −16 to −13 LUFS-I, contemporary pop and hip-hop scores −11 to −9, with true peak at −1 dBTP. Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing. Keep a loudness range (LRA) of roughly 8–14 LU on orchestral albums — the dynamics are part of the drama."
     }
   ],
   "liveStudio": {
@@ -273,12 +273,12 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Session",
         "live": "Eight shows a week, snapshots and DCAs per scene",
-        "studio": "Often a “mammoth” one- to few-day recording with cast and orchestra together; bigger shows track for weeks"
+        "studio": "Often recorded in one to a few long days with cast and orchestra together; bigger shows track for weeks"
       },
       {
         "area": "Dynamics",
         "live": "Hands on faders, 30–40 dB of range",
-        "studio": "Fader rides on subgroups, light serial compression (optical/FET class)"
+        "studio": "Fader rides on subgroups, light serial compression (optical- and FET-style)"
       },
       {
         "area": "Imaging",
@@ -317,7 +317,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Multitrack performances so new operators can rehearse the mix against the desk scenes.",
+      "text": "Multitrack performances so new operators can rehearse the mix against the console scenes.",
       "bullet": true
     },
     {
@@ -325,7 +325,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid over-compressing to save fader work, wet dialogue, and an orchestra that forces singers to belt.",
+      "text": "Avoid three common mistakes: over-compressing to save fader work, wet dialogue, and an orchestra so loud that singers must belt.",
       "bullet": true
     }
   ],
@@ -337,7 +337,7 @@ export const GUIDE: MixingGuide = {
     "Original Broadway Cast, “Company” (Stephen Sondheim), 1970",
     "Original Broadway Cast, “Dear Evan Hansen”, 2017",
     "Original Broadway Cast, “Hadestown”, 2019",
-    "Original West End Cast, “Six”, 2018"
+    "Studio Cast, “Six”, 2018"
   ],
   "empty": []
 };

@@ -16,16 +16,16 @@ export const GUIDE: MixingGuide = {
   "title": "Gospel",
   "expects": "The audience expects to understand every lyric, hear the call-and-response between leader and choir, and feel the band push the room higher through vamps and key changes.",
   "glance": {
-    "origin": "African American churches of the United States; Thomas A. Dorsey’s Chicago gospel of the 1930s, grown from spirituals, hymns and Holiness-Pentecostal worship; urban contemporary gospel from the late 1960s–1980s onward",
+    "origin": "African American churches of the United States; Thomas A. Dorsey’s Chicago gospel of the 1930s, grown from spirituals, hymns and Holiness-Pentecostal worship; urban contemporary gospel from the late 1960s onward",
     "tempo": "60–80 BPM (ballads, 6/8 and 12/8 worship), 90–120 BPM (mid-tempo praise), 130–160+ BPM (shout music / praise breaks)",
     "ensemble": "Lead singer + praise team (3–8) or choir (20–200), with organ, piano/keys, bass, drums, often guitar, percussion and occasional horns",
     "priority": "Lead vocal and choir intelligible and on top of a loud, busy rhythm section — the words are the point",
-    "liveSpl": "Sunday services 88–96 dBA Leq (LAeq-15 min); concerts and live recordings 95–101 dBA; C-weighted Leq usually 10–20 dB above that",
-    "studioLoudness": "Masters commonly −14 to −9 LUFS-I (traditional and live-choir releases −16 to −13); streaming normalizes to about −14"
+    "liveSpl": "Sunday services 88–96 dBA LAeq,15min; concerts and live recordings 95–101 dBA; C-weighted Leq usually 10–20 dB above that",
+    "studioLoudness": "Masters commonly −16 to −9 LUFS-I (traditional and live-choir releases −16 to −13); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Gospel is worship first, carrying testimony and praise, and it is designed to move a congregation from listening to responding — clapping, standing, shouting, dancing in the aisles during a praise break. The audience expects to understand every lyric, hear the call-and-response between leader and choir, and feel the band push the room higher through vamps and key changes. The engineer serves a service, not a show, following the worship leader and pastor, often with no setlist. Listeners say “that sounded wrong” when the choir disappears under the drums, when the organ is missing or harsh, when the lead’s runs get clipped or squashed, or when a modulation or vamp doesn’t lift."
+      "text": "Gospel is worship first, carrying testimony and praise, and it is designed to move a congregation from listening to responding — clapping, standing, shouting, dancing in the aisles during a praise break. The audience expects to understand every lyric, hear the call-and-response between leader and choir, and feel the band push the room higher through vamps and key changes. The engineer is mixing a worship service, not a show, following the worship leader and pastor, often with no setlist. Listeners notice at once when the choir disappears under the drums, the organ is missing or harsh, the lead’s runs get clipped or squashed, or a modulation or vamp doesn’t lift."
     }
   ],
   "instruments": [
@@ -72,12 +72,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Gospel has wide macro-dynamics: a quiet piano-and-voice opening at 75–80 dBA can grow into a full choir-and-band vamp at 100 dBA — roughly 20–25 dB of range within one song. Preserve that arc; it is the emotional engine of the service. Control the micro-dynamics instead: soloists swing from whispers to full belts with long held notes, and drummers hit hard. Ride the lead, push the choir on its answers, and lift the mix at each modulation. Save the last 3–4 dB for the climax."
+      "text": "Gospel has wide macro-dynamics: a quiet piano-and-voice opening at 75–80 dBA can grow into a full choir-and-band vamp at 100 dBA — roughly 20–25 dB of range within one song. Preserve that arc; the service is built on it. Control the micro-dynamics instead: soloists swing from whispers to full belts with long held notes, and drummers hit hard. Ride the lead, push the choir on its answers, and lift the mix at each modulation. Save the last 3–4 dB for the climax."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal; choir or praise team (nearly as loud as the lead during responses); snare and kick; bass; organ; piano/keys; guitar; percussion; effects returns. The low end is shared three ways — kick, a busy extended-range bass, and organ pedals or the rotating speaker’s lower rotor — so give the kick roughly 50–80 Hz punch, let bass own about 60–200 Hz sustain, and, when the organist is not playing bass, high-pass the organ’s lower channel around 60–80 Hz so it adds warmth rather than mud. Ask first: many organists play bass on the pedals or with the left hand, especially when there is no bass player, and then those notes stay in and are balanced against the bass, not filtered out. Lead, kick, snare and bass sit center. Pan the rotating speaker horn mics hard left and right, piano spread moderately, and the choir across the stereo field by section (for example sopranos left, altos just off center, tenors right) to keep the center clear for the lead."
+      "text": "Hierarchy, loudest to quietest: lead vocal; choir or praise team (nearly as loud as the lead during responses); snare and kick; bass; organ; piano/keys; guitar; percussion; effects returns. The low end is shared three ways — kick, a busy extended-range bass, and organ pedals or the rotating speaker’s lower rotor — so give the kick roughly 50–80 Hz punch, let bass own about 60–200 Hz sustain, and, when the organist is not playing bass, high-pass the organ’s lower channel around 60–80 Hz so it adds warmth rather than mud. Ask first: many organists play bass on the pedals or with the left hand, especially when there is no bass player, and then those notes stay in and are balanced against the bass, not filtered out. Lead, kick, snare and bass sit center. Pan the rotating-speaker horn mics hard left and right, spread the piano moderately, and place the choir across the stereo field by section (for example sopranos left, altos just off center, tenors right) to keep the center clear for the lead."
     }
   ],
   "eq": {
@@ -154,7 +154,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "3–10 ms / 60–150 ms (or auto)",
         "gainReduction": "4–8 dB on belts",
-        "notes": "Serial FET then opto works well; ride faders as well"
+        "notes": "Serial FET then opto works well; still ride the fader"
       },
       {
         "source": "Choir group",
@@ -252,7 +252,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle; adds width, but not gain before feedback"
       },
       {
-        "effect": "rotating speaker (real or modeled)",
+        "effect": "Rotating speaker (real or modeled)",
         "appliedTo": "Organ",
         "setting": "Slow chorale / fast tremolo controlled by the organist",
         "amount": "Part of the tone"
@@ -272,24 +272,24 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. A supercardioid handheld helps, since leaders roam in front of loud wedges, but its nulls sit to the sides of its rear (about 125° off axis), so place wedges there, not straight behind it. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and keep choir mics out of the choir wedges (in-ears, or a little added with care, are the exceptions)."
+      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. A supercardioid handheld helps, since leaders roam in front of loud wedges, but its nulls sit to the sides of its rear (about 125° off axis), so place wedges there, not straight behind it. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and keep choir mics out of the choir wedges (in-ears are the exception; in wedges, add only a little, with care)."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Sunday services typically run 88–96 dBA LAeq-15 at FOH, with praise breaks and concert or live-recording events reaching 98–101 dBA and peaks of 108–112 dBA. Bass, kick and organ lift C-weighted levels: a C-weighted Leq about 10–20 dB above the A level is normal, and a bigger gap means too much low end. Many churches set targets around 90–95 dB and allow brief peaks near 100 dB. Stage volume is often the real problem; absorptive drum shields, in-ears and amps aimed away from the choir help."
+      "text": "Sunday services typically run 88–96 dBA LAeq,15min at FOH, with praise breaks and concert or live-recording events reaching 98–101 dBA and peaks of 108–112 dBA. Bass, kick and organ lift C-weighted levels: a C-weighted Leq about 10–20 dB above the A level is normal, and a bigger gap means too much low end. Many churches set targets around 90–95 dBA and allow brief peaks near 100 dBA. Stage volume is often the real problem; absorptive drum shields, in-ears and amps aimed away from the choir help."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below most contemporary studio masters) and loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
+      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below most contemporary studio masters) and a loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Choir",
-        "live": "Few overhead condensers, fighting bleed and feedback; gentle EQ",
+        "live": "A few overhead condensers, fighting bleed and feedback; gentle EQ",
         "studio": "Multiple close and ambient mics, or overdubbed stacks; tuning and timing edits"
       },
       {
@@ -299,7 +299,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Organ",
-        "live": "rotating speaker mics plus stage bleed; hard L/R for width",
+        "live": "Rotating-speaker mics plus stage bleed; hard L/R for width",
         "studio": "Close and room mics, or modeled organ with rotating speaker emulation"
       },
       {
@@ -320,7 +320,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "88–101 dBA Leq depending on service vs concert",
-        "studio": "−14 to −9 LUFS-I, −1 dBTP (−2 if louder than −14)"
+        "studio": "−16 to −9 LUFS-I, −1 dBTP (−2 if louder than −14)"
       }
     ],
     "notes": []
@@ -357,12 +357,12 @@ export const GUIDE: MixingGuide = {
   ],
   "references": [
     "Mahalia Jackson, “Move On Up a Little Higher”, 1947",
-    "The Edwin Hawkins Singers, “Oh Happy Day”, 1969",
+    "The Edwin Hawkins Singers, “Oh Happy Day”, 1968",
     "The Clark Sisters, “You Brought the Sunshine”, 1981",
     "Kirk Franklin and the Family, “Why We Sing”, 1993",
     "Fred Hammond & Radical for Christ, “No Weapon”, 1996",
     "Tye Tribbett & G.A., “Victory”, 2006",
-    "Tasha Cobbs, “Break Every Chain”, 2013",
+    "Tasha Cobbs, “Break Every Chain”, 2012",
     "Hezekiah Walker & LFC, “Every Praise”, 2013"
   ],
   "empty": []

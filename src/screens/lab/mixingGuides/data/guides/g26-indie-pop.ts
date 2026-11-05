@@ -14,21 +14,21 @@ export const GUIDE: MixingGuide = {
   "expects": "Indie pop is music for private feeling shared in public: headphone listening, late-night playlists, and small rooms where the crowd sings every word back softly.",
   "glance": {
     "origin": "UK and US, mid-1980s: C86 jangle/twee (Sarah Records, K Records) and 4AD dream pop (Cocteau Twins); revived as bedroom pop online from about 2015 (Clairo, girl in red, Cuco, Rex Orange County)",
-    "tempo": "70–130 BPM (dream pop 60–100 with slow, swaying feel; twee and jangle 120–150)",
+    "tempo": "70–130 BPM for most songs (dream pop 60–100 with a slow, swaying feel; twee and jangle 120–150)",
     "ensemble": "Solo artist + laptop/tracks, duo, or 3–5 piece band: drums or drum machine, bass, 1–2 guitars, keys/synth, 1–3 vocals",
     "priority": "An intimate, close lead vocal that feels like one person talking to you, sitting inside (not above) a soft, textured bed",
-    "liveSpl": "90–97 dBA Leq (LAeq-15 min); roughly 105–115 dBC; quieter rooms and seated shows at 88–92 dBA",
-    "studioLoudness": "Masters commonly −12 to −9 LUFS-I (lo-fi and dream pop often −13 to −10); streaming normalizes to about −14"
+    "liveSpl": "90–97 dBA LAeq,15min; roughly 105–115 dBC; quieter rooms and seated shows at 88–92 dBA",
+    "studioLoudness": "Masters commonly −12 to −9 LUFS-I (lo-fi and dream pop often −13 to −10); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Indie pop is music for private feeling shared in public: headphone listening, late-night playlists, and small rooms where the crowd sings every word back softly. Its value rests on perceived authenticity. Bedroom pop grew out of young artists making records alone in their rooms and posting them online, and its audience, largely Gen Z and millennial, connects with sad, candid, diary-like lyrics. Dream pop puts texture and atmosphere on equal footing with melody, so the wash is the point. Listeners say “that sounded wrong” when the singer becomes a loud, glossy pop vocal, the band is pushed to rock volume, shimmering guitars turn harsh at 2–4 kHz, or tape-warble character is cleaned away. The opposite live mistake: so much reverb the lyrics vanish."
+      "text": "Indie pop is music for private feeling shared in public: headphone listening, late-night playlists, and small rooms where the crowd sings every word back softly. Listeners value authenticity over polish. Bedroom pop grew out of young artists making records alone in their rooms and posting them online, and its audience, largely Gen Z and millennial, connects with sad, candid, diary-like lyrics. Dream pop puts texture and atmosphere on equal footing with melody, so the wash is the point. Listeners say “that sounded wrong” when the singer becomes a loud, glossy pop vocal, the band is pushed to rock volume, shimmering guitars turn harsh at 2–4 kHz, or tape-warble character is cleaned away. The opposite live mistake is so much reverb that the lyrics vanish."
     }
   ],
   "instruments": [
     {
       "label": "Guitars:",
-      "text": "clean or lightly driven single-coil and offset guitars, often through a clean solid-state or big tube combo; chorus, vibrato, tremolo and long reverb are part of the tone. Jangle uses bright arpeggios; dream pop uses slow strums drowned in modulation.",
+      "text": "clean or lightly driven single-coil and offset guitars, often through a bright solid-state combo or a big tube combo; chorus, vibrato, tremolo and long reverb are part of the tone. Jangle uses bright arpeggios; dream pop uses slow strums drowned in modulation.",
       "bullet": true
     },
     {
@@ -38,12 +38,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Drums:",
-      "text": "a lightly played acoustic kit (brushes, rim clicks, small kicks) or drum machine (vintage drum machines, pad samplers, preset boxes); Beach House-style songs often run a simple machine pattern under organ.",
+      "text": "a lightly played acoustic kit (brushes, rim clicks, small kicks) or a drum machine (vintage boxes, pad samplers, home-keyboard presets); Beach House builds many songs on a simple machine pattern under organ.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "melodic electric bass, frequently DI-led and soft-attack; sometimes synth bass.",
+      "text": "melodic electric bass, often recorded mostly DI with a soft attack; sometimes synth bass.",
       "bullet": true
     },
     {
@@ -59,12 +59,12 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Typical stage: singer-guitarist front center, second guitar or keys to one side, bass opposite, drummer upstage, laptop rig near keys. Rhythm is often understated; the groove may be a soft machine loop with bass. Harmony lives in pads and guitar chords; melody belongs to the vocal plus counter-lines on synth or guitar. Arrangements build by layering rather than by getting louder: a verse with one guitar and voice gains pads, harmonies and a second guitar in the chorus, then the bridge often drops to a single element. Dream pop builds to a big texture swell at the end rather than a hard chorus hit. Clairo and Rostam kept demo drum-machine parts and bleed on “Bags” for feel."
+      "text": "Typical stage: singer-guitarist front center, second guitar or keys to one side, bass opposite, drummer upstage, laptop rig near keys. Rhythm is often understated; the groove may be a soft machine loop with bass. Harmony lives in pads and guitar chords; melody belongs to the vocal plus counter-lines on synth or guitar. Arrangements build by layering rather than by getting louder: a verse with one guitar and voice gains pads, harmonies and a second guitar in the chorus, then the bridge often drops to a single element. Dream pop builds to a big texture swell at the end rather than a hard chorus hit. Clairo’s “Bags” is a good model: a gently strummed guitar that gains drums, piano and warped guitars as it builds."
     }
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are modest in volume (typically 4–8 dB from verse to chorus) but large in density and width. Many singers move from whisper to full voice in one song; the main challenge is keeping the quiet passages clear over loud drums, so the singer seems to be speaking to each listener. Preserve the soft-to-full arc of the voice with automation rather than heavy compression, and let reverb tails and pad swells carry the build. Control micro-dynamics on bass and vocal peaks so the quiet lines are never lost."
+      "text": "Macro-dynamics are modest in volume (typically 4–8 dB from verse to chorus) but large in density and width. Many singers move from whisper to full voice in one song; the main challenge is keeping the quiet passages clear over the band, so the singer seems to be speaking to each listener. Preserve the soft-to-full arc of the voice with automation rather than heavy compression, and let reverb tails and pad swells carry the build. Control micro-dynamics on bass and vocal peaks so the quiet lines are never lost."
     }
   ],
   "balance": [
@@ -150,7 +150,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "3–10 ms / 60–100 ms",
         "gainReduction": "2–4 dB peaks",
-        "notes": "A FET-type plug-in on vocals is common in bedroom pop"
+        "notes": "FET-style compressor plug-ins are common on bedroom-pop vocals"
       },
       {
         "source": "Lead vocal (stage 2, opto)",
@@ -190,7 +190,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "2–3 dB",
-        "notes": "Live, compressing groups instead of inputs keeps transients"
+        "notes": "Live, compress groups rather than every input to keep transients"
       },
       {
         "source": "Mix bus",
@@ -254,23 +254,23 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Dream pop layers effects-printed guitars through digital reverbs and multi-effects units. Live, snapshot key effects per song; the wash is part of the arrangement."
+        "text": "Dream-pop guitars are often printed with their effects and layered through digital reverbs and multi-effects units. Live, store key effects in per-song snapshots; the wash is part of the arrangement."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The vocal is close, soft and personal: breathy, sometimes nearly spoken, often double-tracked or stacked in loose unison. It sits inside the band more than in mainstream pop. Words should be followed easily in indie and bedroom pop; dream pop deliberately blurs some lyrics (Elizabeth Fraser’s are famously hard to make out), so ask the artist how far to go. Pitch correction is light and transparent; audible hard tuning is wrong unless it is the artist’s own effect. Doubles sit 6–10 dB under the lead; harmonies are panned 30–70% and filtered brighter. Studio mics range from everyday dynamics (whole bedroom-pop hits were tracked on one) to large condensers. Live, use a dynamic or tight-pattern condenser; whisper singers need high gain, so watch feedback at 2–4 kHz. A plate plus tempo delay covers most songs, with a longer hall for ballads."
+      "text": "The vocal is close, soft and personal: breathy, sometimes nearly spoken, often double-tracked or stacked in loose unison. It sits inside the band more than in mainstream pop. In indie and bedroom pop, listeners should follow the words easily; dream pop deliberately blurs some lyrics (Elizabeth Fraser’s are famously hard to make out), so ask the artist how far to go. Pitch correction is light and transparent; audible hard tuning is wrong unless it is the artist’s own effect. Doubles sit 6–10 dB under the lead; harmonies are panned 30–70% and filtered brighter. Studio mics range from everyday dynamics (whole bedroom-pop hits were tracked on one) to large condensers. Live, use a dynamic or tight-pattern condenser; whisper singers need high gain, so watch feedback at 2–4 kHz. A plate plus tempo delay covers most songs, with a longer hall for ballads."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Most indie pop plays clubs, theaters and festival side stages. Aim for about 90–97 dBA LAeq-15 at FOH, with C-weighted levels around 105–115 dBC and a C-minus-A gap of no more than about 15–18 dB; this music needs body, not sub pressure. Peaks of 105–108 dBA are plenty; quiet sections may drop to the low 80s. Front fills help vocal clarity at the barrier. Festivals and support slots often enforce A-weighted limits, so control 1–4 kHz energy. NIOSH advises no more than about an hour a day at 94 dBA."
+      "text": "Most indie pop plays clubs, theaters and festival side stages. Aim for about 90–97 dBA LAeq,15min at FOH, with C-weighted levels around 105–115 dBC and a C-minus-A gap of no more than about 15–18 dB; this music needs body, not sub pressure. Peaks of 105–108 dBA are plenty; quiet sections may drop to the low 80s. Front fills help vocal clarity at the barrier. Festivals and support slots often enforce A-weighted limits, so control 1–4 kHz energy. NIOSH advises no more than about an hour a day at 94 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, so loud masters gain nothing. At −2 dBTP these levels give a PLR of about 7–11 dB, and quieter masters keep more punch; a loudness range of 5–9 LU suits the style."
+      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so loud masters gain nothing. At −2 dBTP these levels give a PLR of about 7–11 dB, and quieter masters keep more punch; a loudness range of 5–9 LU suits the style."
     }
   ],
   "liveStudio": {
@@ -297,7 +297,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Low end",
-        "live": "Moderate subs; HPF pads and guitars harder to fight stage wash",
+        "live": "Moderate subs; high-pass pads and guitars harder against stage wash",
         "studio": "Fine control of warm bass vs soft kick"
       },
       {

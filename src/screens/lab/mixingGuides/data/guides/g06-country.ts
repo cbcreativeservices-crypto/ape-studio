@@ -13,16 +13,16 @@ export const GUIDE: MixingGuide = {
   "title": "Country",
   "expects": "The audience knows the words, so they expect to hear them; a buried or smeared vocal is the cardinal sin.",
   "glance": {
-    "origin": "U.S. South and Appalachia, 1920s (Anglo-Celtic ballads, string bands, blues); honky-tonk in the 1940s, the Nashville Sound and Bakersfield in the late 1950s–60s, outlaw and neotraditional waves after; modern Nashville since the 2000s",
-    "tempo": "70–130 BPM (ballads 60–80; shuffles and two-steps 110–130; train beats and up-tempo honky-tonk to 160+)",
-    "ensemble": "6–9 piece band: drums, bass, 2 electric guitars (often bright single-coil), acoustic, pedal steel, fiddle, keys/organ, lead vocal plus 2–3 harmony vocals; tracks and click on arena tours",
+    "origin": "U.S. South and Appalachia, 1920s (Anglo-Celtic ballads, string bands, blues); honky-tonk in the 1940s, the Nashville Sound and Bakersfield in the late 1950s–60s, outlaw in the 1970s and neotraditional in the 1980s; modern Nashville since the 2000s",
+    "tempo": "Mostly 70–130 BPM (ballads 60–80; shuffles and two-steps 110–130; train beats and up-tempo honky-tonk to 160+)",
+    "ensemble": "6–9-piece band: drums, bass, 2 electric guitars (often bright single-coil), acoustic, pedal steel, fiddle, keys/organ, lead vocal plus 2–3 harmony vocals; tracks and click on arena tours",
     "priority": "The lead vocal and every word of the lyric, with the band supporting the story",
-    "liveSpl": "96–102 dBA Leq (LAeq-15 min) in arenas and amphitheaters; about 110–120 dBC; honky-tonk bars 90–98 dBA",
-    "studioLoudness": "Modern Nashville masters commonly −9 to −7 LUFS-I; traditional and singer-songwriter records −12 to −10; streaming normalizes to about −14"
+    "liveSpl": "96–102 dBA LAeq,15min in arenas and amphitheaters; about 110–120 dBC; honky-tonk bars 90–98 dBA",
+    "studioLoudness": "Modern Nashville masters commonly −9 to −7 LUFS-I; traditional and singer-songwriter records −12 to −10; most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
     {
-      "text": "Country is storytelling music. It exists to deliver a lyric — heartbreak, home, faith, work, drinking, small-town pride — in a voice the listener believes. It is also dance music (shuffles, two-steps) and amphitheater singalong anthems. The audience knows the words, so they expect to hear them; a buried or smeared vocal is the cardinal sin. They also expect the genre signatures: the cry of a pedal steel, fiddle answering the singer, a clean, twangy chicken-picked electric. Listeners hear it as wrong when the vocal drowns in reverb, the steel is shrill, the acoustic booms, the low end feels like EDM, or tuning makes a twangy singer robotic."
+      "text": "Country is storytelling music. It exists to deliver a lyric — heartbreak, home, faith, work, drinking, small-town pride — in a voice the listener believes. It is also dance music (shuffles, two-steps) and the music of amphitheater singalongs. The audience knows the words, so they expect to hear them; a buried or smeared vocal is the cardinal sin. They also expect the genre signatures: the cry of a pedal steel, fiddle answering the singer, a clean, twangy chicken-picked electric. Listeners notice at once when the vocal drowns in reverb, the steel is shrill, the acoustic booms, the low end feels like EDM, or heavy tuning makes a twangy singer sound robotic."
     }
   ],
   "instruments": [
@@ -38,7 +38,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Bass:",
-      "text": "electric bass (DI plus amp), sometimes upright on traditional material; locks to kick on roots and fifths.",
+      "text": "electric bass (DI plus amp), sometimes upright on traditional material; locks to the kick on roots and fifths.",
       "bullet": true
     },
     {
@@ -53,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Pedal steel:",
-      "text": "fills, swells and solos; volume-pedal driven, huge dynamic and tonal range. Resonator guitar on traditional tunes.",
+      "text": "fills, swells and solos; shaped with a volume pedal, with a huge dynamic and tonal range. Resonator guitar on traditional tunes.",
       "bullet": true
     },
     {
@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Twangy electric guitar",
-        "cut": "HPF 100 Hz; −2–3 dB at 3–4 kHz if icepick",
+        "cut": "HPF 100 Hz; −2–3 dB at 3–4 kHz if ice-picky",
         "boost": "+1–2 dB at 1–2 kHz (snap)",
         "notes": "Bridge-pickup bite is the sound; don’t dull it"
       },
@@ -136,7 +136,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano / organ",
         "cut": "HPF 80–120 Hz; −2 dB at 300 Hz",
         "boost": "+1–2 dB at 2–4 kHz on piano",
-        "notes": "organ sits behind; carve 2–4 kHz for the vocal"
+        "notes": "Organ sits behind; carve 2–4 kHz for the vocal"
       }
     ],
     "notes": [
@@ -206,7 +206,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Twangy electric guitar",
-        "use": "Yes (often pedal)",
+        "use": "Yes (often a pedal)",
         "ratio": "4:1",
         "attackRelease": "5–10 ms / 100 ms",
         "gainReduction": "3–6 dB",
@@ -223,7 +223,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Parallel vocal compression is a Nashville signature: one mixer runs three parallel vocal paths (fat and pumping, clean, bright) and rides between them. Drum bus 2:1–4:1 for 2–3 dB; mix bus 1–2 dB of glue. Gate toms live; leave fiddle and steel ungated. De-ess at 6–8 kHz for 2–4 dB."
+        "text": "Parallel vocal compression is a Nashville signature: some mixers run three parallel vocal paths (fat and pumping, clean, bright) and ride between them. Drum bus 2:1–4:1 for 2–3 dB; mix bus 1–2 dB of glue. Gate toms live; leave fiddle and steel ungated. De-ess at 6–8 kHz for 2–4 dB."
       }
     ]
   },
@@ -257,7 +257,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Harmonizer / micro-pitch",
         "appliedTo": "Lead vocal, harmonies",
         "setting": "±6–10 cents, 10–20 ms",
-        "amount": "Subtle widening (harmonizer-style, common live)"
+        "amount": "Subtle widening; common in live mixes"
       },
       {
         "effect": "Tape echo",
@@ -274,17 +274,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal is the record. Set it roughly 2–4 dB above the band by perceived level, more forward than rock, with every syllable intelligible from the back row. Tone should be warm and present with the natural twang intact — the 1.5–3 kHz region carries both twang and diction, so shape it gently rather than boosting hard. Pitch correction is near universal in modern Nashville but should be transparent: slow retune speeds (roughly 20–40 ms) preserve the slides, scoops and drawl that define the style; fast hard-tuning reads as hip-hop or pop and alienates traditional fans. Harmony vocals (the “Nashville stack” of a third and fifth above or a third below) sit about 6 dB under the lead, compressed harder and panned moderately wide; chorus doubles tuck 6–10 dB under. Top records often keep the first emotional take over a perfect comp. Live, artists use dynamics or handheld condensers; keep the chain short and ride the fader all night."
+      "text": "The vocal is the record. Set it roughly 2–4 dB above the band by perceived level, more forward than rock, with every syllable intelligible from the back row. Tone should be warm and present with the natural twang intact — the 1.5–3 kHz region carries both twang and diction, so shape it gently rather than boosting hard. Pitch correction is near universal in modern Nashville but should be transparent: slow retune speeds (roughly 20–40 ms) preserve the slides, scoops and drawl that define the style; fast hard-tuning reads as hip-hop or pop and alienates traditional fans. Harmony vocals (usually a third or fifth above, or a third below) sit about 6 dB under the lead, compressed harder and panned moderately wide; chorus doubles tuck 6–10 dB under. Many records keep the first emotional take over a perfect comp. Live, singers use dynamic mics or handheld condensers; keep the chain short and ride the fader all night."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and amphitheater country typically runs 96–102 dBA LAeq-15 at FOH, with peaks to about 108 dBA and C-weighted levels around 110–120 dBC; some FOH engineers run about 105 dB peaking 108, chasing the level where the mix locks. Country needs firm kick and bass but far less sub than EDM or hip-hop; a C-minus-A gap above about 18–20 dB means too much sub. Honky-tonks and dance halls run 90–98 dBA so dancers can talk. Fairs and rodeos bring families — offer earplugs."
+      "text": "Arena and amphitheater country typically runs 96–102 dBA LAeq,15min at FOH, with peaks to about 108 dBA and C-weighted levels around 110–120 dBC; louder shows sit nearer 105 dBA with peaks at 108. Country needs firm kick and bass but far less sub than EDM or hip-hop; a C-minus-A gap above about 18–20 dB means too much sub. Honky-tonks and dance halls run 90–98 dBA so dancers can talk. Fairs and rodeos bring families — offer earplugs."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern Nashville masters commonly land at −9 to −7 LUFS-I. Because that is louder than −14 LUFS, a common streaming recommendation puts true peak at or below −2 dBTP (−1 dBTP is enough for quieter masters). Traditional, Americana-leaning and acoustic records sit around −12 to −10 LUFS-I. Those quieter records can keep a PLR (peak minus loudness) of roughly 8–11 dB; at −2 dBTP that means about −10 LUFS-I or quieter, while a loud modern master leaves only 5–7 dB. A loudness range of 5–8 LU keeps ballads breathing and choruses lifting."
+      "text": "Modern Nashville masters commonly land at −9 to −7 LUFS-I. Because that is louder than −14 LUFS, a common streaming recommendation puts true peak at or below −2 dBTP (−1 dBTP is enough for quieter masters). Traditional, Americana-leaning and acoustic records sit around −12 to −10 LUFS-I and keep a PLR (peak-to-loudness ratio) of roughly 8–11 dB, while a loud modern master at −2 dBTP leaves only 5–7 dB. A loudness range of 5–8 LU keeps ballads breathing and choruses lifting."
     }
   ],
   "liveStudio": {
@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Acoustic",
-        "live": "Pickup plus mic or pickup alone for feedback; thin below 150 Hz",
+        "live": "Pickup plus mic, or pickup alone to avoid feedback; thin below 150 Hz",
         "studio": "Stereo mic pair, often hard-panned, for a wide bed"
       },
       {
@@ -337,7 +337,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t over-tune or over-grid. Leading Nashville editors follow players’ natural push and drag off the click to keep the groove.",
+      "text": "Don’t over-tune or over-grid. Good Nashville editors keep the players’ natural push and drag against the click to protect the groove.",
       "bullet": true
     },
     {
@@ -345,7 +345,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Watch 200–400 Hz build-up from acoustic, piano and organ together.",
+      "text": "Watch 200–400 Hz buildup from acoustic, piano and organ together.",
       "bullet": true
     },
     {
@@ -358,7 +358,7 @@ export const GUIDE: MixingGuide = {
     "Luke Combs, “Beer Never Broke My Heart”, 2019",
     "Morgan Wallen, “Last Night”, 2023",
     "Kacey Musgraves, “Slow Burn”, 2018",
-    "Carrie Underwood, “Before He Cheats”, 2006",
+    "Carrie Underwood, “Before He Cheats”, 2005",
     "George Strait, “Amarillo by Morning”, 1982",
     "Dwight Yoakam, “Guitars, Cadillacs”, 1986",
     "Eric Church, “Springsteen”, 2011"

@@ -14,15 +14,15 @@ export const GUIDE: MixingGuide = {
   "expects": "People expect every lyric to be clear, a bridge that lifts as it repeats, and space in quiet moments of prayer.",
   "glance": {
     "origin": "United States, late 1960s–1970s Jesus movement (Calvary Chapel, Maranatha! Music, 1971); modern worship shaped by Vineyard, Integrity, Delirious? (UK) and Hillsong (Australia) in the 1990s, then Passion, Bethel, Elevation and Maverick City in the 2000s–2020s",
-    "tempo": "68–80 BPM for ballads and “intimate” songs; 120–145 BPM for up-tempo openers, often played in 6/8 or half-time feel",
+    "tempo": "68–80 BPM for ballads and “intimate” songs, which are often in 6/8; 120–145 BPM for up-tempo openers, often with a half-time feel",
     "ensemble": "5–8 piece band: drums, bass, 1–2 electric guitars, acoustic guitar, keys/pads, worship leader plus 2–4 vocalists, with click and tracks",
     "priority": "A clear, intelligible lead vocal that invites the room to sing, without burying the congregation’s own voices",
     "liveSpl": "88–94 dBA LAeq over the worship set (large churches often target about 92–94 dBA slow, peaks under about 100 dBA); youth and conference events 95–100 dBA",
-    "studioLoudness": "CCM radio singles commonly −10 to −8 LUFS-I, live worship albums −12 to −10; streaming normalizes to about −14, church livestreams around −16 to −14"
+    "studioLoudness": "CCM radio singles commonly −10 to −8 LUFS-I, live worship albums −12 to −10; most streaming services normalize to about −14 LUFS, some to −16; church livestreams around −16 to −14"
   },
   "purpose": [
     {
-      "text": "Worship music exists to help a gathered congregation sing, pray and respond together; CCM recordings extend that into car radios, earbuds and Christian radio formats. In a service, the band is a guide and the congregation is the real choir, so the engineer serves participation more than performance. People expect every lyric to be clear, a bridge that lifts as it repeats, and space in quiet moments of prayer. A worship audience will say “that sounded wrong” when it is too loud to hear themselves sing, when the lead is unintelligible, when a click or count-in leaks into the house, when feedback breaks a quiet moment, or when transitions between songs and speaking are abrupt."
+      "text": "Worship music exists to help a gathered congregation sing, pray and respond together; CCM recordings carry that into car stereos, earbuds and Christian radio. In a service, the band is a guide and the congregation is the real choir, so the engineer serves participation more than performance. People expect every lyric to be clear, a bridge that lifts as it repeats, and space in quiet moments of prayer. Worshipers notice at once when it is too loud to hear themselves sing, when the lead is unintelligible, when a click or count-in leaks into the house, when feedback breaks a quiet moment, or when transitions between songs and speaking are abrupt."
     }
   ],
   "instruments": [
@@ -38,7 +38,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electric guitar:",
-      "text": "ambient, delay-heavy lead (dotted-eighth delays, volume swells, shimmer reverbs) via modelers or pedalboards, often going straight to the desk.",
+      "text": "ambient, delay-heavy lead (dotted-eighth delays, volume swells, shimmer reverbs) via modelers or pedalboards, often going straight to the console.",
       "bullet": true
     },
     {
@@ -69,7 +69,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal, kick and bass (a felt foundation), BGVs as a choir block, keys/piano, acoustic guitar, electric guitar, pads and tracks, snare and toms (louder in builds), cymbals and FX returns. Carve 2–4 kHz in guitars and keys rather than just pushing the vocal. Let synth bass or the tracks sub carry 30–60 Hz and bass guitar own roughly 60–200 Hz. Lead vocal, kick, snare and bass center; BGVs spread; electric guitar and keys opposite each other; pads wide. Many sanctuaries cannot deliver stereo to every seat, so check the mix summed to mono."
+      "text": "Hierarchy, loudest to quietest: lead vocal, kick and bass (a felt foundation), BGVs as a choir block, keys/piano, acoustic guitar, electric guitar, pads and tracks, snare and toms (louder in builds), cymbals and FX returns. Carve 2–4 kHz in guitars and keys rather than just pushing the vocal. Let the synth bass or the sub from the tracks carry 30–60 Hz and the bass guitar own roughly 60–200 Hz. Lead vocal, kick, snare and bass center; BGVs spread; electric guitar and keys opposite each other; pads wide. Many sanctuaries cannot deliver stereo to every seat, so check the mix summed to mono."
     }
   ],
   "eq": {
@@ -83,14 +83,14 @@ export const GUIDE: MixingGuide = {
       {
         "source": "BGVs",
         "cut": "HPF 150–200 Hz; −3 dB at 300–500 Hz",
-        "boost": "Small dip at 3 kHz relative to the lead",
+        "boost": "None; a small 3 kHz dip leaves room for the lead",
         "notes": "Make them a pad behind the leader, not competitors"
       },
       {
         "source": "Kick",
         "cut": "HPF 35–40 Hz; −4 dB at 300–400 Hz",
         "boost": "+2–3 dB at 60–80 Hz; +2 dB at 3–4 kHz",
-        "notes": "Rounder and softer beater than rock"
+        "notes": "Rounder, softer beater sound than in rock"
       },
       {
         "source": "Snare",
@@ -120,7 +120,7 @@ export const GUIDE: MixingGuide = {
         "source": "Acoustic guitar",
         "cut": "HPF 100–150 Hz; LPF 12 kHz; −3 dB at 200–300 Hz",
         "boost": "+2 dB at 5–8 kHz for strum sparkle",
-        "notes": "Piezo DIs need a cut near 1–2 kHz to lose the quack"
+        "notes": "Piezo pickups need a cut near 1–2 kHz to lose the quack"
       },
       {
         "source": "Electric guitar (ambient)",
@@ -256,23 +256,23 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Pull vocal FX for prayer and spoken moments; excess reverb in a reflective room is the most common worship over-indulgence."
+        "text": "Pull vocal FX for prayer and spoken moments; too much reverb in a reflective room is the most common worship mixing mistake."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The worship leader’s vocal is the conductor of the congregation: it must be clear, warm and confident, sitting about 2–4 dB above the band by perception, but not so dominant that the room listens instead of sings. Lyrics on screens help, yet intelligibility at 2–4 kHz still matters most. BGVs act as a choir pad, often tight unison or thirds; keep them compressed and slightly below and behind the lead, and lift the group in big choruses. Watch the leader for spontaneous singing and spoken moments mid-song. Pitch correction live is increasingly common on large stages and sparing at most churches; on records, CCM uses tight pop-style tuning while live worship albums keep more natural tuning. Live mics are usually rugged dynamics or handheld condensers. For in-ears, give the leader a flat, clear vocal with little reverb and light compression so they do not over-sing, plus ambient or crowd mics so they hear the congregation."
+      "text": "The worship leader’s vocal is the conductor of the congregation: it must be clear, warm and confident, sounding about 2–4 dB above the band, but not so dominant that the room listens instead of sings. Lyrics on screens help, yet intelligibility at 2–4 kHz still matters most. BGVs act as a choir pad, often tight unison or thirds; keep them compressed and slightly below and behind the lead, and lift the group in big choruses. Watch the leader for spontaneous singing and spoken moments mid-song. Pitch correction live is increasingly common on large stages and sparing at most churches; on records, CCM uses tight pop-style tuning while live worship albums keep more natural tuning. Live mics are usually rugged dynamics or handheld condensers. For in-ears, give the leader a flat, clear vocal with little reverb and light compression so they do not over-sing, plus ambient or crowd mics so they hear the congregation."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Many churches settle on 88–94 dBA slow, averaged over the worship set; one large multisite church measures about 93–94 dBA over roughly 18 minutes of worship with quick peaks capped at 99–100 dBA. Guidance from church tech trainers suggests keeping an hour-long service at or under about 94 dBA, and newer volunteer mixers are often limited to the mid-to-high 80s. Soft songs land near 80–85 dBA. With synth sub in play, C-weighted LCeq can reach about 105–110 dBC; check the gap: a C reading more than about 15–18 dB above the A reading means too much sub for a mixed-age room. Measure at the loudest seats and walk the room during the service; offer earplugs, since children and elderly members attend."
+      "text": "Many churches settle on 88–94 dBA slow, averaged over the worship set; large churches often run about 93–94 dBA over an 18-minute worship set, with quick peaks capped at 99–100 dBA. A common guideline is to keep an hour-long service at or under about 94 dBA, and newer volunteer mixers are often limited to the mid-to-high 80s. Soft songs land near 80–85 dBA. With synth sub in play, C-weighted LCeq can reach about 105–110 dBC; check the gap: a C reading more than about 15–18 dB above the A reading means too much sub for a mixed-age room. Measure at the loudest seats and walk the room during the service; offer earplugs, since children and older members attend."
     },
     {
       "label": "Studio / streaming:",
-      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to −14 LUFS, and −2 dBTP or lower is recommended for masters louder than that, so the streaming version of a loud radio single needs the lower ceiling. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
+      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to about −14 LUFS, some to −16, and −2 dBTP or lower is recommended for masters louder than that, so the streaming version of a loud radio single needs the lower ceiling. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
     }
   ],
   "liveStudio": {
@@ -280,7 +280,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Purpose",
         "live": "Support congregational singing; room level and comfort first",
-        "studio": "Personal listening and radio; lead vocal and hook upfront"
+        "studio": "Personal listening and radio; lead vocal and hook up front"
       },
       {
         "area": "Low end",
@@ -353,7 +353,7 @@ export const GUIDE: MixingGuide = {
     "Lauren Daigle, “You Say”, 2018",
     "Elevation Worship & Maverick City Music, “Jireh”, 2021",
     "Phil Wickham, “Battle Belongs”, 2020",
-    "Brandon Lake, “Gratitude”, 2022"
+    "Brandon Lake, “Gratitude”, 2020"
   ],
   "empty": []
 };
