@@ -255,7 +255,189 @@ function KeysElevation({ k, face1 }: { k: KeyRects; face1: number }) {
   );
 }
 
-const hiRect = (q: Rect, pad = 8) => <Path path={rr(make(), q.u0 - pad, q.v0 - pad, q.u1 + pad, q.v1 + pad, 8)} style="stroke" strokeWidth={4} color={KEYS.amber} />;
+/* the chosen part's mark
+ * Moving PART must show the part on the DRAWING (owner 2026-11-05). Whole
+ * instruments are drawn small on a phone, so a mark sized in mm alone came out
+ * 14 px across with a 1 px line. Every mark is floored in SCREEN pixels, on the
+ * same rule as the shared scene's markOnGlass: at least HI_MIN_PX long and
+ * HI_THIN_PX wide, and a part smaller than that gets HI_MIN_PX both ways,
+ * centred on it. The drawings do not know their fit, so the scale is the fit on
+ * the rack's stage at 375 pt wide; any larger stage only makes the mark larger.
+ * The test pins these scales to keysBox. */
+export const HI_MIN_PX = 44;
+export const HI_THIN_PX = 16;
+export const HI_STROKE_PX = 3;
+/** The rack's stage on a 375 pt phone, as measured, and the fit's padding. */
+export const HI_STAGE = { w: 353, h: 290, pad: 6 } as const;
+const stageFit = (bw: number, bh: number) => Math.min((HI_STAGE.w - 2 * HI_STAGE.pad) / bw, (HI_STAGE.h - 2 * HI_STAGE.pad) / bh);
+
+export type HiArt = 'rhodesFront' | 'rhodesTop' | 'wurliFront' | 'wurliSide' | 'oval';
+/** Screen px per mm of each drawing on that stage. The reed piano's front view
+ *  serves two frames (on its legs; the lid alone): the smaller scale of the two. */
+export const HI_SCALE: Record<HiArt, number> = {
+  rhodesFront: stageFit(2 * RHODES_FRONT.half + 140, 30 - (RHODES_FRONT.top - 70)),
+  rhodesTop: stageFit(2 * RHODES_TOP.half + 80, RHODES_TOP.front + 70 - (RHODES_TOP.back - 40)),
+  wurliFront: Math.min(stageFit(2 * WURLI_FRONT.half + 140, 30 - (W.caseTopY - 70)), stageFit(2 * WURLI_FRONT.half + 80, W.caseBottomY + 70 - (W.caseTopY - 70))),
+  wurliSide: stageFit(120 - (W.caseBackX - 40), W.caseBottomY + 70 - (FACE_TOP.y - 110)),
+  oval: stageFit(2 * OV.aFrame + 80, 2 * OV.bFrame + 88),
+};
+
+/** A rectangle grown about its centre to the floor at scale s. */
+export function hiFloor(q: Rect, s: number): Rect {
+  const w = q.u1 - q.u0;
+  const h = q.v1 - q.v0;
+  const least = (Math.max(w, h) * s >= HI_MIN_PX ? HI_THIN_PX : HI_MIN_PX) / s;
+  const gu = Math.max(0, least - w) / 2;
+  const gv = Math.max(0, least - h) / 2;
+  return { u0: q.u0 - gu, v0: q.v0 - gv, u1: q.u1 + gu, v1: q.v1 + gv };
+}
+
+/** The mark's line in mm: never under HI_STROKE_PX on the stage. */
+export const hiStroke = (art: HiArt) => Math.max(4, HI_STROKE_PX / HI_SCALE[art]);
+
+export type HiShape =
+  | { kind: 'rect'; q: Rect }
+  | { kind: 'oval'; u: number; v: number; a: number; b: number; dashed?: boolean }
+  | { kind: 'poly'; pts: readonly (readonly [number, number])[] };
+
+/** What marks part hi in a drawing. Pure; empty only for a part it never lists. */
+export function hiShapes(art: HiArt, hi: string | null | undefined, mount: 'lid' | 'rail' = 'lid'): HiShape[] {
+  const s = HI_SCALE[art];
+  /** vMax: the drawing's lower edge; a mark grown past it is lifted back up. */
+  const box = (q: Rect, pad = 8, vMax = Infinity): HiShape => {
+    const f = hiFloor({ u0: q.u0 - pad, v0: q.v0 - pad, u1: q.u1 + pad, v1: q.v1 + pad }, s);
+    const lift = Math.max(0, f.v1 - vMax);
+    return { kind: 'rect', q: { ...f, v0: f.v0 - lift, v1: f.v1 - lift } };
+  };
+  const ring = (u: number, v: number, a: number, b: number, dashed = false): HiShape => {
+    const q = hiFloor({ u0: u - a, v0: v - b, u1: u + a, v1: v + b }, s);
+    return { kind: 'oval', u, v, a: (q.u1 - q.u0) / 2, b: (q.v1 - q.v0) / 2, dashed };
+  };
+  if (art === 'rhodesFront') {
+    const F = RHODES_FRONT;
+    const railV = (F.nameRail.v0 + F.nameRail.v1) / 2;
+    const out = (u: number) => u + Math.sign(u) * F.legSplay;
+    switch (hi) {
+      case 'rh.harp':
+        return [box(F.lid)];
+      case 'rh.keys':
+        return [box({ u0: F.keyTops.u0, v0: F.keyTops.v0 - 14, u1: F.keyTops.u1, v1: F.keyFace.v1 })];
+      case 'rh.controls':
+        return [box({ u0: F.knobs[0] - 16, v0: F.nameRail.v0, u1: F.knobs[1] + 16, v1: F.nameRail.v1 }, 6)];
+      // the jack sits beside a knob: the small ring says which of the two is meant
+      case 'rh.jack':
+        return [ring(F.jack, railV, 20, 20), { kind: 'oval', u: F.jack, v: railV, a: 20, b: 20 }];
+      case 'rh.legs':
+        return F.legs.map((u) => ({ kind: 'poly', pts: [[u - 34, F.bottom], [u + 34, F.bottom], [out(u) + 34, 4], [out(u) - 34, 4]] }));
+      case 'rh.pedal':
+        return [box({ u0: F.pedal.u - F.pedal.w / 2, v0: -F.pedal.h, u1: F.pedal.u + F.pedal.w / 2, v1: 0 }, 8, 30)];
+    }
+    return [];
+  }
+  if (art === 'rhodesTop') {
+    const T = RHODES_TOP;
+    switch (hi) {
+      case 'rh.harp':
+        return [box(T.lid)];
+      case 'rh.keys':
+        return [box(T.keysBox)];
+      case 'rh.controls':
+        return [box({ u0: T.knobs[0] - 16, v0: T.nameRail.v0, u1: T.knobs[1] + 16, v1: T.nameRail.v1 }, 6)];
+      case 'rh.jack':
+        return [ring(T.jack, T.railV, 20, 20), { kind: 'oval', u: T.jack, v: T.railV, a: 20, b: 20 }];
+    }
+    return [];
+  }
+  if (art === 'wurliFront') {
+    const F = WURLI_FRONT;
+    const half = F.half;
+    const squash = Math.cos(W.tilt);
+    switch (hi) {
+      case 'wur.lid':
+        return [box(F.face)];
+      case 'wur.grille':
+        return F.grilles.map((g) => ring(g.u, g.v, g.a + 12, g.b + 11));
+      case 'wur.cone':
+        return F.grilles.map((g) => ring(g.u, g.v, OV.aSur, OV.bSur * squash));
+      case 'wur.dust':
+        return F.grilles.map((g) => ring(g.u, g.v, OV.aDust, OV.bDust * squash));
+      case 'wur.frame':
+        return F.grilles.map((g) => ring(g.u, g.v, OV.aFrame + 4, OV.bFrame * squash + 4));
+      case 'wur.keys':
+        return [box({ u0: F.keyTops.u0, v0: F.keyTops.v0 - 12, u1: F.keyTops.u1, v1: F.keyFace.v1 })];
+      case 'wur.case':
+        return [box(F.body)];
+      case 'wur.controls':
+        return [box({ u0: -half + 6, v0: F.keyTops.v0 - 20, u1: -half + 40, v1: F.keyFace.v1 + 6 }, 4)];
+      case 'wur.legs':
+        return F.legs.map((u) => box({ u0: u - 40 + (u < 0 ? -22 : 0), v0: F.body.v1, u1: u + 40 + (u > 0 ? 22 : 0), v1: 4 }, 0));
+      case 'wur.pedal':
+        return [box({ u0: F.pedal.u - F.pedal.w / 2, v0: -F.pedal.h, u1: F.pedal.u + F.pedal.w / 2, v1: 0 }, 8, 30)];
+    }
+    return [];
+  }
+  if (art === 'wurliSide') {
+    const S = OVAL_SECTION;
+    const off = mount === 'rail' ? -14 : 0;
+    const at = (d: number, t: number): [number, number] => {
+      const p = onSpeaker(C_BASS, d, t, 0);
+      return [p.x, p.y];
+    };
+    const band = (d0: number, d1: number, t: number): HiShape => ({ kind: 'poly', pts: [at(d0, -t), at(d1, -t), at(d1, t), at(d0, t)] });
+    const [du, dv] = at(S.dApex + off + 6, 0);
+    switch (hi) {
+      case 'wur.keys':
+        return [box({ u0: W.faceFootX, v0: W.keyTopY, u1: W.keyFrontX, v1: W.keyBottomY })];
+      case 'wur.case':
+        return [box({ u0: W.caseBackX, v0: W.keyBottomY, u1: W.slipX, v1: W.caseBottomY })];
+      case 'wur.lid':
+        return [{ kind: 'poly', pts: [[W.faceFootX, W.faceFootY], [FACE_TOP.x, FACE_TOP.y], [W.caseBackX, W.caseTopY], [W.caseBackX, W.faceFootY]] }];
+      // the speaker's strips run along the slope: the grille across the face,
+      // the frame just behind it, the whole speaker back to its magnet
+      case 'wur.grille':
+        return [band(-14, 18, OV.bFrame + 10)];
+      case 'wur.frame':
+        return [band(S.dFlange + off - 30, S.dFlange + off, OV.bFrame + 4)];
+      case 'wur.cone':
+        return [band(S.dMagnetBack + off - 4, S.dFlange + off, OV.bFrame + 4)];
+      case 'wur.dust':
+        return [ring(du, dv, 10, 10)];
+    }
+    return [];
+  }
+  switch (hi) {
+    case 'wur.dust':
+      return [ring(0, 0, OV.aDust + 5, OV.bDust + 5)];
+    case 'wur.cone':
+      return [ring(0, 0, OV.aSur + 4, OV.bSur + 4)];
+    case 'wur.frame':
+      return [ring(0, 0, OV.aFrame + 5, OV.bFrame + 5)];
+    // neither is drawn on the bare speaker: the grille lies over it (dashed),
+    // the lid is the panel around it
+    case 'wur.grille':
+      return [ring(0, 0, OV.aFrame + 22, OV.bFrame + 22, true)];
+    case 'wur.lid':
+      return [box({ u0: -OV.aFrame - 30, v0: -OV.bFrame - 30, u1: OV.aFrame + 30, v1: OV.bFrame + 30 }, 0)];
+  }
+  return [];
+}
+
+function HiMark({ art, hi, mount = 'lid' }: { art: HiArt; hi?: string | null; mount?: 'lid' | 'rail' }) {
+  const line = hiStroke(art);
+  return (
+    <>
+      {hiShapes(art, hi, mount).map((m, i) => {
+        if (m.kind === 'oval')
+          return (
+            <Path key={i} path={ellipse(m.u, m.v, m.a, m.b)} style="stroke" strokeWidth={line} color={KEYS.amber}>
+              {m.dashed ? <DashPathEffect intervals={[line * 2.4, line * 1.6]} /> : null}
+            </Path>
+          );
+        return <Path key={i} path={m.kind === 'rect' ? R(m.q, 8) : poly(m.pts)} style="stroke" strokeWidth={line} strokeJoin="round" color={KEYS.amber} />;
+      })}
+    </>
+  );
+}
 
 /* ═══════════════ the tine piano ═══════════════
  * REAL DIMENSIONS (mm), code comment only:
@@ -427,12 +609,7 @@ export function RhodesFrontArt({ hi }: { hi?: string | null }) {
         <LinearGradient start={vec(-half, F.bottom - 30)} end={vec(-half + 30, F.bottom)} colors={[...KEYS.chrome]} />
       </Path>
       <Path path={g.caseLow} style="stroke" strokeWidth={1.4} color="#08080a" opacity={0.8} />
-      {hi === 'rh.harp' ? hiRect(F.lid) : null}
-      {hi === 'rh.keys' ? hiRect({ u0: F.keyTops.u0, v0: F.keyTops.v0 - 14, u1: F.keyTops.u1, v1: F.keyFace.v1 }) : null}
-      {hi === 'rh.controls' ? hiRect({ u0: F.knobs[0] - 16, v0: F.nameRail.v0, u1: F.knobs[1] + 16, v1: F.nameRail.v1 }, 6) : null}
-      {hi === 'rh.jack' ? <Circle cx={F.jack} cy={railV} r={20} style="stroke" strokeWidth={4} color={KEYS.amber} /> : null}
-      {hi === 'rh.legs' ? F.legs.map((u) => <Path key={u} path={poly([[u - 34, F.bottom], [u + 34, F.bottom], [out(u) + 34, 4], [out(u) - 34, 4]])} style="stroke" strokeWidth={4} strokeJoin="round" color={KEYS.amber} />) : null}
-      {hi === 'rh.pedal' ? hiRect({ u0: pedal.u - pedal.w / 2, v0: -pedal.h, u1: pedal.u + pedal.w / 2, v1: 0 }) : null}
+      <HiMark art="rhodesFront" hi={hi} />
     </Group>
   );
 }
@@ -520,10 +697,7 @@ export function RhodesTopArt({ hi }: { hi?: string | null }) {
         <LinearGradient start={vec(-half, T.back)} end={vec(half, T.front)} colors={[...KEYS.chrome]} />
       </Path>
       <Path path={body} style="stroke" strokeWidth={1.4} color="#08080a" opacity={0.8} />
-      {hi === 'rh.harp' ? hiRect(T.lid) : null}
-      {hi === 'rh.keys' ? hiRect(T.keysBox) : null}
-      {hi === 'rh.controls' ? hiRect({ u0: T.knobs[0] - 16, v0: T.nameRail.v0, u1: T.knobs[1] + 16, v1: T.nameRail.v1 }, 6) : null}
-      {hi === 'rh.jack' ? <Circle cx={T.jack} cy={T.railV} r={20} style="stroke" strokeWidth={4} color={KEYS.amber} /> : null}
+      <HiMark art="rhodesTop" hi={hi} />
     </Group>
   );
 }
@@ -714,13 +888,7 @@ export function WurliFrontArt({ hi, mount = 'lid' }: { hi?: string | null; mount
       <Path path={rr(make(), F.keyFace.u0, F.body.v0 - 4, F.keyFace.u1, F.body.v0 + 1, 1)}>
         <LinearGradient start={vec(0, F.body.v0 - 4)} end={vec(0, F.body.v0 + 1)} colors={['#d08a70', '#7a3828', '#3a1810']} />
       </Path>
-      {hi === 'wur.lid' ? hiRect(F.face) : null}
-      {hi === 'wur.grille' ? F.grilles.map((g, i) => <Path key={i} path={ellipse(g.u, g.v, g.a + 12, g.b + 11)} style="stroke" strokeWidth={4} color={KEYS.amber} />) : null}
-      {hi === 'wur.keys' ? hiRect({ u0: F.keyTops.u0, v0: F.keyTops.v0 - 12, u1: F.keyTops.u1, v1: F.keyFace.v1 }) : null}
-      {hi === 'wur.case' ? hiRect(F.body) : null}
-      {hi === 'wur.controls' ? hiRect({ u0: -half + 6, v0: F.keyTops.v0 - 20, u1: -half + 40, v1: F.keyFace.v1 + 6 }, 4) : null}
-      {hi === 'wur.legs' ? F.legs.map((u) => <Path key={u} path={rr(make(), u - 40 + (u < 0 ? -22 : 0), F.body.v1, u + 40 + (u > 0 ? 22 : 0), 4, 8)} style="stroke" strokeWidth={4} color={KEYS.amber} />) : null}
-      {hi === 'wur.pedal' ? hiRect({ u0: pedal.u - pedal.w / 2, v0: -pedal.h, u1: pedal.u + pedal.w / 2, v1: 0 }) : null}
+      <HiMark art="wurliFront" hi={hi} />
     </Group>
   );
 }
@@ -1183,8 +1351,7 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
       </Path>
       <Path path={g.shell} style="stroke" strokeWidth={1.4} color={SPK.ink} opacity={0.85} />
       <Path path={g.slots} style="stroke" strokeWidth={3.4} strokeCap="round" color="#0b0806" />
-      {hi === 'wur.lid' ? <Path path={g.shell} style="stroke" strokeWidth={6} color={KEYS.amber} /> : null}
-      {hi === 'wur.cone' || hi === 'wur.grille' ? g.spk.slice(0, 1).map((s, i) => <Path key={i} path={s.cone} style="stroke" strokeWidth={7} color={KEYS.amber} />) : null}
+      <HiMark art="wurliSide" hi={view === 'side' ? hi : null} mount={mount} />
     </Group>
   );
 }
@@ -1304,9 +1471,7 @@ export function OvalFace({ spot, hi }: { spot?: OvalSpot | null; hi?: string | n
           <Circle cx={su} cy={0} r={4} color="#6fa8ff" />
         </Group>
       ) : null}
-      {hi === 'wur.dust' ? <Path path={ellipse(0, 0, OV.aDust + 5, OV.bDust + 5)} style="stroke" strokeWidth={3.5} color={KEYS.amber} /> : null}
-      {hi === 'wur.cone' ? <Path path={ellipse(0, 0, OV.aSur + 4, OV.bSur + 4)} style="stroke" strokeWidth={3.5} color={KEYS.amber} /> : null}
-      {hi === 'wur.frame' ? <Path path={ellipse(0, 0, OV.aFrame + 5, OV.bFrame + 5)} style="stroke" strokeWidth={3.5} color={KEYS.amber} /> : null}
+      <HiMark art="oval" hi={hi} />
       <Line p1={vec(-OV.aFrame - 30, 0)} p2={vec(OV.aFrame + 30, 0)} color="#8a8f9c" strokeWidth={1} opacity={0.5}>
         <DashPathEffect intervals={[8, 6]} />
       </Line>

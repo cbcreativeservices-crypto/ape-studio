@@ -438,7 +438,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
         }),
         stage: (w2, h) => (
           <StageFit w={w2} h={h} aspect={354 / 168}>
-            <FeedbackLoop wedge={w.geometry} ringing={ring} sendDb={w.send} />
+            <FeedbackLoop wedge={w.geometry} ringing={ring} sendDb={w.send} notched={w.notched} />
           </StageFit>
         ),
         params,

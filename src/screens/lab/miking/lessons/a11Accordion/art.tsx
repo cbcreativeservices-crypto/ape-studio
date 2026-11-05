@@ -34,6 +34,8 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const pt = (u: number, v: number): Pt => ({ u, v });
 const HIGHLIGHT = '#ffc64d';
+/** A marker's line: 3 pt at the smallest the front view draws (fully open, 0.22 pt per mm). */
+const MARK_W = 14;
 const LACQUER = ['#c2474c', '#8a252b', '#561519', '#2c0a0c'];
 const CHROME = ['#ffffff', '#dfe4ec', '#9aa3b1', '#5d6572'];
 const CLOTH = ['#2e3036', '#1b1c20', '#0f1012'];
@@ -68,7 +70,7 @@ function Lacquer({ path, box, hi = false }: { path: SkPath; box: { u0: number; v
         </Path>
       </Group>
       <Path path={path} style="stroke" strokeWidth={3} color="#e1e4ea" opacity={0.75} />
-      {hi ? <Path path={path} style="stroke" strokeWidth={9} color={HIGHLIGHT} opacity={0.9} /> : null}
+      {hi ? <Path path={path} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} opacity={0.9} /> : null}
     </Group>
   );
 }
@@ -205,8 +207,7 @@ function TrebleFront({ hi }: { hi: string | null }): ReactElement {
       <Path path={tabs}>
         <LinearGradient start={vec(u0, TREBLE.y0 - 14)} end={vec(u0, TREBLE.y0 + 4)} colors={['#ffffff', '#c9d0da', '#6a7280']} />
       </Path>
-      {hi === 'ac.grille' ? <Path path={rr(-GRILLE.z1 - 10, GRILLE.y0 - 10, -GRILLE.z0 + 10, GRILLE.y1 + 10, 14)} style="stroke" strokeWidth={8} color={HIGHLIGHT} /> : null}
-      {hi === 'ac.keys' ? <Path path={rr(u0 - 10, KEYS.y0 - 10, u0 + 30, KEYS.y1 + 10, 8)} style="stroke" strokeWidth={8} color={HIGHLIGHT} /> : null}
+      {hi === 'ac.grille' ? <Path path={rr(-GRILLE.z1 - 10, GRILLE.y0 - 10, -GRILLE.z0 + 10, GRILLE.y1 + 10, 14)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
@@ -280,7 +281,6 @@ function BassFront({ top, bottom, hi, part = 'box' }: { top: number; bottom: num
           <DashPathEffect intervals={[5, 4]} />
         </Path>
         <Path path={buckle} style="stroke" strokeWidth={3.2} color="#d9dde4" />
-        {hi === 'ac.strap' ? <Path path={strap} style="stroke" strokeWidth={46} strokeCap="round" color={HIGHLIGHT} opacity={0.5} /> : null}
       </Group>
     );
   }
@@ -392,16 +392,20 @@ function frontPose(top: number, bottom: number): PlayerPose {
  * the arms.
  */
 const STRAP_TOP = TREBLE.y0 + 30;
-function strapBand(from: Pt, to: Pt, bow: number): SkPath {
+function bandPath(from: Pt, to: Pt, bow: number): SkPath {
   const p = make();
   p.moveTo(from.u, from.v);
   p.quadTo((from.u + to.u) / 2 + bow, (from.v + to.v) / 2, to.u, to.v);
   return p;
 }
-function AccStraps({ pose }: { pose: PlayerPose }): ReactElement {
+/** Each strap, from its bracket on the treble side to the top of its shoulder. */
+function strapsOf<T>(pose: PlayerPose, strapBand: (from: Pt, to: Pt, bow: number) => T): T[] {
   // Over the shoulder's top: between the neck and the shoulder joint, on the trapezius.
   const over = (s: Pt, side: number): Pt => ({ u: (s.u + pose.neck.u) / 2 + side * 14, v: s.v - 28 });
-  const bands = [strapBand({ u: -TREBLE.z1 + 60, v: STRAP_TOP }, over(pose.shoulderR, -1), -6), strapBand({ u: -TREBLE.z0 - 26, v: STRAP_TOP }, over(pose.shoulderL, 1), 10)];
+  return [strapBand({ u: -TREBLE.z1 + 60, v: STRAP_TOP }, over(pose.shoulderR, -1), -6), strapBand({ u: -TREBLE.z0 - 26, v: STRAP_TOP }, over(pose.shoulderL, 1), 10)];
+}
+function AccStraps({ pose }: { pose: PlayerPose }): ReactElement {
+  const bands = strapsOf(pose, bandPath);
   return (
     <Group>
       {bands.map((b, i) => (
@@ -414,6 +418,29 @@ function AccStraps({ pose }: { pose: PlayerPose }): ReactElement {
             <DashPathEffect intervals={[6, 5]} />
           </Path>
         </Group>
+      ))}
+    </Group>
+  );
+}
+
+/**
+ * THE MARKS the front view cannot leave under the player, in mm (each fills at
+ * least 44 x 16 pt at the smallest the view draws, fully open): the keyboard's
+ * edge, wider than the keys so the mark is a band the eye can find; and BOTH
+ * shoulder straps, wider than the leather, each from its bracket on the
+ * treble side over the top of its shoulder. The bass strap is the bass side's.
+ */
+export const KEYS_MARK = { u0: -TREBLE.z1 - 30, u1: -TREBLE.z1 + 44, v0: KEYS.y0 - 10, v1: KEYS.y1 + 10, w: MARK_W };
+export const STRAP_MARK_W = 74;
+export const strapMarks = (top: number, bottom: number) => strapsOf(poseFor(top, bottom), (from, to) => ({ from, to }));
+
+function PartMark({ top, bottom, hi }: { top: number; bottom: number; hi: string | null }): ReactElement | null {
+  if (hi === 'ac.keys') return <Path path={rr(KEYS_MARK.u0, KEYS_MARK.v0, KEYS_MARK.u1, KEYS_MARK.v1, 8)} style="stroke" strokeWidth={KEYS_MARK.w} color={HIGHLIGHT} />;
+  if (hi !== 'ac.strap') return null;
+  return (
+    <Group>
+      {strapsOf(poseFor(top, bottom), bandPath).map((band, i) => (
+        <Path key={i} path={band} style="stroke" strokeWidth={STRAP_MARK_W} strokeCap="round" color={HIGHLIGHT} opacity={0.6} />
       ))}
     </Group>
   );
@@ -448,10 +475,11 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
       <Bellows top={top} bottom={bottom} view="front" />
       <BassFront top={top} bottom={bottom} hi={hi} />
       <TrebleFront hi={hi} />
-      {hi === 'ac.bellows' ? <Path path={poly([[-TREBLE.z0, TREBLE.y0], [-b.it.z, b.it.y], [-b.ib.z, b.ib.y], [-TREBLE.z0, TREBLE.y1]])} style="stroke" strokeWidth={8} color={HIGHLIGHT} /> : null}
+      {hi === 'ac.bellows' ? <Path path={poly([[-TREBLE.z0, TREBLE.y0], [-b.it.z, b.it.y], [-b.ib.z, b.ib.y], [-TREBLE.z0, TREBLE.y1]])} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
       <PlayerInFront pose={pose} hands={false} />
       <AccHandsFront top={top} bottom={bottom} />
       <BassFront top={top} bottom={bottom} hi={hi} part="strap" />
+      <PartMark top={top} bottom={bottom} hi={hi} />
       {sound ? (
         <Group>
           <Path path={arcs} style="stroke" strokeWidth={4} color={AIR} opacity={0.55}>

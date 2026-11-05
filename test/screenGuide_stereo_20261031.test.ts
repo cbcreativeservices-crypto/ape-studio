@@ -151,8 +151,8 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(CFG, /\{ label: 'OFF', value: 0 \},\s*\{ label: '120 Hz', value: 120 \},/);
     assert.match(CFG, /\{ label: 'STEREO', value: 0 \},\s*\{ label: 'MONO CHECK', value: 1 \},/);
     assert.match(FX, /label: 'SOURCE',/);
-    // bezel readouts WIDTH · PAN · FOLD; the FOLD cell shortens 'MONO CHECK' to 'MONO' (shortChoice)
-    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct \},\s*\{ k: 'PAN', paramId: P\.pan \},\s*\{ k: 'FOLD', paramId: P\.monoFold \},\s*\],/);
+    // bezel readouts WIDTH · PAN · BASS · FOLD; the FOLD cell shortens 'MONO CHECK' to 'MONO' (shortChoice)
+    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct \},\s*\{ k: 'PAN', paramId: P\.pan \},\s*\{ k: 'BASS', paramId: P\.bassMonoHz \},\s*\{ k: 'FOLD', paramId: P\.monoFold \},\s*\],/);
     const shortChoice = (label: string) => {
       if (label.length <= 8) return label;
       const parts = label.split(' ');
@@ -161,7 +161,7 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(FX, /if \(label\.length <= 8\) return label;/);
     assert.equal(shortChoice('MONO CHECK'), 'MONO');
     assert.equal(shortChoice('STEREO'), 'STEREO');
-    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN and FOLD \(STEREO, or MONO during a mono check\)/);
+    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN, BASS and FOLD \(STEREO, or MONO in a mono check\)/);
     // the display: the width flavour's stage label, IN/OUT, the L/R legend colours
     assert.match(ANIM, /case 'stereo': return model\.flavor === 'phase' \? 'R: Ø · DLY' : 'M\/S WIDTH';/);
     assert.match(CFG, /kind: 'stereo',\s*flavor: 'width',/);

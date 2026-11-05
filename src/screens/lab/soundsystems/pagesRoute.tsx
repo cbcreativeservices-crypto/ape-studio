@@ -18,7 +18,7 @@ import { bandConsole, hears, lin2db, ROUTING_TOOLS, routingTool, setChannel, set
 import { markRouteDone } from '../../../features/soundsystems/progress';
 import type { DockParam } from '../rack/rackTypes';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, VerdictLine } from './bits';
-import { auxHears, BusBank, ConsolePanel, DcaStrip, mainHears, MatrixStrip, matrixHears, subgroupHears, SubgroupStrip } from './art/ConsolePanel';
+import { auxHears, BusBank, type BusTags, ConsolePanel, DcaStrip, mainHears, MatrixStrip, matrixHears, subgroupHears, SubgroupStrip } from './art/ConsolePanel';
 import { ChannelStrip, PATCH_H, PatchPanel, STRIP_H, type PatchSocket, type StripStation } from './art/diagrams';
 import { dbFader, fmtDb } from './consoleDock';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
@@ -260,6 +260,11 @@ function PageWhichTool({ ctx }: { ctx: PageCtx }) {
 
 const WEDGE_AUXES = ['aux1', 'aux2', 'aux3', 'aux4'] as const;
 
+/** Each stored send's tap on this aux, for its row on the bus meter. */
+function tapTags(cs: ConsoleState, auxId: string): BusTags {
+  return Object.fromEntries(cs.channels.flatMap((c) => (c.sends[auxId] ? [[c.id, c.sends[auxId].tap === 'pre' ? 'PRE' : 'POST']] : [])));
+}
+
 function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
   const [cs, setCs] = usePageMemory<ConsoleState>('console', bandConsole);
   const [chId, setChId] = useState('vox');
@@ -347,7 +352,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
           <BusBank
             w={w}
             h={h}
-            buses={auxes.map((a, i) => ({ id: a, title: `W${i + 1} · ${WEDGE_NAMES[a as keyof typeof WEDGE_NAMES]}`, list: auxHears(cs, a) }))}
+            buses={auxes.map((a, i) => ({ id: a, title: `W${i + 1} · ${WEDGE_NAMES[a as keyof typeof WEDGE_NAMES]}`, list: auxHears(cs, a), tags: tapTags(cs, a) }))}
           />
         ),
         params,
@@ -383,8 +388,10 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
   ];
   const latched = useVisitGoals(ctx, goals);
   const group = cs.subgroups.find((s) => s.id === 'sub-drums')!;
+  // A DCA moves only its members, so with none the fader would move nothing.
+  const dcaLocked = cs.channels.some((c) => c.dca === 'dca-band') ? undefined : 'no channel is on BAND yet. Open CONSOLE and tap a channel’s DCA cell.';
   const params: DockParam[] = [
-    dbFader({ id: 'dca', label: 'BAND DCA', db: dca.levelDb, min: -60, max: 10, onChange: (db) => setCs((s) => setDca(s, 'dca-band', { levelDb: db })), home: 0, level: true, of: 'on the BAND DCA' }),
+    { ...dbFader({ id: 'dca', label: 'BAND DCA', db: dca.levelDb, min: -60, max: 10, onChange: (db) => setCs((s) => setDca(s, 'dca-band', { levelDb: db })), home: 0, level: true, of: 'on the BAND DCA' }), locked: dcaLocked, autoBind: true } as DockParam,
     {
       kind: 'group',
       id: 'console',
@@ -592,6 +599,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
               { id: 'mx-fills', title: 'MX 2 · FRONT FILLS', list: matrixHears(cs, 'mx-fills') },
               { id: 'mx-lobby', title: 'MX 3 · LOBBY', list: matrixHears(cs, 'mx-lobby') },
               { id: 'mx-rec', title: 'MX 4 · RECORDING', list: matrixHears(cs, 'mx-rec') },
+              { id: 'aux7', title: 'AUX 7 · ANNOUNCE', list: auxHears(cs, 'aux7') },
             ]}
           />
         ),

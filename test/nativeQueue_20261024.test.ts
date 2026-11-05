@@ -83,7 +83,9 @@ test('#11 the Stereo lab: stereo sources on v10+, the old list below, a mono com
   const phase = cfg.slice(cfg.indexOf('const phaseConfig: FxLabConfig'), cfg.indexOf('const stereoConfig: FxLabConfig'));
   assert.doesNotMatch(phase, /stereoSources|stereoSpreadRad/);
   const anim = read('src/screens/lab/fxAnim.tsx');
-  assert.match(anim, /const stereoIn = flavor === 'width' && !monoIn;\n\s*const d0 = stereoIn \? STEREO_TEST_LR_RAD : 0;/);
+  // The bass-mono flag sits between these two lines since 2026-11-05 (the
+  // "TONE 440 Hz: NO CHANGE" caption); the L/R offset still follows stereoIn.
+  assert.match(anim, /const stereoIn = flavor === 'width' && !monoIn;\n\s*const bassOn = flavor === 'width' && bassMonoHz > 0;\n\s*const d0 = stereoIn \? STEREO_TEST_LR_RAD : 0;/);
   assert.match(anim, /monoIn=\{model\.monoIn\}/);
 });
 

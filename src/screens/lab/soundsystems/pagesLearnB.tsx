@@ -576,6 +576,11 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
   // cross: top output, innermost riser, highest lane.
   const cabTop = RIG_Y - RIG_CAB / 2 + 6 * (RIG_CAB / 64);
   const portY = (i: number) => RIG_Y - 6 + 4 * (count - 1 - i);
+  // Bridged: channel B's output, joined to channel A's by a link behind the
+  // ports. Below the lowest cable and behind every port, so it crosses none.
+  const portA = portY(0);
+  const portB = portA + 9;
+  const ampWords = bridged ? 'AMP · BRIDGED' : 'AMP · CH A';
   const runs = cabs.map((i) => {
     const k = count - 1 - i;
     const py = portY(i);
@@ -586,9 +591,9 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
     return `M 78 ${py} L ${rx - r} ${py} Q ${rx} ${py} ${rx} ${py - r} L ${rx} ${ly + r} Q ${rx} ${ly} ${rx + r} ${ly} L ${cx - r} ${ly} Q ${cx} ${ly} ${cx} ${ly + r} L ${cx} ${cabTop}`;
   });
   return (
-    <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}; the load is ${verdict}`}>
+    <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on ${bridged ? 'amplifier channels A and B, linked and bridged' : 'one amplifier channel'}; the load is ${verdict}`}>
       <GearInSvg kind="amp" id="lr-amp" x={44} y={RIG_Y} size={RIG_AMP} power={verdict === 'unsafe' ? 'off' : 'on'} />
-      <SvgText x={44} y={RIG_Y + 26} fontSize={8.5} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
+      <SvgText x={44} y={RIG_Y + 26} fontSize={8.5} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? `${ampWords} · PROTECT` : ampWords}</SvgText>
       {cabs.map((i) => {
         const x = 120 + i * 46;
         return (
@@ -601,6 +606,13 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
         );
       })}
       {count > 1 ? <SvgText x={120 + (count - 1) * 23} y={16} fontSize={8.5} fill={INK.metalHi} textAnchor="middle" fontFamily={fonts.oswaldMedium}>IN PARALLEL</SvgText> : null}
+      {bridged ? (
+        <G>
+          <Path d={`M 78 ${portA} L 72 ${portA} L 72 ${portB} L 78 ${portB}`} stroke={colors.cyanBright} strokeWidth={1.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <Circle cx={78} cy={portB} r={2} fill={colors.cyanBright} />
+          <SvgText x={81} y={portB + 3} fontSize={9} fill={colors.cyanBright} fontFamily={fonts.oswaldMedium}>CH B</SvgText>
+        </G>
+      ) : null}
       {cabs.map((i) => (
         <Circle key={`p${i}`} cx={78} cy={portY(i)} r={2} fill={wire} />
       ))}
@@ -700,18 +712,22 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
 const CABINET = { continuous: 400, program: 800, sensitivity: 97 };
 const AMP_MIN_W = 100;
 const AMP_MAX_W = 1600;
+const LISTENER_M = [2, 10, 30];
+const LISTENER_MAX_M = 30;
 
 /** The cabinet's power band — continuous to program — with the chosen
  *  amplifier's mark on it, between the amplifier and the cabinet it drives. */
-function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 'over'; w: number; h: number }) {
+function PowerBand({ amp, match, dist, spl, w, h }: { amp: number; match: 'under' | 'ok' | 'over'; dist: number; spl: number; w: number; h: number }) {
   const band = (x: number) => Math.min(100, Math.max(1, (x / AMP_MAX_W) * 100));
   const tint = match === 'ok' ? colors.green : match === 'under' ? colors.red : colors.gold;
   const glyph = Math.round(Math.min(64, Math.max(36, h * 0.32)));
   // 'ok' reaches a little past the program rating (the limiter allowance in
   // ampMatch); the words must say so, because the drawn band stops at program.
   const justOver = match === 'ok' && amp > CABINET.program;
+  // To scale, from the cabinet at the line's left end.
+  const out = (m: number) => (m / LISTENER_MAX_M) * 100;
   return (
-    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${justOver ? 'just over the band, fine with the limiter set' : match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}`}>
+    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${justOver ? 'just over the band, fine with the limiter set' : match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}. Listener ${dist} metres from the cabinet: ${spl.toFixed(1)} dB SPL`}>
       <View style={styles.bandRow}>
         <View style={styles.bandEnd}>
           <GearGlyph kind="amp" size={glyph} label="Amplifier" legends={false} />
@@ -732,6 +748,25 @@ function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 
         <View style={styles.bandEnd}>
           <GearGlyph kind="passiveSpeaker" size={glyph} label="Cabinet" legends={false} />
           <Text style={styles.bandEndText}>{CABINET.continuous} W cont.</Text>
+        </View>
+      </View>
+      <View style={styles.listenRow}>
+        <View style={styles.listenEnd}>
+          <Text style={styles.bandText}>LISTENER</Text>
+          <Text style={styles.listenSub}>from cabinet</Text>
+        </View>
+        <View style={styles.listenLine}>
+          <View style={styles.listenTrack}>
+            <View style={[styles.listenRun, { width: `${out(dist)}%` }]} />
+          </View>
+          {LISTENER_M.map((m) => (
+            <Text key={m} style={[styles.listenStop, { left: `${out(m)}%` }, m === dist && { color: colors.amber }]}>{m} m</Text>
+          ))}
+          <View testID="ss-listener-mark" style={[styles.listenMark, { left: `${out(dist)}%` }]} />
+        </View>
+        <View style={styles.listenEnd}>
+          <Text style={styles.bandText}>SPL</Text>
+          <Text style={styles.listenSpl}>{spl.toFixed(1)} dB</Text>
         </View>
       </View>
     </View>
@@ -764,7 +799,7 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
       id: 'dist',
       label: 'LISTENER',
       valueLabel: `${dist} m`,
-      options: [2, 10, 30].map((d) => ({ id: `${d}`, label: `${d} m from the cabinet` })),
+      options: LISTENER_M.map((d) => ({ id: `${d}`, label: `${d} m from the cabinet` })),
       selectedId: `${dist}`,
       onSelect: (id) => setDist(Number(id)),
       sticky: true,
@@ -785,7 +820,7 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
           { k: 'PROGRAM', v: `${CABINET.program} W` },
           { k: `SPL @ ${dist} m`, v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
         ],
-        stage: (w, h) => <PowerBand amp={amp} match={match} w={w} h={h} />,
+        stage: (w, h) => <PowerBand amp={amp} match={match} dist={dist} spl={spl} w={w} h={h} />,
         params,
       }}
       caption="Ride AMP across the cabinet’s power band and read which side of it the amplifier lands on. Move the LISTENER and watch the SPL fall with distance."
@@ -888,6 +923,15 @@ const styles = StyleSheet.create({
   bandLabels: { flexDirection: 'row', justifyContent: 'space-between' },
   bandText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1 },
   bandVerdict: { fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8, textAlign: 'center' },
+  listenRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
+  listenEnd: { alignItems: 'center', width: 72 },
+  listenSub: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 10 },
+  listenSpl: { color: colors.amber, fontFamily: fonts.mono, fontSize: 12 },
+  listenLine: { flex: 1, height: 26, marginRight: 12 },
+  listenTrack: { position: 'absolute', top: 4, left: 0, right: 0, height: 2, backgroundColor: '#2a2e37' },
+  listenRun: { height: 2, backgroundColor: colors.amber },
+  listenMark: { position: 'absolute', top: 0, width: 10, height: 10, marginLeft: -5, borderRadius: 5, backgroundColor: colors.amber },
+  listenStop: { position: 'absolute', top: 12, width: 36, marginLeft: -18, textAlign: 'center', color: colors.textMuted, fontFamily: fonts.mono, fontSize: 10 },
   step: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', padding: 10, gap: 6, minHeight: 44 },
   stepOpen: { borderColor: '#2f4a5a', backgroundColor: '#0f1a22' },
   stepKey: { borderColor: 'rgba(255,198,77,.5)' },

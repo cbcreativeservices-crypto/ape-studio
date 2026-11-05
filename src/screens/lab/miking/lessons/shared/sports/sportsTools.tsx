@@ -19,7 +19,7 @@ import type { Prediction } from '../../../engine/model/types.ts';
 import type { MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard } from '../../../engine/kit';
 import { FieldStage } from '../field/FieldStage';
-import { DishRays, DishSection } from './DishArt';
+import { DishRays, DishSection, FocusWindowMark, dishFocusInset } from './DishArt';
 import { BoundarySection, PlantSection } from './BoundaryArt';
 import { AIM_TRIALS, AIM_WORDS, DISHES, DISH_IDS, FOCUS_SLIDE, fmtHz, focusWords, gainOnsetHz, halfWidthAt, spreadAt, type DishId } from './parabolic.ts';
 import { HEIGHTS, PLANT_IDS, PLANT_WORDS, firstNotch, paths, perpendicularNotch, type PlantMount } from './boundary.ts';
@@ -45,7 +45,10 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
   }, [complete, done, onInteractive]);
   const R = halfWidthAt(dish, dish.depth);
   const box = { u0: -260, u1: dish.depth + 640, v0: -R - 120, v1: R + 220 };
-  const words = `${dish.label}, cut along its axis. Sound arriving ${aim === 0 ? 'on the axis' : `${aim}° off the axis`}: the reflections ${meets ? 'meet at the element' : 'miss the element'}. The element ${focus === 0 ? 'at the focus' : `${Math.abs(focus)} mm ${focus > 0 ? 'out of' : 'into'} the bowl from the focus`}. Below about ${fmtHz(onset)} the bowl adds little; low sound reaches the element directly.`;
+  // The reflections meet at the FOCUS: at the element only when it is there.
+  const meetWords = !meets ? 'miss the element' : focus === 0 ? 'meet at the element' : `meet at the focus, ${Math.abs(focus)} mm from the element`;
+  const aimWords = (a: (typeof AIM_TRIALS)[number]) => (a === 0 && focus !== 0 ? `On the axis: the reflected sound still meets at the focus, but the element is ${Math.abs(focus)} mm away from that point.` : AIM_WORDS[a]);
+  const words = `${dish.label}, cut along its axis. Sound arriving ${aim === 0 ? 'on the axis' : `${aim}° off the axis`}: the reflections ${meetWords}. The element ${focus === 0 ? 'at the focus' : `${Math.abs(focus)} mm ${focus > 0 ? 'out of' : 'into'} the bowl from the focus`}. Below about ${fmtHz(onset)} the bowl adds little; low sound reaches the element directly.`;
   return {
     key: 'dish',
     title: 'The dish',
@@ -59,6 +62,7 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
           view="side"
           box={box}
           a11y={words}
+          inset={dishFocusInset(dish, focus, aim)}
           labels={[
             { id: 'f', text: 'FOCUS', u: dish.f, v: -R * 0.42, align: 'center', tone: 'amber', at: { u: dish.f, v: 0 } },
             { id: 'low', text: 'LOW SOUND, DIRECT', short: 'LOW', u: dish.depth + 560, v: -170, align: 'right', tone: 'blue' },
@@ -69,11 +73,12 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
             <>
               <DishSection dish={dish} px={px} elementOffset={focus} wind={wind} />
               <DishRays dish={dish} offDeg={aim} px={px} />
+              <FocusWindowMark dish={dish} px={px} />
             </>
           )}
         </FieldStage>
       ),
-      badge: 'A simplified picture: blue = arriving sound, amber = its reflections · a picture of the bowl’s shape, not a maker’s drawing',
+      badge: 'A simplified picture, not a maker’s drawing · inset = the focus magnified · blue = sound in, amber = reflections',
       bezel: [
         { k: 'DISH', v: id === 'large' ? 'LARGE' : 'SMALL', flex: 0.9 },
         { k: 'HELPS ABOVE', v: `≈ ${fmtHz(onset)}`, flex: 1.2 },
@@ -93,7 +98,7 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
             setAim(a);
             setSeen((s) => ({ ...s, aims: new Set([...s.aims, a]) }));
           },
-          options: AIM_TRIALS.map((a) => ({ id: String(a), label: a === 0 ? 'On the axis' : `${a}° off the axis`, blurb: AIM_WORDS[a] })),
+          options: AIM_TRIALS.map((a) => ({ id: String(a), label: a === 0 ? 'On the axis' : `${a}° off the axis`, blurb: aimWords(a) })),
         },
         {
           kind: 'fader',
@@ -132,7 +137,7 @@ export function useDishStep({ onInteractive, done, prediction }: { onInteractive
         <NowLine text={words} />
         <Card>
           <Point title="WHAT THE BOWL DOES">{`It gathers sound arriving along its axis onto the element — but only where the wavelength is shorter than the dish is wide. Below about ${fmtHz(onset)} (the speed of sound ÷ this dish’s width) it adds little: low sound still reaches the element directly, which is not dish gain.`}</Point>
-          <Point title={aim === 0 ? 'ON THE AXIS' : `${aim}° OFF THE AXIS`}>{AIM_WORDS[aim]}</Point>
+          <Point title={aim === 0 ? 'ON THE AXIS' : `${aim}° OFF THE AXIS`}>{aimWords(aim)}</Point>
           <Point title="THE FOCUS">{focusWords(focus)}</Point>
           {wind ? <Point title="THE WIND COVER">A cover made for the dish and its element: it may change the high frequencies a little, and must never shift the focus or touch the element.</Point> : null}
         </Card>

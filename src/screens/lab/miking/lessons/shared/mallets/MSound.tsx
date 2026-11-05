@@ -33,9 +33,10 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { malletFamOf, malletWordsOf } from './family.ts';
-import { malletGeom } from './malletModel.ts';
-import { BAR_RATIOS, barNodes, barStrikeShare, freqHz, noteName, quarterWaveMm, type Bar } from './malletSpec.ts';
-import { BarShapes, BarStrike, FanValve, TubeAir, type OneBar } from './MalletSound';
+import { fitXform } from '../../../engine/geometry/frame.ts';
+import { malletGeom, type MalletGeom } from './malletModel.ts';
+import { BAR_RATIOS, barNodes, barStrikeShare, freqHz, noteName, quarterWaveMm, type Bar, type Layout } from './malletSpec.ts';
+import { BarShapes, BarStrike, boxOf, FanValve, TubeAir, type OneBar } from './MalletSound';
 
 const STEP_MS = 1300;
 const FAN_RUN_S = 8;
@@ -46,6 +47,44 @@ function useFocusedSafe(): boolean {
   } catch {
     return true; // the web preview harness mounts the page outside a navigator
   }
+}
+
+/** A STRIKE TO SOUND bezel word: with the damper on the bar, nothing rings. */
+export const strikeWord = (word: string, damped: boolean): string => (damped && word === 'RINGING' ? 'DAMPED' : word);
+
+const oneBarOf = (G: MalletGeom, id: string, b: Bar): OneBar => {
+  const L = G.layouts[id];
+  return { bar: b, tube: L.tubes.find((t) => t.key === b.key) ?? null, inst: L.row.inst, damper: !!G.extras[id].damper, caseBox: L.row.stand === 'case' };
+};
+/** The bar the strike and shapes displays use: a middle natural. */
+export const midBarOf = (L: Layout): Bar => L.naturals[Math.floor(L.naturals.length / 2)];
+/** The rack display on a 375-wide phone, in points, and the least move the eye can catch in it. */
+const RACK_W = 354;
+const RACK_H = 290;
+const SEEN_PT = 1;
+/**
+ * What BarStrike and TubeAir put on screen: the parts, and every edge where the
+ * display fits it. Each display frames its own bar, so the bar's place on the
+ * keyboard never shows, and the same note on two setups can land on the same pixels.
+ */
+const drawnOf = (o: OneBar): { parts: string; edges: number[] } => {
+  const { bar: b, tube: t } = o;
+  const { s, ox, oy } = fitXform('side', boxOf(o), RACK_W, RACK_H, 6);
+  const r = t ? (t.kind === 'helmholtz' ? (t.depth ?? 150) / 2 : t.d / 2) : 0;
+  const us = [b.z - b.L / 2, b.z + b.L / 2, ...(t ? [t.z - r, t.z + r] : [])];
+  const vs = [b.yTop, b.yTop + b.t, ...(t ? [t.yTop, t.yBot] : [])];
+  return { parts: JSON.stringify([o.inst, o.damper, o.caseBox, t?.kind ?? null]), edges: [...us.map((u) => u * s + ox), ...vs.map((v) => v * s + oy)] };
+};
+/**
+ * Does choosing another SETUP change this step's picture? `barOf` names the bar
+ * the step draws in a layout. When it does not (a vibraphone's WITH MOTOR and NO
+ * MOTOR share bars and tubes; a marimba's G4 is the same bar and pipe at 5 and at
+ * 4.3 octaves), SETUP stays off the step: words would change while the picture
+ * stood still. The words still follow the setup picked on the parts step.
+ */
+export function setupRedraws(G: MalletGeom, barOf: (L: Layout) => Bar): boolean {
+  const [first, ...rest] = Object.keys(G.layouts).map((id) => drawnOf(oneBarOf(G, id, barOf(G.layouts[id]))));
+  return rest.some((d) => d.parts !== first.parts || d.edges.some((e, i) => Math.abs(e - first.edges[i]) >= SEEN_PT));
 }
 
 const STRIKES = [
@@ -60,13 +99,12 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
   const G = malletGeom(fam);
   const v = G.layouts[variant] ? variant : fam.variants[0].row.id;
   const L = G.layouts[v];
-  const row = L.row;
   const hasDamper = !!G.extras[v].damper;
   const variantLabel = lesson.model.variants.find((x) => x.id === variant)?.label ?? variant.toUpperCase();
 
   /* ── the bar every display uses: a middle natural, with its tube ── */
-  const oneOf = (b: Bar): OneBar => ({ bar: b, tube: L.tubes.find((t) => t.key === b.key) ?? null, inst: row.inst, damper: hasDamper, caseBox: row.stand === 'case' });
-  const midBar = L.naturals[Math.floor(L.naturals.length / 2)];
+  const oneOf = (b: Bar): OneBar => oneBarOf(G, v, b);
+  const midBar = midBarOf(L);
   const mid = useMemo(() => oneOf(midBar), [L]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ── ① – ④ ── */
@@ -212,13 +250,14 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
           },
         ]
       : []),
-    setupParam,
+    ...(setupRedraws(G, midBarOf) ? [setupParam] : []),
   ];
+  const damped = hasDamper && !pedalDown; // the damper is touching the bar
   const strikeBezel: BezelItem[] = [
     { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
     ...W.cells.map((c) => {
       const at = c.byVariant?.[v] ?? c.at;
-      return { k: c.k, v: at[Math.min(at.length - 1, shown - 1)] ?? '—', flex: c.flex ?? 1 };
+      return { k: c.k, v: strikeWord(at[Math.min(at.length - 1, shown - 1)] ?? '—', damped), flex: c.flex ?? 1 };
     }),
   ];
 
@@ -300,7 +339,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       format: () => (Math.abs(airSwing) < 0.05 ? 'the air passing through rest' : `${Math.round(Math.abs(airSwing) * 100)} % of its swing`),
       formatShort: () => `${Math.round(airSwing * 100)} %`,
     },
-    setupParam,
+    ...(setupRedraws(G, (x) => x.bars.find((b) => b.key === barKey) ?? x.bars[0]) ? [setupParam] : []),
   ];
   const tubeBezel: BezelItem[] = [
     { k: 'NOTE', v: noteName(chosen.key), flex: 0.8 },
@@ -352,7 +391,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: (w, h) => <BarStrike w={w} h={h} o={mid} reveal={reveal} shown={shown} damperUp={hasDamper && !pedalDown} accessibilityLabel={`One bar (${noteName(midBar.key)}) and the tube under it, seen from the low end. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />,
+        render: (w, h) => <BarStrike w={w} h={h} o={mid} reveal={reveal} shown={shown} damperUp={damped} accessibilityLabel={`One bar (${noteName(midBar.key)}) and the tube under it, seen from the low end. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}${damped ? ' Pedal up: the damper is on the bar, so the note stops.' : ''}`} />,
         badge: 'The order of events, not their speed · bar motion drawn much larger than it really is · silent',
         bezel: strikeBezel,
         params: strikeParams,

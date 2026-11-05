@@ -112,7 +112,10 @@ const WS_DISTDELAY: Workspace = {
         const t = n(v.dist) / c;
         return [
           { label: 'DELAY', value: t, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
-          { label: 'DELAY (µs)', value: t, quantity: 'time', unit: 'us', chainable: false },
+          // Second view of the row above. No unit in the label: a tap cycles the
+          // unit the value prints, and outUnit is keyed by label, so it must not
+          // repeat the row above either.
+          { label: 'SAME DELAY', value: t, quantity: 'time', unit: 'us', chainable: false },
           { label: 'SPEED OF SOUND USED', value: c, quantity: 'speed', chainable: false },
         ];
       },
@@ -156,7 +159,7 @@ const WS_DISTDELAY: Workspace = {
         const d = c * n(v.delay);
         return [
           { label: 'DISTANCE', value: d, quantity: 'length', meaning: 'length:path' },
-          { label: 'DISTANCE (ft)', value: d, quantity: 'length', unit: 'ft', chainable: false },
+          { label: 'SAME DISTANCE', value: d, quantity: 'length', unit: 'ft', chainable: false },
           { label: 'SPEED OF SOUND USED', value: c, quantity: 'speed', chainable: false },
         ];
       },
@@ -183,7 +186,7 @@ const WS_DISTDELAY: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         return [
           { label: 'TIME', value: t, quantity: 'time', meaning: 'time:delay', unit: 'ms' },
-          { label: 'TIME (µs)', value: t, quantity: 'time', unit: 'us', chainable: false },
+          { label: 'SAME TIME', value: t, quantity: 'time', unit: 'us', chainable: false },
           { label: 'EQUIVALENT DISTANCE IN AIR', value: t * c, quantity: 'length', meaning: 'length:path' },
         ];
       },

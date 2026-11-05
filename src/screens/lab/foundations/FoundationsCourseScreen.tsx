@@ -921,6 +921,9 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
   const predicted = m7Predicted ?? null;
   const setPredicted = (v: 'time' | 'space') => onM7Predict?.(v);
   const beat = !frozen ? 1 : cursor > 0.03 ? 3 : 2;
+  // The cover hides the display these keys drive, so until the learner has
+  // called it they would move nothing anyone can see. (Reads after "— locked:".)
+  const m7Lock = predicted == null ? 'call it on the display first: TIME or SPACE' : undefined;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -928,6 +931,8 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       label: 'PROBE',
       value: cursor,
       onChange: setCursor,
+      locked: m7Lock,
+      autoBind: true, // the lane comes up on PROBE the moment the call is made
       // The readout IS the lesson: the same spot on two rulers. (It was an
       // instruction sentence that collided with its own label at 375 —
       // design+learning pass 2026-08-31; the caption carries the instruction.)
@@ -939,7 +944,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       tint: '#37e05f',
       helpKey: 'domain_link',
     },
-    { kind: 'toggle', id: 'freeze', label: 'FREEZE', value: frozen, onToggle: () => setFrozen((v) => !v), helpKey: 'domain_link' },
+    { kind: 'toggle', id: 'freeze', label: 'FREEZE', value: frozen, onToggle: () => setFrozen((v) => !v), locked: m7Lock, helpKey: 'domain_link' },
     {
       kind: 'options',
       id: 'freq',
@@ -956,6 +961,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
         tone.set({ freqHz: hz });
       },
       sticky: true,
+      locked: m7Lock,
       helpKey: 'domain_link',
     },
     ...(tone.engineReady ? [playKey(tone, () => tone.play(f, -24))] : []),

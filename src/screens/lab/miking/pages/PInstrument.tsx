@@ -35,6 +35,17 @@ import { journeyIntro } from '../engine/journey.ts';
 import type { PageProps } from './pageTypes';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
 
+/** The front head is one tap target with a part id per variant. */
+const oneTarget = (id: string) => (id === 'kick.resoPorted' ? 'kick.reso' : id);
+
+/** How many of the parts on THIS list have been looked at. `seen` outlives a
+ *  variant change, and a tap can land on a part that is drawn but not listed,
+ *  so the size of `seen` could read "8 of 6". */
+export function lookedAtCount(parts: readonly { id: string }[], seen: ReadonlySet<string>): number {
+  const looked = new Set([...seen].map(oneTarget));
+  return parts.filter((p) => looked.has(oneTarget(p.id))).length;
+}
+
 export function PInstrument({ lesson, art, variant, setVariant, hidden, journey }: PageProps) {
   const model = lesson.model;
   const C = copyOf(lesson);
@@ -54,6 +65,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
     setPartId(id);
     setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
+  const lookedAt = lookedAtCount(parts, seen);
   const region = regions.find((r) => r.partId === partId);
   // The front head is one tap target; its part differs by variant.
   const shownPart = partId === 'kick.reso' || partId === 'kick.resoPorted' ? model.parts.find((p) => p.id === (variant === 'ported' ? 'kick.resoPorted' : 'kick.reso')) : model.parts.find((p) => p.id === partId);
@@ -70,7 +82,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
           formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
@@ -151,7 +163,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
         badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
+          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           { k: C.variantKey, v: variantLabel },
         ],
         params,

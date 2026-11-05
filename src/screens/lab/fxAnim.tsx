@@ -157,7 +157,10 @@ export type FxAnimModel =
   // srcIsNoise (2026-10-31): the source is noise. The drawing stays a sine
   // (label only), so the IN note must not call the noise a sine / a tone.
   | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number; srcIsNoise?: boolean }
-  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean; monoIn?: boolean; srcIsNoise?: boolean };
+  // bassMonoHz (2026-11-05): the width lab's BASS-MONO crossover, 0 = off. The
+  // drawn tone is 440 Hz, above any crossover, so the traces cannot change: the
+  // stage names the setting in words instead of pretending a change.
+  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean; monoIn?: boolean; srcIsNoise?: boolean; bassMonoHz?: number };
 
 function stageLabel(model: FxAnimModel): string {
   switch (model.kind) {
@@ -2077,15 +2080,23 @@ function DynamicsFlow({
   }, [thrG, ceilG, mode, inX0, inX1, outX0, outX1, mid, A]);
 
   // What the IN half is: the source as the hero models it (RN text, ≥ 9 pt).
+  // A steady source holds the GR still, so ATK/REL and RLS cannot show on it:
+  // the compressor and limiter notes say TRY CLICK, as Delay and Reverb do.
+  // Kept short enough to stop before the stage bar at phone width. The gate
+  // keeps its own wording (its CLICK question is with the owner).
   const note =
     // ⚠️ "DRUM-HIT MODEL" (gate, limiter): the lab's CLICK is a 5 ms ping
     // (Generator.hpp), so those drawings borrow only its TEMPO — the decaying
     // hit is a model, and the glass says so (audio-expert review 2026-10-16).
     // The compressor draws the ping itself (D41 J4) and names it.
     sigKind === 1
-      ? 'STEADY TONE · −20 dBFS'
+      ? mode === 'gate'
+        ? 'STEADY TONE · −20 dBFS'
+        : 'TONE · TRY CLICK'
       : sigKind === 2
-        ? 'NOISE · PEAKS ≈ −20 dBFS'
+        ? mode === 'gate'
+          ? 'NOISE · PEAKS ≈ −20 dBFS'
+          : 'NOISE · TRY CLICK'
         : ping
           ? `5 ms CLICK · ${Math.round(60000 / periodMs)} BPM`
           : `DRUM-HIT MODEL · ${Math.round(60000 / periodMs)} BPM`;
@@ -2299,12 +2310,15 @@ function StereoFlow({
   monoFold,
   monoIn = false,
   srcIsNoise = false,
+  bassMonoHz = 0,
 }: {
   w: number;
   h: number;
   active: boolean;
   label: string;
   flavor: 'phase' | 'width';
+  /** Width lab's BASS-MONO crossover, Hz; 0 = off. Named, not drawn: see FxAnimModel. */
+  bassMonoHz?: number;
   /** Width lab's MONO comparison source (engine 10): L = R going in. */
   monoIn?: boolean;
   /** Phase lab with PINK NOISE: the drawn tone is one part of the noise
@@ -2332,6 +2346,7 @@ function StereoFlow({
   // The width lab's MONO comparison source (engine 10) is L = R as well —
   // nothing to widen, drawn as it sounds.
   const stereoIn = flavor === 'width' && !monoIn;
+  const bassOn = flavor === 'width' && bassMonoHz > 0;
   const d0 = stereoIn ? STEREO_TEST_LR_RAD : 0;
   const ampK = flavor === 'width' ? STEREO_A : 0.3;
 
@@ -2425,9 +2440,10 @@ function StereoFlow({
       w={w}
       h={h}
       label={label}
-      note={stereoIn ? 'STEREO TEST TONE · L ≠ R' : flavor === 'phase' && srcIsNoise ? 'PART OF THE NOISE · L = R' : 'SAME TONE IN L AND R'}
+      note={bassOn ? 'TONE 440 Hz: NO CHANGE' : stereoIn ? 'STEREO TEST TONE · L ≠ R' : flavor === 'phase' && srcIsNoise ? 'PART OF THE NOISE · L = R' : 'SAME TONE IN L AND R'}
       noteColor={colors.textSub}
       legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
+      overlay={bassOn ? <GlassText x={stageX + 14} y={h - 16} text={`BASS-MONO ${bassMonoHz} Hz`} align="left" w={96} size={10} color={STAGE_GREEN} /> : undefined}
     >
       <Path path={inR} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.4} />
       <Path path={inL} color={flavor === 'width' ? AMBER : DIM} style="stroke" strokeWidth={1.4} opacity={flavor === 'width' ? 0.5 : 0.85} />
@@ -2568,6 +2584,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           monoFold={model.monoFold}
           monoIn={model.monoIn}
           srcIsNoise={model.srcIsNoise}
+          bassMonoHz={model.bassMonoHz}
         />
       );
   }

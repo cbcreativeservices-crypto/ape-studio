@@ -374,7 +374,7 @@ export function BusHears({ title, list, note, running = true }: { title: string;
  * arithmetic BusHears prints, arranged to be read at a glance while the
  * console itself is worked from the dock. Sized by the glass.
  */
-export function BusBank({ buses, w, h, running = true }: { buses: readonly { id: string; title: string; list: Contribution[] }[]; w: number; h: number; running?: boolean }) {
+export function BusBank({ buses, w, h, running = true }: { buses: readonly { id: string; title: string; list: Contribution[]; tags?: BusTags }[]; w: number; h: number; running?: boolean }) {
   // 52 = the column's chrome: a two-line scribble strip, the sum readout,
   // gaps, padding and border — so a column never grows past the glass.
   const meterH = Math.max(56, Math.min(150, h - 52));
@@ -383,22 +383,30 @@ export function BusBank({ buses, w, h, running = true }: { buses: readonly { id:
   return (
     <View style={[styles.bank, { width: w, height: h }]}>
       {buses.map((b) => (
-        <BusColumn key={b.id} title={b.title} list={b.list} width={colW} meterH={meterH} running={running} />
+        <BusColumn key={b.id} title={b.title} list={b.list} tags={b.tags} width={colW} meterH={meterH} running={running} />
       ))}
     </View>
   );
 }
 
-function BusColumn({ title, list, width, meterH, running }: { title: string; list: Contribution[]; width: number; meterH: number; running: boolean }) {
+/** Optional per-row tag, by channel id: where that channel's send taps off. */
+export type BusTags = Readonly<Record<string, 'PRE' | 'POST'>>;
+
+function BusColumn({ title, list, tags, width, meterH, running }: { title: string; list: Contribution[]; tags?: BusTags; width: number; meterH: number; running: boolean }) {
   const heard = hears(list).sort((a, b) => b.gain - a.gain);
+  // A tagged send that reaches nothing yet still gets its row, reading OFF, so
+  // the PRE/POST choice shows before the send is brought up.
+  const armed = tags ? list.filter((c) => tags[c.channelId] && !heard.some((h) => h.channelId === c.channelId)) : [];
+  const shown = [...heard, ...armed];
   const sumDb = lin2db(list.reduce((s, c) => s + c.gain, 0));
   const programme = useProgrammeLevel(running && heard.length > 0);
   const peak = usePeakHold(programme);
   // One contributor row is its name line, the level bar and the gap (~21 pt);
   // when they do not all fit, the last line is kept for "+n more".
-  const ROW = 21;
+  // A tag line under the name adds about 10 pt.
+  const ROW = tags ? 31 : 21;
   const fitAll = Math.floor((meterH + 3) / ROW);
-  const rows = Math.max(1, heard.length > fitAll ? Math.floor((meterH + 3 - 16) / ROW) : fitAll);
+  const rows = Math.max(1, shown.length > fitAll ? Math.floor((meterH + 3 - 16) / ROW) : fitAll);
   return (
     <View style={[styles.bankCol, { width }]} accessible accessibilityLabel={`${title}: ${heard.length ? heard.map((h) => `${h.name} at ${Math.round(lin2db(h.gain))} dB`).join(', ') : 'silent'}`}>
       <View style={styles.bankTape}>
@@ -407,25 +415,28 @@ function BusColumn({ title, list, width, meterH, running }: { title: string; lis
       <View style={styles.bankBody}>
         <BusMeter db={sumDb} programme={programme} peak={peak} height={meterH} />
         <View style={{ flex: 1, gap: 3 }}>
-          {heard.length === 0 ? (
+          {shown.length === 0 ? (
             <Text style={styles.bankEmpty}>silent</Text>
           ) : (
-            heard.slice(0, rows).map((h) => {
+            shown.slice(0, rows).map((h) => {
               const db = lin2db(h.gain);
+              const on = db > -60;
+              const tag = tags?.[h.channelId];
               return (
                 <View key={h.channelId} style={{ gap: 1 }}>
                   <View style={styles.bankRow}>
                     <Text style={styles.bankName} numberOfLines={1}>{h.name}</Text>
-                    <Text style={styles.bankDb}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
+                    <Text style={styles.bankDb}>{on ? `${db > 0 ? '+' : ''}${Math.round(db)}` : 'OFF'}</Text>
                   </View>
                   <View style={styles.bankBar}>
-                    <View style={[styles.busFill, { width: `${Math.max(3, ((db + 60) / 66) * 100)}%`, backgroundColor: levelColorForDb(db, -60, 6) }]} />
+                    {on ? <View style={[styles.busFill, { width: `${Math.max(3, ((db + 60) / 66) * 100)}%`, backgroundColor: levelColorForDb(db, -60, 6) }]} /> : null}
                   </View>
+                  {tag ? <Text style={[styles.bankTag, { color: tag === 'PRE' ? colors.greenBright : colors.amberLabel }]}>{tag}</Text> : null}
                 </View>
               );
             })
           )}
-          {heard.length > rows ? <Text style={styles.bankEmpty}>+{heard.length - rows} more</Text> : null}
+          {shown.length > rows ? <Text style={styles.bankEmpty}>+{shown.length - rows} more</Text> : null}
         </View>
       </View>
       <Text style={styles.bankSum}>{sumDb <= -60 ? 'OFF' : `${sumDb > 0 ? '+' : ''}${Math.round(sumDb)} dB`}</Text>
@@ -617,6 +628,7 @@ const styles = StyleSheet.create({
   bankName: { flex: 1, color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.3 },
   bankDb: { color: colors.textSub, fontFamily: fonts.mono, fontSize: 9 },
   bankBar: { height: 4, borderRadius: 2, backgroundColor: '#050609', overflow: 'hidden' },
+  bankTag: { fontFamily: fonts.mono, fontSize: 9, letterSpacing: 0.5, lineHeight: 11 },
   bankEmpty: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   bankSum: { color: colors.amberLabel, fontFamily: fonts.mono, fontSize: 9.5, textAlign: 'center' },
   stripRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

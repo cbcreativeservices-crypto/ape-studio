@@ -242,6 +242,8 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       // 411 dp phone (Android pass 2026-10-14).
       labelLines: 2,
       value: !!sel?.enabled,
+      // No item, nothing to switch: LOCKED with its reason, like THICK and SIZE.
+      locked: !sel ? NO_ITEM_LOCK : undefined,
       // Flip the LATEST state: a fast double tap read the same render twice
       // and landed one toggle instead of two (bug pass 2026-10-01).
       onToggle: () => {

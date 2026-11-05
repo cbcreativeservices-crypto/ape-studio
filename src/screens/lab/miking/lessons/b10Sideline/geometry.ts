@@ -30,6 +30,9 @@ import { mouthLine, mouthSurface, voiceRegions } from '../shared/voice/voiceZone
 import { talkerIds, talkerVoice } from '../shared/broadcast/talkerModel.ts';
 import { SHOULDER_R, TORSO, earOf, onStander, standSolids, type Stander } from '../shared/broadcast/standing.ts';
 
+/** The crowd is all round the stadium, not on the drawing: the marker frames the whole glass. */
+const AROUND = { u0: -100000, u1: 100000, v0: -100000, v1: 100000 };
+
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 const DD = ill('a drawing default (sideline_interviews/GEOMETRY_PROPOSAL.md §1)');
@@ -103,7 +106,7 @@ const parts: Part[] = [
   { id: 'b10.play', label: 'the play area', short: 'play area', role: 'Behind the touchline: nobody steps into play — or into a medical, official, athlete or security route — for a better sound.', variants: ['sideline'], prov: DD },
   { id: 'b10.exit', label: 'the clear exit route', short: 'exit', role: 'Kept open the whole time: if play, the crowd, the weather or the venue’s people make the spot unsafe, the interview stops or moves.', variants: ['sideline', 'twoMics'], prov: DD },
   { id: 'b10.pa', label: 'the PA', short: 'PA', role: 'High beyond the camera: every open mic hears it. Where it sits against the mic’s pattern matters — a supercardioid has a small lobe behind.', variants: ['sideline'], prov: DD },
-  { id: 'b10.crowd', label: 'the crowd', short: 'crowd', role: 'Around the stadium: a mic close to the speaking mouth keeps the voice ahead of it. The crowd’s own mics are separate.', prov: DD },
+  { id: 'b10.crowd', mark: { side: AROUND, top: AROUND }, label: 'the crowd', short: 'crowd', role: 'Around the stadium: a mic close to the speaking mouth keeps the voice ahead of it. The crowd’s own mics are separate.', prov: DD },
   { id: 'b10.backdrop', label: 'the backdrop', short: 'backdrop', role: 'A post-event mark in front of it: repeatable places for the guest, the camera and a boom.', variants: ['postEvent'], prov: DD },
   { id: 'b10.operator', label: 'the boom operator', short: 'operator', role: 'Outside the frame and inside the approved area, the pole’s sweep clear of people, the camera, cables and exits.', solid: { kind: 'box', ...OPERATOR.box }, variants: ['postEvent'], prov: DD },
   { id: 'clamp', label: 'how far the hand, the clip or the pole reaches', short: 'reach', role: 'A hand holds a mic only an arm’s length from the shoulder; a clip grips where it is; a pole reaches only so far.', listIn: [], prov: ill('an arm’s reach (63 cm), a clip’s (4 cm) and a pole’s (2.5 m): drawing defaults') },

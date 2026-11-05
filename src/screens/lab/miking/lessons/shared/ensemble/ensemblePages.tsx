@@ -45,7 +45,7 @@ import { dist, fmtM, fmtStage, sideWords, v3, type StageView } from './frameS.ts
 import { arrayClear, edges, nearFar, seatingOf, seatsOf, soundPoint, type Seating } from './seating.ts';
 import { ARRAYS, arrayCapsules, dtLR, frontBackDb, insideRecordingAngle, type ArrayParams, type ArrayPlacement, type ArrayPresetId } from './stereoArray.ts';
 import { EnsembleStage, type StageRig, type StageRing, type StageSingle, type StageSpill, type StageZone } from './EnsembleStage';
-import { variantShort } from './ensembleModel.ts';
+import { acrossKey, acrossWords, axesFor, axisForView, blockedWords, settleHeight, sideViewer, stageWho, variantShort, viewForAxis, type Axis } from './ensembleModel.ts';
 import { MIC_TYPES } from '../../../data/micTypes.ts';
 import { nomDb, worstSpill, worstThreeToOne, type Spill } from './stagePlot.ts';
 import type { ArrayMount, EnsembleData, EnsembleLesson, EnsembleSetup } from './ensembleData.ts';
@@ -129,19 +129,26 @@ function devSetupIndex(): number {
   return m ? Math.max(0, Number(m[1]) - 1) : 0;
 }
 
-const VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string }> = {
+type ViewWords = Record<StageView, { label: string; blurb: string; tag: string }>;
+const VIEW_WORDS: ViewWords = {
   plan: { label: 'FROM ABOVE', blurb: 'The seating plan as the conductor sees it: the conductor at the bottom, the ensemble beyond.', tag: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
   section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the conductor’s right: heights, rows and how far forward everything is. A player hidden behind a nearer one is drawn faint, with a dashed outline; the view from above names everyone.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
   front: { label: 'FROM THE HALL', blurb: 'As the audience sees the stage: heights and how wide everything is. A player hidden behind a nearer one is drawn faint, with a dashed outline.', tag: 'FROM THE HALL' },
 };
+/** A group with no conductor, seated for the room: the same drawings, said from the hall. */
+const SEATING_VIEW_WORDS: ViewWords = {
+  plan: { label: 'FROM ABOVE', blurb: 'The seating plan: the hall and the audience at the bottom, the group beyond.', tag: 'FROM ABOVE · THE SEATING PLAN' },
+  section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the audience’s right: heights, rows and how far forward everything is. Anyone hidden behind someone nearer is drawn faint, with a dashed outline; the view from above names everyone.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
+  front: VIEW_WORDS.front,
+};
 /** Group 4: a stage plot's views, said as the audience sees the stage. */
-const PLOT_VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string }> = {
+const PLOT_VIEW_WORDS: ViewWords = {
   plan: { label: 'FROM ABOVE', blurb: 'The stage plot: downstage and the audience at the bottom, the back wall at the top.', tag: 'FROM ABOVE · THE STAGE PLOT' },
   section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the audience’s right: heights, and how far upstage everything is.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
   front: { label: 'FROM THE FRONT', blurb: 'As the audience sees the stage: heights and how wide everything is.', tag: 'FROM THE AUDIENCE' },
 };
-const viewWordsOf = (s: Seating) => (s.viewer === 'audience' ? PLOT_VIEW_WORDS : VIEW_WORDS);
-function viewParam(view: StageView, setView: (v: StageView) => void, W: Record<StageView, { label: string; blurb: string; tag: string }> = VIEW_WORDS, allowed: readonly StageView[] = ['plan', 'section', 'front']): DockParam[] {
+const viewWordsOf = (s: Seating): ViewWords => (s.viewer === 'audience' ? PLOT_VIEW_WORDS : stageWho(s) === 'conductor' ? VIEW_WORDS : SEATING_VIEW_WORDS);
+function viewParam(view: StageView, setView: (v: StageView) => void, W: ViewWords, allowed: readonly StageView[]): DockParam[] {
   // A lesson drawn from one view only (group 2: E06) has no VIEW chooser.
   if (allowed.length < 2) return [];
   return [
@@ -170,7 +177,7 @@ function StageFigure({ lesson, variant }: { lesson: Lesson; variant: string }) {
   const E = ensembleOf(lesson);
   const st = s.stage;
   const aspect = (st.x1 - st.x0 + 1000) / (st.z1 - st.z0 + 1000);
-  return <ExpandableFigure badge={E.meet.figureBadge} title={E.meet.figureTitle} aspect={aspect} render={(w: number, h: number) => <EnsembleStage w={w} h={h} seating={s} view="plan" accessibilityLabel={`${E.meet.figureTitle}, from above as the ${s.viewer === 'audience' ? 'audience' : 'conductor'} sees it: ${s.sections.map((q) => q.label).join(', ')}.`} />} />;
+  return <ExpandableFigure badge={E.meet.figureBadge} title={E.meet.figureTitle} aspect={aspect} render={(w: number, h: number) => <EnsembleStage w={w} h={h} seating={s} view="plan" accessibilityLabel={`${E.meet.figureTitle}, from above as the ${stageWho(s)} sees it: ${s.sections.map((q) => q.label).join(', ')}.`} />} />;
 }
 
 /* ═══════════════════ 1 · MEET IT ═══════════════════ */
@@ -202,7 +209,11 @@ export function EnsembleMeet(p: PageProps) {
 
   // WHERE THE SOUND LEAVES: one family at a time, and the main position's view.
   const families = useMemo(() => [...new Set(secs.map((q) => q.family))], [secs]);
-  const [fam, setFam] = useState<string>('all');
+  const [famPicked, setFam] = useState<string>('all');
+  // One family: its arcs ARE every section's, so there is nothing to choose.
+  // A pick from another seating that has no such family here falls back too.
+  const manyFamilies = families.length > 1;
+  const fam = manyFamilies && families.some((f) => f === famPicked) ? famPicked : 'all';
   const [view2, setView2] = useState<StageView>(() => allowView(lesson, 'section'));
   const [showMain, setShowMain] = useState(true);
   const radiate = useMemo(() => (fam === 'all' ? secs.map((q) => q.id) : secs.filter((q) => q.family === fam).map((q) => q.id)), [fam, secs]);
@@ -225,7 +236,7 @@ export function EnsembleMeet(p: PageProps) {
       kind: 'TRY',
       layout: 'rack',
       rack: {
-        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} hi={secId} onTapSection={pick} accessibilityLabel={`${lesson.model.name}, ${VW[view].tag.toLowerCase()}.${sec ? ` Highlighted: the ${sec.label}, ${centre ? sideWords(centre, 600, s.viewer) : ''}.` : ''}`} />,
+        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} hi={secId} onTapSection={pick} accessibilityLabel={`${lesson.model.name}, ${VW[view].tag.toLowerCase()}.${sec ? ` Highlighted: the ${sec.label}, ${centre ? sideWords(centre, 600, sideViewer(s)) : ''}.` : ''}`} />,
         badge: `${VW[view].tag} · tap a section to name it · amber outline = the one you picked · a typical layout`,
         bezel: [
           { k: 'SECTION', v: secId === 'cond' ? 'CONDUCTOR' : sec ? sec.short : 'TAP ONE', flex: 1.6 },
@@ -261,7 +272,7 @@ export function EnsembleMeet(p: PageProps) {
           <Landing looking={`${VW[view].tag.toLowerCase()} · ${s.label.toLowerCase()}`} prompt={`Tap a section on the stage — or step through SECTION — to see what it is and where it sits.${viewsFor(lesson).length > 1 ? ' Switch VIEW to see heights and rows.' : ''}`} />
           {sec && centre ? (
             <Card>
-              <Point title={`${sec.label.toUpperCase()} · ${players.length} ${(players.length === 1 ? who : `${who}s`).toUpperCase()}`}>{`${sideWords(centre, 600, s.viewer)[0].toUpperCase()}${sideWords(centre, 600, s.viewer).slice(1)}. ${sec.radiates}`}</Point>
+              <Point title={`${sec.label.toUpperCase()} · ${players.length} ${(players.length === 1 ? who : `${who}s`).toUpperCase()}`}>{`${sideWords(centre, 600, sideViewer(s))[0].toUpperCase()}${sideWords(centre, 600, sideViewer(s)).slice(1)}. ${sec.radiates}`}</Point>
             </Card>
           ) : secId === 'cond' ? (
             <Card>
@@ -283,22 +294,22 @@ export function EnsembleMeet(p: PageProps) {
         render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view2} radiate={radiate} rigs={rigM} aims={false} wedge={false} accessibilityLabel={`Where the sound leaves ${famWord(fam).toLowerCase()}: blue arcs from each ${voices ? 'singer’s mouth' : 'player’s instrument'}. ${showMain ? `A ${mainWord} ${fmtM(-M.y)} up: the nearest ${who} is ${fmtM(dNear)} from it, the farthest ${fmtM(dFar)}, about ${bias.toFixed(0)} dB apart by distance alone.` : ''}`} />,
         badge: 'Blue arcs = where the sound leaves, not how loud · a simplified picture: straight paths, no room',
         bezel: [
-          { k: 'FAMILY', v: famWord(fam), flex: 1.4 },
+          ...(manyFamilies ? [{ k: 'FAMILY', v: famWord(fam), flex: 1.4 }] : []),
           { k: 'NEAREST', v: showMain ? fmtM(dNear) : '—', flex: 1 },
           { k: 'FARTHEST', v: showMain ? fmtM(dFar) : '—', flex: 1 },
           { k: 'BY DISTANCE', v: showMain ? `${bias.toFixed(0)} dB` : '—', flex: 1 },
         ],
         params: [
-          { kind: 'options', id: 'fam', label: 'FAMILY', valueLabel: famWord(fam).split(' ')[0], selectedId: fam, onSelect: setFam, sticky: true, options: [{ id: 'all', label: 'EVERY SECTION', blurb: 'All the arcs at once.' }, ...families.map((f) => ({ id: f, label: f.toUpperCase(), blurb: secs.filter((q) => q.family === f).map((q) => q.label).join(', ') }))] },
+          ...(manyFamilies ? [{ kind: 'options' as const, id: 'fam', label: 'FAMILY', valueLabel: famWord(fam).split(' ')[0], selectedId: fam, onSelect: setFam, sticky: true, options: [{ id: 'all', label: 'EVERY SECTION', blurb: 'All the arcs at once.' }, ...families.map((f) => ({ id: f, label: f.toUpperCase(), blurb: secs.filter((q) => q.family === f).map((q) => q.label).join(', ') }))] }] : []),
           { kind: 'toggle', id: 'main', label: `${(MR ? 'MIC' : 'MAIN PAIR')} ${showMain ? 'ON' : 'OFF'}`, value: showMain, onToggle: () => setShowMain((x) => !x) },
           ...viewParam(view2, setView2, VW, viewsFor(lesson)),
           ...variantParam(p),
         ],
-        initialParam: 'fam',
+        initialParam: manyFamilies ? 'fam' : 'main',
       },
       well: (
         <>
-          <Landing looking={voices ? 'Where the sound leaves each singer' : 'Where the sound leaves each instrument'} prompt={voices ? `The arcs show where each singer’s voice leaves: the mouth, ahead. Then read how far the nearest and farthest singers are from the ${mainWord}.` : 'Choose a FAMILY: the arcs show where each instrument’s sound leaves it. Then read how far the nearest and farthest players are from a main pair.'} />
+          <Landing looking={voices ? 'Where the sound leaves each singer' : 'Where the sound leaves each instrument'} prompt={voices ? `The arcs show where each singer’s voice leaves: the mouth, ahead. Then read how far the nearest and farthest singers are from the ${mainWord}.` : `${manyFamilies ? 'Choose a FAMILY: the' : 'The'} arcs show where each instrument’s sound leaves it. Then read how far the nearest and farthest players are from a main pair.`} />
           <Card>
             {(fam === 'all' ? secs : secs.filter((q) => q.family === fam)).slice(0, 6).map((q) => (
               <Point key={q.id} title={q.label.toUpperCase()}>
@@ -546,11 +557,10 @@ export function EnsembleSetups(p: PageProps) {
 }
 
 /* ═══════════════════ 4 · THE PLACEMENT STUDIO (the main array) ═══════════════════ */
-type Axis = 'h' | 'z' | 'x';
 const AXIS: Record<Axis, { label: string; blurb: string; lo: number; hi: number }> = {
   h: { label: 'UP–DOWN', blurb: 'The array’s height above the floor.', lo: 1200, hi: 4500 },
   z: { label: 'TOWARD–AWAY', blurb: 'Closer to the players, or back toward the hall.', lo: -1500, hi: 4000 },
-  x: { label: 'ACROSS', blurb: 'To the conductor’s left or right.', lo: -3000, hi: 3000 },
+  x: { label: 'ACROSS', blurb: 'To the left or right.', lo: -3000, hi: 3000 },
 };
 
 export { arrayClear } from './seating.ts';
@@ -560,12 +570,13 @@ export function EnsemblePlacement(p: PageProps) {
   const E = ensembleOf(lesson);
   const s = seatingFor(lesson, variant);
   // Group 4: a stage plot's MOVE ranges and its words from the audience's side.
-  const who = s.viewer === 'audience' ? 'audience' : 'conductor';
+  const who = stageWho(s);
+  const them = s.sections.every((q) => q.family === 'voices') ? 'singers' : 'players';
   const front = s.viewer === 'audience' ? 'the front line of the band' : 'the front row';
   const AX: Record<Axis, { label: string; blurb: string; lo: number; hi: number }> = {
     h: { ...AXIS.h, ...E.placeAxes?.h },
-    z: { ...AXIS.z, ...E.placeAxes?.z, ...(s.viewer === 'audience' ? { blurb: 'Upstage toward the back wall, or downstage toward the audience.' } : {}) },
-    x: { ...AXIS.x, ...E.placeAxes?.x, ...(s.viewer === 'audience' ? { blurb: 'To the audience’s left or right.' } : {}) },
+    z: { ...AXIS.z, ...E.placeAxes?.z, blurb: s.viewer === 'audience' ? 'Upstage toward the back wall, or downstage toward the audience.' : `Closer to the ${them}, or back toward the hall.` },
+    x: { ...AXIS.x, ...E.placeAxes?.x, blurb: `To the ${who}’s left or right.` },
   };
   const VW = viewWordsOf(s);
   const list = setupsFor(lesson, variant).filter((q) => q.rig);
@@ -603,8 +614,19 @@ export function EnsemblePlacement(p: PageProps) {
   const [params, setParams] = useState<ArrayParams>(start?.rig?.params ?? {});
   const [c, setC] = useState<Vec3>(start?.rig?.place.c ?? v3(0, -3000, 1500));
   const [rest, setRest] = useState<Vec3>(c);
-  const [axis, setAxis] = useState<Axis>('h');
+  // MOVE and VIEW stay paired: whatever is being moved is what the glass shows.
+  const axes = axesFor(viewsFor(lesson));
+  const [axis, setAxis] = useState<Axis>(axes[0]);
   const [view, setView] = useState<StageView>(() => allowView(lesson, 'section'));
+  const pickAxis = (a: Axis) => {
+    setAxis(a);
+    setView((v) => viewForAxis(a, v, viewsFor(lesson)));
+  };
+  const pickView = (v: StageView) => {
+    setView(v);
+    setAxis((a) => axisForView(v, a, axes));
+  };
+  const seesHeight = axes.includes('h');
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
   const [moved, setMoved] = useState(false);
   const [predicted, setPredicted] = useState<string | null>(null);
@@ -683,17 +705,18 @@ export function EnsemblePlacement(p: PageProps) {
       },
       onCommit: (v) => {
         liveStep.current = null;
-        const n = withAxis(cRef.current, Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50);
+        const at = withAxis(cRef.current, Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50);
+        const n = seesHeight ? at : settleHeight(at, zones);
         setC(n);
         setRest(n);
         setMoved(true);
       },
       format: (v) => {
         const x = Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50;
-        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of ${front}` : `${fmtStage(-x)} behind it`) : x === 0 ? 'on the center line' : `${fmtStage(Math.abs(x))} to the ${who}’s ${x < 0 ? 'left' : 'right'}`;
+        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of ${front}` : `${fmtStage(-x)} behind it`) : acrossWords(x);
       },
-      formatShort: () => (axis === 'h' ? fmtM(-c.y) : axis === 'z' ? fmtM(c.z) : fmtM(c.x)),
-      chooser: { title: 'MOVE THE ARRAY', selectedId: axis, onSelect: (id) => setAxis(id as Axis), options: (['h', 'z', 'x'] as const).map((k) => ({ id: k, label: AX[k].label, blurb: AX[k].blurb })) },
+      formatShort: () => (axis === 'h' ? fmtM(-c.y) : axis === 'z' ? fmtM(c.z) : acrossKey(c.x)),
+      chooser: { title: 'MOVE THE ARRAY', selectedId: axis, onSelect: (id) => pickAxis(id as Axis), options: axes.map((k) => ({ id: k, label: AX[k].label, blurb: AX[k].blurb })) },
     },
     ...(geom
       ? [
@@ -711,13 +734,12 @@ export function EnsemblePlacement(p: PageProps) {
       : []),
     { kind: 'options', id: 'array', label: 'ARRAY', valueLabel: def.short, selectedId: preset, onSelect: (id) => pickPreset(id as ArrayPresetId), sticky: true, options: presets.map((id) => ({ id, label: ARRAYS[id].name, blurb: ARRAYS[id].what })) },
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: list.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
-    ...viewParam(view, setView, VW, viewsFor(lesson)),
+    ...viewParam(view, pickView, VW, viewsFor(lesson)),
   ];
   // Group 4: a small group's equal-distance ring and the spread of distances.
   const eqNow = E.ring ? equalRing(s, c) : null;
   // group 2: one mic (a shared vocal mic) has no sides to time: its nearest singer instead.
   const one = def.family === 'single';
-  const them = s.sections.every((q) => q.family === 'voices') ? 'singers' : 'players';
   const dNearNow = dist(c, soundPoint(nf.near));
   const bezel: BezelItem[] = [
     { k: 'HEIGHT', v: fmtM(-c.y), flex: 0.9 },
@@ -778,10 +800,11 @@ export function EnsemblePlacement(p: PageProps) {
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt="MOVE the array (choose UP–DOWN, TOWARD–AWAY or ACROSS) and let go to rest it. Rest its center in two different blue zones. Watch what the readouts do." />
+          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt={`MOVE the array (choose ${axes.slice(0, -1).map((k) => AX[k].label).join(', ')} or ${AX[axes[axes.length - 1]].label}) and let go to rest it. Rest its center in two different blue zones. Watch what the readouts do.`} />
           <NowLine text={nowWords} />
+          {seesHeight ? null : <Body>{`From above, height cannot be seen, so there is no UP–DOWN move. The height comes from the START you choose, and each blue zone includes a height: rest the array in a zone and it takes that zone’s height. HEIGHT reads ${fmtM(-c.y)} now.`}</Body>}
           {eqNow ? <Body>{`Equal distance: the players are ${fmtDist(eqNow.near)} to ${fmtDist(eqNow.far)} from the array’s center — ${fmtDist(eqNow.spread)} apart. The white dotted ring shows it from above.`}</Body> : null}
-          {blocked ? <Note tone="warn">{`It would touch ${blocked}: the players, their bows and the conductor’s space come first. Move it.`}</Note> : null}
+          {blocked ? <Note tone="warn">{`It would touch ${blocked}: ${blockedWords(s)} come first. Move it.`}</Note> : null}
           {zone ? (
             <Card>
               <Point title={`SUGGESTED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>

@@ -6,7 +6,7 @@
  * fxLabConfigs.tsx) with three tabs, so the guides are keyed by the shell's
  * tab id:
  *   explore — the rack: the animated signal-flow display (IN ▸ · M/S WIDTH ·
- *             ▸ OUT), the WIDTH / PAN / FOLD readouts, the WIDTH fader and the
+ *             ▸ OUT), the WIDTH / PAN / BASS / FOLD readouts, the WIDTH fader and the
  *             PAN / BASS / FOLD / SOURCE keys, LAB NOTES (DESIGNED RESPONSE:
  *             goniometer + CORRELATION, THE AUDIO PATH, two CHECK YOURSELF);
  *   learn   — the reading page (the guided lesson 'stereo' in full);
@@ -47,8 +47,8 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
   explore: {
     seeing: [
       'Signal flow: IN ▸, the green M/S WIDTH stage (MID = what L and R share, SIDE = what differs), ▸ OUT. Amber = L, blue = R.',
-      'IN draws a stand-in tone: STEREO TEST TONE · L ≠ R (R lags L); SOURCE MONO: SAME TONE IN L AND R.',
-      'Readouts: WIDTH, PAN and FOLD (STEREO, or MONO during a mono check).',
+      'IN draws a stand-in: STEREO TEST TONE · L ≠ R (R lags L); SOURCE MONO: SAME TONE IN L AND R.',
+      'Readouts: WIDTH, PAN, BASS and FOLD (STEREO, or MONO in a mono check).',
       'LAB NOTES, DESIGNED RESPONSE: a goniometer, a picture of L against R (M up, S across), and a CORRELATION meter, −1 to +1.',
     ],
     control: [

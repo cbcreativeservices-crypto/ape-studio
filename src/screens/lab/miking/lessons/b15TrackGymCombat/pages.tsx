@@ -21,7 +21,7 @@
  * plain words; no sources or badges on screen; FULLY SILENT; nothing moves
  * by itself.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Note } from '../../engine/kit';
@@ -178,13 +178,14 @@ function B15Context(p: PageProps) {
     (id: string) => {
       setGot((prev) => {
         if (prev.has(id)) return prev;
-        const n = new Set([...prev, id]);
-        if (n.has('coverageMap') && n.has('plantCompared') && n.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
-        return n;
+        return new Set([...prev, id]);
       });
     },
-    [interactiveDone, onInteractive],
+    [],
   );
+  useEffect(() => {
+    if (got.has('coverageMap') && got.has('plantCompared') && got.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
+  }, [got, interactiveDone, onInteractive]);
   const coverage = useCoverageStep({ scene: PRACTICE_SMALL, tasks: B15_COVERAGE, mics: [SG_B, SG2_B], onInteractive: note, done: got.has('coverageMap') });
   const plant = usePlantStep({ onInteractive: note, done: got.has('plantCompared') });
   const headroom = useHeadroomStep({ onInteractive: note, done: got.has('headroomChain'), prediction: p.lesson.predictions.context });

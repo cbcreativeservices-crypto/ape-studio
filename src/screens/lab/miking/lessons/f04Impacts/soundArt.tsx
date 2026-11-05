@@ -97,7 +97,9 @@ export function WaterHitTail({ w, h, mode, swing, accessibilityLabel }: { w: num
     { id: 'n', text: hitMode ? 'SHARP · BRIEF · LOUDEST' : 'QUIET · LONG · EASY TO CUT OFF', short: hitMode ? 'SHARP' : 'LONG', u: 0, v: 105, align: 'center', tone: 'blue' },
     { id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: 290, v: -235, align: 'right', tone: 'illustrative' },
   ];
-  const crown = hitMode && t > 0.15 ? Math.min(1, (t - 0.15) * 2) : 0;
+  // The crown grows over the whole travel, from the moment it clears the rim
+  // at the entry (k 0.27: its tips stand 60 above the water) to full at the end.
+  const crown = hitMode && t > 0.15 ? 0.27 + (0.73 * (t - 0.15)) / 0.85 : 0;
   const drips = !hitMode && t > 0.15;
   return (
     <SoundCanvas w={w} h={h} box={PAIR_BOX} label={accessibilityLabel} labels={labels}>

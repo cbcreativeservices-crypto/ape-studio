@@ -43,6 +43,54 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const AMBER = '#ffc64d';
 
+/*
+ * THE CHOSEN PART, ON THE GLASS (owner 2026-11-05: PART moved the words and the
+ * drawing showed nothing). A 4 mm line on a 1070 mm wide drawing is 1.3 px on a
+ * 375 pt phone, and a knob's ring is 12 px across. The marker is therefore sized
+ * in screen pixels at the narrowest stage: a stroke of at least HI_STROKE_PX, a
+ * box at least HI_MIN_PX long and HI_THIN_PX wide, a ring at least HI_MIN_PX
+ * across (the same floors as the shared scene's markOnGlass), a dark edge under
+ * the amber so it reads on the cream scratch plate, and a faint amber fill.
+ */
+export const HI_STROKE_PX = 3;
+export const HI_MIN_PX = 44;
+export const HI_THIN_PX = 16;
+/** The rack's stage on a 375 pt phone (353 × 290 measured), less the 6 px the Explorer's fit keeps clear. */
+export const HI_STAGE = { w: 341, h: 278 } as const;
+export type HiBox = { u0: number; u1: number; v0: number; v1: number };
+export type HiRing = { u: number; v: number; r: number };
+/** What marks a part: boxes, rings, and/or the outline of the drawn shape itself. */
+export type HiMark = { rects: HiBox[]; rings: HiRing[]; outline?: boolean };
+/** mm of a drawing per screen pixel at the narrowest stage. */
+export const hiMm = (box: HiBox) => Math.max((box.u1 - box.u0) / HI_STAGE.w, (box.v1 - box.v0) / HI_STAGE.h);
+/** A box brought up to the floors. `away`: -1 keeps u1 where it is, for a part
+ *  whose neighbour sits on that side. */
+export function hiRect(u0: number, v0: number, u1: number, v1: number, mm: number, away: 0 | -1 = 0): HiBox {
+  // The long side to HI_MIN_PX, the short one to HI_THIN_PX: squaring it up would swallow the neighbours.
+  const along = u1 - u0 >= v1 - v0;
+  const du = Math.max(0, (along ? HI_MIN_PX : HI_THIN_PX) * mm - (u1 - u0));
+  const dv = Math.max(0, (along ? HI_THIN_PX : HI_MIN_PX) * mm - (v1 - v0));
+  return { u0: u0 - (away ? du : du / 2), u1: u1 + (away ? 0 : du / 2), v0: v0 - dv / 2, v1: v1 + dv / 2 };
+}
+/** A mark as one path; `shape` is the drawn outline when the mark asks for it. */
+export function hiPath(m: HiMark, shape?: SkPath | null): SkPath {
+  const p = make();
+  if (m.outline && shape) p.addPath(shape);
+  for (const b of m.rects) p.addRRect(Skia.RRectXY(Skia.XYWHRect(b.u0, b.v0, b.u1 - b.u0, b.v1 - b.v0), 10, 10));
+  for (const r of m.rings) p.addCircle(r.u, r.v, r.r);
+  return p;
+}
+/** The marker itself: `mm` from hiMm of the drawing's box. */
+export function HiMarker({ path, mm, fill = true }: { path: SkPath; mm: number; fill?: boolean }) {
+  return (
+    <Group>
+      {fill ? <Path path={path} color={AMBER} opacity={0.22} /> : null}
+      <Path path={path} style="stroke" strokeWidth={(HI_STROKE_PX + 2) * mm} color={EL.ink} opacity={0.7} />
+      <Path path={path} style="stroke" strokeWidth={HI_STROKE_PX * mm} color={AMBER} />
+    </Group>
+  );
+}
+
 export const EL = {
   body: ['#a0281f', '#5e120e', '#2a0806'],
   bodyBass: ['#35507a', '#1a2a4a', '#0a101e'],
@@ -345,6 +393,7 @@ export function ElectricFront({ s, fretless = false, highlight, pickupLit, px = 
   const lw = (mm: number, minPx: number) => Math.max(mm, minPx * px);
   const bodyCols = bass ? EL.bodyBass : EL.body;
   const hi = highlightPath(s, b, highlight ?? null);
+  const mark = highlight ? electricMark(s, highlight) : null;
   return (
     <Group>
       {/* Drop shadow, then the body: a deep finish lit from the upper left, a rim highlight. */}
@@ -467,7 +516,7 @@ export function ElectricFront({ s, fretless = false, highlight, pickupLit, px = 
       {b.strings.map((st, i) => (
         <Path key={`s${i}`} path={st.path} style="stroke" strokeWidth={st.wound ? (bass ? lw(2.6 - i * 0.3, 0.32) : lw(1.8 - i * 0.2, 0.26)) : lw(1.1, 0.22)} color={st.wound ? EL.wound : EL.string} />
       ))}
-      {hi ? <Path path={hi} style="stroke" strokeWidth={4} color={AMBER} /> : null}
+      {hi ? <HiMarker path={hi} mm={hiMm(electricBox(s))} fill={!mark?.outline} /> : null}
     </Group>
   );
 }
@@ -516,41 +565,47 @@ export function electricHit(s: ElectricSpec, u: number, v: number, tol: number):
   return null;
 }
 
-/** An amber outline round a tapped part. */
-function highlightPath(s: ElectricSpec, b: ElectricBuilt, id: string | null): SkPath | null {
-  if (!id) return null;
+/** How a chosen part is marked, sized for the narrowest stage (see HI_STROKE_PX). */
+export function electricMark(s: ElectricSpec, id: string): HiMark | null {
+  const b = buildElectric(s);
+  const mm = hiMm(electricBox(s));
+  const bass = s.id === 'bass';
   const L = s.scale.mm;
-  const p = make();
-  const box = (u0: number, v0: number, u1: number, v1: number) => p.addRRect(Skia.RRectXY(Skia.XYWHRect(u0, v0, u1 - u0, v1 - v0), 10, 10));
+  const [h0, h1] = s.neckHalfW;
+  const rect = (u0: number, v0: number, u1: number, v1: number, away: 0 | -1 = 0): HiMark => ({ rects: [hiRect(u0, v0, u1, v1, mm, away)], rings: [] });
   switch (id) {
     case 'el.strings':
-      box(-8, -s.neckHalfW[1] - 10, L + 20, s.neckHalfW[1] + 10);
-      break;
-    case 'el.pickups':
-      for (const pk of b.pickups) p.addPath(pk.path);
-      break;
-    case 'el.controls':
-      for (const k of b.knobs) p.addCircle(k.u, k.v, k.r + 6);
-      if (b.selector) p.addCircle(b.selector.u, b.selector.v, 18);
-      break;
+      return rect(-8, -h1 - 10, L + 20, h1 + 10);
+    case 'el.pickups': {
+      // One band round the set: each pickup alone is 6 × 27 px, swallowed by its own outline.
+      const us = s.pickups.map((pk) => L - pk.fromBridge);
+      const half = bass ? 47 : 42;
+      return rect(Math.min(...us) - 28, -half - 20, Math.max(...us) + 28, half + 20);
+    }
+    case 'el.controls': {
+      const pts = [...b.knobs, ...(b.selector ? [{ u: b.selector.u, v: b.selector.v, r: 14 }] : [])];
+      // Grows away from the jack, which sits just past the last knob.
+      return rect(Math.min(...pts.map((k) => k.u - k.r)) - 8, Math.min(...pts.map((k) => k.v - k.r)) - 8, Math.max(...pts.map((k) => k.u + k.r)) + 8, Math.max(...pts.map((k) => k.v + k.r)) + 8, -1);
+    }
     case 'el.jack':
-      p.addCircle(b.jack.u, b.jack.v, 20);
-      break;
+      // The wide ring finds it; the tight one says which thing in the ring it is.
+      return { rects: [], rings: [{ ...b.jack, r: (HI_MIN_PX / 2) * mm }, { ...b.jack, r: 7 * mm }] };
     case 'el.bridge':
-      box(L - 18, -s.neckHalfW[1] * 1.3 - 14, L + (s.id === 'bass' ? 66 : 38), s.neckHalfW[1] * 1.3 + 14);
-      break;
+      return rect(L - 18, -h1 * 1.3 - 14, L + (bass ? 66 : 38), h1 * 1.3 + 14);
     case 'el.neck':
-      box(-4, -s.neckHalfW[1] - 8, s.bodyU0 + 60, s.neckHalfW[1] + 8);
-      break;
+      return rect(-4, -h1 - 8, s.bodyU0 + 60, h1 + 8);
     case 'el.head':
-      p.addPath(b.head);
-      for (const t of b.tuners) p.addCircle(t.u, s.neckHalfW[0] + 30, s.id === 'bass' ? 18 : 12);
-      break;
+      // The headstock with its tuners' buttons, past the bass edge.
+      return rect(-s.headLen - 8, -h0 - (bass ? 34 : 24) - 8, 2, h0 + (bass ? 18 + 33 : 15 + 22) + 8);
     case 'el.body':
-      p.addPath(b.body);
-      break;
+      return { rects: [], rings: [], outline: true };
     default:
       return null;
   }
-  return p;
+}
+
+/** The chosen part's marker as a path. */
+function highlightPath(s: ElectricSpec, b: ElectricBuilt, id: string | null): SkPath | null {
+  const m = id ? electricMark(s, id) : null;
+  return m ? hiPath(m, b.body) : null;
 }

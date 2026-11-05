@@ -6,7 +6,8 @@
  * suggested starting point, on its own rig (it earns nothing), and STEP
  * reads that position piece by piece — where to begin, the head it is
  * measured from, the distance, the line, the aim, the clearance — with the
- * bezel cell for the current piece lit. Then the help FADES:
+ * bezel cell for the current piece lit and the piece marked on the drawing
+ * (workedMark). Then the help FADES:
  * TRY BEFORE TELL (review M1): PLACE comes next, with a prediction; LEARN
  * follows as "what you just did".
  * PLACE (rack): drag the mic in the side or top view (the other is the
@@ -26,8 +27,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { tapsWhenFew } from '../engine/rack/fewStops.ts';
-import type { ViewId } from '../engine/model/types.ts';
+import type { RefLine, Shape3, Vec3, ViewId } from '../engine/model/types.ts';
+import type { ArtLabel, LessonArt } from '../engine/scene/sceneTypes.ts';
 import { zonesAvailable } from '../engine/geometry/zones.ts';
+import { guideFor, type Guide } from '../engine/geometry/guides.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { nowText, readoutWords, sceneLabel } from '../engine/scene/sceneWords.ts';
@@ -44,6 +47,50 @@ import { useSetups } from './PSetups';
 
 /** "{line}" / "{head}" / "{tol}" in a copy line. */
 const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
+
+/** The nearest point of a reference line (or plane) to `p`: where the worked
+ *  example's OFF THE LINE piece is read from. */
+export function lineFoot(l: RefLine, p: Vec3): Vec3 {
+  const d = { x: p.x - l.point.x, y: p.y - l.point.y, z: p.z - l.point.z };
+  const raw = d.x * l.dir.x + d.y * l.dir.y + d.z * l.dir.z;
+  if (l.plane) return { x: p.x - l.dir.x * raw, y: p.y - l.dir.y * raw, z: p.z - l.dir.z * raw };
+  const k = l.segment != null ? Math.max(-l.segment, Math.min(l.segment, raw)) : raw;
+  return { x: l.point.x + l.dir.x * k, y: l.point.y + l.dir.y * k, z: l.point.z + l.dir.z * k };
+}
+
+/** The clearance piece's words: on the middle of a box-shaped keep-out; else on
+ *  the mic, worded for the mic, or the leader says to keep clear OF the mic. */
+const keepOutLabel = (shape: Shape3 | null, mic: Vec3) =>
+  shape && shape.kind === 'box' ? { text: 'KEEP CLEAR', at: { x: (shape.min.x + shape.max.x) / 2, y: (shape.min.y + shape.max.y) / 2, z: (shape.min.z + shape.max.z) / 2 } } : { text: 'KEEP THE MIC CLEAR', at: mic };
+
+export type WorkedMark = { showZones: boolean; guides: boolean; highlight: string | null; pathsFrom: Vec3 | null; label: { text: string; at: Vec3; align?: 'left' | 'center' | 'right' } | null };
+
+/**
+ * What each piece of the worked example marks ON THE DRAWING (the STEP fader's
+ * whole job). Words with a leader and the guides keep their size on the
+ * screen, so they read on a 20 m site as on a snare; `highlight` and
+ * `pathsFrom` are drawn in millimetres, so on a site they are too fine to see
+ * and never the only mark for a piece.
+ */
+export function workedMark(step: number, x: { mic: Vec3; head: string; headPart: string | null; guide: Guide | null; line: { label: string; foot: Vec3 } | null; envelope: { id: string; shape: Shape3 } | null }): WorkedMark {
+  const none: WorkedMark = { showZones: false, guides: false, highlight: null, pathsFrom: null, label: null };
+  // Words that end at a line's far end sit past it, off the arrow.
+  const past = (p: Vec3) => (p.x >= x.mic.x ? 'left' : 'right');
+  switch (step) {
+    case 0:
+      return { ...none, showZones: true, label: { text: 'START HERE', at: x.mic } };
+    case 1:
+      return { ...none, highlight: x.headPart, label: { text: `FROM ${x.head.toUpperCase()}`, at: x.guide?.foot ?? x.mic } };
+    case 2:
+      return { ...none, highlight: x.headPart, guides: true };
+    case 3:
+      return x.line ? { ...none, pathsFrom: x.line.foot, label: { text: `OFF ${x.line.label.toUpperCase()}`, at: x.line.foot } } : { ...none, highlight: x.headPart, guides: true, label: { text: 'NO LINE NAMED', at: x.mic } };
+    case 4:
+      return { ...none, guides: true, pathsFrom: x.guide?.aimEnd ?? null, label: { text: 'THE AIM', at: x.guide?.aimEnd ?? x.mic, align: past(x.guide?.aimEnd ?? x.mic) } };
+    default:
+      return { ...none, highlight: x.envelope?.id ?? null, label: keepOutLabel(x.envelope?.shape ?? null, x.mic) };
+  }
+}
 
 export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden, startFrom, chooseStart }: PageProps) {
   const C = copyOf(lesson);
@@ -127,11 +174,29 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const wk = worked[exStep];
   // The piece being read is marked ON THE DRAWING too (owner, Pixel
   // 2026-10-06: "sliders not working" — this STEP fader only lit a bezel
-  // cell, so the picture never moved): the head it is measured from (2, 3),
-  // the keep-outs the clearance is about (6).
+  // cell, so the picture never moved): every piece, see workedMark.
   const exHeadPart = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.partId ?? null;
-  const exEnvelope = (lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant)) ?? null)?.id ?? null;
-  const exHighlight = exStep === 1 || exStep === 2 ? exHeadPart : exStep === 5 ? exEnvelope : null;
+  const exEnvelope = lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant)) ?? null;
+  const exPose = ex.mics[0].pose;
+  const exSurface = lesson.model.surfaces.find((q) => q.id === exZone.refSurface) ?? null;
+  const exRefLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line) ?? null : null;
+  const exMark = workedMark(exStep, { mic: exPose.p, head: exHead, headPart: exHeadPart, guide: exSurface ? guideFor(exSurface, exPose) : null, line: exRefLine ? { label: exRefLine.label, foot: lineFoot(exRefLine, exPose.p) } : null, envelope: exEnvelope });
+  const exLabel = exMark.label;
+  const exArt = useMemo<LessonArt>(() => {
+    if (!exLabel) return art;
+    const { text, at, align = 'center' } = exLabel;
+    return {
+      ...art,
+      // The mark's words are often on the mic, and the mic is not moving here:
+      // yielding to it would hide them.
+      labelsYieldToMic: false,
+      labels: (v, vr) => {
+        const here = { u: at.x, v: v === 'side' ? at.y : at.z };
+        const mark: ArtLabel & { priority: 1 } = { id: 'worked.mark', text, ...here, point: here, align, priority: 1 };
+        return [mark, ...art.labels(v, vr)];
+      },
+    };
+  }, [art, exLabel?.text, exLabel?.align, exLabel?.at.x, exLabel?.at.y, exLabel?.at.z]); // eslint-disable-line react-hooks/exhaustive-deps
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, stopShortOf(lesson.model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
     tapsWhenFew(
@@ -252,7 +317,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        render: (w, h) => <DualView rig={ex} art={exArt} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} showZones={exMark.showZones} zoneIds={[exZone.id]} guides={exMark.guides} pathsFrom={exMark.pathsFrom} highlight={exMark.highlight} labelFor={(v) => sceneLabel(ex, v, ['A'], `A worked example: the mic is placed for you.${exLabel ? ` Marked on the drawing: ${exLabel.text.toLowerCase()}.` : ''}`)} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,
@@ -260,7 +325,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       },
       well: (
         <>
-          <Landing looking={`Worked example · ${micType(exType).short} · ${variantShort}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Landing looking={`Worked example · ${micType(exType).short} · ${variantShort}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
           <Card>
             <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
           </Card>

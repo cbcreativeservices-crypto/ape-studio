@@ -173,6 +173,10 @@ export function FootstepFloor({ w, h, mode, swing, accessibilityLabel }: { w: nu
   const surface: SurfaceId = hollow ? 'woodPanel' : 'tile';
   const press = Math.max(0, swing);
   const sx = -240;
+  // The weight rolls from the heel to the ball over the whole travel, on any
+  // floor: a solid bed does not move, so the roll shows the weight going on.
+  const weightX = sx + (40 + (BALL_X - 40) * press) * 1.4;
+  const floorY = hollow ? press * 6 : 0;
   const labels: StaticLabel[] = [
     { id: 'step', text: Math.abs(swing) < 0.05 ? 'THE STEP LANDS' : swing > 0 ? 'WEIGHT ON THE STEP' : 'FOOT LIFTING', short: 'STEP', u: -410, v: -310, align: 'left', tone: 'amber' },
     { id: 'under', text: hollow ? 'THE BOARDS FLEX · THE GAP RINGS' : 'A SOLID BED · IT STOPS HERE', short: hollow ? 'GAP RINGS' : 'SOLID', u: 400, v: 170, align: 'right', tone: 'blue' },
@@ -180,14 +184,15 @@ export function FootstepFloor({ w, h, mode, swing, accessibilityLabel }: { w: nu
   ];
   return (
     <SoundCanvas w={w} h={h} box={SOUND_BOX} label={accessibilityLabel} labels={labels}>
-      <Group transform={hollow ? [{ translateY: press * 6 }] : []}>
+      <Group transform={hollow ? [{ translateY: floorY }] : []}>
         <PitSection surface={surface} u0={-700} u1={700} />
       </Group>
-      <Shoe x={sx} y={swing < 0 ? swing * 60 : hollow ? press * 6 : 0} pitch={0} scale={1.4} />
+      <Shoe x={sx} y={swing < 0 ? swing * 60 : floorY} pitch={0} heelLift={press * 14} scale={1.4} />
       {press > 0.05 ? (
         <>
-          <Arrow a={[sx + 160, 20]} b={[sx + 160, hollow ? 70 : 40]} color={AIR} width={4} head={12} dashed opacity={press} />
-          {hollow ? <Radiate c={[sx + 160, 50]} radii={[40, 80, 120]} a0={190} a1={350} opacity={press} /> : null}
+          <ContactMark c={[weightX, floorY]} w={110 + 50 * press} opacity={0.35 + 0.65 * press} />
+          <Arrow a={[weightX, 20]} b={[weightX, hollow ? 70 : 40]} color={AIR} width={4} head={12} dashed opacity={press} />
+          {hollow ? <Radiate c={[weightX, 50]} radii={[40, 80, 120]} a0={190} a1={350} opacity={press} /> : null}
         </>
       ) : null}
     </SoundCanvas>

@@ -561,11 +561,13 @@ export const E16_LESSON: EnsembleLesson = {
     seatings: { rows: 'bb.standard', horseshoe: 'bb.horseshoe' },
     setups: E16_SETUPS,
     placeZones: E16_PLACE,
+    // The horseshoe's zones sit inside the U, up to 3 m behind the front line.
+    placeAxes: { z: { lo: -3200, hi: 4000 } },
     worked: { rows: 'bbPair', horseshoe: 'hsOne' },
     meet: {
       figureTitle: 'A BIG BAND',
-      figureBadge: 'From above, as the conductor faces it · a typical layout, not a particular band',
-      sectionsNote: 'Saxes in front, trombones on a short riser behind them, trumpets at the back on the highest riser, drawn standing; piano, guitar, bass and drums on the conductor’s left. Switch SEATING for the studio horseshoe. Tap a section.',
+      figureBadge: 'From above, as the audience sees it · a typical layout, not a particular band',
+      sectionsNote: 'Saxes in front, trombones on a short riser behind them, trumpets at the back on the highest riser, drawn standing; piano, guitar, bass and drums on the audience’s left. Switch SEATING for the studio horseshoe. Tap a section.',
       soundNote: 'The arcs show WHERE each instrument’s sound leaves it — never how loud. The rows at three distances; the amp, the piano lid and the kit beside them.',
       mainAt: BB_C,
     },

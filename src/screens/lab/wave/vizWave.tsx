@@ -426,6 +426,9 @@ export type RoomSceneProps = {
   /** One sound path to single out (Echo: source → far wall → listener),
    *  drawn as a bright amber polyline over the rays. Scene metres. */
   highlightPath?: { x: number; y: number }[] | null;
+  /** Fade each reflection order's rays and arrows with the energy it still has
+   *  at this frequency (Reflection, Absorption). Default off. */
+  raysShowLoss?: boolean;
   /** Display names for the four walls [top, right, bottom, left], overriding
    *  the material label (Echo's canyon: ROCK, drawn and modelled as concrete).
    *  null = keep the material's own label. */
@@ -1330,6 +1333,32 @@ function segReachesListener(ax: number, ay: number, bx: number, by: number, lx: 
 }
 
 const RAY_COLORS = [WAVE, ACCENT_BLUE, '#4d5d85']; // direct · 1st bounce · 2nd
+
+/** What a ray keeps of its drawn strength at total absorption, so it never vanishes. */
+const RAY_FADE_FLOOR = 0.3;
+
+/**
+ * Energy left in each ray order [direct, 1st, 2nd] at this frequency: the mean
+ * over the order's rays of (1−α) per bounce. `paths` is one list of bounced
+ * materials per ray. An order with no rays reads 1.
+ */
+export function orderEnergies(paths: MaterialKey[][], freq: number): number[] {
+  const sum = [0, 0, 0];
+  const n = [0, 0, 0];
+  for (const walls of paths) {
+    let e = 1;
+    for (const m of walls) e *= Math.max(0, 1 - alphaAt(m, freq));
+    sum[walls.length] += e;
+    n[walls.length]++;
+  }
+  return sum.map((v, i) => (n[i] ? v / n[i] : 1));
+}
+
+/** A ray layer's opacity for the energy it still carries (RoomSceneView raysShowLoss). */
+export function rayOpacity(base: number, energy: number): number {
+  const e = Math.min(1, Math.max(0, energy));
+  return base * (RAY_FADE_FLOOR + (1 - RAY_FADE_FLOOR) * e);
+}
 const ARRIVAL_COLORS = [WAVE, ACCENT_BLUE, '#5a6c94'];
 
 /** One arrival readout: time (geometric) + level relative to the direct (the
@@ -1488,6 +1517,8 @@ export function RoomSceneView(p: RoomSceneProps) {
     const byOrder = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const arrows = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const traces: TraceRay[] = [];
+    /** Materials each drawn ray bounces off, for the order energies (raysShowLoss). */
+    const bouncedOff: MaterialKey[][] = [];
     /**
      * Rays fanning off a diffusing wall, drawn faint and separate from the
      * specular orders.
@@ -1532,6 +1563,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           }
         }
         if (!pts) continue;
+        bouncedOff.push(img.bounces.map((b) => scene.boundary[b]));
         const path = byOrder[order];
         // Does this reflection bounce off the diffusing wall? If so the mirror
         // leg LEAVING that bounce is replaced by a fan: one strong specular ray
@@ -1790,7 +1822,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         }
       }
     }
-    return { byOrder, arrows, traces, scatter };
+    return { byOrder, arrows, traces, scatter, energy: orderEnergies(bouncedOff, freq) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.rays || p.layers.pressure, scatterWall]);
 
@@ -2101,6 +2133,10 @@ export function RoomSceneView(p: RoomSceneProps) {
   const ringGapWide =
     p.layers.pressure && mode !== 'modal' && (speedOfSound(scene.tempC) / Math.max(20, freq)) * geo.pxPerM < 12;
 
+  // Default off: every other room keeps its fixed ray strengths.
+  const rayOp = (base: number, order: number) =>
+    p.raysShowLoss && rays ? rayOpacity(base, rays.energy[order]) : base;
+
   return (
     <View style={{ width: w, height: h }} {...pan.panHandlers}>
       {/* Android gesture nav: a drag that starts at the screen edge must not
@@ -2147,16 +2183,16 @@ export function RoomSceneView(p: RoomSceneProps) {
         {rays && p.layers.rays ? (
           <>
             <GlowStroke path={rays.byOrder[0]} color={RAY_COLORS[0]} width={1.6} opacity={0.85} />
-            <Path path={rays.byOrder[1]} color={RAY_COLORS[1]} style="stroke" strokeWidth={1.3} opacity={0.6} />
-            <Path path={rays.byOrder[2]} color={RAY_COLORS[2]} style="stroke" strokeWidth={1.1} opacity={0.42} />
+            <Path path={rays.byOrder[1]} color={RAY_COLORS[1]} style="stroke" strokeWidth={1.3} opacity={rayOp(0.6, 1)} />
+            <Path path={rays.byOrder[2]} color={RAY_COLORS[2]} style="stroke" strokeWidth={1.1} opacity={rayOp(0.42, 2)} />
             {/* Scattered fan off a diffusing wall — many weak rays where one
                 strong specular ray used to be. Thinner and fainter than any
                 specular order on purpose: the eye should read "broken up", not
                 "more energy". */}
             <Path path={rays.scatter} color={RAY_COLORS[1]} style="stroke" strokeWidth={0.9} opacity={0.5} />
             <Path path={rays.arrows[0]} color={RAY_COLORS[0]} opacity={0.9} />
-            <Path path={rays.arrows[1]} color={RAY_COLORS[1]} opacity={0.65} />
-            <Path path={rays.arrows[2]} color={RAY_COLORS[2]} opacity={0.45} />
+            <Path path={rays.arrows[1]} color={RAY_COLORS[1]} opacity={rayOp(0.65, 1)} />
+            <Path path={rays.arrows[2]} color={RAY_COLORS[2]} opacity={rayOp(0.45, 2)} />
           </>
         ) : null}
         {/* PRESSURE: constant-speed, wavelength-spaced ring trains (worklets;

@@ -24,6 +24,7 @@ import { DualView } from '../../../engine/scene/DualView';
 import { InstrumentFigure } from '../../../engine/scene/InstrumentFigure';
 import { sceneLabel } from '../../../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
+import { lookedAtCount } from '../../../pages/PInstrument';
 import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../engine/journeyKit';
 import { journeyIntro } from '../../../engine/journey.ts';
@@ -56,6 +57,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
   const variantLabel = model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
   const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
   const shownPart = parts.find((p) => p.id === partId);
+  const lookedAt = lookedAtCount(parts, seen);
   const region = model.regions.find((r) => r.partId === partId);
 
   const pick = (id: string) => {
@@ -76,7 +78,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
           formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
@@ -142,7 +144,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
         badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
+          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           { k: C.variantKey, v: variantLabel },
         ],
         params,

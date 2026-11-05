@@ -56,6 +56,7 @@ const RESTRIKE_MS = 150;
 const NYQUIST = 24000; // display Nyquist (48 kHz engine rate)
 
 const CARRIERS = [110, 220, 440] as const;
+const MAX_CARRIER = CARRIERS[CARRIERS.length - 1];
 // Tray blurbs (owner 2026-08-28): the WHOLE FM lesson lives in this choice —
 // integer ratios land the sidebands ON the harmonic series (pitched), while
 // irrational ones (✳) land them BETWEEN it (bells, metal).
@@ -437,14 +438,45 @@ export function FmLabScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PAD = 14;
+const FC_TAG_MIN_X = 20; // half of the "fc 110" tag's width at 11 pt mono
 // Color-key strip inside the glass, under the plot. Two lines (bug hunt
 // 2026-09-30): the key wraps on every phone glass, and at 18 the fixed-height
 // glass clipped line two — "red dashed = ALIASED past Nyquist".
 const LEGEND_H = 36; // two lines of the 11.5-pt key (art grading 2026-10-16: 10.5 read too small)
 
-/** The sideband stick spectrum: |J_k(I)| at fc ± k·fm, k = 0..K where K covers
- *  Carson + 2. Folds (negative frequencies / above-Nyquist) are drawn dashed
- *  at their folded position — honest about aliasing rather than hiding it.
+/** The sticks at this carrier: |J_k(I)| at fc ± k·fm, k = 0..K where K covers
+ *  Carson + 2. Folds (negative frequencies / above-Nyquist) keep their folded
+ *  position and say so, so the graph can draw them dashed. */
+function sidebandSticks(fc: number, fm: number, index: number) {
+  const K = Math.min(24, Math.ceil(index + 2) + 2);
+  // 'reflect' = negative-frequency reflection (normal FM math, harmless);
+  // 'alias' = folded past Nyquist (a genuine digital fault). They were one
+  // red flag before — an alarm state at safe defaults (fix 2026-08-31).
+  const out: { f: number; a: number; fold: 'none' | 'reflect' | 'alias' }[] = [];
+  for (let k = 0; k <= K; k++) {
+    const a = Math.abs(besselJ(k, index));
+    if (a < 0.004) continue;
+    const push = (f: number) => {
+      let fold: 'none' | 'reflect' | 'alias' = 'none';
+      let ff = f;
+      if (ff < 0) {
+        ff = -ff;
+        fold = 'reflect';
+      }
+      if (ff > NYQUIST) {
+        ff = 2 * NYQUIST - ff;
+        fold = 'alias';
+      }
+      if (ff < 0) return; // double-fold — out of teaching range
+      out.push({ f: ff, a, fold });
+    };
+    push(fc + k * fm);
+    if (k > 0) push(fc - k * fm);
+  }
+  return out;
+}
+
+/** The sideband stick spectrum, honest about aliasing rather than hiding it.
  *  Sized by the stage glass (w × h) — never self-measured on the stage. */
 function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index: number; w: number; h: number }) {
   // FULL SCREEN (2026-09-30, D35 "everything zooms"): the graph is authored
@@ -457,38 +489,21 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
   const lw = w / ts; // logical (glass-pixel) width
   const lgh = gh / ts; // logical graph height
 
-  const sticks = useMemo(() => {
-    const K = Math.min(24, Math.ceil(index + 2) + 2);
-    // 'reflect' = negative-frequency reflection (normal FM math, harmless);
-    // 'alias' = folded past Nyquist (a genuine digital fault). They were one
-    // red flag before — an alarm state at safe defaults (fix 2026-08-31).
-    const out: { f: number; a: number; fold: 'none' | 'reflect' | 'alias' }[] = [];
-    for (let k = 0; k <= K; k++) {
-      const a = Math.abs(besselJ(k, index));
-      if (a < 0.004) continue;
-      const push = (f: number) => {
-        let fold: 'none' | 'reflect' | 'alias' = 'none';
-        let ff = f;
-        if (ff < 0) {
-          ff = -ff;
-          fold = 'reflect';
-        }
-        if (ff > NYQUIST) {
-          ff = 2 * NYQUIST - ff;
-          fold = 'alias';
-        }
-        if (ff < 0) return; // double-fold — out of teaching range
-        out.push({ f: ff, a, fold });
-      };
-      push(fc + k * fm);
-      if (k > 0) push(fc - k * fm);
-    }
-    return out;
-  }, [fc, fm, index]);
+  const sticks = useMemo(() => sidebandSticks(fc, fm, index), [fc, fm, index]);
 
   // X range: cover the sticks with margin (log would crowd — linear is the
-  // honest picture of equal ±k·fm spacing, WHICH IS the lesson).
-  const fMax = Math.max(fc * 2, ...sticks.map((s) => s.f)) * 1.15;
+  // honest picture of equal ±k·fm spacing, WHICH IS the lesson). Sized for
+  // this ratio and index at the HIGHEST carrier, never the current one: fm is
+  // fc × ratio, so an axis that followed fc left every stick in the same place
+  // and a two-octave FC move drew nothing. The current sticks still count
+  // because a folded one can land higher than the highest carrier's do.
+  const ratio = fm / fc;
+  const fMax =
+    Math.max(
+      MAX_CARRIER * 2,
+      ...sidebandSticks(MAX_CARRIER, MAX_CARRIER * ratio, index).map((s) => s.f),
+      ...sticks.map((s) => s.f),
+    ) * 1.15;
 
   // A real frequency axis (art grading 2026-10-16: only "fc" and the right
   // end were labelled): round ticks, at most ~5 across the glass, in Hz.
@@ -555,11 +570,14 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
         })}
         {/* fc tag rides above the carrier stick (green, like the stick). */}
         {(() => {
-          // Above the TALLEST thing at fc (a reflected sideband can land there).
-          const top = Math.max(0, ...sticks.filter((s) => Math.abs(s.f - fc) < 1e-6).map((s) => s.a));
+          // A low carrier on a wide axis sits on the left edge; the tag stays whole.
+          const tagX = Math.max(FC_TAG_MIN_X, xOf(fc));
+          // Above the TALLEST thing under the tag: a reflected sideband can land
+          // on fc, and a low carrier's sidebands crowd in beside it.
+          const top = Math.max(0, ...sticks.filter((s) => Math.abs(xOf(s.f) - tagX) <= FC_TAG_MIN_X + 3).map((s) => s.a));
           const y = base - top * ampH - 8;
           return (
-            <SvgText x={xOf(fc)} y={Math.max(12, y)} fill="#5bff85" fontSize={11} fontFamily={fonts.mono} textAnchor="middle">
+            <SvgText x={tagX} y={Math.max(12, y)} fill="#5bff85" fontSize={11} fontFamily={fonts.mono} textAnchor="middle">
               {`fc ${fc}`}
             </SvgText>
           );

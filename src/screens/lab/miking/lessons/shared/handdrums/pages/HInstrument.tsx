@@ -23,6 +23,7 @@ import { Body, Card, Landing, Note, Point } from '../../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../../engine/journeyKit';
 import { journeyIntro } from '../../../../engine/journey.ts';
 import type { PageProps } from '../../../../pages/pageTypes';
+import { lookedAtCount } from '../../../../pages/PInstrument';
 import { handOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
@@ -55,6 +56,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
     setPartId(id);
     setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
+  const lookedAt = lookedAtCount(parts, seen);
   const region = model.regions.find((r) => r.partId === partId);
   const multi = model.variants.length > 1;
   const vLabel = model.variants.find((v) => v.id === variant)?.label ?? '';
@@ -71,7 +73,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shown ? `${shown.label.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shown ? `${shown.label.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
           formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
@@ -141,7 +143,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
         badge: H.partsBadge,
         bezel: [
           { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
+          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           ...(multi ? [{ k: H.variantKey, v: vLabel.split(' ')[0] }] : []),
         ],
         params,

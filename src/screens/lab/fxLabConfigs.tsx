@@ -159,6 +159,12 @@ function eqBandOf(v: Record<number, number>): EqBandSpec {
   };
 }
 
+/** Bands 1–5 off: the EQ audition modules push up to six live bands and a
+ *  reset clears only `enabled`, so without this an audition's bands stay in the
+ *  sound while the curve draws band 0 alone. The screen says the curve is
+ *  exactly the filter (the SignalChain lab's DEFAULTS do the same). */
+const EQ_OTHER_BANDS_OFF = [1, 2, 3, 4, 5].map((b) => ({ paramId: P.eqBand(b, 'type'), value: EQ_BAND_TYPES.off }));
+
 const eqConfig: FxLabConfig = {
   labId: 'eq',
   guide: equalizerScreenGuide,
@@ -171,6 +177,7 @@ const eqConfig: FxLabConfig = {
     'controls — the response curve below is exactly the filter the audio runs through.',
   exploreCaption: 'Pick a filter shape, place it, and watch the curve — then play pink noise through it.',
   sources: [SRC_PINK, srcSine(440), SRC_WHITE],
+  fixed: EQ_OTHER_BANDS_OFF,
   params: [
     {
       // The continuous teaching fader: sweep the bell across the spectrum and
@@ -278,6 +285,27 @@ export const EqLabScreen = () => <FxLabScreen config={eqConfig} />;
 const SEND_RETURN_WET =
   'The usual setting on an aux send/return: the dry signal stays on the channel and the return adds only the effect. Used as an insert, MIX does the blending instead.';
 
+/** dB lost at f by one pass through the delay's in-loop one-pole low-pass.
+ *  fxAnim's onePoleGain, written out here because fxAnim is the Skia-gated
+ *  module: importing it would load Skia for this file too. A test pins the
+ *  two to the same numbers. */
+function onePoleLossDb(fcHz: number, fHz: number): number {
+  const fs = 48000;
+  const c = 1 - Math.exp((-2 * Math.PI * fcHz) / fs);
+  const wv = (2 * Math.PI * fHz) / fs;
+  const a = 1 - c;
+  return -20 * Math.log10(c / Math.hypot(1 - a * Math.cos(wv), a * Math.sin(wv)));
+}
+
+/** DAMP's picture is honest but small (about 1 dB per repeat at the click's
+ *  1 kHz at DARK 2k), so the number is said in words, never exaggerated. The
+ *  first repeat is the raw input; damping acts on every pass after it. */
+function delayDampPhrase(dampHz: number, feedback: number): string {
+  if (dampHz >= 20000) return '';
+  if (feedback <= 0) return ' REPEAT DAMPING needs FEEDBACK: the single repeat is not filtered.';
+  return ` REPEAT DAMPING: each pass after the first loses ${onePoleLossDb(dampHz, 1000).toFixed(1)} dB at 1 kHz, the CLICK’s pitch, and higher frequencies lose more, so it is easier to hear on PINK.`;
+}
+
 // ──────────────────────────────────────────────────────── LAB 2 · Delay ──
 const delayConfig: FxLabConfig = {
   labId: 'delay',
@@ -373,7 +401,8 @@ const delayConfig: FxLabConfig = {
     (v[P.delayFeedback] >= 0.75 ? 'High feedback — a long trail; runaway starts near 100%.'
       : v[P.timeMs] <= 150 ? 'Slapback range (about 60–150 ms) — a quick repeat just behind the source, not tied to the tempo.'
       : v[P.timeMs] < 250 ? 'A short echo — too quick to be a quarter-note at a usual song tempo.'
-      : `That spacing = a quarter-note at ${Math.round(60000 / v[P.timeMs])} BPM — match the delay to the song's tempo and repeats land ON the beat.`),
+      : `That spacing = a quarter-note at ${Math.round(60000 / v[P.timeMs])} BPM — match the delay to the song's tempo and repeats land ON the beat.`) +
+    delayDampPhrase(v[P.dampHz], v[P.delayFeedback]),
   checks: [
     {
       question: 'You raise FEEDBACK from 25% to 75%. What changes?',
@@ -963,6 +992,11 @@ const compConfig: FxLabConfig = {
   exploreCaption:
     'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +
     'through COMP; each CLICK is a 5 ms spike, and the dotted outline is the hit untouched.',
+  // A steady source holds GR still, so the ATK/REL tray has nothing to show.
+  exploreCaptionBySource: {
+    'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. ATK/REL only show clearly on a transient: choose CLICK 120.',
+    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS, with no hits, so GR hovers around one value; the dotted outline is the signal untouched. ATK/REL only show clearly on a transient: choose CLICK 120.',
+  },
   // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
   // threshold produces CONSTANT gain reduction, so the GR meter lights and then
   // sits perfectly still — correct behaviour that reads as a broken meter, and
@@ -1250,6 +1284,12 @@ const limiterConfig: FxLabConfig = {
   exploreCaption:
     'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the ' +
     'signal before the limiter.',
+  // RLS cannot show on a steady source (see `sources` below). The source order
+  // is a recorded decision, so the words say where to go instead.
+  exploreCaptionBySource: {
+    'SINE 440 Hz': 'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. A steady tone holds GR still, so RLS has nothing to recover from: it only shows on a transient. Choose CLICK 120.',
+    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. With no hits, GR hovers around one value, so RLS only shows clearly on a transient: choose CLICK 120.',
+  },
   // SINE stays first: the ratified caption above and this lab's "constant gain
   // reduction" lesson both depend on a steady tone, and CEILING is expressible
   // on it. But RELEASE is NOT — a steady tone holds the peak follower at a
@@ -1578,6 +1618,20 @@ const phaseConfig: FxLabConfig = {
 };
 export const PhaseLabScreen = () => <FxLabScreen config={phaseConfig} />;
 
+/** The Stereo Imaging caption's second half: what BASS-MONO really does (the
+ *  engine high-passes the SIDE at the crossover, so only content below it
+ *  changes, and only while a SIDE exists), then PAN (LissajousGraph takes no
+ *  pan: it draws the width stage alone). Empty when both are at rest. */
+function stereoCaptionExtras(v: Record<number, number>): string {
+  const bass = !(v[P.bassMonoHz] > 0)
+    ? ''
+    : v[P.monoFold] > 0.5 || v[P.widthPct] === 0
+      ? ' BASS-MONO changes nothing here: the SIDE is already gone.'
+      : ` BASS-MONO ${v[P.bassMonoHz]} Hz: only content below ${v[P.bassMonoHz]} Hz changes, so nothing changes on the 440 Hz tone. Use PINK NOISE · STEREO on headphones; a phone speaker will not reproduce it.`;
+  const pan = v[P.pan] !== 0 ? ' The goniometer above draws the width before the pan; the stage shows PAN.' : '';
+  return bass + pan;
+}
+
 // ────────────────────────────────────────────────────── LAB 15 · Stereo ──
 const stereoConfig: FxLabConfig = {
   labId: 'stereo',
@@ -1649,6 +1703,7 @@ const stereoConfig: FxLabConfig = {
   bezel: [
     { k: 'WIDTH', paramId: P.widthPct },
     { k: 'PAN', paramId: P.pan },
+    { k: 'BASS', paramId: P.bassMonoHz },
     { k: 'FOLD', paramId: P.monoFold },
   ],
   // The MONO comparison source draws as it sounds: L = R, a vertical line at
@@ -1665,6 +1720,7 @@ const stereoConfig: FxLabConfig = {
     delayRms: 0,
     monoFold: v[P.monoFold] > 0.5,
     monoIn: src?.monoCompare === true,
+    bassMonoHz: v[P.bassMonoHz],
   }),
   heroBadge: 'GONIOMETER + CORRELATION — 440 Hz STEREO TEST TONE (model)',
   // Owner 2026-10-24: with PINK · MONO selected these hold only for the stereo
@@ -1672,13 +1728,13 @@ const stereoConfig: FxLabConfig = {
   // under MONO the goniometer stays a vertical line at every width).
   monoCompareHides: { badge: true, caption: (v) => v[P.monoFold] <= 0.5 && v[P.widthPct] > 100, wrongHintChecks: [0, 1] },
   heroCaption: (v) =>
-    v[P.monoFold] > 0.5
+    (v[P.monoFold] > 0.5
       ? 'MONO CHECK: L and R are added, so the SIDE cancels and only the MID is heard. The goniometer above still draws the signal before the fold.'
       : v[P.widthPct] > 100
         ? 'Past 100% the SIDE is boosted above its natural balance with the MID — huge on headphones, hollow in mono. Watch the correlation.'
         : v[P.widthPct] === 0
           ? 'Width 0 = pure MID: a vertical line, perfectly mono-safe.'
-          : 'The classic trade: width vs mono safety.',
+          : 'The classic trade: width vs mono safety.') + stereoCaptionExtras(v),
   checks: [
     {
       question: 'The correlation meter is pinned near −1. What happens on a mono system?',

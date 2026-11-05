@@ -26,6 +26,9 @@ import { BRASS, STEEL } from '../shared/metal/metalArt';
 import { ampExtras, ampLessonArt } from '../shared/speakers/ampArt';
 import { CabFront } from '../shared/speakers/SpeakerArt';
 import { cabFrontHit, frontBox } from '../shared/speakers/cabLabels.ts';
+import { cabDraw, frontDrivers } from '../shared/speakers/cabGeometry.ts';
+import { comboParts } from '../shared/speakers/ampModel.ts';
+import { SPEAKER_12 } from '../shared/speakers/speakerModel.ts';
 import { armPath, FIGURE_SKIN, headProfile, PlayerBehind } from '../shared/players/PlayerFigure';
 import type { HandView, V3 } from '../shared/players/handModel.ts';
 import { hmHands, type PosedArm } from '../shared/freereed/freeReedHands.ts';
@@ -38,6 +41,8 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const pt = (u: number, v: number): Pt => ({ u, v });
 const HIGHLIGHT = '#ffc64d';
+/** A marker's line on the MEET page's close-up: 3 pt on a 375 pt phone. */
+const MARK_W = 6.5;
 const CHROME = ['#ffffff', '#dfe4ec', '#9aa3b1', '#5d6572', '#c9d0da'];
 const COMB = ['#6b4a2c', '#4a321c', '#2c1d10'];
 const AIR = '#9fd4ff';
@@ -197,7 +202,7 @@ export function HandsProfile({ at, state, hi = false, showHarp = true }: { at: P
       {showHarp ? <HarpProfile u={at.u} v={at.v} /> : null}
       <Hand3Art sk={h.L.sk} view={view} fore={angleIn(view, h.L)} cut={MID_CUT} part="front" far />
       <Hand3Art sk={h.R.sk} view={view} fore={angleIn(view, h.R)} />
-      {hi ? <Path path={rr(at.u - 40, at.v - 110, at.u + 170, at.v + 150, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
+      {hi ? <Path path={rr(at.u - 40, at.v - 110, at.u + 170, at.v + 150, 30)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
@@ -517,7 +522,7 @@ function Layer({ i, hi }: { i: number; hi: string | null }): ReactElement {
       <Path path={topFace} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.7} />
       <Path path={front} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.8} />
       <Path path={endFace} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.6} />
-      {on ? <Path path={rr(b.u0 - 8, b.v0 + b.dy - 8, b.u1 + b.dx + 8, b.v1 + 8, 6)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
+      {on ? <Path path={rr(b.u0 - 8, b.v0 + b.dy - 8, b.u1 + b.dx + 8, b.v1 + 8, 6)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
@@ -527,6 +532,9 @@ const CLOSE = { u: 500, v: 212 };
 const CROP = { u0: 284, u1: 690, v0: 34, v1: 412, r: 18 };
 const MEET_BOX = { u0: 0, u1: 700, v0: 0, v1: 420 };
 const CROP_PATH = rr(CROP.u0, CROP.v0, CROP.u1, CROP.v1, CROP.r);
+/** HARMONICA in the close-up: it is smaller than a fingertip on a phone, so a
+ *  box at least 44 pt each way round it, and the instrument itself tinted. */
+export const HARP_MARK = { u0: CLOSE.u + HD / 2 - 45, u1: CLOSE.u + HD / 2 + 45, v0: CLOSE.v - 45, v1: CLOSE.v + 45, w: MARK_W };
 
 function MeetHarmonica({ hi }: { hi: string | null }): ReactElement {
   return (
@@ -538,8 +546,13 @@ function MeetHarmonica({ hi }: { hi: string | null }): ReactElement {
       <Path path={CROP_PATH} color="#1d1f25" />
       <PlayerClose at={CLOSE} state="half" crop={CROP_PATH} hi={hi} />
       <Path path={CROP_PATH} style="stroke" strokeWidth={2} color="#3a3d47" />
-      {hi === 'hm.harp' ? <Path path={rr(CLOSE.u - 8, CLOSE.v - 22, CLOSE.u + HD + 9, CLOSE.v + 22, 5)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
-      {hi === 'hm.holes' ? <Path path={rr(EX.u - 6, layerBox(2).v0 + layerBox(2).dy - 6, EX.u + HL * SCALE + layerBox(2).dx + 6, layerBox(2).v1 + 6, 4)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
+      {hi === 'hm.harp' ? (
+        <Group>
+          <Path path={rr(CLOSE.u - 1, CLOSE.v - HH / 2 - 1, CLOSE.u + HD + 2, CLOSE.v + HH / 2 + 1, 3)} color={HIGHLIGHT} opacity={0.55} />
+          <Path path={rr(HARP_MARK.u0, HARP_MARK.v0, HARP_MARK.u1, HARP_MARK.v1, 8)} style="stroke" strokeWidth={HARP_MARK.w} color={HIGHLIGHT} />
+        </Group>
+      ) : null}
+      {hi === 'hm.holes' ? <Path path={rr(EX.u - 6, layerBox(2).v0 + layerBox(2).dy - 6, EX.u + HL * SCALE + layerBox(2).dx + 6, layerBox(2).v1 + 6, 4)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
@@ -570,6 +583,82 @@ function meetHit(u: number, v: number, tol: number): string | null {
 
 const AMP_EX = (hi: string | null) => ampExtras('combo', hi);
 
+/**
+ * The harp amp's parts on the front view. Every part the PATH = AMP page lists
+ * has its mark here (the shared amp art marks only the control panel, and only
+ * thinly). A DASHED mark is a part behind what you see: the magnet behind the
+ * cone, the chassis behind the panel, the open back behind the whole front.
+ * mm in the view (u = z, v = y); 0.44 pt per mm on a 375 pt phone, so a line
+ * of 7 mm is 3 pt and the smallest ring, the dust cap's, is 50 pt across.
+ */
+type Box = { u0: number; v0: number; u1: number; v1: number };
+export type AmpMark =
+  | ({ kind: 'box'; veil?: boolean; dash?: boolean } & Box)
+  | { kind: 'ring'; r: number; w: number; dash?: boolean; fill?: number; clip?: Box; opacity?: number };
+const AMP_W = 7;
+export function ampFrontMark(id: string): AmpMark | null {
+  const { c, panel, chassis } = comboParts();
+  const P = c.panel;
+  const d = frontDrivers(cabDraw('combo12', 'closed')).find((q) => q.active)!;
+  const opening = { u0: c.box.z0 + P, v0: panel.y1 + 6, u1: c.box.z1 - P, v1: c.box.y1 - P };
+  switch (id) {
+    case 'spk.cabinet':
+      return { kind: 'box', u0: c.box.z0 - 6, v0: c.box.y0 - 6, u1: c.box.z1 + 6, v1: c.box.y1 + 6 };
+    case 'spk.grille':
+      return { kind: 'box', ...opening, veil: true };
+    case 'spk.baffle': {
+      // The board round the speaker, clear of its cut-out, out to the corners.
+      const R = Math.hypot(opening.u1 - opening.u0, opening.v1 - opening.v0);
+      return { kind: 'ring', r: (d.rCut + R) / 2, w: R - d.rCut, clip: opening, opacity: 0.35 };
+    }
+    case 'spk.cone':
+      return { kind: 'ring', r: (d.rDust + d.rSurroundIn) / 2, w: d.rSurroundIn - d.rDust, opacity: 0.5 };
+    case 'spk.dust':
+      return { kind: 'ring', r: d.rDust + AMP_W / 2, w: AMP_W, fill: d.rDust };
+    case 'spk.surround':
+      return { kind: 'ring', r: (d.rSurroundIn + d.rCut) / 2, w: d.rCut - d.rSurroundIn };
+    case 'spk.frame':
+      return { kind: 'ring', r: (d.rCut + d.rFrame) / 2, w: d.rFrame - d.rCut };
+    case 'spk.magnet':
+      return { kind: 'ring', r: SPEAKER_12.magnetD.mm / 2, w: AMP_W, dash: true };
+    case 'spk.openBack':
+      return { kind: 'box', ...opening, dash: true };
+    case 'amp.panel':
+      return { kind: 'box', u0: panel.z0 + 2, v0: panel.y0, u1: panel.z1 - 2, v1: panel.y1 + 2 };
+    case 'amp.chassis':
+      return { kind: 'box', u0: chassis.z0, v0: chassis.y0, u1: chassis.z1, v1: chassis.y1 + 70, dash: true };
+    default:
+      return null;
+  }
+}
+
+function AmpPartMark({ id }: { id: string | null }): ReactElement | null {
+  const m = id ? ampFrontMark(id) : null;
+  if (!m) return null;
+  const dash = m.dash ? <DashPathEffect intervals={[18, 11]} /> : null;
+  if (m.kind === 'box') {
+    const box = rr(m.u0, m.v0, m.u1, m.v1, 8);
+    return (
+      <Group>
+        {m.veil ? <Path path={box} color={HIGHLIGHT} opacity={0.3} /> : null}
+        <Path path={box} style="stroke" strokeWidth={AMP_W} color={HIGHLIGHT}>
+          {dash}
+        </Path>
+      </Group>
+    );
+  }
+  const d = frontDrivers(cabDraw('combo12', 'closed')).find((q) => q.active)!;
+  const ring = (
+    <Group>
+      {m.fill ? <Circle cx={d.u} cy={d.v} r={m.fill} color={HIGHLIGHT} opacity={0.45} /> : null}
+      <Circle cx={d.u} cy={d.v} r={m.r} style="stroke" strokeWidth={m.w} color={HIGHLIGHT} opacity={m.opacity ?? 1}>
+        {dash}
+      </Circle>
+    </Group>
+  );
+  return m.clip ? <Group clip={rr(m.clip.u0, m.clip.v0, m.clip.u1, m.clip.v1, 0)}>{ring}</Group> : ring;
+}
+
 export const HARP_FRONT: FrontArt = {
   box: (v) => (v === 'amp' ? (() => { const b = frontBox('combo12'); return { ...b, v0: b.v0 - 40 }; })() : MEET_BOX),
   Art: ({ variant, highlight }) =>
@@ -577,6 +666,7 @@ export const HARP_FRONT: FrontArt = {
       <Group>
         <CabFront kind="combo12" mode="baffle" spot={null} />
         {AMP_EX(highlight).render?.('front') ?? null}
+        <AmpPartMark id={highlight} />
       </Group>
     ) : (
       <MeetHarmonica hi={highlight} />

@@ -24,7 +24,7 @@
  */
 import type { DocumentedZone, Envelope, InstrumentModel, MicPose, Part, Provenance, ReferenceSurface, Vec3, ViewBox } from '../../../engine/model/types.ts';
 import { sectorPolys } from '../handGeom.ts';
-import { add, aimOf, mul, planDir, sub, unit, v3 } from './frameS.ts';
+import { add, aimOf, fmtStage, mul, planDir, sub, unit, v3, type StageView } from './frameS.ts';
 import { headTop, isVoice, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
 import { voiceSolids } from './voiceGroup.ts';
 import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
@@ -38,6 +38,55 @@ export function variantShort(modelId: string, variantId: string, label: string):
   return SHORTS.get(`${modelId}|${variantId}`) ?? label.split(' ')[0];
 }
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
+
+/* ── who a stage is said for (G1-S3, 2026-11-05): one answer for every caption,
+ *  view tag and left/right word. A conductor only where the seating has a
+ *  podium; otherwise the audience, whose left and right are the same sides. ── */
+type Speaker = Pick<Seating, 'podium' | 'viewer'>;
+export const stageWho = (s: Speaker): 'conductor' | 'audience' => (s.podium && s.viewer !== 'audience' ? 'conductor' : 'audience');
+/** frameS.sideWords' viewer for this seating. */
+export const sideViewer = (s: Speaker): 'audience' | undefined => (stageWho(s) === 'audience' ? 'audience' : undefined);
+/** The engine views' tags for this seating (the pages' view words say the same). */
+export function stageTags(s: Speaker): { side: string; top: string } {
+  if (s.viewer === 'audience') return { side: 'FROM THE AUDIENCE · FRONT', top: 'FROM ABOVE · THE STAGE PLOT' };
+  return { side: 'FROM THE HALL · FRONT', top: s.podium ? 'FROM ABOVE · THE CONDUCTOR’S VIEW' : 'FROM ABOVE · THE SEATING PLAN' };
+}
+
+/* ── the Placement Studio's MOVE (G1-S2, 2026-11-05): an axis only counts if the
+ *  picture on the glass can show it. ── */
+export type Axis = 'h' | 'z' | 'x';
+/** The stage views that draw each axis, the one to open first in front. */
+const AXIS_VIEWS: Record<Axis, readonly StageView[]> = { h: ['section', 'front'], z: ['section', 'plan'], x: ['plan', 'front'] };
+/** The axes a lesson's views can show: a lesson drawn from above has no UP–DOWN. */
+export const axesFor = (views: readonly StageView[]): Axis[] => (['h', 'z', 'x'] as const).filter((a) => AXIS_VIEWS[a].some((v) => views.includes(v)));
+/** The view to be in after picking an axis: this one if it shows the axis. */
+export const viewForAxis = (a: Axis, view: StageView, views: readonly StageView[]): StageView => (AXIS_VIEWS[a].includes(view) ? view : (AXIS_VIEWS[a].find((v) => views.includes(v)) ?? view));
+/** The axis to be on after picking a view: this one if the view shows it. */
+export const axisForView = (view: StageView, a: Axis, axes: readonly Axis[]): Axis => (AXIS_VIEWS[a].includes(view) ? a : (axes.find((q) => AXIS_VIEWS[q].includes(view)) ?? a));
+/** ACROSS on the dock key: the side first, so it can never read as a bare distance. */
+export const acrossKey = (x: number): string => (Math.abs(x) < 50 ? 'CENTER' : `${x < 0 ? 'L' : 'R'} ${(Math.abs(x) / 1000).toFixed(1)} m`);
+/** ACROSS on the lane's caption: the side first, short enough to fit a 375-wide lane. */
+export const acrossWords = (x: number): string => (Math.abs(x) < 50 ? 'on the center line' : `${x < 0 ? 'Left' : 'Right'} ${fmtStage(Math.abs(x))} of center`);
+/** With no view of height, a zone's height comes with the zone: the array
+ *  rests at the nearest height that zone allows (x and z decide the zone). */
+export function settleHeight(c: Vec3, zones: readonly { box: { min: Vec3; max: Vec3 } }[]): Vec3 {
+  const z = zones.find((q) => c.x >= q.box.min.x && c.x <= q.box.max.x && c.z >= q.box.min.z && c.z <= q.box.max.z);
+  return z ? v3(c.x, Math.max(z.box.min.y, Math.min(z.box.max.y, c.y)), c.z) : c;
+}
+
+/** Bowed strings. A double bass alone (jazz, a trio) is plucked here; among
+ *  the orchestra's strings the violins, violas and cellos already say so. */
+const BOWED = new Set<string>(['violin', 'viola', 'cello']);
+/** What a blocked array must keep clear of, from what is on this stage. */
+export function blockedWords(s: Pick<Seating, 'seats' | 'podium'>): string {
+  const players = s.seats.filter((q) => q.kind !== 'conductor');
+  const voices = players.filter((q) => isVoice(q.kind)).length;
+  const things = [voices === players.length ? 'the singers' : voices ? 'the singers and players' : 'the players'];
+  if (players.some((q) => BOWED.has(q.kind))) things.push('their bows');
+  if (s.podium) things.push('the conductor’s space');
+  const last = things.pop()!;
+  return things.length ? `${things.join(', ')} and ${last}` : last;
+}
 
 /** Large instruments drawn in front of their player (SeatingArt.tsx): their
  *  plan box in the player's frame (width across, from f0 to f1 mm ahead) and
@@ -170,8 +219,9 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
   ];
   const views = o.views ?? stageViews(o.variants.map((v) => v.seating));
   for (const v of o.variants) if (v.short) SHORTS.set(`${o.id}|${v.id}`, v.short.toUpperCase());
-  // Group 4: a stage plot says left and right as the audience sees it.
-  const who = first.seating.viewer === 'audience' ? 'audience' : 'conductor';
+  // One model, one set of words: a conductor only if every seating has one.
+  const said = o.variants.find((v) => stageWho(v.seating) === 'audience')?.seating ?? first.seating;
+  const who = stageWho(said);
   return {
     id: o.id,
     name: o.name,
@@ -184,7 +234,7 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
     defaultVariant: first.id,
     views,
     ...(o.viewsByVariant ? { viewsByVariant: o.viewsByVariant } : {}),
-    viewTags: who === 'audience' ? { side: 'FROM THE AUDIENCE · FRONT', top: 'FROM ABOVE · THE STAGE PLOT' } : { side: 'FROM THE HALL · FRONT', top: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
+    viewTags: stageTags(said),
     // The authored boxes ARE the stage (stageViews): a scene with no mic
     // keeps them, so the suggested starting points drawn round the
     // players always sit on the glass.

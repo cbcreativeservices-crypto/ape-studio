@@ -39,7 +39,7 @@ import type { MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { combDb, COMB_FLOOR_DB } from '../../../engine/physics/twoMic.ts';
-import { FieldStage, type FieldInset } from '../field/FieldStage';
+import { Dim, FieldStage, type FieldInset } from '../field/FieldStage';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
 import { ShotgunArt } from '../fieldmics/FieldMicArt';
@@ -79,6 +79,7 @@ import { HeadroomDisplay } from './HeadroomArt';
 import { sportPlan, type SportId } from './sportPlans.ts';
 import type { SafetyRow } from './safety.ts';
 import { PRACTICE_RULES } from './safety.ts';
+import { PF_ARC } from './practiceScenes.ts';
 
 export const AMBER = '#ffc64d';
 export const BLUE = '#8fbcff';
@@ -675,9 +676,77 @@ export function inPlanZone(z: PlanZone, kind: PlanMicKind, at: P2, h: number, ai
   return offAxisDeg(at, aimDeg, t.p) <= z.tol + 1e-9;
 }
 
+export type WorkedPlanMark = { rings: P2[]; aim?: boolean; dim?: [P2, P2]; path?: [P2, P2]; arc?: boolean; footprint?: string | null; label: { text: string; at: P2 } };
+
+/** The nearest point of a polyline to `p`. */
+function nearestOn(p: P2, pts: readonly P2[], closed: boolean): P2 | null {
+  let best: P2 | null = null;
+  let bd = Infinity;
+  const n = closed ? pts.length : pts.length - 1;
+  for (let i = 0; i < n; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % pts.length];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const l2 = dx * dx + dy * dy;
+    const t = l2 > 0 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / l2)) : 0;
+    const q = { x: a.x + dx * t, y: a.y + dy * t };
+    const d = Math.hypot(q.x - p.x, q.y - p.y);
+    if (d < bd) {
+      bd = d;
+      best = q;
+    }
+  }
+  return best;
+}
+
+/** What one worked-example piece marks on the plan, by the piece's key: the
+ *  STEP control has to change the drawing, not only its text card. Pure. */
+export function workedPlanMark(key: string, value: string, mic: Pick<SportMic, 'at' | 'aimAt'>, scene: Pick<VenueScene, 'footprints' | 'keepClear' | 'routes' | 'sectors' | 'targets'>): WorkedPlanMark {
+  const { at, aimAt } = mic;
+  const atMic: WorkedPlanMark = { rings: [at], label: { text: value, at } };
+  switch (key) {
+    case 'WHERE':
+    case 'PLACE': {
+      const f = scene.footprints.find((q) => at.x >= q.rect.x0 && at.x <= q.rect.x1 && at.y >= q.rect.y0 && at.y <= q.rect.y1);
+      return { ...atMic, footprint: f?.id ?? null };
+    }
+    case 'HEIGHT':
+      return { ...atMic, label: { text: `${value} UP`, at } };
+    case 'TARGET':
+      return { rings: [aimAt], label: { text: 'THE TARGET', at: aimAt } };
+    case 'AIM':
+      return { rings: [aimAt], aim: true, label: { text: value, at: aimAt } };
+    case 'RANGE':
+      return { rings: [], dim: [at, aimAt], label: { text: value, at: { x: (at.x + aimAt.x) / 2, y: (at.y + aimAt.y) / 2 } } };
+    case 'PA': {
+      const pa = scene.sectors.find((q) => q.kind === 'pa');
+      return pa ? { rings: [pa.c], path: [at, pa.c], label: { text: value, at: pa.c } } : atMic;
+    }
+    case 'CLEAR': {
+      const edges = [...scene.keepClear.map((k) => nearestOn(at, k.poly, true)), ...scene.routes.map((r) => nearestOn(at, r.pts, false))].filter((q): q is P2 => !!q);
+      const near = edges.sort((a, b) => Math.hypot(a.x - at.x, a.y - at.y) - Math.hypot(b.x - at.x, b.y - at.y))[0];
+      return near ? { rings: [near], path: [at, near], label: { text: value, at: near } } : atMic;
+    }
+    case 'ARC':
+      return { rings: [], arc: true, label: { text: value, at } };
+    case 'L · R': {
+      const off = (q: { p: P2 }) => Math.hypot(q.p.x - aimAt.x, q.p.y - aimAt.y);
+      const sides = scene.targets.filter((q) => off(q) > 1e-6).sort((a, b) => off(a) - off(b)).slice(0, 2);
+      return sides.length ? { rings: sides.map((q) => q.p), label: atMic.label } : atMic;
+    }
+    default:
+      return atMic;
+  }
+}
+
 export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: VenueScene; mic: SportMic; pieces: readonly { title: string; text: string; key: string; value: string }[]; box?: PlanRect; title: string }): MikingStep {
   const [ex, setEx] = useState(0);
   const pc = pieces[Math.min(ex, pieces.length - 1)];
+  const mark = workedPlanMark(pc.key, pc.value, mic, scene);
+  const markUV = planUV(mark.label.at);
+  const k = Math.min(1, (scene.frame.x1 - scene.frame.x0) / 38);
+  const markLabel: StaticLabel = { id: 'worked.mark', text: mark.label.text, u: markUV.u + 1800 * k, v: markUV.v - 500 * k, align: 'left', tone: 'amber' };
   return {
     key: 'watch',
     title: 'Worked example',
@@ -685,11 +754,22 @@ export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: Venue
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={scene} box={box} a11y={`A worked example, placed for you: ${title}. ${pc.title.toLowerCase()}: ${pc.text}`} labels={venueLabels(scene)} inset={micCloseUp(mic, closeUpAt(mic, box ?? scene.frame))}>
-          {(px, g) => <MicOnPlan g={g} m={mic} px={px} />}
+        <PlanStage w={w} h={h} scene={scene} box={box} a11y={`A worked example, placed for you: ${title}. ${pc.title.toLowerCase()}: ${pc.text}`} labels={[markLabel, ...venueLabels(scene)]} inset={micCloseUp(mic, closeUpAt(mic, box ?? scene.frame))} activeFootprint={mark.footprint}>
+          {(px, g) => (
+            <>
+              {mark.arc ? <ArcArt arc={{ ...PF_ARC, at: mic.at }} px={px} /> : null}
+              <MicOnPlan g={g} m={mic} px={px} />
+              {mark.aim ? <PlanAim from={mic.at} to={mic.aimAt} px={px} /> : null}
+              {mark.path ? <PlanPath a={mark.path[0]} b={mark.path[1]} px={px} color={AMBER} width={3} /> : null}
+              {mark.dim ? <Dim a={planUV(mark.dim[0])} b={planUV(mark.dim[1])} px={px} /> : null}
+              {mark.rings.map((p, i) => (
+                <TargetRing key={i} p={p} px={px} active />
+              ))}
+            </>
+          )}
         </PlanStage>
       ),
-      badge: 'WORKED EXAMPLE · placed for you · the corner box = the mic at its height, to scale',
+      badge: 'WORKED EXAMPLE · placed for you · amber = the piece being read · the corner box = the mic at its height, to scale',
       bezel: pieces.map((q, i) => ({ k: i === ex ? `▸ ${q.key}` : q.key, v: q.value, tint: i === ex ? AMBER : undefined, flex: 1 })),
       params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
       initialParam: 'piece',

@@ -5,8 +5,11 @@
  * that stage sees against its own limit (the meter's right end), on the
  * house loudness colours (levelColor.ts), peak red where it is over. A stage
  * that carries a clip from upstream shows a red hatch, however low its own
- * meter reads. The one number printed is the converter's dBFS. Built once
- * by group 2 (lab7-g5). Static; text ≥ 9 pt and zooming with full screen.
+ * meter reads. The numbers printed are the converter's dBFS and the bus output
+ * after the fader. The fader moves its cap and the bus row's blue marker; the
+ * bus meter itself and every clip stay where they are, because a fader only
+ * scales what already happened upstream. Built once by group 2 (lab7-g5).
+ * Static; text ≥ 9 pt and zooming with full screen.
  */
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -16,11 +19,12 @@ import { fitValue } from '../../../../../../theme/legibility';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { levelColorForDb } from '../../../../../../features/tools/levelColor';
 import { ShotgunArt } from '../fieldmics/FieldMicArt';
-import { STAGES, fmtDbfs, readChain, type ChainSettings, type EventId, type StageId } from './headroom.ts';
+import { HEADROOM_DEFAULTS, STAGES, fmtDb, fmtDbfs, readChain, type ChainSettings, type EventId, type StageId } from './headroom.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = (): SkPath => Skia.Path.Make();
 const PEAK_RED = '#ff5a48';
+const BUS_OUT_MARK = '#6fd3ff'; // the level after the output fader, on the bus meter
 const RANGE = 40; // the meter shows the 40 dB below each stage's limit
 
 function rr(x: number, y: number, w: number, h: number, r: number): SkPath {
@@ -30,7 +34,7 @@ function rr(x: number, y: number, w: number, h: number, r: number): SkPath {
 }
 
 /** A device icon for a stage, drawn in a box (x, y, w, h). */
-function Device({ id, x, y, w, h }: { id: StageId; x: number; y: number; w: number; h: number }) {
+function Device({ id, x, y, w, h, fader }: { id: StageId; x: number; y: number; w: number; h: number; fader: number }) {
   const cx = x + w / 2;
   const cy = y + h / 2;
   if (id === 'capsule') return <ShotgunArt x={x + w * 0.88} y={cy} angleDeg={180} scale={(w * 0.8) / 250} mount={false} />;
@@ -123,12 +127,17 @@ function Device({ id, x, y, w, h }: { id: StageId; x: number; y: number; w: numb
       </Group>
     );
   }
-  // bus: a fader cap in its slot.
+  // bus: a fader cap in its slot, the top of the slot at the fader's maximum.
+  const { min, max } = HEADROOM_DEFAULTS.fader;
+  const capH = 10;
+  const slotY = y + 2;
+  const slotH = h - 4;
+  const capY = slotY + (1 - Math.max(0, Math.min(1, (fader - min) / (max - min)))) * (slotH - capH);
   return (
     <Group>
-      <Path path={rr(cx - 3, y + 3, 6, h - 6, 3)} color="#0b0c0f" />
-      <Path path={rr(cx - w * 0.2, cy - 6, w * 0.4, 12, 2)}>
-        <LinearGradient start={vec(cx, cy - 6)} end={vec(cx, cy + 6)} colors={['#e0e3e8', '#8b9099']} />
+      <Path path={rr(cx - 3, slotY, 6, slotH, 3)} color="#3a3d45" />
+      <Path path={rr(cx - w * 0.2, capY, w * 0.4, capH, 2)}>
+        <LinearGradient start={vec(cx, capY)} end={vec(cx, capY + capH)} colors={['#e0e3e8', '#8b9099']} />
       </Path>
     </Group>
   );
@@ -158,14 +167,15 @@ export function HeadroomDisplay({ w, h, s, ev, a11y }: { w: number; h: number; s
   }, [iconW, rowH, n]);
   return (
     <View style={{ width: w, height: h }}>
-      <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={`${a11y} The bus output after the fader is ${fmtDb(r.busOut)}.`}>
         <Path path={cable} style="stroke" strokeWidth={3} color="#0b0c0f" />
         {bars.map(({ q, y, t }, i) => {
           const over = q.over;
           const fill = over ? PEAK_RED : levelColorForDb(q.level - q.limit, -RANGE, 0);
+          const outX = mx + mw * Math.max(0, Math.min(1, (r.busOut - (q.limit - RANGE)) / RANGE));
           return (
             <Group key={q.id}>
-              <Device id={q.id} x={10} y={top + i * rowH + 3} w={iconW} h={rowH - 6} />
+              <Device id={q.id} x={10} y={top + i * rowH + 3} w={iconW} h={rowH - 6} fader={s.fader} />
               <Path path={rr(mx, y - 6, mw, 12, 3)} color="#0b0c0f" />
               {t > 0 ? <Path path={rr(mx, y - 6, mw * t, 12, 3)} color={fill} /> : null}
               {q.clippedBefore ? (
@@ -185,13 +195,20 @@ export function HeadroomDisplay({ w, h, s, ev, a11y }: { w: number; h: number; s
                 />
               ) : null}
               <Path path={rr(mx + mw - 2, y - 9, 3, 18, 1)} color={over ? PEAK_RED : '#e0e3e8'} />
+              {q.id === 'bus' ? (
+                <Group>
+                  <Path path={rr(outX - 2.5, y - 11, 5, 22, 1)} color="#0b0c0f" />
+                  <Path path={rr(outX - 1.5, y - 10, 3, 20, 1)} color={BUS_OUT_MARK} />
+                </Group>
+              ) : null}
             </Group>
           );
         })}
       </Canvas>
       {bars.map(({ q, y }) => {
         const st = STAGES.find((x) => x.id === q.id)!;
-        const text = q.over ? `${st.short} · OVER` : q.clippedBefore ? `${st.short} · CLIPPED` : q.id === 'adc' ? `${st.short} · ${fmtDbfs(r.adcDbfs)}` : st.short;
+        const busOut = fmtDb(r.busOut);
+        const text = q.id === 'bus' ? (q.over ? `BUS ${busOut} · OVER` : q.clippedBefore ? `BUS ${busOut} · CLIPPED` : `${st.short} · ${busOut}`) : q.over ? `${st.short} · OVER` : q.clippedBefore ? `${st.short} · CLIPPED` : q.id === 'adc' ? `${st.short} · ${fmtDbfs(r.adcDbfs)}` : st.short;
         return (
           <Text key={q.id} style={[styles.label, { top: y - 7 * k, left: w - labelW - 6, width: labelW, fontSize: Math.max(9, 9.5 * k), color: q.over || q.clippedBefore ? PEAK_RED : q.id === 'adc' ? '#ffc64d' : colors.textSecondary }]} {...fitValue(Math.max(9, 9.5 * k))}>
             {text}

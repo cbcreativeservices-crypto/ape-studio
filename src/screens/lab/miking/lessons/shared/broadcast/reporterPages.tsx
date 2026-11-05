@@ -140,6 +140,7 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
       valueLabel: pattern === 'omni' ? '—' : aimMode === 'speaker' ? 'SPEAKER' : 'BETWEEN',
       selectedId: aimMode,
       sticky: true,
+      locked: pattern === 'omni' ? 'An omni hears all round: switch to the cardioid to aim it.' : undefined,
       onSelect: (id) => {
         setAimMode(id as typeof aimMode);
         if (id === 'between' && pattern === 'cardioid') mark('between');

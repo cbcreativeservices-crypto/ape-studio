@@ -13,7 +13,9 @@
  *               it rings with it (open at the top, closed at the bottom: a
  *               quarter wavelength); ④ sound leaves the bar and the tube's
  *               mouth, up and out. A damper (vibraphone, pedal glockenspiel)
- *               is drawn touching the bar or clear of it (PEDAL).
+ *               is drawn touching the bar or clear of it (PEDAL). Touching
+ *               it, the stroke still bends the bar at ②, but the bar is flat
+ *               again by ③ and the tube's air never rings: the note stops.
  *   BarShapes   a PLAIN (uniform) bar in one of its first three shapes, from
  *               the free–free beam (malletSpec BAR_BETA): still points, the
  *               ratio to the lowest, how much a strike point drives it.
@@ -159,7 +161,16 @@ function BarBody({ path, o }: { path: SkPath | SharedValue<SkPath>; o: OneBar })
   );
 }
 
+/** How much of its bend the bar shows at `reveal` (0 to 1). Free, it stays
+ *  moving through ③ and ④; with the damper on it, it is flat again by ③. */
+export const barFlex = (reveal: number, damped: boolean): number => {
+  'worklet';
+  const bent = Math.max(0, Math.min(1, reveal - 1));
+  return damped ? bent * (1 - Math.max(0, Math.min(1, reveal - 2))) : bent;
+};
+
 /* ── ① – ④ ── */
+/** `damperUp`: the damper raised against the bar, which is PEDAL UP. */
 export function BarStrike({ w, h, o, reveal, shown, damperUp, accessibilityLabel }: { w: number; h: number; o: OneBar; reveal: SharedValue<number>; shown: number; damperUp: boolean; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
   const box = useMemo(() => boxOf(o), [o]);
@@ -173,7 +184,7 @@ export function BarStrike({ w, h, o, reveal, shown, damperUp, accessibilityLabel
     'worklet';
     return Math.max(0, Math.min(1, x));
   };
-  const bend = useDerivedValue(() => bentBar(b, 0, amp * clamp01(reveal.value - 1)));
+  const bend = useDerivedValue(() => bentBar(b, 0, amp * barFlex(reveal.value, damperUp)));
   const o1 = useDerivedValue(() => clamp01(reveal.value));
   const o2 = useDerivedValue(() => clamp01(reveal.value - 1));
   const o3 = useDerivedValue(() => clamp01(reveal.value - 2));
@@ -213,9 +224,10 @@ export function BarStrike({ w, h, o, reveal, shown, damperUp, accessibilityLabel
   const labels: StaticLabel[] = [];
   if (shown >= 1) labels.push({ id: 's1', text: '① MALLET LANDS', short: '① STRIKE', u: b.z - 200, v: b.yTop - 230, align: 'center', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: '② STILL POINTS — CORDS', short: '② STILL POINTS', u: b.z + b.L / 2 + 20, v: b.yTop - 40, align: 'right', tone: 'blue' });
-  if (shown >= 3 && t) labels.push({ id: 's3', text: '③ TUBE AIR RINGS', short: '③ TUBE AIR', u: t.z + (t.kind === 'helmholtz' ? 80 : t.d / 2 + 14), v: (t.yTop + t.yBot) / 2, align: 'left', tone: 'blue' });
+  if (shown >= 3 && t) labels.push({ id: 's3', text: damperUp ? '③ TUBE AIR DAMPED' : '③ TUBE AIR RINGS', short: damperUp ? '③ DAMPED' : '③ TUBE AIR', u: t.z + (t.kind === 'helmholtz' ? 80 : t.d / 2 + 14), v: (t.yTop + t.yBot) / 2, align: 'left', tone: 'blue' });
   if (shown >= 3 && !t) labels.push({ id: 's3', text: o.caseBox ? '③ THE CASE’S BOX' : '③ NO TUBE', u: b.z, v: b.yTop + b.t + 60, align: 'center', tone: 'blue' });
   if (shown >= 4) labels.push({ id: 's4', text: '④ SOUND LEAVES — UP AND OUT', short: '④ UP AND OUT', u: b.z, v: b.yTop - 175, align: 'center', tone: 'blue' });
+  if (o.damper && damperUp) labels.push({ id: 'dp', text: 'DAMPER ON THE BAR', short: 'DAMPER ON', u: t ? t.z + t.d / 2 + 14 : b.z, v: b.yTop + b.t + 60, align: t ? 'left' : 'center', tone: 'amber' });
   labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: box.u1 - 10, v: box.v1 - 20, align: 'right', tone: 'illustrative' });
   labels.push({ id: 'pl', text: '← PLAYER', u: box.u0 + 10, v: box.v1 - 20, align: 'left', tone: 'muted' });
 
@@ -225,7 +237,7 @@ export function BarStrike({ w, h, o, reveal, shown, damperUp, accessibilityLabel
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
           <Hardware o={o} damperUp={damperUp} />
           {/* ③ the tube's air (a pressure tint, strongest at the closed end) */}
-          {t ? (
+          {t && !damperUp ? (
             <Group opacity={o3}>
               <Path path={paths.press}>
                 <LinearGradient start={vec(0, t.yTop)} end={vec(0, t.yBot)} colors={['rgba(111,168,255,0.0)', 'rgba(111,168,255,0.42)']} />

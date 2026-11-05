@@ -122,6 +122,8 @@ const BIT_BLURBS: Record<number, string> = {
   24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range (6 dB/bit rule of thumb; 6.02·24 + 1.76 ≈ 146 dB), far below any room’s noise floor.',
 };
 
+const DITHER_BADGE = 'REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT';
+
 const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
   options: ['256 levels · ≈ 49.9 dB', '65,536 levels · ≈ 96 dB', '8 levels · ≈ 8 dB', '256 levels · ≈ 96 dB'],
@@ -149,6 +151,10 @@ export function QuantModule(p: DigitalModuleProps) {
   const [levelDb, setLevelDb] = useState(-12);
   const [errorOnly, setErrorOnly] = useState(false);
   const [dither, setDither] = useState<DitherMode>('none');
+  // Which picture the PINNED display shows. DITHER's tray stays open to A/B,
+  // so its chart must answer on the glass: a dither pick shows the DITHER
+  // chart; LEVEL, BITS or ERROR brings the steps back.
+  const [stageView, setStageView] = useState<'quant' | 'dither'>('quant');
 
   const amp = Math.pow(10, levelDb / 20);
   const half = Math.pow(2, bits - 1);
@@ -166,7 +172,10 @@ export function QuantModule(p: DigitalModuleProps) {
       label: 'LEVEL',
       level: true,
       value: (levelDb + 40) / 40,
-      onChange: (v) => setLevelDb(Math.round(-40 + v * 40)),
+      onChange: (v) => {
+        setLevelDb(Math.round(-40 + v * 40));
+        setStageView('quant');
+      },
       format: () => fmtDb(levelDb, 0),
       formatShort: () => `${levelDb} dB`,
       helpKey: 'quant_error',
@@ -178,7 +187,10 @@ export function QuantModule(p: DigitalModuleProps) {
       valueLabel: `${bits}-BIT`,
       options: BIT_CHOICES.map((b) => ({ id: String(b), label: `${b}-BIT`, blurb: BIT_BLURBS[b] })),
       selectedId: String(bits),
-      onSelect: (id) => setBits(Number(id)),
+      onSelect: (id) => {
+        setBits(Number(id));
+        setStageView('quant');
+      },
       sticky: true, // A/B bit depths while the steps move on the glass
       helpKey: 'quant_levels',
     },
@@ -187,13 +199,16 @@ export function QuantModule(p: DigitalModuleProps) {
       id: 'error',
       label: 'ERROR',
       value: errorOnly,
-      onToggle: () => setErrorOnly(!errorOnly),
+      onToggle: () => {
+        setErrorOnly(!errorOnly);
+        setStageView('quant');
+      },
       helpKey: 'quant_error',
     },
     {
       // The DITHER panel's choice — was four chips in the well (owner rule
       // 2026-10-10: every lab control lives in the bottom dock). The panel's
-      // picture stays in the well.
+      // picture stays in the well too, and a pick shows it on the pinned glass.
       kind: 'options',
       id: 'dither',
       label: 'DITHER',
@@ -205,7 +220,10 @@ export function QuantModule(p: DigitalModuleProps) {
         { id: 'shaped', label: 'NOISE-SHAPED', blurb: 'TPDF with the noise pushed up the spectrum, where hearing is least sensitive.' },
       ],
       selectedId: dither,
-      onSelect: (id) => setDither(id as DitherMode),
+      onSelect: (id) => {
+        setDither(id as DitherMode);
+        setStageView('dither');
+      },
       sticky: true,
       helpKey: 'dither',
     },
@@ -219,20 +237,38 @@ export function QuantModule(p: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the step grid + whiskers are the lesson
-        badge: errorOnly
-          ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
-          : bits >= 12
-            ? `AT ${bits}-BIT THE STEPS ARE SUB-PIXEL — DRAWN HONESTLY AS A FINE BAND, NOT EXAGGERATED`
-            : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
-        onGuide: () => p.help('bit_depth'),
-        bezel: [
-          { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
-          { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
-          { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
-          { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
-        ],
+        badge:
+          stageView === 'dither'
+            ? DITHER_BADGE
+            : errorOnly
+              ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
+              : bits >= 12
+                ? `AT ${bits}-BIT THE STEPS ARE SUB-PIXEL — DRAWN HONESTLY AS A FINE BAND, NOT EXAGGERATED`
+                : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
+        onGuide: () => p.help(stageView === 'dither' ? 'dither' : 'bit_depth'),
+        bezel:
+          stageView === 'dither'
+            ? [
+                // The chart's own fixed test tone, not the BITS and LEVEL keys.
+                { k: 'DITHER', v: dither === 'none' ? 'NONE' : dither === 'shaped' ? 'SHAPED' : dither.toUpperCase(), helpKey: 'dither' },
+                { k: 'TEST TONE', v: '−39 dBFS', helpKey: 'dither' },
+                { k: 'REDUCED TO', v: '8-bit', helpKey: 'dither' },
+              ]
+            : [
+                { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
+                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
+                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
+                { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
+              ],
         render: (w, h) =>
-          viz ? (
+          viz && stageView === 'dither' ? (
+            <View style={[styles.stageSwap, { width: w, height: h }]}>
+              <Text style={styles.stageSwapHead}>DITHER · LEVEL, BITS or ERROR returns to the steps</Text>
+              <View style={styles.stageSwapChart}>
+                <viz.DitherView width={w - 16} height={Math.max(120, h - 18)} mode={dither} />
+              </View>
+            </View>
+          ) : viz ? (
             <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} />
           ) : (
             <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
@@ -292,7 +328,7 @@ export function QuantModule(p: DigitalModuleProps) {
           {/* The dither choice is the DITHER dock key now (owner rule
               2026-10-10: every lab control lives in the bottom dock). */}
           {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
-          <Badge text="REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT" />
+          <Badge text={DITHER_BADGE} />
           <Text style={dstyles.caption}>
             {dither === 'none'
               ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and gated fades, not hiss.'
@@ -535,6 +571,12 @@ const styles = StyleSheet.create({
   stack: { gap: 12 },
   headRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   info: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber, marginTop: 6 },
+
+  // The pinned display's swapped-in DITHER chart: how to return on top, the
+  // chart in the glass's remaining height.
+  stageSwap: { backgroundColor: '#0c0c0f', justifyContent: 'center', gap: 4 },
+  stageSwapChart: { paddingHorizontal: 8 },
+  stageSwapHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.9, color: colors.amber, textAlign: 'center', paddingHorizontal: 8 },
 
   // Guided-lesson entry row — mirrors the host's lessonRow styling.
   lessonRow: {

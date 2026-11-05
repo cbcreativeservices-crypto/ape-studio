@@ -362,6 +362,13 @@ export function SignalGenScreen({ navigation }: Props) {
   // Native session/route info — for the dev output diagnostics (why is it silent?).
   const [info, setInfo] = useState<ReturnType<typeof ApeDsp.getInfo>>(() => ApeDsp.getInfo());
   const [genError, setGenError] = useState('');
+  // Generator.hpp holds a finished single-pass sweep silent and KEEPS running,
+  // so status.running never falls: only this screen can tell the sweep ended.
+  const [sweepFinished, setSweepFinished] = useState(false);
+  // Every sweep or mode write retriggers the native sweep from its start, even
+  // a tap on the chip already selected. Counted so that write restarts the
+  // single-pass timer too; a stale timer would cut the new pass off early.
+  const [sweepPass, setSweepPass] = useState(0);
   const [colorsOn, setColorsOn] = useColorModePref(); // waveform MIDI colours, persisted (items 6/7)
 
   // Push the UI defaults to the native generator once, so the params the user
@@ -441,7 +448,13 @@ export function SignalGenScreen({ navigation }: Props) {
 
   const refreshStatus = () => setStatus(ApeDsp.genStatus());
 
+  const restartSweepPass = () => {
+    setSweepFinished(false);
+    setSweepPass((n) => n + 1);
+  };
+
   const pickMode = (m: GenModeName) => {
+    restartSweepPass();
     setMode(m);
     ApeDsp.genSet({ mode: GEN_MODES[m] });
     refreshStatus();
@@ -464,6 +477,7 @@ export function SignalGenScreen({ navigation }: Props) {
     setSweepEnd(next.endHz);
     setSweepSec(next.seconds);
     setSweepRepeat(next.repeat);
+    restartSweepPass();
     ApeDsp.genSet({ sweep: next });
   };
 
@@ -547,6 +561,7 @@ export function SignalGenScreen({ navigation }: Props) {
       const ok = await requestAudioOutput();
       if (!ok || gen !== genRef.current || !mountedRef.current) return;
       setGenError('');
+      restartSweepPass();
       try {
         // The fence (startFenced): a mute, a stop, a close, or a stop-all
         // (leaving the app with "Mute audio when I leave the app" OFF — the
@@ -605,6 +620,19 @@ export function SignalGenScreen({ navigation }: Props) {
   });
 
   const isSweep = mode === 'sweepLin' || mode === 'sweepLog';
+
+  // A single pass that has run its length ends through the normal stop path, so
+  // the key returns to START. REPEAT never ends. Stop, close, a mode change and
+  // any reprogram all drop the pending timer through this effect's cleanup.
+  useEffect(() => {
+    if (!running || !isSweep || sweepRepeat) return;
+    const t = setTimeout(() => {
+      setSweepFinished(true);
+      void onStop();
+    }, sweepSec * 1000);
+    return () => clearTimeout(t);
+  }, [running, mode, sweepRepeat, sweepSec, sweepPass]);
+
   const showFreq = mode === 'sine' || mode === 'burst';
   const isClick = mode === 'click';
   const sigLabel = SIGNALS.find((s) => s.key === mode)?.label ?? mode.toUpperCase();
@@ -773,7 +801,15 @@ export function SignalGenScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>{tool.subtitle ?? 'Test-Signal Source'}</Text>
+          {/* In the header because the sticky SWEEP tray covers the well, and the
+              chips in that tray are what a student has just been pressing. */}
+          {sweepFinished ? (
+            <Text style={styles.sweepFinished} accessibilityLiveRegion="polite">
+              Sweep finished
+            </Text>
+          ) : (
+            <Text style={styles.subtitle}>{tool.subtitle ?? 'Test-Signal Source'}</Text>
+          )}
         </View>
         <AccuracyNote compact detail="Test tones play through your phone’s uncalibrated speaker/output — the frequency is very close, the LEVEL is not. For calibrated output use dedicated signal-generation gear." />
       </View>
@@ -1004,6 +1040,7 @@ const styles = StyleSheet.create({
   stepBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, marginTop: -2 },
   freqReadout: { fontFamily: fonts.mono, fontSize: 28, color: colors.gold },
   sweepSummary: { fontFamily: fonts.mono, fontSize: 15, color: colors.textSecondary },
+  sweepFinished: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.greenBright, marginTop: 1 },
 
   statusCard: {
     borderRadius: 10,

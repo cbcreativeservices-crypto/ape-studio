@@ -17,7 +17,7 @@
  * TROUBLESHOOT and PRACTICE are the engine's. FULLY SILENT; nothing moves by
  * itself.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
@@ -135,13 +135,14 @@ function B14Context(p: PageProps) {
     (id: string) => {
       setGot((prev) => {
         if (prev.has(id)) return prev;
-        const n = new Set([...prev, id]);
-        if (n.has('boundaryHeights') && n.has('plantCompared') && n.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
-        return n;
+        return new Set([...prev, id]);
       });
     },
-    [interactiveDone, onInteractive],
+    [],
   );
+  useEffect(() => {
+    if (got.has('boundaryHeights') && got.has('plantCompared') && got.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
+  }, [got, interactiveDone, onInteractive]);
   const boundary = useBoundaryStep({ onInteractive: note, done: got.has('boundaryHeights'), prediction: p.lesson.predictions.context, source: { x: 3000, hs: 1000 } });
   const plant = usePlantStep({ onInteractive: note, done: got.has('plantCompared') });
   const headroom = useHeadroomStep({ onInteractive: note, done: got.has('headroomChain') });

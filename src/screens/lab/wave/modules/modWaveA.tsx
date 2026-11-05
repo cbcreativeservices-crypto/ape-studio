@@ -129,6 +129,7 @@ function RoomView({
   wallT,
   diffuserPanel,
   listenerKind,
+  raysShowLoss,
   onDragSource,
   onDragListener,
 }: {
@@ -149,6 +150,8 @@ function RoomView({
   diffuserPanel?: { wall: number; depthM: number } | null;
   /** 'mic' draws the listener as a microphone (Comb). */
   listenerKind?: 'head' | 'mic';
+  /** Each reflection order's rays fade with the energy it still has at this freq. */
+  raysShowLoss?: boolean;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
 }) {
@@ -167,6 +170,7 @@ function RoomView({
       wallT={wallT}
       diffuserPanel={diffuserPanel}
       listenerKind={listenerKind}
+      raysShowLoss={raysShowLoss}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
     />
@@ -364,6 +368,7 @@ export function ReflectionModule(p: WaveModuleProps) {
               layers={layers}
               // Deep walls: the material is drawn in section (owner 2026-09-26).
               wallT={18}
+              raysShowLoss
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />
@@ -414,6 +419,12 @@ export function ReflectionModule(p: WaveModuleProps) {
       }}
       explain={
         <PanelCard>
+          {mat === 'concrete' ? (
+            <Text style={dstyles.caption}>
+              Concrete reflects nearly the same at every frequency, so FREQ barely changes the rays here.
+              Pick another MAT, such as foam, and the rays fade as the wall absorbs more.
+            </Text>
+          ) : null}
           <Text style={dstyles.eyebrow}>ANGLE FROM THE NORMAL</Text>
           <Text style={dstyles.body}>
             Angle in equals angle out — measured from the NORMAL, the line perpendicular to the wall,
@@ -530,6 +541,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
               layers={layers}
               // Deep walls: the material is drawn in section (owner 2026-09-26).
               wallT={18}
+              raysShowLoss
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />

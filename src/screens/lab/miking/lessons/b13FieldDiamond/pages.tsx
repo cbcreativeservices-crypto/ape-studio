@@ -20,7 +20,7 @@
  * plain words; no sources or badges on screen; FULLY SILENT; nothing moves
  * by itself.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
@@ -150,13 +150,14 @@ function B13Context(p: PageProps) {
     (id: string) => {
       setGot((prev) => {
         if (prev.has(id)) return prev;
-        const n = new Set([...prev, id]);
-        if (n.has('coverageMap') && n.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
-        return n;
+        return new Set([...prev, id]);
       });
     },
-    [interactiveDone, onInteractive],
+    [],
   );
+  useEffect(() => {
+    if (got.has('coverageMap') && got.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
+  }, [got, interactiveDone, onInteractive]);
   const coverage = useCoverageStep({ scene: PRACTICE_FIELD, tasks: B13_COVERAGE, mics: [SG_A, DISH_A, AMB_E], onInteractive: note, done: got.has('coverageMap') });
   const headroom = useHeadroomStep({ onInteractive: note, done: got.has('headroomChain'), prediction: p.lesson.predictions.context });
   return <PageSteps steps={[coverage, headroom, checkStep(p, 'context')]} />;

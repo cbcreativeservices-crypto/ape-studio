@@ -18,7 +18,7 @@ import { colors, fonts } from '../../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../../rack/rackTypes';
 import type { MicSlot, ViewId } from '../../../../engine/model/types.ts';
 import { dist } from '../../../../engine/geometry/vec.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchesHz, pathDiffMm } from '../../../../engine/physics/twoMic.ts';
+import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb, notchesHz, pathDiffMm } from '../../../../engine/physics/twoMic.ts';
 import { isModelled } from '../../../../engine/physics/polar.ts';
 import { fmtHz, fmtLen, fmtMs } from '../../../../engine/model/units.ts';
 import { lenCell } from '../../../../engine/scene/readoutText.ts';
@@ -73,6 +73,12 @@ function PairPage({ lesson, art, answers, onAnswered, onInteractive, interactive
   const gA = isModelled(A.pattern) ? micGain(A.pattern, A.pose, src) : 1000 / Math.max(1, dist(A.pose.p, src));
   const gB = isModelled(B.pattern) ? micGain(B.pattern, B.pose, src) : 1000 / Math.max(1, dist(B.pose.p, src));
   const sEff = effectivePolarity(B.polarity, gA, gB);
+  // Equal paths, inverted: the graph sits flat at this depth. CANCELS only where
+  // it is really deep: with the levels apart the line barely drops (the coincident
+  // pair's end bar, 11.2 dB apart, is 5 dB down), and the cell must not say more.
+  const sumDb = notchDepthDb(gA, gB);
+  const eqCell = sEff === 1 ? 'NO COMB' : sumDb <= -20 ? 'CANCELS' : 'PARTIAL';
+  const partDb = Math.round(-sumDb);
   const rearFlip = sEff !== B.polarity;
   const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
 
@@ -121,14 +127,14 @@ function PairPage({ lesson, art, answers, onAnswered, onInteractive, interactive
   const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
-    { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
-    { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
+    { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? eqCell.toLowerCase() : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
+    { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
     { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(
-    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}${rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
-    [equal, dMm, dt, first, B.polarity, rearFlip],
+    () => `Ideal two-mic sum, ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, and the sum acts as inverted, so the source cancels' : `no path difference, and the sum acts as inverted, so the source partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}${rearFlip ? ', but the source is in a rear lobe, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : ''}.`,
+    [equal, dMm, dt, first, B.polarity, rearFlip, sEff, eqCell, partDb],
   );
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A', 'B'], `Paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'} are drawn as an overlay.`);
   const pred = lesson.predictions.twoMic;
@@ -157,8 +163,8 @@ function PairPage({ lesson, art, answers, onAnswered, onInteractive, interactive
           <Body>{pair.blurb}</Body>
           <NowLine text={nowText(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} /> : null}</View>
-          <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `Mic B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
-          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
+          <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: the source reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : 'No path difference, no comb: the source reaches both mics at the same instant.') : `Mic B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so ${equal ? 'the sum acts as' : 'the notches follow the'} ${sEff === 1 ? 'same-polarity' : 'inverted'}${equal ? '' : ' set'} even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
           {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">{H.pairWarn}</Note>
         </>

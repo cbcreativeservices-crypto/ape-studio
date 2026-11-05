@@ -5,6 +5,8 @@
  * starting points, up to 60–80 cm away, which leaves a shaker or a clave a
  * few points wide on a phone; here the figure and THE PARTS use the family's
  * close-up boxes (`sp.close`), the same art and the same model otherwise.
+ * Part ids carry the variant they are drawn in (gui.scraper.gourd), so a pick
+ * follows the build: the same part in the new variant, or none if it has none.
  * Nothing to answer; no mic (owner 2026-10-04: understanding first).
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -24,6 +26,30 @@ import type { PageProps } from '../../../../pages/pageTypes';
 import { spOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
+type PartRow = { id: string; variants?: readonly string[] };
+
+/** A part's name across the variants: its id without the variant suffix. */
+export function partKey(id: string, variantIds: readonly string[]): string {
+  const v = variantIds.find((x) => id.endsWith(`.${x}`));
+  return v ? id.slice(0, -(v.length + 1)) : id;
+}
+
+/** The part a pick means in this variant, or null if this variant has none. */
+export function livePartId(partId: string | null, variant: string, parts: readonly PartRow[], variantIds: readonly string[]): string | null {
+  if (!partId) return null;
+  const here = (id: string) => parts.some((p) => p.id === id && (!p.variants || p.variants.includes(variant)));
+  if (here(partId)) return partId;
+  const same = `${partKey(partId, variantIds)}.${variant}`;
+  return here(same) ? same : null;
+}
+
+/** How many of the parts on THIS list have been looked at, in any variant:
+ *  the same part in another build is not a new part. */
+export function lookedAtCount(listed: readonly { id: string }[], seen: ReadonlySet<string>, variantIds: readonly string[]): number {
+  const looked = new Set([...seen].map((id) => partKey(id, variantIds)));
+  return listed.filter((p) => looked.has(partKey(p.id, variantIds))).length;
+}
+
 export function SInstrument({ lesson: full, art, variant, setVariant, hidden, journey }: PageProps) {
   // The same lesson, its views framed close up on the instrument.
   const close = spOf(full).close;
@@ -40,15 +66,17 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
   const regions = model.regions;
   const parts = model.parts.filter((p) => (!p.variants || p.variants.includes(variant)) && (!p.listIn || p.listIn.includes(variant)));
   const variantLabel = model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
-  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')));
+  const variantIds = model.variants.map((v) => v.id);
+  const livePart = livePartId(partId, variant, model.parts, variantIds);
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === livePart));
+  const lookedAt = lookedAtCount(parts, seen, variantIds);
 
   const pick = (id: string) => {
     setPartId(id);
     setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
-  const region = regions.find((r) => r.partId === partId);
-  // The front head is one tap target; its part differs by variant.
-  const shownPart = partId === 'kick.reso' || partId === 'kick.resoPorted' ? model.parts.find((p) => p.id === (variant === 'ported' ? 'kick.resoPorted' : 'kick.reso')) : model.parts.find((p) => p.id === partId);
+  const region = regions.find((r) => r.partId === livePart);
+  const shownPart = model.parts.find((p) => p.id === livePart);
 
   const params: DockParam[] = useMemo(
     () => [
@@ -62,11 +90,11 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
           formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
-        parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')),
+        parts.findIndex((p) => p.id === livePart),
         (i) => parts[i].short.toUpperCase(),
         (i) => pick(parts[i].id),
       ),
@@ -85,7 +113,7 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
     [parts, partIdx, shownPart, seen, view, variant, model.variants, C.variantKey, variantLabel],
   );
 
-  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
+  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], shownPart ? `Highlighted: ${shownPart.label}.` : undefined);
   const steps: MikingStep[] = [
     {
       key: 'start',
@@ -134,12 +162,12 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />
+          <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={livePart} onTapPart={pick} labelFor={labelFor} />
         ),
         badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
+          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           { k: C.variantKey, v: variantLabel },
         ],
         params,

@@ -21,7 +21,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicSlot, ViewId } from '../engine/model/types.ts';
 import { dist } from '../engine/geometry/vec.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchesHz, oppositeSign, pathDiffMm, type OppositePlane } from '../engine/physics/twoMic.ts';
+import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb, notchesHz, oppositeSign, pathDiffMm, type OppositePlane } from '../engine/physics/twoMic.ts';
 import { copyOf } from '../engine/model/copy.ts';
 import { isModelled } from '../engine/physics/polar.ts';
 import { fmtHz, fmtLen, fmtMs } from '../engine/model/units.ts';
@@ -76,6 +76,12 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   const gB = isModelled(B.pattern) ? micGain(B.pattern, B.pose, src) : 1000 / Math.max(1, dist(B.pose.p, src));
   const side = oppositeSign(plane, A.pose.p, B.pose.p);
   const sEff = (effectivePolarity(B.polarity, gA, gB) * side) as 1 | -1;
+  // Equal paths, inverted: the graph sits flat at this depth. CANCELS only where
+  // it is really deep: with the levels apart the line barely drops (the coincident
+  // pair's end bar, 11.2 dB apart, is 5 dB down), and the cell must not say more.
+  const sumDb = notchDepthDb(gA, gB);
+  const eqCell = sEff === 1 ? 'NO COMB' : sumDb <= -20 ? 'CANCELS' : 'PARTIAL';
+  const partDb = Math.round(-sumDb);
   const rearFlip = sEff !== B.polarity && side === 1;
   const sideFlip = side === -1;
   const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
@@ -93,17 +99,30 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
 
   const params: DockParam[] = [
     ...placementParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis }),
-    { kind: 'toggle', id: 'mic', label: `EDIT MIC ${slot}`, value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) },
+    { kind: 'toggle', id: 'mic', label: `EDIT MIC ${slot}`, labelLines: 2, value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) },
+    // A value key, not a toggle: beside a toggle's LED this five-key dock has
+    // 43 px for a line at 375 wide and 32 at 320, and POLARITY alone is 51 at
+    // 12 pt, so MIC B POLARITY wrapped to "MIC B / POLARI…" and lost its sign.
+    // The key reads as the bezel cell does. Not sticky: an open tray veils the
+    // comb graph in the well and at 320 by 700 covers the bezel, so a pick
+    // closes it and the result of the flip shows at once.
     {
-      kind: 'toggle',
+      kind: 'options',
       id: 'polarity',
-      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
-      value: B.polarity === -1,
-      onToggle: () => {
-        const next = B.polarity === 1 ? -1 : 1;
+      label: 'POLARITY',
+      valueLabel: `MIC B ${B.polarity === 1 ? '+' : '−'}`,
+      valueA11y: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+      selectedId: B.polarity === 1 ? 'normal' : 'inverted',
+      onSelect: (id) => {
+        const next = id === 'inverted' ? -1 : 1;
+        if (next === B.polarity) return;
         rig.setPolarity('B', next);
         setFlips((f) => (next === -1 ? { ...f, toInv: true } : { ...f, toNorm: true }));
       },
+      options: [
+        { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+        { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. Δt does not change.' },
+      ],
     },
     {
       kind: 'options',
@@ -120,14 +139,14 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
-    { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
-    { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
+    { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? eqCell.toLowerCase() : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
+    { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
     { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'heads: −' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(
-    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}${sideFlip ? ', and the mics face opposite heads, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
-    [equal, dMm, dt, first, B.polarity, rearFlip, sideFlip, sEff],
+    () => `Ideal two-mic sum, ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, and the sum acts as inverted, so the source cancels' : `no path difference, and the sum acts as inverted, so the source partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}${sideFlip ? ', and the mics face opposite heads, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : rearFlip ? ', but the source is in a rear lobe, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : ''}.`,
+    [equal, dMm, dt, first, B.polarity, rearFlip, sideFlip, sEff, eqCell, partDb],
   );
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A', 'B'], `Paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'} are drawn as an overlay.`);
 
@@ -150,7 +169,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Two mics · paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'}`} prompt="Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes." />
+          <Landing looking={`Two mics · paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'}`} prompt="Use the POLARITY key to flip MIC B both ways, then move a mic. Watch which readout each action changes." />
           <Text style={styles.activity} accessibilityLabel={`Activity: polarity to minus ${flips.toInv ? 'done' : 'not yet'}, back to plus ${flips.toNorm ? 'done' : 'not yet'}, mic moved ${moved ? 'done' : 'not yet'}.`}>
             {`Activity: polarity → − ${tick(flips.toInv)} · back to + ${tick(flips.toNorm)} · mic moved ${tick(moved)}`}
           </Text>
@@ -158,9 +177,9 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>
             {wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} opposite={plane} /> : null}
           </View>
-          <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `Mic B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: the source reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : 'No path difference, no comb: the source reaches both mics at the same instant.') : `Mic B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
           {sideFlip && T.opposite ? <Note>{T.opposite.note}</Note> : null}
-          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
+          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so ${equal ? 'the sum acts as' : 'the notches follow the'} ${sEff === 1 ? 'same-polarity' : 'inverted'}${equal ? '' : ' set'} even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
           {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">{T.warn}</Note>
           {micType(A.typeId).mount === 'surface' ? <Body>Mic A’s pattern is a half-cardioid boundary — not modeled; its level here follows distance only.</Body> : null}

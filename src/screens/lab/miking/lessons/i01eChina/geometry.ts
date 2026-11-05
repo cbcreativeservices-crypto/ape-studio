@@ -20,7 +20,7 @@ const OWN: Part[] = [
   { id: 'china.cup', label: 'cup', short: 'cup', role: 'The China’s bell: squarer and flatter-topped than a crash’s. Struck, it gives a hard, focused accent.', prov: profile },
   { id: 'china.shoulder', label: 'shoulder and valley', short: 'shoulder', role: 'The plate falls from the cup to the valley — the lowest ring of an upright China. A jazz player rides on the side of the shoulder, about an inch above the valley.', prov: { kind: 'sourced', src: 'SAB-JH', quote: 'Where the shoulder kind of comes down into the valley, you want to go up about an inch above that to play the side of the shoulder.' } },
   { id: 'china.lip', label: 'upturned lip', short: 'lip', role: 'Past the valley the edge turns back up to the rim: the China’s mark, and much of its trashy sound.', prov: shape },
-  { id: 'china.mount', label: 'felts, sleeve and wing nut', short: 'mount', role: 'The China sits loose between its felts on the stand that held the 18 in crash, upright or turned over.', prov: profile },
+  { id: 'china.mount', mark: { as: ['china.cup'] }, label: 'felts, sleeve and wing nut', short: 'mount', role: 'The China sits loose between its felts on the stand that held the 18 in crash, upright or turned over.', prov: profile },
 ];
 
 export const CHINA_MODEL: InstrumentModel = cymbalModel({

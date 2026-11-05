@@ -436,10 +436,10 @@ export function RackUnit({
           ))}
         </View>
       ) : null}
-      {/* A tapped LOCKED key's reason (rackTypes fader `locked`). */}
+      {/* A tapped LOCKED key's reason (rackTypes `locked`). */}
       {(() => {
         const lp = lockedNoteId ? params.find((p) => p.id === lockedNoteId) : null;
-        return lp && (lp.kind === 'fader' || lp.kind === 'options') && lp.locked ? (
+        return lp && (lp.kind === 'fader' || lp.kind === 'toggle' || lp.kind === 'options') && lp.locked ? (
           <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
             {lp.label} — locked: {lp.locked}
           </Text>
@@ -526,6 +526,23 @@ export function RackUnit({
                 />
               );
             case 'toggle':
+              // Drawn as a locked options key, minus the verb glyph: a toggle
+              // neither binds nor opens. The value skin carries the word LOCKED,
+              // which the flat KEY skin has no line for.
+              if (p.locked) {
+                return (
+                  <DockButton
+                    key={p.id}
+                    label={p.label}
+                    value="LOCKED"
+                    dim
+                    selected={lockedNoteId === p.id}
+                    onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
+                    onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
+                    a11y={`${p.label}: locked — ${p.locked}.`}
+                  />
+                );
+              }
               // Distinct KEY skin + LED: amber-selected means "bound/open"
               // ONLY (the two-verb rule); an ON toggle must not impersonate it.
               return (

@@ -252,6 +252,11 @@ export type DockParam =
        *  longer name is what makes the control understood — Foundations'
        *  COLORIZED PRESSURE (owner 2026-09-13) is the case this exists for. */
       labelLines?: 1 | 2;
+      /** ADDITIVE (2026-11-05): the key does nothing in this state, so it says
+       *  so: it shows LOCKED, dimmed, never flips, and a tap prints this reason
+       *  under the keys (as a locked options key). Foundations M7 before the
+       *  TIME / SPACE call, Room Design's item key with no item. */
+      locked?: string;
     }
   | {
       kind: 'action';

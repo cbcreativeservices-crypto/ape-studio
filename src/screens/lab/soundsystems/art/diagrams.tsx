@@ -194,7 +194,7 @@ const LOOP_H = 168;
 /** Cardioid polar radius, 0..1, at `deg` off the front axis. */
 const cardioid = (deg: number) => (1 + Math.cos((deg * Math.PI) / 180)) / 2;
 
-export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null' | 'live'; ringing: boolean; sendDb: number; compact?: boolean }) {
+export function FeedbackLoop({ wedge, ringing, sendDb, compact, notched }: { wedge: 'null' | 'live'; ringing: boolean; sendDb: number; compact?: boolean; /** A narrow notch is in this wedge's send: tagged on the console → amplifier line. */ notched?: boolean }) {
   const H = compact ? 118 : LOOP_H;
   const S = compact ? 0.72 : 1;
   const mic = { x: 128 * S + (compact ? 10 : 0), y: 64 * S + 6 };
@@ -219,8 +219,10 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
   const loopColor = ringing ? colors.red : colors.textMuted;
   const con = { x: 286, y: compact ? 30 : 34 };
   const amp = { x: 286, y: compact ? 76 : 104 };
+  /** Centred on the console → amplifier line, in the gap between the two. */
+  const notchY = (con.y + amp.y) / 2;
   return (
-    <Frame h={H} a11y={`Plan view: the performer at the microphone, the microphone’s cardioid pattern drawn around it, the wedge ${wedge === 'null' ? 'directly behind the microphone in its null' : 'off to the side, inside the microphone’s live angle'}. The loop runs microphone to console to amplifier to wedge and through the air back to the microphone. ${ringing ? 'The loop is ringing.' : `Send at ${sendDb} dB; the loop is stable.`}`}>
+    <Frame h={H} a11y={`Plan view: the performer at the microphone, the microphone’s cardioid pattern drawn around it, the wedge ${wedge === 'null' ? 'directly behind the microphone in its null' : 'off to the side, inside the microphone’s live angle'}. The loop runs microphone to console to amplifier to wedge and through the air back to the microphone.${notched ? ' A narrow notch sits in the send, between the console and the amplifier.' : ''} ${ringing ? 'The loop is ringing.' : `Send at ${sendDb} dB; the loop is stable.`}`}>
       {/* polar pattern: live lobe amber, the null dark */}
       <Polygon points={pts.join(' ')} fill={colors.amber} opacity={0.12} stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.5} />
       <SvgText x={mic.x - R * 0.55} y={mic.y - R * 0.62} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>LIVE ANGLE</SvgText>
@@ -243,6 +245,12 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
       <GearInSvg kind="console" id="fl-con" x={con.x} y={con.y} size={compact ? 30 : 38} />
       <Line x1={con.x} y1={con.y + (compact ? 14 : 18)} x2={amp.x} y2={amp.y - (compact ? 12 : 16)} stroke={CABLE_COLORS.line} strokeWidth={1.6} />
       <GearInSvg kind="amp" id="fl-amp" x={amp.x} y={amp.y} size={compact ? 30 : 38} />
+      {notched ? (
+        <G>
+          <Rect x={amp.x - 21} y={notchY - 8} width={42} height={16} rx={3} fill="#0f1a22" stroke={colors.cyanBright} strokeWidth={1.2} />
+          <SvgText x={amp.x} y={notchY + FS * 0.36} fontSize={FS} fill={colors.cyanBright} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={0.6}>NOTCH</SvgText>
+        </G>
+      ) : null}
       <Path d={`M ${amp.x - 20} ${amp.y} C ${amp.x - 60} ${amp.y} ${wJack.x + 28} ${wJack.y + 6} ${wJack.x} ${wJack.y}`} stroke={CABLE_COLORS.speaker} strokeWidth={1.6} fill="none" />
       {/* the acoustic return: the part of the loop the room owns */}
       <Path d={`M ${wedgeAt.x - 10} ${wedgeAt.y - 4} C ${wedgeAt.x - 30} ${wedgeAt.y - 14 * S} ${mic.x + 20 * S} ${mic.y + 8 * S} ${mic.x + 4 * S} ${mic.y + 3}`} stroke={loopColor} strokeWidth={ringing ? 2 : 1.2} fill="none" strokeDasharray="2 3" />

@@ -39,7 +39,7 @@ import { useScrollLock } from '../../../scrollLock';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
 import { MikingMicArt } from '../../../../../features/lab/micDrawings';
 import { useDecorativeMotion } from '../../../../../features/settings/decorativeMotion';
-import type { CompiledScene, DocumentedZone, Envelope, MicBody, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
+import type { CompiledScene, DocumentedZone, Envelope, InstrumentModel, MicBody, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
 import { sdf } from '../geometry/sdf.ts';
 import { KeepOutsAtRest } from './keepOuts.ts';
 import { LavLead } from './LavLead';
@@ -62,7 +62,7 @@ import { frustumOutline } from '../geometry/outline.ts';
 import { refLabels } from './sceneWords.ts';
 import { labelWidth } from './labelLayout.ts';
 import { bodyOf, layoutArtLabels, occupancy } from './artLabels.ts';
-import { sceneFrame } from '../geometry/contentFrame.ts';
+import { sceneFrame, shapeBox } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
@@ -334,6 +334,203 @@ function cylinderRect(sol: Extract<Shape3, { kind: 'tube' | 'slab' }>, view: Vie
   const us = ends.map((e) => e.x);
   const vs = ends.map((e) => (view === 'side' ? e.y : e.z));
   return { u0: Math.min(...us) - eu, u1: Math.max(...us) + eu, v0: Math.min(...vs) - ev, v1: Math.max(...vs) + ev };
+}
+
+/* ── the chosen part's marker ─────────────────────────────────────────── */
+
+/** On the glass (px): the marker's least long side, its least short side, and
+ *  the least stroke — a 7 mm line is 3 px on a drum and nothing on a 30 m site
+ *  (owner 2026-11-05, F06: PART moved the words and the drawing showed nothing). */
+export const MARK_MIN_PX = 44;
+export const MARK_THIN_PX = 16;
+export const MARK_STROKE_PX = 3;
+/** The marker's stroke (mm of the drawing) at a fit scale. */
+export const markStroke = (s: number) => Math.max(7, MARK_STROKE_PX / s);
+
+/** How a marker found its part (see partMark). */
+export type PartMarkHow = 'solid' | 'region' | 'hit' | 'label' | 'placed' | 'ground' | 'otherView';
+export type PartMark = { how: PartMarkHow; shapes: Shape3[]; rects: ViewBox[]; rings: { u: number; v: number }[] };
+
+/** The shapes drawn by their outline (a box, a tube and a slab are boxes; the
+ *  floor is unbounded). */
+const OUTLINED: ReadonlySet<Shape3['kind']> = new Set<Shape3['kind']>(['sweep', 'frustum', 'sector', 'cyl', 'capsule', 'fan', 'prism']);
+
+/** Cells along the longer side of the sampled drawing (a part thinner than
+ *  half a cell names what carries it: Part.mark). The boxes are found once per
+ *  (art, view, variant): a hit test can cost a tenth of a millisecond
+ *  (artLabels.ts), so only a part with no geometry of its own asks. */
+const HIT_CELLS = 40;
+const hitBoxCache = new WeakMap<object, Map<string, ReadonlyMap<string, ViewBox>>>();
+
+/** Where the art's own tap targets lie: for each id, the box of the sampled
+ *  points it answers at. Reads a lesson's HITS boxes and its computed hit
+ *  areas alike. */
+export function hitBoxes(art: Pick<LessonArt, 'hitTest'>, view: ViewId, variant: VariantId, frame: ViewBox): ReadonlyMap<string, ViewBox> {
+  let byKey = hitBoxCache.get(art);
+  if (!byKey) {
+    byKey = new Map();
+    hitBoxCache.set(art, byKey);
+  }
+  const key = `${view}|${variant}|${frame.u0}|${frame.u1}|${frame.v0}|${frame.v1}`;
+  const had = byKey.get(key);
+  if (had) return had;
+  const fw = frame.u1 - frame.u0;
+  const fh = frame.v1 - frame.v0;
+  const cell = Math.max(fw, fh) / HIT_CELLS;
+  const half = cell / 2;
+  const out = new Map<string, ViewBox>();
+  for (let i = 0; i * cell < fw; i++)
+    for (let j = 0; j * cell < fh; j++) {
+      const u = frame.u0 + (i + 0.5) * cell;
+      const v = frame.v0 + (j + 0.5) * cell;
+      const id = art.hitTest(view, variant, u, v, half);
+      if (!id) continue;
+      const b = out.get(id);
+      if (!b) out.set(id, { u0: u, u1: u, v0: v, v1: v });
+      else {
+        b.u0 = Math.min(b.u0, u);
+        b.u1 = Math.max(b.u1, u);
+        b.v0 = Math.min(b.v0, v);
+        b.v1 = Math.max(b.v1, v);
+      }
+    }
+  byKey.set(key, out);
+  return out;
+}
+
+type MarkArt = Pick<LessonArt, 'hitTest' | 'labels'>;
+type MarkModel = Pick<InstrumentModel, 'parts' | 'regions' | 'views' | 'viewsByVariant'>;
+
+/** All of a view a hit area can lie in: the authored box and the fitted frame. */
+function markFrame(model: MarkModel, variant: VariantId, view: ViewId, frame: ViewBox): ViewBox {
+  const a = viewsOf(model, variant)[view];
+  return a ? { u0: Math.min(a.u0, frame.u0), u1: Math.max(a.u1, frame.u1), v0: Math.min(a.v0, frame.v0), v1: Math.max(a.v1, frame.v1) } : frame;
+}
+
+/** A label is keyed by the part's id or by its last word (`ride.stand`: `stand`). */
+function partLabel(art: MarkArt, view: ViewId, variant: VariantId, id: string) {
+  const labels = art.labels(view, variant);
+  const tail = id.slice(id.lastIndexOf('.') + 1);
+  return labels.find((l) => l.id === id) ?? labels.find((l) => l.id === tail);
+}
+
+/** What this view of this variant itself knows about `id`. */
+function markHere(model: MarkModel, art: MarkArt, view: ViewId, variant: VariantId, frame: ViewBox, id: string): PartMark | null {
+  const part = model.parts.find((p) => p.id === id);
+  // A named part drawn as several solids (the resonator tubes, in groups):
+  // ring the solids themselves, never a point where the part meets another.
+  const solids = part?.solid ? [part.solid] : part ? model.parts.filter((q) => q.id.startsWith(`${part.id}.`) && q.solid && (!q.variants || q.variants.includes(variant)) && !q.hiddenIn?.includes(view)).map((q) => q.solid!) : [];
+  const rects: ViewBox[] = [];
+  const shapes: Shape3[] = [];
+  for (const sol of solids) {
+    if (sol.kind === 'slab' || sol.kind === 'tube') {
+      const q = cylinderRect(sol, view);
+      rects.push({ u0: q.u0 - 14, u1: q.u1 + 14, v0: q.v0 - 14, v1: q.v1 + 14 });
+    } else if (sol.kind === 'box') rects.push({ u0: sol.min.x, u1: sol.max.x, v0: view === 'side' ? sol.min.y : sol.min.z, v1: view === 'side' ? sol.max.y : sol.max.z });
+    else if (OUTLINED.has(sol.kind)) shapes.push(sol);
+  }
+  if (rects.length || shapes.length) return { how: 'solid', shapes, rects, rings: [] };
+  // By variant: a sound source of the other setup is not on this drawing. One
+  // past the frame (leaves in a canopy cropped by the fit) gives way to the
+  // part's hit area or label, if it has one on the drawing.
+  const rings = model.regions.filter((r) => r.partId === id && (!r.variants || r.variants.includes(variant))).map((r) => ({ u: r.anchor.x, v: view === 'side' ? r.anchor.y : r.anchor.z }));
+  const seen = rings.filter((q) => q.u >= frame.u0 && q.u <= frame.u1 && q.v >= frame.v0 && q.v <= frame.v1);
+  if (seen.length) return { how: 'region', shapes: [], rects: [], rings: seen };
+  const hit = hitBoxes(art, view, variant, markFrame(model, variant, view, frame)).get(id);
+  if (hit) return { how: 'hit', shapes: [], rects: [hit], rings: [] };
+  const l = partLabel(art, view, variant, id);
+  if (l) return { how: 'label', shapes: [], rects: [], rings: [l.at ?? l.lead ?? l.point ?? { u: l.u, v: l.v }] };
+  return rings.length ? { how: 'region', shapes: [], rects: [], rings } : null;
+}
+
+/** A band across this view at the x where the OTHER view shows `id` (u is x in
+ *  both views): the part is not drawn here, but this is how far along it is. */
+function markAcross(model: MarkModel, art: MarkArt, view: ViewId, variant: VariantId, frame: ViewBox, id: string): PartMark | null {
+  const other: ViewId = view === 'side' ? 'top' : 'side';
+  const box = viewsOf(model, variant)[other];
+  if (!box) return null;
+  const hit = hitBoxes(art, other, variant, box).get(id);
+  const l = hit ? null : partLabel(art, other, variant, id);
+  const at = l ? (l.at ?? l.lead ?? l.point ?? l) : null;
+  const span = hit ?? (at ? { u0: at.u, u1: at.u } : null);
+  return span ? { how: 'otherView', shapes: [], rects: [{ u0: span.u0, u1: span.u1, v0: frame.v0, v1: frame.v1 }], rings: [] } : null;
+}
+
+/**
+ * What shows the chosen part on this view of this variant (mm of the view):
+ * its solids; its sound sources; the art's own hit area; its label's point;
+ * the model's `mark` (a place of its own, the drawn part that carries it, the
+ * ground); else a band where the other view shows it. Null for a part
+ * `hiddenIn` this view (a marimba's tubes under its bars, from above: a marker
+ * would ring the part in front). Pure, so a test can walk every lesson with it.
+ */
+export function partMark(model: MarkModel, art: MarkArt, view: ViewId, variant: VariantId, frame: ViewBox, id: string, floor = 0): PartMark | null {
+  const part = model.parts.find((p) => p.id === id);
+  if (part?.hiddenIn?.includes(view)) return null;
+  // Left chosen from the other setup (a facade, in the woodland): not on this
+  // drawing. The art may still answer to it (the kick's one front-head target).
+  if (part?.variants && !part.variants.includes(variant) && !hitBoxes(art, view, variant, markFrame(model, variant, view, frame)).has(id)) return null;
+  const here = markHere(model, art, view, variant, frame, id);
+  if (here) return here;
+  const mark = part?.mark;
+  const placed = mark?.[view];
+  if (placed) return { how: 'placed', shapes: [], rects: [placed], rings: [] };
+  for (const as of mark?.as ?? []) {
+    const m = markHere(model, art, view, variant, frame, as);
+    if (m) return m;
+  }
+  if (mark?.ground) return { how: 'ground', shapes: [], rects: [view === 'side' ? { ...frame, v0: floor, v1: Math.max(frame.v1, floor) } : frame], rings: [] };
+  for (const q of [id, ...(mark?.as ?? [])]) {
+    const m = markAcross(model, art, view, variant, frame, q);
+    if (m) return m;
+  }
+  return null;
+}
+
+/** The (u, v) box round a solid, for measuring its outline on the glass. */
+function shapeView(s: Shape3, view: ViewId): ViewBox | null {
+  const b = shapeBox(s);
+  return b && { u0: b.min.x, u1: b.max.x, v0: view === 'side' ? b.min.y : b.min.z, v1: view === 'side' ? b.max.y : b.max.z };
+}
+
+/**
+ * A marker as drawn at fit scale `s` on the glass `vis` (mm): every box stays
+ * on the glass and is at least MARK_MIN_PX long and MARK_THIN_PX wide (an
+ * amber box you can find, not a hairline); every point gets a ring at
+ * least MARK_MIN_PX across; so does an outline too small to see. `off`: what
+ * the marker stands for lies wholly off this glass, so it waits at the edge.
+ */
+export function markOnGlass(mark: PartMark, view: ViewId, s: number, vis: ViewBox): { rects: ViewBox[]; rings: { u: number; v: number; r: number }[]; off: boolean } {
+  const edge = (MARK_STROKE_PX + 2) / s;
+  const hold = (x: number, lo: number, hi: number) => (hi < lo ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, x)));
+  const r = Math.max(70, MARK_MIN_PX / 2 / s);
+  let off = false;
+  const ring = (u: number, v: number) => {
+    if (u < vis.u0 || u > vis.u1 || v < vis.v0 || v > vis.v1) off = true;
+    const m = r + edge;
+    return { u: hold(u, vis.u0 + m, vis.u1 - m), v: hold(v, vis.v0 + m, vis.v1 - m), r };
+  };
+  const rects = mark.rects.map((b) => {
+    if (b.u1 < vis.u0 || b.u0 > vis.u1 || b.v1 < vis.v0 || b.v0 > vis.v1) off = true;
+    const u0 = hold(b.u0, vis.u0 + edge, vis.u1 - edge);
+    const u1 = hold(b.u1, vis.u0 + edge, vis.u1 - edge);
+    const v0 = hold(b.v0, vis.v0 + edge, vis.v1 - edge);
+    const v1 = hold(b.v1, vis.v0 + edge, vis.v1 - edge);
+    const least = (Math.max(u1 - u0, v1 - v0) * s >= MARK_MIN_PX ? MARK_THIN_PX : MARK_MIN_PX) / s;
+    const wu = Math.max(u1 - u0, least);
+    const wv = Math.max(v1 - v0, least);
+    const cu = hold((u0 + u1) / 2, vis.u0 + edge + wu / 2, vis.u1 - edge - wu / 2);
+    const cv = hold((v0 + v1) / 2, vis.v0 + edge + wv / 2, vis.v1 - edge - wv / 2);
+    return { u0: cu - wu / 2, u1: cu + wu / 2, v0: cv - wv / 2, v1: cv + wv / 2 };
+  });
+  const rings = mark.rings.map((p) => ring(p.u, p.v));
+  for (const sh of mark.shapes) {
+    const b = shapeView(sh, view);
+    if (!b) continue;
+    const gone = b.u1 < vis.u0 || b.u0 > vis.u1 || b.v1 < vis.v0 || b.v0 > vis.v1;
+    if (gone || Math.max(b.u1 - b.u0, b.v1 - b.v0) * s < MARK_MIN_PX) rings.push(ring((b.u0 + b.u1) / 2, (b.v0 + b.v1) / 2));
+  }
+  return { rects, rings, off };
 }
 
 function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
@@ -2395,37 +2592,25 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const partLabels = useMemo(() => labels.filter((l) => !isZoneLabel(l.id)), [labels]);
   const zoneLabels = useMemo(() => labels.filter((l) => isZoneLabel(l.id)), [labels]);
   const Instrument = memoArt(art.Instrument);
+  // The chosen part's marker, sized from this view's scale so it reads on a
+  // 30 m site as on a tambourine (partMark, markOnGlass).
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
-    const part = model.parts.find((p) => p.id === highlight);
-    // A part that cannot be seen from this view (a marimba's tubes under its
-    // bars, from above) gets no marker here: it would ring the part in front.
-    if (part?.hiddenIn?.includes(view)) return null;
-    const region = model.regions.find((r) => r.partId === highlight);
+    const floor = model.floorByVariant?.[variant] ?? model.yFloorByVariant?.[variant] ?? model.yFloor.mm;
+    const mark = partMark(model, art, view, variant, box, highlight, floor);
+    if (!mark) return null;
+    const glass = { u0: -base.ox / base.s, u1: (w - base.ox) / base.s, v0: (reserveTop - base.oy) / base.s, v1: (h - base.oy) / base.s };
+    const drawn = markOnGlass(mark, view, base.s, glass);
     const p = Skia.Path.Make();
-    // A named part drawn as several solids (the resonator tubes, in groups):
-    // ring the solids themselves, never a point where the part meets another.
-    if (part && !part.solid) {
-      const kids = model.parts.filter((q) => q.id.startsWith(`${part.id}.`) && q.solid && (!q.variants || q.variants.includes(variant)) && !q.hiddenIn?.includes(view));
-      for (const k of kids) {
-        const o = shapeOutline(k.solid!, view);
-        if (o) p.addPath(o);
-      }
-      if (kids.length) return p;
+    for (const sh of mark.shapes) {
+      const o = shapeOutline(sh, view);
+      if (o) p.addPath(o);
     }
-    const sol = part?.solid;
-    if (sol && (sol.kind === 'slab' || sol.kind === 'tube')) {
-      const q = cylinderRect(sol, view);
-      p.addRRect(Skia.RRectXY(Skia.XYWHRect(q.u0 - 14, q.v0 - 14, q.u1 - q.u0 + 28, q.v1 - q.v0 + 28), 10, 10));
-      return p;
-    }
-    if (sol) {
-      const o = shapeOutline(sol, view);
-      if (o) return o;
-    }
-    if (region) p.addCircle(region.anchor.x, view === 'side' ? region.anchor.y : region.anchor.z, 70);
-    return region ? p : null;
-  }, [highlight, model, view, variant]);
+    const corner = Math.max(10, 6 / base.s);
+    for (const q of drawn.rects) p.addRRect(Skia.RRectXY(Skia.XYWHRect(q.u0, q.v0, q.u1 - q.u0, q.v1 - q.v0), corner, corner));
+    for (const c of drawn.rings) p.addCircle(c.u, c.v, c.r);
+    return p;
+  }, [highlight, model, art, view, variant, box, base, w, h, reserveTop]);
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
   const hkView = model.hardwareScaleByView?.[view] ?? model.hardwareScale ?? 1;
@@ -2461,7 +2646,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {zones.map((z) => (
             <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
           ))}
-          {highlightPath ? <Path path={highlightPath} style="stroke" strokeWidth={7} color={AMBER} /> : null}
+          {highlightPath ? <Path path={highlightPath} style="stroke" strokeWidth={markStroke(base.s)} color={AMBER} /> : null}
           {pathsFrom ? <PathsOverlay rig={rig} view={view} from={pathsFrom} /> : null}
           {wedge ? (
             <>

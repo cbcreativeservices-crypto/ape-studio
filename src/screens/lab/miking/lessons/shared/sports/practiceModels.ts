@@ -20,10 +20,11 @@ function targetSurface(scene: VenueScene, id: string, prefix: string): Reference
 
 /** Engine model of a practice scene. `src`: the lesson whose layout it is. */
 /** Exported for Lab 7 group 3 (B08's venues): any VenueScene as an engine model. */
-export function sceneModel(o: { scene: VenueScene; id: string; name: string; prefix: string; variant: { id: string; label: string; blurb: string; phrase: string }; src: string; parts: { id: string; label: string; short: string; role: string; lesson: boolean }[]; views: InstrumentModel['views'] }): InstrumentModel {
+export function sceneModel(o: { scene: VenueScene; id: string; name: string; prefix: string; variant: { id: string; label: string; blurb: string; phrase: string }; src: string; parts: { id: string; label: string; short: string; role: string; lesson: boolean; mark?: Part['mark'] }[]; views: InstrumentModel['views'] }): InstrumentModel {
   const LESSON: Provenance = { kind: 'trial', src: o.src, note: 'the lesson’s own practice geometry, CONFIRMED by calculation' };
   const DD = ill('a drawing default (the practice scene’s other places)');
-  const parts: Part[] = o.parts.map((p) => ({ id: `${o.prefix}.${p.id}`, label: p.label, short: p.short, role: p.role, prov: p.lesson ? LESSON : DD }));
+  // `area` is the ground the scene stands on; nothing else marks it (partMark).
+  const parts: Part[] = o.parts.map((p) => ({ id: `${o.prefix}.${p.id}`, label: p.label, short: p.short, role: p.role, prov: p.lesson ? LESSON : DD, ...(p.mark || p.id === 'area' ? { mark: p.mark ?? { ground: true } } : {}) }));
   const envelopes: Envelope[] = o.scene.keepClear.map((k) => {
     const xs = k.poly.map((q) => q.x * 1000);
     const zs = k.poly.map((q) => -q.y * 1000);
@@ -54,13 +55,13 @@ export function sceneModel(o: { scene: VenueScene; id: string; name: string; pre
 }
 
 const FIELD_PARTS = [
-  { id: 'area', label: 'the practice rectangle (30 × 20 m)', short: 'field', role: 'An inactive, authorized training area: the source assistant walks only inside it; every mic and observer stays outside.', lesson: true },
+  { id: 'area', mark: { top: { u0: 0, u1: 30000, v0: -20000, v1: 0 }, ground: true }, label: 'the practice rectangle (30 × 20 m)', short: 'field', role: 'An inactive, authorized training area: the source assistant walks only inside it; every mic and observer stays outside.', lesson: true },
   { id: 'A', label: 'target A (15, 4) — 10 m straight ahead of M', short: 'A', role: 'The near target: 10.0 m from M, straight ahead. The baseline for every comparison.', lesson: true },
   { id: 'B', label: 'target B (5, 10) — 18.9 m, 32° left', short: 'B', role: 'Farther and off to the left: 18.9 m from M, 32° left of straight ahead.', lesson: true },
   { id: 'C', label: 'target C (15, 18) — 24 m straight ahead', short: 'C', role: 'The far target: 24.0 m from M, straight ahead.', lesson: true },
   { id: 'M', label: 'comparison mark M (15, −6)', short: 'M', role: 'Where the action mics are compared — one at a time: two capsules standing side by side do not share a coordinate.', lesson: true },
   { id: 'E', label: 'the fixed ambience mark E', short: 'E', role: 'A separately approved ambience position in the crew strip: the stable bed under the action mics.', lesson: false },
-  { id: 'offset', label: 'the 6 m practice offset (keep clear)', short: 'offset', role: 'Between the rectangle and the crew strip. The 6 m is this practice’s own layout, not a sport’s rule — it may be made larger.', lesson: true },
+  { id: 'offset', mark: { top: { u0: -2000, u1: 32000, v0: 0, v1: 4000 }, ground: true }, label: 'the 6 m practice offset (keep clear)', short: 'offset', role: 'Between the rectangle and the crew strip. The 6 m is this practice’s own layout, not a sport’s rule — it may be made larger.', lesson: true },
 ];
 
 /** The practice field as an engine model (B13, B12). */

@@ -22,7 +22,7 @@
  *                   (standing.ts) — the wearer (coach, official, athlete),
  *                   the mic's place, the pack, the cable's loop, the antenna,
  *                   the keep-outs; the head turn's change at a chest mic
- *                   against a headset.
+ *                   against a headset, seen from above in the corner.
  */
 import { useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -36,15 +36,18 @@ import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { SINGER_SIDE } from '../voice/voicePose.ts';
-import { Dim, FieldStage, MicAt, Ray, uvOf } from '../field/FieldStage';
+import { Dim, FieldStage, MicAt, Ray, uvOf, type FieldInset } from '../field/FieldStage';
 import { DESTINATIONS, problemWords, type DestId } from './routing.ts';
 import { RoutingPanel, type SourceLook } from './RoutingPanel';
 import { BODY_CHAIN, FEED_HOME, KEY_WORDS, PRIVATE_REFUSED, feedPlan, feedProblemWords, feedProblems, type FeedSpec, type FeedState } from './feeds.ts';
 import { boothSpill, partnerAt, partnerMouth } from './boothPlan.ts';
 import { HANDOFF_EARLY, HANDOFF_LATE, HANDOFF_ON_TIME, between, betweenDrop, clippedQuestion, handoffOk, levelDb, lostSyllables, type Handoff } from './handoff.ts';
 import { TORSO, TORSO_FRONT, bodyWornChain, chestVsHeadset, frontUV, keepOutsOf, type Wearer } from './standing.ts';
-import { turnHead } from './talkerPose.ts';
-import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing } from './SportSpeechArt';
+import { HOST, TURN_PIVOT, turnHead } from './talkerPose.ts';
+import { withHead } from './bodyWorn.ts';
+import { TurnedHeadTop } from './BroadcastArt';
+import { HeadsetFrame } from './BodyWornArt';
+import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing, StandingTalker } from './SportSpeechArt';
 
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 const unit = (a: Vec3): Vec3 => {
@@ -124,9 +127,12 @@ export function useFeedsStep(spec: FeedsSpec): MikingStep {
   const src = plan.sources.find((q) => q.id === trace) ?? plan.sources[0];
   const reached = plan.dests.filter((d) => plan.sends[src.id]?.includes(d));
   const refused = s.priv === 'tryAir';
-  const set = (patch: Partial<FeedState>) => {
+  // A switch acts on one source: the panel lights only the traced source, so
+  // the trace follows the switch and the route's change shows at once.
+  const set = (patch: Partial<FeedState>, source?: string) => {
     setS((q) => ({ ...q, ...patch }));
     setFlipped(true);
+    if (source) setTrace(source);
   };
   const opt = <T extends string>(id: FeedControl, label: string, value: T, options: readonly { id: T; label: string; blurb: string }[], on: (v: T) => void): DockParam => ({
     kind: 'options',
@@ -151,16 +157,16 @@ export function useFeedsStep(spec: FeedsSpec): MikingStep {
       options: plan.sources.map((q) => ({ id: q.id, label: q.label, blurb: `Light every destination ${q.label.toLowerCase()} reaches.` })),
     },
     ...(spec.controls.includes('key') && first
-      ? [opt('key', 'MIC KEY', s.key, [{ id: 'onAir', label: 'On air', blurb: KEY_WORDS.onAir }, { id: 'cough', label: 'Cough', blurb: KEY_WORDS.cough }, { id: 'talkback', label: 'Talkback', blurb: KEY_WORDS.talkback }] as const, (v) => set({ key: v }))]
+      ? [opt('key', 'MIC KEY', s.key, [{ id: 'onAir', label: 'On air', blurb: KEY_WORDS.onAir }, { id: 'cough', label: 'Cough', blurb: KEY_WORDS.cough }, { id: 'talkback', label: 'Talkback', blurb: KEY_WORDS.talkback }] as const, (v) => set({ key: v }, first.id))]
       : []),
     ...(spec.controls.includes('ret')
-      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: their own mics come back to them locally, never late.' }, { id: 'full', label: 'Full mix', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }))]
+      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: their own mics come back to them locally, never late.' }, { id: 'full', label: 'Full mix', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }, spec.feed.commentators.some((c) => c.id === trace) ? trace : first?.id))]
       : []),
     ...(spec.controls.includes('crowd') && spec.feed.crowd
-      ? [opt('crowd', 'CROWD', s.crowd, [{ id: 'own', label: 'Separate', blurb: 'The crowd bed on its own channel into the program, added on purpose.' }, { id: 'none', label: 'Not routed', blurb: 'The crowd mics are not in the program: only what the commentary mics happen to hear.' }] as const, (v) => set({ crowd: v }))]
+      ? [opt('crowd', 'CROWD', s.crowd, [{ id: 'own', label: 'Separate', blurb: 'The crowd bed on its own channel into the program, added on purpose.' }, { id: 'none', label: 'Not routed', blurb: 'The crowd mics are not in the program: only what the commentary mics happen to hear.' }] as const, (v) => set({ crowd: v }, spec.feed.crowd?.id))]
       : []),
     ...(spec.controls.includes('official') && spec.feed.official
-      ? [opt('official', 'OFFICIAL MIC', s.official, [{ id: 'off', label: 'Off', blurb: 'The announcement mic muted between announcements.' }, { id: 'pa', label: 'To the PA', blurb: 'Opened on purpose for an announcement: the crowd hears it on the PA.' }, { id: 'paProgram', label: 'PA + air', blurb: 'Also split to the broadcast — only with explicit permission for that split.' }] as const, (v) => set({ official: v }))]
+      ? [opt('official', 'OFFICIAL MIC', s.official, [{ id: 'off', label: 'Off', blurb: 'The announcement mic muted between announcements.' }, { id: 'pa', label: 'To the PA', blurb: 'Opened on purpose for an announcement: the crowd hears it on the PA.' }, { id: 'paProgram', label: 'PA + air', blurb: 'Also split to the broadcast — only with explicit permission for that split.' }] as const, (v) => set({ official: v }, spec.feed.official?.id))]
       : []),
     ...(spec.controls.includes('priv') && spec.privateCircuit
       ? [opt('priv', 'PRIVATE', s.priv, [{ id: 'closed', label: 'Closed', blurb: 'The officials’ private circuit on its own approved route.' }, { id: 'tryAir', label: 'Put on air', blurb: 'Ask the tool to open the private circuit into the program. It will refuse.' }] as const, (v) => set({ priv: v }))]
@@ -541,6 +547,8 @@ export type BodySpec = {
 
 const FRONT_BOX: ViewBox = { u0: -470, u1: 470, v0: -320, v1: 1640 };
 const SIDE_BOX: ViewBox = { u0: -560, u1: 380, v0: -320, v1: 1640 };
+/** The corner view from above: the head and the chest, close in. */
+const ABOVE_BOX: ViewBox = { u0: -290, u1: 170, v0: -200, v1: 200 };
 
 export function useBodyStep(spec: BodySpec): MikingStep {
   const [who, setWho] = useState<Wearer>(spec.wearers[0]);
@@ -555,7 +563,11 @@ export function useBodyStep(spec: BodySpec): MikingStep {
   const uvS = (p: Vec3) => ({ u: p.x, v: p.y });
   const uv = view === 'front' ? uvF : uvS;
   const mic = uv(chain.mic);
-  const a11y = `The ${who} seen from the ${view}: ${at === 'chest' ? 'a body mic clipped at the breastbone' : 'a headset with its boom at the corner of the mouth'}, the cable with a strain-relief loop to a pack at the small of the back, its antenna hanging straight.${kos.length ? ` Never mount on: ${kos.map((k) => k.short.toLowerCase()).join(', ')}.` : ''} Turned ${Math.abs(yaw)}°: the chest mic is ${cm(cmp.chest.d)} from the mouth (${cm(cmp.chest.d0)} facing ahead).`;
+  // From above: the mouth goes round with the head; the chest mic stays on the
+  // chest, the headset's boom goes round with the head.
+  const mouth = turnHead(yaw, 0).mouth;
+  const worn = at === 'chest' ? chain.mic : withHead(chain.mic, yaw, 0);
+  const a11y = `The ${who} seen from the ${view}: ${at === 'chest' ? 'a body mic clipped at the breastbone' : 'a headset with its boom at the corner of the mouth'}, the cable with a strain-relief loop to a pack at the small of the back, its antenna hanging straight.${kos.length ? ` Never mount on: ${kos.map((k) => k.short.toLowerCase()).join(', ')}.` : ''} Turned ${Math.abs(yaw)}°: the chest mic is ${cm(cmp.chest.d)} from the mouth (${cm(cmp.chest.d0)} facing ahead), the headset ${cm(cmp.headset.d)} at every turn.`;
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -622,6 +634,40 @@ export function useBodyStep(spec: BodySpec): MikingStep {
     ...kos.slice(0, 2).map((k, i) => ({ id: k.id, text: `NEVER MOUNT HERE · ${k.short}`, short: k.short, u: view === 'front' ? -440 : -540, v: i === 0 ? -260 : 160, align: 'left' as const, tone: 'muted' as const })),
   ];
   const pose = view === 'front' ? TORSO_FRONT : SINGER_SIDE;
+  const inset: FieldInset = {
+    view: 'top',
+    box: ABOVE_BOX,
+    at: { x: 0.02, y: 0.6, w: 0.37, h: 0.38 },
+    title: 'FROM ABOVE',
+    draw: (px) => (
+      <>
+        <StandingTalker view="top" t={HOST} headless />
+        <TurnedHeadTop yawDeg={yaw} />
+        {at === 'headset' ? (
+          <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: TURN_PIVOT.z }, { rotate: (yaw * Math.PI) / 180 }, { translateX: -TURN_PIVOT.x }, { translateY: -TURN_PIVOT.z }]}>
+            <HeadsetFrame view="top" capsule={chain.mic} />
+          </Group>
+        ) : null}
+        <Dim a={uvOf('top', mouth)} b={uvOf('top', worn)} px={px} color="#ffc64d" />
+        <Circle cx={worn.x} cy={worn.z} r={5 * px} color="#ffc64d" />
+      </>
+    ),
+  };
+  // A wide, low corner (the phone on its side) has room beside the drawing:
+  // the words sit there, off the head and the mic.
+  const aboveLabels = (w: number, h: number): StaticLabel[] => {
+    const wide = w * inset.at.w > 2 * h * inset.at.h;
+    const dist = cm(at === 'chest' ? cmp.chest.d : cmp.headset.d);
+    return wide
+      ? [
+          { id: 'above', text: 'FROM ABOVE', short: 'ABOVE', u: ABOVE_BOX.u0 - 12, v: 0, align: 'right' },
+          { id: 'dist', text: dist, u: ABOVE_BOX.u1 + 12, v: 0, align: 'left', tone: 'amber' },
+        ]
+      : [
+          { id: 'above', text: 'FROM ABOVE', short: 'ABOVE', u: ABOVE_BOX.u0 + 18, v: ABOVE_BOX.v0 + 44, align: 'left' },
+          { id: 'dist', text: dist, u: ABOVE_BOX.u1 - 14, v: ABOVE_BOX.v1 - 56, align: 'right', tone: 'amber' },
+        ];
+  };
   return {
     key: 'body',
     title: 'A body mic, front and side',
@@ -629,7 +675,7 @@ export function useBodyStep(spec: BodySpec): MikingStep {
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <FieldStage w={w} h={h} view="side" box={view === 'front' ? FRONT_BOX : SIDE_BOX} a11y={a11y} labels={labels}>
+        <FieldStage w={w} h={h} view="side" box={view === 'front' ? FRONT_BOX : SIDE_BOX} a11y={a11y} labels={labels} inset={{ ...inset, labels: aboveLabels(w, h) }}>
           {() => (
             <>
               {view === 'side' ? <BodyChain uv={uvS} chain={chain} /> : null}
@@ -646,7 +692,7 @@ export function useBodyStep(spec: BodySpec): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'Front or side · the places are drawing defaults · hatched = never mount here · silent',
+      badge: 'Front or side, above in the corner · the places are drawing defaults · hatched = never mount here · silent',
       bezel,
       params,
       initialParam: 'who',

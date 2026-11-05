@@ -99,6 +99,13 @@ export type Part = {
    *  — a marker would sit on the part in front (owner 2026-10-06: "marimba
    *  resonator are the tubes not the wooden struck note"). */
   hiddenIn?: ViewId[];
+  /** Where the parts page's marker goes for a part with no solid, sound source,
+   *  hit area or label of its own (partMark, PlacementScene): `side`/`top`, a
+   *  place on that view (mm); `as`, the drawn parts that carry it, first found
+   *  (a headset on a head, a cone under its coverplate); `ground`, the floor
+   *  of the scene (from above, the whole plan). Draws nothing new; it only
+   *  says where to point. */
+  mark?: { side?: ViewBox; top?: ViewBox; as?: readonly PartId[]; ground?: boolean };
   /** Where its geometry comes from (internal record; never shown). */
   prov: Provenance;
 };

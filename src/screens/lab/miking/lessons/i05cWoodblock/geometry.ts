@@ -17,7 +17,7 @@ function parts(s: WbState): Part[] {
   const c = s.c;
   const out: Part[] = [
     { id: `wb.block.${v}`, label: 'the block (hardwood)', short: 'block', role: 'A solid hardwood body with a slot cut into it. Struck on top, its thin wall over the slot and the air inside ring together.', prov: WB_DIMS.len.prov, solid: { kind: 'box', min: v3(c.x - DP / 2, c.y - H / 2, c.z - L / 2), max: v3(c.x + DP / 2, c.y + H / 2, c.z + L / 2) } },
-    { id: `wb.slot.${v}`, label: 'the slot (the opening)', short: 'slot', role: 'The opening, here facing the audience. It shapes the block’s hollow ring — a mic is never put into it.', prov: { kind: 'sourced', src: 'PAS-ECV02', quote: 'The opening of the wood block should face towards the audience when possible.' } },
+    { id: `wb.slot.${v}`, mark: { as: [`wb.block.${v}`] }, label: 'the slot (the opening)', short: 'slot', role: 'The opening, here facing the audience. It shapes the block’s hollow ring — a mic is never put into it.', prov: { kind: 'sourced', src: 'PAS-ECV02', quote: 'The opening of the wood block should face towards the audience when possible.' } },
     { id: `wb.mallet.${v}`, label: 'mallet (rubber head)', short: 'mallet', role: 'A rubber, plastic or hard-cord mallet. It strikes just off the middle of the top, toward the opening; its rebound and a missed stroke set the clearance.', moving: true, prov: WB_DIMS.mallet.prov, solid: { kind: 'capsule', a: s.mallet.hand, b: s.mallet.head, r: 15 } },
   ];
   if (v === 'table') {

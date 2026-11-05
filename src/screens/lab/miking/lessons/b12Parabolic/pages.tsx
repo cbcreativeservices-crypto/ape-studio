@@ -18,7 +18,7 @@
  * TROUBLESHOOT and PRACTICE are the engine's. FULLY SILENT; nothing moves by
  * itself.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Circle } from '@shopify/react-native-skia';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
@@ -210,13 +210,14 @@ function B12Context(p: PageProps) {
     (id: string) => {
       setGot((prev) => {
         if (prev.has(id)) return prev;
-        const n = new Set([...prev, id]);
-        if (n.has('handoff') && n.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
-        return n;
+        return new Set([...prev, id]);
       });
     },
-    [interactiveDone, onInteractive],
+    [],
   );
+  useEffect(() => {
+    if (got.has('handoff') && got.has('headroomChain') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
+  }, [got, interactiveDone, onInteractive]);
   const track = useTrackStep({ scene: PRACTICE_FIELD, dish: DISH_A, arc: PF_ARC, path: TRACK_PATH, fixed: { ...SG_F, aimAt: { x: 4, y: 6 } }, onInteractive: note, done: got.has('handoff') });
   const headroom = useHeadroomStep({ onInteractive: note, done: got.has('headroomChain') });
   return <PageSteps steps={[track, headroom, checkStep(p, 'context')]} />;

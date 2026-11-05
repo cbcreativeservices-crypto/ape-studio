@@ -314,7 +314,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     heat: challenge.rig.thermal,
     speaker: true,
     faulted: challenge.rig.primary != null,
-    a11ySummary: `System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${challenge.rig.primary}.` : 'No fault.'} Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`,
+    // Mode, load and vent leave the wave alone, so the stage says it instead.
+    stageStatus: true,
+    faultTag: faultWord,
+    a11ySummary: `System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${challenge.rig.primary}.` : 'No fault.'} Current demand ${Math.round(challenge.rig.currentDemand * 100)} percent. Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`,
   };
 
   return (

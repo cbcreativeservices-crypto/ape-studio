@@ -12,11 +12,15 @@
  *                 reflections (amber) meeting at the focus on the axis or
  *                 missing it off the axis (parabolic.reflectRay), and the low
  *                 sound's direct path to the element (a separate dashed arrow)
+ *   dishFocusInset   the FieldStage close-up of the focus, drawn to its own
+ *                    larger scale: a 2 mm slide of the element is a few px on
+ *                    a whole dish, and is plain to see here
  *   ArcOperator   the operator from above with the dish (B12's turn arc)
  */
 import { useMemo } from 'react';
-import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Circle, DashPathEffect, Group, LinearGradient, Path, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { profile, raySet, halfWidthAt, type Dish } from './parabolic.ts';
+import { Dim, type FieldInset } from '../field/FieldStage';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { standing, topPose } from '../foley/performer.ts';
 import { v3 } from '../foley/frameF.ts';
@@ -150,6 +154,53 @@ export function DishRays({ dish, offDeg, px, low = true, n = 7 }: { dish: Dish; 
       ) : null}
     </Group>
   );
+}
+
+/** The close-up's window (mm): the same shape at every dish, wide enough for
+ *  the element's whole body at either end of the ±20 mm slide. */
+export const focusWindow = (dish: Dish) => ({ u0: dish.f - 38, u1: dish.f + 66, v0: -36, v1: 36 });
+
+/** The window's outline on the whole dish, so the eye can match the inset to
+ *  the place it magnifies. */
+export function FocusWindowMark({ dish, px }: { dish: Dish; px: number }) {
+  const p = useMemo(() => {
+    const b = focusWindow(dish);
+    const o = make();
+    o.addRect(Skia.XYWHRect(b.u0, b.v0, b.u1 - b.u0, b.v1 - b.v0));
+    return o;
+  }, [dish]);
+  return <Path path={p} style="stroke" strokeWidth={1.2 * px} color={AMBER} opacity={0.75} />;
+}
+
+/** The focus magnified: the true geometry at a larger scale (nothing is
+ *  exaggerated), so the gap between where the reflections meet and the
+ *  element is the true `offset` mm. Bottom right: the only clear corner. */
+export function dishFocusInset(dish: Dish, offset: number, aim: number): FieldInset {
+  const a = Math.abs(offset);
+  const elementU = dish.f + offset;
+  const box = focusWindow(dish);
+  return {
+    view: 'side',
+    box,
+    at: { x: 0.56, y: 0.63, w: 0.42, h: 0.35 },
+    draw: (px) => (
+      <>
+        <DishSection dish={dish} px={px} elementOffset={offset} />
+        <DishRays dish={dish} offDeg={aim} px={px} low={false} />
+        <RoundedRect x={elementU - 4} y={-10} width={46} height={20} r={6} style="stroke" strokeWidth={1.2 * px} color="#c9ced8" />
+        <Rect x={box.u0} y={box.v0} width={box.u1 - box.u0} height={12} color="#0b0c0f" opacity={0.86} />
+        <Rect x={box.u0} y={box.v1 - 12} width={box.u1 - box.u0} height={12} color="#0b0c0f" opacity={0.86} />
+        <Circle cx={dish.f} cy={0} r={3.2 * px} color={AMBER} />
+        {a ? <Dim a={{ u: dish.f, v: -18 }} b={{ u: elementU, v: -18 }} px={px} color={AMBER} /> : null}
+      </>
+    ),
+    labels: [
+      { id: 'zoom', text: 'CLOSE-UP', u: dish.f - 34, v: -30, align: 'left', tone: 'muted' },
+      { id: 'gap', text: a ? `${a} mm GAP` : 'AT FOCUS', u: dish.f + 62, v: -30, align: 'right', tone: 'amber' },
+      { id: 'rays', text: aim ? 'RAYS MISS' : 'RAYS MEET', u: dish.f - 34, v: 30, align: 'left', tone: 'amber' },
+      { id: 'el', text: 'ELEMENT', u: dish.f + 62, v: 30, align: 'right', tone: 'muted' },
+    ],
+  };
 }
 
 /* The operator from above holding the dish in front (facing +u). Drawing

@@ -30,7 +30,8 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { SPK } from '../speakers/SpeakerArt';
-import { KEYS } from './KeysArt';
+import { HI_STROKE_PX, KEYS, hiFloor } from './KeysArt';
+import type { Rect } from './keysGeometry.ts';
 import { REED, TINE, cantileverShape, tipSwing } from './keysSpec.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -361,19 +362,9 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
   labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: FR.box.u1 - 4, v: -46, align: 'right', tone: 'illustrative' });
 
   const hiPath = useMemo(() => {
-    if (!highlight) return null;
-    const p = make();
-    if (highlight === 'k.bar') rr(p, -S.L - 8, -S.amp - 6, 4, S.amp + 6, 6);
-    else if (highlight === 'k.tonebar') rr(p, -TINE.tonebarL.mm - 6, -30, 30, -9, 6);
-    else if (highlight === 'k.pickup') {
-      if (tine) rr(p, (S as typeof MECH.tine).pickupFace - 40, -19, (S as typeof MECH.tine).pickupFace + 6, 19, 6);
-      else rr(p, (S as typeof MECH.reed).plate.u0 - 8, (S as typeof MECH.reed).plate.v0 - 32, (S as typeof MECH.reed).plate.u1 + 8, (S as typeof MECH.reed).plate.v1 + 6, 6);
-    } else if (highlight === 'k.hammer') rr(p, S.strikeU - 16, 12, piv.u + 16, piv.v + 18, 8);
-    else if (highlight === 'k.key') rr(p, MECH.keyFront - 6, MECH.keyV - 16, MECH.keyBack + 6, MECH.keyV + 30, 8);
-    else if (highlight === 'k.block') rr(p, -10, -30, 50, 38, 8);
-    else return null;
-    return p;
-  }, [highlight, kind]); // eslint-disable-line react-hooks/exhaustive-deps
+    const q = mechHiRect(kind, highlight, xf.s);
+    return q ? rr(make(), q.u0, q.v0, q.u1, q.v1, 6) : null;
+  }, [highlight, kind, xf.s]);
 
   const tap = (sx: number, sy: number) => {
     if (!onTapPart) return;
@@ -506,7 +497,7 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
           <Path path={still.out} style="stroke" strokeWidth={1.6} color={AMBER} />
           <Path path={still.outArrow} style="stroke" strokeWidth={3} strokeCap="round" color={AMBER} />
         </Group>
-        {hiPath ? <Path path={hiPath} style="stroke" strokeWidth={2.8} color={AMBER} /> : null}
+        {hiPath ? <Path path={hiPath} style="stroke" strokeWidth={Math.max(2.8, HI_STROKE_PX / xf.s)} color={AMBER} /> : null}
         {/* the scope */}
         <Path path={still.scope} color="#0b0c10" />
         <Path path={still.grid} style="stroke" strokeWidth={0.6} color="#2e3240" />
@@ -535,6 +526,41 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
 /** The instrument's tremolo ("vibrato"): a slow pulse in LEVEL, not pitch. */
 export function trem(phase: number): number {
   return 1 - 0.55 * (0.5 - 0.5 * Math.cos(2 * Math.PI * 0.42 * phase));
+}
+
+/** The chosen part's outline in the inside view, floored for the screen at
+ *  scale s (see hiFloor), then kept inside the picture: the drawing is clipped
+ *  to its box and the scope panel covers what lies below it, so a key or a
+ *  hammer running past either would lose a side of its frame. Null for a part
+ *  this mechanism does not have. */
+export function mechHiRect(kind: MechKind, id: string | null | undefined, s: number): Rect | null {
+  const S = MECH[kind];
+  const piv = MECH.hammerPivot;
+  const { box, scope } = MECH_FRAME[kind];
+  const edge = Math.max(2.8, HI_STROKE_PX / s);
+  const at = (u0: number, v0: number, u1: number, v1: number) => {
+    const q = hiFloor({ u0, v0, u1, v1 }, s);
+    return { u0: Math.max(q.u0, box.u0 + edge), v0: Math.max(q.v0, box.v0 + edge), u1: Math.min(q.u1, box.u1 - edge), v1: Math.min(q.v1, scope.v0 - edge) };
+  };
+  switch (id) {
+    case 'k.bar':
+      return at(-S.L - 8, -S.amp - 6, 4, S.amp + 6);
+    case 'k.tonebar':
+      return kind === 'tine' ? at(-TINE.tonebarL.mm - 6, -30, 30, -9) : null;
+    case 'k.pickup': {
+      if (kind === 'tine') return at(MECH.tine.pickupFace - 40, -19, MECH.tine.pickupFace + 6, 19);
+      const P = MECH.reed.plate;
+      return at(P.u0 - 8, P.v0 - 32, P.u1 + 8, P.v1 + 6);
+    }
+    case 'k.hammer':
+      return at(S.strikeU - 16, 12, piv.u + 16, piv.v + 18);
+    case 'k.key':
+      return at(MECH.keyFront - 6, MECH.keyV - 16, MECH.keyBack + 6, MECH.keyV + 30);
+    case 'k.block':
+      return at(-10, -30, 50, 38);
+    default:
+      return null;
+  }
 }
 
 /** The part under (u, v) of the inside view. */

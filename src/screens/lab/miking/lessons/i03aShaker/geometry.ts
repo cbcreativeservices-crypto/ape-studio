@@ -16,7 +16,7 @@ function parts(s: ShakerState): Part[] {
   return [
     { id: `shk.shell.${s.id}`, label: 'shell (a clear tube)', short: 'shell', role: 'The closed tube the player holds. Its walls and end caps are what the fill strikes: they ring briefly and pass the sound to the air.', moving: true, prov: SHELL_PROV, solid: { kind: 'cyl', a, b, r: R_SHELL } },
     { id: `shk.fill.${s.id}`, label: 'fill (beads or grains inside)', short: 'fill', role: 'The loose fill inside. It lags behind each change of direction and hits the end and the walls — the attack — and slides and rubs along the wall in between — the wash.', prov: ill('the fill is drawn as beads; the material and amount vary by model') },
-    { id: `shk.caps.${s.id}`, label: 'end caps', short: 'caps', role: 'The two closed ends. When the stroke reverses, the fill lands on one of them: that is where most of the accent starts.', prov: SHELL_PROV },
+    { id: `shk.caps.${s.id}`, mark: { as: [`shk.shell.${s.id}`] }, label: 'end caps', short: 'caps', role: 'The two closed ends. When the stroke reverses, the fill lands on one of them: that is where most of the accent starts.', prov: SHELL_PROV },
   ];
 }
 

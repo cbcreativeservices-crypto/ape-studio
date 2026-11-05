@@ -34,6 +34,7 @@ import { PageSteps, type MikingStep } from '../../engine/steps';
 import { PairComb } from '../shared/speakers/PairComb';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../engine/kit';
 import { useRig, type Rig } from '../../engine/scene/useRig.ts';
+import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { previewMemo, stopWordOf } from '../../engine/scene/placementDock.ts';
 import { DualView } from '../../engine/scene/DualView';
 import { PlacementScene } from '../../engine/scene/PlacementScene';
@@ -41,14 +42,16 @@ import { placementBezel, lenCell, stopShortOf } from '../../engine/scene/readout
 import { readoutWords } from '../../engine/scene/sceneWords.ts';
 import { zonesAvailable } from '../../engine/geometry/zones.ts';
 import { dist } from '../../engine/geometry/vec.ts';
+import { guideFor } from '../../engine/geometry/guides.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../engine/physics/polar.ts';
 import { C20, EQUAL_PATH_MM, deltaTms, notchesHz } from '../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../data/micTypes';
 import { PTroubleshoot } from '../../pages/PReadPages';
+import { lineFoot, workedMark, type WorkedMark } from '../../pages/PPlacement';
 import type { PageProps } from '../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type PosAxis } from '../shared/journeyPages';
-import { CabExplorer, SPOT_WORDS, type CabExplorerView } from '../shared/speakers/CabExplorer';
+import { CabExplorer, SPOT_WORDS, cabPartMark, type CabExplorerView } from '../shared/speakers/CabExplorer';
 import { ConeSequence, BeamDisplay } from '../shared/speakers/SpeakerSound';
 import { LeslieDisplay, rampWords, useLeslieRig, type LeslieView } from '../shared/speakers/LeslieDisplay';
 import { StagePlan, SignalChain, CHAIN, type PlanScene } from '../shared/speakers/StagePlan';
@@ -121,6 +124,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
     setSeen((s) => (s.has(id) ? s : new Set([...s, id])));
   };
   const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
+  const partMark = cabPartMark(cab.kind, cab.back, view, shown?.id ?? null, cloth ? 'cloth' : 'baffle');
 
   /* the rotary cabinet (at rest on this page: it is explored, not run) */
   const les = useLeslieRig({ motion, hidden, focused, start: 'stop' });
@@ -162,10 +166,10 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
             frontMode={cloth ? 'cloth' : 'baffle'}
             highlight={partId}
             onTapPart={pick}
-            accessibilityLabel={`The ${cab.label.toLowerCase()}, ${viewOpts.find((v) => v.id === view)!.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.label}.` : ''} The miked speaker is ringed.`}
+            accessibilityLabel={`The ${cab.label.toLowerCase()}, ${viewOpts.find((v) => v.id === view)!.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.label}.${partMark?.note ? ` ${partMark.note.text.toLowerCase()}.` : ''}` : ''} The miked speaker is ringed.`}
           />
         ),
-        badge: view === 'front' ? (cloth ? 'From the front · the miked speaker ringed in amber · its dust cap marked through the cloth' : 'The grille cloth taken away IN THE DRAWING only — never on a real cabinet') : view === 'face' ? 'One 12 in speaker face-on · tap a part' : 'Cut through the speaker’s middle · tap a part',
+        badge: `${view === 'front' ? (cloth ? `From the front · the miked speaker ringed in amber${shown ? '' : ' · its dust cap marked through the cloth'}` : 'The grille cloth taken away IN THE DRAWING only — never on a real cabinet') : view === 'face' ? 'One 12 in speaker face-on · tap a part' : 'Cut through the speaker’s middle · tap a part'}${shown ? ` · green: the ${shown.short}${partMark?.hidden ? ' (not drawn in this view)' : ''}` : ''}`,
         bezel: [
           { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
           { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
@@ -757,6 +761,18 @@ const CAB_AXES: AxisWords = {
 };
 const AIM_WORDS = { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' };
 
+/**
+ * The worked example's marks on the drawing: the shared workedMark, with two
+ * pieces in a cabinet's own terms. The second piece is the SPEAKER that sounds,
+ * not the grille in front of it; a cabinet has no keep-out envelope, and what
+ * the clearance piece keeps clear of is the grille cloth.
+ */
+function cabWorkedMark(step: number, last: number, base: WorkedMark, x: { cone: Vec3; conePart: string; headPart: string | null }): WorkedMark {
+  if (step === 1) return { ...base, highlight: x.conePart, label: { text: 'THE SPEAKER', at: x.cone } };
+  if (step === last) return { ...base, highlight: x.headPart };
+  return base;
+}
+
 function cabNow(rig: Rig, slots: MicSlot[]): string {
   return slots.map((s) => micSentence(rig, s, { outside: 'outside the cabinet' })).join(' ');
 }
@@ -780,6 +796,36 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
     { title: 'CLEARANCE', text: 'Off the grille cloth — never touching it — on a secure stand, the cable routed away from the player’s feet and the walkway. With the amp off or muted while you place it.', cell: 3 },
   ];
   const wk = worked[exStep];
+  // The piece being read is marked ON THE DRAWING, as in the Placement Studio:
+  // the STEP fader lit a bezel cell and changed the card, and the picture stayed.
+  const exModel = L['1x12'].model;
+  const exPose = ex.mics[0].pose;
+  const exSurface = exModel.surfaces.find((q) => q.id === exZone.refSurface) ?? null;
+  const exRefLine = exZone.radial ? exModel.lines.find((l) => l.id === exZone.radial!.line) ?? null : null;
+  const exCone = exModel.regions.find((r) => r.id === 'r.cone')!;
+  const exMark = cabWorkedMark(
+    exStep,
+    worked.length - 1,
+    workedMark(exStep, { mic: exPose.p, head: exSurface?.label ?? 'its head', headPart: exSurface?.partId ?? null, guide: exSurface ? guideFor(exSurface, exPose) : null, line: exRefLine ? { label: exRefLine.label, foot: lineFoot(exRefLine, exPose.p) } : null, envelope: null }),
+    { cone: exCone.anchor, conePart: exCone.partId, headPart: exSurface?.partId ?? null },
+  );
+  const exLabel = exMark.label;
+  const exArt = useMemo<LessonArt>(() => {
+    const art = cabArt('1x12');
+    if (!exLabel) return art;
+    const { text, at, align = 'center' } = exLabel;
+    return {
+      ...art,
+      // The mark's words are often on the mic, and the mic is not moving here:
+      // yielding to it would hide them.
+      labelsYieldToMic: false,
+      labels: (v, vr) => {
+        const here = { u: at.x, v: v === 'side' ? at.y : at.z };
+        const mark: ArtLabel & { priority: 1 } = { id: 'worked.mark', text, ...here, point: here, align, priority: 1 };
+        return [mark, ...art.labels(v, vr)];
+      },
+    };
+  }, [exLabel?.text, exLabel?.align, exLabel?.at.x, exLabel?.at.y, exLabel?.at.z]); // eslint-disable-line react-hooks/exhaustive-deps
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, stopShortOf(L['1x12'].model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
 
   /* PLACE: one rig per cabinet; the dock edits the chosen one */
@@ -950,7 +996,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={cabArt('1x12')} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of a 1 by 12 cabinet cut through its speaker. A worked example: the mic is placed for you. ${cabNow(ex, ['A'])}`} />,
+        render: (w, h) => <DualView rig={ex} art={exArt} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} showZones={exMark.showZones} zoneIds={[exZone.id]} guides={exMark.guides} pathsFrom={exMark.pathsFrom} highlight={exMark.highlight} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of a 1 by 12 cabinet cut through its speaker. A worked example: the mic is placed for you.${exLabel ? ` Marked on the drawing: ${exLabel.text.toLowerCase()}.` : ''} ${cabNow(ex, ['A'])}`} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
@@ -961,7 +1007,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       },
       well: (
         <>
-          <Landing looking="Worked example · an instrument dynamic · a 1 × 12 cabinet" prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Landing looking="Worked example · an instrument dynamic · a 1 × 12 cabinet" prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
           <Card>
             <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
           </Card>
@@ -1224,20 +1270,16 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
   const rig = useRig(L['1x12'], {
     variant: 'open',
     mics: [
-      { slot: 'A', typeId: 'instDynCard', pattern: 'cardioid', pose: front.start },
-      { slot: 'B', typeId: 'instDynCard', pattern: 'cardioid', pose: rear.start },
+      // Each mic reads from the side of the cabinet it faces: every number, the
+      // strip and the words name the grille for A and the open back for B.
+      { slot: 'A', typeId: 'instDynCard', pattern: 'cardioid', pose: front.start, surfaceId: 'grille' },
+      { slot: 'B', typeId: 'instDynCard', pattern: 'cardioid', pose: rear.start, surfaceId: 'back' },
     ],
   });
   const [view, setView] = useState<ViewId>('side');
   const [slot, setSlot] = useState<MicSlot>('B');
   const [posAxis, setPosAxis] = useState<PosAxis>('x');
   const [aimAxis, setAimAxis] = useState<AimAxis>('el');
-  // The readouts measure from the surface the EDITED mic faces: the grille
-  // for the front mic, the open back for the rear one.
-  useEffect(() => {
-    const want = slot === 'B' ? 'back' : 'grille';
-    if (rig.surfaceId !== want) rig.setSurfaceId(want);
-  }, [slot, rig]);
   const model = L['1x12'].model;
   const sFront = model.regions.find((r) => r.id === 'r.cone')!.anchor;
   const sBack = model.regions.find((r) => r.id === 'r.back')!.anchor;

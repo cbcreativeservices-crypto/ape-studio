@@ -27,6 +27,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Polyline, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
+import { fitValue } from '../../../theme/legibility';
 import { WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
 import { cycleRms } from '../../../features/amp/ampModel';
@@ -43,6 +44,12 @@ const TITLE_FONT = 10;
 const TITLE_LINE = 14;
 const TITLE_GAP = 2;
 const PANEL_GAP = 6;
+/** The CURRENT / HEAT strip under the panels (RigPicture.stageStatus). */
+const STATUS_LINE = 16;
+const STATUS_BAR = 6;
+/** Below this drawing width (a sideways phone squeezes the inline stage) a bar
+ *  has no room, so the strip keeps its words and numbers whole and drops it. */
+const STATUS_BAR_MIN_W = 230;
 const stackHeight = (n: number) => n * (TITLE_LINE + TITLE_GAP + PANEL_H) + (n - 1) * PANEL_GAP;
 
 export const CONCEPT_NOTE = 'Conceptual visualization — not a component-level circuit simulation.';
@@ -87,14 +94,18 @@ function clippedSegments(data: Float32Array, limit: number, h: number, yMax = Y_
  * with the zoom through `scale` (the Skia/overlay trap), 1 on the glass.
  */
 function WavePanel({
-  title, children, w, svgH, scale,
-}: { title: string; children: ReactNode; w: number; svgH: number; scale: number }) {
+  title, children, w, svgH, scale, tag,
+}: { title: string; children: ReactNode; w: number; svgH: number; scale: number; tag?: string }) {
   const h = PANEL_H;
+  const type = { fontSize: TITLE_FONT * scale, lineHeight: TITLE_LINE * scale };
   return (
     <View style={styles.panel}>
-      <Text style={[styles.panelTitle, { fontSize: TITLE_FONT * scale, lineHeight: TITLE_LINE * scale }]} numberOfLines={1}>
-        {title}
-      </Text>
+      <View style={styles.titleRow}>
+        <Text style={[styles.panelTitle, styles.titleText, type]} numberOfLines={1}>
+          {title}
+        </Text>
+        {tag ? <Text style={[styles.faultTag, type]} {...fitValue(type.fontSize)}>{tag}</Text> : null}
+      </View>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={svgH} viewBox={`0 0 ${W} ${h}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W} height={h} fill="#0a0a0c" />
         <Line x1={0} y1={h / 2} x2={W} y2={h / 2} stroke="rgba(255,255,255,0.10)" strokeWidth={1} />
@@ -166,6 +177,15 @@ export type RigPicture = {
   efficiencyPct?: number | null;
   speaker?: boolean;
   faulted?: boolean;
+  /** For a page whose faults do NOT reshape the wave (Module 8: bridge, load
+   *  and vent only change what the amp is asked to survive). Turns on the
+   *  stage's own fault state — `faulted` repaints the output trace and tags
+   *  its panel — and the CURRENT / HEAT strip from `supplyFlow` and `heat`.
+   *  Left unset, `faulted` and those two values stay off the glass, as they
+   *  always have: Modules 1 and 6 draw their faults in the wave itself. */
+  stageStatus?: boolean;
+  /** Short word for the tag, the one the bezel prints (≤ 7 characters). */
+  faultTag?: string;
   /** One-sentence accessible summary of the current state. */
   a11ySummary: string;
   deviceTitle?: string;
@@ -177,7 +197,7 @@ export const rigPanelCount = (p: RigPicture) => Math.max(1, (p.input ? 1 : 0) + 
 
 /** width ÷ height of the stack in drawing units — the FULL SCREEN canvas is
  *  exactly this shape at every zoom (StageFit reports it). */
-export const rigAspect = (p: RigPicture) => W / stackHeight(rigPanelCount(p));
+export const rigAspect = (p: RigPicture) => W / (stackHeight(rigPanelCount(p)) + (p.stageStatus ? PANEL_GAP + STATUS_LINE : 0));
 
 /** The legend lines the page prints under the stage (rail limit, overlays). */
 export function rigLegend(p: RigPicture): { text: string; color: string }[] {
@@ -224,6 +244,23 @@ export function rigStatusBezel(p: RigPicture, pick: ('supply' | 'heat' | 'eff' |
     }
   }
   return items;
+}
+
+/** One cell of the stage's CURRENT / HEAT strip: a word, a bar, a value. */
+function StatusBar({ label, value, fill, tint, scale, bar }: { label: string; value: string; fill: number; tint: string; scale: number; bar: boolean }) {
+  const font = TITLE_FONT * scale;
+  const type = { fontSize: font, lineHeight: STATUS_LINE * scale };
+  return (
+    <View style={[styles.statusCell, { gap: 4 * scale }]}>
+      <Text style={[styles.statusLabel, type]} {...fitValue(font)}>{label}</Text>
+      {bar ? (
+        <View style={[styles.statusTrack, { height: STATUS_BAR * scale }]}>
+          <View style={{ width: `${Math.round(Math.min(1, Math.max(0, fill)) * 100)}%`, height: '100%', backgroundColor: tint }} />
+        </View>
+      ) : null}
+      <Text style={[styles.statusValue, type, { color: tint, minWidth: bar ? 34 * scale : 0 }]} {...fitValue(font)}>{value}</Text>
+    </View>
+  );
 }
 
 /* ── the shared playhead ────────────────────────────────────────────────── */
@@ -294,13 +331,15 @@ export function WaveStack({
   const gid = useRef(`amprig${Math.floor(Math.random() * 1e9).toString(36)}`).current;
   const n = rigPanelCount(p);
   const titleLine = TITLE_LINE * scale;
-  const svgH = Math.max(16, Math.floor((h - n * (titleLine + TITLE_GAP) - (n - 1) * PANEL_GAP) / n));
+  const statusH = p.stageStatus ? PANEL_GAP + STATUS_LINE * scale : 0;
+  const svgH = Math.max(16, Math.floor((h - statusH - n * (titleLine + TITLE_GAP) - (n - 1) * PANEL_GAP) / n));
   const { motion, phase, stepPhase } = play;
   const playX = useMemo(
     () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, w] }) : new Animated.Value((stepPhase / 8) * w)),
     [motion, phase, w, stepPhase],
   );
   const showNominal = showNominalRail(p);
+  const faultShown = !!(p.stageStatus && p.faulted);
   return (
     <View style={{ width: w, height: h, gap: PANEL_GAP }} accessible accessibilityRole="image" accessibilityLabel={p.a11ySummary}>
       {p.input ? (
@@ -326,11 +365,13 @@ export function WaveStack({
         </WavePanel>
       ) : null}
       {p.output ? (
-        <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'} w={w} svgH={svgH} scale={scale}>
+        <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'} w={w} svgH={svgH} scale={scale} tag={faultShown ? (p.faultTag ? `FAULT · ${p.faultTag}` : 'FAULT') : undefined}>
           {showNominal ? <RailPair at={p.nominalRailAt!} stroke="rgba(255,255,255,0.18)" dash="2,5" /> : null}
           {p.clipAt != null ? <RailPair at={p.clipAt} stroke="rgba(255,75,58,0.45)" dash="4,4" /> : null}
           <WaveGradient id={`${gid}out`} fullScale={p.clipAt ?? 1} />
-          <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={`url(#${gid}out)`} strokeWidth={2} />
+          {/* A fault is not a level, so it leaves the amplitude ramp: red and
+              broken, which keeps the solid clip overlay readable on top. */}
+          <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={faultShown ? AMP_COLORS.fault : `url(#${gid}out)`} strokeWidth={2} strokeDasharray={faultShown ? '7,4' : undefined} />
           {p.clipAt != null
             ? clippedSegments(p.output, p.clipAt, PANEL_H).map((s, i) => (
                 <Polyline key={i} points={s} fill="none" stroke={AMP_COLORS.fault} strokeWidth={2.6} />
@@ -341,10 +382,16 @@ export function WaveStack({
           ))}
         </WavePanel>
       ) : null}
+      {p.stageStatus ? (
+        <View style={[styles.statusRow, { height: STATUS_LINE * scale, gap: 10 * scale }]}>
+          <StatusBar label="CURRENT" value={`${Math.round(p.supplyFlow * 100)}%`} fill={p.supplyFlow} tint={AMP_COLORS.supply} scale={scale} bar={w / scale >= STATUS_BAR_MIN_W} />
+          <StatusBar label="HEAT" value={heatWord(p.heat)} fill={p.heat} tint={heatTint(p.heat)} scale={scale} bar={w / scale >= STATUS_BAR_MIN_W} />
+        </View>
+      ) : null}
       {/* the shared playhead */}
       <Animated.View
         pointerEvents="none"
-        style={[styles.playhead, { top: titleLine + TITLE_GAP, width: 1.5 * scale, transform: [{ translateX: playX }] }]}
+        style={[styles.playhead, { top: titleLine + TITLE_GAP, bottom: statusH, width: 1.5 * scale, transform: [{ translateX: playX }] }]}
       />
     </View>
   );
@@ -352,6 +399,14 @@ export function WaveStack({
 
 const styles = StyleSheet.create({
   panel: { gap: TITLE_GAP },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  titleText: { flexShrink: 1 },
   panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: TITLE_FONT, letterSpacing: 1.2 },
+  faultTag: { color: AMP_COLORS.fault, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
+  statusRow: { flexDirection: 'row' },
+  statusCell: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  statusLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
+  statusTrack: { flex: 1, backgroundColor: 'rgba(255,255,255,0.12)', overflow: 'hidden' },
+  statusValue: { fontFamily: fonts.oswaldMedium, textAlign: 'right' },
   playhead: { position: 'absolute', bottom: 0, left: 0, width: 1.5, backgroundColor: 'rgba(255,255,255,0.35)' },
 });

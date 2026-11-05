@@ -23,9 +23,9 @@
  * Abstract data stays abstract but styled (standards §2): gradient underfills,
  * layered glow strokes, never hairline-on-black.
  *
- * RACK UNIT (2026-08-23): QuantView and InspectStripView take an optional
- * `height` so the pinned stage glass can size them (defaults preserved for
- * legacy callers).
+ * RACK UNIT (2026-08-23): QuantView, InspectStripView and DitherView take an
+ * optional `height` so the pinned stage glass can size them (defaults
+ * preserved for legacy callers).
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text as RNText, View } from 'react-native';
@@ -313,6 +313,8 @@ function computeDither(mode: DitherMode): DitherData {
   return { xIn, yOut, err };
 }
 
+const D_LABEL_H = 13; // one line of vstyles.stripLabel
+
 /** One labeled strip: tiny eyebrow + canvas. */
 function Strip({ label, children, width, height }: { label: string; children: React.ReactNode; width: number; height: number }) {
   return (
@@ -330,11 +332,15 @@ function Strip({ label, children, width, height }: { label: string; children: Re
  * spikes vs flat/triangular spread), and (4) a SIMPLIFIED noise-spectrum
  * strip (illustrative shape, not an FFT — the host badges it).
  */
-export function DitherView({ width, mode }: { width: number; mode: DitherMode }) {
-  const HW = 88; // waveform strip
-  const HE = 44; // error strip
-  const HH = 42; // histogram strip
-  const HS = 42; // spectrum strip
+export function DitherView({ width, mode, height }: { width: number; mode: DitherMode; height?: number }) {
+  // The well's strip heights, or those same proportions fitted to the pinned
+  // glass once `height` is given (labels and gaps come off the top first).
+  const stripGap = height === undefined ? 8 : 4;
+  const k = height === undefined ? 1 : Math.max(0.3, (height - 4 * (D_LABEL_H + 3) - 3 * stripGap) / 216);
+  const HW = Math.round(88 * k); // waveform strip
+  const HE = Math.round(44 * k); // error strip
+  const HH = Math.round(42 * k); // histogram strip
+  const HS = Math.round(42 * k); // spectrum strip
   const geo = useMemo(() => {
     const padX = 8;
     const innerW = width - padX * 2;
@@ -428,11 +434,11 @@ export function DitherView({ width, mode }: { width: number; mode: DitherMode })
     }
 
     return { padX, wMid, orig, quant, codeLines, eMid, errP, hist, spikes, floor, floorFill, sigX, specBase };
-  }, [width, mode]);
+  }, [width, mode, HW, HE, HH, HS]);
 
   const g = geo;
   return (
-    <View style={{ gap: 8 }}>
+    <View style={{ gap: stripGap }}>
       <Strip label={`LOW-LEVEL SINE → ${D_BITS}-BIT · VIEW ZOOMED TO ±3 STEPS`} width={width} height={HW}>
         <SkLine p1={{ x: g.padX, y: g.wMid }} p2={{ x: width - g.padX, y: g.wMid }} color="#3a3a42" strokeWidth={1} />
         <Path path={g.codeLines} color={GRID} style="stroke" strokeWidth={1} opacity={0.8} />
@@ -645,5 +651,5 @@ export function BitDotStrip({ width, value }: { width: number; value: number }) 
 }
 
 const vstyles = StyleSheet.create({
-  stripLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSub },
+  stripLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, lineHeight: D_LABEL_H, letterSpacing: 1.1, color: colors.textSub },
 });

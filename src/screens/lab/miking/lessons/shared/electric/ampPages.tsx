@@ -26,7 +26,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
+import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { cancelAnimation, Easing, useAnimatedReaction, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
@@ -43,13 +43,16 @@ import { DualView } from '../../../engine/scene/DualView';
 import { PlacementScene } from '../../../engine/scene/PlacementScene';
 import { placementBezel, lenCell, stopShortOf } from '../../../engine/scene/readoutText.ts';
 import { readoutWords } from '../../../engine/scene/sceneWords.ts';
+import { MEET_DROP } from '../../../engine/restructure.ts';
 import { zonesAvailable } from '../../../engine/geometry/zones.ts';
+import { guideFor } from '../../../engine/geometry/guides.ts';
 import { dist } from '../../../engine/geometry/vec.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../../engine/physics/polar.ts';
 import { C20, EQUAL_PATH_MM, deltaTms, notchesHz } from '../../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
+import { lineFoot, workedMark, type WorkedMark } from '../../../pages/PPlacement';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
 import { CabExplorer, SPOT_WORDS, type CabExplorerView } from '../speakers/CabExplorer';
@@ -77,6 +80,13 @@ function useFocusedSafe(): boolean {
   } catch {
     return true; // the web preview harness mounts the page outside a navigator
   }
+}
+
+/** The worked example's second piece here is THE SPEAKER, not a head to measure
+ *  from: it marks the model's own cone (the keys share these pages, and a reed
+ *  piano's oval is not `spk.cone`). The other pieces mark what workedMark says. */
+export function ampWorkedMark(step: number, mark: WorkedMark, cone: { partId: string; anchor: Vec3 } | undefined): WorkedMark {
+  return step === 1 && cone ? { ...mark, highlight: cone.partId, label: { text: 'THE SPEAKER', at: cone.anchor } } : mark;
 }
 
 export type AmpPart = { id: string; title: string; text: string; shows?: readonly ElectricShow[] };
@@ -370,12 +380,16 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const half = halfAngle(ka);
     const farFrom = farFieldFromMm(fHz);
     const [spot, setSpot] = useState<(typeof SPOTS)[number]>('boundary');
-    // CREDIT: the cone reached its end AND the string was explored.
+    // CREDIT: the cone reached its end AND the string was explored. MEET IT
+    // leaves the string step out (MEET_DROP): then it is never asked for, as a
+    // "still to do" may only name a step the learner can see.
     const coneDone = useRef(false);
     if (shown >= n) coneDone.current = true;
+    const stringShown = !MEET_DROP.has('string');
+    const stringOwed = stringShown && !stringDone;
     useEffect(() => {
-      if (coneDone.current && stringDone && !interactiveDone.has('soundPath')) onInteractive('soundPath');
-    }, [shown, stringDone, interactiveDone, onInteractive]);
+      if (coneDone.current && !stringOwed && !interactiveDone.has('soundPath')) onInteractive('soundPath');
+    }, [shown, stringOwed, interactiveDone, onInteractive]);
     const reached = shown >= n;
     const pred = lesson.predictions.sound;
     const puShort = st.spec.pickups.find((p) => p.id === pu)!.short;
@@ -575,7 +589,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               <Point title="THE HELD TONE">{S.body}</Point>
             </Card>
             <Note>A mic on the amp hears AIR — the speaker, the box and the room. A DI or the amp’s direct output is a separate electrical signal, taken earlier in the chain: it does not carry the speaker, the box or the room (unless it imitates one). Label each as its own source.</Note>
-            {!reached || !stringDone ? <Note tone="warn">{`Still to do for this page’s credit: ${!stringDone ? (st.steel ? 'step through three harmonics and move the bar' : 'step through three harmonics and try two pickups') : ''}${!stringDone && !reached ? ', and ' : ''}${!reached ? 'step the cone through to the end' : ''}.`}</Note> : null}
+            {!reached || stringOwed ? <Note tone="warn">{`Still to do for this page’s credit: ${stringOwed ? (st.steel ? 'step through three harmonics and move the bar' : 'step through three harmonics and try two pickups') : ''}${stringOwed && !reached ? ', and ' : ''}${!reached ? 'step the cone through to the end' : ''}.`}</Note> : null}
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
           </>
         ),
@@ -805,6 +819,32 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const wk = worked[exStep];
     const partShort = stopShortOf(lesson.model);
     const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+    // The piece being read is marked ON THE DRAWING too, not only on the card
+    // and the bezel: every piece, see workedMark.
+    const exSurface = lesson.model.surfaces.find((q) => q.id === exZone.refSurface) ?? null;
+    const exPose = ex.mics[0].pose;
+    const exRefLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line) ?? null : null;
+    const exMark = ampWorkedMark(
+      exStep,
+      workedMark(exStep, { mic: exPose.p, head: exSurface?.label ?? 'the grille', headPart: exSurface?.partId ?? null, guide: exSurface ? guideFor(exSurface, exPose) : null, line: exRefLine ? { label: exRefLine.label, foot: lineFoot(exRefLine, exPose.p) } : null, envelope: lesson.model.envelopes[0] ?? null }),
+      lesson.model.regions[0],
+    );
+    const exLabel = exMark.label;
+    const exArt = useMemo<LessonArt>(() => {
+      if (!exLabel) return art;
+      const { text, at, align = 'center' } = exLabel;
+      return {
+        ...art,
+        // The mark's words are often on the mic, and the mic is not moving here:
+        // yielding to it would hide them.
+        labelsYieldToMic: false,
+        labels: (v, vr) => {
+          const here = { u: at.x, v: v === 'side' ? at.y : at.z };
+          const mark: ArtLabel & { priority: 1 } = { id: 'worked.mark', text, ...here, point: here, align, priority: 1 };
+          return [mark, ...art.labels(v, vr)];
+        },
+      };
+    }, [exLabel?.text, exLabel?.align, exLabel?.at.x, exLabel?.at.y, exLabel?.at.z]); // eslint-disable-line react-hooks/exhaustive-deps
     /* PLACE */
     const startZ = lesson.zones.find((z) => z.id === spec.placeZone)!;
     const rig = useRig(lesson, { mics: [{ slot: 'A', typeId: spec.micDefault, pattern: 'cardioid', pose: startZ.start }] });
@@ -880,7 +920,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         kind: 'WATCH',
         layout: 'rack',
         rack: {
-          render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of ${spec.ampNoun} cut through its speaker. A worked example: the mic is placed for you. ${now(ex, ['A'])}`} />,
+          render: (w, h) => <DualView rig={ex} art={exArt} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} showZones={exMark.showZones} zoneIds={[exZone.id]} guides={exMark.guides} pathsFrom={exMark.pathsFrom} highlight={exMark.highlight} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of ${spec.ampNoun} cut through its speaker. A worked example: the mic is placed for you.${exLabel ? ` Marked on the drawing: ${exLabel.text.toLowerCase()}.` : ''} ${now(ex, ['A'])}`} />,
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
@@ -891,7 +931,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         },
         well: (
           <>
-            <Landing looking={`Worked example · ${micType(spec.micDefault).label.toLowerCase()} · ${spec.ampNoun}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+            <Landing looking={`Worked example · ${micType(spec.micDefault).label.toLowerCase()} · ${spec.ampNoun}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
             <Card>
               <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
             </Card>

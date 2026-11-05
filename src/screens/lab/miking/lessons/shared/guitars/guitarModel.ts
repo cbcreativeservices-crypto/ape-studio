@@ -274,7 +274,7 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
     if (sp.opening.kind === 'coverplate') {
       const cr = sp.opening.d.mm / 2;
       add('coverplate', { label: 'coverplate', short: 'coverplate', role: 'The perforated metal plate over the cone. Sound leaves through its holes. Never clamp to it, press on it or block it.' }, { kind: 'slab', c: P(v(sp.opening.x.mm, 0, 0)), axis: P(v(0, 0, 1)), r: cr, x0: 0, x1: 7 }, { clearance: dd(15, 'coverplate keep-off') });
-      add('cone', W.cone, undefined);
+      add('cone', W.cone, undefined, { mark: { as: [pid(id, 'coverplate')] } });
       if (sp.opening.ports) add('ports', W.ports, undefined);
     }
     add('bridge', sp.opening.kind === 'coverplate' && W.bridge === PART_DEFAULT.bridge ? CONE_BRIDGE : W.bridge, B({ min: v(sp.bridge.x.mm - sp.bridge.l.mm / 2, -sp.bridge.w.mm / 2, 0), max: v(sp.bridge.x.mm + sp.bridge.l.mm / 2, sp.bridge.w.mm / 2, sp.opening.kind === 'coverplate' ? 18 : 11) }), { clearance: dd(6, 'bridge keep-off') });

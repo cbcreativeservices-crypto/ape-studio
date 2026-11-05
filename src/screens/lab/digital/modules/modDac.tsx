@@ -106,6 +106,7 @@ const LAYER_CHIPS: { key: LayerKey; label: string }[] = [
 ];
 
 const OS_CHOICES: (1 | 2 | 4 | 8)[] = [1, 2, 4, 8];
+const IMAGES_BADGE = 'DRAWN SPECTRA — ILLUSTRATIVE MIRROR MATH, √f AXIS COMPRESSION · NOT A MEASUREMENT';
 
 export function DacModule({ width, focused, help }: DigitalModuleProps) {
   const viz = useState(() => requireVizDac())[0];
@@ -123,8 +124,8 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
   // FREQ and PHASE drove only the INTER-SAMPLE PEAK EXPLORER down the well,
   // so riding them changed nothing on the glass. The glass now shows the
   // picture of the control last moved — ISP FREQ / PHASE → the ISP view;
-  // MODE / LAYERS → the reconstruction hero.
-  const [stageView, setStageView] = useState<'recon' | 'isp'>('recon');
+  // MODE / LAYERS → the reconstruction hero; OS RATE → the spectral images.
+  const [stageView, setStageView] = useState<'recon' | 'isp' | 'images'>('recon');
 
   const ratio = 0.4 + ratio01 * 0.09; // 0.40..0.49 · fs
   const phaseDeg = phase01 * 180;
@@ -182,7 +183,8 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
     },
     // The well panels' controls (owner rule 2026-10-10: every lab control
     // lives in the bottom dock). Their pictures stay in the well — SPECTRAL
-    // IMAGES & OVERSAMPLING and the INTER-SAMPLE PEAK EXPLORER.
+    // IMAGES & OVERSAMPLING and the INTER-SAMPLE PEAK EXPLORER — and also swap
+    // onto the pinned display when these keys are used.
     {
       kind: 'options',
       id: 'os',
@@ -192,7 +194,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       valueA11y: `oversampling ${os} times`,
       options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves up around ${c * 48} kHz, so the analog filter can be gentler.` })),
       selectedId: String(os),
-      onSelect: (id) => setOs(Number(id) as 1 | 2 | 4 | 8),
+      onSelect: (id) => {
+        setOs(Number(id) as 1 | 2 | 4 | 8);
+        setStageView('images');
+      },
       sticky: true,
       helpKey: 'oversampling',
     },
@@ -235,8 +240,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
         badge:
           stageView === 'isp'
             ? 'EXACT SINE MATH · 16 SAMPLES NORMALIZED TO −0.1 dBFS · THE CONTINUOUS CURVE IS WHAT THE DAC OUTPUTS'
-            : 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
-        onGuide: () => help(stageView === 'isp' ? 'isp' : 'reconstruction'),
+            : stageView === 'images'
+              ? IMAGES_BADGE
+              : 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
+        onGuide: () => help(stageView === 'isp' ? 'isp' : stageView === 'images' ? 'oversampling' : 'reconstruction'),
         bezel:
           stageView === 'isp'
             ? [
@@ -249,16 +256,27 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
                 },
                 { k: 'MISSED', v: `${isp.missDb.toFixed(2)} dB`, helpKey: 'isp' },
               ]
-            : [
-                { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
-                { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
-                { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
-              ],
+            : stageView === 'images'
+              ? [
+                  { k: 'OUTPUT', v: `${os} × 48 kHz`, helpKey: 'oversampling' },
+                  { k: '1ST IMAGE', v: `${os * 48} kHz`, helpKey: 'oversampling' },
+                  { k: 'FILTER', v: `20→${os * 48 - 20} kHz`, helpKey: 'oversampling' },
+                ]
+              : [
+                  { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
+                  { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
+                  { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
+                ],
         render: (w, h) =>
           viz && stageView === 'isp' ? (
             <View style={[local.stageSwap, { width: w, height: h }]}>
               <Text style={local.stageSwapHead}>INTER-SAMPLE PEAKS · pick MODE or LAYERS to see the reconstruction again</Text>
               <viz.IspView width={w} height={Math.max(120, h - 36)} running={focused} ratio={ratio} phaseDeg={phaseDeg} />
+            </View>
+          ) : viz && stageView === 'images' ? (
+            <View style={[local.stageSwap, { width: w, height: h }]}>
+              <Text style={local.stageSwapHead}>IMAGES · MODE or LAYERS returns to the reconstruction</Text>
+              <viz.ImagesView width={w} height={Math.max(120, h - 18)} os={os} />
             </View>
           ) : viz ? (
             <viz.ReconstructionView
@@ -325,7 +343,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
               { k: 'FILTER TRANSITION', v: `20 → ${os * 48 - 20} kHz` },
             ]}
           />
-          <Badge text="DRAWN SPECTRA — ILLUSTRATIVE MIRROR MATH, √f AXIS COMPRESSION · NOT A MEASUREMENT" />
+          <Badge text={IMAGES_BADGE} />
           <Text style={dstyles.caption}>
             Oversampling relaxes the analog filter — it adds no new information. The audio band was
             fully described by the original samples; the extra rate only buys engineering room.
@@ -667,7 +685,7 @@ const local = StyleSheet.create({
   riskOn: { borderColor: 'rgba(255,75,58,.55)', backgroundColor: '#170f0e' },
   riskOff: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: '#0e130f' },
   riskText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
-  // The pinned display's swapped-in ISP picture: its name on top, the
+  // The pinned display's swapped-in ISP or images picture: its name on top, the
   // picture in the glass's remaining height.
   stageSwap: { backgroundColor: '#0c0c0f', justifyContent: 'center', gap: 4 },
   stageSwapHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.9, color: colors.amber, textAlign: 'center', paddingHorizontal: 8 },

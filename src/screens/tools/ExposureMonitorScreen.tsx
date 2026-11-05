@@ -92,9 +92,12 @@ const INTERVALS: { label: string; v: number }[] = [
   { label: '15 min', v: 15 },
   { label: '30 min', v: 30 },
   { label: '60 min', v: 60 },
-  { label: 'Elevated only', v: 0 },
   { label: 'Off', v: -1 },
 ];
+/** Any stored value at or below 0 means no routine check-ins (exposureMonitor
+ *  only reads `checkinMinutes > 0`), so a saved 0 from the old "Elevated only"
+ *  chip still lights Off. Elevated advisories have their own toggle. */
+const isIntervalChosen = (stored: number, v: number) => v === (stored > 0 ? stored : -1);
 
 const STANDARDS: ExposureStandard[] = ['niosh3', 'osha5', 'conservative3'];
 
@@ -381,8 +384,8 @@ export function ExposureMonitorScreen() {
           <Text style={styles.body}>
             Duration matters as much as level: exposure accumulates. Under the 3 dB exchange standards a 3 dB
             increase roughly HALVES the recommended listening time, and 3 dB less roughly doubles it; under the
-            5 dB standard of US workplace law (OSHA) it takes 5 dB to do the same. The standard you pick below changes
-            the answer.
+            5 dB standard of US workplace law (OSHA) it takes 5 dB to do the same. The standard you pick below sets how
+            your dose counts from then on.
           </Text>
           <Text style={styles.body}>
             Estimates vary between headphones — sensitivity, fit and seal change the level at your ear for the same
@@ -398,19 +401,22 @@ export function ExposureMonitorScreen() {
           <Toggle label="Listening Exposure Monitor" value={s.enabled} onChange={(v) => changeSetting({ enabled: v })} />
           <Text style={styles.rowLabel}>Routine check-in interval (active minutes)</Text>
           <View style={styles.chipRow}>
-            {INTERVALS.map((iv) => (
-              <Pressable
-                key={iv.label}
-                onPress={() => changeSetting({ checkinMinutes: iv.v })}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityState={{ selected: s.checkinMinutes === iv.v }}
-                aria-pressed={s.checkinMinutes === iv.v}
-                style={[styles.chip, s.checkinMinutes === iv.v && styles.chipActive]}
-              >
-                <Text style={[styles.chipText, s.checkinMinutes === iv.v && { color: colors.amber }]}>{iv.label}</Text>
-              </Pressable>
-            ))}
+            {INTERVALS.map((iv) => {
+              const chosen = isIntervalChosen(s.checkinMinutes, iv.v);
+              return (
+                <Pressable
+                  key={iv.label}
+                  onPress={() => changeSetting({ checkinMinutes: iv.v })}
+                  hitSlop={10}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: chosen }}
+                  aria-pressed={chosen}
+                  style={[styles.chip, chosen && styles.chipActive]}
+                >
+                  <Text style={[styles.chipText, chosen && { color: colors.amber }]}>{iv.label}</Text>
+                </Pressable>
+              );
+            })}
           </View>
           <Toggle
             label="Critical dose warnings (separate from routine)"
@@ -439,6 +445,10 @@ export function ExposureMonitorScreen() {
               </Text>
             </Pressable>
           ))}
+          <Text style={styles.note}>
+            A new standard counts from the moment you pick it. Today’s dose so far stays as counted; Time remaining
+            updates right away.
+          </Text>
           <Text style={[styles.rowLabel, { marginTop: 8 }]}>
             {`Reference point: 0 dBFS at your usual volume ≈ ${s.refSplAt0Dbfs} dB SPL`}
           </Text>

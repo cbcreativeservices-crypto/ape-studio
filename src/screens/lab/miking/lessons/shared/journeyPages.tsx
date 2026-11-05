@@ -434,8 +434,11 @@ export function micSentence(rig: Rig, slot: MicSlot, nouns: { inside?: string; o
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const t = micType(m.typeId);
   const r = rig.shown(slot);
-  const s = rig.lesson.model.surfaces.find((q) => q.id === rig.surfaceId);
-  const l = rig.lesson.model.lines.find((q) => q.id === rig.lineId);
+  // The head and line THIS mic's numbers are measured from (a pair of mics can
+  // read from two heads): the words never name a different one.
+  const ref = rig.refOf(slot);
+  const s = rig.lesson.model.surfaces.find((q) => q.id === ref.surfaceId);
+  const l = rig.lesson.model.lines.find((q) => q.id === ref.lineId);
   const z = r.zoneId ? rig.lesson.zones.find((q) => q.id === r.zoneId) ?? null : null;
   const where = r.inside && nouns.inside ? nouns.inside : nouns.outside;
   return `Mic ${slot}: ${t.label.toLowerCase()}, ${where}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${z ? ` At a suggested starting point: ${z.label}.` : ' Not at a suggested starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;

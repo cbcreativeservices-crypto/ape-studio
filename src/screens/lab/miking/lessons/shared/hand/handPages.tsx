@@ -17,7 +17,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
-import type { DocumentedZone, MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
+import type { DocumentedZone, Lesson, MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard, useMicMoved } from '../../../engine/kit';
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
@@ -28,15 +28,17 @@ import { CombPanel } from '../../../engine/scene/CombPanel';
 import { InstrumentFigure } from '../../../engine/scene/InstrumentFigure';
 import { placementBezel, lenCell, stopShortOf } from '../../../engine/scene/readoutText.ts';
 import { readoutWords } from '../../../engine/scene/sceneWords.ts';
-import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
+import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { zonesAvailable } from '../../../engine/geometry/zones.ts';
+import { guideFor } from '../../../engine/geometry/guides.ts';
 import { deriveReadouts } from '../../../engine/geometry/readouts.ts';
 import { dist } from '../../../engine/geometry/vec.ts';
 import { arrivalAngle, gainDb, isModelled, nearNull, nullAngles } from '../../../engine/physics/polar.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchesHz, pathDiffMm } from '../../../engine/physics/twoMic.ts';
+import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb, notchesHz, pathDiffMm } from '../../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
+import { lineFoot, workedMark, type WorkedMark } from '../../../pages/PPlacement';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
 import { HandPlan, type HandPlanItem, type HandScene } from './HandPlan';
@@ -377,6 +379,46 @@ function ownSentence(rig: Rig, slot: MicSlot, z: DocumentedZone, outside: string
   return `Mic ${slot}: ${micType(m.typeId).label.toLowerCase()}, ${outside}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${at ? ` At a suggested starting point: ${at.label}.` : ' Not at a suggested starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;
 }
 
+/**
+ * What the worked example's STEP marks ON THE DRAWING (PPlacement's rule, see
+ * workedMark): the mark for the piece, and the art with its words on it.
+ * `noLine` names piece 4 when the zone has no line to be off, for a card that
+ * talks about something else there (a viewpoint, a height): the words sit on
+ * the mic with the drawing clear around them.
+ */
+export function useWorkedMark(lesson: Lesson, art: LessonArt, ex: Rig, zone: DocumentedZone, variant: string, step: number, noLine?: string): { mark: WorkedMark; art: LessonArt } {
+  const surface = lesson.model.surfaces.find((q) => q.id === zone.refSurface) ?? null;
+  const line = zone.radial ? lesson.model.lines.find((l) => l.id === zone.radial!.line) ?? null : null;
+  const pose = ex.mics[0].pose;
+  const read = workedMark(step, {
+    mic: pose.p,
+    head: surface?.label ?? 'its head',
+    headPart: surface?.partId ?? null,
+    guide: surface ? guideFor(surface, pose) : null,
+    line: line ? { label: line.label, foot: lineFoot(line, pose.p) } : null,
+    envelope: lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant)) ?? null,
+  });
+  const mark = step === 3 && !line && noLine ? { ...read, guides: false, highlight: null, label: { text: noLine, at: pose.p } } : read;
+  const label = mark.label;
+  const marked = useMemo<LessonArt>(() => {
+    if (!label) return art;
+    const { text, at, align = 'center' } = label;
+    // Next to an inset or a boom a long name can have no room: never lose the mark.
+    const short = text.startsWith('OFF ') ? 'OFF LINE' : text.startsWith('FROM ') ? 'FROM HERE' : null;
+    return {
+      ...art,
+      // The mark's words are often on the mic, and the mic is not moving here.
+      labelsYieldToMic: false,
+      labels: (v, vr) => {
+        const here = { u: at.x, v: v === 'side' ? at.y : at.z };
+        const tag: ArtLabel & { priority: 1 } = { id: 'worked.mark', text, ...(short ? { short } : {}), ...here, point: here, align, priority: 1 };
+        return [tag, ...art.labels(v, vr)];
+      },
+    };
+  }, [art, label?.text, label?.align, label?.at.x, label?.at.y, label?.at.z]); // eslint-disable-line react-hooks/exhaustive-deps
+  return { mark, art: marked };
+}
+
 function HandPlacement(spec: HandSpec) {
   return function HPlacement({ lesson, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
     const exZone = lesson.zones.find((z) => z.id === spec.worked.zone) ?? lesson.zones[0];
@@ -389,6 +431,7 @@ function HandPlacement(spec: HandSpec) {
     const pieces = spec.worked.pieces(exZone);
     const wk = pieces[exStep];
     const exBezel: BezelItem[] = placementBezel(ex.shown('A'), readoutWords(ex, 'A'), exZone, stopShortOf(lesson.model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+    const { mark: exMark, art: exArt } = useWorkedMark(lesson, spec.art, ex, exZone, variant, exStep, wk.title);
 
     const startZone = lesson.zones.find((z) => z.id === spec.place.zone) ?? lesson.zones[0];
     const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: spec.place.mic, pattern: 'cardioid', pose: startZone.start }] });
@@ -470,7 +513,7 @@ function HandPlacement(spec: HandSpec) {
         kind: 'WATCH',
         layout: 'rack',
         rack: {
-          render: (w, h) => <DualView rig={ex} art={spec.art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${spec.worked.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. A worked example: the mic is placed for you. ${nowLine(ex, ['A'], spec.outside)}`} />,
+          render: (w, h) => <DualView rig={ex} art={exArt} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} showZones={exMark.showZones} zoneIds={[exZone.id]} guides={exMark.guides} pathsFrom={exMark.pathsFrom} highlight={exMark.highlight} labelFor={(v) => `${spec.worked.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. A worked example: the mic is placed for you.${exMark.label ? ` Marked on the drawing: ${exMark.label.text.toLowerCase()}.` : ''} ${nowLine(ex, ['A'], spec.outside)}`} />,
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
@@ -481,7 +524,7 @@ function HandPlacement(spec: HandSpec) {
         },
         well: (
           <>
-            <Landing looking={spec.worked.looking} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+            <Landing looking={spec.worked.looking} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
             <Card>
               <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
             </Card>
@@ -738,6 +781,11 @@ function HandTwoMic(spec: HandSpec) {
     const gA = isModelled(A.pattern) ? micGain(A.pattern, A.pose, src) : 1000 / Math.max(1, dist(A.pose.p, src));
     const gB = isModelled(B.pattern) ? micGain(B.pattern, B.pose, src) : 1000 / Math.max(1, dist(B.pose.p, src));
     const sEff = effectivePolarity(B.polarity, gA, gB);
+    // Equal paths, inverted: the graph sits flat at this depth. CANCELS only where
+    // it is really deep (HTwoMic's rule): with the levels apart the line barely drops.
+    const sumDb = notchDepthDb(gA, gB);
+    const eqCell = sEff === 1 ? 'NO COMB' : sumDb <= -20 ? 'CANCELS' : 'PARTIAL';
+    const partDb = Math.round(-sumDb);
     const rearFlip = sEff !== B.polarity;
     const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
     // Changing only the SOURCE moves no mic (owner ruling 2026-10-14, #19).
@@ -776,13 +824,13 @@ function HandTwoMic(spec: HandSpec) {
     const dCell = lenCell(dMm, true);
     const bezel: BezelItem[] = [
       { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
-      { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
-      { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
+      { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? eqCell.toLowerCase() : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
+      { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
       { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
     ];
     const [wellW, setWellW] = useState(0);
     const pairNow = `${ownSentence(rig, 'A', zA, spec.outside)} ${ownSentence(rig, 'B', zB, spec.outside)}`;
-    const combLabel = `Simplified two-mic sum for ${region.label}: ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}; mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}.`;
+    const combLabel = `Simplified two-mic sum for ${region.label}: ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, and the sum acts as inverted, so the source cancels' : `no path difference, and the sum acts as inverted, so the source partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}; mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}.`;
     const pred = lesson.predictions.twoMic;
     const flipped = flips.toInv || flips.toNorm;
     const tick = (on: boolean) => (on ? '✓' : '○');
@@ -809,7 +857,7 @@ function HandTwoMic(spec: HandSpec) {
             </Text>
             <NowLine text={pairNow} />
             <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-            <Body>{equal ? `No path difference: ${region.label} reaches both mics at the same instant.` : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+            <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
             {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
             {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             <Note tone="warn">{T.warn}</Note>

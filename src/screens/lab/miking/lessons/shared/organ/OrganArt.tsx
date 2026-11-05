@@ -299,6 +299,10 @@ export function OrganFacade({ hi = null }: { hi?: string | null }): ReactElement
     for (const z of [S.z0 + 230, S.z1 - 230]) pivots.addCircle(z, y + 85, 26);
   }
   const glow = (id: string, p: SkPath) => (hi === id ? <Path path={p} style="stroke" strokeWidth={90} color={HIGHLIGHT} opacity={0.85} /> : null);
+  // The console stands on the chancel floor in front of the case, so this view
+  // has no drawing of it: PART marks the ground it stands on, its real width and
+  // height (the model's CONSOLE) with a margin that makes it 44 pt on a phone.
+  const consoleSpot = rr(CONSOLE.z0 - 350, -CONSOLE.h - 350, CONSOLE.z1 + 350, 350, 60);
   return (
     <Group>
       <Path path={rr(-H - 200, -10300, H + 200, 60, 60)} color="#000" opacity={0.45}>
@@ -345,6 +349,8 @@ export function OrganFacade({ hi = null }: { hi?: string | null }): ReactElement
       {glow('org.pedal', rr(-P.z1, -10000, -P.z0, -900, 40))}
       {glow('org.great', rr(G.z0, G.y0, G.z1, G.y1, 40))}
       {glow('org.positive', rr(Q.z0, Q.y0, Q.z1, Q.y1, 30))}
+      {hi === 'org.console' ? <Path path={consoleSpot} color={HIGHLIGHT} opacity={0.3} /> : null}
+      {glow('org.console', consoleSpot)}
       {hi === 'org.case' ? <Path path={rr(-H - 60, -10350, H + 60, 40, 80)} style="stroke" strokeWidth={90} color={HIGHLIGHT} opacity={0.85} /> : null}
     </Group>
   );

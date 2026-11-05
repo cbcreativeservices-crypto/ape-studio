@@ -36,6 +36,8 @@ const make = () => Skia.Path.Make();
 const DEG = Math.PI / 180;
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
+/** The lav cable where it shows and its loops: light, so it reads on the dark stage. */
+const CABLE_INK = '#d5d9e2';
 const JACKET = ['#4f535c', '#363940', '#24262b', '#141518'];
 const vOf = (view: ViewId, p: Vec3) => (view === 'side' ? p.y : p.z);
 
@@ -180,6 +182,7 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
   const p = useMemo(() => {
     const out = make();
     const under = make();
+    const secondary = make();
     const tape = make();
     const pull = make();
     const X = CHEST_X + 3;
@@ -192,19 +195,25 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
       out.moveTo(u0, v0);
       out.lineTo(u0 - 1, v0 + 26);
       if (loops.broadcast && !taut) {
-        // A small loop hanging under the clip, then in at the next button.
-        out.cubicTo(u0 + 18, v0 + 44, u0 + 16, v0 + 74, u0 + 2, v0 + 70);
-        out.cubicTo(u0 - 10, v0 + 66, u0 - 6, v0 + 46, X - 2, v0 + 52);
+        // A small loop close under the clip, then in at the next button. Drawn
+        // to read at phone size, yet it hugs the chest: no loop a hand can
+        // catch. The dashes start below it, so its middle stays open.
+        out.cubicTo(u0 + 50, v0 + 58, u0 + 46, v0 + 134, u0 + 6, v0 + 130);
+        out.cubicTo(u0 - 26, v0 + 126, u0 - 22, v0 + 48, X - 2, v0 + 52);
+        under.moveTo(X - 2, v0 + 131);
       } else {
         out.lineTo(X - 2, v0 + 46);
+        // Under the shirt: down the chest.
+        under.moveTo(X - 2, v0 + 52);
       }
-      // Under the shirt: down the chest.
-      under.moveTo(X - 2, v0 + 52);
       if (loops.secondary && !taut) {
-        under.lineTo(X - 4, secY - 24);
-        under.cubicTo(X + 18, secY - 10, X + 16, secY + 26, X - 2, secY + 22);
-        under.cubicTo(X - 14, secY + 18, X - 10, secY, X - 6, secY + 8);
-        tape.addRRect(Skia.RRectXY(Skia.XYWHRect(X - 16, secY - 34, 24, 16), 3, 3));
+        // Under the shirt too, so it lies inside the body's outline.
+        under.lineTo(X - 4, secY - 34);
+        secondary.moveTo(X - 4, secY - 34);
+        secondary.cubicTo(X + 10, secY - 22, X + 8, secY + 62, X - 8, secY + 60);
+        secondary.cubicTo(X - 66, secY + 58, X - 64, secY - 26, X - 4, secY - 34);
+        tape.addRRect(Skia.RRectXY(Skia.XYWHRect(X - 42, secY - 54, 48, 24), 4, 4));
+        under.moveTo(X - 8, secY + 60);
       } else {
         under.lineTo(X - 6, secY + 8);
       }
@@ -227,14 +236,20 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
       under.moveTo(from.x - 4, from.z + 4);
       under.cubicTo(CHEST_X - 40, -180, pack.x + 60, -220, pack.x, pack.z);
     }
-    return { out, under, tape, pull };
+    return { out, under, secondary, tape, pull };
   }, [view, from, pack, loops.broadcast, loops.secondary, taut, tug, standing]);
   return (
     <Group>
-      <Path path={p.out} style="stroke" strokeWidth={3.4} strokeCap="round" strokeJoin="round" color="#08090b" />
-      <Path path={p.out} style="stroke" strokeWidth={2} strokeCap="round" strokeJoin="round" color={taut ? RED : '#3d4049'} />
+      <Path path={p.out} style="stroke" strokeWidth={6.6} strokeCap="round" strokeJoin="round" color="#08090b" />
+      <Path path={p.out} style="stroke" strokeWidth={4.2} strokeCap="round" strokeJoin="round" color={taut ? RED : CABLE_INK} />
       <Path path={p.under} style="stroke" strokeWidth={2.4} strokeCap="round" strokeJoin="round" color={taut ? RED : '#8a8f99'} opacity={0.75}>
         <DashPathEffect intervals={[7, 6]} />
+      </Path>
+      <Path path={p.secondary} style="stroke" strokeWidth={7} color="#08090b">
+        <DashPathEffect intervals={[11, 5]} />
+      </Path>
+      <Path path={p.secondary} style="stroke" strokeWidth={4.2} color={CABLE_INK}>
+        <DashPathEffect intervals={[11, 5]} />
       </Path>
       <Path path={p.tape} color="#c9b98f" opacity={0.85} />
       {view === 'side' ? <Path path={p.pull} style="stroke" strokeWidth={3} strokeCap="round" strokeJoin="round" color={RED} /> : null}

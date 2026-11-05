@@ -22,7 +22,7 @@ const OWN: Part[] = [
   { id: 'splash.arm2', label: 'arm and clamp', short: 'arm', role: 'The arm rising to the splash.', solid: armShapes[2], prov: armProv, variants: ['arm'], listIn: [] },
   { id: 'splash.clamp', label: 'arm and clamp', short: 'clamp', role: 'The multi-clamp on the post.', solid: armShapes[3], prov: armProv, variants: ['arm'], listIn: [] },
   { id: 'piggy.plate', label: '8 in splash, upside down on the crash', short: 'splash on top', role: 'An 8 in splash turned over and stacked on top of the 18 in crash, on the same rod with a felt between. The two swing together — the crash carries the splash.', solid: plate(fxSolid(PIGGY)), clearance: CYMBAL_SWING, moving: true, prov: { kind: 'sourced', src: 'ZIL-BARATA', quote: 'Kerope 18" with A custom splash 8" inverted on top' }, variants: ['piggy'] },
-  { id: 'splash.mount', label: 'felts, sleeve and wing nut', short: 'mount', role: 'The splash sits loose between felts so it can move; on top of a crash, a felt keeps the two apart.', prov: SPLASH_10.d.prov },
+  { id: 'splash.mount', mark: { as: ['splash.plate', 'piggy.plate'] }, label: 'felts, sleeve and wing nut', short: 'mount', role: 'The splash sits loose between felts so it can move; on top of a crash, a felt keeps the two apart.', prov: SPLASH_10.d.prov },
 ];
 
 export const SPLASH_MODEL: InstrumentModel = cymbalModel({

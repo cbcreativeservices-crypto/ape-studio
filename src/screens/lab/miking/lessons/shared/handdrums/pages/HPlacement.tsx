@@ -5,7 +5,8 @@
  * WATCH (rack, worked example): the mic placed FOR the learner at a
  * suggested starting point (its own rig, never credit); STEP reads it piece
  * by piece — where to begin, the head it is measured from, the distance, the
- * line, the aim, clearance — with the bezel cell for the piece lit.
+ * line, the aim, clearance — with the bezel cell for the piece lit and the
+ * piece marked on the drawing (useWorkedMark).
  * PLACE (rack): PREDICT FIRST, then drag the mic (or POSITION / AIM; ZONE
  * jumps; SETUP picks the mic, the drums' setup and the head distances are
  * read from). Collisions stop the mic and say what it would hit.
@@ -29,6 +30,7 @@ import { PageSteps, type MikingStep } from '../../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../../engine/kit';
 import { MIC_TYPES, micType } from '../../../../data/micTypes';
 import type { PageProps } from '../../../../pages/pageTypes';
+import { useWorkedMark } from '../../hand/handPages';
 import { handOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
@@ -79,11 +81,10 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: H.clearWords, cell: 3 },
   ];
   const wk = worked[exStep];
-  // The piece being read is marked on the drawing too (PPlacement's rule,
-  // 2026-10-06): the head it is measured from (2, 3), the keep-outs (6).
-  const exHeadPart = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.partId ?? null;
-  const exEnvelope = lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant))?.id ?? null;
-  const exHighlight = exStep === 1 || exStep === 2 ? exHeadPart : exStep === 5 ? exEnvelope : null;
+  // Every piece being read is marked on the drawing too (PPlacement's rule).
+  const { mark: exMark, art: exArt } = useWorkedMark(lesson, art, ex, exZone, variant, exStep);
+  // THE LINE's words point at the blue region, so that piece keeps it drawn.
+  const exShowZones = exMark.showZones || (exStep === 3 && exLine != null);
   const partShort = stopShortOf(lesson.model, { gooseneck: 'REACH' });
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
@@ -184,7 +185,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        render: (w, h) => <DualView rig={ex} art={exArt} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} showZones={exShowZones} zoneIds={[exZone.id]} guides={exMark.guides} pathsFrom={exMark.pathsFrom} highlight={exMark.highlight} labelFor={(v) => sceneLabel(ex, v, ['A'], `A worked example: the mic is placed for you.${exMark.label ? ` Marked on the drawing: ${exMark.label.text.toLowerCase()}.` : ''}`)} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,
@@ -192,7 +193,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       },
       well: (
         <>
-          <Landing looking={`Worked example · ${micType(exType).short}${multi ? ` · ${vLabel.toLowerCase()}` : ''}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Landing looking={`Worked example · ${micType(exType).short}${multi ? ` · ${vLabel.toLowerCase()}` : ''}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
           <Card>
             <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
           </Card>

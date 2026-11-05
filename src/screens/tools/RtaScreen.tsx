@@ -1376,8 +1376,8 @@ export function RtaScreen({ navigation }: Props) {
           </View>
           <Text style={styles.settingsNote}>
             Changing banding, averaging, or resolution restarts the band average and peak hold (new
-            settings epoch). HI-RES doubles the FFT for finer low-frequency detail (down to ~30 Hz) at
-            a slower response.
+            settings epoch). HI-RES doubles the FFT and slows the response. Low tones spill into fewer
+            neighboring bars at every band count; at 61 bands the low bands also separate down to ~30 Hz.
           </Text>
         </View>
       ),

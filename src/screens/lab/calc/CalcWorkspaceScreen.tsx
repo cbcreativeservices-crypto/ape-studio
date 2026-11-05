@@ -20,13 +20,14 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { costsACalculation, refusalRows, type CalcValues, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
-import { chainFits, fmtCarried, unitsFor } from './calcUnits';
+import { chainFits, fmtCarried, outputUnits, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { useCalcSectionOpen } from './calcPrefs';
 // Shared field row + compute path (Phase 3, owner 2026-08-06) — the SAME
 // implementation the workflow runner uses. One panel, no fork.
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from './calcPanel';
+import { fitValue } from '../../../theme/legibility';
 import { buildReportFromCalc, reportToText } from './calcReport';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 import { FormulaKeyPopup } from './FormulaKeyPopup';
@@ -486,14 +487,21 @@ export function CalcWorkspaceScreen() {
                     <View key={`${o.label}#${oi}`} style={styles.resultRow}>
                       <Text style={styles.resultLabel}>{o.label}</Text>
                       <View style={styles.resultRight}>
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={`${o.label} ${formatOut(o, 0)} — tap to change the display unit`}
-                          hitSlop={{ top: 8, bottom: 8 }}
-                          onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}
-                        >
-                          <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
-                        </Pressable>
+                        {/* Only a value with another unit to show is a control: a
+                            one-unit value (dB, °, ×, samples) has nothing to change. */}
+                        {outputUnits(o.quantity, o.unit).length > 1 ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`${o.label} ${formatOut(o, 0)} — tap to change the display unit`}
+                            hitSlop={{ top: 8, bottom: 8 }}
+                            style={styles.resultValueWrap}
+                            onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}
+                          >
+                            <Text style={styles.resultValue} {...fitValue(19)}>{formatOut(o, 0)} ⇄</Text>
+                          </Pressable>
+                        ) : (
+                          <Text style={[styles.resultValue, styles.resultValueWrap]} {...fitValue(19)}>{formatOut(o, 0)}</Text>
+                        )}
                         {sendTakers.get(o.label) && o.chainable !== false && Number.isFinite(o.value) && !refused ? (
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
@@ -919,7 +927,8 @@ const styles = StyleSheet.create({
   sigHint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16.5, color: colors.textSub },
   resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   resultLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary, flexShrink: 1 },
-  resultRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  resultRight: { flexDirection: 'row', alignItems: 'center', gap: 8, maxWidth: '72%' },
+  resultValueWrap: { flexShrink: 1 },
   resultValue: { fontFamily: fonts.oswaldMedium, fontSize: 19, letterSpacing: 0.4, color: colors.amber },
   resultNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   sendBtn: { borderRadius: 7, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 8, paddingVertical: 5, backgroundColor: '#17171c' },

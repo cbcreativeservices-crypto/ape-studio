@@ -456,7 +456,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / 168}>
-            <FeedbackLoop wedge={position} ringing={ringing} sendDb={send} />
+            <FeedbackLoop wedge={position} ringing={ringing} sendDb={send} notched={notched} />
           </StageFit>
         ),
         params,

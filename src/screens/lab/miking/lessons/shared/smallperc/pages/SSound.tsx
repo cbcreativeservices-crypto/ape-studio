@@ -10,7 +10,8 @@
  *                           that stops at ④ (not a loop, D8); PAUSE stops it
  *                           where it is. Under reduced motion PLAY advances
  *                           one step, instantly. It stops when the page is
- *                           covered.
+ *                           covered. The variant chooser stays only where the
+ *                           drawing changes with it (not ONE_STRIKE_DRAWING).
  *   THE MOTION (rack)       the lesson's own pair of motions (copy.sound.pair:
  *                           the fill at the stroke's end or mid-stroke, a
  *                           clave cradled or squeezed, a long or short
@@ -35,6 +36,11 @@ import type { PageProps } from '../../../../pages/pageTypes';
 import { spOf } from '../family.ts';
 
 const STEP_MS = 1300;
+
+/** These lessons draw one strike sequence whatever the variant, and their
+ *  events read the same, so a chooser here would change one word over a frozen
+ *  picture. Their variant is chosen on THE PARTS, where it redraws. */
+const ONE_STRIKE_DRAWING: ReadonlySet<string> = new Set(['I03a', 'I03b', 'I03c', 'I05a', 'I05b', 'I05c']);
 
 function useFocusedSafe(): boolean {
   try {
@@ -126,18 +132,22 @@ export function SSound({ lesson, art, answers, onAnswered, onInteractive, intera
         (i) => goTo(i + 1),
       ),
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
-      {
-        kind: 'options',
-        id: 'state',
-        label: C.variantKey,
-        valueLabel: variantLabel,
-        selectedId: variant,
-        onSelect: (id) => setVariant(id),
-        options: lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
-      },
+      ...(ONE_STRIKE_DRAWING.has(lesson.id)
+        ? []
+        : [
+            {
+              kind: 'options' as const,
+              id: 'state',
+              label: C.variantKey,
+              valueLabel: variantLabel,
+              selectedId: variant,
+              onSelect: (id: string) => setVariant(id),
+              options: lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
+            },
+          ]),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shown, n, stage, playing, motion, variant, lesson.model.variants, C.variantKey, variantLabel],
+    [shown, n, stage, playing, motion, variant, lesson.id, lesson.model.variants, C.variantKey, variantLabel],
   );
   const strikeBezel: BezelItem[] = [
     { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },

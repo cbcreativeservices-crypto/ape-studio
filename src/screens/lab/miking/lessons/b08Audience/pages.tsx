@@ -21,7 +21,7 @@
  * plain words; no sources or badges on screen; FULLY SILENT; nothing moves
  * by itself.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Body, Card, Note, Point, ScenarioList } from '../../engine/kit';
@@ -197,13 +197,14 @@ function B08Context(p: PageProps) {
     (id: string) => {
       setGot((prev) => {
         if (prev.has(id)) return prev;
-        const n = new Set([...prev, id]);
-        if (n.has('pa') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
-        return n;
+        return new Set([...prev, id]);
       });
     },
-    [interactiveDone, onInteractive],
+    [],
   );
+  useEffect(() => {
+    if (got.has('pa') && !interactiveDone.has('liveChecks')) onInteractive('liveChecks');
+  }, [got, interactiveDone, onInteractive]);
   const pa = usePaAngleStep({
     onDone: () => note('pa'),
     prediction: p.lesson.predictions.context,

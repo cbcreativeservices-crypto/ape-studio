@@ -20,7 +20,7 @@
  */
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { LAP_STEEL, PEDAL_STEEL, STEEL_FRAME, fretU } from './electricSpec.ts';
-import { EL } from './ElectricArt';
+import { EL, HiMarker, hiMm, hiPath, hiRect, type HiBox, type HiMark } from './ElectricArt';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -165,27 +165,7 @@ function SteelSide({ hi }: { hi: string | null }) {
   }
   const volJack = rr(v1, -14, v1 + 14, -6, 2);
   const floor = rr(-400, 0, LEN + 400, 60, 0);
-  const hiPath = (() => {
-    if (!hi) return null;
-    switch (hi) {
-      case 'ps.changer':
-        return rr(LEN - 70, TOP - 36, LEN + 34, TOP + BH, 10);
-      case 'ps.keyhead':
-        return rr(-40, TOP - 44, 50, TOP + BH - 10, 10);
-      case 'ps.knee':
-        return rr(STEEL.kneeU[0] - 50, TOP + BH - 4, STEEL.kneeU[3] + 50, TOP + BH + STEEL_FRAME.kneeDrop.mm + 20, 10);
-      case 'ps.pedals':
-        return rr(STEEL.pedalsU[0] - 80, TOP + BH, STEEL.pedalsU[2] + 80, -36, 10);
-      case 'ps.volume':
-        return rr(STEEL.volumeU[0] - 12, -80, STEEL.volumeU[1] + 12, 8, 10);
-      case 'ps.legs':
-        return rr(STEEL.legsU[0] - 26, TOP + BH, STEEL.legsU[1] + 44, 6, 10);
-      case 'ps.neck':
-        return rr(-6, TOP - 10, LEN + 6, TOP + BH + 8, 10);
-      default:
-        return null;
-    }
-  })();
+  const mark = hi ? steelMark('side', hi) : null;
   const chromeV = (u: number, r: number) => <LinearGradient start={vec(u - r, 0)} end={vec(u + r, 0)} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />;
   return (
     <Group>
@@ -293,7 +273,7 @@ function SteelSide({ hi }: { hi: string | null }) {
       <Circle cx={axle.x} cy={axle.y} r={5} style="stroke" strokeWidth={1} color="#c8ccd4" />
       <Path path={ballEnds} color="#b9a98a" />
       <Path path={strings} style="stroke" strokeWidth={1.6} color={EL.string} />
-      {hiPath ? <Path path={hiPath} style="stroke" strokeWidth={5} color={AMBER} /> : null}
+      {mark ? <HiMarker path={hiPath(mark)} mm={hiMm(steelBox('side'))} /> : null}
     </Group>
   );
 }
@@ -421,24 +401,7 @@ function SteelTop({ hi, barAt, turned = false }: { hi: string | null; barAt: num
   const seat = rr(270, DEPTH / 2 + 300, 710, DEPTH / 2 + 600, 40);
   const seatSeam = rr(290, DEPTH / 2 + 320, 690, DEPTH / 2 + 580, 30);
   const zone = rr(450 - STEEL_FRAME.legsZone.w.mm / 2, DEPTH / 2, 450 + STEEL_FRAME.legsZone.w.mm / 2, DEPTH / 2 + STEEL_FRAME.legsZone.d.mm - 120, 30);
-  const hiPath = (() => {
-    switch (hi) {
-      case 'ps.neck':
-        return rr(STEEL.nutU - 14, -88, STEEL.changerU - 20, 88, 10);
-      case 'ps.changer':
-        return rr(LEN - 70, -106, LEN + 34, 106, 12);
-      case 'ps.keyhead':
-        return rr(-40, -102, 50, 102, 12);
-      case 'ps.pickup':
-        return rr(STEEL.pickupU - 22, -92, STEEL.pickupU + 22, 92, 10);
-      case 'ps.bar':
-        return barAt == null ? null : rr(barAt - 22, -112, barAt + 22, 112, 14);
-      case 'ps.pedals':
-        return rr(STEEL.pedalsU[0] - 80, DEPTH / 2 + 50, STEEL.pedalsU[2] + 80, DEPTH / 2 + 270, 12);
-      default:
-        return null;
-    }
-  })();
+  const mark = hi ? steelMark('top', hi, barAt) : null;
   return (
     <Group>
       <Path path={zone} color={GREY} opacity={0.08} />
@@ -461,7 +424,7 @@ function SteelTop({ hi, barAt, turned = false }: { hi: string | null; barAt: num
         <DashPathEffect intervals={[8, 6]} />
       </Path>
       <SteelBodyTop barAt={barAt} turned={turned} />
-      {hiPath ? <Path path={hiPath} style="stroke" strokeWidth={5} color={AMBER} /> : null}
+      {mark ? <HiMarker path={hiPath(mark)} mm={hiMm(steelBox('top'))} /> : null}
     </Group>
   );
 }
@@ -592,9 +555,57 @@ function LapTop({ hi, turned = false }: { hi: string | null; turned?: boolean })
         <LinearGradient {...lin(turned, vec(nutU + fretU(7, Ls) - 11, 0), vec(nutU + fretU(7, Ls) + 11, 0))} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />
       </Path>
       <Path path={bar} style="stroke" strokeWidth={0.8} color={EL.ink} />
-      {hi === 'ls.body' ? <Path path={body} style="stroke" strokeWidth={5} color={AMBER} /> : null}
+      {hi === 'ls.body' ? <HiMarker path={body} mm={hiMm(steelBox('lap'))} fill={false} /> : null}
     </Group>
   );
+}
+
+/** How a chosen part is marked in a view, sized for the narrowest stage
+ *  (ElectricArt, HI_STROKE_PX). Null: that view does not show the part. */
+export function steelMark(view: SteelView, id: string, barAt: number | null = null): HiMark | null {
+  const mm = hiMm(steelBox(view));
+  const rect = (u0: number, v0: number, u1: number, v1: number): HiBox => hiRect(u0, v0, u1, v1, mm);
+  const one = (u0: number, v0: number, u1: number, v1: number): HiMark => ({ rects: [rect(u0, v0, u1, v1)], rings: [] });
+  if (view === 'lap') return id === 'ls.body' ? { rects: [], rings: [], outline: true } : null;
+  if (view === 'side') {
+    const BOT = TOP + BH;
+    switch (id) {
+      case 'ps.changer':
+        return one(LEN - 70, TOP - 36, LEN + 34, BOT);
+      case 'ps.keyhead':
+        return one(-70, TOP - 44, 50, BOT - 10);
+      case 'ps.knee':
+        return one(STEEL.kneeU[0] - 50, BOT - 4, STEEL.kneeU[3] + 50, BOT + STEEL_FRAME.kneeDrop.mm + 20);
+      case 'ps.pedals':
+        // Starts under the knee levers: from the body down it would take in the inner two as pedals.
+        return one(STEEL.pedalsU[0] - 80, BOT + STEEL_FRAME.kneeDrop.mm + 20, STEEL.pedalsU[2] + 80, -14);
+      case 'ps.volume':
+        return one(STEEL.volumeU[0] - 12, -92, STEEL.volumeU[1] + 26, 8);
+      case 'ps.legs':
+        // One band on each leg: a box round both is the whole space under the body.
+        return { rects: STEEL.legsU.map((u) => rect(u - 30, BOT, u + 30, 6)), rings: [] };
+      case 'ps.neck':
+        return one(-6, TOP - 10, LEN + 6, BOT + 8);
+      default:
+        return null;
+    }
+  }
+  switch (id) {
+    case 'ps.neck':
+      return one(STEEL.nutU - 14, -88, STEEL.changerU - 20, 88);
+    case 'ps.changer':
+      return one(LEN - 70, -106, LEN + 34, 106);
+    case 'ps.keyhead':
+      return one(-70, -102, 50, 102);
+    case 'ps.pickup':
+      return one(STEEL.pickupU - 22, -92, STEEL.pickupU + 22, 92);
+    case 'ps.bar':
+      return barAt == null ? null : one(barAt - 22, -112, barAt + 22, 112);
+    case 'ps.pedals':
+      return one(STEEL.pedalsU[0] - 80, DEPTH / 2 + 50, STEEL.pedalsU[2] + 80, DEPTH / 2 + 270);
+    default:
+      return null;
+  }
 }
 
 /** `turned`: drawn inside a 180° turn (the face views, body left, head
