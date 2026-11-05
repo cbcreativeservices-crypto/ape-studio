@@ -168,13 +168,13 @@ async function buy(body: Row) {
       body: JSON.stringify(body),
     }),
   );
-  return (await res.json()) as { ok: boolean; expires_at?: string; error?: string };
+  return (await res.json()) as { ok: boolean; expires_at?: string | null; error?: string };
 }
 const appleBuy = (productId: string) => buy({ platform: 'ios', productId, transactionId: 'tx-1' });
 const googleBuy = (productId: string) => buy({ platform: 'android', productId, purchaseToken: 'tok-1' });
 const appleLifetimeTx = (environment: string) => ({ environment, bundleId: BUNDLE, productId: 'academy_lifetime' });
 
-function assertAboutOneDay(iso: string | undefined) {
+function assertAboutOneDay(iso: string | null | undefined) {
   const ms = Date.parse(String(iso)) - Date.now();
   assert.ok(ms > DAY - SLACK && ms <= DAY + SLACK, `expected about 24 hours, got ${iso}`);
 }
@@ -295,6 +295,68 @@ describe('validate-purchase: what a sandbox purchase leaves alone', () => {
     state.appleTx = appleLifetimeTx('Sandbox');
     assertAboutOneDay((await appleBuy('academy_lifetime')).expires_at);
     assert.equal(state.entitlement?.member_since, null);
+  });
+
+  const forever = (): Row => ({ ...comp(), expires_at: null });
+
+  it('a no-end-date comp is permanent: a sandbox Lifetime leaves it unchanged', async () => {
+    state.entitlement = forever();
+    state.appleTx = appleLifetimeTx('Sandbox');
+    const r = await appleBuy('academy_lifetime');
+    assert.equal(r.ok, true);
+    assert.equal(r.expires_at, null);
+    assert.equal(state.writes.length, 0);
+    assert.deepEqual(state.entitlement, forever());
+  });
+
+  it('a no-end-date comp is permanent: a real monthly leaves it unchanged, source included', async () => {
+    state.entitlement = forever();
+    state.appleTx = { environment: 'Production', bundleId: BUNDLE, productId: 'academy_monthly', expiresDate: Date.now() + 30 * DAY };
+    const r = await appleBuy('academy_monthly');
+    assert.equal(r.ok, true);
+    assert.equal(r.expires_at, null);
+    assert.equal(state.writes.length, 0);
+    assert.equal(state.entitlement?.source, 'admin_grant');
+  });
+
+  it('a real Google purchase on a no-end-date comp is still acknowledged', async () => {
+    state.entitlement = forever();
+    state.googleBody = { purchaseState: 0, acknowledgementState: 0 };
+    assert.equal((await googleBuy('academy_lifetime')).ok, true);
+    assert.equal(state.writes.length, 0);
+    assert.equal(state.acks, 1);
+  });
+
+  it('a real monthly leaves a dated access code alone too', async () => {
+    state.entitlement = { ...comp(), source: 'access_code', store_ref: 'CODE1' };
+    state.appleTx = { environment: 'Production', bundleId: BUNDLE, productId: 'academy_monthly', expiresDate: Date.now() + 30 * DAY };
+    const r = await appleBuy('academy_monthly');
+    assert.equal(r.expires_at, '2099-01-01T00:00:00.000Z');
+    assert.equal(state.writes.length, 0);
+  });
+
+  it('a paid plan bought again still updates its row, keeping the later date', async () => {
+    const later = new Date(Date.now() + 200 * DAY).toISOString();
+    state.entitlement = { ...comp(), source: 'app_store', store_ref: 'tx-0', expires_at: later };
+    state.appleTx = { environment: 'Production', bundleId: BUNDLE, productId: 'academy_monthly', expiresDate: Date.now() + 30 * DAY };
+    const r = await appleBuy('academy_monthly');
+    assert.equal(r.expires_at, later);
+    assert.equal(state.writes.length, 1);
+    assert.equal(state.entitlement?.store_ref, 'tx-1');
+  });
+
+  it('a gift that has run out does not hold the row back from a real purchase', async () => {
+    state.entitlement = { ...comp(), expires_at: new Date(Date.now() - DAY).toISOString() };
+    state.appleTx = appleLifetimeTx('Production');
+    const r = await appleBuy('academy_lifetime');
+    assert.equal(r.expires_at, '2099-12-31T00:00:00.000Z');
+    assert.equal(state.entitlement?.source, 'app_store');
+  });
+
+  it('a refunded row with no end date is not permanent access', async () => {
+    state.entitlement = { ...forever(), status: 'refunded', refunded_at: '2026-10-01T00:00:00.000Z', member_since: null };
+    state.appleTx = appleLifetimeTx('Sandbox');
+    assertAboutOneDay((await appleBuy('academy_lifetime')).expires_at);
   });
 
   it('an unreadable prior row grants nothing on a sandbox purchase, so a comp is never shortened', async () => {

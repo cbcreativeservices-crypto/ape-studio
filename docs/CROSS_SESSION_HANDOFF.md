@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 01:13 · ccode · 87f2dcec
+changed: Android: BACK on Home asks once before leaving the app (Swipe back again to leave) [MD:D51]
+affects other side: Comp A deploys validate-purchase v21 round 2; the Home BACK change waits for a second OTA.
+needs: the v21 deploy [MD:D50]
+
+
 ### 2026-11-05 00:15 · ccode · 62b06426
 changed: validate-purchase v21: sandbox purchases buy 24 hours and no tenure, and leave longer access alone; H5 live, snapshot refreshed; two exposure tests no longer age out [MD:D50]
 affects other side: Comp A deploys validate-purchase v21 on the owner's go.
@@ -9079,7 +9085,7 @@ affects other side: nothing â€” client-only cosmetic.
 needs: nothing.
 
 ### 2026-09-14 10:27 Â· ccode Â· 92dca6b7
-changed: Sync nudge: match only real stub lines (^affects/needs: <FILL), not protocol prose
+changed: Sync nudge: match only real stub lines (^affects/needs: the v21 deploy [MD:D50]
 affects other side: nothing â€” ccode-side Claude Code config.
 needs: nothing. Comms-hook setup is COMPLETE + verified (git post-commit stub + Stop-hook fill reminder).
 

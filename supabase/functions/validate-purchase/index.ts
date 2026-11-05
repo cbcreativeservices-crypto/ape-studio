@@ -464,7 +464,7 @@ Deno.serve(async (req) => {
   // round trip on a path that already made two HTTPS calls to a store.
   let { data: existing, error: readErr } = await admin
     .from('entitlements')
-    .select('id, status, expires_at, member_since, refunded_at')
+    .select('id, status, source, expires_at, member_since, refunded_at')
     .eq('user_id', userId)
     .eq('product', ACADEMY_PRODUCT)
     .maybeSingle();
@@ -472,7 +472,7 @@ Deno.serve(async (req) => {
     console.warn('[validate-purchase] prior entitlement read failed, retrying:', readErr.message);
     ({ data: existing, error: readErr } = await admin
       .from('entitlements')
-      .select('id, status, expires_at, member_since, refunded_at')
+      .select('id, status, source, expires_at, member_since, refunded_at')
       .eq('user_id', userId)
       .eq('product', ACADEMY_PRODUCT)
       .maybeSingle());
@@ -494,18 +494,23 @@ Deno.serve(async (req) => {
 
   // Never SHORTEN access a user already has (e.g. a lifetime comp who also
   // buys a month): keep the later expiry.
-  const prior = existing as { id: string; status: string; expires_at: string; member_since: string | null; refunded_at: string | null } | null;
-  const priorMs = prior?.expires_at ? Date.parse(prior.expires_at) : 0;
+  const prior = existing as { id: string; status: string; source: string; expires_at: string | null; member_since: string | null; refunded_at: string | null } | null;
+  // A NULL expiry on a live row means NEVER, the same as has_academy_access and
+  // member_month_complete read it, so it is the longest access there is, not none.
+  const priorHolds = prior?.status === 'active' && !prior.refunded_at;
+  const priorPermanent = priorHolds && prior!.expires_at === null;
+  const priorMs = priorPermanent ? Infinity : prior?.expires_at ? Date.parse(prior.expires_at) : 0;
   const computedMs = Date.parse(computed);
   // M1: a refunded or inactive row holds nothing, so a free test purchase cannot
   // bring its old end date back.
-  const sandboxIgnoresPrior = sandbox && (prior?.status !== 'active' || !!prior?.refunded_at);
+  const sandboxIgnoresPrior = sandbox && !priorHolds;
   const expires_at = priorMs > computedMs && !sandboxIgnoresPrior ? prior!.expires_at : computed;
-  // M1: the row already holds longer real access (a comp, an access code, a paid
-  // plan), so the test purchase leaves it completely alone. Writing even the
-  // source and store_ref here would hand a comp to the store: a sandbox renewal
-  // notice, minutes later, would match that store_ref and replace its expiry.
-  const sandboxLeavesRow = sandbox && !sandboxIgnoresPrior && priorMs > computedMs;
+  // Leave the row completely alone when it already holds longer access and is
+  // either a gift (comp, access code) or this is a test purchase. Writing even
+  // source and store_ref here hands a gift to the store: a later renewal notice
+  // matches that store_ref and replaces its expiry, and a refund would revoke it.
+  const priorIsGift = priorHolds && prior!.source !== 'app_store' && prior!.source !== 'play_store';
+  const leaveRowAlone = priorHolds && priorMs > computedMs && (sandbox || priorPermanent || priorIsGift);
 
   // ── the tenure clock (owner 2026-09-17) ──────────────────────────────────
   // A credential needs one complete month of unbroken membership, so this has
@@ -614,8 +619,9 @@ Deno.serve(async (req) => {
   // exists — and a plain insert would hit UNIQUE (user_id, product), fail the
   // grant, and hand the customer "we couldn't verify that purchase" for a
   // purchase that verified perfectly. Upsert lands either way.
-  if (sandbox) console.log('[validate-purchase] sandbox purchase:', { sandbox: true, sku, apple: isApple, leftRowAlone: sandboxLeavesRow });
-  const write = sandboxLeavesRow
+  if (sandbox) console.log('[validate-purchase] sandbox purchase:', { sandbox: true, sku, apple: isApple, leftRowAlone: leaveRowAlone });
+  else if (leaveRowAlone) console.log('[validate-purchase] purchase on longer gifted access, row left alone:', { sku, apple: isApple, source: prior!.source });
+  const write = leaveRowAlone
     ? { error: null }
     : existing
     ? await admin.from('entitlements').update(row).eq('id', prior!.id)
