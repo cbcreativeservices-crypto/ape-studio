@@ -522,6 +522,9 @@ export function PeakMeterView(p: {
    *  dBFS only; no SAMPLE PEAK / OVER / L-R / CREST legends. The OVER lamp
    *  itself still lights. */
   plain?: boolean;
+  /** Signal Detective: the display's name is the first question, so it is not
+   *  printed. Everything else on the face stays — it is the evidence. */
+  hideName?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? 190;
@@ -814,9 +817,11 @@ export function PeakMeterView(p: {
       {p.plain ? null : (
         <>
       {/* x clears the corner screw (12·ts ± 3.6·ts) — it sat on the "P". */}
+      {p.hideName ? null : (
       <Lbl x={20 * ts} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
         SAMPLE PEAK
       </Lbl>
+      )}
       <Lbl x={w / 2 - 26} y={11 * ts} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
         OVER
       </Lbl>
@@ -863,6 +868,9 @@ export function VuMeterView(p: {
   phase: SharedValue<number>;
   /** Also draw a fast peak LED beside the face (the peak-vs-average lesson). */
   showPeakLed?: boolean;
+  /** Signal Detective: the display's name is the first question, so the VU
+   *  wordmark is not printed. */
+  hideName?: boolean;
   /** Peak-hold marker on the VU arc (SPL popup, 2026-07-30): a thin white tick on
    *  the scale arc marking the HIGHEST needle position reached. 'off' / absent ⇒
    *  no marker (meter-lab callers unaffected); '1s'/'3s' ⇒ the tick lingers at the
@@ -1342,9 +1350,11 @@ export function VuMeterView(p: {
       {/* VU wordmark: centred at the MIDPOINT between the blue in-arc numbers
           (radius ≈ R−15) and the pivot hub (owner 2026-07-30) — raised up out of
           the pivot zone. Center column is clear of the needle blade at rest. */}
+      {p.hideName ? null : (
       <Lbl x={cx - 26} y={wmTopY} w={52} size={wmSize} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
         VU
       </Lbl>
+      )}
       {showLed ? (
         <Lbl x={ledX - 20} y={ledY + 9 * ts} w={40} size={6.5} color="#8c2f24" ls={1}>
           PEAK
@@ -1639,7 +1649,7 @@ export function LoudnessView(p: {
         {`LRA ${sim.lraLu.toFixed(1)} LU`}
       </Lbl>
       <Lbl x={histX} y={histBot + 7 * ts} w={histW} size={9}>
-        SHORT-TERM · LOOP ≈ 24 s
+        SHORT-TERM · SPED UP
       </Lbl>
       <Lbl x={w - 12 * ts - 98} y={32 * ts} w={98} align="right" size={10} color={over ? RED : TEXT_DIM}>
         {`TP ${sim.truePeakDbtp.toFixed(1)} dBTP`}
@@ -1664,6 +1674,9 @@ export function PhaseMeterView(p: {
   width01: number;
   phaseDeg: number;
   phase: SharedValue<number>;
+  /** Signal Detective: the display's name is the first question, so the
+   *  CORRELATION title is not printed. */
+  hideName?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? 220;
@@ -1796,9 +1809,11 @@ export function PhaseMeterView(p: {
         </Path>
         <Path path={beam} color="#f2fff5" opacity={0.95} />
       </Canvas>
+      {p.hideName ? null : (
       <Lbl x={10} y={4 * ts} w={120} align="left" size={7} ls={1}>
         CORRELATION
       </Lbl>
+      )}
       <Lbl x={w - 10 * ts - 80} y={4 * ts} w={80} align="right" size={9} color={zoneColor}>
         {`ρ ${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`}
       </Lbl>

@@ -263,6 +263,10 @@ function ChoiceChips({
   );
 }
 
+/** Owner 2026-11-05: hide Audio Community on Profile until the next store build
+ *  and the forum go live, the same as Home. Set to true then. */
+const SHOW_COMMUNITY_ON_PROFILE = false;
+
 function fmtCredDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
@@ -1405,8 +1409,10 @@ export function ProfileScreen() {
           ) : (
             <Text style={styles.rowHint}>
               Optional, and kept on this device only — never sent to us, never shown on
-              your public page. Members who find you in the directory reach you through
-              in-app contact requests, which never reveal your address.
+              your public page.
+              {SHOW_COMMUNITY_ON_PROFILE
+                ? ' Members who find you in the directory reach you through in-app contact requests, which never reveal your address.'
+                : ''}
             </Text>
           )}
 
@@ -1435,6 +1441,7 @@ export function ProfileScreen() {
             their own permanent link; the community profile is an opt-in
             professional listing that can be published, hidden or deleted
             without touching them. —— */}
+        {SHOW_COMMUNITY_ON_PROFILE ? (
         <Section title="AUDIO COMMUNITY DIRECTORY" summary="opt-in">
           <Text style={styles.sectionIntro}>
             An optional professional listing: what you work in, what you specialize in, how
@@ -1457,6 +1464,7 @@ export function ProfileScreen() {
             <Text style={styles.chevron}>›</Text>
           </Pressable>
         </Section>
+        ) : null}
 
         {/* —— WHO CAN SEE ME — both publishing switches in ONE place, with a
             literal manifest between them. People refuse these toggles because

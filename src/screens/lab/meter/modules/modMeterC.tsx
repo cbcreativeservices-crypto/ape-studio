@@ -76,7 +76,8 @@ const PHASE_ZONES = [
   { mark: '−1', text: 'MONO-DEATH — opposite polarity; the sum cancels', color: '#ff6b5e' },
 ] as const;
 
-const phaseZoneIdx = (corr: number) => (corr > 0.35 ? 0 : corr > -0.35 ? 1 : 2);
+/** MONO-SAFE starts where the bar's green zone and the SAFE verdict start: +0.5. */
+const phaseZoneIdx = (corr: number) => (corr >= 0.5 ? 0 : corr >= -0.35 ? 1 : 2);
 
 function ZoneCaptions({ corr }: { corr: number }) {
   const active = phaseZoneIdx(corr);
@@ -533,7 +534,12 @@ export function ScopeModule(p: MeterModuleProps) {
       label: 'SIGNAL',
       valueLabel: sigLabel,
       selectedId: signal,
-      onSelect: (id) => setSignal(id as SignalKey),
+      // X-Y draws its own stereo pair, so a SIGNAL only shows in TIME: picking
+      // one goes back there, or the tray would do nothing (owner 2026-11-05).
+      onSelect: (id) => {
+        setSignal(id as SignalKey);
+        setXy(false);
+      },
       sticky: true,
       helpKey: 'oscilloscope',
       options: SCOPE_SIGNALS.map((s) => ({ id: s.key, label: s.label, blurb: s.blurb })),
@@ -607,7 +613,7 @@ export function ScopeModule(p: MeterModuleProps) {
       <View style={styles.well}>
         <Text style={dstyles.caption}>
           {xy
-            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. A studio goniometer rotates this plot 45°, so there mono stands upright instead. Riding WIDTH or PHASE switches X-Y mode on.'
+            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. A studio goniometer rotates this plot 45°, so there mono stands upright instead. Riding WIDTH or PHASE switches X-Y mode on; picking a SIGNAL goes back to TIME.'
             : 'Reading flat-tops: when the trace slams into a ceiling and flattens, the signal has clipped RIGHT THERE or earlier — whatever the meters further down the chain claim.'}
         </Text>
 
@@ -817,20 +823,20 @@ const CASES: DetectiveCase[] = [
       options: ['A VU meter', 'A spectrogram', 'A digital peak meter', 'A correlation meter'],
       correctIdx: 2,
       reveal:
-        'A segment ladder in dBFS with a hold bar parked at the recent maximum and an OVER lamp that latches when full scale is hit — the digital recording safety meter.',
-      wrongHint: 'Segments, a hold bar, and a latched warning lamp at the very top.',
+        'A segment ladder in dBFS with a hold bar parked at the recent maximum and an OVER lamp that lights when full scale is hit — the digital recording safety meter.',
+      wrongHint: 'Segments, a hold bar, and a warning lamp at the very top.',
     },
     shows: {
       question: 'WHAT DOES IT SHOW?',
       options: [
         'Average loudness in LUFS',
-        'Peaks pinned at the top, OVER latched',
+        'Peaks pinned at the top, OVER lit',
         'Frequency balance',
         'Stereo width',
       ],
       correctIdx: 1,
       reveal:
-        'The bar keeps slamming the top of the scale and the latched OVER says full scale has already been hit at least once. Peak meters answer exactly one question: how close are the biggest instants to 0 dBFS?',
+        'The bar keeps slamming the top of the scale and the lit OVER says full scale has already been hit at least once. Peak meters answer exactly one question: how close are the biggest instants to 0 dBFS?',
       wrongHint: 'This ladder reads instants, not averages — and its warning lamp has tripped.',
     },
     problem: {
@@ -843,7 +849,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 0,
       reveal:
-        'Hitting full scale means the converter has run out of numbers: the waveform is flat-topped and the distortion is already recorded. The latched OVER exists so you catch it even if you looked away.',
+        'Hitting full scale means the converter has run out of numbers: the waveform is flat-topped and the distortion is already recorded. The OVER lamp exists so you catch it even if you looked away.',
       wrongHint: 'What happens to a digital signal at the moment it reaches full scale?',
     },
     fix: {
@@ -1156,14 +1162,14 @@ function CaseHero({
   const phase = vm.usePhaseClock(focused, kase.kind === 'ring' ? vs.waterfallRealtimeHz(RING_OPTS) : kase.visHz);
   if (kase.kind === 'dc')
     return <vm.WaveformView width={width} height={height} signal="sine" gain={0.55} dcOffset={0.35} showClip phase={phase} />;
-  if (kase.kind === 'over') return <vm.PeakMeterView width={width} height={height} signal="music" gain={2.2} phase={phase} />;
+  if (kase.kind === 'over') return <vm.PeakMeterView width={width} height={height} signal="music" gain={2.2} phase={phase} hideName />;
   if (kase.kind === 'hum') return <vs.SpectrumPatternView width={width} height={height} pattern="hum" phase={phase} />;
   if (kase.kind === 'feedback')
     return <vs.SpectrogramPatternView width={width} height={height} pattern="feedback" phase={phase} />;
   if (kase.kind === 'ring') return <vs.WaterfallView width={width} height={height} opts={RING_OPTS} animate phase={phase} />;
   if (kase.kind === 'antiphase')
-    return <vm.PhaseMeterView width={width} height={height} width01={0.15} phaseDeg={175} phase={phase} />;
-  return <vm.VuMeterView width={width} height={height} signal="snare" showPeakLed phase={phase} />;
+    return <vm.PhaseMeterView width={width} height={height} width01={0.15} phaseDeg={175} phase={phase} hideName />;
+  return <vm.VuMeterView width={width} height={height} signal="snare" showPeakLed phase={phase} hideName />;
 }
 
 export function DetectiveModule(p: MeterModuleProps) {
@@ -1219,9 +1225,10 @@ export function DetectiveModule(p: MeterModuleProps) {
   ];
 
   const bezel: BezelItem[] = [
-    { k: 'CASE', v: `${idx + 1}/${n}`, helpKey: 'detective' },
-    { k: 'QUESTION', v: `${step + 1}/${qCount}`, helpKey: 'detective' },
-    { k: 'SOLVED', v: `${solvedN}/${n * qCount}`, tint: solvedN >= n * qCount ? '#5bff85' : undefined, helpKey: 'detective' },
+    // Position only, never "N of total" (D117).
+    { k: 'CASE', v: `${idx + 1}`, helpKey: 'detective' },
+    { k: 'QUESTION', v: `${step + 1}`, helpKey: 'detective' },
+    { k: 'SOLVED', v: `${solvedN}`, tint: solvedN >= n * qCount ? '#5bff85' : undefined, helpKey: 'detective' },
   ];
 
   return (

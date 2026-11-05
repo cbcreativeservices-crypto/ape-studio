@@ -363,7 +363,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'MODE tells you which view you’re in, TIME or X-Y. SIGNAL reads in TIME; CORR and WIDTH read only in X-Y.',
     ],
     control: [
-      'SIGNAL draws SINE, SQUARE, TRIANGLE, SAW, SPEECH or MUSIC, and the tray stays open so you can compare traces. It only changes TIME: X-Y draws its own stereo pair.',
+      'SIGNAL draws SINE, SQUARE, TRIANGLE, SAW, SPEECH or MUSIC, and the tray stays open so you can compare traces. Picking one in X-Y goes back to TIME: X-Y draws its own stereo pair.',
       'The X-Y key switches between TIME and X-Y.',
       'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0. Moving either one switches X-Y on, so tap X-Y to get back to TIME.',
     ],

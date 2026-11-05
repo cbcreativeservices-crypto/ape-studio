@@ -64,7 +64,7 @@ describe('shared lab navigation law', () => {
       assert.ok(!bar.includes(word) && !pure.includes(word), `the kit carries the retired "${word}"`);
     }
     assert.ok(pure.includes("prev: '‹ PREV'") && pure.includes("next: 'NEXT ›'") && pure.includes("finish: 'FINISH ›'"));
-    assert.ok(bar.includes('accessibilityLabel="Leave the lab"'), 'the header ‹ must read "Leave the lab"');
+    assert.ok(bar.includes("backLabel = 'Leave the lab'") && bar.includes('accessibilityLabel={backLabel}'), 'the header ‹ must read "Leave the lab" unless the screen says what it really leaves');
     assert.ok(bar.includes('hitSlop={BACK_HIT_SLOP}'), 'the header ‹ keeps BACK_HIT_SLOP');
     assert.ok(bar.includes('BackHandler.addEventListener'), 'CONTENTS must answer Android BACK while open');
   });

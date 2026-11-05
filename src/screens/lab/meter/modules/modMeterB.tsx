@@ -357,7 +357,7 @@ const SPECTROGRAM_CAPTIONS: Record<SpectrogramKey, string> = {
     'Cymbal decay: a bright high-frequency WASH at the hit that FADES toward the right — decay reads as brightness dying along the time axis.',
   feedback:
     'Feedback: ONE horizontal line getting BRIGHTER as it runs right — same pitch, growing level. The growth is the danger sign.',
-  whistle: 'Whistle: one THIN, STEADY horizontal line at constant brightness. Pure tone, stable level — nothing to fix.',
+  whistle: 'Whistle: one THIN line at constant brightness, wavering only slightly with vibrato. Pure tone, stable level — nothing to fix.',
   whitenoise: 'White noise: uniform CONFETTI — every time and every frequency lit about the same. No structure = noise.',
 };
 
@@ -527,7 +527,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'ROOM RESONANCES',
     helpKey: 'room_ring',
     caption:
-      'Pick CLASSROOM. Every ridge collapses quickly — except 250 Hz, still standing tall far toward the front. That frequency is RINGING: the room stores and releases energy there long after everything else has died.',
+      'In CLASSROOM, slide DAMPING down to CONCRETE · 0%. Every ridge collapses quickly — except 250 Hz, still standing tall far toward the front. That frequency is RINGING: the room stores and releases energy there long after everything else has died.',
   },
   {
     title: 'SPEAKER PROBLEMS',
@@ -834,7 +834,7 @@ export function WaterfallModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <Text style={dstyles.body}>
-          Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ GAIN
+          Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ
           lanes reshape it live, Q RING plants a ringing filter. The bezel keeps score.
         </Text>
         <ReadoutGrid
@@ -852,7 +852,9 @@ export function WaterfallModule(p: MeterModuleProps) {
         <Text style={dstyles.caption}>
           {ringing
             ? `${fmtHz(rt.f)} decays ${rt.ratio.toFixed(1)}× slower than its neighbors — that narrow ridge is RINGING. (A broad bass rise is normal room physics; a ridge is a resonance.)`
-            : 'No narrow resonance stands out of the decay. Pick CLASSROOM or flip Q RING to plant one — or dry the room out: a live room can MASK a ring that decays faster than the room does.'}
+            : room === 'classroom'
+              ? 'No ridge is marked yet: this room’s 250 Hz mode stays under the mark here. Slide DAMPING toward 0 % to see it ring, or flip Q RING to plant one. A slower reverb can MASK a ring.'
+              : 'No narrow resonance stands out of the decay. Pick CLASSROOM or flip Q RING to plant one — or dry the room out: a live room can MASK a ring that decays faster than the room does.'}
         </Text>
         {(reverb !== 'none' && reverbHidden[reverb]) || (qRing && qRingHidden) ? (
           <Text style={dstyles.caption}>

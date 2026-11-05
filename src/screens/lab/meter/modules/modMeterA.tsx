@@ -418,8 +418,9 @@ export function WaveformModule(p: MeterModuleProps) {
         <CollapsibleSection title="READING THE PICTURE — CUE BY CUE">
           <Text style={dstyles.body}>
             HEIGHT is amplitude — the peak readout, nothing more. SYMMETRY around the center is
-            polarity balance: tap the Ø POL key and the picture flips upside-down while every
-            number but the DC sign stays put — polarity changes nothing about level. FLAT TOPS at
+            polarity balance: with DC at 0 %, tap the Ø POL key and the picture flips upside-down
+            while every number but the DC sign stays put — polarity changes nothing about level. An
+            offset you added stays where it is: Ø POL flips the sound, not the offset. FLAT TOPS at
             the rails are clipping — push GAIN up and watch red shear appear the instant the CLIP
             readout trips. A FLAT LINE at center is silence; a flat line OFF center is DC offset —
             the ride line the DC lane moves (DC→0 snaps it back). THIN SPIKES (pick KICK in the
@@ -565,8 +566,9 @@ export function PeakModule(p: MeterModuleProps) {
             The live bar tracks the instantaneous maximum — up in microseconds, falling slowly only
             so your eye can follow. The floating segment above it is PEAK HOLD, the highest recent
             peak kept on screen so you can mix without staring. Push GAIN until the top segment
-            lights: that is the OVER lamp, and it LATCHES — one trip means full scale was already
-            hit, however briefly. The OVERS readout tallies each separate excursion.
+            lights: that is the OVER lamp. One trip means full scale was already hit, however
+            briefly, so it stays lit until this short clip starts over, then lights again on the
+            next hit. The OVERS readout tallies each separate excursion.
           </Text>
           <Text style={dstyles.eyebrow}>WHAT PEAK CANNOT TELL YOU — PREVIEW OF MODULE 3</Text>
           <Text style={dstyles.body}>
@@ -694,9 +696,10 @@ export function VuModule(p: MeterModuleProps) {
           <Text style={dstyles.body}>
             Select SNARE: the peak LED flashes hard on every hit while the needle barely stirs — by
             the time 300 ms of ballistics get it moving, the hit is long over. The NDL MAX readout
-            shows how little of the peak it ever reaches. Now select ORGAN: similar LED,
-            but the needle climbs and SITS there, because the energy never stops arriving. Same peak,
-            opposite needles — that is RMS versus peak made physical, and it is the single most
+            shows how little of the peak it ever reaches. Now select ORGAN: at GAIN +0.0 dB its
+            peaks stay under the LED, which stays dark, yet the needle climbs and SITS there, because
+            the energy never stops arriving. Lower peak, higher needle — that is RMS versus peak made
+            physical, and it is the single most
             important metering lesson in this lab.
           </Text>
           <Text style={dstyles.eyebrow}>WHY ENGINEERS STILL TRUST IT</Text>

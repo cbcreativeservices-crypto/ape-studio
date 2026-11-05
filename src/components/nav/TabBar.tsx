@@ -14,6 +14,12 @@ import { colors, fonts } from '../../theme/tokens';
 import { CommunityBadge, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y } from '../../features/directory/inboxCounts';
 
+/** Owner 2026-11-05: Audio Community is off Home and Profile until the next
+ *  store build and the forum go live, so the PROFILE tab must not count requests
+ *  nobody can reach. Set to true with SHOW_COMMUNITY_ON_HOME and
+ *  SHOW_COMMUNITY_ON_PROFILE. */
+const SHOW_COMMUNITY_BADGE_ON_TAB = false;
+
 const TAB_ORDER: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
 /** Root screen of each nested-stack tab (for active-tab re-tap). */
@@ -90,7 +96,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               accessibilityLabel={
                 name === 'Achievements'
                   ? 'Progress'
-                  : name === 'Profile' && inboxLabel
+                  : SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' && inboxLabel
                     ? `Profile, ${inboxLabel}`
                     : name
               }
@@ -99,7 +105,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               <NavIcon icon={name} lit={lit} />
               {/* The community lives under Profile: pending contact requests +
                   unread messages (owner 2026-10-04). Nothing when unknown. */}
-              {name === 'Profile' ? <CommunityBadge state={inbox} style={styles.badge} /> : null}
+              {SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' ? <CommunityBadge state={inbox} style={styles.badge} /> : null}
             </Pressable>
           );
         })}

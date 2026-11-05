@@ -97,6 +97,7 @@ export function LabHeader({
   headerRef,
   guide,
   guideTitle,
+  backLabel = 'Leave the lab',
 }: {
   title: string;
   subtitle?: string;
@@ -108,6 +109,9 @@ export function LabHeader({
   guide?: ScreenGuide;
   /** The guide card's title; defaults to `title` in capitals. */
   guideTitle?: string;
+  /** What ‹ says to a screen reader, for a screen where ‹ does not leave the
+   *  whole lab (a module under its own menu). */
+  backLabel?: string;
 }) {
   const navigation = useNavigation();
   const leave = () => {
@@ -117,7 +121,7 @@ export function LabHeader({
   const key = guide ? <ScreenGuideKey title={guideTitle ?? title.toUpperCase()} guide={guide} /> : null;
   const header = (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>
-      <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave the lab">
+      <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel={backLabel}>
         <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
       </Pressable>
       <Pressable style={styles.titleBlock} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>

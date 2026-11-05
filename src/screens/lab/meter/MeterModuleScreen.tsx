@@ -144,7 +144,8 @@ export function MeterModuleScreen() {
           steps sit away from the display / dock they explain (measured from
           the module's Rack Unit). A module change closes an open guide. */}
       <ScreenGuideHost resetKey={ending ? 'end' : meta.id}>
-      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). The header ⓘ
+      {/* The shared header: ‹ leaves this module (kit/LabNavBar), so it says
+          that rather than "Leave the lab". The header ⓘ
           explains THIS module's screen (Signal Detective = 'detective'), or
           the what's-left screen after FINISH (Screen Guide, owner 2026-10-31).
           A CONCEPT lab: built-in teaching signals (badged on every stage), no
@@ -153,6 +154,7 @@ export function MeterModuleScreen() {
       <LabHeader
         title={meta.title.toUpperCase()}
         subtitle="Visual Audio Analysis Lab"
+        backLabel="Leave this module"
         guide={ending ? METER_END_GUIDE : METER_SCREEN_GUIDES[meta.id]}
         guideTitle={ending ? 'VISUAL AUDIO ANALYSIS LAB' : meta.title.toUpperCase()}
       />
