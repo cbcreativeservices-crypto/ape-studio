@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 01:40 · ccode · b35045f0
+changed: Must-do: v21 live, Pixel and iPhone confirmed, A6, R3 step 2 and R7b done and tested [MD:D50]
+affects other side: nothing.
+needs: nothing
+
+
 ### 2026-11-05 01:13 · ccode · 87f2dcec
 changed: Android: BACK on Home asks once before leaving the app (Swipe back again to leave) [MD:D51]
 affects other side: Comp A deploys validate-purchase v21 round 2; the Home BACK change waits for a second OTA.
