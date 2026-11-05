@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 08:28 · ccode · ce310618
+changed: Owner decisions from the full app test applied [MD:D57]
+affects other side: nothing; client-only changes, no schema or server change.
+needs: [MD:D57] Comp A pack for the practice quiz and glossary items is in Downloads: 2026-11-05_FOR_COMP_A_PRACTICE_QUIZ_AND_GLOSSARY.zip
+
+
 ### 2026-11-05 07:45 · ccode · fb15fef5
 changed: One-pass full app test: bug fixes [MD:D50]
 affects other side: nothing; client-only fixes, no schema or server change.
