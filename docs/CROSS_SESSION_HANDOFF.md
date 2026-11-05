@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-04 08:13 · ccode · 00ba47d8
+changed: must-do A2: owner said not yet; OTA ready and held [MD:A2]
+affects other side: nothing (A2 held by the owner)
+needs: nothing
+
+
 ### 2026-11-04 08:06 · ccode · 5bb93367
 changed: Topic Foundations: final pass to 4.5: 157 of 171 at 4.5+ (146 at 4.6+, average 4.64); all 171 pass the check script
 affects other side: nothing yet (Foundations text not loaded; column not added)
