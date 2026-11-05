@@ -7,7 +7,7 @@
  * LABELS carry the unit; compute converts from base F/H.
  */
 import type { Workspace } from '../calcTypes';
-import { AIR_TEMP_FIELD, fmt, overAirCeiling, P_REF_PA, RHO_AIR_20C, SPL_CEILING_WHY, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, overAirCeiling, P_REF_PA, RHO_AIR_20C, SPL_CEILING_WHY, SPL_INPUT_RANGE, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const TWO_PI = 2 * Math.PI;
@@ -168,7 +168,7 @@ const LINEARRAY: Workspace = {
     { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Center-to-center distance between array elements.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
+    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_INPUT_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
     { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '4', help: 'Distance where the reference SPL was measured.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '16', help: 'Distance to evaluate the SPL at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],

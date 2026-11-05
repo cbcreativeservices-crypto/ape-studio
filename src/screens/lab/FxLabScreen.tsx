@@ -214,6 +214,8 @@ export type FxLabConfig = {
   subtitle: string;
   intro: string;
   exploreCaption: string;
+  /** A source that needs its own caption, by its label (owner 2026-11-05). */
+  exploreCaptionBySource?: Record<string, string>;
   sources: FxSourceSpec[];
   /** Engine 10+ (ApeDsp.stereoSpreadAvailable): REPLACES `sources` when the
    *  generator can render a stereo-spread source. Older builds keep `sources`
@@ -680,7 +682,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       title={config.title}
       subtitle={config.subtitle}
       intro={config.intro}
-      exploreCaption={config.exploreCaption}
+      exploreCaption={config.exploreCaptionBySource?.[sources[sourceIdx]?.label] ?? config.exploreCaption}
       guide={config.guide}
       accuracy={config.accuracy ?? true}
       // The what's-left screen under the CHECK (every lab ends on one; D41):

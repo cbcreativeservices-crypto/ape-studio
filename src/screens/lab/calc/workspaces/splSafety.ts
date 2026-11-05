@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { DBU_REF_V, MIC_SENS_FIELD, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, overAirCeiling, snapWhole } from '../calcUnits';
+import { CALC_LIMITS, DBU_REF_V, LIMITER_MARGIN_OUTSIDE_LIMIT, MIC_SENS_FIELD, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_FLOOR_WHY, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, outsideLimit, overAirCeiling, snapWhole, underSplFloor } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -159,6 +159,17 @@ export const AMP_ATTENUATOR_NOTE =
  *  words, never printed (a card showed "1.000e8 dB SPL" and "196 dB SPL"). */
 const pastCeiling = (db: number): string | null =>
   overAirCeiling(db) ? `${SPL_CEILING_WHY} Check the levels and distances you entered.` : null;
+/** D53 (owner 2026-11-05, report item 3): a typed level under the SPL floor is
+ *  refused in words. The ceiling of a typed level stays with SPL_FIELD_RANGE. */
+const underFloor = (db: number): string | null =>
+  underSplFloor(db) ? `${SPL_FLOOR_WHY} Check the level you entered.` : null;
+/** A list of typed levels never meets a field range, so both ends are checked here. */
+const levelListRefusal = (ls: number[]): string | null =>
+  ls.some(overAirCeiling)
+    ? `${SPL_CEILING_WHY} Check the levels you entered.`
+    : ls.some(underSplFloor)
+      ? `${SPL_FLOOR_WHY} Check the levels you entered.`
+      : null;
 /** Owner decision 2026-10-23 (item 7, D53): past 75 dB of gain there is no
  *  preamp setting to give — say what to do instead, print no number (a quiet
  *  source printed "GAIN TO HIT TARGET 102.7 dB"). */
@@ -232,7 +243,7 @@ const WS_SPL_DIST: Workspace = {
         'A free-field point source loses 6 dB every time the distance doubles. This predicts the level at a new distance from a known level at a known distance — the basis of every coverage question, from the back row to the front-row heat.',
       keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Free-field point source: −6 dB per doubling of distance.',
-      refuse: (v) => pastCeiling(n(v.l1) - 20 * Math.log10(n(v.d2) / n(v.d1))),
+      refuse: (v) => underFloor(n(v.l1)) ?? pastCeiling(n(v.l1) - 20 * Math.log10(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -261,7 +272,7 @@ const WS_SPL_DIST: Workspace = {
         'An idealized (infinite) line source spreads cylindrically, so it loses only 3 dB per doubling of distance — half the falloff of a point source. Real line arrays only approximate this, and only in their near field, which is exactly why arrays throw farther.',
       keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Idealized (infinite) line source: −3 dB per doubling. Real line arrays only approximate this, and only in their near field.',
-      refuse: (v) => pastCeiling(n(v.l1) - 10 * Math.log10(n(v.d2) / n(v.d1))),
+      refuse: (v) => underFloor(n(v.l1)) ?? pastCeiling(n(v.l1) - 10 * Math.log10(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = 10 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -289,7 +300,7 @@ const WS_SPL_DIST: Workspace = {
         'Uses a measured per-doubling falloff rate instead of the ideal 6 or 3 dB. Real arrays typically land between the two. The base-two log turns the distance ratio into a number of doublings, each costing the entered rate.',
       keySymbols: ['−', '·', '/', 'x₁'],
       note: 'Use a measured per-doubling rate — real arrays typically land between 3 and 6 dB per doubling.',
-      refuse: (v) => pastCeiling(n(v.l1) - n(v.rate) * Math.log2(n(v.d2) / n(v.d1))),
+      refuse: (v) => underFloor(n(v.l1)) ?? pastCeiling(n(v.l1) - n(v.rate) * Math.log2(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = n(v.rate) * Math.log2(n(v.d2) / n(v.d1));
         return [
@@ -321,9 +332,10 @@ const WS_SPL_DIST: Workspace = {
       // A required level past the ceiling of air is no source at all (audit
       // R2, 2026-10-23): a 192 dB SPL target at 8 m asked for "210.1 dB SPL".
       refuse: (v) =>
-        overAirCeiling(n(v.lTarget) + 20 * Math.log10(n(v.d2) / n(v.d1)))
+        underFloor(n(v.lTarget)) ??
+        (overAirCeiling(n(v.lTarget) + 20 * Math.log10(n(v.d2) / n(v.d1)))
           ? 'No source can do this — at d₁ it would need more than about 194 dB SPL, the loudest sound air can carry. Lower the target or move the listener closer.'
-          : null,
+          : null),
       compute: (v) => {
         const gain = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -394,7 +406,7 @@ const WS_SPL_ADD: Workspace = {
       keySymbols: ['·', 'log₁₀', 'Σ', 'x²', 'x₁'],
       refuse: (v) => {
         const ls = arr(v.levels);
-        return ls.some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : pastCeiling(dbSum(ls));
+        return levelListRefusal(ls) ?? pastCeiling(dbSum(ls));
       },
       compute: (v) => {
         const ls = arr(v.levels);
@@ -442,7 +454,7 @@ const WS_SPL_ADD: Workspace = {
       explain:
         'N identical, uncorrelated sources add N times the energy, which is 10·log(N) of gain: two give +3 dB, four give +6 dB, ten give +10 dB. Each new identical source buys less than the last.',
       keySymbols: ['·', 'log₁₀'],
-      refuse: (v) => pastCeiling(n(v.lvl) + 10 * Math.log10(n(v.count))),
+      refuse: (v) => underFloor(n(v.lvl)) ?? pastCeiling(n(v.lvl) + 10 * Math.log10(n(v.count))),
       compute: (v) => {
         const gain = 10 * Math.log10(n(v.count));
         return [
@@ -509,7 +521,7 @@ const WS_SPL_ADD: Workspace = {
       explain:
         'Energy-sums two levels and checks which dominates. When one source is more than about 10 dB below the other, it adds under half a dB — muting it barely moves the meter. Within 10 dB, both matter. It is why removing a quiet channel often barely changes the total level.',
       keySymbols: ['·', 'log₁₀', 'x²'],
-      refuse: (v) => pastCeiling(dbSum([n(v.la), n(v.lb)])),
+      refuse: (v) => underFloor(Math.min(n(v.la), n(v.lb))) ?? pastCeiling(dbSum([n(v.la), n(v.lb)])),
       compute: (v) => {
         const la = n(v.la);
         const lb = n(v.lb);
@@ -591,6 +603,7 @@ const WS_DOSE: Workspace = {
       keySymbols: ['/', 'x²', '−'],
       // Names the authorities (owner ruling 2026-10-23).
       note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      refuse: (v) => underFloor(n(v.lex)),
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
         const none = nioshNoLimit(n(v.lex));
@@ -632,6 +645,7 @@ const WS_DOSE: Workspace = {
         'The same idea under the OSHA-style criterion (90 dBA, 5 dB exchange, 8 hours), where every 5 dB above 90 halves the time. It is more lenient than the 3 dB model at high levels — the same day scores a very different dose under each. Teaching only, not compliance.',
       keySymbols: ['/', 'x²', '−'],
       note: 'Criterion 90 dBA · exchange rate 5 dB · reference duration 8 h. Permissible-limit style; more lenient than the 3 dB model at high levels.',
+      refuse: (v) => underFloor(n(v.lex)),
       compute: (v) => {
         const T = allowMin(n(v.lex), 90, 5);
         const none = oshaNoLimit(n(v.lex));
@@ -675,7 +689,7 @@ const WS_DOSE: Workspace = {
         'Adds a day of mixed levels into a single dose under the NIOSH criterion (DHHS/NIOSH 98-126). Each interval spends a share of the daily allowance — its duration over the time allowed at that level — and 100% is the full day’s allowance. NIOSH counts sound from 80 to 140 dBA, so intervals below 80 dBA add nothing. Loud intervals dominate.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Intervals pair by position: first level with first duration. Intervals below 80 dBA are not counted (NIOSH integrates 80–140 dBA). 100% = the full daily allowance under this criterion.',
-      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
+      refuse: (v) => levelListRefusal(arr(v.doseLevels)),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
@@ -754,7 +768,7 @@ const WS_DOSE: Workspace = {
         'The same day scored under OSHA 29 CFR 1910.95 (90 dBA criterion, 5 dB exchange). OSHA scores it TWICE with different floors: the permissible exposure limit (PEL, Table G-16) counts only sound at 90 dBA or more, and the hearing-conservation action level (Appendix A) counts everything from 80 dBA up. 100% PEL dose is the legal limit; 50% action-level dose (an 85 dBA 8-hour average) is where a hearing conservation program is required. Comparing with the NIOSH result shows how much the criterion choice changes the answer.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Thresholds: the PEL dose leaves out intervals below 90 dBA; the action-level dose leaves out intervals below 80 dBA. 90 dBA for 8 h = 100% on both; 85 dBA for 8 h = 0% PEL, 50% action level.',
-      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
+      refuse: (v) => levelListRefusal(arr(v.doseLevels)),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
@@ -843,7 +857,7 @@ const WS_DOSE: Workspace = {
         'The single steady level carrying the same total energy as the varying intervals. It weights each interval’s energy by its duration — criterion-free, pure energy math — so the loudest intervals dominate the average. Arithmetic dB averaging would badly under-read it.',
       keySymbols: ['·', 'log₁₀', 'Σ', 'x²', '/', 'x₁'],
       note: 'The single steady level that carries the same total energy as the varying intervals. Criterion-free — pure energy math.',
-      refuse: (v) => (arr(v.doseLevels).some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : null),
+      refuse: (v) => levelListRefusal(arr(v.doseLevels)),
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
@@ -943,6 +957,7 @@ const WS_MIC_GAIN: Workspace = {
         'From sound pressure at the capsule to volts on the wire. Sensitivity is quoted at 1 pascal — about 94 dB SPL — so the SPL sets the pressure (against the 20 µPa reference), and the mic’s millivolts-per-pascal sets the output voltage, also shown in dBV and dBu.',
       keySymbols: ['x²', 'µ', '/', '×'],
       note: '1 pascal is ≈ 94 dB SPL (93.98 dB exactly; 94 dB SPL is 1.0024 Pa) — the anchor every sensitivity spec hangs on.',
+      refuse: (v) => underFloor(n(v.spl)),
       compute: (v) => {
         const p = paFromSpl(n(v.spl));
         const volts = (n(v.sens) / 1000) * p;
@@ -973,6 +988,8 @@ const WS_MIC_GAIN: Workspace = {
       keySymbols: ['−'],
       note: 'The recommended setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
       refuse: (v) => {
+        const low = underFloor(n(v.spl));
+        if (low) return low;
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * paFromSpl(n(v.spl))) / V_REF_DBU);
         return n(v.target) - micDbu > PREAMP_MAX_GAIN_DB ? PREAMP_GAIN_TOO_HIGH : null;
       },
@@ -1136,6 +1153,8 @@ const WS_LIMITER: Workspace = {
       keySymbols: ['·', 'log₁₀', '√', '/', '−', 'Z'],
       note: 'RMS/average protection starting point. Verify the processor’s meter reference (dBu vs dBFS) before entering it.',
       refuse: (v) => {
+        // D53 (owner 2026-11-05): a 500 dB margin printed "-500.75 dBu".
+        if (outsideLimit(n(v.margin), CALC_LIMITS.limiterMarginDb)) return LIMITER_MARGIN_OUTSIDE_LIMIT;
         const thr = 20 * Math.log10(Math.sqrt(n(v.pwr) * n(v.z)) / V_REF_DBU) - n(v.ampGain) - n(v.margin);
         return thr > LIMITER_MAX_THRESHOLD_DBU ? LIMITER_THRESHOLD_TOO_HIGH : null;
       },

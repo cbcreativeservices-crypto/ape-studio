@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { OutputVal, Workspace } from '../calcTypes';
-import { copperOhmPerM, fmt, fmtInt, fmtNotWhole, overAirCeiling, SPL_CEILING_WHY, SPL_FIELD_RANGE, snapWhole } from '../calcUnits';
+import { copperOhmPerM, fmt, fmtInt, fmtNotWhole, overAirCeiling, SPL_CEILING_WHY, SPL_INPUT_RANGE, snapWhole } from '../calcUnits';
 
 /** Owner decision 2026-10-23 (item 7, D53): past 100 kW for one speaker no
  *  amplifier can do it — words, never a number like "1.259e13 W". */
@@ -80,7 +80,7 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'SENSITIVITY',
       quantity: 'sensitivity',
       signed: true,
-      ...SPL_FIELD_RANGE,
+      ...SPL_INPUT_RANGE,
       placeholder: '97',
       help: 'SPL the speaker produces at 1 m from 1 W input (per its spec sheet).',
       warn: { test: (x) => x < 80 || x > 115, msg: 'That is outside the usual 80–115 dB (1W/1m) span for passive boxes — check the spec sheet.' },
@@ -108,7 +108,7 @@ const WS_SPEAKERPOWER: Workspace = {
       quantity: 'spl',
       meaning: 'spl:target',
       signed: true,
-      ...SPL_FIELD_RANGE,
+      ...SPL_INPUT_RANGE,
       placeholder: '105',
       help: 'The continuous level you need AT the listener, before headroom.',
     },

@@ -1125,6 +1125,9 @@ const gateConfig: FxLabConfig = {
   exploreCaption:
     'CLICK source (90 BPM): the gate opens on each hit — tune Hold/Release until it stops chattering. The sound flows ' +
     'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
+  exploreCaptionBySource: {
+    'PINK NOISE': 'PINK NOISE source: a steady hiss. Set THRESH above its level and the gate shuts; below it, the gate stays open.',
+  },
   sources: [srcClick(90), SRC_PINK],
   // The gate's ATTACK is written, not inherited (D41 fix 2026-11-01). The
   // engine default (Effects.hpp DynamicsEffect `attackMs_{10.0}`) is slower

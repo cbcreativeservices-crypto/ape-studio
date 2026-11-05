@@ -5,7 +5,7 @@
  * numbers — no symbolic algebra, no hidden unit tricks.
  */
 import type { Workspace } from '../calcTypes';
-import { DBU_REF_V, fmt, fmtNotWhole } from '../calcUnits';
+import { CALC_LIMITS, DBU_REF_V, fmt, fmtNotWhole, outsideLimit, Q_OUTSIDE_LIMIT } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -815,6 +815,10 @@ const WS_ELECTRONICS: Workspace = {
 // 4 · Q · Bandwidth · Band Edges
 // ---------------------------------------------------------------------------
 
+/** D53 (owner 2026-11-05): a typed Q outside 0.1 to 100 is refused in words;
+ *  a Q of 0.0001 printed "26.6 octaves". */
+const refuseQ = (q: number): string | null => (outsideLimit(q, CALC_LIMITS.q) ? Q_OUTSIDE_LIMIT : null);
+
 /** Exact geometric −3 dB band edges for a given center and Q. */
 function bandEdges(fc: number, q: number): { f1: number; f2: number } {
   const root = Math.sqrt(1 + 1 / (4 * q * q));
@@ -913,6 +917,7 @@ const WS_QBW: Workspace = {
       explain:
         'What a Q knob means: bandwidth is center frequency over Q, and the −3 dB edges sit geometrically around the center (their product equals the center squared), not at center ± half-bandwidth. So the band extends further in Hz above the center than below.',
       keySymbols: ['/', 'Q', '·', '√', 'x²', 'x₁'],
+      refuse: (v) => refuseQ(n(v.q)),
       compute: (v) => {
         const fc = n(v.fc);
         const q = n(v.q);
@@ -977,6 +982,7 @@ const WS_QBW: Workspace = {
       explain:
         'Turns a Q into a width in octaves — the units EQ plots are drawn in. Octave width depends only on the edge ratio, so the center frequency cancels out entirely: Q 1.41 is about one octave everywhere.',
       keySymbols: ['/', 'x₁'],
+      refuse: (v) => refuseQ(n(v.q)),
       compute: (v) => {
         const q = n(v.q);
         const { f1, f2 } = bandEdges(1000, q); // any fc — the octave width depends only on Q
@@ -1038,6 +1044,7 @@ const WS_QBW: Workspace = {
         'The −3 dB edges describe the bandpass shape, but a bell’s audible footprint grows with gain — the skirts approach flat only gradually. When sweeping for a problem frequency, listen past the calculated edges before deciding the filter is missing it.',
       keySymbols: ['| |', 'x₁'],
       note: 'The −3 dB edges describe the bandpass shape; a bell’s AUDIBLE footprint grows with gain.',
+      refuse: (v) => refuseQ(n(v.q)),
       compute: (v) => {
         const fc = n(v.fc);
         const q = n(v.q);

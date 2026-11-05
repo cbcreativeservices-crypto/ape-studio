@@ -13,7 +13,7 @@
  * those refinements bends around.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { CALC_LIMITS, COMP_GR_OUTSIDE_LIMIT, fmt, outsideLimit } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -198,6 +198,8 @@ const WS_COMPRESSOR: Workspace = {
         'Sets the threshold so a known input gets exactly the gain reduction you want. It converts your target gain reduction into how far above the threshold the input must sit (which depends on the ratio), then drops the threshold that far below the input. At 1:1 there is no gain reduction, so no threshold can produce the target.',
       keySymbols: ['−', '·', '/'],
       note: 'How low to set the threshold so a known input gets exactly the gain reduction you want.',
+      // D53 (owner 2026-11-05): 500 dB of target reduction printed "-676.67 dBFS".
+      refuse: (v) => (outsideLimit(n(v.targetGr), CALC_LIMITS.compGainReductionDb) ? COMP_GR_OUTSIDE_LIMIT : null),
       compute: (v) => {
         const inp = n(v.inLvl);
         const r = n(v.ratio);

@@ -320,6 +320,41 @@ export const SPL_FIELD_RANGE = {
   range: [-Infinity, SPL_MAX_AIR_DB] as const,
   rangeMsg: `${SPL_CEILING_WHY} Check the level you entered.`,
 };
+/**
+ * Owner-approved input limits (2026-11-05, report item 3, D53). A value outside
+ * its span is refused in words by the function's `refuse`, never printed: a
+ * 500 dB limiter margin printed "-500.75 dBu", a mic at −1000 dB SPL "-1137 dBV"
+ * and a Q of 0.0001 "26.6 octaves". The SPL floor is a working limit, not a
+ * physical one, so SPL_FIELD_RANGE keeps its open floor for the
+ * fields handled by splSafety.ts refuse rules.
+ */
+/** Field declaration for an SPL input that also has the −20 dB working floor. */
+export const SPL_INPUT_RANGE = {
+  range: [-20, SPL_MAX_AIR_DB] as const,
+  rangeMsg: 'Sound levels here run from −20 to 194 dB SPL. Check the level you entered.',
+};
+export const CALC_LIMITS = {
+  splDb: [-20, SPL_MAX_AIR_DB],
+  limiterMarginDb: [0, 60],
+  compGainReductionDb: [0, 60],
+  q: [0.1, 100],
+} as const;
+/** True when a value sits outside a limit (or is not a number at all). */
+export function outsideLimit(x: number, limit: readonly [number, number]): boolean {
+  return !(x >= limit[0] && x <= limit[1]);
+}
+/** True when a level is under the SPL floor (or not a number at all). */
+export function underSplFloor(db: number): boolean {
+  return !(db >= CALC_LIMITS.splDb[0]);
+}
+export const SPL_FLOOR_WHY =
+  'Sound levels here run from −20 to 194 dB SPL. The quietest rooms ever measured sit at about −20 dB SPL, so a level below that is not a real reading.';
+export const LIMITER_MARGIN_OUTSIDE_LIMIT =
+  'SAFETY MARGIN must be from 0 to 60 dB. 60 dB down is one thousandth of the speaker’s rated voltage, far past any real protection margin. Check the margin you entered.';
+export const COMP_GR_OUTSIDE_LIMIT =
+  'TARGET GAIN REDUCTION must be from 0 to 60 dB. 60 dB of reduction leaves one thousandth of the input’s voltage, far past any real compressor setting. Check the amount you entered.';
+export const Q_OUTSIDE_LIMIT =
+  'Q must be from 0.1 to 100. That runs from a band several octaves wide to a very narrow notch. Check the Q you entered.';
 /** Absolute zero: no air, no speed of sound, at or below it (D53). The
  *  dry-air model is a classroom model; only this floor is a physical limit. */
 export const ABS_ZERO_C = -273.15;

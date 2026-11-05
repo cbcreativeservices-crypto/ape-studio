@@ -7,7 +7,7 @@
  * compute) rather than adding MHz to the audio frequency picker.
  */
 import type { Workspace } from '../calcTypes';
-import { AIR_TEMP_FIELD, DBU_REF_V, fmt, MIC_SENS_DBV_FIELD, MIC_SENS_FIELD, P_REF_PA, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, DBU_REF_V, fmt, MIC_SENS_DBV_FIELD, MIC_SENS_FIELD, P_REF_PA, SPL_INPUT_RANGE, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -189,7 +189,7 @@ const MICSENS: Workspace = {
   fields: [
     { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', meaning: 'number:mic-sens', nonNegative: true, ...MIC_SENS_FIELD('SENSITIVITY (mV/Pa)'), placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', meaning: 'number:mic-sens', signed: true, ...MIC_SENS_DBV_FIELD, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
-    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
+    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', meaning: 'spl:level', signed: true, ...SPL_INPUT_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
   ],
   functions: [
     {
