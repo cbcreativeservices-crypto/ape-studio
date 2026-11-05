@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-04 19:47 · ccode · 0628d40a
+changed: must-do A2: re-checked at 2d0ceb41; Comp A loads Foundations before the OTA [MD:A2]
+affects other side: Topic Foundations now load before the OTA; Comp A's tonight steps are in Downloads/2026-11-04_FOR_COMP_A_LAUNCH_NIGHT.zip.
+needs: [MD:D47] Comp A runs step 1 of that ZIP on the owner's go.
+
+
 ### 2026-11-04 08:13 · ccode · 00ba47d8
 changed: must-do A2: owner said not yet; OTA ready and held [MD:A2]
 affects other side: nothing (A2 held by the owner)
