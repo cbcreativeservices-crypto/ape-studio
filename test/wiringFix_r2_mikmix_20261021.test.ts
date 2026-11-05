@@ -629,7 +629,7 @@ describe('R2-MG-01: Gospel guide — choir mics out of the choir wedges, excepti
 
   it('the hand-edited line', () => {
 
-    assert.ok(g.includes('keep choir mics out of the choir wedges (in-ears, or a little added with care, are the exceptions)'));
+    assert.ok(g.includes('keep choir mics out of the choir wedges (in-ears are the exception; in wedges, add only a little, with care)'));
 
     assert.ok(!g.includes('never send choir mics to choir wedges'));
 
