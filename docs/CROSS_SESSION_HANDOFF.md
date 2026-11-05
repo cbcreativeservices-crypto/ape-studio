@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 08:58 · ccode · c8410c63
+changed: Calculator limits refused in words and Gate Pink Noise caption, owner approved [MD:D57]
+affects other side: nothing; client-only calculator limits and one caption.
+needs: nothing
+
+
 ### 2026-11-05 08:28 · ccode · ce310618
 changed: Owner decisions from the full app test applied [MD:D57]
 affects other side: nothing; client-only changes, no schema or server change.
