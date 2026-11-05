@@ -28,12 +28,16 @@ import {
   View,
   useWindowDimensions,
   type ViewToken,
+  Platform,
+  ToastAndroid,
 } from 'react-native';
 import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-native-skia';
 import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
+import { secondBackToExit } from '../../lib/focusedBack';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { BrandLogo } from '../../components/BrandLogo';
 import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
@@ -1480,6 +1484,10 @@ export function CourseSelectionScreen() {
   const cd = useMemo(() => fitCardToRow(baseDims, deckRowH, tabletWindow), [baseDims, deckRowH, tabletWindow]);
   const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
+  // Android only: a sideways swipe from the edge is the system BACK, so the first
+  // one on Home asks instead of leaving (owner 2026-11-05). iPhone has no BACK.
+  const homeBack = useMemo(() => secondBackToExit(() => ToastAndroid.show('Swipe back again to leave', ToastAndroid.SHORT)), []);
+  useBackWhileFocused(Platform.OS === 'android', homeBack);
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   // The Study Area whose EXPLORE picker/popup is open (owner 2026-09-16).
