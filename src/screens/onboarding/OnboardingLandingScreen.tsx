@@ -96,7 +96,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
       return;
     }
     if (c === 'watchAgain') {
-      navigation.replace('IntroVideo', { replay: true });
+      navigation.replace('IntroVideo', { replay: true, returnTo: 'landing' });
       return;
     }
     // Back to the Academy menu first, then open the destination from there.

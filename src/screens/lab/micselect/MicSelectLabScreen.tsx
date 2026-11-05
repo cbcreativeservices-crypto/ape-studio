@@ -811,7 +811,7 @@ function LockerStep() {
       <View style={styles.rowBetween}>
         <Text accessibilityRole="header" style={styles.panelEyebrow}>{`SLOTS USED: ${chosen.size}/${LOCKER_SLOTS}`}</Text>
         <Text accessibilityRole="header" style={[styles.panelEyebrow, { color: covered.size >= 9 ? colors.green : colors.amber }]}>
-          {`APPLICATIONS COVERED: ${covered.size}/${LOCKER_JOBS.length}`}
+          {`${covered.size} ${covered.size === 1 ? 'JOB COVERED' : 'JOBS COVERED'}`}
         </Text>
       </View>
       {LOCKER_MICS.map((m) => {

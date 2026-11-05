@@ -495,6 +495,10 @@ export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
   ],
 };
 
+/** The title on each studio's CHECK tab. All three studios share one lab-wide
+ *  check, so a question about the plate or the liquid is expected on any of them. */
+export const CYMATICS_CHECK_TITLE = 'Covers the Whole Cymatics Lab';
+
 /** The LabShell `guide` for a studio: EXPLORE, LEARN and CHECK each explained. */
 export function cymaticsStudioGuide(studio: CymaticsStudioId): (mode: 'learn' | 'explore' | 'check') => ScreenGuide {
   return (mode) => (mode === 'learn' ? CYMATICS_LEARN_GUIDES[studio] : mode === 'check' ? CYMATICS_CHECK_GUIDE : CYMATICS_STUDIO_GUIDES[studio]);

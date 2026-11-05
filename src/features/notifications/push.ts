@@ -5,6 +5,7 @@
  */
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { sharedAppUserId } from '../account/appUserIdMemo';
@@ -318,7 +319,8 @@ export function attachWeeklyConceptPush(
     const data = response?.notification.request.content.data;
     if (rules().isCommunityData(data)) {
       const tap = rules().communityTapFrom(data);
-      if (tap && community) community.open(rules().communityPath(tap));
+      // Switched off: the tap just opens the app, never the hidden directory.
+      if (COMMUNITY_VISIBLE && tap && community) community.open(rules().communityPath(tap));
       return true;
     }
     const payload = payloadFromResponse(response);

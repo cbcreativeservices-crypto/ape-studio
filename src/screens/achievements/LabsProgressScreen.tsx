@@ -8,8 +8,9 @@
  * Each row opens that lab again (practice; credit is never removed). BROWSE
  * LABS opens the Audio Learning landing for the rest.
  *
- * Three faces (AGENTS.md): loading, UNREADABLE (a failed device read is never
- * "no labs"), and truly empty.
+ * Three faces (AGENTS.md): loading, UNREADABLE (a failed read, of the device
+ * or of the server's record on a new phone, is never "no labs"), and truly
+ * empty.
  */
 import { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -62,7 +63,7 @@ export function LabsProgressScreen() {
         ) : state.status === 'unreadable' ? (
           <View style={styles.note}>
             <Text style={styles.noteText}>
-              Couldn’t read your lab record on this device right now. Nothing you’ve completed is lost — retry, and email info@proaudiotrainingacademy.com if it keeps failing.
+              Couldn’t read your lab record right now. Nothing you’ve completed is lost — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.
             </Text>
             <View style={styles.noteBtn}>
               <StudioButton label="Retry" variant="secondary" small onPress={retry} />

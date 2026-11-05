@@ -39,6 +39,9 @@ export type ToolDef = {
   measures: string[];
   /** "What it does NOT measure" bullets (§x.2) — integrity-first, per spec. */
   notMeasures: string[];
+  /** Makes a signal rather than reading one: the info page lists what it
+   *  produces, not what it measures. */
+  signalSource?: boolean;
   /** Placeholder tool — catalogued + info screen live, engine not yet specced. */
   planned?: boolean;
 };
@@ -148,6 +151,7 @@ export const TOOLS: ToolDef[] = [
     name: 'Tone / Noise Generator',
     subtitle: 'Test-Signal Source',
     tint: 'gold',
+    signalSource: true,
     purpose:
       'Produces reference test signals — sine tones, sweeps, and pink/white noise — for checking systems, exciting rooms alongside the RTA, finding resonances, and ear training. A signal SOURCE, not a measurement tool.',
     measures: [
@@ -156,8 +160,8 @@ export const TOOLS: ToolDef[] = [
       'Frequency sweeps for resonance and response checks',
     ],
     notMeasures: [
-      'Anything — it is a signal SOURCE, not a meter',
-      'Your system’s response (pair it with the RTA or SPL meter for that)',
+      'Measure anything — it is a signal SOURCE, not a meter',
+      'Tell you your system’s response (pair it with the RTA or SPL meter for that)',
     ],
   },
 ];

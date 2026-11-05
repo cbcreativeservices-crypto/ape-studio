@@ -23,7 +23,7 @@ import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 
-type FlatSubject = { field: string; subject: string; topics: TopicAchievement[]; earnedCount: number; totalCount: number };
+type FlatSubject = { field: string; subject: string; topics: TopicAchievement[]; earnedCount: number };
 
 function flatten(fields: FieldGroup[]): FlatSubject[] {
   return fields.flatMap((f) =>
@@ -32,7 +32,6 @@ function flatten(fields: FieldGroup[]): FlatSubject[] {
       subject: s.subject,
       topics: s.topics,
       earnedCount: s.earnedCount,
-      totalCount: s.totalCount,
     })),
   );
 }
@@ -52,7 +51,6 @@ export function TopicsScreen() {
   const navigation = useNavigation<any>();
   const [fields, setFields] = useState<FieldGroup[] | null>(null);
   const [earnedTotal, setEarnedTotal] = useState(0);
-  const [total, setTotal] = useState(0);
   const [open, setOpen] = useState<string | null>(null);
   const [modalTopic, setModalTopic] = useState<TopicAchievement | null>(null);
   // [11] (2026-09-07): track a load error separately from a loaded-empty result
@@ -88,12 +86,11 @@ export function TopicsScreen() {
       // and "0 / 0" as fact.
       if (failedRef.current) setFields(null);
       fetchTopicAchievementsShared()
-        .then(({ fields, earnedTotal, totalCount }) => {
+        .then(({ fields, earnedTotal }) => {
           if (my !== loadSeq.current) return;
           failedRef.current = false;
           setFields(fields);
           setEarnedTotal(earnedTotal);
-          setTotal(totalCount);
         })
         .catch(() => {
           if (my !== loadSeq.current) return;
@@ -137,14 +134,14 @@ export function TopicsScreen() {
                     accessibilityState={{ expanded: isOpen }}
                     // RN-web drops accessibilityState; aria-expanded reaches the DOM (A1-02).
                     aria-expanded={isOpen}
-                    accessibilityLabel={`${s.subject}, ${s.earnedCount} of ${s.totalCount} earned`}
+                    accessibilityLabel={`${s.subject}, ${s.earnedCount} earned`}
                   >
                     <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
                     <Text style={styles.subjectName} numberOfLines={2}>
                       {s.subject}
                     </Text>
                     <Text style={[styles.subjectCount, hasEarned ? styles.subjectCountEarned : null]}>
-                      {s.earnedCount} / {s.totalCount}
+                      {s.earnedCount} earned
                     </Text>
                   </Pressable>
 
@@ -175,9 +172,9 @@ export function TopicsScreen() {
           <Text style={styles.title}>TOPICS</Text>
           {/* Not a count until one was READ (hunt 8, 2026-10-03): while
               loading, and on a failed read, this said "0 / 0" beside the
-              error card — the Trophy Case hub's '— / —' rule. */}
+              error card. Unread stays '—'. Earned count only, no total (D117). */}
           <Text style={styles.counter}>
-            {fields !== null && !loadError ? `${earnedTotal} / ${total}` : '— / —'}
+            {fields !== null && !loadError ? `${earnedTotal} EARNED` : '—'}
           </Text>
           <View style={styles.flex} />
           <Pressable accessibilityRole="button" accessibilityLabel="Your gallery" onPressIn={() => prefetchTrophyCase('gallery')} onPress={() => navigation.navigate('Gallery')} hitSlop={8}>

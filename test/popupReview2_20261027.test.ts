@@ -105,7 +105,7 @@ test('C1: the Help hub answers "What is My Custom List?" truthfully', () => {
   assert.match(entry!.a, /turn the topic dial to My Custom List/);
   assert.match(entry!.a, /doesn’t count toward a certificate/);
   const order = study!.entries.find((e) => e.id === 'study-order');
-  assert.match(order!.a, /My Custom List is the exception: all of its methods are open from the start\./);
+  assert.match(order!.a, /My Custom List is the exception: with membership, all of its methods are open from the start\./);
 });
 
 // ── House terms the round settled ────────────────────────────────────────────

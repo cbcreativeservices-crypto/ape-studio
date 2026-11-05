@@ -216,7 +216,7 @@ export type RootStackParamList = {
    *  beginner experience from its own Home card. Not a lab-catalog entry, not
    *  membership-gated, no certificate credit. */
   /** Onboarding video (owner 2026-10-09): first Academy menu visit, or a replay. */
-  IntroVideo: { replay?: boolean } | undefined;
+  IntroVideo: { replay?: boolean; returnTo?: 'landing' } | undefined;
   /** The one-time page the onboarding video ends on. */
   OnboardingLanding: undefined;
   StartHere: undefined;

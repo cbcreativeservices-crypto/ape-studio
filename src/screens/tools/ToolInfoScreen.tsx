@@ -202,10 +202,10 @@ export function ToolInfoScreen({ navigation, route }: Props) {
 
         <Text style={styles.purpose}>{tool.purpose}</Text>
 
-        <Text style={styles.sectionHead}>WHAT IT MEASURES</Text>
+        <Text style={styles.sectionHead}>{tool.signalSource ? 'WHAT IT PRODUCES' : 'WHAT IT MEASURES'}</Text>
         <Bullets items={tool.measures} />
 
-        <Text style={styles.sectionHead}>WHAT IT DOES NOT MEASURE</Text>
+        <Text style={styles.sectionHead}>{tool.signalSource ? 'WHAT IT DOES NOT DO' : 'WHAT IT DOES NOT MEASURE'}</Text>
         <Bullets items={tool.notMeasures} />
 
         <Text style={styles.sectionHead}>PHONE-MICROPHONE LIMITS</Text>

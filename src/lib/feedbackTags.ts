@@ -78,8 +78,9 @@ export function buildDataLine(fields: DataField[]): string {
 
 /**
  * Who is sending, merged into every email's APE-DATA line without touching the
- * call sites. Student id from Settings' existing my_identity read; role from
- * the Profile employer section's existing my_verifier_kind read. The tier is
+ * call sites. Student id and role are filled at sign-in (fillFeedbackIdentity
+ * below) and refreshed by Settings' my_identity read and the Profile employer
+ * section's my_verifier_kind read. The tier is
  * NOT here: it comes from the provider's leaf mirror (memberStanding
  * reportedTier) so the app-start graph gains no module. Cleared on sign-out
  * through the local-store reset registry (resetAllLocalStores), so the next
@@ -107,4 +108,40 @@ export function getFeedbackIdentity(): FeedbackIdentity {
 
 export function clearFeedbackIdentity(): void {
   identity = {};
+}
+
+/** What the sign-in fill reads. `undefined` from `sessionUid` or `studentId`
+ *  means the read failed; `role` answers 'unknown' for the same thing. */
+export type FeedbackIdentityReads = {
+  sessionUid: () => Promise<string | null | undefined>;
+  role: () => Promise<string>;
+  studentId: () => Promise<string | null | undefined>;
+};
+
+let filling: string | null = null;
+
+/**
+ * Fill `role` and `studentId` for the account `uid` that just signed in, so an
+ * email sent straight from Help carries them (report 2026-11-05 item 24).
+ *
+ * A failed read leaves its field as it was. The answer is applied only while
+ * `uid` is still the confirmed session, so a read that lands after a sign-out
+ * or an account switch, or while the session is unknown, changes nothing.
+ * Auth often announces one launch twice; a fill already running covers both.
+ */
+export async function fillFeedbackIdentity(uid: string, reads: FeedbackIdentityReads): Promise<void> {
+  if (filling === uid) return;
+  filling = uid;
+  try {
+    const [role, studentId] = await Promise.all([reads.role(), reads.studentId()]);
+    if ((await reads.sessionUid()) !== uid) return;
+    const next: FeedbackIdentity = {};
+    if (role !== 'unknown') next.role = role === 'none' ? undefined : role;
+    if (studentId !== undefined) next.studentId = studentId || undefined;
+    setFeedbackIdentity(next);
+  } catch {
+    // A feedback tag is never worth an unhandled rejection at sign-in.
+  } finally {
+    filling = null;
+  }
 }

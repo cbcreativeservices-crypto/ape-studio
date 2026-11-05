@@ -68,7 +68,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
-import { cymaticsStudioGuide } from './cymaticsScreenGuides';
+import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -486,6 +486,7 @@ function MembraneStudio() {
         // real-world measurement — so the accuracy chip gives way to the ⓘ.
         guide={cymaticsStudioGuide('membrane')}
         accuracy={false}
+        checkTitle={CYMATICS_CHECK_TITLE}
         title="MEMBRANE & LOUDSPEAKER STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."

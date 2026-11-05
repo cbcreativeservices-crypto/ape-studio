@@ -108,12 +108,12 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       'IN ▸', '▸ OUT', 'GATE', 'GR', 'THRESH', 'RANGE', '— dB',
-      '−20 GENTLE', '−40', '−70 SILENCE', 'HOLD', 'RLS', '20 ms CHATTER', '100 ms', '500 ms', 'SOURCE', 'CLICK 90', 'PINK NOISE',
+      '−20 dB GENTLE', '−40 dB', '−70 dB SILENCE', 'HOLD', 'RLS', '20 ms CHATTER', '100 ms', '500 ms', 'SOURCE', 'CLICK 90', 'PINK NOISE',
       'LAB NOTES', 'GATE ATTENUATION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       'TEACHING MODEL', 'DRUM-HIT MODEL',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Threshold', 'Attack', 'Hold', 'Release', 'Range', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 SILENCE', '−20 GENTLE'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'CLICK 90', 'RANGE', 'HOLD', 'THRESH', '−20 GENTLE'],
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Threshold', 'Attack', 'Hold', 'Release', 'Range', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 dB SILENCE', '−20 dB GENTLE'],
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'CLICK 90', 'RANGE', 'HOLD', 'THRESH', '−20 dB GENTLE'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));
   for (const [id, names] of Object.entries(NAMES)) {
@@ -274,8 +274,8 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.match(GATE, /the gate opens on each hit/);
     assert.match(GUIDES.learn.tryThis[0], /at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0\.0/);
     assert.match(GUIDES.check.tryThis[1], /compare HOLD 0 ms and 100 ms: at 100 ms GR rests at 0\.0 a moment after each hit/);
-    assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 SILENCE, 20\.0 at −20 GENTLE/);
-    assert.match(GUIDES.check.tryThis[0], /THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 GENTLE: GR tops out at 20\.0 dB/);
+    assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 dB SILENCE, 20\.0 at −20 dB GENTLE/);
+    assert.match(GUIDES.check.tryThis[0], /THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 dB GENTLE: GR tops out at 20\.0 dB/);
     // and no number is quoted on PINK NOISE (route-dependent)
     for (const gd of allGuides.map(([, g]) => g)) for (const line of gd.tryThis) assert.doesNotMatch(line, /PINK NOISE/);
   });

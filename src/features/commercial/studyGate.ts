@@ -135,10 +135,24 @@ export function customListHasQuiz(serverReady: boolean = CUSTOM_LIST_SERVER_READ
  * Rule 2b (owner 2026-10-19): "On My Custom List - do not progress progress
  * bars, show all always at 100% already (also to show they are open and
  * available to use)." Every custom-list meter — each method, the list quiz and
- * the topic card — reads FULL from the start and never moves, whatever the
- * list holds (an empty list still says EMPTY in words). Nothing is recorded.
+ * the topic card — reads FULL from the start and never moves once the list
+ * holds a term. Nothing is recorded.
+ *
+ * A list known to hold NOTHING is the one exception (owner 2026-11-05): there is
+ * no percent beside 0 TERMS and its meters are not full. A list still loading or
+ * unreadable is not known to be empty, so it keeps the ruling.
  */
 export const CUSTOM_LIST_METER_PCT = 100;
+
+/** True only when the stored list was read and really holds no terms. */
+export function customListIsEmpty(s: ListRead): boolean {
+  return s.read && !s.unreadable && s.count === 0;
+}
+
+/** What a custom-list meter reads for this list. */
+export function customListMeterPct(s: ListRead): number {
+  return customListIsEmpty(s) ? 0 : CUSTOM_LIST_METER_PCT;
+}
 
 /** Rule 2: every custom-list method is powered from the start. */
 export function customListMethodPowered(_method: string): true {

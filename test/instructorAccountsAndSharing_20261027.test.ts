@@ -347,7 +347,7 @@ describe('H2 · the words', () => {
     assert.match(rules.confirmLine({ instructorName: 'Ina S', school: 'Miramar College' }), /^Share your progress with Ina S · Miramar College\?/);
     assert.match(
       rules.sharingSince({ instructorName: 'Ina S', school: null, grantedAt: '2026-10-27T10:00:00Z', instructorActive: true }),
-      /^Sharing with Ina S since 27 Oct 2026\.$/,
+      /^Sharing with Ina S since Oct 27, 2026\.$/,
     );
   });
 });

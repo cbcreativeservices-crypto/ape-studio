@@ -72,6 +72,7 @@ import { registerAndSavePushToken, registerAndSavePushTokenChecked } from '../..
 import { setPhoneNotificationsEnabled } from '../../features/notifications/localSchedule';
 import { releaseCommunityDevice } from '../../features/notifications/communityPush';
 import { CommunityNotifySection } from '../../features/notifications/CommunityNotifySection';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import {
   WEEKLY_CONCEPT_CATEGORIES,
   deactivateAllWeeklySubscriptions,
@@ -189,8 +190,16 @@ export function SettingsScreen({ navigation }: Props) {
       // refresh that failed (false) or has not caught up still said "your
       // Academy access is active" over a locked app.
       const tier = res.ok ? await refreshEntitlement() : false;
-      setRedeemOpen(false);
-      setRedeemCode('');
+      // A failed code keeps the popup open with the code still in it, so a
+      // typo in a long code is one correction, not a full retype (report item
+      // 6, 2026-11-05). The notice draws inside this popup (AppDialogHost's
+      // hosted mode); the keyboard goes down so its OK is never covered.
+      if (res.ok) {
+        setRedeemOpen(false);
+        setRedeemCode('');
+      } else {
+        Keyboard.dismiss();
+      }
       const lagging = res.status === 'granted' && tier !== 'academy';
       notify(res.ok ? 'Code applied' : 'Code not applied', lagging ? REDEEM_GRANTED_NOT_REFRESHED : res.message);
     } finally {
@@ -923,8 +932,8 @@ ${LOCAL_LOSS}`
             2026-10-04). Its own section, not inside NOTIFICATIONS: the
             community is open to every account, while the reminders above are
             members-only. Renders nothing for a guest, or until the server has
-            the setting. */}
-        <CommunityNotifySection />
+            the setting. Hidden with Community (report item 13, 2026-11-05). */}
+        {COMMUNITY_VISIBLE ? <CommunityNotifySection /> : null}
 
         {/* DISPLAY + ACCESSIBILITY are one concern to a user ("how it looks and
             reads"), so they live in one section rather than two one-row stubs. */}

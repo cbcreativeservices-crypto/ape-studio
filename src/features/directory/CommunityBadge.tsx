@@ -12,6 +12,7 @@
  */
 import { useEffect, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { colors, fonts } from '../../theme/tokens';
 import {
   badgeA11y,
@@ -33,8 +34,11 @@ const readCounts = (): Promise<InboxRead> =>
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   (require('./inboxApi') as typeof import('./inboxApi')).readInboxCounts();
 
-/** Re-read the counts. `force` after a write the counts must reflect. */
+/** Re-read the counts. `force` after a write the counts must reflect. While
+ *  the community is switched off this is the one place every caller (app start,
+ *  foreground, Home, tab bar, a received alert) stops asking the server. */
 export function refreshCommunityInbox(force = false): Promise<void> {
+  if (!COMMUNITY_VISIBLE) return Promise.resolve();
   return refreshInbox(readCounts, force ? { force: true } : { minAgeMs: BADGE_MIN_AGE_MS });
 }
 

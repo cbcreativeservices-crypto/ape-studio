@@ -25,6 +25,7 @@ import { registryUrl } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { fetchMyCredentials } from '../../features/credentials/api';
 import { readingColumn } from '../../theme/readingColumn';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
 import { CredentialBlurb } from '../curriculum/CredentialBlurb';
 import { notify } from '../../lib/confirm';
@@ -322,17 +323,24 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
           )}
           {/* M18 (2026-09-07): registered users had NO way into the community
               directory (the only CTA was dead in the guest branch). Give them a
-              working button here. */}
+              working button here. While the community is switched off it opens
+              Profile, where the Registry name and the listing switch live, so
+              the words on this screen stay true (report item 7). popTo, not
+              navigate: navigate('Main') would push a second tab shell. */}
           <Pressable
             style={styles.registryBtn}
-            onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
+            onPress={() =>
+              COMMUNITY_VISIBLE
+                ? (navigation as any).navigate('AudioCommunityDirectory')
+                : (navigation as any).popTo('Main', { screen: 'Profile' })
+            }
             accessibilityRole="button"
-            accessibilityLabel="Set up my community directory profile"
+            accessibilityLabel={COMMUNITY_VISIBLE ? 'Set up my community directory profile' : 'Set up my profile'}
           >
             <Text style={styles.registryBtnText}>SET UP MY PROFILE ›</Text>
             {/* The directory's REQUESTS waiting behind this button (owner
                 2026-10-04). Nothing when the count is unknown or 0. */}
-            <CommunityBadge style={{ position: 'absolute', top: -7, right: -7 }} />
+            {COMMUNITY_VISIBLE ? <CommunityBadge style={{ position: 'absolute', top: -7, right: -7 }} /> : null}
           </Pressable>
         </View>
       ) : (

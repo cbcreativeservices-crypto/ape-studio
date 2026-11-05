@@ -114,11 +114,11 @@ describe('Audio Community is off Profile, the same way as Home', () => {
   const P = code('src/screens/profile/ProfileScreen.tsx');
   it('a named constant, off', () => {
     assert.match(P, /^const SHOW_COMMUNITY_ON_PROFILE = false;$/m);
-    assert.match(code('src/screens/courses/CourseSelectionScreen.tsx'), /^const SHOW_COMMUNITY_ON_HOME = false;$/m);
+    assert.match(code('src/screens/courses/CourseSelectionScreen.tsx'), /^const SHOW_COMMUNITY_ON_HOME = COMMUNITY_VISIBLE;$/m);
   });
   it('the PROFILE tab does not count requests nobody can reach', () => {
     const T = code('src/components/nav/TabBar.tsx');
-    assert.match(T, /^const SHOW_COMMUNITY_BADGE_ON_TAB = false;$/m);
+    assert.match(T, /^const SHOW_COMMUNITY_BADGE_ON_TAB = COMMUNITY_VISIBLE;$/m);
     assert.match(T, /SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' \? <CommunityBadge/);
     assert.match(T, /SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' && inboxLabel/);
   });

@@ -118,7 +118,8 @@ import {
   CUSTOM_CHECKING_TITLE,
   CUSTOM_EMPTY_BODY,
   CUSTOM_EMPTY_TITLE,
-  CUSTOM_LIST_METER_PCT,
+  customListIsEmpty,
+  customListMeterPct,
   CUSTOM_QUIZ_MIN_TITLE,
   CUSTOM_UNREADABLE_BODY,
   CUSTOM_UNREADABLE_TITLE,
@@ -132,7 +133,11 @@ import {
   effectiveRemoved,
 } from '../../features/commercial/studyGate';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
-import { consumeDevPreview } from '../../features/dev/devPreview';
+// Required on first use, not imported: a dev-only module kept out of the
+// app-start graph (budgeted, test/perfStartTrim_20261004).
+const consumeDevPreview = (key: string): boolean =>
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  (require('../../features/dev/devPreview') as typeof import('../../features/dev/devPreview')).consumeDevPreview(key);
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
@@ -1033,6 +1038,8 @@ export function DashboardScreen() {
   }, [starred]);
   /** The list as a tap sees it: read / unreadable / how many (studyGate). */
   const customRead = { read: starredRead, unreadable: starredUnreadable, count: starred.size };
+  const customEmpty = customListIsEmpty(customRead);
+  const customMeterPct = customListMeterPct(customRead);
   // Never "0 TERMS" for a list that has not been read yet (house rule).
   const starredCount = starredUnreadable
     ? 'TERMS COULD NOT BE READ'
@@ -2029,8 +2036,8 @@ export function DashboardScreen() {
   const overallPctFor = (t: Topic): number => {
     // Every real topic has all four methods (owner 2026-08-13); only the Custom
     // List pseudo-topic has none.
-    // MY CUSTOM LIST reads full, always (owner 2026-10-19).
-    if (t.id === FLAGGED_TOPIC_ID) return CUSTOM_LIST_METER_PCT;
+    // MY CUSTOM LIST reads full (owner 2026-10-19), unless it holds no terms.
+    if (t.id === FLAGGED_TOPIC_ID) return customMeterPct;
     const keys = METHOD_ORDER.map((m) => m.key);
     const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
@@ -2141,8 +2148,9 @@ export function DashboardScreen() {
     dispTopic.global_sequence != null &&
     inactiveGs.current.has(dispTopic.global_sequence);
   // MY CUSTOM LIST: the topic card's % and meter read 100 and never move (owner
-  // 2026-10-19: "show all always at 100% already … to show they are open").
-  const dispOverallPct = dispIsCustom ? CUSTOM_LIST_METER_PCT : jogActive ? overallPctFor(dispTopic) : overallPct;
+  // 2026-10-19: "show all always at 100% already … to show they are open"),
+  // but a list with 0 terms shows no percent (owner 2026-11-05).
+  const dispOverallPct = dispIsCustom ? customMeterPct : jogActive ? overallPctFor(dispTopic) : overallPct;
 
   const topicProg = data.progressByTopic.get(topic.id);
   const rawQuizState =
@@ -2375,7 +2383,7 @@ export function DashboardScreen() {
                         S", build 36 tester with Larger Text). It follows the OS
                         size up to the brand cap and holds there. */}
                     <Text style={styles.pctLabel} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}>OVERALL TOPIC PROGRESS</Text>
-                    <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                    <Text style={styles.pctBig}>{dispIsCustom && customEmpty ? 'EMPTY' : `${dispOverallPct}%`}</Text>
                   </View>
                   <View style={styles.topicNavArrows}>
                     <Pressable
@@ -2648,8 +2656,8 @@ export function DashboardScreen() {
                     {isCustom ? (
                       // Owner 2026-10-19: the meter reads FULL from the start and
                       // never moves — it says "open and available", not progress
-                      // (none is kept for the list). The word still tells an
-                      // empty list apart; the count is on the topic card.
+                      // (none is kept for the list). An empty list reads EMPTY
+                      // with an unlit meter; the count is on the topic card.
                       // A non-member's list is not open (D4, 2026-10-27): the meter
                       // says LOCKED from the same flag as the switch beside it.
                       <GlassScreen
@@ -2662,7 +2670,7 @@ export function DashboardScreen() {
                               : 'EMPTY'
                         }
                         valueColor={colors.customList}
-                        segments={segmentsForPct(CUSTOM_LIST_METER_PCT)}
+                        segments={segmentsForPct(customMeterPct)}
                       />
                     ) : (
                     <GlassScreen
@@ -2847,7 +2855,7 @@ export function DashboardScreen() {
                         2026-08-06): TITLE · status · gate summary line. */}
                     {isCustom ? (
                       // The list quiz's meter reads FULL too (owner 2026-10-19).
-                      <GlassScreen title="LIST QUIZ" value={qShort} valueColor={qColor} segments={segmentsForPct(CUSTOM_LIST_METER_PCT)} />
+                      <GlassScreen title="LIST QUIZ" value={qShort} valueColor={qColor} segments={segmentsForPct(customMeterPct)} />
                     ) : (
                       <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
                     )}

@@ -144,6 +144,11 @@ let unsaved = false;
  *  learner's record — and the hubs say so instead of showing no ticks. Only
  *  a successful read (or the account wipe) clears it. Read-only state. */
 let lastReadFailed = false;
+/** How this account's read of its server lab record went (see
+ *  pullServerLabCredit). The account wipe puts it back to 'unread'. */
+let serverRead: 'unread' | 'reading' | 'read' | 'failed' = 'unread';
+/** The generation of the server read that is out, if any. */
+let pullingGen: number | null = null;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -662,18 +667,33 @@ onSessionCarrySettled(() => {
  * `labs` key comes through the lab_id foreign key) and every key the server
  * holds is marked `sent`: credited, so isLabDone reads it and it is never
  * re-sent. Only `sent` is added, never units, so a lab's own screen still
- * starts as a fresh practice run. A failed read changes nothing and runs again
- * on the next launch / sign-in.
+ * starts as a fresh practice run. A failed read adds nothing and runs again
+ * on the next launch / sign-in, on the Progress screens' next mount, or from
+ * their Retry.
+ *
+ * WHILE THIS READ IS OUT OR HAS FAILED, AN EMPTY LIST IS NOT "NO LABS" (bug
+ * test 2026-11-05, item 4): on a new phone the device holds nothing, so the
+ * server's answer is the whole record. `serverRead` says how the read went and
+ * labServerCreditRead() gives the screens the answer.
  */
 async function pullServerLabCredit(): Promise<void> {
   if (!sessionIsSettledAccount()) return;
   const gen = completionGen;
-  await hydrate();
-  if (gen !== completionGen) return;
+  if (pullingGen === gen) return; // the Progress tile and list share one read
+  pullingGen = gen;
+  // A later re-read of a record already read is not a new "loading".
+  if (serverRead !== 'read') {
+    serverRead = 'reading';
+    emit();
+  }
+  let answered = false;
   try {
+    await hydrate();
+    if (gen !== completionGen) return;
     const { data, error } = await supabase.from('student_lab_progress').select('labs(key)');
     // The account changed while the read was out: those rows are the departing account's.
     if (gen !== completionGen || error || !Array.isArray(data)) return;
+    answered = true;
     let added = false;
     for (const row of data as { labs?: { key?: unknown } | { key?: unknown }[] | null }[]) {
       const lab = Array.isArray(row.labs) ? row.labs[0] : row.labs;
@@ -688,13 +708,56 @@ async function pullServerLabCredit(): Promise<void> {
       emit();
     }
   } catch {
-    // network error: read again on the next launch / sign-in
+    // network error: read again on the next launch / sign-in / Retry
+  } finally {
+    if (pullingGen === gen) pullingGen = null;
+    if (gen === completionGen) {
+      if (answered) serverRead = 'read';
+      else if (serverRead !== 'read') serverRead = 'failed';
+      emit();
+    }
   }
 }
 
 onSessionCarrySettled(() => {
   void pullServerLabCredit();
 });
+// A guest's settle starts no read, but it does end "not known yet".
+onSessionCarrySettled(emit);
+
+/** What the server's lab record can tell a screen right now:
+ *   none    = KNOWN to have no account, so there is no server record;
+ *   pending = not answered yet (an UNKNOWN session is never a guest, D57);
+ *   read    = the server answered, and its labs are in the store;
+ *   failed  = the read failed, so an empty list proves nothing. */
+export type LabServerRead = 'none' | 'pending' | 'read' | 'failed';
+
+export function labServerCreditRead(): LabServerRead {
+  if (sessionHasNoAccount()) return 'none';
+  if (sessionWipePending()) return 'pending';
+  return serverRead === 'read' || serverRead === 'failed' ? serverRead : 'pending';
+}
+
+/** Read the server's lab record again (a Retry). Resolves when it has landed. */
+export function retryLabServerCredit(): Promise<void> {
+  return pullServerLabCredit();
+}
+
+/** Reactive labServerCreditRead. Mounting reads again after a failure, so
+ *  coming back to the screen is a retry too. */
+export function useLabServerCreditRead(): LabServerRead {
+  const [v, setV] = useState(labServerCreditRead);
+  useEffect(() => {
+    const l = () => setV(labServerCreditRead());
+    listeners.add(l);
+    l();
+    if (serverRead !== 'read') void pullServerLabCredit();
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+  return v;
+}
 
 /** Explicit "Mark reviewed" for the read-through / sandbox labs. */
 export function markLabReviewed(labKey: LabKey): void {
@@ -709,6 +772,8 @@ export function resetLocal(): void {
   hydrating = null;
   unsaved = false;
   lastReadFailed = false;
+  serverRead = 'unread';
+  pullingGen = null;
   cleared = {};
   sent = new Set<string>();
   afComplete = false;

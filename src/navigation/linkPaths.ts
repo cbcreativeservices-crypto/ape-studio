@@ -21,6 +21,8 @@
  * below and covered by test/linkPaths.test.ts.
  */
 
+import { COMMUNITY_VISIBLE } from '../config/communityVisible.ts';
+
 export const APP_SCHEME = 'proaudio';
 export const LINK_HOSTS = ['proaudiotrainingacademy.com', 'www.proaudiotrainingacademy.com'] as const;
 
@@ -164,6 +166,21 @@ const LAB_DEEP_PATHS: RegExp[] = [
   /^production\/(preprod|postprod)\/exercise\/[^/]+\/[^/]+$/,
 ];
 
+/** `directory[/requests[/<request uuid>]]`, the shape of a community link —
+ *  where a tapped member alert opens (owner 2026-10-04). The id must be a real
+ *  uuid: it is matched against the person's own threads and nothing else is
+ *  accepted. */
+export function isDirectoryPath(path: string): boolean {
+  const [head, second, ...more] = path.split('/');
+  return (
+    head === 'directory' &&
+    (second == null ||
+      (second === 'requests' &&
+        (more.length === 0 ||
+          (more.length === 1 && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(more[0])))))
+  );
+}
+
 export function isClaimedPath(path: string): boolean {
   const [head, second, ...more] = path.split('/');
   switch (head) {
@@ -172,15 +189,8 @@ export function isClaimedPath(path: string): boolean {
     case 'careers':
       return second == null;
     case 'directory':
-      // `directory/requests[/<request uuid>]` — where a tapped member alert
-      // opens (owner 2026-10-04). The id must be a real uuid: it is matched
-      // against the person's own threads and nothing else is accepted.
-      return (
-        second == null ||
-        (second === 'requests' &&
-          (more.length === 0 ||
-            (more.length === 1 && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(more[0]))))
-      );
+      // Off with the community (config/communityVisible): the link is dropped.
+      return COMMUNITY_VISIBLE && isDirectoryPath(path);
     case 'tools':
       return (
         second == null ||

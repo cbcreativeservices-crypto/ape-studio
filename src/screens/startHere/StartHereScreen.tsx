@@ -416,7 +416,7 @@ export function StartHereScreen() {
             accessibilityRole="button"
             accessibilityState={{ expanded: listOpen }}
             aria-expanded={listOpen}
-            accessibilityLabel={`All pages. ${progress.completed.length} of ${PAGES.length} done. ${listOpen ? 'Expanded' : 'Collapsed'}`}
+            accessibilityLabel={`All pages. ${progress.completed.length} done. ${listOpen ? 'Expanded' : 'Collapsed'}`}
           >
             {PAGES.map((p, i) => (
               <View

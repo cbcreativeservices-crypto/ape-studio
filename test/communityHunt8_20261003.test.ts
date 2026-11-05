@@ -43,7 +43,7 @@ describe('hunt 8 — community / careers / awards', () => {
   test('H2 Topics: no "0 / 0" before a read, or beside a failed one', () => {
     const v = code('src/screens/achievements/TopicsScreen.tsx');
     assert.doesNotMatch(v, /\{earnedTotal\} \/ \{total\}/, 'the raw counter is gone');
-    assert.match(v, /fields !== null && !loadError \? `\$\{earnedTotal\} \/ \$\{total\}` : '— \/ —'/);
+    assert.match(v, /fields !== null && !loadError \? `\$\{earnedTotal\} EARNED` : '—'/);
   });
 
   for (const [file, setter, okArm] of [

@@ -131,12 +131,12 @@ export const SHARE_COPY = {
   stoppedBody: 'Your instructor can no longer see your progress.',
 };
 
-/** "Sharing with Ina S · Miramar College since 27 Oct 2026." */
+/** "Sharing with Ina S · Miramar College since Oct 27, 2026." */
 export function sharingSince(s: InstructorShare): string {
   const d = s.grantedAt ? new Date(s.grantedAt) : null;
   const when =
     d && !Number.isNaN(d.getTime())
-      ? ` since ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+      ? ` since ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
       : '';
   return `Sharing with ${whoLabel(s)}${when}.`;
 }

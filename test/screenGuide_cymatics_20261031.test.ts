@@ -559,7 +559,7 @@ describe('5. wiring and the accuracy-chip decision', () => {
   it('the three studios: LabShell guide per tab (EXPLORE / LEARN / CHECK), accuracy={false}', () => {
     for (const [f, id] of [['PlateStudioScreen', 'plate'], ['LiquidStudioScreen', 'liquid'], ['MembraneStudioScreen', 'membrane']]) {
       const S = code(`${D}${f}.tsx`);
-      assert.match(S, /import \{ cymaticsStudioGuide \} from '\.\/cymaticsScreenGuides';/, f);
+      assert.match(S, /import \{ CYMATICS_CHECK_TITLE, cymaticsStudioGuide \} from '\.\/cymaticsScreenGuides';/, f);
       assert.match(S, new RegExp(`labId="cymatics"\\s*guide=\\{cymaticsStudioGuide\\('${id}'\\)\\}\\s*accuracy=\\{false\\}`), f);
     }
     const g = G.cymaticsStudioGuide('liquid');

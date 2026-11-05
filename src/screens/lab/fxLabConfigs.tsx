@@ -1136,18 +1136,19 @@ const gateConfig: FxLabConfig = {
   params: [
     {
       label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
-      choices: [-50, -35, -20].map((t) => ({ label: `${t} dB`, value: t })),
+      // Same minus sign as RANGE beside it on the bezel.
+      choices: [-50, -35, -20].map((t) => ({ label: `−${Math.abs(t)} dB`, value: t })),
       initial: -35,
       // The teaching fader: sweep the cliff past the clicks and hear the gate
       // start opening/closing — GR live on the bezel.
-      fader: { min: -50, max: -20, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
+      fader: { min: -50, max: -20, snap: Math.round, format: (v) => `−${Math.abs(Math.round(v))} dB` },
     },
     {
       label: 'RANGE (FLOOR)', short: 'RANGE', paramId: P.rangeDb, lessonKey: 'range',
       choices: [
-        { label: '−20 GENTLE', value: -20, blurb: 'Closed = 20 dB quieter, not silent — leakage ducks instead of vanishing. Natural on drums.' },
-        { label: '−40', value: -40, blurb: 'Deep attenuation — the gate is clearly audible opening and closing.' },
-        { label: '−70 SILENCE', value: -70, blurb: 'Closed = gone. Maximum isolation, and maximum chatter risk near the threshold.' },
+        { label: '−20 dB GENTLE', value: -20, blurb: 'Closed = 20 dB quieter, not silent — leakage ducks instead of vanishing. Natural on drums.' },
+        { label: '−40 dB', value: -40, blurb: 'Deep attenuation — the gate is clearly audible opening and closing.' },
+        { label: '−70 dB SILENCE', value: -70, blurb: 'Closed = gone. Maximum isolation, and maximum chatter risk near the threshold.' },
       ],
       initial: -40,
     },
@@ -1199,7 +1200,7 @@ const gateConfig: FxLabConfig = {
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
-    `Below ${v[P.thresholdDb]} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
+    `Below −${Math.abs(v[P.thresholdDb])} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
     (v[P.rangeDb] <= -70 ? 'Full silence is abrupt — a partial floor usually sounds more natural.' : 'A partial floor keeps a little ambience.'),
   pollGr: 'gate',
   checks: [

@@ -119,7 +119,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         q: 'Why are some study methods locked?',
         // Popup review 2 C1 (owner OK 2026-10-27): the list has no unlock order
         // (studyGate.ts rule 2, customListMethodPowered).
-        a: 'Methods unlock in order on purpose — each builds on the one before it. Finish the current method and the next opens; the Topic Quiz opens last. My Custom List is the exception: all of its methods are open from the start. Its quiz only needs 30 terms in the list.',
+        a: 'Methods unlock in order on purpose — each builds on the one before it. Finish the current method and the next opens; the Topic Quiz opens last. My Custom List is the exception: with membership, all of its methods are open from the start. Its quiz only needs 30 terms in the list.',
       },
       {
         // Popup review 2 C1 (owner OK 2026-10-27). Methods = studyGate
@@ -128,7 +128,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // no certificate.
         id: 'study-custom-list',
         q: 'What is My Custom List?',
-        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study Dashboard: turn the topic dial to My Custom List. All of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of 30 up to all of them, picked at random. It’s practice only and doesn’t count toward a certificate.',
+        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study Dashboard: turn the topic dial to My Custom List. With membership, all of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of 30 up to all of them, picked at random. It’s practice only and doesn’t count toward a certificate.',
       },
       {
         id: 'study-quiz',

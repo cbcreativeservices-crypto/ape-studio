@@ -71,7 +71,7 @@ export const VERIFIER_COPY: Record<
     badgeA11y: 'Verified employer. We checked this organization.',
     adminTag: 'EMPLOYER',
     activeBody:
-      'Your employer account is active. Choose what you are looking for — members can see this, and it is how the right people find you.',
+      'Your employer account is active. Choose what you are looking for. Your choices are kept on your account.',
     areaHead: 'AREAS YOU HIRE IN',
     roleHead: 'ROLES YOU ARE LOOKING FOR',
     offerHead: 'WHAT YOU ARE OFFERING',
@@ -84,7 +84,7 @@ export const VERIFIER_COPY: Record<
     badgeA11y: 'Verified instructor. We checked this school or instructor.',
     adminTag: 'INSTRUCTOR OR SCHOOL',
     activeBody:
-      'Your instructor account is active. Choose what you teach and what you offer — members can see this, and it is how the right people find you.',
+      'Your instructor account is active. Choose what you teach and what you offer. Your choices are kept on your account.',
     areaHead: 'AREAS YOU TEACH',
     roleHead: 'ROLES YOU TRAIN PEOPLE FOR',
     offerHead: 'WHAT YOU ARE OFFERING',

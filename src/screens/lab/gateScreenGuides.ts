@@ -62,12 +62,12 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     control: [
       '▶ in the header, or a tap on the display, plays the SOURCE through the gate; ■ stops it. The THRESH fader runs from −50 to −20 dB.',
-      'RANGE key: −20 GENTLE, −40 or −70 SILENCE. HOLD key: 0, 10 or 100 ms. RLS key: 20 ms CHATTER, 100 ms or 500 ms.',
+      'RANGE key: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD key: 0, 10 or 100 ms. RLS key: 20 ms CHATTER, 100 ms or 500 ms.',
       'SOURCE key: CLICK 90 or PINK NOISE.',
       'Long-press any key or readout for its lesson entry. Below, LAB NOTES: the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [
-      'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 = 40 dB quieter).',
+      'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 dB = 40 dB quieter).',
       'HOLD keeps it open a set time after the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at the line with a fast RLS flickers: chatter.',
       'Each click opens it at the starting THRESH −35 dB; at −20 dB the short click never does.',
     ],
@@ -106,7 +106,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
-      'Read the line on Range at −∞, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 SILENCE, 20.0 at −20 GENTLE.',
+      'Read the line on Range at −∞, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 dB SILENCE, 20.0 at −20 dB GENTLE.',
     ],
   },
 
@@ -129,7 +129,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'Every question is answered by something EXPLORE shows or LEARN says.',
     ],
     tryThis: [
-      'Unsure about RANGE? On EXPLORE, CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 GENTLE: GR tops out at 20.0 dB — quieter, not silent.',
+      'Unsure about RANGE? On EXPLORE, CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 dB GENTLE: GR tops out at 20.0 dB — quieter, not silent.',
       'Unsure about HOLD? On EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) compare HOLD 0 ms and 100 ms: at 100 ms GR rests at 0.0 a moment after each hit before it falls.',
     ],
   },

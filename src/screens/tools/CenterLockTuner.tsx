@@ -924,7 +924,7 @@ const LiveReadout = memo(function LiveReadout({
   const FIXED_ABOVE_NOTE = 24 + dirRowH + 18 + 139;
   // Space left for the note block: measured when the platform reports it,
   // otherwise the arithmetic of the fixed chrome (bar 78/38, foot 32, the
-  // strip/stepper/hold box, SIGNAL row and hint) — react-native-web did not
+  // strip/stepper/hold box, CONFIDENCE row and hint) — react-native-web did not
   // deliver onLayout for this view in the preview.
   const stripH = piano ? 92 : chromatic ? 68 : 74;
   const inputH = 23 + (hint ? 44 : 0);
@@ -942,7 +942,7 @@ const LiveReadout = memo(function LiveReadout({
   const noteFit = landscapeNoteFit(width, height, bigSizeRaw);
   const NOTE_COL_W = noteFit.colW;
   const bigSize = landscape ? noteFit.size : bigSizeRaw;
-  // One gutter: meter, keys, hold box and SIGNAL share the same width.
+  // One gutter: meter, keys, hold box and CONFIDENCE share the same width.
   const meterW = landscape ? Math.min(Math.max(240, width - NOTE_COL_W - 76), 720) : Math.min(width - 24, 720);
   const pointerX = (view.shownCents / METER_RANGE) * (meterW / 2);
   const zoneW = (IN_TUNE_CENTS / METER_RANGE) * (meterW / 2);
@@ -1041,8 +1041,8 @@ const LiveReadout = memo(function LiveReadout({
   const input = (
     <View style={[styles.confWrap, landscape && styles.confWrapLandscape]}>
       <View style={styles.confRow}>
-        <Text style={styles.footLabel}>SIGNAL</Text>
-        <View style={styles.confTrack} accessible accessibilityRole="progressbar" accessibilityLabel="Pitch signal confidence" accessibilityValue={{ min: 0, max: 100, now: signalPct }}
+        <Text style={styles.footLabel}>CONFIDENCE</Text>
+        <View style={styles.confTrack} accessible accessibilityRole="progressbar" accessibilityLabel="Pitch confidence" accessibilityValue={{ min: 0, max: 100, now: signalPct }}
         // RNW 0.21 drops the accessibilityValue object — these carry it to the DOM.
         aria-valuemin={0} aria-valuemax={100} aria-valuenow={signalPct}>
           <View style={[styles.confFill, { width: `${signalPct}%`, backgroundColor: signalPct > 60 ? '#37e05f' : signalPct > 30 ? colors.amber : '#f0603a' }]} />

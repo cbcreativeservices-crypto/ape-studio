@@ -117,7 +117,7 @@ export function LabUnderstandingCheck({
 
       {!done ? (
         <Text style={s.remaining}>
-          {remaining} of {questions.length} still to get right
+          {remaining} still to get right
         </Text>
       ) : null}
 

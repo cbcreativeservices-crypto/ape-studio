@@ -37,7 +37,7 @@ registerHooks({
   },
 });
 
-const { isClaimedPath, TOOL_INFO_KEYS, AWARD_PAGES } = await import(
+const { isClaimedPath, isDirectoryPath, TOOL_INFO_KEYS, AWARD_PAGES } = await import(
   '../src/navigation/linkPaths.ts'
 );
 
@@ -105,7 +105,9 @@ describe('deep links: the navigator and the filter agree', () => {
 
   it('EVERY declared path is claimed', () => {
     const rejected = declared
-      .filter((d) => !isClaimedPath(sample(d.path)))
+      // Directory links are off with the community (config/communityVisible);
+      // isDirectoryPath keeps their shape checked for switching back on.
+      .filter((d) => !isClaimedPath(sample(d.path)) && !isDirectoryPath(sample(d.path)))
       .map((d) => `${d.route} — ${d.path}`);
     assert.deepEqual(
       rejected,

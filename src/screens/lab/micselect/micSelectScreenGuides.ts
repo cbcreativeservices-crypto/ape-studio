@@ -320,7 +320,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   locker: {
     seeing: [
       'Six slots, ten jobs this week. Ten mics to tick, each row saying which jobs it covers.',
-      'Two counters, SLOTS USED and APPLICATIONS COVERED (green at nine or more). THIS WEEK’S JOBS marks each job ✓ covered or —.',
+      'Two counters, SLOTS USED and JOBS COVERED (green at nine or more). THIS WEEK’S JOBS marks each job ✓ covered or —.',
     ],
     control: [
       'Tap a mic to add it to the locker or take it out. With six chosen, the rest dim until you take one out.',
@@ -336,7 +336,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     ],
     tryThis: [
       'Cover all ten jobs — five well-chosen mics can do it. Hint: Kick drum, Snare, Live vocal and Choir each have only one mic that covers them.',
-      'Add Large-diaphragm condenser, then Second large-diaphragm condenser: APPLICATIONS COVERED does not move the second time — it covers nothing new.',
+      'Add Large-diaphragm condenser, then Second large-diaphragm condenser: JOBS COVERED does not move the second time — it covers nothing new.',
     ],
   },
 };

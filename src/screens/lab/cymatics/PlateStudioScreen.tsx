@@ -49,7 +49,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
-import { cymaticsStudioGuide } from './cymaticsScreenGuides';
+import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 import { makeFreqFader } from '../../../features/cymatics/freqFader';
 import { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } from '../../../features/cymatics/plateBezel';
 
@@ -595,6 +595,7 @@ function PlateStudio() {
         // real-world measurement — so the accuracy chip gives way to the ⓘ.
         guide={cymaticsStudioGuide('plate')}
         accuracy={false}
+        checkTitle={CYMATICS_CHECK_TITLE}
         title="CHLADNI PLATE STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns snap in only near the plate’s own resonances — and which resonances those are depends on the whole plate, not on the frequency alone."

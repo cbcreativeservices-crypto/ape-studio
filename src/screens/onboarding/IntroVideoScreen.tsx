@@ -6,8 +6,12 @@
  * the Academy menu and "Watch again" on the landing page play it again.
  *
  * Owner rulings:
- *  - NO skip ("people skip then complain they don't understand it"): no
- *    button, no tap-to-pause, Android back does nothing, iOS swipe-back is off.
+ *  - NO skip on the FIRST run ("people skip then complain they don't understand
+ *    it"): no button, no tap-to-pause, Android back does nothing, iOS swipe-back
+ *    is off.
+ *  - A voluntary REPLAY can be left (owner 2026-11-05, bug test report item 5):
+ *    a Close button and Android BACK return to where it was started from. Close
+ *    is the same on iOS, which has no BACK; swipe-back stays off.
  *  - The video is bundled in the app (works offline and for the reviewer); a
  *    new cut can still go out by update.
  *  - If it cannot play, go straight to the landing page and do NOT mark it
@@ -17,14 +21,17 @@
  * the audio session the tools share.
  */
 import { useCallback, useEffect, useRef } from 'react';
-import { AppState, StyleSheet, View } from 'react-native';
+import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import { safeGoBack } from '../../lib/safeGoBack';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { markIntroVideoSeenOnAccount } from '../../features/profile/api';
 import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
+import { fonts } from '../../theme/tokens';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'IntroVideo'>;
 
@@ -35,6 +42,8 @@ const LOAD_TIMEOUT_MS = 8000;
 
 export function IntroVideoScreen({ navigation, route }: Props) {
   const replay = route.params?.replay === true;
+  const returnToLanding = route.params?.returnTo === 'landing';
+  const insets = useSafeAreaInsets();
   // Its dismiss writes the first-run seen-flag (the one write, ScreenIntroOverlay).
   const { dismiss } = useScreenIntro('introVideo');
   const doneRef = useRef(false);
@@ -107,20 +116,52 @@ export function IntroVideoScreen({ navigation, route }: Props) {
     };
   }, [player, finish]);
 
-  // No skip: Android back is consumed while the video plays.
-  useBackWhileFocused(true, useCallback(() => true, []));
+  // Leaving a replay. "Watch again" swapped the landing page out, so that page
+  // comes back; from the Academy menu the menu is underneath. finish(false)
+  // never retires the first-run flag, and nothing to go back to still leaves.
+  const leaveReplay = useCallback(() => {
+    if (doneRef.current) return;
+    if (!returnToLanding && safeGoBack(navigation)) {
+      doneRef.current = true;
+      return;
+    }
+    finish(false);
+  }, [navigation, returnToLanding, finish]);
+
+  // First run, no skip: Android back is consumed while the video plays.
+  // A replay leaves. Either way BACK stops here.
+  useBackWhileFocused(
+    true,
+    useCallback(() => {
+      if (replay) leaveReplay();
+      return true;
+    }, [replay, leaveReplay]),
+  );
 
   return (
-    <View style={styles.root} accessibilityLabel="Introduction video" accessible>
-      <VideoView
-        style={styles.video}
-        player={player}
-        nativeControls={false}
-        contentFit="contain"
-        allowsPictureInPicture={false}
-        // Taps do nothing (owner 2026-10-09: no pause / resume).
-        pointerEvents="none"
-      />
+    <View style={styles.root}>
+      <View style={styles.video} accessibilityLabel="Introduction video" accessible>
+        <VideoView
+          style={styles.video}
+          player={player}
+          nativeControls={false}
+          contentFit="contain"
+          allowsPictureInPicture={false}
+          // Taps do nothing (owner 2026-10-09: no pause / resume).
+          pointerEvents="none"
+        />
+      </View>
+      {replay ? (
+        <Pressable
+          style={[styles.close, { top: insets.top + 8 }]}
+          onPress={leaveReplay}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Close video"
+        >
+          <Text style={styles.closeText}>Close</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -128,4 +169,14 @@ export function IntroVideoScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
   video: { flex: 1 },
+  close: {
+    position: 'absolute',
+    right: 12,
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  closeText: { fontFamily: fonts.barlowMedium, fontSize: 16, color: '#fff' },
 });

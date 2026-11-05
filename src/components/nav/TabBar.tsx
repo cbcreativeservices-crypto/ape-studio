@@ -11,14 +11,14 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { NavIcon, type NavIconName } from './NavIcon';
 import { useFootnote } from '../../lib/footnote';
 import { colors, fonts } from '../../theme/tokens';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { CommunityBadge, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y } from '../../features/directory/inboxCounts';
 
 /** Owner 2026-11-05: Audio Community is off Home and Profile until the next
  *  store build and the forum go live, so the PROFILE tab must not count requests
- *  nobody can reach. Set to true with SHOW_COMMUNITY_ON_HOME and
- *  SHOW_COMMUNITY_ON_PROFILE. */
-const SHOW_COMMUNITY_BADGE_ON_TAB = false;
+ *  nobody can reach. One switch: config/communityVisible. */
+const SHOW_COMMUNITY_BADGE_ON_TAB = COMMUNITY_VISIBLE;
 
 const TAB_ORDER: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 

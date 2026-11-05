@@ -307,7 +307,7 @@ export function CareerFamilyScreen() {
           <CtaButton label="TAKE THE CAREER FINDER" tone="green" onPress={goToFinder} />
         )}
         <LinkRow>
-          {hasResults ? <TextLink label="Retake the Career Finder" onPress={goToFinder} muted /> : null}
+          {hasResults ? <TextLink label="Back to the Career Finder" onPress={goToFinder} muted /> : null}
           <TextLink label="Suggest a correction" onPress={correction} muted a11y="Suggest a correction. Opens your mail app with this family named." />
         </LinkRow>
       </View>

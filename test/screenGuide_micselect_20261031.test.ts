@@ -116,7 +116,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     env: [SRC, ['A · Controlled recording studio', 'B · Loud concert stage', 'C · Outdoor interview', 'PRIORITIES', 'Feedback rejection (pattern!)', 'Wind protection']],
     jobs: [SRC, ['Voice', 'Instruments', 'Production / AV', 'Live vocal', 'Studio vocal', 'Voiceover', 'Kick', 'Strings', 'Measurement', 'WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?', 'CHECK YOURSELF', 'Feedback rejection', 'Ruggedness', 'Tonal detail', 'Self-noise', 'Max SPL', 'Voicing']],
     challenge: [SRC, ['Outdoor interview', 'One speaker', 'Moderate traffic noise', 'Wind', 'Camera must stay several feet away', 'Boom operator available', 'CHOOSE THE MICROPHONE', 'WHY? SELECT THE FACTORS THAT DROVE YOUR CHOICE', 'CHECK MY REASONING', 'CHANGE ONE VARIABLE', 'Original brief', 'CHECK', 'A defensible professional choice', 'Also defensible', 'Not the strongest choice', 'Microphone B', 'Microphone D', 'Microphone A', 'Directionality', 'Working distance / application', 'Wind protection']],
-    locker: [SRC, ['SLOTS USED', 'APPLICATIONS COVERED', 'THIS WEEK’S JOBS', '✓ covered', 'Kick drum', 'Snare', 'Live vocal', 'Choir', 'Large-diaphragm condenser', 'Second large-diaphragm condenser', 'FINISH · SEE WHAT’S LEFT ›']],
+    locker: [SRC, ['SLOTS USED', 'JOBS COVERED', 'THIS WEEK’S JOBS', '✓ covered', 'Kick drum', 'Snare', 'Live vocal', 'Choir', 'Large-diaphragm condenser', 'Second large-diaphragm condenser', 'FINISH · SEE WHAT’S LEFT ›']],
     end: [END_SRC, ['LAB COMPLETE', 'WHAT’S LEFT', 'CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS']],
   };
   it('a name list for every guide', () => {

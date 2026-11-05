@@ -424,6 +424,7 @@ export function LabShell({
   headerAction,
   rack,
   checkEnd,
+  checkTitle,
   guide,
   guideTitle,
   accuracy = true,
@@ -433,6 +434,9 @@ export function LabShell({
   /** Drawn under the CHECK — the lab's "what's left" link, so CHECK never
    *  ends on a dead card (every lab ends with a what's-left screen). */
   checkEnd?: ReactNode;
+  /** The title on the CHECK card, when it is not the screen's own title: one
+   *  lab-wide check shown on several screens says that it covers the whole lab. */
+  checkTitle?: string;
   title: string;
   subtitle: string;
   intro: string;
@@ -758,7 +762,7 @@ export function LabShell({
             <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
                 <LabUnderstandingCheck
-                  labTitle={title}
+                  labTitle={checkTitle ?? title}
                   questions={understandingFor(labId) ?? []}
                   passed={checkPassed}
                   onPassed={() => {

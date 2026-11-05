@@ -23,6 +23,7 @@ import { isRealAccount } from '../commercial/realAccount';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { softDeadline } from '../../lib/boundedCall';
 import { safeSessionResult } from '../../lib/getSessionSafe';
+import { runSoon } from '../../lib/afterInteractions';
 import { noteSessionIdentity, settleSessionCarry } from '../lab/sessionCarry';
 
 /** Marker holding the id of the user whose data currently lives on the device.
@@ -137,6 +138,27 @@ export function runAfterAccountSync<T>(fn: () => Promise<T>, waitMs = 15000): Pr
 }
 
 /**
+ * Feedback emails carry role= and sid= from sign-in, not only after Profile or
+ * Settings has been opened (report 2026-11-05 item 24). A `require` inside the
+ * function, because the app-start graph is at its cap (perfStartTrim) and the
+ * fill pulls in the feedback and employer modules. Idle time, so a launch
+ * never pays for it before first paint.
+ */
+function fillFeedbackIdentitySoon(uid: string): void {
+  runSoon(
+    () => {
+      try {
+        const fill = require('./feedbackIdentityFill') as typeof import('./feedbackIdentityFill');
+        void fill.fillFeedbackIdentityForAccount(uid);
+      } catch {
+        // A feedback tag is never worth an error at sign-in.
+      }
+    },
+    { idleTimeoutMs: 3000 },
+  );
+}
+
+/**
  * Mount once at the app root. Clears device-local data whenever the IDENTITY
  * changes — a different user signs in, OR the user signs OUT / enters no-account
  * (identity ''). This is what makes a LOG OUT (and a fresh Guest start) reset the
@@ -183,6 +205,9 @@ export function useAccountLocalSync(): void {
       const guestLaunch = launch && identity === '' && claimGuestLaunchWipe();
       chain = chain.then(() => (guestLaunch ? wipeGuestLaunch() : syncLocalToIdentity(identity))).catch(() => {});
       chain = chain.then(() => settleSessionCarry()).catch(() => {});
+      // After the wipe above, which clears the previous account's identity.
+      // A real account only: '' is a guest, and an unknown session never gets here.
+      if (identity) chain = chain.then(() => fillFeedbackIdentitySoon(identity)).catch(() => {});
     };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       // SIGNED_IN (login), SIGNED_OUT (logout → guest), INITIAL_SESSION (cold

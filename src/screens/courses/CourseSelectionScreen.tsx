@@ -73,6 +73,7 @@ import { StudyAreaExplore } from './StudyAreaExplore';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
+import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y, badgeCount } from '../../features/directory/inboxCounts';
 
@@ -1466,8 +1467,8 @@ onScreenIntrosReset(() => {
 });
 
 /** Owner 2026-11-05: hide Audio Community and New Messages on Home until the
- *  next store build and the forum go live. Set to true then. */
-const SHOW_COMMUNITY_ON_HOME = false;
+ *  next store build and the forum go live. One switch: config/communityVisible. */
+const SHOW_COMMUNITY_ON_HOME = COMMUNITY_VISIBLE;
 
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();

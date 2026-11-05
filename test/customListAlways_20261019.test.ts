@@ -278,23 +278,23 @@ test('4d. the length popup is a centred DimModal popup built on the same rules',
 
 /* ── 5. Every meter reads 100% from the start (owner 2026-10-19) ──────────── */
 
-test('5. every custom-list meter is FULL and never moves; nothing is recorded', () => {
+test('5. a custom-list meter with terms is FULL and never moves; nothing is recorded', () => {
   // "On My Custom List - do not progress progress bars, show all always at 100%
   // already (also to show they are open and available to use)."
   assert.equal(rules.CUSTOM_LIST_METER_PCT, 100);
   const d = read(DASH);
-  // Each method panel: a full meter, not a progress figure; EMPTY still in words.
+  // Each method panel: a full meter, not a progress figure (0 terms: groupScreensCopy test).
   const at = d.indexOf('{isCustom ? (\n                      // Owner 2026-10-19: the meter reads FULL');
   assert.ok(at > 0, 'the custom method panel is missing');
   const panel = d.slice(at, d.indexOf('/>', at));
-  assert.match(panel, /segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\}/);
+  assert.match(panel, /segments=\{segmentsForPct\(customMeterPct\)\}/);
   // D4 (2026-10-27): a non-member's list reads LOCKED first (popupReview2 pins it).
   assert.match(panel, /\?\s*'LOCKED'\s*:\s*starred\.size > 0 \|\| !starredRead \|\| starredUnreadable\s*\?\s*'OPEN'\s*:\s*'EMPTY'/);
-  assert.doesNotMatch(panel, /pct|rawPct|methodPct/);
+  assert.doesNotMatch(panel, /\bpct\b|rawPct|methodPct/);
   // The list quiz (when it appears) and the topic card read full too.
-  assert.match(d, /<GlassScreen title="LIST QUIZ" value=\{qShort\} valueColor=\{qColor\} segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\} \/>/);
-  assert.match(d, /const dispOverallPct = dispIsCustom \? CUSTOM_LIST_METER_PCT : jogActive/);
-  assert.match(d, /if \(t\.id === FLAGGED_TOPIC_ID\) return CUSTOM_LIST_METER_PCT;/);
+  assert.match(d, /<GlassScreen title="LIST QUIZ" value=\{qShort\} valueColor=\{qColor\} segments=\{segmentsForPct\(customMeterPct\)\} \/>/);
+  assert.match(d, /const dispOverallPct = dispIsCustom \? customMeterPct : jogActive/);
+  assert.match(d, /if \(t\.id === FLAGGED_TOPIC_ID\) return customMeterPct;/);
   // Full is a display, never a completion: no ✓, no celebration, no credit.
   assert.match(d, /const complete = !isCustom && isApplicable && rawPct >= 100;/);
   // And no progress is written for the list by any method screen.

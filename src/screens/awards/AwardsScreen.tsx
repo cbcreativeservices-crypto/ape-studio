@@ -184,7 +184,8 @@ function TierBlock({
 
       {/* CO-requisites and requirements side by side (user request 2026-07-18:
           these are co-reqs, taken alongside — not pre-reqs). Now BELOW the
-          builder (user request 2026-07-22). */}
+          builder (user request 2026-07-22). A plain bullet: these rows say what
+          the award needs, not what is done, and ✓ is kept for done. */}
       {(tier.corequisite?.length || tier.requirements?.length) ? (
         <View style={styles.twoCol}>
           {tier.corequisite && tier.corequisite.length > 0 ? (
@@ -192,7 +193,7 @@ function TierBlock({
               <Text style={[styles.groupHead, { color: accent }]}>CO-REQUISITES</Text>
               {tier.corequisite.map((r) => (
                 <View key={r} style={styles.row}>
-                  <Text style={[styles.check, { color: accent }]}>✓</Text>
+                  <Text style={[styles.bulletDot, { color: accent }]}>•</Text>
                   <Text style={styles.rowText}>{r}</Text>
                 </View>
               ))}
@@ -203,7 +204,7 @@ function TierBlock({
               <Text style={[styles.groupHead, { color: accent }]}>REQUIREMENTS</Text>
               {tier.requirements.map((r) => (
                 <View key={r} style={styles.row}>
-                  <Text style={[styles.check, { color: accent }]}>✓</Text>
+                  <Text style={[styles.bulletDot, { color: accent }]}>•</Text>
                   <Text style={styles.rowText}>{r}</Text>
                 </View>
               ))}
@@ -1303,7 +1304,6 @@ const styles = StyleSheet.create({
   group: { gap: 7, marginTop: 3 },
   groupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.8 },
   row: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
-  check: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 23, width: 15 },
   bulletDot: { fontFamily: fonts.barlowRegular, fontSize: 17, lineHeight: 23, width: 15 },
   rowText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 24, color: colors.textSecondary },
 

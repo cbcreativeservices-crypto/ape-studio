@@ -60,7 +60,7 @@ import { requireVizLiquid, skiaAvailable } from './skiaGate';
 import type { LiquidViewMode } from './vizLiquid';
 import { useDriveTone } from './useDriveTone';
 import { goToCymatics, useStudioKey } from './goToCymatics';
-import { cymaticsStudioGuide } from './cymaticsScreenGuides';
+import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 10;
 const F_MAX = 200;
@@ -571,6 +571,7 @@ function LiquidStudio() {
         // real-world measurement — so the accuracy chip gives way to the ⓘ.
         guide={cymaticsStudioGuide('liquid')}
         accuracy={false}
+        checkTitle={CYMATICS_CHECK_TITLE}
         title="LIQUID CYMATICS STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A shallow dish on a shaker. Below a threshold the liquid just rides the platform; above it the surface breaks into standing Faraday waves that oscillate at HALF the drive frequency. Which pattern appears depends on the liquid, the depth, the dish and how hard it is shaken — not on the frequency alone."

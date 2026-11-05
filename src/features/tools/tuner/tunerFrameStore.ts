@@ -41,7 +41,7 @@ export function publishTunerFrame(frame: TunerFrame): void {
   // virtually every engine frame even in silence, so the dedup below never
   // fired and both fullscreen overlays re-rendered at frame rate for as long
   // as they sat open. No display changes: the only reader of the store's
-  // confidence is CenterLock's SIGNAL bar, which rounds to a whole percent
+  // confidence is CenterLock's CONFIDENCE bar, which rounds to a whole percent
   // (same value from the 0.01-quantized number), and no store reader renders
   // levelDb. The accept thresholds (PITCH_CONF_MIN, PITCH_LOW_SIGNAL_DB) read
   // the RAW engine frame in the tuner mode, never this store.

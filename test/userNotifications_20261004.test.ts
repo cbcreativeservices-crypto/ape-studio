@@ -189,21 +189,24 @@ describe('userNotifications — unread counts store', async () => {
 });
 
 describe('userNotifications — deep link + pendingLink', async () => {
-  const { isClaimedPath } = await import('../src/navigation/linkPaths.ts');
+  const { isDirectoryPath } = await import('../src/navigation/linkPaths.ts');
   const { setPendingLink, consumePendingLink, pendingLinkUrl } = await import('../src/navigation/pendingLink.ts');
+  const { COMMUNITY_VISIBLE } = await import('../src/config/communityVisible.ts');
 
-  it('`directory/requests/<uuid>` is claimed; anything looser is not', () => {
-    assert.equal(isClaimedPath('directory'), true);
-    assert.equal(isClaimedPath('directory/requests'), true);
-    assert.equal(isClaimedPath(`directory/requests/${UUID}`), true);
-    assert.equal(isClaimedPath('directory/requests/not-a-uuid'), false);
-    assert.equal(isClaimedPath(`directory/explore/${UUID}`), false);
-    assert.equal(isClaimedPath(`directory/requests/${UUID}/more`), false);
+  // Whether these are claimed at all follows the community switch (report item
+  // 7): test/communitySwitch_20261105. The SHAPE rule stands either way.
+  it('`directory/requests/<uuid>` is the link shape; anything looser is not', () => {
+    assert.equal(isDirectoryPath('directory'), true);
+    assert.equal(isDirectoryPath('directory/requests'), true);
+    assert.equal(isDirectoryPath(`directory/requests/${UUID}`), true);
+    assert.equal(isDirectoryPath('directory/requests/not-a-uuid'), false);
+    assert.equal(isDirectoryPath(`directory/explore/${UUID}`), false);
+    assert.equal(isDirectoryPath(`directory/requests/${UUID}/more`), false);
   });
 
-  it('a tap while signed out is held as a pending link and resumes after sign-in', () => {
-    assert.equal(setPendingLink(pendingLinkUrl(`directory/requests/${UUID}`)), true);
-    assert.equal(consumePendingLink(), `directory/requests/${UUID}`);
+  it('a tap while signed out is held as a pending link only while the community is on', () => {
+    assert.equal(setPendingLink(pendingLinkUrl(`directory/requests/${UUID}`)), COMMUNITY_VISIBLE);
+    assert.equal(consumePendingLink(), COMMUNITY_VISIBLE ? `directory/requests/${UUID}` : null);
   });
 
   it('the navigator declares the params', () => {
