@@ -157,6 +157,32 @@ const SHOW_MEDIA_KEY = 'ape:fcShowMedia';
  *  ON (owner 2026-08-13). Toggling on any card applies to every definition. */
 const SHOW_LINKS_KEY = 'ape:fcShowLinks';
 
+/**
+ * In-definition links: names that link only as the card spells them, keyed by
+ * lower-cased name. An all-capitals or one/two-character name is usually an
+ * everyday word in another case ("AND", "OR", "IT"; "and", "or", "it"). When a
+ * key also has an ordinary spelling ("Pan" beside "PAN"), any case links.
+ */
+function exactCaseNames(
+  items: readonly { term: string; also_called?: readonly string[] | null }[],
+): Map<string, Set<string>> {
+  const exact = new Map<string, Set<string>>();
+  const anyCase = new Set<string>();
+  for (const it of items) {
+    for (const raw of [it.term, ...(it.also_called ?? [])]) {
+      const name = raw.trim();
+      const key = name.toLowerCase();
+      if (name.length <= 2 || (name === name.toUpperCase() && name !== key)) {
+        exact.set(key, (exact.get(key) ?? new Set<string>()).add(name));
+      } else {
+        anyCase.add(key);
+      }
+    }
+  }
+  for (const key of anyCase) exact.delete(key);
+  return exact;
+}
+
 type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 /** The one-time tutorials this screen presents itself (T2, T3, the DAW note). */
@@ -1106,6 +1132,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // Terms AND the cards' other names (also_called, 2026-10-29) link; a term
   // always keeps its own card (deckNameIndex files every term first).
   const termIndex = useMemo(() => deckNameIndex(items ?? []), [items]);
+  const exactNames = useMemo(() => exactCaseNames(items ?? []), [items]);
   const linkRegex = useMemo(() => {
     if (termIndex.size === 0) return null;
     const names = [...termIndex.keys()]
@@ -1124,6 +1151,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       linkRegex.lastIndex = 0;
       let m: RegExpExecArray | null;
       while ((m = linkRegex.exec(text))) {
+        const spellings = exactNames.get(m[1].toLowerCase());
+        if (spellings && !spellings.has(m[1])) {
+          linkRegex.lastIndex = m.index + 1; // not this name: a shorter one here may still link
+          continue;
+        }
         const hit = termIndex.get(m[1].toLowerCase());
         if (!hit || hit.id === currentId) continue; // own term stays plain
         if (m.index > last) parts.push(text.slice(last, m.index));
@@ -1142,7 +1174,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       parts.push(text.slice(last));
       return parts;
     },
-    [linkRegex, termIndex, navigation, showLinks],
+    [linkRegex, termIndex, exactNames, navigation, showLinks],
   );
 
   // Ordered subset of levels the user chose to see on reveal (never empty).

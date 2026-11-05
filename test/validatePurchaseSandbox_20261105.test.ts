@@ -297,6 +297,24 @@ describe('validate-purchase: what a sandbox purchase leaves alone', () => {
     assert.equal(state.entitlement?.member_since, null);
   });
 
+  it('a real monthly after a refund gets its own month, not the refunded plan\'s end date', async () => {
+    const refundedEnd = new Date(Date.now() + 300 * DAY).toISOString();
+    const end = Date.now() + 30 * DAY;
+    state.entitlement = { ...comp(), source: 'app_store', store_ref: 'tx-0', plan: 'annual', status: 'refunded', refunded_at: '2026-10-01T00:00:00.000Z', member_since: null, expires_at: refundedEnd };
+    state.appleTx = { environment: 'Production', bundleId: BUNDLE, productId: 'academy_monthly', expiresDate: end };
+    const r = await appleBuy('academy_monthly');
+    assert.equal(r.expires_at, new Date(end).toISOString());
+    assert.equal(state.entitlement?.expires_at, new Date(end).toISOString());
+    assert.equal(state.entitlement?.status, 'active');
+  });
+
+  it('an inactive row with a later end date has no influence on a real purchase either', async () => {
+    const end = Date.now() + 30 * DAY;
+    state.entitlement = { ...comp(), source: 'app_store', status: 'inactive', expires_at: new Date(Date.now() + 300 * DAY).toISOString() };
+    state.appleTx = { environment: 'Production', bundleId: BUNDLE, productId: 'academy_monthly', expiresDate: end };
+    assert.equal((await appleBuy('academy_monthly')).expires_at, new Date(end).toISOString());
+  });
+
   const forever = (): Row => ({ ...comp(), expires_at: null });
 
   it('a no-end-date comp is permanent: a sandbox Lifetime leaves it unchanged', async () => {

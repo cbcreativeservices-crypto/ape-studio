@@ -16,6 +16,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsScreen } from './SettingsScreen';
 import { EntitlementProvider } from '../../features/commercial/EntitlementProvider';
+import { AudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { __setDevPrefsOverride } from '../../features/settings/store';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -61,11 +62,13 @@ export function SettingsPreview() {
       <Text style={styles.bar}>{previewWidthLabel('SETTINGS', width, viewportW)}</Text>
       <View style={[styles.phone, { width }]}>
         <EntitlementProvider>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="Settings" component={SettingsScreen as never} />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <AudioOutputGate>
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Settings" component={SettingsScreen as never} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </AudioOutputGate>
         </EntitlementProvider>
       </View>
     </View>

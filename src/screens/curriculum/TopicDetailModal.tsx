@@ -103,14 +103,13 @@ export function splitTopicIntro(raw: string | null | undefined): TopicIntro | nu
 }
 
 function useTopicIntro(gs: number | null): TopicIntro | null {
-  const [intro, setIntro] = useState<TopicIntro | null>(() => (gs != null ? introCache.get(gs) ?? null : null));
+  // The intro is read from the cache DURING render, for this render's gs. Held in
+  // state it lagged a step behind: the first render of a new topic paired the new
+  // name and image with the previous topic's headline. State only asks for a
+  // re-render once a read lands.
+  const [, showFetched] = useState(0);
   useEffect(() => {
-    if (gs == null) return;
-    if (introCache.has(gs)) {
-      setIntro(introCache.get(gs) ?? null);
-      return;
-    }
-    setIntro(null);
+    if (gs == null || introCache.has(gs)) return;
     let alive = true;
     void (async () => {
       try {
@@ -124,7 +123,7 @@ function useTopicIntro(gs: number | null): TopicIntro | null {
         if (error) return;
         const value = splitTopicIntro((data as { description?: string | null } | null)?.description);
         introCache.set(gs, value);
-        if (alive) setIntro(value);
+        if (alive) showFetched((n) => n + 1);
       } catch {
         // Offline or timed out: keep the one-liner; try again on the next open.
       }
@@ -133,7 +132,7 @@ function useTopicIntro(gs: number | null): TopicIntro | null {
       alive = false;
     };
   }, [gs]);
-  return intro;
+  return gs != null ? introCache.get(gs) ?? null : null;
 }
 
 /** The write-state map without one topic (its add was written, or superseded). */

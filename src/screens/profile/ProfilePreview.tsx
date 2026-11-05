@@ -13,6 +13,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileScreen } from './ProfileScreen';
 import { EntitlementProvider } from '../../features/commercial/EntitlementProvider';
+import { AudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { colors, fonts } from '../../theme/tokens';
 
 const Stack = createNativeStackNavigator();
@@ -27,11 +28,13 @@ export function ProfilePreview() {
       <Text style={styles.bar}>{previewWidthLabel('PROFILE', width, viewportW)}</Text>
       <View style={[styles.phone, { width }]}>
         <EntitlementProvider>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="Profile" component={ProfileScreen as never} />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <AudioOutputGate>
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Profile" component={ProfileScreen as never} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </AudioOutputGate>
         </EntitlementProvider>
       </View>
     </View>

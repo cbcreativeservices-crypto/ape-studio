@@ -34,7 +34,7 @@
  * its inline drawing while this is up so only one copy ever draws.
  */
 import { Children, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
@@ -204,7 +204,19 @@ export function ToolFullScreenView({
             {close}
           </View>
           <View style={styles.bodyRow}>
-            {controls ? <View style={styles.ctrlCol}>{controls}</View> : null}
+            {/* The rail scrolls when the keys outgrow the height (the RTA's 7 on a
+                phone): a centred plain column spilled off both ends, over the
+                readouts and past reach. Keys that fit stay centred and still. */}
+            {controls ? (
+              <ScrollView
+                style={styles.ctrlCol}
+                contentContainerStyle={styles.ctrlColContent}
+                alwaysBounceVertical={false}
+                persistentScrollbar
+              >
+                {controls}
+              </ScrollView>
+            ) : null}
             <View style={styles.bodyCol}>
               {display}
               {footer}
@@ -332,7 +344,9 @@ const styles = StyleSheet.create({
   title: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.textSubAlt },
   bodyRow: { flex: 1, flexDirection: 'row', gap: 12 },
   bodyCol: { flex: 1, gap: 4 },
-  ctrlCol: { width: FS_CTRL_W, gap: 8, justifyContent: 'center' },
+  // flexGrow 0: a ScrollView grows by default, and in this row it would eat the display.
+  ctrlCol: { width: FS_CTRL_W, flexGrow: 0, flexShrink: 0 },
+  ctrlColContent: { flexGrow: 1, gap: 8, justifyContent: 'center' },
   ctrlRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   display: { flex: 1, borderRadius: 8, overflow: 'hidden', backgroundColor: '#07090b' },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, textAlign: 'center' },

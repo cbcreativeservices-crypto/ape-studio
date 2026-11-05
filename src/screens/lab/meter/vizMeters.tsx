@@ -130,6 +130,18 @@ function withAlpha(hex: string, a: number): string {
   return `rgba(${r},${g},${b},${a})`;
 }
 
+/** The number the SPL LED prints for a dBFS level: whole dB SPL, or `<40` when
+ *  the level is under the printed scale (the BAR floors there; the reading must
+ *  not — a 21 dB room is not 40), or `—` with no reading at all (the screen's
+ *  word for that, and the -120 it writes when stopped). Same width as "100", so
+ *  it fits the readout column. A worklet: it runs on the UI thread. */
+export function splReadoutText(db: number, splOffset: number, splBot: number): string {
+  'worklet';
+  if (db !== db || db <= -119) return '—';
+  const s = Math.round(db + splOffset);
+  return s < splBot ? `<${splBot}` : `${s}`;
+}
+
 /** Loop-fraction of the phase clock (worklet-safe). */
 function frac01(phase: number): number {
   'worklet';
@@ -3300,11 +3312,9 @@ export function PeakAvgMeterView(p: {
   // shows. WHITE = the PEAK-HOLD MAX dB SPL: it follows the peak UP and STAYS at the
   // highest reached, honouring holdMode (inf latches; 1s/3s linger then decay; off
   // just follows the current peak) via the `lHold` engine value (or the live peak
-  // when hold is off). Both floor at SPL_BOT (40) in silence.
+  // when hold is off). Under the scale both say `<40`, never a false 40.
   const avgReadoutProps = useAnimatedProps(() => {
-    const r = liveRms.value;
-    const s = r === r && r > -119 ? Math.max(SPL_BOT, Math.round(r + splOffset)) : SPL_BOT;
-    const t = `${s}`;
+    const t = splReadoutText(liveRms.value, splOffset, SPL_BOT);
     return { text: t, defaultValue: t } as any;
   }, [liveRms, splOffset]);
   const pkMaxReadoutProps = useAnimatedProps(() => {
@@ -3312,9 +3322,7 @@ export function PeakAvgMeterView(p: {
     // frame per holdMode ('off' ⇒ follows the current peak; '1s'/'3s' ⇒ hold then
     // decay; 'inf' ⇒ latch), so the readout and the cap ALWAYS agree. lHold mutates
     // each frame, which keeps this worklet ticking.
-    const hv = lHold.value;
-    const s = hv === hv && hv > -119 ? Math.max(SPL_BOT, Math.round(hv + splOffset)) : SPL_BOT;
-    const t = `${s}`;
+    const t = splReadoutText(lHold.value, splOffset, SPL_BOT);
     return { text: t, defaultValue: t } as any;
   }, [lHold, splOffset]);
 

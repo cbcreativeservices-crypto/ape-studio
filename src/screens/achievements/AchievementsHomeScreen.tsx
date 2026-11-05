@@ -226,7 +226,7 @@ export function AchievementsHomeScreen() {
   const hubFailed = error && !hub;
   const hubLoading = !hub && !hubFailed;
   // LABS (owner 2026-10-29): the device lab-credit record, read live.
-  const { state: labs } = useCompletedLabs();
+  const { state: labs, retry: retryLabs } = useCompletedLabs();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -304,11 +304,15 @@ export function AchievementsHomeScreen() {
             unit="COMPLETED"
             a11y={labs.status === 'ready' ? `Labs, ${labs.labs.length} completed` : 'Labs'}
             onPress={() => navigation.navigate('Labs')}
+            headOnly={labs.status === 'unreadable'}
           >
             {labs.status === 'loading' ? (
               <View style={styles.miniPlaceholder} />
             ) : labs.status === 'unreadable' ? (
-              <Text style={styles.tileNote}>Couldn’t read your lab record. Tap to retry.</Text>
+              <View style={styles.tileRetry}>
+                <Text style={styles.tileNote}>Couldn’t read your lab record.</Text>
+                <StudioButton label="Retry" variant="secondary" small onPress={retryLabs} />
+              </View>
             ) : labs.labs.length === 0 ? (
               <Text style={styles.tileNote}>{TROPHY_CASE_EMPTY.labs}</Text>
             ) : (
@@ -483,6 +487,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   tileHead: { gap: 2 },
+  tileRetry: { gap: 8 },
   tileTop: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   tileName: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.textPrimary },
   tileValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },

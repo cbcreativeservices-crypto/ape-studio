@@ -1166,9 +1166,9 @@ const LiveReadout = memo(function LiveReadout({
       </View>
       {strobe && landscape ? null : (
         <View style={[styles.scaleRow, { width: meterW }]}>
-          <Text style={styles.scaleText}>−50 FLAT</Text>
-          <Text style={styles.scaleText}>0</Text>
-          <Text style={styles.scaleText}>SHARP +50</Text>
+          <Text style={[styles.scaleText, styles.scaleLeft]}>−50 FLAT</Text>
+          <Text style={[styles.scaleText, styles.scaleMid]}>0</Text>
+          <Text style={[styles.scaleText, styles.scaleRight]}>SHARP +50</Text>
         </View>
       )}
       {strobe ? <StrobeBand cents={octaveOff ? null : cents} width={meterW} tint={tint} endLabels={landscape} /> : null}
@@ -1497,8 +1497,13 @@ const styles = StyleSheet.create({
   tick: { position: 'absolute', top: 44, width: 2, height: 8, backgroundColor: '#3a3b43' },
   tickZero: { top: 42, height: 12, backgroundColor: '#8a8b93' },
   pointer: { position: 'absolute', top: 6, width: 10, height: 44, borderRadius: 5 },
-  scaleRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  // EQUAL side cells either side of the 0, so it sits on the centre tick whatever the
+  // side labels measure, and each label keeps almost half the row at a large font size.
+  scaleRow: { flexDirection: 'row' },
   scaleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: DIM },
+  scaleLeft: { flex: 1, textAlign: 'left' },
+  scaleMid: { textAlign: 'center' },
+  scaleRight: { flex: 1, textAlign: 'right' },
   cents: { fontFamily: fonts.oswaldSemiBold, fontSize: 46, lineHeight: 52, letterSpacing: 1, marginTop: 4 },
   centsLandscape: { fontSize: 40, lineHeight: 44, marginTop: 0 },
   strobe: { height: 22, overflow: 'hidden', borderRadius: 4, backgroundColor: '#101116', marginTop: 6 },

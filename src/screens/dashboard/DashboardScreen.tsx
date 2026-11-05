@@ -796,6 +796,15 @@ async function finishSignOut(onDone: () => void): Promise<void> {
   onDone();
 }
 
+/** A topic's place among the REAL topics. My Custom List sits in the same deck
+ *  (any position, the learner can reorder it) but is not a topic, so it counts
+ *  in neither number: "TOPIC 2 OF 8" for the first of 7 enrolled topics was the
+ *  bug (owner's Pixel pass, 2026-11-05). */
+function realTopicNumber(deck: readonly { id: string }[], id: string): { n: number; of: number } {
+  const real = deck.filter((t) => t.id !== FLAGGED_TOPIC_ID);
+  return { n: real.findIndex((t) => t.id === id) + 1, of: real.length };
+}
+
 /**
  * After a sign-out the login screen is the ROOT (full run 1, 2026-10-01), the
  * way Settings › Log out and the session-expiry guard leave it. `navigate`
@@ -2033,6 +2042,7 @@ export function DashboardScreen() {
   const dispIdx = jogActive ? scrollIdx : topicIdx;
   const dispTopic = topics[dispIdx] ?? topic;
   const dispIsCustom = dispTopic.id === FLAGGED_TOPIC_ID;
+  const dispTopicNo = realTopicNumber(topics, dispTopic.id);
   // The rack + quiz must ACT on the DISPLAYED topic (what the card shows), never
   // the frozen committed `topic`: mid-jog the two diverge, so tapping a method
   // while the carousel previews another topic opened the WRONG one and bypassed
@@ -2347,7 +2357,7 @@ export function DashboardScreen() {
                         // program (award_standing_requirements), so a Microphone
                         // Building enrollment opens on one of them with nothing
                         // saying so.
-                        `TOPIC ${dispIdx + 1} OF ${topics.length} · ${
+                        `TOPIC ${dispTopicNo.n} OF ${dispTopicNo.of} · ${
                           dispTopic.global_sequence != null && COREQ_TOPIC_GS.includes(dispTopic.global_sequence)
                             ? 'REQUIRED FOR EVERY CERTIFICATE'
                             : data.currentCourse.name.toUpperCase()

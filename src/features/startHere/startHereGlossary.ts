@@ -72,7 +72,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   },
   'meter (metering)': {
     term: 'Meter (Metering)',
-    definition: 'A device or on-screen indicator that displays the level of an audio signal (peak, RMS, average, or loudness) relative to a calibrated reference, so operators can monitor and control signal amplitude; common types include the VU meter, peak programme meter (PPM), and digital peak (dBFS) meter.',
+    definition: 'A device or on-screen indicator that displays the level of an audio signal (peak, RMS, average, or loudness) relative to a calibrated reference, so operators can monitor and control signal amplitude; common types include the VU meter, peak program meter (PPM), and digital peak (dBFS) meter.',
     plain_english: 'A meter shows the level of a signal. You watch it to keep levels high enough to be clear but low enough to avoid distortion. It is like a speedometer for your signal.',
   },
   'microphone (mic)': {

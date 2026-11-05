@@ -501,10 +501,10 @@ Deno.serve(async (req) => {
   const priorPermanent = priorHolds && prior!.expires_at === null;
   const priorMs = priorPermanent ? Infinity : prior?.expires_at ? Date.parse(prior.expires_at) : 0;
   const computedMs = Date.parse(computed);
-  // M1: a refunded or inactive row holds nothing, so a free test purchase cannot
-  // bring its old end date back.
-  const sandboxIgnoresPrior = sandbox && !priorHolds;
-  const expires_at = priorMs > computedMs && !sandboxIgnoresPrior ? prior!.expires_at : computed;
+  // A refunded or inactive row holds nothing, so no purchase, real or test, can
+  // inherit its old end date: a month's payment buys a month, not the refunded
+  // plan's remaining time.
+  const expires_at = priorHolds && priorMs > computedMs ? prior!.expires_at : computed;
   // Leave the row completely alone when it already holds longer access and is
   // either a gift (comp, access code) or this is a test purchase. Writing even
   // source and store_ref here hands a gift to the store: a later renewal notice

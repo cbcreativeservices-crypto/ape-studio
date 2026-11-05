@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 03:37 · ccode · 74ce172f
+changed: Meters lab fixes and Profile community hidden [MD:D56]
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-11-05 02:35 · ccode · 20f90975
 changed: Employer Account folds, accuracy chip to the Audio Tools top bar, community links off Home, rack tile back, Meters lab help speaks to the student [MD:D52]
 affects other side: nothing.

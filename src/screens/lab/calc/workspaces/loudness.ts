@@ -17,7 +17,7 @@ const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
  *  "9000000 dB" gain change. */
 const lufsField = (name: string) => ({
   range: [-70, 0] as const,
-  rangeMsg: `${name} must be from −70 to 0 LUFS — real programme loudness sits inside that span (BS.1770 gating ignores anything below −70 LUFS). Check the reading.`,
+  rangeMsg: `${name} must be from −70 to 0 LUFS — real program loudness sits inside that span (BS.1770 gating ignores anything below −70 LUFS). Check the reading.`,
 });
 const truePeakField = (name: string) => ({
   range: [-60, 6] as const,

@@ -48,3 +48,18 @@ test('the shared full screen is a root overlay that rotates and restores', () =>
   assert.match(code, /if \(open\) \{\s*if \(!closing\) setClosing\(true\);\s*return true;/, 'BACK starts the close');
   assert.match(code, /accessibilityLabel="Close fullscreen"/, 'the same close key as the Waveform');
 });
+
+test('the landscape control rail scrolls inside its own column (RTA has 7 keys)', () => {
+  const src = read('ToolFullScreen.tsx');
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.match(code, /<ScrollView\s+style=\{styles\.ctrlCol\}\s+contentContainerStyle=\{styles\.ctrlColContent\}/, 'the rail is a ScrollView');
+  assert.doesNotMatch(code, /<View style=\{styles\.ctrlCol\}/, 'a plain View spills off both ends when centred');
+  const col = code.match(/ctrlCol: \{[^}]*\}/)?.[0] ?? '';
+  assert.match(col, /width: FS_CTRL_W/, 'keeps the docked width');
+  assert.match(col, /flexGrow: 0/, 'must not grow into the display');
+  assert.doesNotMatch(col, /justifyContent/, 'centring on the viewport is what spilled the keys');
+  const content = code.match(/ctrlColContent: \{[^}]*\}/)?.[0] ?? '';
+  assert.match(content, /flexGrow: 1/, 'a short rail (Spectrogram, 4 keys) fills the height');
+  assert.match(content, /justifyContent: 'center'/, 'and stays centred');
+  assert.match(content, /gap: 8/, 'same key spacing');
+});

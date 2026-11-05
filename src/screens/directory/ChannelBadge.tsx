@@ -19,15 +19,22 @@ export type BadgeLed = 'green' | 'amber' | 'off';
 
 export const STEEL = '#9fb4c8';
 
-/** Up to two initials from a display name ("Harbor Sound Co." → "HS"). */
+/**
+ * Up to two initials from a display name ("Harbor Sound Co." → "HS").
+ * Each word is cut into whole letters: one code point (never half a surrogate
+ * pair) with the combining marks that follow it, so a decomposed mark inside
+ * a word does not split the word and a mark never stands alone. At most three
+ * marks stay per letter: a piled-up name must not stack out of the tile.
+ */
 export function initialsOf(name: string): string {
   const words = name
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/[^\p{L}\p{N}\p{M}\s]/gu, ' ')
     .split(/\s+/)
-    .filter(Boolean);
+    .map((word) => word.match(/\P{M}\p{M}{0,3}/gu) ?? [])
+    .filter((letters) => letters.length > 0);
   if (words.length === 0) return '·';
-  const first = words[0][0] ?? '';
-  const second = words.length > 1 ? words[1][0] ?? '' : words[0][1] ?? '';
+  const first = words[0][0];
+  const second = words.length > 1 ? words[1][0] : words[0][1] ?? '';
   return (first + second).toUpperCase();
 }
 

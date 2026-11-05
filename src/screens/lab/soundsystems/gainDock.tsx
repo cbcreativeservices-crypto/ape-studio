@@ -61,6 +61,11 @@ export function gainStageParam(settings: GainSettings, setSettings: (fn: (s: Gai
  *  goals on both gain pages (D41 #24, 2026-11-01). */
 export const HEADROOM_GOOD_DB = 12;
 
+/** The headroom figure as printed: rounded DOWN, so a shortfall (11.6) can
+ *  never read as the target it missed. The verdict and colour keep the exact
+ *  value from `leastHeadroomDb`. */
+const shownHeadroomDb = (db: number) => Math.floor(db);
+
 /** The least headroom anywhere in the chain, dB. */
 export function leastHeadroomDb(chain: GainNode[]): number {
   return Math.min(...chain.map((n) => n.headroomDb));
@@ -79,13 +84,13 @@ export function gainReadingCopy(r: GainReading, chain: GainNode[]): string {
   if (r !== 'tight') return gainVerdictCopy(r, chain);
   const least = leastHeadroomDb(chain);
   const at = chain.reduce((a, n) => (n.headroomDb < a.headroomDb ? n : a), chain[0]);
-  return `Clean and low in hiss, but too little headroom: the ${at.label.toLowerCase()} is only ${Math.round(least)} dB below its clip line, and a louder moment than this peak would clip it. Leave at least ${HEADROOM_GOOD_DB} dB at every stage — take a few dB off the gain that put it there, usually the preamp.`;
+  return `Clean and low in hiss, but too little headroom: the ${at.label.toLowerCase()} is only ${shownHeadroomDb(least)} dB below its clip line, and a louder moment than this peak would clip it. Leave at least ${HEADROOM_GOOD_DB} dB at every stage — take a few dB off the gain that put it there, usually the preamp.`;
 }
 
 /** The chain's four bezel readouts. */
 export function gainBezel(chain: GainNode[], verdict: GainReading, extra?: BezelItem): BezelItem[] {
   const last = chain[chain.length - 1];
-  const least = Math.round(leastHeadroomDb(chain));
+  const least = shownHeadroomDb(leastHeadroomDb(chain));
   const vTint = verdict === 'ok' ? colors.green : verdict === 'clipping' ? colors.red : colors.orange;
   return [
     { k: 'AT SPEAKER', v: `${Math.round(last.levelDbu)} dBu`, tint: levelColorForDb(last.levelDbu, -40, 20), flex: 1.1 },

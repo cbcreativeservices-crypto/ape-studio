@@ -174,7 +174,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               <Card>
                 <Point title="Peak level (dBFS)">The highest sample. It tells you about one instant, not about how loud the piece is.</Point>
                 <Point title="True peak (dBTP)">An estimate of the reconstructed waveform BETWEEN samples (oversampled). It can exceed the sample peak; converters and lossy encoders see it.</Point>
-                <Point title="Integrated loudness (LUFS / LKFS)">A gated, frequency-weighted average of the whole programme — the ITU-R BS.1770 measurement the loudness world shares. One number for how loud the piece is.</Point>
+                <Point title="Integrated loudness (LUFS / LKFS)">A gated, frequency-weighted average of the whole program — the ITU-R BS.1770 measurement the loudness world shares. One number for how loud the piece is.</Point>
                 <Point title="Dynamic range">How far the peaks sit above the average (PLR, crest factor) and how much the loudness moves over time (loudness range). Limiting spends mostly the first; compression is what shrinks the second.</Point>
               </Card>
             </>

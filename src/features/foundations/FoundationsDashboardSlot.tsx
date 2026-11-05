@@ -15,6 +15,7 @@
  * locked topic's tap goes to the same study-access popup (no new paywall).
  */
 import { useEffect, useState, type ReactElement } from 'react';
+import { notify } from '../../lib/confirm';
 import { cachedFoundations, loadFoundations } from './foundationsSource';
 import type { FoundationsLesson } from './foundationsText';
 import { FoundationsSheet } from './TopicFoundationsSheet';
@@ -51,6 +52,9 @@ export function FoundationsDashboardSlot({
     lesson: cachedFoundations(achievementId) ?? null,
   }));
   const [open, setOpen] = useState(false);
+  // Fixed when the sheet opens. Live read state would flip the buttons to CLOSE
+  // the moment the write lands, in the frames before the sheet closes.
+  const [closeOnly, setCloseOnly] = useState(false);
   const rs = useFoundationsRead(achievementId);
 
   useEffect(() => {
@@ -80,16 +84,25 @@ export function FoundationsDashboardSlot({
       {renderRow({
         read,
         locked,
-        onPress: () => (locked ? onLocked() : setOpen(true)),
+        onPress: () => {
+          if (locked) {
+            onLocked();
+            return;
+          }
+          // Unknown state: nothing can be marked, so I'VE READ THIS is not offered.
+          setCloseOnly(read || !rs.known);
+          setOpen(true);
+        },
       })}
       {open ? (
         <FoundationsSheet
           lesson={lesson}
-          alreadyRead={read}
+          alreadyRead={closeOnly}
           onLater={() => setOpen(false)}
           onRead={async () => {
-            await rs.markRead();
-            setOpen(false);
+            // Closes only on a write that landed; otherwise the lesson stays up to try again.
+            if (await rs.markRead()) setOpen(false);
+            else notify('Not saved', 'This lesson couldn’t be marked as read. Try again, or tap LATER and come back to it.');
           }}
         />
       ) : null}

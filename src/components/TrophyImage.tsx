@@ -149,7 +149,13 @@ export function TrophyImage({
 
   const ExpoImg = EXPO_IMAGE;
   return (
-    <View style={[box, style, grayed && styles.grayed]}>
+    // ⛔ KEYED. Without a key React sees `<>{fallback}</>` and this View as the
+    // same slot whenever the fallback is a plain View, so it re-styles the
+    // fallback's native view into the image box instead of making a new one.
+    // The Dashboard tile does that on every My Custom List visit. SUSPECTED
+    // cause of its blank picture on every topic until a restart (Pixel
+    // 2026-11-05); not yet proven on a device.
+    <View key="trophy-art" style={[box, style, grayed && styles.grayed]}>
       {ExpoImg ? (
         <ExpoImg
           source={{ uri: bustedUri }}

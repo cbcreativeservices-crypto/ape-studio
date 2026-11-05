@@ -155,6 +155,7 @@ export function ProductionLabScreen() {
           .remove(lab, project.id)
           .then((ok) => {
             if (!ok) return notify('Not deleted', 'That project could not be removed. Try again.');
+            setChoosingType(false);
             setOpenId(null);
             void reload();
           });
@@ -202,6 +203,7 @@ export function ProductionLabScreen() {
       return;
     }
     setNameDraft(null);
+    setChoosingType(false);
     await reload();
     setOpenId(copy.id);
     setDupNote(hadConditions ? { id: copy.id, text: 'Accepted conditions were not copied — review them on this project.' } : null);
@@ -396,8 +398,8 @@ export function ProductionLabScreen() {
             {choosingType ? (
               <View style={styles.startBlock}>
                 <Text style={styles.sectionIntro}>
-                  Pick a type for the new project. What you are making changes the questions; this project stays saved
-                  and its chip switches back to it.
+                  Pick a type for the new project. What you are making changes the questions. This project stays saved:
+                  once the new one starts, tap this project’s chip at the top to switch back.
                 </Text>
                 {pathwayRows}
               </View>

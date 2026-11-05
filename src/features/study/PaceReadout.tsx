@@ -448,13 +448,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#0e0e10',
   },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  statusWord: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
-  controls: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  // The word never gives way (it was clipped to "ON …" at 375 wide); the control
+  // row is what shrinks on a narrow phone, and the word keeps pushing it right.
+  statusWord: { flexGrow: 1, flexShrink: 0, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
+  controls: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 4 },
   // WIDE-AND-SHORT control buttons (2026-07-25) — elongated horizontally and
   // trimmed in height so the control row is shorter, keeping the container thin
   // while staying comfortably tappable.
   iconBtn: {
     width: 48,
+    flexShrink: 1,
+    minWidth: 28, // the widest glyph is 22
     height: 30,
     borderWidth: 1,
     borderColor: '#3a3a3a',
@@ -469,7 +473,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#1b1b1b',
     paddingVertical: 5,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
   },
   resetText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSub },
 
