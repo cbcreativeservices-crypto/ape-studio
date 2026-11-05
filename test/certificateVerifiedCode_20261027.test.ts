@@ -15,6 +15,9 @@
  *     page does not have — they must never be faked), and it only applies with
  *     no qrToken and an 8-hex code.
  *
+ * Hashes re-taken 2026-11-04: the owner changed the signature to Professor
+ * Channing Booth, Founder, Pro Audio Training Academy.
+ *
  * Template literals cook CRLF source to LF, so these hashes are the same on a
  * Windows (CRLF) checkout and in the cloud.
  */
@@ -75,11 +78,11 @@ const APP_CASES: Record<string, () => string> = {
 
 // sha256 of each app case's HTML, captured from blob ff2ac2db before the edit.
 const APP_SNAPSHOTS: Record<string, string> = {
-  'registry QR, real qrcode library': '95a840bec68bbcf4db405b8c98ab6ad19cbf6ce050aed9e8d8c18a148e656c11',
-  'registry QR, injected matrix': 'a425eabb4bb9b0fa787ad852a356eb9aa3cc6e020b242de15a3ba52aa1f76d18',
-  'no token (fail-closed panel)': '62b0e269a678044d6ecb7ef65d25df240ba5c6b8be6c4e294c7707da5670512b',
-  'program, two-line name, no date': '3ee9a96930d43ebea60e844e0ff397505c2c655af5c56ddffc8b6a2283fa846e',
-  'URL disagrees with token': 'a54de0826a8447a622ef7c69d9603138ad150719defe08ca755c94e44a0163d8',
+  'registry QR, real qrcode library': '5cd3e3dfb2df7a8b7efac7a8023f169c58c6e71e47c4b37c97c30f079ffa0788',
+  'registry QR, injected matrix': '291b2cf4148285a99129ca2f53888689a2154c49c7c33347b58a9b8717b58553',
+  'no token (fail-closed panel)': '74c041c7246e8793275ebfc99d7064f3732662892782a24aceef956eb58d6538',
+  'program, two-line name, no date': 'c07a2396af27052ef8c358c63715326b4d7f1f788ad4dcfc77a09dcaddf12b38',
+  'URL disagrees with token': '2b013527b251a9d20a11ee8f65bc38e8258099d16312b78b8867cbbecaa9d3c2',
 };
 
 describe('certificate export — app output byte-identical (D15)', () => {
@@ -91,7 +94,7 @@ describe('certificate export — app output byte-identical (D15)', () => {
 });
 
 const CODE_FIELDS = { ...BASE, qrToken: null, verifyUrl: null };
-const VERIFIED_CODE_SNAPSHOT = 'f3f5cae6e791f75a6d19e1acb50f83e6ebb06c4b3703d3f6b1c30b7cbda3209e';
+const VERIFIED_CODE_SNAPSHOT = '555f466525b65b55778a83c1529780c875d39c3e268d8b845ad855ec10548db2';
 
 describe('certificate verifiedCode path — the website code page (D15)', () => {
   const html = () => buildCertificateHtml(CODE_FIELDS, { verifiedCode: 'f8461fbf' });

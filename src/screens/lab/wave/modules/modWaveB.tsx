@@ -2049,13 +2049,10 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                 </View>
                 {sel ? (
                   <View style={{ gap: 10 }}>
-                    <DragSlider
-                      value={logPos(sel.freq, 40, 8000)}
-                      onChange={(v) => patchSel({ freq: logMap(v, 40, 8000) })}
-                      label="SOURCE FREQUENCY"
-                      readout={fmtHz(sel.freq)}
-                      onHelp={() => p.help('room_builder')}
-                    />
+                    {/* D38 / D75: the engine draws every source at the FREQ lane, so a per-source fader would do nothing. */}
+                    <Text style={{ color: colors.textSub, fontSize: 11, lineHeight: 15 }}>
+                      SOURCE FREQUENCY: LOCKED. Every source plays at the FREQ fader’s frequency.
+                    </Text>
                     <DragSlider
                       value={(sel.levelDb + 24) / 30}
                       onChange={(v) => patchSel({ levelDb: Math.round((v * 30 - 24) * 2) / 2 })}

@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-04 21:13 · ccode · d0050766
+changed: Mixing Guides: owner's 24 decisions: open questions, safety wording, one rule each for loudness and sub, style made consistent [MD:D49]
+affects other side: nothing.
+needs: nothing
+
+
 ### 2026-11-04 21:03 · ccode · 8e5e3d6b
 changed: Mixing Guides: Comp B's 719 language and accuracy corrections (round 2) [MD:D49]
 affects other side: nothing; app text only.

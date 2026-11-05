@@ -22,8 +22,8 @@ test('the sample certificate is the 3x watermarked render, same 486:375 shape', 
   assert.equal(h, 375 * 3);
 });
 
-test('the certificate is signed Channing “Cháno” Booth, Founder & Curriculum Director (owner 2026-10-25)', () => {
+test('the certificate is signed Professor Channing Booth, Founder, Pro Audio Training Academy (owner 2026-11-04)', () => {
   const s = readFileSync(join(process.cwd(), 'src/features/credentials/certificateHtml.ts'), 'utf8').replace(/\r\n/g, '\n');
-  assert.match(s, /<div class="signature-name">Channing “Cháno” Booth<\/div><div class="signature-role">Founder &amp; Curriculum Director<\/div>/);
+  assert.match(s, /<div class="signature-name">Professor Channing Booth<\/div><div class="signature-role">Founder, Pro Audio Training Academy<\/div>/);
   assert.doesNotMatch(s, /Program Director/);
 });

@@ -99,7 +99,7 @@ describe('oddTerms.json — S1 fact fixes', () => {
   it('line-by-line mixing is current practice, not history (F097349)', () => {
     const b = bodyOf(ODD, 'Line-by-Line Mixing');
     assert.doesNotMatch(b, /Before automatic mic mixers/);
-    assert.match(b, /In musical theatre the mixer still follows the script by hand, line by line/);
+    assert.match(b, /In musical theater the mixer still follows the script by hand, line by line/);
   });
 
   it('general emergency alarm is seven OR MORE short blasts (F097379)', () => {

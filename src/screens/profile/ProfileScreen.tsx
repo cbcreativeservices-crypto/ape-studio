@@ -1304,10 +1304,10 @@ export function ProfileScreen() {
                 })
               }
               accessibilityRole="button"
-              accessibilityLabel="View trophies and records"
+              accessibilityLabel="View my progress"
             >
               <View style={styles.rowMain}>
-                <Text style={styles.rowLabel}>Trophies &amp; records</Text>
+                <Text style={styles.rowLabel}>My Progress</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
             </Pressable>
