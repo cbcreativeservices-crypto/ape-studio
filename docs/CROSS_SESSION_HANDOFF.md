@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 07:45 · ccode · fb15fef5
+changed: One-pass full app test: bug fixes [MD:D50]
+affects other side: nothing; client-only fixes, no schema or server change.
+needs: nothing
+
+
 ### 2026-11-05 03:37 · ccode · 74ce172f
 changed: Meters lab fixes and Profile community hidden [MD:D56]
 affects other side: nothing
