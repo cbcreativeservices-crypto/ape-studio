@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 07:42 · ccode · b43323e5
+changed: Merge OTA fixes into 1.0.1: Skip on every viewing, Apple purchase routing [MD:E1]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-06 00:05 · ccode · (this commit)
 changed: Meta real activate call: iOS replaces the plain event, Android adds the install report and keeps the plain open [MD:E1]
 affects other side: nothing yet; the App Privacy and Data safety drafts in the plan still hold (session length is iOS only).
