@@ -419,7 +419,7 @@ function ShuffleIcon({ color }: { color: string }) {
  * 29-pt design size (46 pt, about the size of the largest Dynamic Type body
  * text) — and a long term then shrinks to fit the card instead of spilling.
  * The definition text, the reading surface, is not capped. The full-screen
- * card (long-press, or the green key) shows everything at the OS size.
+ * card (the green key) shows everything at the OS size.
  */
 const CHIP_MAX_FONT_SCALE = 1.2;
 const DOCK_MAX_FONT_SCALE = BRAND_MAX_FONT_SCALE;
@@ -492,8 +492,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // FILTERS popup: which definition sections show when a card is revealed
   // (levels 1..6). Never empty. Device-global preference (Booth 2026-07-09d).
   const [filtersOpen, setFiltersOpen] = useState(false);
-  // Full-screen distraction-free mode (Booth 2026-07-11): long-press the card
-  // or tap the ⛶ button. A short instruction guide shows the first TWO times
+  // Full-screen distraction-free mode (Booth 2026-07-11): tap the ⛶ button
+  // (the card hold came out 2026-11-05: a resting thumb opened it by accident). A short instruction guide shows the first TWO times
   // the user actually reviews terms in it (2 term-changes); open+close without
   // reviewing does NOT count.
   const [fullscreen, setFullscreen] = useState(false);
@@ -1968,8 +1968,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             // stayed unreachable. The term itself is the reveal control.
             <Pressable
               onPress={soloReveal ? undefined : onTap}
-              onLongPress={() => setFullscreen(true)}
-              delayLongPress={850}
               style={{ flex: 1 }}
               accessible={false}
             >
@@ -2047,9 +2045,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       showsVerticalScrollIndicator
                       nestedScrollEnabled
                     >
-                      <CardTextPress onLongPress={() => setFullscreen(true)}>
-                        <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, memberGate), card.id)}</Text>
-                      </CardTextPress>
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, memberGate), card.id)}</Text>
                     </ScrollView>
                   </>
                 ) : level === 0 ? (
@@ -2110,7 +2106,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     <DefinitionScroll
                       key={`${card.id}:${level}`}
                       onTap={onTap}
-                      onLongPress={() => setFullscreen(true)}
                       hint={
                         coach.visible ? (
                           <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
@@ -2604,7 +2599,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
  * user lands back on the exact card/level they were on.
  */
 /**
- * CardTextPress — the card's tap / long-press, moved INSIDE the definition's
+ * CardTextPress — the card's tap, moved INSIDE the definition's
  * ScrollView (tester report 2026-09-25, iPhone 15, iOS 26.6.2: "I'm only
  * getting the part of the text that first shows up when you tap for
  * definitions… I can't see the words that would scroll from below… If I tap
@@ -2656,12 +2651,10 @@ function AlsoCalledReveal({ names, big }: { names: readonly string[] | undefined
 
 function DefinitionScroll({
   onTap,
-  onLongPress,
   hint,
   children,
 }: {
   onTap: () => void;
-  onLongPress: () => void;
   hint: ReactNode;
   children: ReactNode;
 }) {
@@ -2697,7 +2690,7 @@ function DefinitionScroll({
             if (contentOffset.y + layoutMeasurement.height >= contentSize.height - 8) setAtEnd(true);
           }}
         >
-          <CardTextPress onPress={canAdvance ? onTap : pageDown} onLongPress={onLongPress}>
+          <CardTextPress onPress={canAdvance ? onTap : pageDown}>
             {children}
           </CardTextPress>
         </ScrollView>
@@ -2715,9 +2708,9 @@ function DefinitionScroll({
   );
 }
 
-function CardTextPress({ onPress, onLongPress, children }: { onPress?: () => void; onLongPress: () => void; children: ReactNode }) {
+function CardTextPress({ onPress, children }: { onPress?: () => void; children: ReactNode }) {
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} delayLongPress={850} style={{ flexGrow: 1 }} accessible={false}>
+    <Pressable onPress={onPress} style={{ flexGrow: 1 }} accessible={false}>
       {children}
     </Pressable>
   );
