@@ -15,7 +15,7 @@
  *  go fully public.
  * ============================================================ */
 
-export const GATE_ENABLED = true;
+export const GATE_ENABLED = false;
 
 /* ------------------------------------------------------------------
  *  TEMPORARY UNLOCK WINDOW
