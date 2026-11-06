@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 17:41 · ccode · ddcf0ec0
+changed: Lab thank-you: drop the word topics (owner 2026-11-05) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
 ### 2026-11-05 17:20 · ccode · cfcb8a7a
 changed: Must-do: function audit and 39 decisions committed, OTA waits for the owner [MD:D57]
 affects other side: nothing; client-only control fixes.
