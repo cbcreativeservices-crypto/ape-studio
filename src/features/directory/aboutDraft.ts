@@ -25,6 +25,8 @@
  */
 import { LIMITS } from './rules';
 
+/** Its label is a list of people, not a field, so "in <area>" does not read. */
+const MUSICIANS_AREA = 'musicians-artists-performers';
 /** The area that means "I don't know yet" — it cannot be used in a sentence. */
 const EXPLORING_AREA = 'exploring-not-sure-yet';
 
@@ -89,6 +91,9 @@ export function draftAbout(
         ? `${rolePhrase} across audio, and still finding my direction.`
         : 'Still exploring audio and finding my direction.',
     );
+  } else if (area === MUSICIANS_AREA) {
+    // "Creating and performing in Musicians, Artists & Performers." reads badly (owner 2026-11-05).
+    sentences.push('Musician, artist or performer.');
   } else if (area && rolePhrase) {
     sentences.push(`${rolePhrase} in ${label('areas', area)}.`);
   } else if (area) {

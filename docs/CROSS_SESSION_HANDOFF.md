@@ -675,15 +675,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-11-05 22:24 · ccode · d0b34c23
-changed: Meta measurement is strictly opt-in: one 18+ popup, Settings row, off at once (owner 2026-11-05) [MD:E1]
-affects other side: nothing; client-only 1.0.1 work on its own branch, nothing shipped.
+### 2026-11-05 22:11 · ccode · e88c6b7f
+changed: Community: a plain About line for the musicians area (owner 2026-11-05) [MD:D57]
+affects other side: nothing; client-only control fixes.
 needs: nothing
 
 
-### 2026-11-05 21:47 · ccode · 0966b615
-changed: Merge the launch fixes into 1.0.1; version 1.0.1
-affects other side: nothing; client-only 1.0.1 work on its own branch, nothing shipped.
+### 2026-11-05 21:58 · ccode · dbbf3cef
+changed: Must-do: seventh OTA published, Musician / Artist [MD:D57]
+affects other side: nothing; client-only control fixes.
 needs: nothing
 
 

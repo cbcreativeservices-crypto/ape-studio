@@ -30,6 +30,20 @@ const label = (_kind: string, slug: string) =>
   slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 
 describe('draftAbout writes a true sentence from the member’s own picks', () => {
+  it('says who a musician is, not "in Musicians, Artists & Performers"', () => {
+    const t = draftAbout(
+      {
+        primaryArea: 'musicians-artists-performers',
+        areas: ['musicians-artists-performers'],
+        roles: ['creating-performing'],
+        specialties: [],
+        openTo: [],
+      },
+      label as never,
+    );
+    assert.equal(t, 'Musician, artist or performer.');
+  });
+
   it('combines role, area, specialties and open-to', () => {
     const t = draftAbout(
       {
