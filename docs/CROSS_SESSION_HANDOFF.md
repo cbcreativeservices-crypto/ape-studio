@@ -677,20 +677,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-05 20:35 · ccode · 52dc2697
 changed: Must-do: owner lifts the paid ads hold before 1.0.1 [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 20:26 · ccode · b072b97a
 changed: Must-do: 1.0.1 Meta plan on hold, Apple open [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 19:50 · ccode · 87753024
 changed: Must-do: launched, website public [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 19:45 · ccode · 104fb0f2
