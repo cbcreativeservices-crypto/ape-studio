@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 17:48 · ccode · da25d0ee
+changed: Lab thank-you test: repair the word guard (owner 2026-11-05) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
 ### 2026-11-05 17:44 · ccode · e78c4255
 changed: Lab thank-you test: the word guard really matches (owner 2026-11-05) [MD:D57]
 affects other side: nothing; client-only control fixes.
