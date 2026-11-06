@@ -8,18 +8,46 @@
  *
  * THE RULES:
  *  • OFF BY DEFAULT. On only with the native values in this build, a device
- *    region of US, CA or AU, and on a phone. Anything unknown is off.
+ *    region of US, CA or AU, on a phone, AND this person's own yes on this
+ *    device (owner 2026-11-05). Anything unknown is off. Until that yes, the
+ *    SDK is not started and the Apple prompt does not appear.
+ *  • ONE QUESTION, asked once, inside the region gate, at the same calm moment
+ *    the Apple prompt waits for. No is kept and never asked again. Closing the
+ *    popup without choosing saves nothing and is not asked again this launch;
+ *    a later launch may ask. Settings carries the same question.
+ *  • OFF MEANS OFF AT ONCE. Neither platform's SDK can be shut down once it
+ *    has started, so `stopNow` is what stops it: nothing more is logged, auto
+ *    flushing is turned off so a queued event stays on the phone, ad id
+ *    collection goes off, and the next launch does not start the SDK.
+ *  • A KNOWN GUEST IS NEVER ASKED. Consent belongs to a person and goes in the
+ *    account wipe, and a guest is wiped at every launch: a guest's No could not
+ *    be kept, so asking would re-ask it for ever. For the same reason a stored
+ *    yes does not start Meta for a guest. Settings still works for this launch.
  *  • Only three things reach Meta: activate/app open, and a purchase with the
  *    store's price and currency. No user id, no email, no Advanced Matching,
  *    no learning data. `buildPurchaseEvent` is an allowlist.
  *  • Automatic logging stays off.
- *  • iOS asks once, at a calm moment after the first run, and only if iOS has
- *    never been asked. No feature ever reads the answer: "denied" just means
- *    no IDFA, and the same events go out with limited data.
+ *  • After a yes, iOS asks once, at a calm moment after the first run, and only
+ *    if iOS has never been asked. After a no, it never asks. "Denied" just
+ *    means no IDFA, and the same events go out with limited data.
  *  • Nothing starts while a member gate is unsettled or a popup is up.
+ *
+ * No feature reads the answer: the only way out of this file is the phase, and
+ * the Settings row (growth/metaConsentStore.ts) is the only screen that shows it.
  */
 
 export const META_REGIONS: readonly string[] = ['US', 'CA', 'AU'];
+
+/** The question, word for word as the owner approved it (2026-11-05). The same
+ *  popup in both places: the calm moment and the Settings switch. */
+export const META_CONSENT_TITLE = 'Help us measure our ads?';
+export const META_CONSENT_BODY =
+  'If you are 18 or older, you can let us tell Meta when the app is opened or a membership is bought, so we can see which ads work. Your lesson progress and study data are not included. You can change this any time in Settings.';
+export const META_CONSENT_YES = "I'm 18+ and agree";
+export const META_CONSENT_NO = 'No thanks';
+export const META_CONSENT_ROW_LABEL = 'Ad measurement';
+export const META_CONSENT_ROW_HINT = 'Lets us tell Meta when the app is opened or a membership is bought.';
+export const META_CONSENT_ROW_UNREADABLE = 'This setting could not be read on this phone, so it stays off.';
 
 /** Meta's own standard name for an app activation (Android
  *  AppEventsConstants.EVENT_NAME_ACTIVATED_APP, iOS AppEvents.Name.activatedApp).
@@ -29,7 +57,7 @@ export const META_ACTIVATE_EVENT = 'fb_mobile_activate_app';
 
 /** Meta's session rule of thumb: a return within a minute is the same open. */
 export const OPEN_GAP_MS = 60_000;
-/** How long the screen must stay quiet before the Apple prompt appears: long
+/** How long the screen must stay quiet before either question appears: long
  *  enough for a welcome popup or a reminder that was about to open. */
 export const CALM_DWELL_MS = 20_000;
 export const CALM_CHECK_MS = 5_000;
@@ -37,7 +65,7 @@ export const CALM_CHECK_MS = 5_000;
 export const MAX_CALM_CHECKS = 120;
 export const START_RETRY_MS = 2_000;
 export const MAX_START_CHECKS = 150;
-/** The Apple prompt never appears on the first app open. */
+/** Neither question appears on the first app open. */
 export const FIRST_ASK_SESSION = 2;
 /** Purchases held for a start still under way. */
 export const MAX_QUEUED_PURCHASES = 3;
@@ -140,6 +168,7 @@ export type FbLogger = {
   logEvent(name: string): void;
   logPurchase(amount: number, currency: string, parameters: Record<string, string>): void;
   flush(): void;
+  setFlushBehavior(behavior: 'auto' | 'explicit_only'): void;
 };
 
 /** expo-tracking-transparency 57. */
@@ -149,6 +178,13 @@ export type TrackingApi = {
   getTrackingPermissionsAsync(): Promise<TrackingAnswer>;
   requestTrackingPermissionsAsync(): Promise<TrackingAnswer>;
 };
+
+/** What the phone holds. Only 'yes' lets Meta run, and only 'unset' may be
+ *  asked: 'unreadable' might be a No nobody can see. */
+export type ConsentRead = 'yes' | 'no' | 'unset' | 'unreadable';
+export type ConsentAnswer = 'yes' | 'no';
+/** 'dismissed': the popup was closed without a choice. */
+export type ConsentChoice = ConsentAnswer | 'dismissed';
 
 export type MetaDevice = {
   gateFacts(): GateFacts;
@@ -164,6 +200,12 @@ export type MetaDevice = {
   loadTracking(): TrackingApi | null;
   /** App opens on this device, this one included. Null: storage unreadable. */
   appSessions(): Promise<number | null>;
+  /** This person's answer on this device. */
+  readConsent(): Promise<ConsentRead>;
+  /** True only when the phone kept it. */
+  saveConsent(answer: ConsentAnswer): Promise<boolean>;
+  /** The house popup. `done` runs once, or never if the dialog is cleared. */
+  askConsent(done: (choice: ConsentChoice) => void): void;
   now(): number;
   after(ms: number, run: () => void): void;
 };
@@ -171,24 +213,66 @@ export type MetaDevice = {
 export type MetaPhase = 'idle' | 'waiting' | 'starting' | 'on' | 'off';
 
 export type MetaEngine = {
-  noteMemberGate(gate: MemberGateState): void;
+  /** `knownGuest`: a session CONFIRMED to have no account, never an unknown one. */
+  noteMemberGate(gate: MemberGateState, knownGuest?: boolean): void;
   noteAppOpen(): void;
   notePurchase(note: PurchaseNote): void;
+  /** Settings, switching on: the same popup. */
+  offerConsent(): void;
+  /** Settings, switching off. */
+  withdrawConsent(): void;
+  /** The account wipe took the answer with it. */
+  noteConsentWiped(): void;
   phase(): MetaPhase;
 };
 
 export function createMetaEngine(device: MetaDevice): MetaEngine {
   let phase: MetaPhase = 'idle';
   let gate: MemberGateState | null = null;
+  let knownGuest = false;
   let settings: FbSettings | null = null;
   let logger: FbLogger | null = null;
   let lastOpenAt: number | null = null;
   let startChecks = 0;
   let queued: PurchaseNote[] = [];
+  /** Null until read. A change made meanwhile outranks a read still out. */
+  let consent: ConsentRead | null = null;
+  let readingConsent = false;
+  /** Said in this launch, so it holds for a guest too (see the rules above). */
+  let yesThisLaunch = false;
+  /** One question per launch, whatever the answer. */
+  let consentAsked = false;
+  /** Bumped by every stop and every change of answer: work that began before
+   *  one lands nowhere. */
+  let startRun = 0;
+  let trackingRun = 0;
+  let consentRun = 0;
 
   const turnOff = () => {
     phase = 'off';
     queued = [];
+  };
+
+  const consentGiven = () => consent === 'yes' && (yesThisLaunch || !knownGuest);
+
+  /** Not a device fact, so unlike turnOff this can be undone by a later yes.
+   *  Neither SDK has a shutdown call, so this is everything there is. */
+  const stopNow = () => {
+    queued = [];
+    startRun += 1;
+    trackingRun += 1;
+    if (phase === 'off' || phase === 'idle') return;
+    phase = 'idle';
+    try {
+      // A queued event stays on the phone: the timer, the event threshold and
+      // iOS's persisted-event send all stand down in explicit mode, and only
+      // `flush` sends, which nothing here calls while stopped.
+      logger?.setFlushBehavior('explicit_only');
+      settings?.setAdvertiserIDCollectionEnabled(false);
+      void settings?.setAdvertiserTrackingEnabled(false).catch(() => {});
+    } catch {
+      // Nothing above is what stops our events: the phase is.
+    }
   };
 
   /** No device fact can change inside a session, so "no" is final until the
@@ -207,18 +291,19 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
 
   /** "Ask App Not to Track": no IDFA and limited data, the app unchanged. */
   const applyTrackingAnswer = (granted: boolean) => {
-    if (!settings) return;
+    if (!settings || phase !== 'on') return;
     settings.setAdvertiserIDCollectionEnabled(granted);
     // Only iOS 16 still reads this flag: from iOS 17 FBSDK 17+ takes the
     // answer from ATTrackingManager itself.
     void settings.setAdvertiserTrackingEnabled(granted).catch(() => {});
   };
 
-  const askWhenCalm = (tracking: TrackingApi) => {
+  /** The quiet spell both questions wait for. */
+  const whenCalm = (wanted: () => boolean, run: () => void) => {
     let checks = 0;
     let quietSince: number | null = null;
     const check = () => {
-      if (phase !== 'on') return;
+      if (!wanted()) return;
       checks += 1;
       if (checks > MAX_CALM_CHECKS) return;
       let calm = false;
@@ -231,10 +316,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       if (!calm) quietSince = null;
       else if (quietSince === null) quietSince = now;
       if (calm && quietSince !== null && now - quietSince >= CALM_DWELL_MS) {
-        tracking
-          .requestTrackingPermissionsAsync()
-          .then((answer) => applyTrackingAnswer(answer.granted === true))
-          .catch(() => {});
+        run();
         return;
       }
       device.after(CALM_CHECK_MS, check);
@@ -243,6 +325,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   };
 
   const startTracking = async () => {
+    const run = trackingRun;
     const tracking = device.loadTracking();
     if (!tracking || !tracking.isAvailable()) return;
     const current = await tracking.getTrackingPermissionsAsync();
@@ -251,7 +334,15 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     if (current.status !== 'undetermined') return;
     const opens = await device.appSessions();
     if (opens === null || opens < FIRST_ASK_SESSION) return; // the first run stays free of it
-    askWhenCalm(tracking);
+    whenCalm(
+      () => phase === 'on' && run === trackingRun,
+      () => {
+        tracking
+          .requestTrackingPermissionsAsync()
+          .then((answer) => applyTrackingAnswer(answer.granted === true))
+          .catch(() => {});
+      },
+    );
   };
 
   const send = (note: PurchaseNote) => {
@@ -269,17 +360,27 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   };
 
   const begin = async () => {
+    startRun += 1;
+    const run = startRun;
     phase = 'starting';
     try {
       const { platform } = device.gateFacts();
-      if (!(await device.initNative())) return turnOff();
-      settings = device.loadSettings();
-      if (!settings) return turnOff();
-      if (platform === 'ios') settings.initializeSDK();
-      settings.setAutoLogAppEventsEnabled(false);
+      // Off and on again in one launch: the SDK is still up, so it is not
+      // started twice, it is only told to send again.
+      const resuming = settings !== null && logger !== null;
+      if (!resuming) {
+        const ready = await device.initNative();
+        if (run !== startRun) return;
+        if (!ready) return turnOff();
+        settings = device.loadSettings();
+        if (!settings) return turnOff();
+        if (platform === 'ios') settings.initializeSDK();
+        settings.setAutoLogAppEventsEnabled(false);
+      }
       // iOS collects nothing until the Apple answer says it may (startTracking).
-      if (platform === 'android') settings.setAdvertiserIDCollectionEnabled(true);
-      logger = device.loadLogger();
+      if (platform === 'android') settings?.setAdvertiserIDCollectionEnabled(true);
+      if (resuming) logger?.setFlushBehavior('auto');
+      else logger = device.loadLogger();
       if (!logger) return turnOff();
       phase = 'on';
       logOpen();
@@ -289,7 +390,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       if (platform === 'ios') await startTracking();
     } catch {
       // A failed start is the same as off: the app never hears about it.
-      if (phase !== 'on') turnOff();
+      if (run === startRun && phase !== 'on') turnOff();
     }
   };
 
@@ -324,10 +425,88 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     device.after(START_RETRY_MS, retry);
   };
 
-  return {
-    noteMemberGate(next) {
-      gate = next;
+  const withdraw = () => {
+    consentRun += 1;
+    stopNow(); // first, and in this tick: logging stops before anything is saved
+    consent = 'no';
+    yesThisLaunch = false;
+    void device.saveConsent('no').catch(() => false);
+  };
+
+  const takeAnswer = async (choice: ConsentChoice) => {
+    if (choice === 'dismissed') return; // nothing chosen, nothing saved
+    if (choice === 'no') {
+      withdraw();
+      return;
+    }
+    consentRun += 1;
+    const run = consentRun;
+    let saved = false;
+    try {
+      saved = await device.saveConsent('yes');
+    } catch {
+      saved = false;
+    }
+    if (!saved || run !== consentRun) return; // a yes the phone could not keep starts nothing
+    consent = 'yes';
+    yesThisLaunch = true;
+    decide();
+  };
+
+  const ask = () => {
+    consentAsked = true;
+    try {
+      device.askConsent((choice) => void takeAnswer(choice));
+    } catch {
+      // No popup means no answer, and no answer means off.
+    }
+  };
+
+  const askWhenCalm = async () => {
+    if (consentAsked) return;
+    consentAsked = true;
+    let opens: number | null = null;
+    try {
+      opens = await device.appSessions();
+    } catch {
+      opens = null;
+    }
+    if (opens === null || opens < FIRST_ASK_SESSION) return; // the first run stays free of it
+    whenCalm(() => consent === 'unset' && !knownGuest && phase !== 'off', ask);
+  };
+
+  /** Every change of gate or answer comes here. */
+  function decide(): void {
+    if (phase === 'off') return;
+    if (consentGiven()) {
       tryStart();
+      return;
+    }
+    stopNow(); // a purchase from before a yes is never sent after it
+    if (consent === 'unset' && !knownGuest) void askWhenCalm();
+  }
+
+  const loadConsent = async () => {
+    if (readingConsent) return;
+    readingConsent = true;
+    let read: ConsentRead = 'unreadable';
+    try {
+      read = await device.readConsent();
+    } catch {
+      read = 'unreadable';
+    }
+    readingConsent = false;
+    if (consent === null) consent = read;
+    decide();
+  };
+
+  return {
+    noteMemberGate(next, guest = false) {
+      gate = next;
+      knownGuest = guest;
+      if (!allowedOrOff()) return;
+      if (consent === null) void loadConsent();
+      else decide();
     },
     noteAppOpen() {
       if (phase === 'on') logOpen();
@@ -338,8 +517,25 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
         return;
       }
       if (!allowedOrOff()) return;
+      // Held only for a yes, or for the read that will say whether there is one.
+      if (consent !== null && !consentGiven()) return;
       if (queued.length < MAX_QUEUED_PURCHASES) queued.push(note);
-      tryStart();
+      if (consent === null) void loadConsent();
+      else tryStart();
+    },
+    offerConsent() {
+      ask();
+    },
+    withdrawConsent() {
+      withdraw();
+    },
+    noteConsentWiped() {
+      consentRun += 1;
+      stopNow();
+      consent = 'unset';
+      yesThisLaunch = false;
+      // The next person is asked on a later launch, not over this one's end.
+      consentAsked = true;
     },
     phase: () => phase,
   };

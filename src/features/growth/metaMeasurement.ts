@@ -17,14 +17,21 @@ import Constants from 'expo-constants';
 import { initializeMetaSdkAndroid } from '../../../modules/ape-meta-init';
 import { presentedModalCount, rootModalHoldMs } from '../../components/DimModal';
 import { TELEMETRY_ENABLED } from '../../config/telemetry';
+import { confirmDialog } from '../../lib/confirm';
 import { navigationRef } from '../../navigation/navigationRef';
 import { isMicActive } from '../audio/audioOutputStore';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { appSessionCount } from '../review/reviewPrompt';
 import { optionalModule } from '../tools/capture/optionalModule';
+import { noteMetaConsentWipe, readMetaConsent, saveMetaConsent } from './metaConsentStore';
 import {
+  META_CONSENT_BODY,
+  META_CONSENT_NO,
+  META_CONSENT_TITLE,
+  META_CONSENT_YES,
   createMetaEngine,
+  metaAllowed,
   type FbLogger,
   type FbSettings,
   type MemberGateState,
@@ -81,6 +88,15 @@ const device: MetaDevice = {
   loadLogger: () => libDefault<FbLogger>('react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger'),
   loadTracking: () => optionalModule<TrackingApi>('expo-tracking-transparency'),
   appSessions: appSessionCount,
+  readConsent: readMetaConsent,
+  saveConsent: saveMetaConsent,
+  askConsent: (done) =>
+    confirmDialog(META_CONSENT_TITLE, META_CONSENT_BODY, META_CONSENT_YES, () => done('yes'), {
+      cancelText: META_CONSENT_NO,
+      onCancel: () => done('no'),
+      // The scrim and Android BACK are not a No: nothing is saved (metaGate.ts).
+      onDismiss: () => done('dismissed'),
+    }),
   now: () => Date.now(),
   // One wait at a time: the engine's checks run one after another.
   after: (ms, run) => {
@@ -90,6 +106,10 @@ const device: MetaDevice = {
 };
 
 const engine = createMetaEngine(device);
+
+// Consent belongs to a person: an account wipe stops this session too, or the
+// next person's purchase would go out on the last person's yes.
+noteMetaConsentWipe(() => engine.noteConsentWiped());
 
 let watchingAppState = false;
 function watchAppOpens(): void {
@@ -103,9 +123,9 @@ function watchAppOpens(): void {
 }
 
 /** From PurchaseListenerRoot, on each change of useMemberGate()'s answer. */
-export function noteMemberGate(gate: MemberGateState): void {
+export function noteMemberGate(gate: MemberGateState, knownGuest: boolean): void {
   if (Platform.OS === 'web') return;
-  engine.noteMemberGate(gate);
+  engine.noteMemberGate(gate, knownGuest);
   if (engine.phase() !== 'off') watchAppOpens();
 }
 
@@ -113,4 +133,26 @@ export function noteMemberGate(gate: MemberGateState): void {
 export function noteMetaPurchase(note: PurchaseNote): void {
   if (Platform.OS === 'web') return;
   engine.notePurchase(note);
+}
+
+/** Settings: the row exists only where Meta could really run. Never on web. */
+export function adMeasurementAvailable(): boolean {
+  if (Platform.OS === 'web') return false;
+  try {
+    return metaAllowed(device.gateFacts());
+  } catch {
+    return false;
+  }
+}
+
+/** Settings, switching on: the same popup, so the same 18+ statement. */
+export function askAdMeasurement(): void {
+  if (Platform.OS === 'web') return;
+  engine.offerConsent();
+}
+
+/** Settings, switching off: stops logging now, then saves the no. */
+export function stopAdMeasurement(): void {
+  if (Platform.OS === 'web') return;
+  engine.withdrawConsent();
 }

@@ -56,6 +56,12 @@ export type AppDialogRequest = {
    * dismissal that skipped this would leave them signed in on two devices.
    */
   onCancel?: () => void;
+  /**
+   * Runs INSTEAD of onCancel on the scrim and Android BACK. Only for a question
+   * where closing the card is not the same as tapping the cancel button (owner
+   * 2026-11-05, Ad measurement: a saved No must be a No the person chose).
+   */
+  onDismiss?: () => void;
 };
 
 let current: AppDialogRequest | null = null;
@@ -172,7 +178,7 @@ function drainQueue(): void {
 }
 
 /** Close the open dialog, run ONE of its handlers, then drain the queue. */
-function resolve(which: 'confirm' | 'cancel' | number): void {
+function resolve(which: 'confirm' | 'cancel' | 'dismiss' | number): void {
   // Too soon after this dialog appeared — the tail of a double-tap meant for
   // the one before it, not an answer to this one (see ANSWER_GUARD_MS).
   if (current && Date.now() - shownAt < ANSWER_GUARD_MS) return;
@@ -181,7 +187,17 @@ function resolve(which: 'confirm' | 'cancel' | number): void {
   emit();
   // Handler AFTER clearing, so a handler that opens another dialog is queued
   // against an empty slot rather than colliding with the one closing.
-  if (req) (which === 'confirm' ? req.onConfirm : which === 'cancel' ? req.onCancel : req.extras?.[which]?.onPress)?.();
+  if (req) {
+    const handler =
+      which === 'confirm'
+        ? req.onConfirm
+        : which === 'cancel'
+          ? req.onCancel
+          : which === 'dismiss'
+            ? (req.onDismiss ?? req.onCancel)
+            : req.extras?.[which]?.onPress;
+    handler?.();
+  }
   // …and only drain if that handler did not open one of its own. Draining
   // unconditionally sent the next request back through showAppDialog, which
   // saw the handler's dialog in `current` and pushed it onto the BACK of the
@@ -267,7 +283,7 @@ export function AppDialogHost() {
   const isNotice = req?.confirmText == null;
   const card =
     req == null ? null : (
-      <Pressable style={styles.scrim} onPress={() => resolve('cancel')} accessible={false} accessibilityViewIsModal>
+      <Pressable style={styles.scrim} onPress={() => resolve('dismiss')} accessible={false} accessibilityViewIsModal>
         {/* Stop card taps falling through to the scrim's dismiss. */}
         <Pressable style={styles.card} onPress={() => {}} accessible={false}>
           <Text style={styles.title}>{req.title}</Text>
@@ -313,7 +329,7 @@ export function AppDialogHost() {
   // current, and withdrawn when this screen blurs or unmounts.
   useEffect(() => {
     if (!focused) return;
-    setHostedOverlay(hostedMode && card ? { node: card, onBack: () => resolve('cancel') } : null, 'dialog');
+    setHostedOverlay(hostedMode && card ? { node: card, onBack: () => resolve('dismiss') } : null, 'dialog');
   });
   useEffect(() => {
     if (!focused) return;
@@ -332,7 +348,7 @@ export function AppDialogHost() {
       transparent
       animationType="fade"
       // Android BACK counts as declining, not as a silent dismissal.
-      onRequestClose={() => resolve('cancel')}
+      onRequestClose={() => resolve('dismiss')}
     >
       {card}
     </Modal>

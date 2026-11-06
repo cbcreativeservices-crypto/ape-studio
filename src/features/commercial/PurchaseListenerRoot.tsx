@@ -102,14 +102,17 @@ export function PurchaseListenerRoot(): null {
    * component that already sees the account and adds no module: the start graph
    * is at its cap, so metaMeasurement is required on demand, off the render
    * path. Its gate decides everything, and on most devices that is "off".
+   * 'locked' is what makes this a KNOWN guest: a read that failed or has not
+   * landed reads 'guest' in the tier too, and an unknown session is no guest.
    */
-  const gate = memberGateOf(tierOf(entitlement, resolved), tierKnown, tierReadFailed);
+  const gate = memberGateOf(tier, tierKnown, tierReadFailed);
+  const knownGuest = gate === 'locked' && tier === 'guest';
   useEffect(() => {
     if (Platform.OS === 'web') return;
     const soon = runSoon(
       () => {
         try {
-          require('../growth/metaMeasurement').noteMemberGate(gate);
+          require('../growth/metaMeasurement').noteMemberGate(gate, knownGuest);
         } catch {
           /* no Meta in this build: nothing else depends on it */
         }
@@ -117,7 +120,7 @@ export function PurchaseListenerRoot(): null {
       { idleTimeoutMs: 3000 },
     );
     return () => soon.cancel();
-  }, [gate]);
+  }, [gate, knownGuest]);
 
   return null;
 }

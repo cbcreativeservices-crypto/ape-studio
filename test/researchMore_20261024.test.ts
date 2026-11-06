@@ -80,7 +80,7 @@ test('the flashcard link read is separate and non-fatal (never in the study SELE
 
 test('the shared dialog has an optional second choice, through the same answer guard', () => {
   const d = read('src/components/AppDialog.tsx');
-  assert.match(d, /function resolve\(which: 'confirm' \| 'cancel' \| number\): void \{\s*\/\/[^\n]*\n[^\n]*\n\s*if \(current && Date\.now\(\) - shownAt < ANSWER_GUARD_MS\) return;/);
+  assert.match(d, /function resolve\(which: 'confirm' \| 'cancel' \| 'dismiss' \| number\): void \{\s*\/\/[^\n]*\n[^\n]*\n\s*if \(current && Date\.now\(\) - shownAt < ANSWER_GUARD_MS\) return;/);
   assert.match(d, /\(req\.extras \?\? \[\]\)\.map\(\(x, i\) => \(/);
   const c = read('src/lib/confirm.ts');
   assert.match(c, /extras: opts\?\.extras,/);

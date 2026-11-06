@@ -83,6 +83,10 @@ export function confirmDialog(
     cancelText?: string;
     destructive?: boolean;
     onCancel?: () => void;
+    /** Runs instead of onCancel on the scrim and Android BACK, for a question
+     *  where closing the card is no answer. The platform fallback has neither,
+     *  so it never fires there. */
+    onDismiss?: () => void;
     /** The YES handler opens a `presentation: 'modal'` screen (Paywall,
      *  Settings, Help…): run it after this dialog has faded — afterDialogCloses.
      *  Opt-in (pattern P5, 2026-10-02). */
@@ -101,6 +105,7 @@ export function confirmDialog(
       destructive: opts?.destructive,
       onConfirm: onYes,
       onCancel: opts?.onCancel,
+      onDismiss: opts?.onDismiss,
       extras: opts?.extras,
     });
     return;

@@ -1,7 +1,8 @@
 /**
  * Meta measurement, 1.0.1 (plan 2026-11-05, owner-approved). The engine in
  * metaGate.ts runs here against a fake phone: every promise in the plan that
- * can be checked without a real one.
+ * can be checked without a real one. This phone has said yes; what happens
+ * before a yes is test/metaConsent_20261105 (owner 2026-11-05).
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -97,6 +98,7 @@ function phone(over: {
         logEvent: (name) => void calls.push(['event', name]),
         logPurchase: (amount, currency, parameters) => void calls.push(['purchase', amount, currency, parameters]),
         flush: () => void calls.push(['flush']),
+        setFlushBehavior: (b) => void calls.push(['flushBehavior', b]),
       };
     },
     loadTracking: () =>
@@ -111,6 +113,9 @@ function phone(over: {
             },
           },
     appSessions: async () => (over.appSessions === undefined ? 3 : over.appSessions),
+    readConsent: async () => 'yes',
+    saveConsent: async () => true,
+    askConsent: () => {},
     now: () => clock,
     after: (ms, run) => void timers.push({ at: clock + ms, run }),
   };
@@ -474,7 +479,15 @@ describe('the Apple prompt', () => {
 
   it('no feature can read the answer', () => {
     assert.ok(!/export function \w*[Tt]racking/.test(code('src/features/growth/metaMeasurement.ts')));
-    assert.deepEqual(Object.keys(phone({}).engine).sort(), ['noteAppOpen', 'noteMemberGate', 'notePurchase', 'phase']);
+    assert.deepEqual(Object.keys(phone({}).engine).sort(), [
+      'noteAppOpen',
+      'noteConsentWiped',
+      'noteMemberGate',
+      'notePurchase',
+      'offerConsent',
+      'phase',
+      'withdrawConsent',
+    ]);
   });
 
   it('the wording is the approved Option A, exactly', () => {
