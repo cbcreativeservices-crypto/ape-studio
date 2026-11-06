@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 19:04 · ccode · 56ef69e7
+changed: Must-do: launch prep started, certificate job confirmed live [MD:D57]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-05 18:57 · ccode · 6c2fb58d
 changed: Must-do: fifth OTA published, flashcard hold removed [MD:D57]
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
