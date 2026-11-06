@@ -20,6 +20,7 @@ import type { SourcePageId } from '../../engine/model/types.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { makeBroadcastSetting, makeBroadcastSound, useRoutingStep } from '../shared/broadcast/broadcastPages';
 import { useBodyTurnStep, useBreathStep, useCableStep } from '../shared/broadcast/bodyWornPages';
+import { MovePresenter } from '../shared/broadcast/BodyWornArt';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import { B05Scene, Presenter } from './scene';
 import { HEADSET, LAPEL, STERNUM } from './geometry.ts';
@@ -48,7 +49,7 @@ function useTools() {
   const cable = useCableStep({
     mount: STERNUM,
     standing: true,
-    side: () => <Presenter view="side" />,
+    side: (_px, move) => <MovePresenter move={move} />,
     box: { u0: -560, u1: 420, v0: -260, v1: 760 },
     words: {
       subject: 'presenter',

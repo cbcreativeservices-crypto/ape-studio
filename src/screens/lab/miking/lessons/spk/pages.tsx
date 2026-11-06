@@ -32,6 +32,7 @@ import { tapsWhenFew } from '../../engine/rack/fewStops.ts';
 import type { Lesson, MicPattern, MicPose, MicSlot, PatternId, Vec3, ViewBox, ViewId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { PairComb } from '../shared/speakers/PairComb';
+import { livePartId } from '../../pages/PInstrument';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../engine/kit';
 import { useRig, type Rig } from '../../engine/scene/useRig.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
@@ -44,7 +45,8 @@ import { zonesAvailable } from '../../engine/geometry/zones.ts';
 import { dist } from '../../engine/geometry/vec.ts';
 import { guideFor } from '../../engine/geometry/guides.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../engine/physics/polar.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, notchesHz } from '../../engine/physics/twoMic.ts';
+import { PatternInset, patternInsetBadge } from '../../engine/scene/PatternInset';
+import { C20, EQUAL_PATH_MM, deltaTms, notchDepthDb, notchesHz } from '../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../data/micTypes';
 import { PTroubleshoot } from '../../pages/PReadPages';
@@ -115,15 +117,14 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
   const [view, setView] = useState<CabExplorerView>('front');
   const [cloth, setCloth] = useState(true);
   const [partId, setPartId] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const model = SPK_CABS[cab.kind].model;
   const parts = model.parts.filter((p) => (!p.variants || p.variants.includes(cab.back)) && PART_ORDER.includes(p.id)).sort((a, b) => PART_ORDER.indexOf(a.id) - PART_ORDER.indexOf(b.id));
-  const shown = model.parts.find((p) => p.id === partId);
-  const pick = (id: string) => {
-    setPartId(id);
-    setSeen((s) => (s.has(id) ? s : new Set([...s, id])));
-  };
-  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
+  // A pick outlives a change of cabinet: only a part this cabinet really has stays shown.
+  const onThisCab = model.parts.filter((p) => !p.variants || p.variants.includes(cab.back));
+  const livePart = livePartId(partId, cab.back, onThisCab, model.variants.map((v) => v.id));
+  const shown = onThisCab.find((p) => p.id === livePart);
+  const pick = (id: string) => setPartId(id);
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === livePart));
   const partMark = cabPartMark(cab.kind, cab.back, view, shown?.id ?? null, cloth ? 'cloth' : 'baffle');
 
   /* the rotary cabinet (at rest on this page: it is explored, not run) */
@@ -164,7 +165,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
             back={cab.back}
             view={view}
             frontMode={cloth ? 'cloth' : 'baffle'}
-            highlight={partId}
+            highlight={livePart}
             onTapPart={pick}
             accessibilityLabel={`The ${cab.label.toLowerCase()}, ${viewOpts.find((v) => v.id === view)!.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.label}.${partMark?.note ? ` ${partMark.note.text.toLowerCase()}.` : ''}` : ''} The miked speaker is ringed.`}
           />
@@ -172,7 +173,6 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
         badge: `${view === 'front' ? (cloth ? `From the front · the miked speaker ringed in amber${shown ? '' : ' · its dust cap marked through the cloth'}` : 'The grille cloth taken away IN THE DRAWING only — never on a real cabinet') : view === 'face' ? 'One 12 in speaker face-on · tap a part' : 'Cut through the speaker’s middle · tap a part'}${shown ? ` · green: the ${shown.short}${partMark?.hidden ? ' (not drawn in this view)' : ''}` : ''}`,
         bezel: [
           { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
           { k: 'CABINET', v: CABINETS[cab.kind].short, flex: 1.1 },
         ],
         params: [
@@ -186,11 +186,11 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
                 const p = parts[Math.round(v * (parts.length - 1))];
                 if (p) pick(p.id);
               },
-              format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+              format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
               formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
             },
             parts.length,
-            parts.findIndex((p) => p.id === partId),
+            parts.findIndex((p) => p.id === livePart),
             (i) => parts[i].short.toUpperCase(),
             (i) => pick(parts[i].id),
           ),
@@ -587,16 +587,12 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
   const byId = (id: string | null) => items.find((i) => i.id === id);
   const shortOf = (id: string) => byId(id)?.short ?? id.toUpperCase();
   const [chainSel, setChainSel] = useState<string | null>(null);
-  const [chainSeen, setChainSeen] = useState<ReadonlySet<string>>(() => new Set());
   const [scene, setScene] = useState<PlanScene>('stage');
   const [sel, setSel] = useState<string | null>(null);
   const chainItems = CHAIN.map((id) => byId(id)!).filter(Boolean);
   const planIds = scene === 'stage' ? ['cab', 'player', 'di', 'wedge', 'sideFill', 'drums', 'organ', 'leslie', 'audience'] : ['cab', 'player', 'di', 'organ', 'leslie', 'room'];
   const planItems = planIds.map((id) => byId(id) ?? (id === 'sideFill' ? { id, label: 'a side-fill monitor', short: 'SIDE FILL', note: lesson.live.wedges.find((w) => w.id === 'sideFill')?.note ?? '', tag: 'MONITOR' } : null)).filter((x): x is NonNullable<typeof x> => !!x);
-  const pickChain = (id: string) => {
-    setChainSel(id);
-    setChainSeen((s) => (s.has(id) ? s : new Set([...s, id])));
-  };
+  const pickChain = (id: string) => setChainSel(id);
   const chainIdx = Math.max(0, chainItems.findIndex((i) => i.id === chainSel));
   const planIdx = Math.max(0, planItems.findIndex((i) => i.id === sel));
   const cs = byId(chainSel);
@@ -613,7 +609,6 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
         bezel: [
           { k: 'ITEM', v: cs ? cs.short : 'TAP ONE', flex: 1.4 },
           { k: 'FOR A MIC', v: cs ? cs.tag : '—', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${chainSeen.size} / ${chainItems.length}` },
         ],
         params: [
           tapsWhenFew(
@@ -1103,6 +1098,9 @@ const PATTERNS: { id: PatternId; label: string }[] = [
   { id: 'hypercardioid', label: 'hypercardioid' },
 ];
 
+/** The speaker's grille: the inset leaves it in sight. */
+const CAB_AT: Vec3 = { x: 0, y: 0, z: 0 };
+
 export function SpkContext({ lesson, answers, onAnswered, onInteractive, interactiveDone }: PageProps) {
   const L = cabLessons(lesson);
   const z = L['1x12'].zones.find((q) => q.id === 'cab.close')!;
@@ -1209,8 +1207,12 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
       kind: 'LIVE',
       layout: 'rack',
       rack: {
-        render: (w, h) => <PlacementScene rig={rig} art={cabArt('1x12')} view={view} w={w} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />,
-        badge: `A simplified pattern (white dashed: shape, not range) · monitors where a stage often puts them · counts within ±${NULL_TOL}° of a null`,
+        render: (w, h) => (
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
+            {(sceneW) => <PlacementScene rig={rig} art={cabArt('1x12')} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+          </PatternInset>
+        ),
+        badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',
@@ -1298,6 +1300,8 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
   // EFFECTIVE polarity is the switch times −1.
   const sEff = (B.polarity * -1) as 1 | -1;
   const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
+  // Equal paths, opposed: CANCELS only where the levels really match (HTwoMic's rule).
+  const eqCell = sEff === 1 ? 'NO COMB' : notchDepthDb(gA, gB) <= -20 ? 'CANCELS' : 'PARTIAL';
   const dt0 = useRef(dt);
   const [flips, setFlips] = useState({ toInv: false, toNorm: false });
   const [predicted, setPredicted] = useState<string | null>(null);
@@ -1326,8 +1330,8 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
   const bezel: BezelItem[] = [
     { k: 'PATH Δd R−F', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'rear later' : 'rear earlier', flex: 1.3 },
-    { k: '1ST NOTCH', v: equal ? (sEff === -1 ? 'CANCELS' : 'NO COMB') : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
-    { k: 'REAR', v: B.polarity === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'sum: in step' : 'sum: opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
+    { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
+    { k: 'REAR', v: B.polarity === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'in step' : 'opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
   ];
   const [wellW, setWellW] = useState(0);
   const combLabel = `Simplified sum of the front and rear mics: ${equal ? 'no path difference' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}`}; the rear polarity switch is ${B.polarity === 1 ? 'normal, so the sum is opposed' : 'inverted, so the sum is in step'}${first ? `; first notch about ${fmtHz(first)}` : ''}.`;

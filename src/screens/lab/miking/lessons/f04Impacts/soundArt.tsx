@@ -68,7 +68,7 @@ export function ImpactStrike({ w, h, variant, shown, accessibilityLabel }: { w: 
           flat ring on the surface where it happens (art fix 2026-10-16 —
           they were starbursts). */}
       <Group opacity={eventOpacity(shown, 2)}>
-        {water ? <SplashCrown c={hit} k={1} rimY={-(BASIN.depth - BASIN.water)} /> : <ContactMark c={hit} w={v === 'texture' ? 220 : 170} />}
+        {water ? <SplashCrown c={hit} k={1} /> : <ContactMark c={hit} w={v === 'texture' ? 220 : 170} />}
       </Group>
       <Group opacity={eventOpacity(shown, 3)}>
         <Radiate c={water ? [BASIN.R - 20, 10] : [0, 20]} radii={[60, 95]} a0={water ? -60 : 20} a1={water ? 60 : 160} />
@@ -104,7 +104,7 @@ export function WaterHitTail({ w, h, mode, swing, accessibilityLabel }: { w: num
   return (
     <SoundCanvas w={w} h={h} box={PAIR_BOX} label={accessibilityLabel} labels={labels}>
       <Basin view="side" splash={false} />
-      {crown > 0 ? <SplashCrown c={[0, 0]} k={crown} rimY={-(BASIN.depth - BASIN.water)} /> : null}
+      {crown > 0 ? <SplashCrown c={[0, 0]} k={crown} /> : null}
       {drips ? (
         <>
           <Droplet x={40} y={-110 + t * 60} r={6} />

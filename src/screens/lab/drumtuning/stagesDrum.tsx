@@ -183,6 +183,9 @@ function DrumKey({ cx, cy, R, lugs, i, turns, bst = 1 }: { cx: number; cy: numbe
 export type DrumFaults = { worn?: boolean; loose?: number | null; debris?: number | null; uneven?: boolean };
 
 export const TOP_H = 250;
+/** The rod-turn bars: units per turn, and the longest bar before the centre. */
+const ROD_BAR_PER_TURN = 12;
+const ROD_BAR_MAX = 44;
 export const TOP_ASPECT = W / TOP_H;
 
 /** Where the learner is LOOKING on the inspection page: a dashed amber ring
@@ -197,7 +200,7 @@ export type LookAt = 'head' | 'edge' | 'map' | number | null;
  * lug while a tap sounds; `strikeSync` brightens the head's centre and fades
  * it with the measured envelope while a strike sounds.
  */
-export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, hitCentre, tapSync, strikeSync, look = null, scaleBySize = false, exploded = false, legend, keyTurn }: {
+export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, rodTurns, hitCentre, tapSync, strikeSync, look = null, scaleBySize = false, exploded = false, legend, keyTurn }: {
   width: number;
   height: number;
   drum: DrumKind;
@@ -215,6 +218,8 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
   /** Star-pattern order to draw as arrows (lug indices), up to `orderStep`. */
   order?: readonly number[];
   orderStep?: number;
+  /** How far each rod has turned so far, in turns: a bar in from that rod. */
+  rodTurns?: readonly number[];
   /** A stick hit near the centre (the PLAY step). */
   hitCentre?: boolean;
   tapSync?: SoundSync;
@@ -314,6 +319,14 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
             return <Path key={i} d={arcPath(cx, cy, R - 17, R - 4, a - halfA, a + halfA)} fill={showMap === 'hidden' ? MAP_HIDDEN : mapTint(c)} opacity={lit ? 1 : 0.82} stroke={lit ? colors.textPrimary : 'none'} strokeWidth={lit ? 1.2 : 0} />;
           })
         : null}
+      {/* how far each rod has turned: equal bars are an even head */}
+      {rodTurns?.map((t, i) => {
+        if (t <= 0) return null;
+        const a = lugAngle(i, lugs);
+        const from = polar(cx, cy, R - 33, a);
+        const to = polar(cx, cy, R - 33 - Math.min(ROD_BAR_MAX, t * ROD_BAR_PER_TURN), a);
+        return <Line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke={ink.cyan} strokeWidth={5} strokeLinecap="round" />;
+      })}
       {/* star-pattern arrows */}
       {steps.length > 1
         ? steps.slice(1).map((lug, k) => {
@@ -373,6 +386,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
       ) : showMap === 'hidden' && !tiny ? (
         <SvgText x={6} y={TOP_H - 4} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? 'map hidden — listen first'}</SvgText>
       ) : null}
+      {rodTurns?.some((t) => t > 0) && !tiny ? <SvgText x={W - 6} y={TOP_H - 4} fontSize={fsS} fill={ink.cyan} textAnchor="end" fontFamily={fonts.barlowMedium}>bar = turns so far</SvgText> : null}
       {(tap != null || tapAll) && !tiny ? <SvgText x={W - 6} y={TOP_H - 4} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.barlowMedium}>● tap point</SvgText> : null}
     </Svg>
     {/* the strike: the head's centre brightens and fades with the measured envelope */}

@@ -31,8 +31,9 @@ import { hapticsEnabled } from '../../../features/settings/store';
 import { colors, fonts } from '../../../theme/tokens';
 import { ScrollLockProvider } from '../scrollLock';
 import { BezelReadouts } from './BezelReadouts';
-import { DockButton } from './DockButton';
+import { DockButton, DockStrip } from './DockButton';
 import { DockTray } from './DockTray';
+import { DOCK_KEY_GAP, isLabelOnly } from './dockFit';
 import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 import { StageFullScreen } from './StageFullScreen';
@@ -251,9 +252,15 @@ export function RackUnit({
 
   const trayParam =
     chooserTray ??
-    ((params.find((p) => p.id === openTrayId && (p.kind === 'options' || p.kind === 'group')) as
+    ((params.find((p) => p.id === openTrayId && (p.kind === 'options' || p.kind === 'group') && !isLabelOnly(p)) as
       | Extract<DockParam, { kind: 'options' | 'group' }>
       | undefined) ?? null);
+  // Its choices narrowed to one while the tray was open: the tray is gone,
+  // and it must not come back by itself if they widen again.
+  const openIsLabel = openParam != null && isLabelOnly(openParam);
+  useEffect(() => {
+    if (openIsLabel) setOpenTrayId(null);
+  }, [openIsLabel]);
 
   const [stageCollapsed, setStageCollapsed] = useState(stageCollapsedCache ?? false);
   useEffect(() => {
@@ -396,6 +403,7 @@ export function RackUnit({
   // FULL SCREEN's dock leaves out the keys that change nothing there
   // (`hideInFull`, owner 2026-10-06: "useless buttons should just be
   // hidden" — a view toggle over a full screen that shows both views).
+  const shownIn = (inFull: boolean) => params.filter((p) => !(inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull));
   const dockFor = (inFull: boolean) => (
     <View style={styles.dock}>
       {/* Tablet (owner 2026-09-29): the faceplate stays full width but the
@@ -445,15 +453,17 @@ export function RackUnit({
           </Text>
         ) : null;
       })()}
-      <View style={styles.strip}>
-        {params.map((p) => {
+      <DockStrip style={styles.strip} ids={shownIn(inFull).map((p) => p.id)}>
+        {(fitFor) => params.map((p) => {
           if (inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull) return null;
+          const fit = fitFor(p.id);
           switch (p.kind) {
             case 'fader':
               if (p.locked) {
                 return (
                   <DockButton
                     key={p.id}
+                    fit={fit}
                     label={p.label}
                     value="LOCKED"
                     glyph="▪"
@@ -472,6 +482,7 @@ export function RackUnit({
               return (
                 <DockButton
                   key={p.id}
+                  fit={fit}
                   label={p.label}
                   value={(p.formatShort ?? p.format)(p.value)}
                   // A chooser-fader opens a tray first, so it wears the
@@ -499,6 +510,7 @@ export function RackUnit({
                 return (
                   <DockButton
                     key={p.id}
+                    fit={fit}
                     label={p.label}
                     value="LOCKED"
                     glyph="▸"
@@ -510,9 +522,25 @@ export function RackUnit({
                   />
                 );
               }
+              // One choice: nothing to open, so nothing to press. The lane
+              // binds faders only, so it never depended on this key.
+              if (p.kind === 'options' && isLabelOnly(p)) {
+                return (
+                  <DockButton
+                    key={p.id}
+                    fit={fit}
+                    plain
+                    label={p.label}
+                    value={p.valueLabel}
+                    onPress={() => {}}
+                    a11y={`${p.label}: ${p.valueA11y ?? p.valueLabel}.`}
+                  />
+                );
+              }
               return (
                 <DockButton
                   key={p.id}
+                  fit={fit}
                   label={p.label}
                   value={p.valueLabel}
                   glyph="▸"
@@ -533,6 +561,7 @@ export function RackUnit({
                 return (
                   <DockButton
                     key={p.id}
+                    fit={fit}
                     label={p.label}
                     value="LOCKED"
                     dim
@@ -548,6 +577,7 @@ export function RackUnit({
               return (
                 <DockButton
                   key={p.id}
+                  fit={fit}
                   label={p.label}
                   value=""
                   variant="key"
@@ -565,6 +595,7 @@ export function RackUnit({
               return (
                 <DockButton
                   key={p.id}
+                  fit={fit}
                   label={p.label}
                   value=""
                   variant="key"
@@ -575,7 +606,7 @@ export function RackUnit({
               );
           }
         })}
-      </View>
+      </DockStrip>
       </View>
     </View>
   );
@@ -878,7 +909,7 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
   },
   dockInner: { width: '100%', maxWidth: READING_MAX_W, alignSelf: 'center', gap: 7 },
-  strip: { flexDirection: 'row', gap: 6 },
+  strip: { flexDirection: 'row', gap: DOCK_KEY_GAP },
   nudgeRow: { flexDirection: 'row', gap: 6, justifyContent: 'flex-end' },
   lockedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, textAlign: 'center', paddingHorizontal: 6 },
   nudge: {

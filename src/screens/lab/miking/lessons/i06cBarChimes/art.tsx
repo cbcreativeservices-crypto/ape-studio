@@ -16,9 +16,10 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import type { VariantId, ViewBox, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { ALU, Floor, GOLD_ALU, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, WOOD } from '../shared/metal/metalArt';
+import { ALU, Floor, GOLD_ALU, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, WOOD } from '../shared/metal/metalArt';
 import { straightBar, type BarGeom } from '../shared/metal/metalFigures';
 import type { FrontArt } from '../shared/metal/metalPages';
+import { FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { BAR_TOP, barsOf, BC, P0, RAIL_Y, type Bar } from './model.ts';
 import { STAND } from './geometry.ts';
 import { Hand } from '../shared/smallperc/Hand';
@@ -30,7 +31,7 @@ const metalOf = (v: VariantId) => (v === 'double' ? ALU : GOLD_ALU);
 
 /** A hanging bar in a plane (u, v): from its filament top, rotated `deg`
  *  about the top (a swing), length L. */
-function HangingBar({ u, L, deg = 0, pal, glow = false }: { u: number; L: number; deg?: number; pal: readonly string[]; glow?: boolean }): ReactElement {
+function HangingBar({ u, L, deg = 0, pal }: { u: number; L: number; deg?: number; pal: readonly string[] }): ReactElement {
   const a = (deg * Math.PI) / 180;
   const top: [number, number] = [u, BAR_TOP];
   const bot: [number, number] = [u + Math.sin(a) * L, BAR_TOP + Math.cos(a) * L];
@@ -38,7 +39,6 @@ function HangingBar({ u, L, deg = 0, pal, glow = false }: { u: number; L: number
   return (
     <Group>
       <Path path={fil} style="stroke" strokeWidth={0.9} color="#d8dde6" opacity={0.7} />
-      {glow ? <Path path={polyPath([top, bot])} style="stroke" strokeWidth={D * 2.4} strokeCap="round" color={HIGHLIGHT} opacity={0.35} /> : null}
       <Rod path={polyPath([top, bot])} d={D} pal={pal} shadow={false} />
     </Group>
   );
@@ -154,34 +154,62 @@ function handAtTip(u: number, v: number): { pl: Placement; arm: { from: readonly
   const at: [number, number] = [u - TIP[1], v + TIP[0]];
   return { pl: { at, angle: -90, mirror: true }, arm: { from: [at[0] + 40, at[1] + 520], w: 54, sleeve: 300 } };
 }
-function SweepHand({ u, v, glow }: { u: number; v: number; glow?: boolean }): ReactElement {
+function SweepHand({ u, v }: { u: number; v: number }): ReactElement {
   const h = useMemo(() => handAtTip(u, v), [u, v]);
-  return (
-    <Group>
-      {glow ? <Circle cx={u} cy={v + 90} r={110} color={HIGHLIGHT} opacity={0.3} /> : null}
-      <Hand geo={SWEEP_HAND} pl={h.pl} forearm={h.arm} />
-    </Group>
-  );
+  return <Hand geo={SWEEP_HAND} pl={h.pl} forearm={h.arm} />;
+}
+
+/** The sweeping hand's fingertip, from the audience. */
+const HAND_AT: [number, number] = [FU(-HALF) + 30, P0.y - 10];
+
+/** The outline round the whole row: along the tops, then the graduated bottoms. */
+function barsOutline(variant: VariantId, pad: number): [number, number][] {
+  const longest = new Map<number, number>();
+  for (const b of barsOf(variant)) longest.set(FU(b.z), Math.max(longest.get(FU(b.z)) ?? 0, b.L));
+  const row = [...longest].sort((a, b) => a[0] - b[0]);
+  const [first, last] = [row[0], row[row.length - 1]];
+  const [u0, u1] = [first[0] - pad, last[0] + pad];
+  return [[u0, BAR_TOP - pad], [u1, BAR_TOP - pad], [u1, BAR_TOP + last[1] + pad], [u0, BAR_TOP + first[1] + pad]];
+}
+
+/** The chosen part on the face-on drawing. */
+export function barChimesMark(variant: VariantId, id: string | null): FrontMark[] {
+  const box = frontBox(variant);
+  const px = mmPerPx(box);
+  const w = 18 * px;
+  const postU = FU(STAND.z);
+  switch (id) {
+    case 'bc.rail':
+      return [{ kind: 'run', a: [FU(HALF) + w / 2, RAIL_Y], b: [FU(-HALF) - w / 2, RAIL_Y], w: Math.max(w, BC.railH.mm + 8 * px) }];
+    case 'bc.bars':
+      return [{ kind: 'shape', pts: barsOutline(variant, 5 * px) }];
+    case 'bc.filament': {
+      const y = RAIL_Y + BC.railH.mm / 2 + w / 2;
+      return [{ kind: 'run', a: [FU(HALF) + w / 2, y], b: [FU(-HALF) - w / 2, y], w }];
+    }
+    case 'bc.stand':
+      return [{ kind: 'run', a: [postU, RAIL_Y], b: [postU, box.v1 - 12 * px], w }];
+    case 'bc.hand':
+      return [{ kind: 'run', a: [HAND_AT[0] + 8, HAND_AT[1] + 5], b: [HAND_AT[0] + 8, HAND_AT[1] + 170], w: 56 * px }];
+    default:
+      return [];
+  }
 }
 
 function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
   const pal = metalOf(variant);
   const bars = barsOf(variant);
-  const hl = (id: string) => highlight === id;
-  const handAt: [number, number] = [FU(-HALF) + 30, P0.y - 10];
   return (
     <Group>
       <Floor u0={-2400} u1={2400} />
-      <PlayerInk path={playerFront([handAt])} faint head="front" />
-      {hl('bc.stand') ? <Path path={polyPath([[FU(STAND.z), -40], [FU(STAND.z), RAIL_Y]])} style="stroke" strokeWidth={50} color={HIGHLIGHT} opacity={0.3} /> : null}
+      <PlayerInk path={playerFront([HAND_AT])} faint head="front" />
       <Rod path={polyPath([[FU(STAND.z), 0], [FU(STAND.z), RAIL_Y], [FU(HALF) + 12, RAIL_Y]])} d={STAND.r * 2} pal={STEEL} />
       {[...bars].sort((a, b) => a.x - b.x).map((b, i) => (
-        <HangingBar key={i} u={FU(b.z)} L={b.L} pal={b.x > 0 ? [pal[2], pal[2], pal[3], pal[4], pal[4]] : pal} glow={hl('bc.bars')} />
+        <HangingBar key={i} u={FU(b.z)} L={b.L} pal={b.x > 0 ? [pal[2], pal[2], pal[3], pal[4], pal[4]] : pal} />
       ))}
-      {hl('bc.filament') ? <Path path={polyPath([[FU(-HALF), BAR_TOP - 8], [FU(HALF), BAR_TOP - 8]])} style="stroke" strokeWidth={24} color={HIGHLIGHT} opacity={0.35} /> : null}
-      {hl('bc.rail') ? <RoundedRect x={FU(HALF) - 12} y={RAIL_Y - 30} width={2 * HALF + 24} height={60} r={10} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Rail u0={FU(HALF)} u1={FU(-HALF)} />
-      <SweepHand u={handAt[0]} v={handAt[1]} glow={hl('bc.hand')} />
+      <SweepHand u={HAND_AT[0]} v={HAND_AT[1]} />
+      <FrontMarks marks={barChimesMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );
 }
@@ -203,8 +231,7 @@ function frontLabels(_v: VariantId): ArtLabel[] {
 
 function frontHit(v: VariantId, u: number, vv: number, tol: number): string | null {
   if (Math.abs(vv - RAIL_Y) <= BC.railH.mm / 2 + tol && Math.abs(u) <= HALF + tol) return 'bc.rail';
-  const hand: [number, number] = [FU(-HALF) + 30, P0.y - 10];
-  if (Math.abs(u - hand[0]) <= 50 + tol && vv >= hand[1] - 10 && vv <= hand[1] + 200) return 'bc.hand';
+  if (Math.abs(u - HAND_AT[0]) <= 50 + tol && vv >= HAND_AT[1] - 10 && vv <= HAND_AT[1] + 200) return 'bc.hand';
   if (vv > RAIL_Y && vv < BAR_TOP + 4 && Math.abs(u) <= HALF) return 'bc.filament';
   for (const b of barsOf(v)) if (Math.abs(u - FU(b.z)) <= D + tol * 0.5 && vv >= BAR_TOP && vv <= BAR_TOP + b.L + tol) return 'bc.bars';
   if (Math.abs(u - FU(STAND.z)) <= STAND.r + tol && vv >= RAIL_Y && vv <= 0) return 'bc.stand';

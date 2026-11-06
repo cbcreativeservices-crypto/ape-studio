@@ -20,11 +20,19 @@ import { BRASS, Floor, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, play
 import { Hand } from '../shared/smallperc/Hand';
 import { pinchHand, wristFor, type Placement } from '../shared/smallperc/hands.ts';
 import type { FrontArt } from '../shared/metal/metalPages';
+import { FRONT_MARK_LINE_PX, FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { FC, FLANGE_RISE, P0, P0D, profile, RA, RB } from './model.ts';
 import { DROP_C, DROP_TILT, HAND_L, HAND_R } from './geometry.ts';
 
 const H = FC.h.mm;
 const isDance = (v: VariantId) => v === 'dance';
+
+/** A raised arm, shoulder to hand. */
+function addArm(p: ReturnType<typeof make>, [su, sv]: readonly [number, number], [hu, hv]: readonly [number, number]) {
+  p.moveTo(su, sv);
+  p.cubicTo(su + (hu - su) * 0.2, sv - 160, hu - (hu - su) * 0.3, hv + 120, hu, hv);
+}
+const SHOULDERS: [number, number][] = [[-170, -1450], [210, -1440]];
 
 /** A dancer seen from the audience (u = −z): mid-step, arms raised in
  *  curves to the two hands, the hips swayed — quiet line art. */
@@ -44,18 +52,13 @@ function dancerFront(hands: readonly [number, number][]) {
   p.moveTo(110, -930);
   p.cubicTo(140, -620, 60, -420, 120, -230); // the other, bent
   p.lineTo(70, -20);
-  const shoulders: [number, number][] = [[-170, -1450], [210, -1440]];
-  hands.forEach(([hu, hv], i) => {
-    const [su, sv] = shoulders[hu < 0 ? 0 : 1] ?? shoulders[i];
-    p.moveTo(su, sv);
-    p.cubicTo(su + (hu - su) * 0.2, sv - 160, hu - (hu - su) * 0.3, hv + 120, hu, hv);
-  });
+  hands.forEach((h) => addArm(p, SHOULDERS[h[0] < 0 ? 0 : 1], h));
   return p;
 }
 
 /** A cymbal seen edge-on: centre (u, v), radius r, rotated by `deg`, dome up
  *  (or down with flip). Brass, lit from the upper left; a rim highlight. */
-export function CymbalEdge({ u, v, r, deg = 0, flip = false, glow = false }: { u: number; v: number; r: number; deg?: number; flip?: boolean; glow?: boolean }): ReactElement {
+export function CymbalEdge({ u, v, r, deg = 0, flip = false }: { u: number; v: number; r: number; deg?: number; flip?: boolean }): ReactElement {
   const g = useMemo(() => {
     const sg = flip ? -1 : 1;
     const pts = profile(r, H).map(([a, b]) => [a, sg * b] as [number, number]);
@@ -86,7 +89,6 @@ export function CymbalEdge({ u, v, r, deg = 0, flip = false, glow = false }: { u
   }, [r, flip]);
   return (
     <Group transform={[{ translateX: u }, { translateY: v }, { rotate: (deg * Math.PI) / 180 }]}>
-      {glow ? <Circle cx={0} cy={0} r={r * 1.25} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Path path={g.strap} style="stroke" strokeWidth={3.4} strokeCap="round" color="#3a2010" />
       <Path path={g.strap} style="stroke" strokeWidth={2} strokeCap="round" color="#8a5530" />
       <Path path={g.body}>
@@ -100,11 +102,10 @@ export function CymbalEdge({ u, v, r, deg = 0, flip = false, glow = false }: { u
 }
 
 /** A cymbal seen from above or below: the flange ring and the dome. */
-function CymbalFace({ u, v, r, sq = 1, glow = false }: { u: number; v: number; r: number; sq?: number; glow?: boolean }): ReactElement {
+function CymbalFace({ u, v, r, sq = 1 }: { u: number; v: number; r: number; sq?: number }): ReactElement {
   const rd = (FC.domeD.mm / 2) * (r / RA);
   return (
     <Group>
-      {glow ? <Oval x={u - r * 1.3} y={v - r * 1.3 * sq} width={r * 2.6} height={r * 2.6 * sq} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Oval x={u - r} y={v - r * sq} width={2 * r} height={2 * r * sq}>
         <RadialGradient c={vec(u - r * 0.35, v - r * 0.35 * sq)} r={r * 1.6} colors={[BRASS[1], BRASS[2], BRASS[3], BRASS[4]]} />
       </Oval>
@@ -257,10 +258,110 @@ function armOf(pl: Placement, at: readonly [number, number]): { from: readonly [
   return { from: [pl.at[0] + (dx / l) * 420, pl.at[1] + (dy / l) * 420], w: 54, sleeve: 260 };
 }
 
-function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
-  const hl = (id: string) => highlight === id;
+/** The dropped cymbal's strap loop, its tilt carried round its centre. */
+const dropStrapAt = (top: number): [number, number] => {
+  const a = (DROP_TILT * Math.PI) / 180;
+  return [FU(DROP_C.z) - Math.sin(a) * top, DROP_C.y + Math.cos(a) * top];
+};
+/** The dancer's hands, screen-left then screen-right. */
+const DANCE_HANDS: [number, number][] = [[FU(HAND_R.z), HAND_R.y], [FU(HAND_L.z), HAND_L.y]];
+/** A pair on one hand, the screen-right hand when `s` is 1. */
+const dancePair = (s: 1 | -1, [a, b]: [number, number]) => ({
+  thumb: { u: a + s * 10, v: b - 20, r: RA, deg: s * 80 },
+  finger: { u: a + s * 34, v: b + 10, r: RB, deg: s * 100 },
+});
+
+/** Along a cymbal's plate, edge-on, tilted `deg`. */
+function plateRun(u: number, v: number, r: number, deg: number, lift: number, w: number): FrontMark {
+  const a = (deg * Math.PI) / 180;
+  const [du, dv] = [Math.cos(a), Math.sin(a)];
+  const [cu, cv] = [u + Math.sin(a) * lift, v - Math.cos(a) * lift];
+  return { kind: 'run', a: [cu - du * r, cv - dv * r], b: [cu + du * r, cv + dv * r], w };
+}
+
+/** The chosen part on the drawing. On the dancer the cymbals are 5 px apart on
+ *  the phone: the rings find the hands, and danceLens below shows which one. */
+export function fingerCymbalsMark(variant: VariantId, id: string | null): FrontMark[] {
+  const px = mmPerPx(frontBox(variant));
   if (isDance(variant)) {
-    const hands: [number, number][] = [[FU(HAND_R.z), HAND_R.y], [FU(HAND_L.z), HAND_L.y]];
+    if (id === 'fc.route') {
+      const R = FC.route.mm * 0.25;
+      return [{ kind: 'run', a: [-R, -40], b: [R, -40], w: 18 * px }];
+    }
+    if (id === 'fc.strap' || id === 'fc.thumb' || id === 'fc.finger') return DANCE_HANDS.map(([u, v]) => ({ kind: 'ring', u, v, r: 24 * px }));
+    return [];
+  }
+  const w = 22 * px;
+  switch (id) {
+    case 'fc.held':
+      return [plateRun(FU(P0.z), P0.y, RA, 0, 8, w)];
+    case 'fc.drop':
+      return [plateRun(FU(DROP_C.z), DROP_C.y, RB, DROP_TILT, 8, w)];
+    case 'fc.strap': {
+      const [du, dv] = dropStrapAt(STRAP_TOP);
+      return [{ kind: 'ring', u: FU(P0.z), v: P0.y + STRAP_TOP, r: 23 * px }, { kind: 'ring', u: du, v: dv, r: 23 * px }];
+    }
+    default:
+      return [];
+  }
+}
+
+/** THUMB, FINGER and STRAP on the dancer, magnified: the screen-right hand's
+ *  pair in a close-up beside it, the chosen one marked there. */
+export function danceLens(id: string | null): { c: [number, number]; r: number; z: number; focus: [number, number]; hand: [number, number]; marks: FrontMark[] } | null {
+  if (id !== 'fc.strap' && id !== 'fc.thumb' && id !== 'fc.finger') return null;
+  const px = mmPerPx(frontBox('dance'));
+  const hand = DANCE_HANDS[1];
+  const { thumb, finger } = dancePair(1, hand);
+  const focus: [number, number] = [(thumb.u + finger.u) / 2 + 8, (thumb.v + finger.v) / 2];
+  const r = 38 * px;
+  const z = 5;
+  const c: [number, number] = [hand[0] + 230, hand[1] + 520];
+  const L = (u: number, v: number): [number, number] => [c[0] + (u - focus[0]) * z, c[1] + (v - focus[1]) * z];
+  const plate = (q: typeof thumb): FrontMark => {
+    const [u, v] = L(q.u, q.v);
+    return plateRun(u, v, q.r * z, q.deg, 8 * z, 17 * px);
+  };
+  if (id === 'fc.thumb') return { c, r, z, focus, hand, marks: [plate(thumb)] };
+  if (id === 'fc.finger') return { c, r, z, focus, hand, marks: [plate(finger)] };
+  // The straps stand out of the bells, side by side.
+  const a = (thumb.deg * Math.PI) / 180;
+  const b = (finger.deg * Math.PI) / 180;
+  const top = -STRAP_TOP;
+  const [u, v] = L((thumb.u + Math.sin(a) * top + finger.u + Math.sin(b) * top) / 2, (thumb.v - Math.cos(a) * top + finger.v - Math.cos(b) * top) / 2);
+  return { c, r, z, focus, hand, marks: [{ kind: 'ring', u, v, r: 23 * px }] };
+}
+
+function DanceLens({ id }: { id: string | null }): ReactElement | null {
+  const l = danceLens(id);
+  if (!l) return null;
+  const box = frontBox('dance');
+  const px = mmPerPx(box);
+  const { thumb, finger } = dancePair(1, l.hand);
+  const disc = make();
+  disc.addCircle(l.c[0], l.c[1], l.r);
+  const arm = make();
+  addArm(arm, SHOULDERS[1], l.hand);
+  const line = FRONT_MARK_LINE_PX * px;
+  return (
+    <Group>
+      <Path path={polyPath([l.hand, l.c])} style="stroke" strokeWidth={line * 0.7} color={HIGHLIGHT} />
+      <Circle cx={l.c[0]} cy={l.c[1]} r={l.r} color="#101216" />
+      <Group clip={disc}>
+        <Group transform={[{ translateX: l.c[0] }, { translateY: l.c[1] }, { scale: l.z }, { translateX: -l.focus[0] }, { translateY: -l.focus[1] }]}>
+          <Path path={arm} style="stroke" strokeWidth={(line * 1.2) / l.z} strokeCap="round" color="#8a8f9c" />
+          <CymbalEdge u={thumb.u} v={thumb.v} r={thumb.r} deg={thumb.deg} />
+          <CymbalEdge u={finger.u} v={finger.v} r={finger.r} deg={finger.deg} />
+        </Group>
+        <FrontMarks marks={l.marks} box={box} />
+      </Group>
+      <Circle cx={l.c[0]} cy={l.c[1]} r={l.r} style="stroke" strokeWidth={line} color={HIGHLIGHT} />
+    </Group>
+  );
+}
+
+function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
+  if (isDance(variant)) {
     const R = FC.route.mm;
     const arrows = make();
     arrows.moveTo(-R * 0.25, -40);
@@ -273,15 +374,19 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
     return (
       <Group>
         <Floor u0={-2400} u1={2400} />
-        {hl('fc.route') ? <Path path={polyPath([[-R * 0.25, -40], [R * 0.25, -40]])} style="stroke" strokeWidth={60} color={HIGHLIGHT} opacity={0.3} /> : null}
         <Path path={arrows} style="stroke" strokeWidth={10} strokeCap="round" strokeJoin="round" color="#8a8f9c" opacity={0.7} />
-        <PlayerInk path={dancerFront(hands)} head="front" headAt={[30, -1660]} />
-        {hands.map(([a, b], i) => (
-          <Group key={i}>
-            <CymbalEdge u={a + (i ? 10 : -10)} v={b - 20} r={RA} deg={i ? 80 : -80} glow={hl('fc.thumb')} />
-            <CymbalEdge u={a + (i ? 34 : -34)} v={b + 10} r={RB} deg={i ? 100 : -100} glow={hl('fc.finger')} />
-          </Group>
-        ))}
+        <PlayerInk path={dancerFront(DANCE_HANDS)} head="front" headAt={[30, -1660]} />
+        {DANCE_HANDS.map((h, i) => {
+          const { thumb, finger } = dancePair(i ? 1 : -1, h);
+          return (
+            <Group key={i}>
+              <CymbalEdge u={thumb.u} v={thumb.v} r={thumb.r} deg={thumb.deg} />
+              <CymbalEdge u={finger.u} v={finger.v} r={finger.r} deg={finger.deg} />
+            </Group>
+          );
+        })}
+        <FrontMarks marks={fingerCymbalsMark(variant, highlight)} box={frontBox(variant)} />
+        <DanceLens id={highlight} />
       </Group>
     );
   }
@@ -292,9 +397,8 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
   // right), the dropped one from the right. Anatomical hands at true size
   // (smallperc/hands.ts pinchHand: ≈ 190 mm hand, the thumb's pad on the
   // index finger's pad), so the 55 mm cymbals read at their real scale.
-  const a = (DROP_TILT * Math.PI) / 180;
   const sTop = STRAP_TOP;
-  const dropStrap: [number, number] = [dropU - Math.sin(a) * sTop, DROP_C.y + Math.cos(a) * sTop];
+  const dropStrap = dropStrapAt(sTop);
   return (
     <Group>
       {([[[heldU, P0.y + sTop], false], [dropStrap, true]] as const).map(([at, left], i) => {
@@ -304,9 +408,9 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
       <Circle cx={heldU + 8} cy={P0.y + 10} r={RA} color="#000" opacity={0.35}>
         <BlurMask blur={8} style="normal" />
       </Circle>
-      <CymbalEdge u={heldU} v={P0.y} r={RA} glow={hl('fc.held')} />
-      <CymbalEdge u={dropU} v={DROP_C.y} r={RB} deg={DROP_TILT} glow={hl('fc.drop')} />
-      {hl('fc.strap') ? <Circle cx={heldU} cy={P0.y - H * 0.7 - 6} r={14} color={HIGHLIGHT} opacity={0.4} /> : null}
+      <CymbalEdge u={heldU} v={P0.y} r={RA} />
+      <CymbalEdge u={dropU} v={DROP_C.y} r={RB} deg={DROP_TILT} />
+      <FrontMarks marks={fingerCymbalsMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );
 }
@@ -318,9 +422,12 @@ function frontBox(v: VariantId): ViewBox {
 
 function frontLabels(v: VariantId): ArtLabel[] {
   if (isDance(v)) {
+    // Outside the hands' rings (24 px), so a mark never crosses its own label.
+    const off = 29 * mmPerPx(frontBox('dance'));
     return [
-      { id: 'fc.thumb', text: 'ON THE THUMB', short: 'THUMB', u: FU(HAND_R.z) - 60, v: HAND_R.y - 70, align: 'right' },
-      { id: 'fc.finger', text: 'ON A FINGER', short: 'FINGER', u: FU(HAND_L.z) + 70, v: HAND_L.y + 50, align: 'left' },
+      { id: 'fc.thumb', text: 'ON THE THUMB', short: 'THUMB', u: FU(HAND_R.z) - off, v: HAND_R.y - 70, align: 'right' },
+      { id: 'fc.finger', text: 'ON A FINGER', short: 'FINGER', u: FU(HAND_L.z) + off, v: HAND_L.y + 50, align: 'left' },
+      { id: 'fc.strap', text: 'STRAPS', u: FU(HAND_R.z) - off, v: HAND_R.y + 70, align: 'right', tone: 'muted' },
       { id: 'fc.route', text: '← THE ROUTE →', short: 'ROUTE', u: 0, v: -130, align: 'center', tone: 'muted' },
     ];
   }

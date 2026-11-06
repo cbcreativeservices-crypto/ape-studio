@@ -181,7 +181,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Swipe the console sideways to reach every channel. RESET MIX puts every channel back to flat.',
     ],
     changes: [
-      'The picture follows the console: wider = louder, sideways = panned, dashed = muted. Its title goes from THE WALL · EVERY FADER AT 0 to YOUR BALANCE.',
+      'The picture follows the console: wider = louder, sideways = panned, dashed = muted, Ø = polarity flipped. Its title goes from THE WALL · EVERY FADER AT 0 to YOUR BALANCE.',
       'Your anchor is ringed and named: ANCHOR: LEAD, for example.',
       'Soloed tapes glow; the rest are silenced in the render only, so dropping solo returns the exact mix.',
       'MY MIX is matched to the wall, so what you hear is decisions, not loudness.',

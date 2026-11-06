@@ -20,6 +20,7 @@ import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../.
 import { useRig } from '../../../../engine/scene/useRig.ts';
 import { previewMemo, stopWordOf } from '../../../../engine/scene/placementDock.ts';
 import { PlacementScene } from '../../../../engine/scene/PlacementScene';
+import { PatternInset, patternInsetBadge } from '../../../../engine/scene/PatternInset';
 import { sceneLabel } from '../../../../engine/scene/sceneWords.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../../../engine/physics/polar.ts';
 import { fmtAngle, fmtDb, fmtIdealPickup, isDeepNull } from '../../../../engine/model/units.ts';
@@ -170,8 +171,12 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       kind: 'LIVE',
       layout: 'rack',
       rack: {
-        render: (w, h) => <PlacementScene rig={rig} art={art} view={view} w={w} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={box} wedge={live ? { at, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />,
-        badge: `A simplified pattern (white dashed: shape, not range) · the monitor where a stage often puts it · counts within ±${NULL_TOL}° of a null`,
+        render: (w, h) => (
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={box} avoid={live ? [pose.p, at] : [pose.p]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
+            {(sceneW) => <PlacementScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={box} wedge={live ? { at, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+          </PatternInset>
+        ),
+        badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · the monitor where a stage often puts it` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',

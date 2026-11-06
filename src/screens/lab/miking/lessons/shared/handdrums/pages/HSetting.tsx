@@ -29,7 +29,6 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const items = lesson.setting.items;
   const bandItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
   const [bandSel, setBandSel] = useState<string | null>(null);
-  const [bandSeen, setBandSeen] = useState<ReadonlySet<string>>(() => new Set());
   const [where, setWhere] = useState<'stage' | 'studio'>('stage');
   const [wideSel, setWideSel] = useState<string | null>(null);
   const wideItems = items.filter((i) => i.scene === where || i.scene === 'all');
@@ -42,7 +41,6 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const pickBand = (id: string) => {
     if (!bandItems.some((i) => i.id === id)) return;
     setBandSel(id);
-    setBandSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
   const pickWide = (id: string) => {
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -91,10 +89,10 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       ],
     },
   ];
-  const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+  const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
     { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
     { k: 'FOR A MIC HERE', v: sel ? sel.tag : '—', flex: 1.4 },
-    extra,
+    ...(extra ? [extra] : []),
   ];
   const card = (it: SettingItem | undefined, prompt: string) =>
     it ? (
@@ -116,7 +114,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       rack: {
         render: render('kit', bandSel, pickBand, `${H.plan.label} ${bandSelItem ? `Highlighted: ${bandSelItem.label}.` : ''} A typical layout.`),
         badge: H.plan.badge,
-        bezel: bezel(bandSelItem, { k: 'LOOKED AT', v: `${bandSeen.size} / ${bandItems.length}`, flex: 1 }),
+        bezel: bezel(bandSelItem),
         params: bandParams,
         initialParam: 'item',
       },

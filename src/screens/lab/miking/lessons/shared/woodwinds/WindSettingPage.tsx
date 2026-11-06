@@ -41,7 +41,6 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
     const items = lesson.setting.items;
     const kitItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
     const [kitSel, setKitSel] = useState<string | null>(null);
-    const [kitSeen, setKitSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [where, setWhere] = useState<'stage' | 'studio'>('stage');
     const [wideSel, setWideSel] = useState<string | null>(null);
     const wideItems = items.filter((i) => i.scene === where || i.scene === 'all');
@@ -52,7 +51,6 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
     const pickKit = (id: string) => {
       if (!kitItems.some((i) => i.id === id)) return;
       setKitSel(id);
-      setKitSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
     };
     const pickWide = (id: string) => {
       if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -102,10 +100,10 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
         ],
       },
     ];
-    const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+    const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
       { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.4 },
-      extra,
+      ...(extra ? [extra] : []),
     ];
     const kitSelItem = byId(kitSel);
     const wideSelItem = byId(wideSel);
@@ -126,7 +124,7 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
         rack: {
           render: render('kit', kitSel, pickKit, `${cfg.a11y.section} ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
           badge: 'The woodwinds from above · a typical layout · the conductor and the audience below',
-          bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
+          bezel: bezel(kitSelItem),
           params: kitParams,
           initialParam: 'item',
         },

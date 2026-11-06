@@ -9,7 +9,7 @@
  * patterns, by property, the checks) follows: a composed page.
  */
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, ViewId } from '../engine/model/types.ts';
@@ -18,11 +18,12 @@ import { roleWords, typeForZone, zoneInVariant, type StartingSetup } from '../en
 import { bestView, guideFor } from '../engine/geometry/guides.ts';
 import { hasBothViews, viewToggle } from '../engine/scene/viewToggle.ts';
 import { SetupStage } from '../engine/scene/SetupStage';
+import { MicCloseUp } from '../engine/scene/MicCloseUp';
 import { isModelled, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { MIC_TYPES, micType } from '../data/micTypes';
-import { plainLines, powerOf } from './PMicrophone';
+import { patternReadout, plainLines, powerOf } from './PMicrophone';
 import { micWords, useSetups } from './PSetups';
 import type { PageProps } from './pageTypes';
 
@@ -79,7 +80,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
       kind: 'options',
       id: 'pattern',
       label: 'PATTERN',
-      valueLabel: (isModelled(pat) ? pat : 'NOT DRAWN').toUpperCase().slice(0, 10),
+      valueLabel: (isModelled(pat) ? pat : patternReadout(t, pat)).toUpperCase().slice(0, 10),
       selectedId: pat,
       onSelect: (id) => setPattern(id as MicPattern),
       sticky: true,
@@ -89,7 +90,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
   ];
   const bezel: BezelItem[] = [
     { k: 'TYPE', v: t.short, flex: 1.3 },
-    { k: 'PATTERN', v: isModelled(pat) ? pat.toUpperCase() : 'NOT DRAWN', flex: 1.2 },
+    { k: 'PATTERN', v: patternReadout(t, pat), flex: 1.2 },
     { k: 'POWER', v: powerOf(t).word, flex: 1 },
     { k: 'MOUNT', v: t.mount.toUpperCase(), flex: 0.9 },
   ];
@@ -102,9 +103,12 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
       rack: {
         render: (w, h) =>
           setup ? (
-            <SetupStage key={setup.id} lesson={lesson} art={art} setup={setup} view={view} setView={setView} w={w} h={h} label={`${micWords(typeId, pat)}, where this lesson starts it: ${setup.title}.`} />
+            <SetupStage key={setup.id} lesson={lesson} art={art} setup={setup} view={view} setView={setView} w={w} h={h} closeUp label={`${micWords(typeId, pat)}, where this lesson starts it: ${setup.title}.`} />
           ) : (
-            <Text style={styles.missing}>This mic type has no starting point in this setup of the instrument.</Text>
+            <View style={{ width: w, height: h }}>
+              <Text style={styles.missing}>This mic type has no starting point in this setup of the instrument.</Text>
+              <MicCloseUp type={t} w={w} />
+            </View>
           ),
         badge: 'The chosen mic where this lesson starts it · amber dashed = where it points · white = its distance · dashed lobe = pattern shape',
         bezel,

@@ -13,7 +13,7 @@ import { C03_BUILT, C03_ZONES } from './geometry.ts';
 export const C03_ART: LessonArt = {
   ...makeGuitarArt(C03_BUILT, { zones: C03_ZONES }),
   pages: {
-    sound: makeStringSoundPage(C03_BUILT),
+    sound: makeStringSoundPage(C03_BUILT, { variantKey: false }),
     setting: makeStagePlanPage(C03_BUILT, { plan: GUITAR_PLANS.C03, hearing: STRINGS_HEARING }),
   },
   stepCounts: { sound: 4, setting: 3 },

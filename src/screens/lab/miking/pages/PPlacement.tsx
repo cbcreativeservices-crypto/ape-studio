@@ -163,11 +163,16 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const exShown = ex.shown('A');
   const exHead = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.label ?? 'its head';
   const exLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line)?.label ?? 'its line' : null;
+  // The line the bezel's OFF cell reads: the zone's own, else the rig's, which
+  // prints a distance whether or not this starting point names a line. Words
+  // and mark follow that cell, so a card never says "no line" beside "8.5 cm".
+  const exRefLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line) ?? null : null;
+  const exReadLine = exRefLine ?? lesson.model.lines.find((l) => l.id === ex.lineId) ?? null;
   const worked: { title: string; text: string; cell: number }[] = [
     { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
     { title: C.terms?.refTitle ?? (C.words.workedHead ? 'THE SURFACE' : `THE ${C.words.reference.toUpperCase()}`), text: C.words.workedHead ? fill(C.words.workedHead, { head: exHead }) : `The distance is measured from ${exHead}. ${C.terms?.otherRef ?? `The same number from another ${C.words.reference} would put the mic somewhere else entirely.`}`, cell: 0 },
     { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
-    { title: 'OFF THE LINE', text: exLine ? fill(C.placement.workedLine, { line: exLine }) : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
+    { title: 'OFF THE LINE', text: exLine ? fill(C.placement.workedLine, { line: exLine }) : exReadLine ? `This starting point sets no distance from ${exReadLine.label}. The lit cell only shows how far off it the mic sits here; the distance from ${exHead} is what places the mic.` : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
     { title: 'THE AIM', text: exZone.aim || exZone.aimAt ? fill(C.placement.workedAim, { head: exHead, tol: `${exZone.aim?.maxOffAxis ?? ''}` }) : C.terms?.noAim ?? C.words.workedNoAim ?? `This starting point gives no aim, so the mic simply faces the ${C.words.instrument}. Distance, height and angle are still separate things to try.`, cell: 2 },
     { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
   ];
@@ -179,8 +184,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const exEnvelope = lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant)) ?? null;
   const exPose = ex.mics[0].pose;
   const exSurface = lesson.model.surfaces.find((q) => q.id === exZone.refSurface) ?? null;
-  const exRefLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line) ?? null : null;
-  const exMark = workedMark(exStep, { mic: exPose.p, head: exHead, headPart: exHeadPart, guide: exSurface ? guideFor(exSurface, exPose) : null, line: exRefLine ? { label: exRefLine.label, foot: lineFoot(exRefLine, exPose.p) } : null, envelope: exEnvelope });
+  const exMark = workedMark(exStep, { mic: exPose.p, head: exHead, headPart: exHeadPart, guide: exSurface ? guideFor(exSurface, exPose) : null, line: exReadLine ? { label: exReadLine.label, foot: lineFoot(exReadLine, exPose.p) } : null, envelope: exEnvelope });
   const exLabel = exMark.label;
   const exArt = useMemo<LessonArt>(() => {
     if (!exLabel) return art;

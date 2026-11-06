@@ -390,6 +390,8 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
   const group = cs.subgroups.find((s) => s.id === 'sub-drums')!;
   // A DCA moves only its members, so with none the fader would move nothing.
   const dcaLocked = cs.channels.some((c) => c.dca === 'dca-band') ? undefined : 'no channel is on BAND yet. Open CONSOLE and tap a channel’s DCA cell.';
+  // The tray's ▲/▼ and MUTE too: only a DCA with a member gets its strip.
+  const liveDcas = cs.dcas.filter((d) => cs.channels.some((c) => c.dca === d.id));
   const params: DockParam[] = [
     { ...dbFader({ id: 'dca', label: 'BAND DCA', db: dca.levelDb, min: -60, max: 10, onChange: (db) => setCs((s) => setDca(s, 'dca-band', { levelDb: db })), home: 0, level: true, of: 'on the BAND DCA' }), locked: dcaLocked, autoBind: true } as DockParam,
     {
@@ -403,7 +405,8 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
           <Body>Three drum channels and the bass: their L/R assignment, their GROUP cell, their DCA cell, and the drummer’s pre-fader wedge send. Tap GROUP to cycle a channel into DRUMS and take it OFF L/R; tap DCA to hang it on BAND.</Body>
           <ConsolePanel cs={cs} onChange={setCs} channels={['kick', 'snare', 'oh', 'bass']} columns={['main', 'sub', 'dca', 'send:aux4']} sendNames={WEDGE_NAMES} />
           <SubgroupStrip cs={cs} onChange={setCs} ids={['sub-drums']} />
-          <DcaStrip cs={cs} onChange={setCs} />
+          {dcaLocked ? <Body>{`BAND DCA — locked: ${dcaLocked}`}</Body> : null}
+          {liveDcas.length ? <DcaStrip cs={{ ...cs, dcas: liveDcas }} onChange={(next) => setCs({ ...next, dcas: cs.dcas.map((d) => next.dcas.find((x) => x.id === d.id) ?? d) })} /> : null}
         </View>
       ),
     },

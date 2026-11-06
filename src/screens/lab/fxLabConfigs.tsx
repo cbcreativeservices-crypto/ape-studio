@@ -163,7 +163,7 @@ function eqBandOf(v: Record<number, number>): EqBandSpec {
  *  reset clears only `enabled`, so without this an audition's bands stay in the
  *  sound while the curve draws band 0 alone. The screen says the curve is
  *  exactly the filter (the SignalChain lab's DEFAULTS do the same). */
-const EQ_OTHER_BANDS_OFF = [1, 2, 3, 4, 5].map((b) => ({ paramId: P.eqBand(b, 'type'), value: EQ_BAND_TYPES.off }));
+export const EQ_OTHER_BANDS_OFF = [1, 2, 3, 4, 5].map((b) => ({ paramId: P.eqBand(b, 'type'), value: EQ_BAND_TYPES.off }));
 
 const eqConfig: FxLabConfig = {
   labId: 'eq',
@@ -583,7 +583,7 @@ const chorusConfig: FxLabConfig = {
   exploreCaption:
     'Display: gray = your voice, blue = the delayed copy, the bold glowing line = what you hear (the two mixed; ' +
     'its color shows its level). As the slow wobble (the LFO) drifts the delay, the copy slides and the sum swells ' +
-    'and thins — that movement is the chorus.',
+    'and thins — that movement is the chorus. Compare VOICE DELAY on PINK NOISE: on a sine, each setting should sound the same.',
   sources: [srcSine(440), SRC_PINK],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
   // only sets param 0 (enabled) to 0 — every other atomic keeps its last
@@ -991,7 +991,8 @@ const compConfig: FxLabConfig = {
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
     'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +
-    'through COMP; each CLICK is a 5 ms spike, and the dotted outline is the hit untouched.',
+    'through COMP; each CLICK is a 5 ms spike, and the dotted outline is the hit untouched. The amber strip under OUT is the ' +
+    'gain reduction on each click: RATIO and THRESH change how deep it hangs.',
   // A steady source holds GR still, so the ATK/REL tray has nothing to show.
   exploreCaptionBySource: {
     'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. ATK/REL only show clearly on a transient: choose CLICK 120.',
@@ -1157,11 +1158,17 @@ const gateConfig: FxLabConfig = {
     'click source you hear it open on every hit and close in the silence between.',
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
-    'CLICK source (90 BPM): the gate opens on each hit — tune Hold/Release until it stops chattering. The sound flows ' +
+    'CLICK source (90 BPM): the gate opens on each hit. The sound is only a 5 ms click, so RANGE, HOLD and RELEASE barely change ' +
+    'what you hear: to hear those three, choose PINK NOISE. The sound flows ' +
     'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
   exploreCaptionBySource: {
     'PINK NOISE': 'PINK NOISE source: a steady hiss. Set THRESH above its level and the gate shuts; below it, the gate stays open.',
   },
+  // Audit decision 2 (2026-11-05): the words that make PINK NOISE worth choosing.
+  captionExtra: (_v, src) =>
+    src.label === 'PINK NOISE'
+      ? 'Set THRESH near its level and the gate should flutter (chatter): hear RANGE, HOLD and RELEASE there.'
+      : '',
   sources: [srcClick(90), SRC_PINK],
   // The gate's ATTACK is written, not inherited (D41 fix 2026-11-01). The
   // engine default (Effects.hpp DynamicsEffect `attackMs_{10.0}`) is slower
@@ -1384,6 +1391,29 @@ const limiterConfig: FxLabConfig = {
 export const LimiterLabScreen = () => <FxLabScreen config={limiterConfig} />;
 
 // ─────────────────────────────────────────────────── LAB 10 · Distortion ──
+/** The one source that shows OVERSAMPLING (audit decision 4, 2026-11-05). The
+ *  generator's own sine, so no native change. 5 kHz at 48 kHz: the harmonics
+ *  past Nyquist fold onto 3, 7, 13 kHz, none of them multiples of 5 kHz. On the
+ *  engine's path (Effects.hpp shapeOversampled, re-run sample by sample in
+ *  test/dec_A03) HARD CLIP's folded tones total −29 dBFS OFF, −46 dBFS ON at
+ *  +24 dB, and −14 / −36 dBFS at +36 dB. Computed, not heard. */
+const DIST_OS_HZ = 5000;
+const SRC_SINE_5K = {
+  ...srcSine(DIST_OS_HZ),
+  label: 'SINE 5 kHz',
+  short: '5 kHz',
+  blurb: 'A high tone: its harmonics soon pass the top of the audio range, so OVERSAMPLING can be heard on it.',
+};
+
+/** Under the rack: the only place the OS key shows, since neither drawing
+ *  takes it. Which source reveals it, and what OFF should do. */
+function distOsCaption(v: Record<number, number>, src: FxSourceSpec): string {
+  if (src.gen.frequency !== DIST_OS_HZ) return 'OVERSAMPLING barely shows on this source: choose SINE 5 kHz to hear it.';
+  return v[P.oversample] > 0.5
+    ? 'OS ON (CLEAN): most harmonics past the top of the audio range are filtered out. Now try OS OFF (ALIASING) on HARD CLIP at DRIVE +36 dB.'
+    : 'OS OFF (ALIASING): harmonics past the top of the audio range fold back as new tones that are not harmonics of 5 kHz, so this should sound rougher than ON (CLEAN) once DRIVE clips the wave.';
+}
+
 const distConfig: FxLabConfig = {
   labId: 'distortion',
   guide: distortionScreenGuide,
@@ -1396,7 +1426,8 @@ const distConfig: FxLabConfig = {
     '(same on top and bottom) makes only ODD harmonics; an asymmetric stage (like many single-ended tube stages) adds EVEN ones. ' +
     'Watch the wave change below.',
   exploreCaption: 'Sine source: what you hear as “grit” is the new harmonic series of the reshaped wave.',
-  sources: [srcSine(220), SRC_PINK],
+  sources: [srcSine(220), SRC_SINE_5K, SRC_PINK],
+  captionExtra: distOsCaption,
   params: [
     {
       // The teaching fader FIRST: push the wave into the clipper and watch the

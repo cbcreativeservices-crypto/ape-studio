@@ -306,14 +306,10 @@ const LAYERS: readonly { id: LayerId; label: string; short: string; text: (s: Ve
   { id: 'sound', label: 'Cameras, crowd and PA', short: 'CROWD · PA', text: () => 'The cameras’ frames, the crowd and the PA: what a mic must stay out of the picture of, and what it will hear besides the play.' },
 ];
 
-/** The sport a plan tour opens on (the preview harness may pick another). */
-const sid0 = (sports: readonly SportId[]): SportId => sports[Math.min(devIndex('sport'), sports.length - 1)];
-
 export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: readonly SportId[]; title: string; prompt: string; a11yLead: string }): MikingStep {
   // The web preview harness only: `&sport=<n>&layer=<n>` (1-based) opens that sport and layer.
   const [sid, setSid] = useState<SportId>(() => sports[Math.min(devIndex('sport'), sports.length - 1)]);
   const [k, setK] = useState(() => Math.min(devIndex('layer'), LAYERS.length - 1));
-  const [seen, setSeen] = useState<ReadonlySet<SportId>>(() => new Set([sid0(sports)]));
   const scene = sportPlan(sid);
   const layer = LAYERS[Math.min(k, LAYERS.length - 1)];
   const show = {
@@ -342,10 +338,9 @@ export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: r
       bezel: [
         { k: 'SPORT', v: scene.label.split(' (')[0].toUpperCase(), flex: 1.6 },
         { k: 'LAYER', v: layer.short, flex: 1.3 },
-        { k: 'LOOKED AT', v: `${seen.size} / ${sports.length}`, flex: 1 },
       ],
       params: [
-        { kind: 'fader', id: 'layer', label: 'LAYER', value: k / (LAYERS.length - 1), onChange: (v) => setK(Math.round(v * (LAYERS.length - 1))), format: () => `${k + 1} of ${LAYERS.length} · ${layer.label.toLowerCase()}`, formatShort: () => layer.short.slice(0, 8) },
+        { kind: 'fader', id: 'layer', label: 'LAYER', value: k / (LAYERS.length - 1), onChange: (v) => setK(Math.round(v * (LAYERS.length - 1))), format: () => layer.label.toLowerCase(), formatShort: () => layer.short.slice(0, 8) },
         {
           kind: 'options',
           id: 'sport',
@@ -353,10 +348,7 @@ export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: r
           valueLabel: scene.label.split(' ')[0].toUpperCase().slice(0, 9),
           selectedId: sid,
           sticky: true,
-          onSelect: (id) => {
-            setSid(id as SportId);
-            setSeen((p) => (p.has(id as SportId) ? p : new Set([...p, id as SportId])));
-          },
+          onSelect: (id) => setSid(id as SportId),
           options: sports.map((q) => ({ id: q, label: sportPlan(q).label, blurb: sportPlan(q).blurb })),
         },
       ],
@@ -368,7 +360,7 @@ export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: r
         <Card>
           <Point title={layer.label.toUpperCase()}>{layer.text(scene)}</Point>
         </Card>
-        <Body>{`Sports looked at: ${seen.size} of ${sports.length}. The outlines are typical layouts for a picture of where approval is needed — your event’s own plan and rules decide.`}</Body>
+        <Body>The outlines are typical layouts for a picture of where approval is needed — your event’s own plan and rules decide.</Body>
       </>
     ),
   };
@@ -426,7 +418,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
               setK(i);
               setSeen((p) => (p.has(ts[i].id) ? p : new Set([...p, ts[i].id])));
             },
-            format: () => `${k + 1} of ${ts.length} · ${t.label}`,
+            format: () => t.label,
             formatShort: () => t.short,
           },
           ts.length,
@@ -446,7 +438,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
           <Point title="DISTANCE">{`${fmtRange(slant)} to the source’s height. Each doubling of distance costs about 6 dB of direct sound in the open; the background does not drop with it.`}</Point>
           <Point title="ANGLE">{Math.round(aim) === 0 ? 'Straight ahead: on the axis of a mic aimed this way.' : `${aimWords(aim)}: a mic aimed straight ahead hears it off its axis — weaker, the higher frequencies first.`}</Point>
         </Card>
-        {seen.size === ts.length ? <Note tone="ok">{`Each target is a different range and angle from the same approved mark: a mic aimed at one hears the others less well. No mic zooms — the plan decides who covers what. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Targets looked at: ${seen.size} of ${ts.length}.`}</Body>}
+        {seen.size === ts.length ? <Note tone="ok">{`Each target is a different range and angle from the same approved mark: a mic aimed at one hears the others less well. No mic zooms — the plan decides who covers what. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : null}
       </>
     ),
   };
@@ -482,7 +474,6 @@ export function useMethodsStep({ scene, methods, box, prediction, prompt, done }
       badge: 'From above · white dashed = a pattern’s shape, not its range · the corner box = the mic itself, to scale',
       bezel: [
         { k: 'METHOD', v: mt.short, flex: 1.6 },
-        { k: 'LOOKED AT', v: `${seen.size} / ${methods.length}`, flex: 1 },
       ],
       params: [
         {
@@ -510,7 +501,7 @@ export function useMethodsStep({ scene, methods, box, prediction, prompt, done }
           <Point title="ITS LIMIT">{mt.limit}</Point>
           {mt.note ? <Point title="TO CHECK">{mt.note}</Point> : null}
         </Card>
-        {seen.size === methods.length ? <Note tone="ok">{done}</Note> : <Body>{`Methods looked at: ${seen.size} of ${methods.length}.`}</Body>}
+        {seen.size === methods.length ? <Note tone="ok">{done}</Note> : null}
       </>
     ),
   };
@@ -574,7 +565,6 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
         { k: 'SETUP', v: `${i + 1} / ${setups.length}`, flex: 0.8 },
         { k: 'ROLE', v: sel ? roleKey(sel.role) : '—', flex: 1 },
         { k: 'RANGE', v: fmtM1(r0), flex: 1 },
-        { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
       ],
       params: [
         ...faderUnlessFew(setups.length, { kind: 'fader', id: 'setup', label: 'SETUP', value: setups.length > 1 ? i / (setups.length - 1) : 0, onChange: (v) => setIdx(Math.round(v * (setups.length - 1))), format: () => (sel ? `${i + 1} of ${setups.length} · ${sel.role.toLowerCase()}` : 'no setup'), formatShort: () => `${i + 1} / ${setups.length}` }),
@@ -603,7 +593,7 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
             </Text>
           </Card>
         ) : null}
-        <Body>{`Looked at: ${seenCore} of ${core.length} main setups (ANOTHER START is there to explore).`}</Body>
+        <Body>Go through the main setups. ANOTHER START is there to explore.</Body>
       </>
     ),
   };
@@ -1277,15 +1267,26 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
           format: () => `the source ${fmtM1(o.dA)} from mic A`,
           formatShort: () => fmtM1(o.dA),
         },
+        // A value key, not a toggle: MIC B POLARITY clips beside a toggle's LED at
+        // 375 wide (the same key as pages/PTwoMic.tsx). Not sticky, so the result
+        // of the flip shows at once.
         {
-          kind: 'toggle',
+          kind: 'options',
           id: 'pol',
-          label: 'MIC B POLARITY',
-          value: pol === -1,
-          onToggle: () => {
-            setPol((p0) => (p0 === 1 ? -1 : 1));
-            setFlipped((fl) => (pol === 1 ? { ...fl, a: true } : { ...fl, b: true }));
+          label: 'POLARITY',
+          valueLabel: `MIC B ${pol === 1 ? '+' : '−'}`,
+          valueA11y: pol === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+          selectedId: pol === 1 ? 'normal' : 'inverted',
+          onSelect: (id) => {
+            const next = id === 'inverted' ? -1 : 1;
+            if (next === pol) return;
+            setPol(next);
+            setFlipped((fl) => (next === -1 ? { ...fl, a: true } : { ...fl, b: true }));
           },
+          options: [
+            { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+            { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. The delay does not change.' },
+          ],
         },
       ],
       initialParam: 'walk',

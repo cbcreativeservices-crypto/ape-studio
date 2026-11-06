@@ -13,7 +13,7 @@
  * those refinements bends around.
  */
 import type { Workspace } from '../calcTypes';
-import { CALC_LIMITS, COMP_GR_OUTSIDE_LIMIT, fmt, outsideLimit } from '../calcUnits';
+import { CALC_LIMITS, COMP_GR_OUTSIDE_LIMIT, COMP_THRESHOLD_BELOW_FLOOR, fmt, outsideLimit } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -21,8 +21,8 @@ const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
  *  input or target output — is refused in words outside −150…+30 dB. No real
  *  signal sits outside that span in dBFS or dBu; a −20,000,000 dB threshold
  *  printed an output of "-1.500e7 dB". */
-export const COMP_LEVEL_MIN_DB = -150;
-export const COMP_LEVEL_MAX_DB = 30;
+export const COMP_LEVEL_MIN_DB = CALC_LIMITS.compLevelDb[0];
+export const COMP_LEVEL_MAX_DB = CALC_LIMITS.compLevelDb[1];
 const compLevel = (name: string) => ({
   range: [COMP_LEVEL_MIN_DB, COMP_LEVEL_MAX_DB] as const,
   rangeMsg: `${name} must be from −150 to +30 dB — no real signal level sits outside that span, in dBFS or dBu. Check the level you entered.`,
@@ -199,7 +199,16 @@ const WS_COMPRESSOR: Workspace = {
       keySymbols: ['−', '·', '/'],
       note: 'How low to set the threshold so a known input gets exactly the gain reduction you want.',
       // D53 (owner 2026-11-05): 500 dB of target reduction printed "-676.67 dBFS".
-      refuse: (v) => (outsideLimit(n(v.targetGr), CALC_LIMITS.compGainReductionDb) ? COMP_GR_OUTSIDE_LIMIT : null),
+      refuse: (v) => {
+        const gr = n(v.targetGr);
+        if (outsideLimit(gr, CALC_LIMITS.compGainReductionDb)) return COMP_GR_OUTSIDE_LIMIT;
+        // Audit decision 24: every input in span, yet a ratio near 1:1 solved to
+        // "-6068 dBFS". The solved level meets the same span as a typed one.
+        // At 1:1 or below, compute's own refusal rows say why.
+        const r = n(v.ratio);
+        if (!(r > 1)) return null;
+        return outsideLimit(n(v.inLvl) - (gr * r) / (r - 1), CALC_LIMITS.compLevelDb) ? COMP_THRESHOLD_BELOW_FLOOR : null;
+      },
       compute: (v) => {
         const inp = n(v.inLvl);
         const r = n(v.ratio);

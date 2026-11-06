@@ -337,6 +337,10 @@ export const CALC_LIMITS = {
   splDb: [-20, SPL_MAX_AIR_DB],
   limiterMarginDb: [0, 60],
   compGainReductionDb: [0, 60],
+  /** A compressor level, typed or solved (owner 2026-10-23 item 7, audit decision 24). */
+  compLevelDb: [-150, 30],
+  /** Amplifier voltage gain: spec sheets run 26–44 dB (audit decision 24). */
+  ampGainDb: [0, 100],
   q: [0.1, 100],
 } as const;
 /** True when a value sits outside a limit (or is not a number at all). */
@@ -353,6 +357,10 @@ export const LIMITER_MARGIN_OUTSIDE_LIMIT =
   'SAFETY MARGIN must be from 0 to 60 dB. 60 dB down is one thousandth of the speaker’s rated voltage, far past any real protection margin. Check the margin you entered.';
 export const COMP_GR_OUTSIDE_LIMIT =
   'TARGET GAIN REDUCTION must be from 0 to 60 dB. 60 dB of reduction leaves one thousandth of the input’s voltage, far past any real compressor setting. Check the amount you entered.';
+export const COMP_THRESHOLD_BELOW_FLOOR =
+  'No real threshold gives that much gain reduction at this ratio: the answer falls below −150 dBFS, under any real signal. Raise the ratio, or ask for less gain reduction.';
+export const AMP_GAIN_OUTSIDE_LIMIT =
+  'AMPLIFIER VOLTAGE GAIN must be from 0 to 100 dB. Power amps sit around 26 to 44 dB, so a figure past that span is not a real spec. Check the gain you entered.';
 export const Q_OUTSIDE_LIMIT =
   'Q must be from 0.1 to 100. That runs from a band several octaves wide to a very narrow notch. Check the Q you entered.';
 /** Absolute zero: no air, no speed of sound, at or below it (D53). The

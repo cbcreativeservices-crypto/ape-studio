@@ -155,7 +155,7 @@ const BAND_BLURBS: Record<number, string> = {
   7: 'Seven broad bands — the mixer-EQ view. Reads at a glance; hides detail.',
   10: 'One band per octave — the classic 10-band graphic-EQ layout.',
   15: 'Two-thirds octave — a middle ground: more shape, still calm.',
-  31: 'One-third octave — the live-sound standard, matching a 31-band graphic EQ fader for fader.',
+  31: 'One-third octave — the live-sound standard, with the same band spacing as a 31-band graphic EQ, shown here from 25 Hz to 20 kHz.',
   61: 'Sixth-octave — analysis detail: narrow enough to isolate a single problem frequency.',
 };
 /** Engine fraction a mode needs (61 aggregates the fine spectrum instead —

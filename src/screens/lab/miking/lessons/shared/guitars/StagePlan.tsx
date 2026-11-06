@@ -378,7 +378,6 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     const items = lesson.setting.items;
     const nearItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
     const [nearSel, setNearSel] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [where, setWhere] = useState<'stage' | 'studio'>('stage');
     const [wideSel, setWideSel] = useState<string | null>(null);
     const wideItems = items.filter((i) => i.scene === where || i.scene === 'all' || i.scene === 'kit');
@@ -386,7 +385,6 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     const pickNear = (id: string) => {
       if (!nearItems.some((i) => i.id === id)) return;
       setNearSel(id);
-      setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
     };
     const pickWide = (id: string) => {
       if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -412,10 +410,10 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
         (i) => pick(list[i].id),
       );
     };
-    const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+    const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
       { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
-      extra,
+      ...(extra ? [extra] : []),
     ];
     const card = (it: SettingItem | undefined, idle: string) =>
       it ? (
@@ -436,7 +434,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
         rack: {
           render: (w, h) => <Plan w={w} h={h} sc={sc} scene="kit" items={items} wedges={lesson.live.wedges} highlight={nearSel} onTap={pickNear} label={`${C.setting.kitA11y} ${nearItem ? `Highlighted: ${nearItem.label}.` : ''} A typical layout.`} />,
           badge: 'From above · a typical layout · gray hatch = the player’s space',
-          bezel: bezel(nearItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
+          bezel: bezel(nearItem),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',
         },

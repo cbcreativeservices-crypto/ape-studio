@@ -122,14 +122,9 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
   function KeysInstrument({ lesson, journey }: PageProps) {
     const [view, setView] = useState<KeysView['id']>(spec.views[0].id);
     const [partId, setPartId] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [mount, setMount] = useState<WurliMount>('lid');
     const parts = spec.parts.filter((p) => p.views.includes(view));
-    const shown = spec.parts.find((p) => p.id === partId);
-    const pick = (id: string) => {
-      setPartId(id);
-      setSeen((s) => (s.has(id) ? s : new Set([...s, id])));
-    };
+    const shown = parts.find((p) => p.id === partId);
     const pIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
     const vMeta = spec.views.find((v) => v.id === view)!;
     const show: KeysShow | null = view === 'inside' ? null : rhodes ? (view === 'top' ? 'rhodesTop' : 'rhodesFront') : view === 'side' ? 'wurliSide' : 'wurliFront';
@@ -137,15 +132,10 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
     const [sView, setSView] = useState<CabExplorerView | 'lid' | 'oval' | 'cut'>(rhodes ? 'front' : 'lid');
     const [cloth, setCloth] = useState(true);
     const [sPart, setSPart] = useState<string | null>(null);
-    const [sSeen, setSSeen] = useState<ReadonlySet<string>>(() => new Set());
     const sParts: { id: string; title: string; text: string }[] = rhodes
       ? (spec.ampParts ?? []).map((id) => lesson.model.parts.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => !!p).map((p) => ({ id: p.id, title: p.label.toUpperCase(), text: p.role }))
       : [...spec.speakerParts];
     const sShown = sParts.find((p) => p.id === sPart);
-    const sPick = (id: string) => {
-      setSPart(id);
-      setSSeen((s) => (s.has(id) ? s : new Set([...s, id])));
-    };
     const sIdx = Math.max(0, sParts.findIndex((p) => p.id === sPart));
     const extras = useMemo(() => (rhodes ? ampExtras('combo', sPart) : null), [sPart]);
     const sViews = rhodes
@@ -171,14 +161,13 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         rack: {
           render: (w, h) =>
             view === 'inside' ? (
-              <MechanismDisplay w={w} h={h} kind={mechKind} reveal={null} shown={0} swing={0} highlight={partId} onTapPart={pick} accessibilityLabel={`Inside view, one note cut open: ${rhodes ? 'the key, the hammer, the tine with the tonebar above it, and the pickup facing the tine’s tip' : 'the key, the hammer, the steel reed and the charged pickup plate at its tip'}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />
+              <MechanismDisplay w={w} h={h} kind={mechKind} reveal={null} shown={0} swing={0} highlight={shown?.id ?? null} onTapPart={setPartId} accessibilityLabel={`Inside view, one note cut open: ${rhodes ? 'the key, the hammer, the tine with the tonebar above it, and the pickup facing the tine’s tip' : 'the key, the hammer, the steel reed and the charged pickup plate at its tip'}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />
             ) : (
-              <KeysExplorer w={w} h={h} show={show!} mount={mount} highlight={partId} onTapPart={pick} accessibilityLabel={`${vMeta.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />
+              <KeysExplorer w={w} h={h} show={show!} mount={mount} highlight={shown?.id ?? null} onTapPart={setPartId} accessibilityLabel={`${vMeta.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />
             ),
           badge: view === 'inside' ? 'INSIDE VIEW — drawn, never opened · one note · tap a part' : 'A simplified drawing with typical proportions · tap a part',
           bezel: [
             { k: 'PART', v: shown ? shown.title.split(' ')[0] : 'TAP ONE', flex: 1.4 },
-            { k: 'LOOKED AT', v: `${seen.size} / ${spec.parts.length}` },
             { k: 'VIEW', v: SHORT[view], flex: 1.1 },
           ],
           params: [
@@ -190,15 +179,15 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                 value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
                 onChange: (v) => {
                   const p = parts[Math.round(v * (parts.length - 1))];
-                  if (p) pick(p.id);
+                  if (p) setPartId(p.id);
                 },
-                format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
+                format: () => (shown ? shown.title : 'step through the parts'),
                 formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
               },
               parts.length,
               parts.findIndex((p) => p.id === partId),
               (i) => parts[i].title,
-              (i) => pick(parts[i].id),
+              (i) => setPartId(parts[i].id),
             ),
             { kind: 'options', id: 'view', label: 'VIEW', valueLabel: SHORT[view], selectedId: view, onSelect: (id) => setView(id as KeysView['id']), sticky: true, options: spec.views.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })) },
             ...(!rhodes && view === 'side' ? [{ kind: 'toggle' as const, id: 'mount', label: mount === 'lid' ? 'ON THE LID' : 'ON THE RAIL', value: mount === 'rail', onToggle: () => setMount((m) => (m === 'lid' ? 'rail' : 'lid')) }] : []),
@@ -227,14 +216,13 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         rack: {
           render: (w, h) =>
             rhodes ? (
-              <CabExplorer w={w} h={h} kind="combo12" back="open" view={sView as CabExplorerView} frontMode={cloth ? 'cloth' : 'baffle'} highlight={sPart} onTapPart={sPick} extras={extras ?? undefined} accessibilityLabel={`The combo amp, ${sMeta.label.toLowerCase()}.${sShown ? ` Highlighted: the ${sShown.title.toLowerCase()}.` : ''} The miked speaker is ringed.`} />
+              <CabExplorer w={w} h={h} kind="combo12" back="open" view={sView as CabExplorerView} frontMode={cloth ? 'cloth' : 'baffle'} highlight={sPart} onTapPart={setSPart} extras={extras ?? undefined} accessibilityLabel={`The combo amp, ${sMeta.label.toLowerCase()}.${sShown ? ` Highlighted: the ${sShown.title.toLowerCase()}.` : ''} The miked speaker is ringed.`} />
             ) : (
-              <KeysExplorer w={w} h={h} show={sView === 'oval' ? 'oval' : sView === 'cut' ? 'wurliSide' : 'wurliLid'} mount={mount} highlight={sPart} onTapPart={sPick} accessibilityLabel={`The reed piano’s speakers, ${sMeta.label.toLowerCase()}.${sShown ? ` Highlighted: the ${sShown.title.toLowerCase()}.` : ''}`} />
+              <KeysExplorer w={w} h={h} show={sView === 'oval' ? 'oval' : sView === 'cut' ? 'wurliSide' : 'wurliLid'} mount={mount} highlight={sPart} onTapPart={setSPart} accessibilityLabel={`The reed piano’s speakers, ${sMeta.label.toLowerCase()}.${sShown ? ` Highlighted: the ${sShown.title.toLowerCase()}.` : ''}`} />
             ),
           badge: rhodes ? (sView === 'front' ? (cloth ? 'From the front · the miked speaker ringed · its dust cap marked through the cloth' : 'The grille cloth taken away IN THE DRAWING only — never on a real amp') : 'Cut through the speaker’s middle · tap a part') : sView === 'cut' ? (mount === 'lid' ? 'The later model · the speaker screwed to the lid' : 'The earlier model · the speaker on the amp rail, behind the grille') : 'A simplified drawing · the grille positions are typical, not measured',
           bezel: [
             { k: 'PART', v: sShown ? sShown.title.split(' ')[0] : 'TAP ONE', flex: 1.4 },
-            { k: 'LOOKED AT', v: `${sSeen.size} / ${sParts.length}` },
             { k: rhodes ? 'AMP' : 'MOUNT', v: rhodes ? 'COMBO' : mount === 'lid' ? 'LID' : 'RAIL', flex: 1.1 },
           ],
           params: [
@@ -246,15 +234,15 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                 value: sParts.length > 1 ? sIdx / (sParts.length - 1) : 0,
                 onChange: (v) => {
                   const p = sParts[Math.round(v * (sParts.length - 1))];
-                  if (p) sPick(p.id);
+                  if (p) setSPart(p.id);
                 },
-                format: () => (sShown ? `${sShown.title} · ${sSeen.size} of ${sParts.length} looked at` : `step through the ${sParts.length} parts`),
+                format: () => (sShown ? sShown.title : 'step through the parts'),
                 formatShort: () => (sShown ? sShown.title.split(' ')[0].slice(0, 9) : 'STEP'),
               },
               sParts.length,
               sParts.findIndex((p) => p.id === sPart),
               (i) => sParts[i].title,
-              (i) => sPick(sParts[i].id),
+              (i) => setSPart(sParts[i].id),
             ),
             { kind: 'options', id: 'view', label: 'VIEW', valueLabel: SHORT[sView], selectedId: sView, onSelect: (id) => setSView(id as typeof sView), sticky: true, options: sViews },
             rhodes ? { kind: 'toggle', id: 'cloth', label: cloth ? 'CLOTH ON' : 'CLOTH OFF', value: !cloth, onToggle: () => setCloth((x) => !x) } : { kind: 'toggle', id: 'mount', label: mount === 'lid' ? 'LATER MODEL' : 'EARLIER MODEL', value: mount === 'rail', onToggle: () => setMount((m) => (m === 'lid' ? 'rail' : 'lid')) },

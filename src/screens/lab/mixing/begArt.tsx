@@ -11,7 +11,8 @@
  *                  height = the range it plays in (the session model's own
  *                  low/high Hz), width = its fader level, its outline carved
  *                  by the renderer's own high-pass and EQ biquads, a glow for
- *                  its reverb send. Folds to the centre for the mono check.
+ *                  its reverb send, a Ø on any track with polarity flipped.
+ *                  Folds to the centre for the mono check.
  *   PrepArt        a DAW session before / after the prep checklist
  *   FlowArt        the eight stations as gear, in YOUR tap order, then in
  *                  signal order with the cables once solved
@@ -103,7 +104,7 @@ export type MapProps = {
   a11y?: string;
 };
 
-type Shape = { id: TrackId; d: string; ghost: string | null; silent: boolean; db: number; send: number | null; pos: number; cx: number };
+type Shape = { id: TrackId; d: string; ghost: string | null; silent: boolean; db: number; send: number | null; pos: number; cx: number; flipped: boolean; topY: number };
 
 export function MixMapArt(p: MapProps) {
   const x0 = 46;
@@ -150,11 +151,22 @@ export function MixMapArt(p: MapProps) {
       send: p.verb && s.verbSendDb != null && !silent ? s.verbSendDb : null,
       pos,
       cx,
+      flipped: !!s.polarity,
+      topY: yOf(t.highHz),
     };
   });
   // Loud parts are drawn first so the quiet ones stay visible on top.
   // The anchor last of all, so its ring is never covered.
   const order = [...shapes].sort((a, b) => (a.id === p.anchor ? 1 : b.id === p.anchor ? -1 : b.db - a.db));
+  // The Ø marks sit at the top of each flipped shape. Centred parts share an
+  // axis and nearly share a top, so a mark that would land on another steps
+  // sideways, keeping every one readable.
+  const marks: { id: TrackId; x: number; y: number }[] = [];
+  for (const s of [...shapes].filter((v) => v.flipped).sort((a, b) => a.topY - b.topY)) {
+    let x = s.cx;
+    while (marks.some((m) => Math.abs(m.x - x) < 14 && Math.abs(m.y - s.topY) < 14)) x += 15;
+    marks.push({ id: s.id, x: Math.min(x1 - 8, x), y: s.topY });
+  }
   const key: { dim: DimensionId; text: string }[] = [
     { dim: 'frequency', text: 'HEIGHT = RANGE' },
     { dim: 'balance', text: 'WIDTH = LEVEL' },
@@ -168,7 +180,7 @@ export function MixMapArt(p: MapProps) {
       a11y={
         p.a11y ??
         `${p.title}. ${shapes
-          .map((s) => `${track(s.id).name} ${s.silent ? 'silent' : `${fmtDb(Math.round(s.db))} dB, ${Math.abs(s.pos) < 0.05 || p.mono ? 'centre' : `${Math.round(Math.abs(s.pos) * 100)} % ${s.pos < 0 ? 'left' : 'right'}`}${s.send != null ? ', in the reverb' : ''}`}`)
+          .map((s) => `${track(s.id).name} ${s.silent ? 'silent' : `${fmtDb(Math.round(s.db))} dB, ${Math.abs(s.pos) < 0.05 || p.mono ? 'centre' : `${Math.round(Math.abs(s.pos) * 100)} % ${s.pos < 0 ? 'left' : 'right'}`}${s.send != null ? ', in the reverb' : ''}`}${s.flipped ? ', polarity flipped' : ''}`)
           .join('; ')}.`
       }
     >
@@ -235,6 +247,15 @@ export function MixMapArt(p: MapProps) {
           />
         ) : null,
       )}
+      {/* polarity flipped: a Ø at the top of the part, ringed in its track colour */}
+      {marks.map((m) => (
+        <G key={`p${m.id}`}>
+          <Circle cx={m.x} cy={m.y} r={6.5} fill="#0b0c10" stroke={TRACK_COLOR[m.id]} strokeWidth={1.2} />
+          <T x={m.x} y={m.y + 3.5} color={ART.amber} ls={0}>
+            Ø
+          </T>
+        </G>
+      ))}
       {/* legend: one swatch per track with its level — names never on the shapes */}
       {SESSION_TRACKS.map((t, i) => {
         const s = shapes[i];
@@ -244,7 +265,16 @@ export function MixMapArt(p: MapProps) {
         const ly = 228 + row * 17;
         return (
           <G key={t.id}>
-            <Rect x={lx} y={ly - 8} width={9} height={9} rx={1.5} fill={s.silent ? 'none' : TRACK_COLOR[t.id]} stroke={TRACK_COLOR[t.id]} strokeWidth={1} strokeDasharray={s.silent ? '2 1.5' : undefined} opacity={s.silent ? 0.7 : 0.9} />
+            {s.flipped ? (
+              <G>
+                <Circle cx={lx + 4.5} cy={ly - 3.5} r={6} fill="#0b0c10" stroke={TRACK_COLOR[t.id]} strokeWidth={1.2} />
+                <T x={lx + 4.5} y={ly} color={ART.amber} ls={0}>
+                  Ø
+                </T>
+              </G>
+            ) : (
+              <Rect x={lx} y={ly - 8} width={9} height={9} rx={1.5} fill={s.silent ? 'none' : TRACK_COLOR[t.id]} stroke={TRACK_COLOR[t.id]} strokeWidth={1} strokeDasharray={s.silent ? '2 1.5' : undefined} opacity={s.silent ? 0.7 : 0.9} />
+            )}
             <T x={lx + 13} y={ly} anchor="start" color={p.anchor === t.id ? ART.amber : ART.ink} ls={0.4}>
               {t.name}
             </T>
@@ -254,6 +284,11 @@ export function MixMapArt(p: MapProps) {
           </G>
         );
       })}
+      {marks.length ? (
+        <T x={170} y={259} color={ART.amber} ls={0.6}>
+          Ø = POLARITY FLIPPED
+        </T>
+      ) : null}
       {/* the encoding key — the four dimensions a still picture can hold */}
       {key.map((k, i) => (
         <T key={k.dim} x={52 + i * 80} y={272} color={p.focus === k.dim ? ART.amber : ART.inkDim} ls={0.4}>

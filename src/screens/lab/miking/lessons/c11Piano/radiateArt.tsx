@@ -78,6 +78,27 @@ function crossZ(pts: readonly (readonly [number, number])[], xm: number): number
 }
 const endCache = new Map<string, EndPaths>();
 
+/** SHORT STICK, in the cut: the lid so low that a ray tilted as on the full
+ *  stick comes back down into the case wall. Sound gets out through the gap
+ *  between the rim and the lid, so each ray is found from a point Q in that gap:
+ *  the straight line from the board to Q's mirror image in the lid crosses the
+ *  lid where the mirror law sends it on through Q, over the rim. a = lid angle. */
+export function shortStickRays(zb: number, zt: number, rimTop: number, t: number, a: number) {
+  const n = { z: Math.sin(a), y: Math.cos(a) };
+  const off = (p: { z: number; y: number }) => (p.z - zb) * n.z + (p.y - rimTop) * n.y; // below the lid, > 0
+  const W = zt - zb;
+  const gap = W * Math.tan(a);
+  return ([[0.18, 0.74], [0.4, 0.52], [0.62, 0.3]] as const).map(([f, k]) => {
+    const from = { z: zb + t + (W - 2 * t) * f, y: 40 };
+    const q = { z: zt, y: rimTop - gap * k };
+    const image = { z: q.z - 2 * off(q) * n.z, y: q.y - 2 * off(q) * n.y };
+    const along = off(from) / (off(from) - off(image));
+    const hit = { z: from.z + (image.z - from.z) * along, y: from.y + (image.y - from.y) * along };
+    const len = Math.hypot(q.z - hit.z, q.y - hit.y);
+    return { from, hit, out: { z: (q.z - hit.z) / len, y: (q.y - hit.y) / len } };
+  });
+}
+
 /** The case cut across at x = xm, seen from the keyboard (u = z, v = y). */
 function endPaths(g: GrandGeom, lid: LidState): EndPaths {
   const key = `${g.spec.id}:${lid}`;
@@ -174,6 +195,12 @@ function endPaths(g: GrandGeom, lid: LidState): EndPaths {
   } else if (lid === 'closed') {
     for (const dz of [-200, 0, 200]) arrow(up, mid + dz, 40, mid + dz, g.rimTop + 30);
     arrow(leak, zt - 30, g.rimTop - 10, zt + 260, g.rimTop - 60, 24);
+  } else if (lid === 'short') {
+    for (const ray of shortStickRays(zb, zt, g.rimTop, t, a)) {
+      up.moveTo(ray.from.z, ray.from.y);
+      up.lineTo(ray.hit.z, ray.hit.y);
+      arrow(reflect, ray.hit.z, ray.hit.y, ray.hit.z + ray.out.z * 1050, ray.hit.y + ray.out.y * 1050);
+    }
   } else {
     // Rays leaving the board tilted 30° toward the open side meet the lid's
     // underside (the plane through the hinge at angle a) and reflect off it
@@ -193,8 +220,7 @@ function endPaths(g: GrandGeom, lid: LidState): EndPaths {
       up.lineTo(hz, hy + 8);
       const dn = d.z * n.z + d.y * n.y;
       const r = { z: d.z - 2 * dn * n.z, y: d.y - 2 * dn * n.y };
-      const L = lid === 'full' ? 1050 : 900;
-      arrow(reflect, hz, hy + 8, hz + r.z * L, hy + 8 + r.y * L);
+      arrow(reflect, hz, hy + 8, hz + r.z * 1050, hy + 8 + r.y * 1050);
     }
   }
   for (const dz of [-260, 0, 260]) arrow(down, mid + dz, g.caseBottom + 30, mid + dz * 1.3, FLOOR_Y - 90, 24);

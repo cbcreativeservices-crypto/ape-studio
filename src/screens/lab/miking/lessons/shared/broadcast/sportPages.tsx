@@ -36,7 +36,7 @@ import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { SINGER_SIDE } from '../voice/voicePose.ts';
-import { Dim, FieldStage, MicAt, Ray, uvOf, type FieldInset } from '../field/FieldStage';
+import { Dim, FieldStage, MicAt, Ray, fieldXform, uvOf, type FieldInset } from '../field/FieldStage';
 import { DESTINATIONS, problemWords, type DestId } from './routing.ts';
 import { RoutingPanel, type SourceLook } from './RoutingPanel';
 import { BODY_CHAIN, FEED_HOME, KEY_WORDS, PRIVATE_REFUSED, feedPlan, feedProblemWords, feedProblems, type FeedSpec, type FeedState } from './feeds.ts';
@@ -47,7 +47,7 @@ import { HOST, TURN_PIVOT, turnHead } from './talkerPose.ts';
 import { withHead } from './bodyWorn.ts';
 import { TurnedHeadTop } from './BroadcastArt';
 import { HeadsetFrame } from './BodyWornArt';
-import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing, StandingTalker } from './SportSpeechArt';
+import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing, RoleTag, StandingTalker } from './SportSpeechArt';
 
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 const unit = (a: Vec3): Vec3 => {
@@ -395,35 +395,58 @@ const TIMINGS: Readonly<Record<'onTime' | 'late' | 'early', { h: Handoff; label:
   early: { h: HANDOFF_EARLY, label: 'Moved early', blurb: 'The mic leaves before the question has ended.' },
 };
 
-/** The strip: the four phases on one line, the mic's place under them; red
- *  where a voice is heard from the wrong mouth's distance. Static. */
-function HandoffStrip({ w, h, t }: { w: number; h: number; t: Handoff }) {
+/** The strip's height: drawn under the top view, inside the display. */
+const STRIP_H = 84;
+/** A display too short for both (the phone on its side): the strip goes beside
+ *  the top view, so the people and the mic stay in the picture. */
+const STAGE_MIN_H = 120;
+const STRIP_BESIDE_W = 330;
+
+/** The strip: the speech along the track (the question, then the answer), the
+ *  mic's line stepping from the reporter's lane to the guest's across its
+ *  move, and in red the words heard from the wrong mouth's distance. Read only. */
+export function HandoffStrip({ w, h, t }: { w: number; h: number; t: Handoff }) {
   const T = 10;
-  const x = (s: number) => 6 + (s / T) * (w - 12);
+  const x = (s: number) => 8 + (s / T) * (w - 16);
   const late = lostSyllables(t);
   const early = clippedQuestion(t);
+  const BAR = 20;
+  const y0 = 4;
+  const y1 = y0 + BAR + 14;
+  const atReporter = y0 + BAR + 2;
+  const atGuest = y1 - 2;
+  const arrives = t.moveStart + t.moveDur;
+  const mic = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(x(0), atReporter);
+    p.lineTo(x(t.moveStart), atReporter);
+    p.lineTo(x(arrives), atGuest);
+    p.lineTo(x(T), atGuest);
+    return p;
+  }, [w, t]); // eslint-disable-line react-hooks/exhaustive-deps
+  const lost = late > 0 ? `${late.toFixed(1)} s OF THE ANSWER LOST` : early > 0 ? `${early.toFixed(1)} s OF THE QUESTION LOST` : 'NO WORDS LOST';
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={`A timeline: the question until ${t.questionEnd} s, the mic moves from ${t.moveStart} s for ${t.moveDur} s, the answer from ${t.answerStart} s. ${late > 0 ? `The first ${late.toFixed(1)} s of the answer are heard from the reporter’s side.` : early > 0 ? `The last ${early.toFixed(1)} s of the question are heard from the guest’s side.` : 'The mic arrives before the answer.'}`}>
-        <RoundedRect x={x(0)} y={h * 0.08} width={x(t.questionEnd) - x(0)} height={h * 0.3} r={5} color="#6f8fb8" />
-        <RoundedRect x={x(t.answerStart)} y={h * 0.08} width={x(t.answerEnd) - x(t.answerStart)} height={h * 0.3} r={5} color="#5f9a6a" />
-        <Line p1={vec(x(0), h * 0.62)} p2={vec(x(t.moveStart), h * 0.62)} color="#c9ced8" strokeWidth={5} />
-        <Line p1={vec(x(t.moveStart), h * 0.62)} p2={vec(x(t.moveStart + t.moveDur), h * 0.62)} color="#ffc64d" strokeWidth={5}>
-          <DashPathEffect intervals={[5, 4]} />
-        </Line>
-        <Line p1={vec(x(t.moveStart + t.moveDur), h * 0.62)} p2={vec(x(T), h * 0.62)} color="#c9ced8" strokeWidth={5} />
-        {late > 0 ? <RoundedRect x={x(t.answerStart)} y={h * 0.04} width={x(t.answerStart + late) - x(t.answerStart)} height={h * 0.66} r={4} color="#ff6b5e" opacity={0.55} /> : null}
-        {early > 0 ? <RoundedRect x={x(t.moveStart)} y={h * 0.04} width={x(t.questionEnd) - x(t.moveStart)} height={h * 0.66} r={4} color="#ff6b5e" opacity={0.55} /> : null}
-        <Circle cx={x(t.moveStart + t.moveDur)} cy={h * 0.62} r={6} color="#ffc64d" />
+        <RoundedRect x={0} y={0} width={w} height={h} r={0} color="#0d0f13" />
+        <RoundedRect x={x(0)} y={y0} width={x(t.questionEnd) - x(0)} height={BAR} r={4} color="#44618a" />
+        <RoundedRect x={x(t.answerStart)} y={y1} width={x(t.answerEnd) - x(t.answerStart)} height={BAR} r={4} color="#3f7350" />
+        {late > 0 ? <RoundedRect x={x(t.answerStart)} y={y1} width={x(t.answerStart + late) - x(t.answerStart)} height={BAR} r={4} color="#ff6b5e" /> : null}
+        {early > 0 ? <RoundedRect x={x(t.moveStart)} y={y0} width={x(t.questionEnd) - x(t.moveStart)} height={BAR} r={4} color="#ff6b5e" /> : null}
+        <Path path={mic} style="stroke" strokeWidth={3} strokeJoin="round" strokeCap="round" color="#ffc64d" />
+        <Circle cx={x(arrives)} cy={atGuest} r={5} color="#ffc64d" />
       </Canvas>
-      <Text style={[styles.tick, { left: x(0), top: h * 0.1 }]} {...fitValue(9)}>
+      <Text style={[styles.tick, { left: x(0) + 5, top: y0 + 4 }]} {...fitValue(9)}>
         QUESTION
       </Text>
-      <Text style={[styles.tick, { left: x(t.answerStart) + 4, top: h * 0.1 }]} {...fitValue(9)}>
+      <Text style={[styles.tick, { left: x(t.answerStart + late) + 5, top: y1 + 4 }]} {...fitValue(9)}>
         ANSWER
       </Text>
-      <Text style={[styles.tick, { left: x(0), top: h * 0.72, color: colors.textMuted }]} {...fitValue(9)}>
-        MIC AT THE REPORTER → AT THE GUEST
+      <Text style={[styles.tick, { left: x(0), top: y1 + BAR + 5, width: w * 0.4, color: '#ffc64d' }]} {...fitValue(9)}>
+        {`MIC MOVES AT ${t.moveStart} s`}
+      </Text>
+      <Text style={[styles.tick, { right: 8, top: y1 + BAR + 5, width: w * 0.55, textAlign: 'right', color: late > 0 || early > 0 ? '#ff6b5e' : '#5bff85' }]} {...fitValue(9)}>
+        {lost}
       </Text>
     </View>
   );
@@ -498,25 +521,37 @@ export function useHandoffStep(spec: HandoffSpec): MikingStep {
     { id: 'g', text: 'GUEST', u: spec.guest.x - 160, v: spec.guest.z + 330, align: 'center', tone: who === 'guest' ? 'amber' : 'muted' },
     { id: 'r', text: 'REPORTER', u: spec.reporter.x - 160, v: spec.reporter.z - 330, align: 'center', tone: who === 'reporter' ? 'amber' : 'muted' },
   ];
+  const draw = (px: number) => (
+    <>
+      {spec.top(px)}
+      <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
+      <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
+      <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={spec.look.len} />
+      <HeldArmArt view="top" shoulder={spec.shoulder} p={micP} aim={aim} len={spec.look.len} />
+    </>
+  );
   return {
     key: 'handoff',
     title: 'The handoff',
     kind: 'TRY',
     layout: 'rack',
     rack: {
-      render: (w, h) => (
-        <FieldStage w={w} h={h} view="top" box={spec.box} a11y={a11y} labels={labels}>
-          {(px) => (
-            <>
-              {spec.top(px)}
-              <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
-              <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
-              <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={spec.look.len} />
-              <HeldArmArt view="top" shoulder={spec.shoulder} p={micP} aim={aim} len={spec.look.len} />
-            </>
-          )}
-        </FieldStage>
-      ),
+      render: (w, h) =>
+        h - STRIP_H < STAGE_MIN_H ? (
+          <View style={{ width: w, height: h, flexDirection: 'row' }}>
+            <FieldStage w={w - STRIP_BESIDE_W} h={h} view="top" box={spec.box} a11y={a11y} labels={labels}>
+              {draw}
+            </FieldStage>
+            <HandoffStrip w={STRIP_BESIDE_W} h={h} t={T} />
+          </View>
+        ) : (
+          <View style={{ width: w, height: h }}>
+            <FieldStage w={w} h={h - STRIP_H} view="top" box={spec.box} a11y={a11y} labels={labels}>
+              {draw}
+            </FieldStage>
+            <HandoffStrip w={w} h={STRIP_H} t={T} />
+          </View>
+        ),
       badge: 'From above · amber = the voice speaking, blue = the other voice · by distance alone: a simplified picture · silent',
       bezel,
       params,
@@ -530,7 +565,6 @@ export function useHandoffStep(spec: HandoffSpec): MikingStep {
           <Point title="LEFT BETWEEN THEM">{`A mic left halfway hears the guest about ${Math.round(drop)} dB lower than a mic moved to their mouth — and turning up the gain raises the crowd by the same amount.`}</Point>
           <Point title={ok ? 'THE HANDOFF' : '✕ THE HANDOFF'}>{ok ? 'The question ends, the mic moves, a short pause: the answer’s first words land at the guest’s mouth. Then the mic goes back before the next question.' : lostSyllables(T) > 0 ? `The answer starts before the mic arrives: its first ${lostSyllables(T).toFixed(1)} s are heard from the wrong mouth’s distance — the first words of an answer are often the ones that matter.` : `The mic left before the question ended: its last ${clippedQuestion(T).toFixed(1)} s are heard from the guest’s side.`}</Point>
         </Card>
-        <HandoffStrip w={300} h={74} t={T} />
         {seen.has('between') && seen.size >= 3 ? <Note tone="ok">{spec.words.done}</Note> : null}
         <Body>Distances are calculated from the drawing and the levels by distance alone — the crowd, the wind and the mic’s pattern change the real picture. A pattern cannot make up for a mic left far from the mouth.</Body>
       </>
@@ -549,6 +583,13 @@ const FRONT_BOX: ViewBox = { u0: -470, u1: 470, v0: -320, v1: 1640 };
 const SIDE_BOX: ViewBox = { u0: -560, u1: 380, v0: -320, v1: 1640 };
 /** The corner view from above: the head and the chest, close in. */
 const ABOVE_BOX: ViewBox = { u0: -290, u1: 170, v0: -200, v1: 200 };
+/** The role tag's place: the torso's middle, between the chest mic and the belt. */
+const TAG_V = (TORSO.sternum.y + TORSO.beltFront.y) / 2 + 60;
+const TAG_SIDE_U = (TORSO.beltFront.x + TORSO.smallOfBack.x) / 2;
+/** A figure drawn smaller than this (px per mm: a short display) is narrower
+ *  than its tag: the tag sits beside it, clear of the mic and the torso. */
+const TAG_ON_FIGURE_S = 0.11;
+const TAG_BESIDE_PX = 58;
 
 export function useBodyStep(spec: BodySpec): MikingStep {
   const [who, setWho] = useState<Wearer>(spec.wearers[0]);
@@ -674,24 +715,33 @@ export function useBodyStep(spec: BodySpec): MikingStep {
     kind: 'TRY',
     layout: 'rack',
     rack: {
-      render: (w, h) => (
-        <FieldStage w={w} h={h} view="side" box={view === 'front' ? FRONT_BOX : SIDE_BOX} a11y={a11y} labels={labels} inset={{ ...inset, labels: aboveLabels(w, h) }}>
-          {() => (
-            <>
-              {view === 'side' ? <BodyChain uv={uvS} chain={chain} /> : null}
-              <PlayerBehind pose={pose} />
-              <PlayerInFront pose={pose} hands />
-              {at === 'headset' ? <HeadsetOnHead view={view} /> : null}
-              {view === 'front' ? <BodyChain uv={uvF} chain={chain} showPack={false} /> : null}
-              {kos.map((k) => (
-                <KeepOutRegion key={k.id} shape={k.shape} uv={uv} />
-              ))}
-              <PlaceRing u={mic.u} v={mic.v} r={34} />
-              {at === 'chest' ? <MicAt view="side" p={view === 'front' ? v3(mic.u, mic.v, 0) : chain.mic} aim={view === 'front' ? v3(0, -1, 0) : unit(sub(LIP, chain.mic))} art="lavalier" r={4} len={14} /> : null}
-            </>
-          )}
-        </FieldStage>
-      ),
+      render: (w, h) => {
+        const box = view === 'front' ? FRONT_BOX : SIDE_BOX;
+        const xf = fieldXform('side', box, w, h);
+        return (
+          <View style={{ width: w, height: h }}>
+            <FieldStage w={w} h={h} view="side" box={box} a11y={a11y} labels={labels} inset={{ ...inset, labels: aboveLabels(w, h) }}>
+              {() => (
+                <>
+                  {view === 'side' ? <BodyChain uv={uvS} chain={chain} /> : null}
+                  <PlayerBehind pose={pose} />
+                  <PlayerInFront pose={pose} hands />
+                  {at === 'headset' ? <HeadsetOnHead view={view} /> : null}
+                  {view === 'front' ? <BodyChain uv={uvF} chain={chain} showPack={false} /> : null}
+                  {kos.map((k) => (
+                    <KeepOutRegion key={k.id} shape={k.shape} uv={uv} />
+                  ))}
+                  <PlaceRing u={mic.u} v={mic.v} r={34} />
+                  {at === 'chest' ? <MicAt view="side" p={view === 'front' ? v3(mic.u, mic.v, 0) : chain.mic} aim={view === 'front' ? v3(0, -1, 0) : unit(sub(LIP, chain.mic))} art="lavalier" r={4} len={14} /> : null}
+                </>
+              )}
+            </FieldStage>
+            <View pointerEvents="none" style={[StyleSheet.absoluteFill, xf.s < TAG_ON_FIGURE_S && { left: -TAG_BESIDE_PX, right: TAG_BESIDE_PX }]}>
+              <RoleTag who={who} x={xf.ox + (view === 'front' ? 0 : TAG_SIDE_U) * xf.s} y={xf.oy + TAG_V * xf.s} />
+            </View>
+          </View>
+        );
+      },
       badge: 'Front or side, above in the corner · the places are drawing defaults · hatched = never mount here · silent',
       bezel,
       params,

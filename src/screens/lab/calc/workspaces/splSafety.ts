@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { CALC_LIMITS, DBU_REF_V, LIMITER_MARGIN_OUTSIDE_LIMIT, MIC_SENS_FIELD, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_FLOOR_WHY, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, outsideLimit, overAirCeiling, snapWhole, underSplFloor } from '../calcUnits';
+import { AMP_GAIN_OUTSIDE_LIMIT, CALC_LIMITS, DBU_REF_V, LIMITER_MARGIN_OUTSIDE_LIMIT, MIC_SENS_FIELD, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_FLOOR_WHY, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, outsideLimit, overAirCeiling, snapWhole, underSplFloor } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -1155,6 +1155,8 @@ const WS_LIMITER: Workspace = {
       refuse: (v) => {
         // D53 (owner 2026-11-05): a 500 dB margin printed "-500.75 dBu".
         if (outsideLimit(n(v.margin), CALC_LIMITS.limiterMarginDb)) return LIMITER_MARGIN_OUTSIDE_LIMIT;
+        // Audit decision 24: the gain is subtracted, so 500 dB printed a threshold.
+        if (outsideLimit(n(v.ampGain), CALC_LIMITS.ampGainDb)) return AMP_GAIN_OUTSIDE_LIMIT;
         const thr = 20 * Math.log10(Math.sqrt(n(v.pwr) * n(v.z)) / V_REF_DBU) - n(v.ampGain) - n(v.margin);
         return thr > LIMITER_MAX_THRESHOLD_DBU ? LIMITER_THRESHOLD_TOO_HIGH : null;
       },

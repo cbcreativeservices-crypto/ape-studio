@@ -80,7 +80,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, outside,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, outside, raysShowLoss,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -120,6 +120,8 @@ function SceneHero({
   onPulseClock?: (clock: SharedValue<number> | null) => void;
   /** Outside zone + per-wall transmission loss (Room Builder). */
   outside?: { marginM: number; tlDb: [number, number, number, number] } | null;
+  /** Rays fade with the energy each bounce leaves (Reverb). */
+  raysShowLoss?: boolean;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -145,6 +147,7 @@ function SceneHero({
       wallLabels={wallLabels}
       onPulseClock={onPulseClock}
       outside={outside}
+      raysShowLoss={raysShowLoss}
     />
   );
 }
@@ -186,7 +189,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, raysShowLoss,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -208,6 +211,7 @@ function RackScene({
   highlightPath?: { x: number; y: number }[] | null;
   wallLabels?: (string | null)[];
   onPulseClock?: (clock: SharedValue<number> | null) => void;
+  raysShowLoss?: boolean;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -237,6 +241,7 @@ function RackScene({
         highlightPath={highlightPath}
         wallLabels={wallLabels}
         onPulseClock={onPulseClock}
+        raysShowLoss={raysShowLoss}
       />
     </View>
   );
@@ -1675,6 +1680,7 @@ export function ReverbModule(p: WaveModuleProps) {
                     layers={layers}
                     onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
                     onPulseClock={onPulseClock}
+                    raysShowLoss
                   />
                 )}
                 rt60={rt500}

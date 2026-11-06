@@ -48,7 +48,8 @@ import { zonesAvailable } from '../../../engine/geometry/zones.ts';
 import { guideFor } from '../../../engine/geometry/guides.ts';
 import { dist } from '../../../engine/geometry/vec.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../../engine/physics/polar.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, notchesHz } from '../../../engine/physics/twoMic.ts';
+import { PatternInset, patternInsetBadge } from '../../../engine/scene/PatternInset';
+import { C20, EQUAL_PATH_MM, deltaTms, notchDepthDb, notchesHz } from '../../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
@@ -148,26 +149,20 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
   function AmpInstrument({ lesson, journey }: PageProps) {
     const [show, setShow] = useState<ElectricShow>(spec.shows[0].id);
     const [partId, setPartId] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const parts = spec.instParts.filter((p) => !p.shows || p.shows.includes(show));
-    const shown = spec.instParts.find((p) => p.id === partId);
-    const pick = (id: string) => {
-      setPartId(id);
-      setSeen((s) => (s.has(id) ? s : new Set([...s, id])));
-    };
+    // Only the parts of THIS view: a part picked on another view is not on this
+    // drawing. A view with one part simply names it.
+    const shown = parts.find((p) => p.id === partId) ?? (parts.length === 1 ? parts[0] : undefined);
+    const pick = (id: string) => setPartId(id);
     const pIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
     const showMeta = spec.shows.find((s) => s.id === show)!;
     /* the amp */
     const [view, setView] = useState<CabExplorerView>('front');
     const [cloth, setCloth] = useState(true);
     const [aPart, setAPart] = useState<string | null>(null);
-    const [aSeen, setASeen] = useState<ReadonlySet<string>>(() => new Set());
     const aParts = spec.ampParts.map((id) => lesson.model.parts.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => !!p);
     const aShown = lesson.model.parts.find((p) => p.id === aPart);
-    const aPick = (id: string) => {
-      setAPart(id);
-      setASeen((s) => (s.has(id) ? s : new Set([...s, id])));
-    };
+    const aPick = (id: string) => setAPart(id);
     const aIdx = Math.max(0, aParts.findIndex((p) => p.id === aPart));
     const extras = useMemo(() => ampExtras(spec.rig, aPart), [aPart]);
     const viewOpts = [
@@ -188,39 +183,42 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         kind: 'TRY',
         layout: 'rack',
         rack: {
-          render: (w, h) => <ElectricExplorer w={w} h={h} show={show} highlight={partId} pickupLit={null} onTapPart={pick} accessibilityLabel={`${showMeta.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />,
-          badge: 'A simplified drawing with typical proportions · tap a part',
+          render: (w, h) => <ElectricExplorer w={w} h={h} show={show} highlight={shown?.id ?? null} pickupLit={null} onTapPart={pick} accessibilityLabel={`${showMeta.label.toLowerCase()}.${shown ? ` Highlighted: the ${shown.title.toLowerCase()}.` : ''}`} />,
+          badge: parts.length > 1 ? 'A simplified drawing with typical proportions · tap a part' : 'A simplified drawing with typical proportions',
           bezel: [
             { k: 'PART', v: shown ? shown.title.split(' ')[0] : 'TAP ONE', flex: 1.4 },
-            { k: 'LOOKED AT', v: `${[...seen].filter((id) => spec.instParts.some((p) => p.id === id)).length} / ${spec.instParts.length}` },
             { k: 'VIEW', v: showMeta.label.split(' ')[0], flex: 1.1 },
           ],
           params: [
-            tapsWhenFew(
-              {
-                kind: 'fader',
-                id: 'part',
-                label: 'PART',
-                value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
-                onChange: (v) => {
-                  const p = parts[Math.round(v * (parts.length - 1))];
-                  if (p) pick(p.id);
-                },
-                format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
-                formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
-              },
-              parts.length,
-              parts.findIndex((p) => p.id === partId),
-              (i) => parts[i].title,
-              (i) => pick(parts[i].id),
-            ),
+            ...(parts.length > 1
+              ? [
+                  tapsWhenFew(
+                    {
+                      kind: 'fader',
+                      id: 'part',
+                      label: 'PART',
+                      value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
+                      onChange: (v) => {
+                        const p = parts[Math.round(v * (parts.length - 1))];
+                        if (p) pick(p.id);
+                      },
+                      format: () => (shown ? shown.title : 'step through the parts'),
+                      formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
+                    },
+                    parts.length,
+                    parts.findIndex((p) => p.id === partId),
+                    (i) => parts[i].title,
+                    (i) => pick(parts[i].id),
+                  ),
+                ]
+              : []),
             ...(spec.shows.length > 1 ? [{ kind: 'options' as const, id: 'view', label: 'VIEW', valueLabel: showMeta.label.split(' ')[0], selectedId: show, onSelect: (id: string) => setShow(id as ElectricShow), sticky: true, options: spec.shows.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb })) }] : []),
           ],
           initialParam: 'part',
         },
         well: (
           <>
-            <Landing looking={showMeta.label.toLowerCase()} prompt="Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page." />
+            <Landing looking={showMeta.label.toLowerCase()} prompt={parts.length > 1 ? 'Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page.' : `One part to look at in this view: ${parts[0]?.title.toLowerCase()}. There is nothing to answer on this page.`} />
             {shown ? (
               <Card>
                 <Point title={shown.title}>{shown.text}</Point>
@@ -254,7 +252,6 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           badge: view === 'front' ? (cloth ? 'From the front · the miked speaker ringed in amber · its dust cap marked through the cloth' : 'The grille cloth taken away IN THE DRAWING only — never on a real amp') : view === 'face' ? 'One speaker face-on · tap a part' : 'Cut through the speaker’s middle · tap a part',
           bezel: [
             { k: 'PART', v: aShown ? aShown.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-            { k: 'LOOKED AT', v: `${aSeen.size} / ${aParts.length}` },
             { k: 'AMP', v: CABINETS[kind].short, flex: 1.1 },
           ],
           params: [
@@ -268,7 +265,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   const p = aParts[Math.round(v * (aParts.length - 1))];
                   if (p) aPick(p.id);
                 },
-                format: () => (aShown ? `${aShown.short.toUpperCase()} · ${aSeen.size} of ${aParts.length} looked at` : `step through the ${aParts.length} parts`),
+                format: () => (aShown ? aShown.short.toUpperCase() : 'step through the parts'),
                 formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
               aParts.length,
@@ -987,6 +984,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
   const NULL_TOL = 15;
   const AZ_MAX = 45;
   const EL_MAX = 30;
+  /** The speaker's grille: the inset leaves it in sight. */
+  const CAB_AT: Vec3 = { x: 0, y: 0, z: 0 };
   const PATTERNS: PatternId[] = ['cardioid', 'supercardioid', 'hypercardioid'];
   function AmpContext({ lesson, answers, onAnswered, onInteractive, interactiveDone }: PageProps) {
     const close = lesson.zones.find((z) => z.id === spec.placeZone)!;
@@ -1093,8 +1092,12 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         kind: 'LIVE',
         layout: 'rack',
         rack: {
-          render: (w, h) => <PlacementScene rig={rig} art={art} view={view} w={w} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />,
-          badge: `A simplified pattern (white dashed: shape, not range) · monitors where a stage often puts them · counts within ±${NULL_TOL}° of a null`,
+          render: (w, h) => (
+            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
+              {(sceneW) => <PlacementScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+            </PatternInset>
+          ),
+          badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
           bezel,
           params,
           initialParam: 'aim',
@@ -1147,7 +1150,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const front = lesson.zones.find((z) => z.id === spec.workedZone)!;
     const rear = lesson.zones.find((z) => z.id.endsWith('.rear'));
     const rig = useRig(lesson, {
-      mics: [{ slot: 'A', typeId: spec.micDefault, pattern: 'cardioid', pose: front.start }, ...(rear ? [{ slot: 'B' as const, typeId: spec.micDefault, pattern: 'cardioid' as const, pose: rear.start }] : [])],
+      // Each mic reads from the side it faces: the words name the grille for A and the back for B, whichever mic is being moved.
+      mics: [{ slot: 'A', typeId: spec.micDefault, pattern: 'cardioid', pose: front.start, surfaceId: 'grille' }, ...(rear ? [{ slot: 'B' as const, typeId: spec.micDefault, pattern: 'cardioid' as const, pose: rear.start, surfaceId: 'back' }] : [])],
     });
     const [view, setView] = useState<ViewId>('side');
     const [slot, setSlot] = useState<MicSlot>(pair === 'rear' ? 'B' : 'A');
@@ -1158,10 +1162,6 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     useEffect(() => {
       if (pair === 'di' && slot !== 'A') setSlot('A');
     }, [pair, slot]);
-    useEffect(() => {
-      const want = pair === 'rear' && slot === 'B' ? 'back' : 'grille';
-      if (rig.surfaceId !== want) rig.setSurfaceId(want);
-    }, [slot, pair, rig]);
     useEffect(() => {
       const b = rig.mics.find((m) => m.slot === 'B');
       if (b && b.on !== (pair === 'rear')) rig.setOn('B', pair === 'rear');
@@ -1187,6 +1187,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const switchB: 1 | -1 = rearMode ? B!.polarity : diPol;
     const sEff = (rearMode ? switchB * -1 : switchB) as 1 | -1;
     const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
+    // Equal paths, opposed: CANCELS only where the levels really match (HTwoMic's rule).
+    const eqCell = sEff === 1 ? 'NO COMB' : notchDepthDb(gA, gB) <= -20 ? 'CANCELS' : 'PARTIAL';
     const dt0 = useRef<number | null>(null);
     if (dt0.current == null) dt0.current = dt;
     const [flips, setFlips] = useState({ toInv: false, toNorm: false });
@@ -1214,8 +1216,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
       ? [
           { k: 'PATH Δd R−F', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
           { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'rear later' : 'rear earlier', flex: 1.3 },
-          { k: 'NOTCH', v: equal ? (sEff === -1 ? 'CANCELS' : 'NO COMB') : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
-          { k: 'REAR', v: switchB === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'sum: in step' : 'sum: opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
+          { k: 'NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
+          { k: 'REAR', v: switchB === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'in step' : 'opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
         ]
       : [
           { k: 'MIC PATH', v: dCell.v, sub: 'cone to mic', flex: 1.2 },

@@ -31,7 +31,6 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const items = lesson.setting.items;
   const kitItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
   const [kitSel, setKitSel] = useState<string | null>(null);
-  const [kitSeen, setKitSeen] = useState<ReadonlySet<string>>(() => new Set());
   const [where, setWhere] = useState<'stage' | 'studio'>('stage');
   const [wideSel, setWideSel] = useState<string | null>(null);
   const wideItems = items.filter((i) => i.scene === where || i.scene === 'all');
@@ -43,7 +42,6 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const pickKit = (id: string) => {
     if (!kitItems.some((i) => i.id === id)) return;
     setKitSel(id);
-    setKitSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
   const pickWide = (id: string) => {
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -101,10 +99,10 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       ],
     },
   ];
-  const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+  const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
     { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
     { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.4 },
-    extra,
+    ...(extra ? [extra] : []),
   ];
   const kitSelItem = byId(kitSel);
   const wideSelItem = byId(wideSel);
@@ -126,7 +124,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       rack: {
         render: render('kit', kitSel, pickKit, `${C.setting.kitA11y} ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
         badge: PW?.badge ?? 'The kit from above · a typical right-handed layout · gray hatch = the player’s space',
-        bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
+        bezel: bezel(kitSelItem),
         params: kitParams,
         initialParam: 'item',
       },

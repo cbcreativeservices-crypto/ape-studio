@@ -25,6 +25,7 @@ import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../e
 import { useRig } from '../engine/scene/useRig.ts';
 import { previewMemo, stopWordOf } from '../engine/scene/placementDock.ts';
 import { PlacementScene } from '../engine/scene/PlacementScene';
+import { PatternInset, patternInsetBadge } from '../engine/scene/PatternInset';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { solidOnPath } from '../engine/geometry/collision.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../engine/physics/polar.ts';
@@ -36,6 +37,11 @@ import { copyOf } from '../engine/model/copy.ts';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
 
 const NULL_TOL = 15; // deg: "in the null" tolerance (the lab's, ruling §16.4)
+/** A mic this steep turns on its own axis under LEFT–RIGHT (cos 80° of the
+ *  move, none at 90°): the aim barely moves, so only tilt is offered. Read off
+ *  the mic's real start: useRig tilts a mic clear of a part it would start
+ *  inside, so the zone's own angle can be 30° steeper than the mic (C11). */
+const TILT_ONLY_EL = 60;
 
 export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant: shared }: PageProps) {
   const C = copyOf(lesson);
@@ -59,7 +65,8 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const [pattern, setPattern] = useState<PatternId>(startPattern);
   const [wedgeId, setWedgeId] = useState(lesson.live.wedges.find((w) => w.id === X.target)?.id ?? lesson.live.wedges[0]?.id ?? '');
   const [view, setView] = useState<ViewId>('top');
-  const [aimAxis, setAimAxis] = useState<'az' | 'el'>('az');
+  const [tiltOnly] = useState(() => Math.abs(rig.mics[0].pose.el) >= TILT_ONLY_EL);
+  const [aimAxis, setAimAxis] = useState<'az' | 'el'>(tiltOnly ? 'el' : 'az');
   const [predicted, setPredicted] = useState<string | null>(null);
   const [aimed, setAimed] = useState(false);
   const pose = rig.mics[0].pose;
@@ -120,15 +127,19 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
         return `${sw ? `${sw} · ` : ''}${x === 0 ? C.words.facing : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`}`;
       },
       formatShort: () => fmtAngle(a),
-      chooser: {
-        title: 'TURN THE MIC',
-        selectedId: aimAxis,
-        onSelect: (id) => setAimAxis(id as 'az' | 'el'),
-        options: [
-          { id: 'az', label: 'LEFT–RIGHT', blurb: X.aimBlurb },
-          { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
-        ],
-      },
+      ...(tiltOnly
+        ? {}
+        : {
+            chooser: {
+              title: 'TURN THE MIC',
+              selectedId: aimAxis,
+              onSelect: (id: string) => setAimAxis(id as 'az' | 'el'),
+              options: [
+                { id: 'az', label: 'LEFT–RIGHT', blurb: X.aimBlurb },
+                { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
+              ],
+            },
+          }),
     },
     {
       kind: 'options',
@@ -192,22 +203,26 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <PlacementScene
-            rig={rig}
-            art={art}
-            view={view}
-            w={w}
-            h={h}
-            slots={['A']}
-            showZones={false}
-            interactive={false}
-            boxOverride={view === 'top' ? PLAN : SIDE}
-            wedge={live ? { at: wedge.p, faces: wedge.faces, src, glyph: wedge.glyph } : null}
-            showLabels={false}
-            accessibilityLabel={label}
-          />
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, wedge.glyph === 'none' ? src : wedge.p] : [pose.p]} angle={live ? theta : 0} source={live ? (wedge.glyph === 'none' ? wedge.short : 'MONITOR') : null}>
+            {(sceneW) => (
+              <PlacementScene
+                rig={rig}
+                art={art}
+                view={view}
+                w={sceneW}
+                h={h}
+                slots={['A']}
+                showZones={false}
+                interactive={false}
+                boxOverride={view === 'top' ? PLAN : SIDE}
+                wedge={live ? { at: wedge.p, faces: wedge.faces, src, glyph: wedge.glyph } : null}
+                showLabels={false}
+                accessibilityLabel={label}
+              />
+            )}
+          </PatternInset>
         ),
-        badge: `A simplified pattern (white dashed: shape, not range) · ${X.badgeWhere ?? 'monitors where a stage often puts them'} · counts within ±${NULL_TOL}° of a null`,
+        badge: live ? `${patternInsetBadge(true, wedge.glyph === 'none' ? wedge.short : undefined)} · counts within ±${NULL_TOL}° of a null · ${X.badgeWhere ?? 'monitors where a stage often puts them'}` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',

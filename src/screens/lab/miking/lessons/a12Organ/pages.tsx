@@ -439,6 +439,7 @@ const meet = MetalInstrument({
   partsNote: 'A pipe organ is many instruments in one case — and sometimes in several places in the room. Tap each division.',
   partsWarn: 'Never touch the pipes, the shutters, the panels, the wiring or the blower, and never hang anything from the organ. Access to the loft, the gallery and the chambers is the venue’s to give.',
   variantKey: 'ROOM',
+  partsVariant: false,
 });
 
 type PageFn = (p: PageProps) => ReactNode;

@@ -262,13 +262,13 @@ function KeysElevation({ k, face1 }: { k: KeyRects; face1: number }) {
  * same rule as the shared scene's markOnGlass: at least HI_MIN_PX long and
  * HI_THIN_PX wide, and a part smaller than that gets HI_MIN_PX both ways,
  * centred on it. The drawings do not know their fit, so the scale is the fit on
- * the rack's stage at 375 pt wide; any larger stage only makes the mark larger.
- * The test pins these scales to keysBox. */
+ * the smallest rack stage, a 375 × 667 pt phone; any larger stage only makes
+ * the mark larger. The test pins these scales to keysBox. */
 export const HI_MIN_PX = 44;
 export const HI_THIN_PX = 16;
 export const HI_STROKE_PX = 3;
-/** The rack's stage on a 375 pt phone, as measured, and the fit's padding. */
-export const HI_STAGE = { w: 353, h: 290, pad: 6 } as const;
+/** The rack's stage on a 375 × 667 pt phone, as measured, and the fit's padding. */
+export const HI_STAGE = { w: 353, h: 198, pad: 6 } as const;
 const stageFit = (bw: number, bh: number) => Math.min((HI_STAGE.w - 2 * HI_STAGE.pad) / bw, (HI_STAGE.h - 2 * HI_STAGE.pad) / bh);
 
 export type HiArt = 'rhodesFront' | 'rhodesTop' | 'wurliFront' | 'wurliSide' | 'oval';
@@ -708,11 +708,12 @@ export function rhodesLabels(view: 'front' | 'top'): StaticLabel[] {
     return [
       // CLASH SWEEP 2026-10-10 (owner at 3×): CONTROLS sat on the harp
       // cover and KEYS on the key slip, and SUSTAIN PEDAL ran onto the right
-      // leg. CONTROLS now stands a row above the cover with a leader down to
-      // the knobs, KEYS under the case (left of the pedal rod), and the
-      // pedal's words left of the pedal.
-      { id: 'lid', text: 'HARP COVER · THE TINES ARE UNDER IT', short: 'HARP COVER', u: 0, v: F.top - 34, align: 'center' },
-      { id: 'ctl', text: 'CONTROLS · OUTPUT JACK', short: 'CONTROLS', u: F.knobs[0] - 30, v: F.top - 94, align: 'left', tone: 'muted', at: { u: F.knobs[0], v: (F.nameRail.v0 + F.nameRail.v1) / 2 } },
+      // leg. CONTROLS now stands above the cover with a leader down to the
+      // knobs, KEYS under the case (left of the pedal rod), and the pedal's
+      // words left of the pedal. Both top words share one row, the only one
+      // inside the box: a second row above it was cut off on a short phone.
+      { id: 'lid', text: 'HARP COVER · THE TINES ARE UNDER IT', short: 'HARP COVER', u: F.knobs[0] + 50, v: F.top - 34, align: 'left' },
+      { id: 'ctl', text: 'CONTROLS · JACK', short: 'CONTROLS', u: F.knobs[0] + 24, v: F.top - 34, align: 'right', tone: 'muted', at: { u: F.knobs[0], v: (F.nameRail.v0 + F.nameRail.v1) / 2 } },
       { id: 'keys', text: 'KEYS', u: -150, v: F.bottom + 34, align: 'center', tone: 'muted', at: { u: -150, v: F.keyFace.v0 + 6 } },
       { id: 'legs', text: 'LEGS', u: F.legs[0] + 40, v: -190, align: 'left', tone: 'muted' },
       { id: 'pedal', text: 'SUSTAIN PEDAL', short: 'PEDAL', u: F.pedal.u - 70, v: -30, align: 'right', tone: 'amber' },

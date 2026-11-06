@@ -18,7 +18,8 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import type { VariantId, ViewBox, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { Floor, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, HIGHLIGHT } from '../shared/metal/metalArt';
+import { Floor, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL } from '../shared/metal/metalArt';
+import { FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { polyBar, type BarGeom } from '../shared/metal/metalFigures';
 import { metalFrontPose } from '../shared/metal/metalFigure.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
@@ -220,22 +221,63 @@ function PlayerBehindQuiet({ pose }: { pose: ReturnType<typeof metalFrontPose> }
   );
 }
 
+/** The held beater's grip and its tip on the base, from the audience: from
+ *  behind the triangle, low on the player's right (screen-left). */
+const HELD_GRIP: [number, number] = [-150, BASE_Y + 105];
+const HELD_TIP: [number, number] = [-8, BASE_Y + ROD_D * 0.2];
+/** The mounted beaters, from the audience: [grip, tip], one on each side. */
+const MOUNTED_BEATERS: [[number, number], [number, number]][] = [
+  [[-180, P0.y + 120], [-46, P0.y + 34]],
+  [[180, P0.y + 120], [46, P0.y + 34]],
+];
+
+/** The chosen part on the face-on drawing, each part of each way of playing. */
+export function triangleMark(variant: VariantId, id: string | null): FrontMark[] {
+  const held = variant !== 'mounted';
+  const c = cornersOf(variant);
+  const pts = rodPath(c).map(fr);
+  const box = frontBox(variant);
+  const px = mmPerPx(box);
+  const rod = 18 * px;
+  const spot = 24 * px;
+  const side = (i: number): FrontMark[] => [{ kind: 'run', a: pts[i], b: pts[i + 1], w: rod }];
+  const beater = (a: [number, number], b: [number, number]): FrontMark => ({ kind: 'run', a: [a[0] + (b[0] - a[0]) * 0.12, a[1] + (b[1] - a[1]) * 0.12], b, w: rod });
+  switch (id) {
+    case 'tri.base':
+    case 'tri.sideM':
+      return side(0);
+    case 'tri.side':
+    case 'tri.topM':
+      return side(1);
+    case 'tri.oside':
+    case 'tri.osideM':
+      return side(2);
+    case 'tri.open': {
+      const [u, v] = fr(c.open);
+      return [{ kind: 'ring', u, v, r: spot }];
+    }
+    case 'tri.corner': {
+      const [u, v] = fr(c.closed);
+      return [{ kind: 'ring', u, v, r: spot }];
+    }
+    case 'tri.clip':
+      return [{ kind: 'run', a: [0, CLIP_Y + 6], b: [0, TOP_Y - ROD_D], w: 26 * px }];
+    case 'tri.stand':
+      return [
+        { kind: 'run', a: [-STAND.barHalf, STAND.barY], b: [STAND.barHalf, STAND.barY], w: rod },
+        { kind: 'run', a: [0, STAND.barY], b: [0, box.v1 - 10 * px], w: rod },
+      ];
+    case 'tri.beater':
+      return held ? [beater(HELD_GRIP, HELD_TIP)] : MOUNTED_BEATERS.map(([a, b]) => beater(a, b));
+    default:
+      return [];
+  }
+}
+
 function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
   const held = variant !== 'mounted';
   const c = cornersOf(variant);
-  const { rod, pts } = frontTriangle(c);
-  // The beater comes from behind the triangle (the player's side), its grip
-  // low on the player's right (screen-left from the audience).
-  const grip: [number, number] = [-150, BASE_Y + 105];
-  const tip: [number, number] = [-8, BASE_Y + ROD_D * 0.2];
-  const hl = (id: string) => highlight === id;
-  const segOf = (id: string): [number, number][] | null => {
-    if (id === 'tri.base' || id === 'tri.sideM') return [pts[0], pts[1]];
-    if (id === 'tri.side' || id === 'tri.topM') return [pts[1], pts[2]];
-    if (id === 'tri.oside' || id === 'tri.osideM') return [pts[2], pts[3]];
-    return null;
-  };
-  const hiSeg = highlight ? segOf(highlight) : null;
+  const { rod } = frontTriangle(c);
   return (
     <Group>
       <Floor u0={-2000} u1={2000} />
@@ -252,29 +294,24 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
           ))}
         </Group>
       )}
-      {hiSeg ? <Path path={polyPath(hiSeg)} style="stroke" strokeWidth={ROD_D * 2.6} strokeCap="round" color={HIGHLIGHT} opacity={0.35} /> : null}
-      {hl('tri.open') ? <Circle cx={pts[0][0] + 6} cy={pts[0][1] - 8} r={26} color={HIGHLIGHT} opacity={0.3} /> : null}
-      {hl('tri.corner') ? <Circle cx={pts[1][0] + 14} cy={pts[1][1] - 10} r={26} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Rod path={rod} d={ROD_D} pal={STEEL} />
       {held ? (
         <Group>
-          {hl('tri.clip') ? <Circle cx={0} cy={CLIP_Y + 20} r={40} color={HIGHLIGHT} opacity={0.3} /> : null}
           <Lines u={0} v0={CLIP_Y + CLIP.h} v1={TOP_Y - ROD_D / 2} />
           <Clip u={0} v={CLIP_Y} />
           {/* the arms and hands over the clip: the left fist closed on it,
               thumb and fingers round its top, the line hanging free below */}
           <PlayerInFront pose={HELD_FRONT_POSE} dim={0.62} />
-          {hl('tri.beater') ? <Path path={polyPath([grip, tip])} style="stroke" strokeWidth={BD * 5} strokeCap="round" color={HIGHLIGHT} opacity={0.35} /> : null}
-          <Beater a={grip} b={tip} />
+          <Beater a={HELD_GRIP} b={HELD_TIP} />
         </Group>
       ) : (
         <Group>
-          {hl('tri.stand') ? <Path path={polyPath([[0, -60], [0, STAND.barY]])} style="stroke" strokeWidth={50} color={HIGHLIGHT} opacity={0.3} /> : null}
-          {hl('tri.beater') ? <Path path={polyPath([[-180, P0.y + 120], [-40, P0.y + 30]])} style="stroke" strokeWidth={BD * 5} strokeCap="round" color={HIGHLIGHT} opacity={0.35} /> : null}
-          <Beater a={[-180, P0.y + 120]} b={[-46, P0.y + 34]} />
-          <Beater a={[180, P0.y + 120]} b={[46, P0.y + 34]} />
+          {MOUNTED_BEATERS.map(([a, b], i) => (
+            <Beater key={i} a={a} b={b} />
+          ))}
         </Group>
       )}
+      <FrontMarks marks={triangleMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );
 }

@@ -10,7 +10,7 @@
  *                    and level change are read from the drawing
  *                    (bodyWorn.bodyMicReadout; inverse square).
  *   useCableStep     THE LOOPS (key 'cable'): the wearer stands, sits, turns
- *                    or gestures; with no loop, the broadcast loop, or both
+ *                    or gestures, each drawn; with no loop, the broadcast loop, or both
  *                    loops — where the tug ends up (bodyWorn.cablePull; a
  *                    simplified picture, the moves drawing defaults).
  *   useBreathStep    OUT OF THE BREATH (key 'breath'): slide a headset's
@@ -247,8 +247,8 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
 export type CableSpec = {
   mount: BodyMount;
   standing: boolean;
-  /** The wearer from the side, close on the chest (the scene's figure). */
-  side: (px: number) => ReactNode;
+  /** The wearer from the side, close on the chest, in the chosen move. */
+  side: (px: number, move: MoveId) => ReactNode;
   box: ViewBox;
   words: { subject: string; done: string };
 };
@@ -269,9 +269,13 @@ export function useCableStep(spec: CableSpec): MikingStep {
   const note = (mId: MoveId, l: LoopsId) => setTried((s) => (s.has(`${mId}:${l}`) ? s : new Set([...s, `${mId}:${l}`])));
   const capsule = spec.mount.at;
   const tail = v3(capsule.x - 1, capsule.y + 12, capsule.z);
-  const pack = packAt(spec.standing);
+  const standing = spec.standing && move !== 'sit';
+  const pack = packAt(standing);
   const showBroadcast = loops.broadcast && !(!loops.secondary && mv.mm >= LOOPS.broadcast.mm);
-  const showSecondary = loops.secondary && mv.mm < LOOPS.secondary.mm;
+  // The tape holds through every move: the words talk about it even once a
+  // gesture has used the loop's spare cable.
+  const showSecondary = loops.secondary;
+  const spent = loops.secondary && pull.atTape > 0;
   const a11y = `The ${spec.words.subject} from the side, close on the chest: a lavalier clipped ${spec.mount.label.toLowerCase()}, its cable down the shirt to a bodypack on the belt. The wearer is ${mv.words}; ${LOOP_OPTS.find((o) => o.id === loopsId)!.label.toLowerCase()}. ${pull.atCapsule > 0 ? `The pull reaches the capsule: about ${pull.atCapsule} millimeters of tug.` : 'No pull reaches the capsule.'}`;
   const params: DockParam[] = [
     {
@@ -322,15 +326,16 @@ export function useCableStep(spec: CableSpec): MikingStep {
           a11y={a11y}
           labels={[
             { id: 'cap', text: 'CAPSULE', u: capsule.x + 90, v: capsule.y - 70, align: 'left', tone: 'amber', at: { u: capsule.x, v: capsule.y } },
-            { id: 'pack', text: 'BODYPACK', short: 'PACK', u: pack.x - 70, v: pack.y - 160, align: 'right', tone: 'muted', at: { u: pack.x - 8, v: pack.y - 30 } },
-            ...(showSecondary ? [{ id: 'tape', text: 'TAPED LOOP', short: 'TAPE', u: capsule.x + 90, v: capsule.y + 210, align: 'left' as const, tone: 'muted' as const, at: { u: capsule.x - 4, v: capsule.y + 210 } }] : []),
+            { id: 'pack', text: 'BODYPACK', short: 'PACK', u: pack.x - (standing ? 70 : 96), v: pack.y - 160, align: 'right', tone: 'muted', at: { u: pack.x - 8, v: pack.y - 30 } },
+            // With the arms out the words sit below the forearm, the leader on the tape itself.
+            ...(showSecondary ? [{ id: 'tape', text: 'TAPED LOOP', short: 'TAPE', u: capsule.x + 90, v: capsule.y + (spent ? 300 : 210), align: 'left' as const, tone: 'muted' as const, at: { u: capsule.x - (spent ? 24 : 4), v: capsule.y + (spent ? 164 : 210) } }] : []),
           ]}
         >
           {(px) => (
             <>
-              {spec.side(px)}
+              {spec.side(px, move)}
               <BeltPack view="side" at={pack} />
-              <LavCable view="side" from={tail} pack={pack} loops={{ broadcast: showBroadcast, secondary: showSecondary }} taut={pull.atCapsule > 0} tug={pull.atCapsule > 0} standing={spec.standing} />
+              <LavCable view="side" from={tail} pack={pack} loops={{ broadcast: showBroadcast, secondary: showSecondary, spent }} taut={pull.atCapsule > 0} tug={pull.atCapsule > 0} standing={standing} />
               <LavClip view="side" grip={spec.mount.grip} />
               {spec.mount.covered ? <FabricOver view="side" at={capsule} /> : null}
               <MicAt view="side" p={capsule} aim={unit(sub(LIP, capsule))} art="lavalier" r={3} len={12} />
@@ -357,7 +362,7 @@ export function useCableStep(spec: CableSpec): MikingStep {
                   : `The broadcast loop’s spare cable gives first: nothing reaches the capsule.`}
           </Point>
         </Card>
-        {done ? <Note tone="ok">{spec.words.done}</Note> : null}
+        {done && loops.secondary ? <Note tone="ok">{spec.words.done}</Note> : null}
         <Body>Let the wearer sit, stand, turn and gesture before the take, and listen for cable taps, a tie or a necklace on the capsule, and the pack moving. A high-pass filter can soften a little rumble; it cannot repair a rub or a tug.</Body>
       </>
     ),

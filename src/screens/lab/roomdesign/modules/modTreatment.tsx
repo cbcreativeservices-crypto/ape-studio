@@ -42,6 +42,8 @@ const SIZE_MAX = 2.4;
 const FLASH_MS = 1000;
 /** THICK / SIZE with no item in the room (slider audit 2026-10-14). */
 export const NO_ITEM_LOCK = 'nothing to resize yet — ADD a treatment item first';
+/** The on/off key's own reason: it switches an item, it does not resize one. */
+export const NO_ITEM_SWITCH = 'nothing to switch yet — ADD a treatment item first';
 
 /** The reflection ABSORB NEXT would treat: the earliest untreated path the
  *  kit can reach (never the desk bounce), inside 20 ms first. */
@@ -243,7 +245,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       labelLines: 2,
       value: !!sel?.enabled,
       // No item, nothing to switch: LOCKED with its reason, like THICK and SIZE.
-      locked: !sel ? NO_ITEM_LOCK : undefined,
+      locked: !sel ? NO_ITEM_SWITCH : undefined,
       // Flip the LATEST state: a fast double tap read the same render twice
       // and landed one toggle instead of two (bug pass 2026-10-01).
       onToggle: () => {

@@ -12,7 +12,9 @@
  *   LavCable     the lav's cable: the broadcast loop at the clip, down inside
  *                the shirt (dashed), the secondary loop and its tape, round
  *                to the pack at the back of the belt — drawn TAUT (no loops)
- *                when a move pulls on it, with a tug mark at the capsule.
+ *                when a move pulls on it, with a tug mark at the capsule. The
+ *                tape stays drawn once a move has used the secondary loop's
+ *                spare cable: the loop runs straight, a tug mark at the tape.
  *   BeltPack     a bodypack transmitter on the belt with its antenna.
  *   FabricOver   one layer of shirt drawn over a concealed capsule.
  *   HeadsetFrame a headset's ear hook and its thin boom along the cheek to
@@ -21,6 +23,8 @@
  *   StandingPresenter  the voice family's standing figure in a jacket, the
  *                bodypack on the belt (`headless` for a step that draws the
  *                head turned).
+ *   MovePresenter the same wearer in each move of THE LOOPS: standing, seated
+ *                on a chair, turning (an arrow at the waist), arms out.
  */
 import { useMemo } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
@@ -29,7 +33,9 @@ import { EAR, EAR_HALF, HEAD_C } from '../voice/voiceSpec.ts';
 import { VoiceFigure } from '../voice/VoiceArt';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP } from '../voice/voicePose.ts';
-import { BREATH_JET, BODY_DIMS, CHEST_X, NECK_Y, packAt } from './bodyWorn.ts';
+import { StudioChair } from './BroadcastArt';
+import { HOST } from './talkerPose.ts';
+import { BREATH_JET, BODY_DIMS, CHEST_X, MOVE_POSES, NECK_Y, packAt, type MoveId } from './bodyWorn.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -176,9 +182,11 @@ export function LavClip({ view, grip }: { view: ViewId; grip: Vec3 }) {
  * loop just under the clip, down the shirt (dashed: under the shirt), the
  * secondary loop with its tape strip, the belt, and round the waist to the
  * pack at `pack`. `taut` draws the loops pulled out — the move has used
- * their spare cable — and `tug` marks a pull reaching the capsule.
+ * their spare cable — and `tug` marks a pull reaching the capsule. `loops.spent`:
+ * the secondary loop's spare is used, so it runs straight and the pull rests on
+ * its tape, which stays drawn with a tug mark beside it.
  */
-export function LavCable({ view, from, pack, loops, taut = false, tug = false, standing = true }: { view: ViewId; from: Vec3; pack: Vec3; loops: { broadcast: boolean; secondary: boolean }; taut?: boolean; tug?: boolean; standing?: boolean }) {
+export function LavCable({ view, from, pack, loops, taut = false, tug = false, standing = true }: { view: ViewId; from: Vec3; pack: Vec3; loops: { broadcast: boolean; secondary: boolean; spent?: boolean }; taut?: boolean; tug?: boolean; standing?: boolean }) {
   const p = useMemo(() => {
     const out = make();
     const under = make();
@@ -210,8 +218,17 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
         // Under the shirt too, so it lies inside the body's outline.
         under.lineTo(X - 4, secY - 34);
         secondary.moveTo(X - 4, secY - 34);
-        secondary.cubicTo(X + 10, secY - 22, X + 8, secY + 62, X - 8, secY + 60);
-        secondary.cubicTo(X - 66, secY + 58, X - 64, secY - 26, X - 4, secY - 34);
+        if (loops.spent) {
+          secondary.lineTo(X - 8, secY + 60);
+          pull.moveTo(X + 22, secY - 62);
+          pull.lineTo(X + 22, secY - 12);
+          pull.moveTo(X + 14, secY - 22);
+          pull.lineTo(X + 22, secY - 10);
+          pull.lineTo(X + 30, secY - 22);
+        } else {
+          secondary.cubicTo(X + 10, secY - 22, X + 8, secY + 62, X - 8, secY + 60);
+          secondary.cubicTo(X - 66, secY + 58, X - 64, secY - 26, X - 4, secY - 34);
+        }
         tape.addRRect(Skia.RRectXY(Skia.XYWHRect(X - 42, secY - 54, 48, 24), 4, 4));
         under.moveTo(X - 8, secY + 60);
       } else {
@@ -237,7 +254,7 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
       under.cubicTo(CHEST_X - 40, -180, pack.x + 60, -220, pack.x, pack.z);
     }
     return { out, under, secondary, tape, pull };
-  }, [view, from, pack, loops.broadcast, loops.secondary, taut, tug, standing]);
+  }, [view, from, pack, loops.broadcast, loops.secondary, loops.spent, taut, tug, standing]);
   return (
     <Group>
       <Path path={p.out} style="stroke" strokeWidth={6.6} strokeCap="round" strokeJoin="round" color="#08090b" />
@@ -435,6 +452,63 @@ export function StandingPresenter({ view, headless = false, pack = true, tie = f
       )}
       <Jacket view={view} standing tie={tie} />
       {pack && view === 'top' ? <BeltPack view="top" at={at} /> : null}
+    </Group>
+  );
+}
+
+/* ── the wearer in each move ── */
+
+/** The near side of a turn at the waist (toward the viewer): a band round the
+ *  body, its arrow running to the back. */
+function WaistTurn() {
+  const p = useMemo(() => {
+    const cx = -105;
+    const cy = NECK_Y + 408;
+    const rx = 150;
+    const ry = 40;
+    const end = 150 * DEG;
+    const tip = { u: cx + rx * Math.cos(end), v: cy + ry * Math.sin(end) };
+    const th = Math.atan2(ry * Math.cos(end), -rx * Math.sin(end));
+    const band = make();
+    band.addArc(Skia.XYWHRect(cx - rx, cy - ry, rx * 2, ry * 2), 20, 130);
+    const head = make();
+    head.moveTo(tip.u - 36 * Math.cos(th - 0.5), tip.v - 36 * Math.sin(th - 0.5));
+    head.lineTo(tip.u, tip.v);
+    head.lineTo(tip.u - 36 * Math.cos(th + 0.5), tip.v - 36 * Math.sin(th + 0.5));
+    return { band, head };
+  }, []);
+  return (
+    <Group>
+      <Path path={p.band} style="stroke" strokeWidth={11} strokeCap="round" color="#08090b" />
+      <Path path={p.head} style="stroke" strokeWidth={11} strokeCap="round" strokeJoin="round" color="#08090b" />
+      <Path path={p.band} style="stroke" strokeWidth={7} strokeCap="round" color="#e8eaee" />
+      <Path path={p.head} style="stroke" strokeWidth={7} strokeCap="round" strokeJoin="round" color="#e8eaee" />
+    </Group>
+  );
+}
+
+/** The wearer in profile in one move of THE LOOPS (MOVE_POSES), jacket on, the
+ *  near arm over it. The pack is the step's own drawing. */
+export function MovePresenter({ move }: { move: MoveId }) {
+  const pose = MOVE_POSES[move];
+  const seated = pose.posture === 'seated';
+  const mouth = useMemo(() => {
+    // Between the lips: the small dark lens the standing figure has (VoiceFigure).
+    const q = make();
+    q.moveTo(1.5, -2.5);
+    q.cubicTo(-4, -4.5, -11, -3.5, -14, 0);
+    q.cubicTo(-11, 3.5, -4, 4.5, 1.5, 2.5);
+    q.close();
+    return q;
+  }, []);
+  return (
+    <Group>
+      {seated ? <StudioChair view="side" t={HOST} /> : null}
+      <PlayerBehind pose={pose} />
+      <Jacket view="side" standing={!seated} />
+      <PlayerInFront pose={pose} />
+      <Path path={mouth} color="#24170f" opacity={0.92} />
+      {move === 'turn' ? <WaistTurn /> : null}
     </Group>
   );
 }

@@ -117,6 +117,10 @@ export function spillWords(m: PlotReadout['mics'][number]): string {
 }
 const fmtDist = (mm: number) => (mm < 1000 ? `${Math.round(mm / 10)} cm` : fmtM(mm));
 
+/** One mic position (a shared mic, or two back to back): its pickup shape is the
+ *  point of the setup, so it is drawn from above too. A stereo pair, from above,
+ *  keeps its aims alone: at stage scale lobes would hide the capsules. */
+const patternFromAbove = (id?: ArrayPresetId) => !!id && ARRAYS[id].art === 'ldc';
 /** group 2: the views a lesson draws (E06: from above only), and a view
  *  that is allowed (the asked one, else the first allowed). */
 const viewsFor = (l: Lesson): readonly StageView[] => ensembleOf(l).views ?? ['plan', 'section', 'front'];
@@ -188,21 +192,13 @@ export function EnsembleMeet(p: PageProps) {
   const VW = viewWordsOf(s);
   const [view, setView] = useState<StageView>(() => allowView(lesson, 'plan'));
   const [secId, setSecId] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const secs = s.sections;
   // group 2: singers, not players; a shared mic, not a main pair.
   const voices = secs.every((q) => q.family === 'voices');
   const who = voices ? 'singer' : 'player';
   const mainWord = E.meet.mainRig?.label ?? 'main pair';
   const sec = secs.find((q) => q.id === secId) ?? null;
-  const pick = (id: string) => {
-    if (id === 'cond') {
-      setSecId('cond');
-      return;
-    }
-    setSecId(id);
-    setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
-  };
+  const pick = (id: string) => setSecId(id);
   const idx = Math.max(0, secs.findIndex((q) => q.id === secId));
   const players = sec ? seatsOf(s, sec.id) : [];
   const centre = sec ? players.map((q) => q.p).reduce((a, b) => v3(a.x + b.x / players.length, 0, a.z + b.z / players.length), v3(0, 0, 0)) : null;
@@ -241,7 +237,6 @@ export function EnsembleMeet(p: PageProps) {
         bezel: [
           { k: 'SECTION', v: secId === 'cond' ? 'CONDUCTOR' : sec ? sec.short : 'TAP ONE', flex: 1.6 },
           { k: voices ? 'SINGERS' : 'PLAYERS', v: sec ? `${players.length}` : '—', flex: 0.8 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${secs.length}`, flex: 1 },
         ],
         params: [
           tapsWhenFew(
@@ -281,7 +276,7 @@ export function EnsembleMeet(p: PageProps) {
           ) : (
             <Note>{E.meet.sectionsNote}</Note>
           )}
-          <Body>{`${s.blurb} Looked at: ${seen.size} of ${secs.length} sections.`}</Body>
+          <Body>{s.blurb}</Body>
         </>
       ),
     },
@@ -430,7 +425,7 @@ export function EnsembleSetups(p: PageProps) {
   useEffect(() => {
     if (core.length && seenCore >= core.length && !interactiveDone.has('setupsSeen')) onInteractive('setupsSeen');
   }, [seenCore, core.length, interactiveDone, onInteractive]);
-  // Memoised per setup (L5-R1-03): stepping SETUP fast re-drew every stage piece twice (the LOOKED AT update).
+  // Memoised per setup (L5-R1-03): stepping SETUP fast re-drew every stage piece twice (the seen list update).
   const st = useMemo(() => (sel ? stageOf(sel) : { rigs: [], singles: [] }), [sel]);
   const c = sel?.rig?.place.c ?? sel?.singles?.[0]?.p ?? null;
   const a11y = sel ? `${sel.role}: ${sel.title}. ${sel.mics}. ${sel.start}` : 'No setup.';
@@ -446,13 +441,11 @@ export function EnsembleSetups(p: PageProps) {
         { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
         { k: 'OPEN MICS', v: `${plot.open}`, flex: 1 },
         { k: 'MARGIN LOST', v: plot.open > 1 ? `${plot.nom.toFixed(1)} dB` : '0 dB', flex: 1 },
-        { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
       ]
     : [
         { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
         { k: 'ARRAY', v: sel?.short ?? (sel?.rig ? ARRAYS[sel.rig.id].short : sel ? ((sel.singles?.length ?? 0) > 1 ? 'CLOSE MICS' : 'SPOT') : '—'), flex: 1.1 },
         { k: 'HEIGHT', v: c ? fmtM(-c.y) : '—', flex: 0.9 },
-        { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
       ];
   const steps: MikingStep[] = [
     {
@@ -461,7 +454,7 @@ export function EnsembleSetups(p: PageProps) {
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eqRings} dims detail={!!sel.rig && ARRAYS[sel.rig.id].family !== 'single'} lobes={view !== 'plan'} focus={sel.focus} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
+        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eqRings} dims detail={!!sel.rig && ARRAYS[sel.rig.id].family !== 'single'} lobes={view !== 'plan' || patternFromAbove(sel.rig?.id)} focus={sel.focus} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
         badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbor reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
         bezel,
         params: [
@@ -490,7 +483,7 @@ export function EnsembleSetups(p: PageProps) {
             </Card>
           ) : null}
           {plot ? <PlotCard r={plot} /> : null}
-          <Body>{`Looked at: ${seenCore} of ${core.length} setups${list.length > core.length ? ` (and ${list.length - core.length} more to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
+          <Body>The Placement Studio starts from the last one you look at.</Body>
         </>
       ),
     },
@@ -761,7 +754,7 @@ export function EnsemblePlacement(p: PageProps) {
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => (wk ? <EnsembleStage w={w} h={h} seating={s} view={wk.view} rigs={exRigs} dims detail={!single} lobes={wk.view !== 'plan'} accessibilityLabel={`A worked example, placed for you: ${worked!.title}. ${wk.title.toLowerCase()}: ${wk.text}`} /> : <Text style={styles.missing}>No worked example here.</Text>),
+        render: (w, h) => (wk ? <EnsembleStage w={w} h={h} seating={s} view={wk.view} rigs={exRigs} dims detail={!single} lobes={wk.view !== 'plan' || patternFromAbove(exRig?.id)} accessibilityLabel={`A worked example, placed for you: ${worked!.title}. ${wk.title.toLowerCase()}: ${wk.text}`} /> : <Text style={styles.missing}>No worked example here.</Text>),
         badge: 'WORKED EXAMPLE · placed for you · white = height and distance · the corner box = the array’s exact shape',
         bezel: [
           { k: exStep === 0 || exStep === 1 ? '▸ ARRAY' : 'ARRAY', v: exRig ? ARRAYS[exRig.id].short : '—', tint: exStep <= 1 ? '#ffc64d' : undefined, flex: 1 },
@@ -791,7 +784,7 @@ export function EnsemblePlacement(p: PageProps) {
       kind: 'PLACE',
       layout: 'rack',
       rack: {
-        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} rings={eqNow ? [eqNow.ring] : []} dims detail={!one} lobes={view !== 'plan'} accessibilityLabel={nowWords} />,
+        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} rings={eqNow ? [eqNow.ring] : []} dims detail={!one} lobes={view !== 'plan' || patternFromAbove(preset)} accessibilityLabel={nowWords} />,
         badge: 'Blue = suggested starting points for the array’s center · amber dot = the array’s center · readouts calculated from the drawing',
         bezel,
         params: params2,

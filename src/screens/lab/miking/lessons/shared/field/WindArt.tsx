@@ -12,7 +12,8 @@
  *
  * Air arrives from the left; its streamlines bend round the protection. The
  * curls at the capsule are the "wind on the capsule" cue — ILLUSTRATIVE, a
- * count from wind.ts, never a level. Static (D8).
+ * count from wind.ts, never a level. Behind it all, the SITE as a plain backdrop
+ * (forest, grassland, plaza): scenery in code, not to scale. Static (D8).
  */
 import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
@@ -227,17 +228,167 @@ export function WindLayerArt({ layer, exposure }: { layer: WindLayerId; exposure
   );
 }
 
-/** The wind step's display: the mic and its layer, labelled. */
+/* ── the place behind the mic ── */
+
+/** A plain scenery sketch, not to scale and no real location. It reaches far past
+ *  WIND_BOX so a tall stage and full screen stay covered; `ground` = the horizon. */
+const BACK = { u0: -1400, u1: 1400, v0: -900, v1: 900, ground: 128 };
+
+function area(u0: number, v0: number, u1: number, v1: number): SkPath {
+  const p = make();
+  p.addRect(Skia.XYWHRect(u0, v0, u1 - u0, v1 - v0));
+  return p;
+}
+
+/** Inside a forest: tree trunks crowd in, the canopy closes overhead. */
+function ForestBack() {
+  const g = useMemo(() => {
+    const rnd = seeded(23);
+    const far = make();
+    const near = make();
+    const canopy = make();
+    const litter = make();
+    for (let u = BACK.u0; u < BACK.u1; u += 58) far.addRect(Skia.XYWHRect(u + rnd() * 26, BACK.v0, 9 + rnd() * 8, BACK.ground + 8 - BACK.v0));
+    for (let u = BACK.u0; u < BACK.u1; u += 150) {
+      const x = u + rnd() * 70;
+      const half = 13 + rnd() * 8;
+      near.moveTo(x - half, BACK.v0);
+      near.lineTo(x + half, BACK.v0);
+      near.lineTo(x + half * 1.6, BACK.ground + 26);
+      near.lineTo(x - half * 1.6, BACK.ground + 26);
+      near.close();
+    }
+    for (let u = BACK.u0; u < BACK.u1; u += 46) canopy.addCircle(u + rnd() * 24, -118 - rnd() * 44, 44 + rnd() * 32);
+    canopy.addRect(Skia.XYWHRect(BACK.u0, BACK.v0, BACK.u1 - BACK.u0, -130 - BACK.v0));
+    for (let k = 0; k < 260; k++) {
+      const u = BACK.u0 + rnd() * (BACK.u1 - BACK.u0);
+      const v = BACK.ground + 12 + rnd() * 260;
+      litter.moveTo(u, v);
+      litter.lineTo(u + 7 + rnd() * 9, v + rnd() * 3);
+    }
+    return { all: area(BACK.u0, BACK.v0, BACK.u1, BACK.v1), floor: area(BACK.u0, BACK.ground, BACK.u1, BACK.v1), far, near, canopy, litter };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.all} color="#16261c" />
+      <Path path={g.far} color="#243a2c" />
+      <Path path={g.floor}>
+        <LinearGradient start={vec(0, BACK.ground)} end={vec(0, BACK.ground + 260)} colors={['#3a3a20', '#222414']} />
+      </Path>
+      <Path path={g.litter} style="stroke" strokeWidth={3} strokeCap="round" color="#6b6330" opacity={0.7} />
+      <Path path={g.near}>
+        <LinearGradient start={vec(0, -130)} end={vec(0, BACK.ground + 26)} colors={['#3a2c20', '#5a4532']} />
+      </Path>
+      <Path path={g.canopy} color="#1f4a2e" />
+    </Group>
+  );
+}
+
+/** Open grassland: a wide sky, a low far rise, grass to the horizon. */
+function OpenBack() {
+  const g = useMemo(() => {
+    const rnd = seeded(31);
+    const rise = make();
+    rise.moveTo(BACK.u0, BACK.ground + 4);
+    rise.lineTo(BACK.u0, BACK.ground - 16);
+    rise.cubicTo(-420, BACK.ground - 62, -120, BACK.ground - 8, 110, BACK.ground - 24);
+    rise.cubicTo(300, BACK.ground - 40, 560, BACK.ground - 44, BACK.u1, BACK.ground - 10);
+    rise.lineTo(BACK.u1, BACK.ground + 4);
+    rise.close();
+    const tufts = make();
+    for (let k = 0; k < 520; k++) {
+      const u = BACK.u0 + rnd() * (BACK.u1 - BACK.u0);
+      const depth = rnd();
+      const v = BACK.ground + 8 + depth * depth * 280;
+      const tall = 7 + depth * 20;
+      for (const lean of [4, 9, 14]) {
+        tufts.moveTo(u, v);
+        tufts.quadTo(u + lean * 0.3, v - tall * 0.7, u + lean, v - tall);
+      }
+    }
+    return { sky: area(BACK.u0, BACK.v0, BACK.u1, BACK.ground + 1), grass: area(BACK.u0, BACK.ground, BACK.u1, BACK.v1), rise, tufts };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.sky}>
+        <LinearGradient start={vec(0, -200)} end={vec(0, BACK.ground)} colors={['#1d3147', '#3f6072']} />
+      </Path>
+      <Path path={g.rise} color="#3d5a44" />
+      <Path path={g.grass}>
+        <LinearGradient start={vec(0, BACK.ground)} end={vec(0, BACK.ground + 240)} colors={['#5d7030', '#2f3e19']} />
+      </Path>
+      <Path path={g.tufts} style="stroke" strokeWidth={1.6} strokeCap="round" color="#8ba34a" opacity={0.65} />
+    </Group>
+  );
+}
+
+/** A city plaza: plain blocks round a paved square, their window grids. */
+function PlazaBack() {
+  const g = useMemo(() => {
+    const rnd = seeded(47);
+    const FOOT = 92;
+    const blocks: { path: SkPath; color: string }[] = [];
+    const panes = make();
+    const lit = make();
+    const shades = ['#2c3140', '#384054', '#262b38', '#323a4c'];
+    const wide = [210, 150, 260, 180];
+    const tall = [-300, -210, -380, -250];
+    let u = BACK.u0;
+    for (let k = 0; u < BACK.u1; k++) {
+      const w = wide[k % 4];
+      const top = tall[k % 4];
+      blocks.push({ path: area(u, top, u + w, FOOT), color: shades[k % 4] });
+      for (let x = u + 22; x + 22 < u + w - 8; x += 36) {
+        for (let y = top + 24; y + 34 < FOOT - 16; y += 52) (rnd() < 0.2 && (y > -90 || y < -190) ? lit : panes).addRect(Skia.XYWHRect(x, y, 20, 32)); // no lit pane behind the top labels
+      }
+      u += w;
+    }
+    const joints = make();
+    for (let x = -3000; x <= 3000; x += 170) {
+      joints.moveTo(x * 0.14, FOOT);
+      joints.lineTo(x, BACK.v1);
+    }
+    for (const v of [106, 126, 156, 196, 250, 320, 410]) {
+      joints.moveTo(BACK.u0, v);
+      joints.lineTo(BACK.u1, v);
+    }
+    return { sky: area(BACK.u0, BACK.v0, BACK.u1, FOOT), paving: area(BACK.u0, FOOT, BACK.u1, BACK.v1), blocks, panes, lit, joints, foot: FOOT };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.sky} color="#171b25" />
+      {g.blocks.map((b, i) => (
+        <Path key={i} path={b.path} color={b.color} />
+      ))}
+      <Path path={g.panes} color="#6c7a96" opacity={0.42} />
+      <Path path={g.lit} color="#d9b868" opacity={0.5} />
+      <Path path={g.paving}>
+        <LinearGradient start={vec(0, g.foot)} end={vec(0, g.foot + 240)} colors={['#65656b', '#3b3b41']} />
+      </Path>
+      <Path path={g.joints} style="stroke" strokeWidth={1.8} color="#26262b" opacity={0.75} />
+    </Group>
+  );
+}
+
+/** The place, behind the wind marks: what SITE changes besides the words. */
+export function WindSiteBack({ exposure }: { exposure: ExposureId }) {
+  if (exposure === 'forest') return <ForestBack />;
+  if (exposure === 'open') return <OpenBack />;
+  return <PlazaBack />;
+}
+
+/** The wind step's display: the place, the mic and its layer, labelled. */
 export function WindScene({ w, h, layer, exposure, accessibilityLabel }: { w: number; h: number; layer: WindLayerId; exposure: ExposureId; accessibilityLabel: string }) {
   const L = WIND_LAYERS.find((l) => l.id === layer)!;
   const v = windVerdict(exposure, layer);
   const labels: StaticLabel[] = [
     { id: 'air', text: 'WIND →', u: -245, v: -122, align: 'left', tone: 'blue' },
     { id: 'layer', text: L.label.toUpperCase(), short: L.short, u: 265, v: -122, align: 'right', tone: 'amber' },
-    { id: 'cap', text: v.marks > 0 ? 'WIND ON THE CAPSULE' : 'THE CAPSULE · STILL AIR', short: 'CAPSULE', u: CAP_U, v: 150, align: 'center', tone: v.marks > 0 ? 'amber' : 'muted' },
+    { id: 'cap', text: v.marks > 0 ? 'WIND ON THE CAPSULE' : 'THE CAPSULE · STILL AIR', short: 'CAPSULE', u: CAP_U, v: 150, align: 'center', tone: v.marks > 0 ? 'amber' : undefined },
   ];
   return (
     <SoundCanvas w={w} h={h} box={WIND_BOX} label={accessibilityLabel} labels={labels}>
+      <WindSiteBack exposure={exposure} />
       <WindLayerArt layer={layer} exposure={exposure} />
     </SoundCanvas>
   );

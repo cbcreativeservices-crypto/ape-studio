@@ -19,6 +19,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { DockParam } from '../../rack/rackTypes';
 import type { MicPattern, MicType } from '../engine/model/types.ts';
 import { PolarCompare } from '../engine/scene/PolarCompare';
+import { isDishType } from '../engine/scene/MicCloseUp';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physics/polar.ts';
@@ -41,6 +42,16 @@ export function powerOf(m: MicType): { word: 'PHANTOM' | 'NONE' | 'BATTERY' | 'O
   if (/^its own batter/i.test(p)) return { word: 'BATTERY', line: `Power: ${p}` };
   if (/^its own approved supply/i.test(p)) return { word: 'OWN SUPPLY', line: `Power: ${p}` };
   return { word: 'VARIES', line: `Power: ${p}` };
+}
+
+/**
+ * The PATTERN word for a readout. A dish is drawn, so NOT DRAWN would be false;
+ * its pickup narrows as the pitch rises and no lobe is modelled, so it names
+ * no pattern either.
+ */
+export function patternReadout(m: Pick<MicType, 'id' | 'art'>, p: MicPattern): string {
+  if (isModelled(p)) return p.toUpperCase();
+  return isDishType(m) ? 'BY PITCH' : 'NOT DRAWN';
 }
 
 /** Three plain lines per mic type: what the choice needs (review M3). */
@@ -72,7 +83,9 @@ export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | '
                 ? 'Pattern: half-cardioid — picks up the half-space above its surface'
                 : p === 'omni'
                   ? 'Pattern: omni — hears every side about equally'
-                  : 'Pattern: open cardioid — not drawn here',
+                  : isDishType(m)
+                    ? 'Pattern: none fixed — the dish narrows as the pitch rises'
+                    : 'Pattern: open cardioid — not drawn here',
   };
 }
 
@@ -100,7 +113,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
   const pat: MicPattern = t.patterns.some((p) => p.id === pattern) ? pattern : t.patterns[0].id;
   const patLabel = t.patterns.find((p) => p.id === pat)?.label ?? PATTERN_LABELS[pat];
   const db = isModelled(pat) ? gainDb(pat, angle) : null;
-  const pickup = db == null ? 'not drawn' : fmtIdealPickup(db);
+  const pickup = db == null ? (isDishType(t) ? 'changes with pitch' : 'not drawn') : fmtIdealPickup(db);
   const nulls = isModelled(pat) ? nullAngles(pat) : [];
   const nearNullNow = nulls.some((n) => Math.abs(angle - n) <= 15);
   // The NULL cell is the answer to the prediction: shown once the learner
@@ -141,7 +154,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         kind: 'options',
         id: 'pattern',
         label: 'PATTERN',
-        valueLabel: (isModelled(pat) ? pat : 'NOT DRAWN').toUpperCase().slice(0, 10),
+        valueLabel: (isModelled(pat) ? pat : patternReadout(t, pat)).toUpperCase().slice(0, 10),
         selectedId: pat,
         onSelect: (id) => setPattern(id as MicPattern),
         sticky: true,
@@ -162,9 +175,9 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         render: (w, h) => <PolarCompare w={w} h={h} typeId={typeId} pattern={pat} angle={angle} label={`${t.label}, ${patLabel}. Test source ${angle} degrees off the front axis: ${pickup}.`} />,
         badge: 'A simplified pattern, the same at every pitch · a real mic’s pattern changes with pitch',
         bezel: [
-          { k: 'PATTERN', v: isModelled(pat) ? pat.toUpperCase() : 'NOT DRAWN', flex: 1.3 },
+          { k: 'PATTERN', v: patternReadout(t, pat), flex: 1.3 },
           { k: 'AT ANGLE', v: `${angle}°` },
-          db == null ? { k: 'PICKUP', v: 'NOT DRAWN', flex: 1.2 } : deep ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.2 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.2 },
+          db == null ? { k: 'PICKUP', v: patternReadout(t, pat), flex: 1.2 } : deep ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.2 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.2 },
           { k: 'NULL', v: !nulls.length ? 'NONE' : tried ? `${nulls[0].toFixed(0)}°` : '?' },
         ],
         params,
@@ -185,7 +198,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
             )
           ) : null}
           {!isModelled(pat) ? (
-            <Note>{t.mount === 'surface' ? 'A boundary plate hears only the space above its surface; this one is a half-cardioid, so keep the sound source within about 60° of straight up from the plate — the maker’s “60° range above this surface”. That is not a free-field lobe, so none is drawn.' : 'An “open cardioid” has no simple shape to draw, so no lobe is drawn. The textbook patterns are offered for comparison.'}</Note>
+            <Note>{t.mount === 'surface' ? 'A boundary plate hears only the space above its surface; this one is a half-cardioid, so keep the sound source within about 60° of straight up from the plate — the maker’s “60° range above this surface”. That is not a free-field lobe, so none is drawn.' : isDishType(t) ? 'A dish narrows as the pitch rises, so it has no one shape and no lobe is drawn.' : 'An “open cardioid” has no simple shape to draw, so no lobe is drawn. The textbook patterns are offered for comparison.'}</Note>
           ) : null}
         </>
       ),

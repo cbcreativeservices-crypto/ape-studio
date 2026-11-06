@@ -127,12 +127,22 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       format: () => `${noteName(bar.key)} · ${barIdx === 0 ? 'the lowest bar' : barIdx === bars.length - 1 ? 'the highest bar' : `bar ${barIdx + 1} of ${bars.length}`}`,
       formatShort: () => noteName(bar.key),
     },
+    // A value key, as on PTwoMic: MIC B POLARITY + will not fit a toggle key at phone width, and the sign must stay in view. This page has no POLARITY bezel cell, so the key is the only place it shows.
     {
-      kind: 'toggle',
+      kind: 'options',
       id: 'polarity',
-      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
-      value: B.polarity === -1,
-      onToggle: () => rig.setPolarity('B', B.polarity === 1 ? -1 : 1),
+      label: 'POLARITY',
+      valueLabel: `MIC B ${B.polarity === 1 ? '+' : '−'}`,
+      valueA11y: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+      selectedId: B.polarity === 1 ? 'normal' : 'inverted',
+      onSelect: (id) => {
+        const next = id === 'inverted' ? -1 : 1;
+        if (next !== B.polarity) rig.setPolarity('B', next);
+      },
+      options: [
+        { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+        { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. Δt does not change.' },
+      ],
     },
     ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: ['FRONT VIEW', 'TOP VIEW'] }),
   ];

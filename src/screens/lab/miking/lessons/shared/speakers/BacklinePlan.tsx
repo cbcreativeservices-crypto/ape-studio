@@ -380,9 +380,22 @@ function build(who: Backline) {
   return { c, hd, headTop, keep, chairs, room, deck };
 }
 
+/** The plan's box, grown so the ring round any item shows whole: the ring is
+ *  r + 40 out from the item and 34 wide, and the fit keeps no margin for it. */
+export function ringedBox<B extends { u0: number; u1: number; v0: number; v1: number }>(box: B, items: readonly { u: number; v: number; r: number }[]) {
+  const out = (i: { r: number }) => i.r + 40 + 34 / 2 + 8;
+  return {
+    u0: Math.min(box.u0, ...items.map((i) => i.u - out(i))),
+    u1: Math.max(box.u1, ...items.map((i) => i.u + out(i))),
+    v0: Math.min(box.v0, ...items.map((i) => i.v - out(i))),
+    v1: Math.max(box.v1, ...items.map((i) => i.v + out(i))),
+  };
+}
+
 export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; who: Backline; scene: BacklineScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
   const ts = useStageTextScale();
-  const box = BACKLINE_BOX[scene];
+  const items = backlineItems(who, scene, wedges);
+  const box = useMemo(() => ringedBox(BACKLINE_BOX[scene], backlineItems(who, scene, wedges)), [who, scene, wedges]);
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
   const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
   const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
@@ -392,7 +405,6 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
     builtCache.set(who, g);
   }
   const P = BACKLINE_POS[who];
-  const items = backlineItems(who, scene, wedges);
   const hi = items.find((i) => i.id === highlight);
   // Collision pass 2026-10-15: every word keeps clear of every object (the
   // plan's footprints); a name with no clear spot beside its object moves to

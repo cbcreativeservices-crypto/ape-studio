@@ -311,6 +311,11 @@ export function ValveTube({ w, h, P, semis, pressed, accessibilityLabel }: { w: 
 
 /* ── from the bell: radiation by band (a simplified picture) ── */
 
+/** How far MIC ANGLE swings. The mic's arc runs through the player's head at
+ *  180° and its words onto the horn, so the swing stops just short of them
+ *  (at 165° the mic stands clear of the head on all four horns). */
+export const MIC_ANGLE_MAX = 165;
+
 export function BellRadiation({ w, h, P, band, deg, accessibilityLabel }: { w: number; h: number; P: HornPose; band: Band; deg: number; accessibilityLabel: string }) {
   const box: ViewBox = { u0: -820, u1: 900, v0: -620, v1: 620 };
   const d = P.spec.bell.mm;

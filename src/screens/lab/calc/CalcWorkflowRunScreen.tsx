@@ -36,7 +36,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { refusalRows, type CalcFunction, type FieldDef, type Workspace } from './calcTypes';
-import { chainFits, fmt, fmtCarried, liveImport, parseQuantity, unitFits, unitsFor } from './calcUnits';
+import { chainFits, fmt, fmtCarried, liveImport, outputUnits, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -889,10 +889,26 @@ export function CalcWorkflowRunScreen() {
                     // 2026-09-01): duplicate output labels collided here too.
                     cur.result.outputs.map((o, oi) =>
                       'value' in o ? (
-                        <Pressable accessibilityRole="button" key={`${o.label}#${oi}`} style={styles.resultRow} onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}>
-                          <Text style={styles.resultLabel}>{o.label}</Text>
-                          <Text style={styles.resultValue}>{formatOutput(o, 4, outUnit[`${idx}:${o.label}`] ?? 0)}</Text>
-                        </Pressable>
+                        // Only a value with another unit to show is a control
+                        // (as CalcWorkspaceScreen): a one-unit value (dB, °, ×,
+                        // samples) has nothing to change.
+                        outputUnits(o.quantity, o.unit).length > 1 ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`${o.label} ${formatOutput(o, 4, outUnit[`${idx}:${o.label}`] ?? 0)} — tap to change the display unit`}
+                            key={`${o.label}#${oi}`}
+                            style={styles.resultRow}
+                            onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}
+                          >
+                            <Text style={styles.resultLabel}>{o.label}</Text>
+                            <Text style={styles.resultValue}>{formatOutput(o, 4, outUnit[`${idx}:${o.label}`] ?? 0)} ⇄</Text>
+                          </Pressable>
+                        ) : (
+                          <View key={`${o.label}#${oi}`} style={styles.resultRow}>
+                            <Text style={styles.resultLabel}>{o.label}</Text>
+                            <Text style={styles.resultValue}>{formatOutput(o, 4, 0)}</Text>
+                          </View>
+                        )
                       ) : (
                         <Text key={`${o.label}#${oi}`} style={styles.resultNote}>
                           <Text style={styles.resultLabel}>{o.label}  </Text>

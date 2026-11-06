@@ -541,7 +541,13 @@ function stringsBand(sc: GuitarScene) {
 
 /* ═══════════════════════════════ the page ═══════════════════════════════ */
 
-export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: { diameterMm: number; hooks: number; bridgeMm: number; label: string } } = {}) {
+/**
+ * `variantKey: false` drops the variant key from the pluck step, for a lesson
+ * whose variants look alike from the front (C03: a key here would change the
+ * words and leave the picture as it was). The choice stays with the parts page,
+ * and the words here still follow it.
+ */
+export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: { diameterMm: number; hooks: number; bridgeMm: number; label: string }; variantKey?: boolean } = {}) {
   return function StringSoundPage({ lesson, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps): ReactNode {
     const S = lesson.sound;
     const C = copyOf(lesson);
@@ -640,7 +646,7 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
           (i) => goTo(i + 1),
         ),
         { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
-        ...(lesson.model.variants.length > 1
+        ...(opts.variantKey !== false && lesson.model.variants.length > 1
           ? [
               {
                 kind: 'options' as const,

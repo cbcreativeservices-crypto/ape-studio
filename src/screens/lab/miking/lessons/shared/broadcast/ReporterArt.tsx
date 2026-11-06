@@ -13,6 +13,8 @@
  *                    — the air arriving from the left and bending round it;
  *                    the curls at the capsule are the "wind on the capsule"
  *                    cue: ILLUSTRATIVE (reporterWind.ts), never a level.
+ *   ReporterSiteBack  the place behind it as a plain backdrop (open street,
+ *                    doorway, waterfront): scenery in code, not to scale.
  *   ReporterWindScene  the wind step's display, labelled.
  */
 import { useMemo } from 'react';
@@ -197,6 +199,153 @@ export function HandheldWindArt({ cover, site }: { cover: ReporterCover; site: R
   );
 }
 
+/* ── the place behind the handheld ── */
+
+/** A plain scenery sketch, not to scale and no real location. It reaches far past
+ *  HANDHELD_WIND_BOX so a tall stage and full screen stay covered. */
+const BACK = { u0: -1400, u1: 1400, v0: -900, v1: 900 };
+
+function area(u0: number, v0: number, u1: number, v1: number): SkPath {
+  const p = make();
+  p.addRect(Skia.XYWHRect(u0, v0, u1 - u0, v1 - v0));
+  return p;
+}
+
+/** An open street: a row of plain fronts, the pavement, the kerb, a lane line. */
+function StreetBack() {
+  const g = useMemo(() => {
+    const rnd = seeded(53);
+    const PAVE = 42;
+    const KERB = 72;
+    const fronts: { path: SkPath; color: string }[] = [];
+    const panes = make();
+    const lit = make();
+    const shades = ['#3a3440', '#2f3644', '#433a38', '#343a48'];
+    const wide = [170, 220, 150, 200];
+    const tall = [-330, -420, -280, -380];
+    let u = BACK.u0;
+    for (let k = 0; u < BACK.u1; k++) {
+      const w = wide[k % 4];
+      fronts.push({ path: area(u, tall[k % 4], u + w, PAVE), color: shades[k % 4] });
+      for (let x = u + 20; x + 28 < u + w - 8; x += 44) {
+        for (let y = tall[k % 4] + 24; y + 42 < PAVE - 22; y += 66) (rnd() < 0.18 && (y > -100 || y < -200) ? lit : panes).addRect(Skia.XYWHRect(x, y, 26, 42)); // no lit pane behind the top labels
+      }
+      u += w;
+    }
+    const lane = make();
+    for (let x = BACK.u0; x < BACK.u1; x += 150) lane.addRect(Skia.XYWHRect(x, 196, 90, 9));
+    const lamp = make();
+    lamp.addRect(Skia.XYWHRect(-247, -300, 7, PAVE + 300));
+    lamp.addRect(Skia.XYWHRect(-247, -300, 62, 6));
+    lamp.addRect(Skia.XYWHRect(-197, -298, 20, 11));
+    return { sky: area(BACK.u0, BACK.v0, BACK.u1, PAVE), pave: area(BACK.u0, PAVE, BACK.u1, KERB), kerb: area(BACK.u0, KERB, BACK.u1, KERB + 9), road: area(BACK.u0, KERB + 9, BACK.u1, BACK.v1), fronts, panes, lit, lane, lamp, roadTop: KERB + 9 };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.sky} color="#1a1f2c" />
+      {g.fronts.map((b, i) => (
+        <Path key={i} path={b.path} color={b.color} />
+      ))}
+      <Path path={g.panes} color="#7686a0" opacity={0.4} />
+      <Path path={g.lit} color="#d9b868" opacity={0.5} />
+      <Path path={g.lamp} color="#15171c" />
+      <Path path={g.pave} color="#5c5d63" />
+      <Path path={g.kerb} color="#a3a7ae" />
+      <Path path={g.road}>
+        <LinearGradient start={vec(0, g.roadTop)} end={vec(0, g.roadTop + 180)} colors={['#3c3e45', '#26282d']} />
+      </Path>
+      <Path path={g.lane} color="#e8e3d0" opacity={0.7} />
+    </Group>
+  );
+}
+
+/** A sheltered doorway: a brick wall close behind, the door set back in its
+ *  frame under a lintel, a step at its foot. */
+function DoorwayBack() {
+  const g = useMemo(() => {
+    const DOOR = { u0: -215, u1: 95, top: -188, foot: 160 };
+    const courses = make();
+    for (let v = BACK.v0, row = 0; v < DOOR.foot; v += 30, row++) {
+      courses.moveTo(BACK.u0, v);
+      courses.lineTo(BACK.u1, v);
+      for (let u = BACK.u0 + (row % 2) * 34; u < BACK.u1; u += 68) {
+        courses.moveTo(u, v);
+        courses.lineTo(u, v + 30);
+      }
+    }
+    const frame = area(DOOR.u0 - 18, DOOR.top - 6, DOOR.u1 + 18, DOOR.foot);
+    const door = area(DOOR.u0, DOOR.top, DOOR.u1, DOOR.foot);
+    const panels = make();
+    for (const [u0, u1] of [[DOOR.u0 + 26, DOOR.u0 + 142], [DOOR.u0 + 168, DOOR.u1 - 26]] as const) {
+      panels.addRect(Skia.XYWHRect(u0, DOOR.top + 30, u1 - u0, 120));
+      panels.addRect(Skia.XYWHRect(u0, DOOR.top + 176, u1 - u0, 148));
+    }
+    return { wall: area(BACK.u0, BACK.v0, BACK.u1, DOOR.foot), courses, frame, door, panels, lintel: area(DOOR.u0 - 44, DOOR.top - 44, DOOR.u1 + 44, DOOR.top - 6), step: area(DOOR.u0 - 44, DOOR.foot, DOOR.u1 + 44, DOOR.foot + 24), ground: area(BACK.u0, DOOR.foot + 24, BACK.u1, BACK.v1), walk: area(BACK.u0, DOOR.foot, BACK.u1, DOOR.foot + 24) };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.wall} color="#5a3a2e" />
+      <Path path={g.courses} style="stroke" strokeWidth={2} color="#32211b" opacity={0.85} />
+      <Path path={g.frame} color="#7f7666" />
+      <Path path={g.door} color="#20302c" />
+      <Path path={g.panels} style="stroke" strokeWidth={3} color="#3f5a52" />
+      <Path path={g.lintel} color="#a79c88" />
+      <Path path={g.walk} color="#4a4a50" />
+      <Path path={g.step} color="#8c8c92" />
+      <Path path={g.ground} color="#303035" />
+    </Group>
+  );
+}
+
+/** An exposed waterfront: open sky, the water out to a flat horizon, a rail. */
+function WaterfrontBack() {
+  const g = useMemo(() => {
+    const rnd = seeded(61);
+    const HORIZON = 34;
+    const DECK = 214;
+    const waves = make();
+    for (let k = 0; k < 230; k++) {
+      const u = BACK.u0 + rnd() * (BACK.u1 - BACK.u0);
+      const d = rnd();
+      const v = HORIZON + 7 + d * d * (DECK - HORIZON);
+      const half = 7 + d * 24;
+      waves.moveTo(u - half, v);
+      waves.quadTo(u, v - 3 - d * 3, u + half, v);
+    }
+    const rail = make();
+    rail.addRect(Skia.XYWHRect(BACK.u0, 160, BACK.u1 - BACK.u0, 8));
+    rail.addRect(Skia.XYWHRect(BACK.u0, 186, BACK.u1 - BACK.u0, 5));
+    for (let u = BACK.u0; u < BACK.u1; u += 130) rail.addRect(Skia.XYWHRect(u, 160, 8, DECK - 160));
+    const planks = make();
+    for (const v of [DECK + 14, DECK + 34, DECK + 62, DECK + 100]) {
+      planks.moveTo(BACK.u0, v);
+      planks.lineTo(BACK.u1, v);
+    }
+    return { sky: area(BACK.u0, BACK.v0, BACK.u1, HORIZON + 1), water: area(BACK.u0, HORIZON, BACK.u1, DECK), deck: area(BACK.u0, DECK, BACK.u1, BACK.v1), waves, rail, planks, horizon: HORIZON, deckTop: DECK };
+  }, []);
+  return (
+    <Group>
+      <Path path={g.sky}>
+        <LinearGradient start={vec(0, -240)} end={vec(0, g.horizon)} colors={['#203a54', '#54788a']} />
+      </Path>
+      <Path path={g.water}>
+        <LinearGradient start={vec(0, g.horizon)} end={vec(0, g.deckTop)} colors={['#2d6478', '#123a4c']} />
+      </Path>
+      <Path path={g.waves} style="stroke" strokeWidth={2} strokeCap="round" color="#a7d3de" opacity={0.5} />
+      <Path path={g.deck} color="#4a3f33" />
+      <Path path={g.planks} style="stroke" strokeWidth={2} color="#2a231b" />
+      <Path path={g.rail} color="#9aa0aa" />
+    </Group>
+  );
+}
+
+/** The place, behind the wind marks: what PLACE changes besides the words. */
+export function ReporterSiteBack({ site }: { site: ReporterSite }) {
+  if (site === 'street') return <StreetBack />;
+  if (site === 'sheltered') return <DoorwayBack />;
+  return <WaterfrontBack />;
+}
+
 /** The wind step's display. */
 export function ReporterWindScene({ w, h, cover, site, accessibilityLabel }: { w: number; h: number; cover: ReporterCover; site: ReporterSite; accessibilityLabel: string }) {
   const C = REPORTER_COVERS.find((q) => q.id === cover)!;
@@ -204,11 +353,12 @@ export function ReporterWindScene({ w, h, cover, site, accessibilityLabel }: { w
   const labels: StaticLabel[] = [
     { id: 'air', text: 'WIND →', u: -300, v: -140, align: 'left', tone: 'blue' },
     { id: 'layer', text: C.label.toUpperCase(), short: C.short, u: 262, v: -140, align: 'right', tone: 'amber' },
-    { id: 'cap', text: v.marks > 0 ? 'WIND ON THE CAPSULE' : 'THE CAPSULE · STILL AIR', short: 'CAPSULE', u: HEAD_U, v: 140, align: 'center', tone: v.marks > 0 ? 'amber' : 'muted' },
-    { id: 'hand', text: 'HANDLE · HOLD BELOW THE FLAG', short: 'HANDLE', u: 70, v: 104, align: 'left', tone: 'muted' },
+    { id: 'cap', text: v.marks > 0 ? 'WIND ON THE CAPSULE' : 'THE CAPSULE · STILL AIR', short: 'CAPSULE', u: HEAD_U, v: 140, align: 'center', tone: v.marks > 0 ? 'amber' : undefined },
+    { id: 'hand', text: 'HANDLE · HOLD BELOW THE FLAG', short: 'HANDLE', u: 70, v: 104, align: 'left' },
   ];
   return (
     <SoundCanvas w={w} h={h} box={HANDHELD_WIND_BOX} label={accessibilityLabel} labels={labels}>
+      <ReporterSiteBack site={site} />
       <HandheldWindArt cover={cover} site={site} />
     </SoundCanvas>
   );

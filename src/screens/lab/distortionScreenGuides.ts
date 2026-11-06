@@ -33,11 +33,15 @@
  *     no clean tone to hear (review 2026-10-31). The OUT wave is coloured by
  *     level (FlowGlow gradH), not amber — amber is the LAB NOTES waveshape.
  * OVERSAMPLING changes only the audio (neither the flow nor the static graph
- * takes it), so no TRY THIS asks the learner to SEE it. Nor to HEAR it: with
- * the 220 Hz sine only HARD CLIP aliases at all (tanh harmonics die out long
- * before Nyquist), and its folded partials sit ≈ −71 dBFS in total at +24 dB,
+ * takes it), so no TRY THIS asks the learner to SEE it; the caption under the
+ * rack (fxLabConfigs distOsCaption) says which source reveals it. With the
+ * 220 Hz sine only HARD CLIP aliases at all (tanh harmonics die out long before
+ * Nyquist), and its folded partials sit ≈ −71 dBFS in total at +24 dB,
  * ≈ −57 dBFS at +36 dB, under a ≈ −1 dBFS fundamental (verified 2026-10-31;
- * hence the OS label OFF (ALIASING), not "HEAR ALIASING").
+ * hence the OS label OFF (ALIASING), not "HEAR ALIASING"). SINE 5 kHz (audit
+ * decision 4, 2026-11-05) reveals it: HARD CLIP's folded tones total −29 dBFS
+ * OFF against −46 ON at +24 dB, −14 against −36 at +36 dB, about 20 dB apart
+ * (test/dec_A03 re-runs the engine's path). Computed, not heard.
  * test/screenGuide_distortion_20261031.test.ts pins the names and re-runs
  * every number. Change a label, a default or the source level → update this
  * file.
@@ -72,10 +76,10 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     ],
     control: [
       '▶ in the header, or a tap on the display, plays the source through the effect; ■ stops it. The source plays at −20 dBFS, uncalibrated; DRIVE raises it.',
-      'DRIVE fader (+6 to +36 dB): how hard the sine is pushed into the green DRIVE stage, which bends the wave.',
-      'TYPE key: HARD CLIP, SOFT (TANH) or TUBE (ASYM). OS key: ON (CLEAN) or OFF (ALIASING). MIX key: 100% or 50% PARALLEL.',
-      'SOURCE key: SINE 220 Hz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ at the end of the readouts opens the lesson’s display entry: this moving display, then the drawing in LAB NOTES.',
-      'LAB NOTES holds two CHECK YOURSELF questions. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
+      'DRIVE fader (+6 to +36 dB): how hard the sine is pushed into the green DRIVE stage.',
+      'TYPE key: HARD CLIP, SOFT (TANH) or TUBE (ASYM). OS key: ON (CLEAN) or OFF (ALIASING), heard on SINE 5 kHz. MIX key: 100% or 50% PARALLEL.',
+      'SOURCE key: SINE 220 Hz, 5 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ at the end of the readouts opens the lesson’s display entry: this moving display, then the drawing in LAB NOTES.',
+      'LAB NOTES holds two CHECK YOURSELF questions. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges it.',
     ],
     changes: [
       'On HARD CLIP, DRIVE +12 dB lifts the sine to −8 dBFS, still round; past +20 dB it is cut flat at 0 dBFS. SOFT and TUBE bend gently long before that.',

@@ -93,16 +93,24 @@ function PairPage({ lesson, art, answers, onAnswered, onInteractive, interactive
   const params: DockParam[] = [
     ...placementParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis }),
     { kind: 'toggle', id: 'mic', label: `EDIT MIC ${slot}`, value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) },
+    // A value key, as on PTwoMic: MIC B POLARITY + will not fit a toggle key at phone width, and the sign must stay in view.
     {
-      kind: 'toggle',
+      kind: 'options',
       id: 'polarity',
-      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
-      value: B.polarity === -1,
-      onToggle: () => {
-        const next = B.polarity === 1 ? -1 : 1;
+      label: 'POLARITY',
+      valueLabel: `MIC B ${B.polarity === 1 ? '+' : '−'}`,
+      valueA11y: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+      selectedId: B.polarity === 1 ? 'normal' : 'inverted',
+      onSelect: (id) => {
+        const next = id === 'inverted' ? -1 : 1;
+        if (next === B.polarity) return;
         rig.setPolarity('B', next);
         setFlips((f) => (next === -1 ? { ...f, toInv: true } : { ...f, toNorm: true }));
       },
+      options: [
+        { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+        { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. Δt does not change.' },
+      ],
     },
     {
       kind: 'options',

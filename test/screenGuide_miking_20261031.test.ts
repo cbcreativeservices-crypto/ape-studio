@@ -71,9 +71,9 @@ const filesDefining = (title: string) => ALL_TSX.filter((f) => code(f).includes(
 const STEP_SAMPLES = [
   G.stepInfoOf({ kind: 'READ', title: 'Start here', layout: 'read' }),
   G.stepInfoOf({ kind: 'LEARN', title: 'What it is', layout: 'read' }),
-  G.stepInfoOf({ kind: 'TRY', title: 'The parts', layout: 'rack', rack: { bezel: [{ k: 'PART' }, { k: 'LOOKED AT' }, { k: 'FRONT HEAD' }], params: [{ kind: 'fader', label: 'PART' }, { kind: 'toggle', label: 'SIDE VIEW' }, { kind: 'options', label: 'FRONT HEAD', options: [{ label: 'PORTED' }, { label: 'SOLID' }] }] } }),
-  G.stepInfoOf({ kind: 'WATCH', title: 'Starting setups', layout: 'rack', rack: { bezel: [{ k: 'SETUP' }, { k: 'MIC' }, { k: 'DISTANCE' }, { k: 'LOOKED AT' }], params: [{ kind: 'fader', label: 'SETUP' }, { kind: 'options', label: 'SETUPS', options: [{ label: 'ONE MIC · Inside, near the batter head' }, { label: 'TWO MICS · Inside and outside' }, { label: 'CLOSE · LIVE · At the port' }, { label: 'FARTHER BACK · STUDIO · A tunnel' }, { label: 'ANOTHER START · Outside' }] }, { kind: 'toggle', label: 'TOP VIEW' }] } }),
-  G.stepInfoOf({ kind: 'WATCH', title: 'Starting setups', layout: 'rack', rack: { bezel: [{ k: 'SETUP' }, { k: 'MIC' }, { k: 'DISTANCE' }, { k: 'LOOKED AT' }], params: [{ kind: 'options', label: 'SETUPS', options: [{ label: 'ONE MIC · A' }, { label: 'TWO MICS · B' }, { label: 'CLOSE · LIVE · C' }] }] } }),
+  G.stepInfoOf({ kind: 'TRY', title: 'The parts', layout: 'rack', rack: { bezel: [{ k: 'PART' }, { k: 'FRONT HEAD' }], params: [{ kind: 'fader', label: 'PART' }, { kind: 'toggle', label: 'SIDE VIEW' }, { kind: 'options', label: 'FRONT HEAD', options: [{ label: 'PORTED' }, { label: 'SOLID' }] }] } }),
+  G.stepInfoOf({ kind: 'WATCH', title: 'Starting setups', layout: 'rack', rack: { bezel: [{ k: 'SETUP' }, { k: 'MIC' }, { k: 'DISTANCE' }], params: [{ kind: 'fader', label: 'SETUP' }, { kind: 'options', label: 'SETUPS', options: [{ label: 'ONE MIC · Inside, near the batter head' }, { label: 'TWO MICS · Inside and outside' }, { label: 'CLOSE · LIVE · At the port' }, { label: 'FARTHER BACK · STUDIO · A tunnel' }, { label: 'ANOTHER START · Outside' }] }, { kind: 'toggle', label: 'TOP VIEW' }] } }),
+  G.stepInfoOf({ kind: 'WATCH', title: 'Starting setups', layout: 'rack', rack: { bezel: [{ k: 'SETUP' }, { k: 'MIC' }, { k: 'DISTANCE' }], params: [{ kind: 'options', label: 'SETUPS', options: [{ label: 'ONE MIC · A' }, { label: 'TWO MICS · B' }, { label: 'CLOSE · LIVE · C' }] }] } }),
   G.stepInfoOf({ kind: 'LEARN', title: 'What else the mic hears', layout: 'read' }),
   G.stepInfoOf({ kind: 'CHECK', title: 'Before any mic', layout: 'read' }),
   G.stepInfoOf({ kind: 'LEARN', title: 'On the instrument', layout: 'rack', rack: { bezel: [{ k: 'TYPE' }, { k: 'PATTERN' }, { k: 'POWER' }, { k: 'MOUNT' }], params: [{ kind: 'options', label: 'TYPE', options: [{ label: 'Kick dynamic' }, { label: 'Boundary plate' }] }, { kind: 'options', label: 'PATTERN', options: [{ label: 'Cardioid' }, { label: 'Supercardioid' }] }, { kind: 'toggle', label: 'SIDE VIEW' }] } }),
@@ -251,8 +251,8 @@ describe('2. every hand-written name is on the screen it describes', () => {
   const NOTE_NAMES: Record<string, [string[], string[]]> = {
     'READ|Start here': [[P('PInstrument'), `${MIKING}/engine/journeyKit.tsx`, `${MIKING}/engine/journey.ts`], ['THE JOURNEY', 'How would you like to start?', 'New to miking', 'I already mic', 'six-question quick check', 'QUICK CHECK', 'the one that counts']],
     'LEARN|What it is': [[P('PInstrument')], ['orient.map']],
-    'TRY|The parts': [[P('PInstrument')], ['PART', 'LOOKED AT', 'WHERE SOUND COMES FROM', 'There is nothing to answer']],
-    'WATCH|Starting setups': [[P('PSetups')], ['SETUP', 'SETUPS', 'LOOKED AT', 'START · ', 'TENDS TO', 'The Placement Studio starts from the last one you look at', 'faderUnlessFew']],
+    'TRY|The parts': [[P('PInstrument')], ['PART', 'WHERE SOUND COMES FROM', 'There is nothing to answer']],
+    'WATCH|Starting setups': [[P('PSetups')], ['SETUP', 'SETUPS', 'START · ', 'TENDS TO', 'The Placement Studio starts from the last one you look at', 'faderUnlessFew']],
     'LEARN|What else the mic hears': [[P('PSetups')], ['ON A STAGE (LIVE)', 'IN A STUDIO']],
     'LEARN|On the instrument': [[P('PMicOnIt'), P('PMicrophone')], ['TYPE', 'PATTERN', 'POWER', 'powerOf(t).word', 'PHANTOM', 'NONE', 'BATTERY', 'OWN SUPPLY', 'VARIES', 'MOUNT']],
     'COMPARE|Patterns': [[P('PMicrophone')], ['SOURCE ANGLE', 'TYPE', 'PATTERN', 'PICKUP', 'DEEP NULL', 'NULL']],

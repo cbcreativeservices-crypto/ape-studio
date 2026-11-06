@@ -225,7 +225,6 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
   const roomItems = items.filter((i) => i.scene === 'all' || i.scene === 'studio');
   const [view, setView] = useState<ViewId>('top');
   const [sel, setSel] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const [where, setWhere] = useState<Where>('live');
   const [wsel, setWsel] = useState<string | null>(null);
   const [wview, setWview] = useState<ViewId>('top');
@@ -234,7 +233,6 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
   const pick = (id: string) => {
     if (!roomItems.some((i) => i.id === id)) return;
     setSel(id);
-    setSeen((s) => (s.has(id) ? s : new Set([...s, id])));
   };
   const pickWide = (id: string) => {
     if (wideItems.some((i) => i.id === id)) setWsel(id);
@@ -261,10 +259,10 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
     );
   };
   const viewToggle = (v: ViewId, set: (f: (x: ViewId) => ViewId) => void): DockParam => ({ kind: 'toggle', id: 'view', label: v === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: v === 'top', onToggle: () => set((x) => (x === 'side' ? 'top' : 'side')) });
-  const bezel = (it: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+  const bezel = (it: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
     { k: 'ITEM', v: it ? it.short : 'TAP ONE', flex: 1.3 },
     { k: 'FOR A ROOM MIC', v: it ? it.tag : '—', flex: 1.5 },
-    extra,
+    ...(extra ? [extra] : []),
   ];
   const card = (it: SettingItem | undefined, idle: string) =>
     it ? (
@@ -285,7 +283,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       rack: {
         render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 meters with a 3 meter ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${view === 'top' ? ' The drummer’s own headphone mixer stands at the drummer’s right, its cable running straight back to the control room box on the back wall, clear of the door’s walkway.' : ''}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
         badge: 'The room and its size are drawing values · a typical studio live room · gray hatch = the walkway',
-        bezel: bezel(selItem, { k: 'LOOKED AT', v: `${seen.size} / ${roomItems.length}`, flex: 1 }),
+        bezel: bezel(selItem),
         params: [fader(roomItems, sel, pick), viewToggle(view, setView)],
         initialParam: 'item',
       },

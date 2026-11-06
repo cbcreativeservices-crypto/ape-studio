@@ -176,25 +176,17 @@ describe('THE PARTS: the card follows the build', () => {
       }
     });
 
-    it(`${id}: LOOKED AT never passes the list, in any order`, () => {
+    it(`${id}: the bezel names the part and counts nothing`, () => {
       const { variants } = lessonById(id).model as { variants: { id: string }[] };
       const s = student(id);
-      for (const v of [...variants, ...variants]) {
+      for (const v of variants) {
         s.build(v.id);
-        for (const p of s.listed()) s.pick(p.id);
-        const n = s.listed().length;
-        assert.equal(s.cell('LOOKED AT'), `${n} / ${n}`, `every part of ${v.id} was looked at`);
+        for (const p of s.listed()) {
+          s.pick(p.id);
+          assert.equal(s.cell('PART'), p.short.toUpperCase());
+          assert.equal(s.cell('LOOKED AT'), undefined);
+        }
       }
     });
   }
-
-  it('güiro: the same part in a second build is not a new look', () => {
-    const s = student('I05d', 'gourd');
-    s.pick('gui.scraper.gourd');
-    assert.equal(s.cell('LOOKED AT'), '1 / 4');
-    s.build('fiberglass');
-    assert.equal(s.cell('LOOKED AT'), '1 / 4');
-    s.pick('gui.scraper.fiberglass');
-    assert.equal(s.cell('LOOKED AT'), '1 / 4');
-  });
 });

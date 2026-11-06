@@ -72,7 +72,7 @@ function renderScreen(checkinMinutes: number) {
       getExposureSnapshot: () => ({
         enabled: true, active: false, settings, todayDose: 0.25, todayActiveSec: 600, todayMaxDb: 90, todayAvgDb: 85,
         sessionActiveSec: 0, sessionMaxDb: 0, sessionStartMs: null, currentDb: null, route: 'speaker', routeLabel: '',
-        confidence: 'general', measured: false, remainingSec: 3600, checkinsToday: 0, hadGap: false, doseUnreadable: false,
+        confidence: 'general', measured: false, remainingSec: 3600, belowStandardRange: false, checkinsToday: 0, hadGap: false, doseUnreadable: false,
       }),
     },
   };

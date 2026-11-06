@@ -34,6 +34,7 @@ import { StaticLabels } from '../../../engine/scene/StaticLabels';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
+import { livePartId } from '../../../pages/PInstrument';
 import { factsStep, startStep } from '../journeyPages';
 import { makeHandPages, useStepper, type HandSpec } from '../hand/handPages';
 import { BAR_SHAPES, barAt, barStrikeShare, chimePitchRatio, DISC_SHAPES, discAt, discPeak, discStillDiameters, discStillRings, discStrikeShare, octaves } from './metalModes.ts';
@@ -119,6 +120,8 @@ export type MeetSpec = {
   partsWarn: string;
   /** The dock key for the variant ("PLAYED", "GONG"). */
   variantKey: string;
+  /** false: the parts step has no variant chooser and no variant bezel cell, for a front drawing that the variant does not change. */
+  partsVariant?: false;
 };
 
 export function MetalInstrument(spec: MeetSpec) {
@@ -127,19 +130,17 @@ export function MetalInstrument(spec: MeetSpec) {
     const model = lesson.model;
     const parts = model.parts.filter((q) => (!q.variants || q.variants.includes(variant)) && (!q.listIn || q.listIn.includes(variant)));
     const [partId, setPartId] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const pick = (id: string) => {
-      if (!parts.some((q) => q.id === id)) return;
-      setPartId(id);
-      setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
+      if (parts.some((q) => q.id === id)) setPartId(id);
     };
-    const shown = parts.find((q) => q.id === partId);
-    const region = model.regions.find((r) => r.partId === partId && (!r.variants || r.variants.includes(variant)));
-    const partIdx = Math.max(0, parts.findIndex((q) => q.id === partId));
+    const livePart = livePartId(partId, variant, parts, model.variants.map((v) => v.id));
+    const shown = parts.find((q) => q.id === livePart);
+    const region = model.regions.find((r) => r.partId === livePart && (!r.variants || r.variants.includes(variant)));
+    const partIdx = Math.max(0, parts.findIndex((q) => q.id === livePart));
     const box = spec.front.box(variant);
     const aspect = (box.u1 - box.u0) / (box.v1 - box.v0);
     const vNote = model.variants.find((v) => v.id === variant);
-    const vp = variantParam(p, spec.variantKey);
+    const vp = spec.partsVariant === false ? null : variantParam(p, spec.variantKey);
     const steps: MikingStep[] = [
       startStep(lesson, journey, spec.intro),
       factsStep(lesson, <ExpandableFigure badge={spec.figure.badge} title={spec.figure.title} aspect={aspect} render={(fw: number, fh: number) => <FrontStage w={fw} h={fh} front={spec.front} variant={variant} highlight={null} label={spec.figure.label(variant)} />} />),
@@ -149,12 +150,11 @@ export function MetalInstrument(spec: MeetSpec) {
         kind: 'TRY',
         layout: 'rack',
         rack: {
-          render: (w, h) => <FrontStage w={w} h={h} front={spec.front} variant={variant} highlight={partId} onTap={pick} label={`${spec.figure.label(variant)}${shown ? ` Highlighted: ${shown.label}.` : ''}`} />,
+          render: (w, h) => <FrontStage w={w} h={h} front={spec.front} variant={variant} highlight={livePart} onTap={pick} label={`${spec.figure.label(variant)}${shown ? ` Highlighted: ${shown.label}.` : ''}`} />,
           badge: spec.partsBadge,
           bezel: [
             { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.5 },
-            { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
-            { k: spec.variantKey, v: (vNote?.label ?? variant).split(' ')[0], flex: 1.1 },
+            ...(spec.partsVariant === false ? [] : [{ k: spec.variantKey, v: (vNote?.label ?? variant).split(' ')[0], flex: 1.1 }]),
           ],
           params: [
             tapsWhenFew(
@@ -167,11 +167,11 @@ export function MetalInstrument(spec: MeetSpec) {
                   const q = parts[Math.round(v * (parts.length - 1))];
                   if (q) pick(q.id);
                 },
-                format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+                format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
                 formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
               parts.length,
-              parts.findIndex((q) => q.id === partId),
+              parts.findIndex((q) => q.id === livePart),
               (i) => parts[i].short.toUpperCase(),
               (i) => pick(parts[i].id),
             ),

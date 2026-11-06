@@ -17,7 +17,8 @@ export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] 
     const act = frontDrivers(c).find((d) => d.active)!;
     const out: CabLabel[] = [
       { id: 'active', text: 'MIKED SPEAKER', short: 'MIKED', u: act.u, v: act.v + act.rCut + 46, align: 'center' },
-      { id: 'grille', text: 'GRILLE CLOTH', short: 'GRILLE', u: c.box.z0 + 30, v: c.box.y0 - 30, align: 'left' },
+      // Under the box: above it is where a head rests on a bass cabinet.
+      { id: 'grille', text: 'GRILLE CLOTH', short: 'GRILLE', u: c.box.z0 + 30, v: c.box.y1 + 34, align: 'left' },
     ];
     if (c.horn) out.push({ id: 'horn', text: 'HORN', u: c.horn.z, v: c.horn.y - c.horn.h / 2 - 24, align: 'center', tone: 'illustrative' });
     return out;

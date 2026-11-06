@@ -77,6 +77,9 @@ function facadeLabels(): ArtLabel[] {
 }
 
 function facadeHit(u: number, v: number, tol: number): string | null {
+  // The console's ring (OrganFacade's consoleSpot) stands in front of the case
+  // and the left Pedal tower, on one side only: it is tested first, on u itself.
+  if (u >= CONSOLE.z0 - 350 - tol && u <= CONSOLE.z1 + 350 + tol && v >= -CONSOLE.h - 350 - tol && v <= 350 + tol) return 'org.console';
   const z = Math.abs(u);
   const inside = (d: DivisionId) => {
     const q = DIVISIONS[d];

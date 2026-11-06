@@ -21,13 +21,18 @@
  *                   cable with its strain-relief loop, the antenna hanging
  *                   straight (never coiled).
  *   KeepOutRegion   a hatched "never mount here" region (a helmet, pads).
+ *   RoleTag         a small tag on the wearer naming the role: the drawn
+ *                   figure is one generic person.
  */
 import { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Paint, Path, PathOp, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { colors, fonts } from '../../../../../../theme/tokens';
+import { fitValue } from '../../../../../../theme/legibility';
 import type { Shape3, Vec3, ViewId } from '../../../engine/model/types.ts';
 import { FigureMass, PlayerBehind, PlayerInFront, figureCovers, handShape } from '../players/PlayerFigure';
 import { Headphones, OnTalker, talkerPose } from './BroadcastArt';
-import { frontUV, standPoses, type Stander } from './standing.ts';
+import { frontUV, standPoses, type Stander, type Wearer } from './standing.ts';
 import type { Talker } from './talkerPose.ts';
 import { heldElbowOf, heldFist } from '../../../engine/geometry/arm.ts';
 import { HELD_ARM } from './sportMics.ts';
@@ -504,6 +509,29 @@ export function HeldArmArt({ view, shoulder, p, aim, len, dim = 1 }: { view: Vie
     </Group>
   );
 }
+
+const ROLE_TAG: Readonly<Record<Wearer, { word: string; bg: string; ink: string }>> = {
+  coach: { word: 'COACH', bg: '#8fbcff', ink: '#0d1a2e' },
+  official: { word: 'OFFICIAL', bg: '#f2f4f8', ink: '#111318' },
+  athlete: { word: 'ATHLETE', bg: '#5bff85', ink: '#06240f' },
+};
+
+/** The role's tag, centred at (x, y) px over the stage. Read only. */
+export function RoleTag({ who, x, y }: { who: Wearer; x: number; y: number }) {
+  const t = ROLE_TAG[who];
+  return (
+    <View pointerEvents="none" style={[tagStyles.tag, { left: x - 30, top: y - 10, backgroundColor: t.bg }]}>
+      <Text style={[tagStyles.word, { color: t.ink }]} {...fitValue(10)}>
+        {t.word}
+      </Text>
+    </View>
+  );
+}
+
+const tagStyles = StyleSheet.create({
+  tag: { position: 'absolute', width: 60, height: 20, borderRadius: 4, borderWidth: 1, borderColor: colors.screenBg, alignItems: 'center', justifyContent: 'center' },
+  word: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 0.6 },
+});
 
 /** A small amber ring at a place (a mic's place on the body). */
 export function PlaceRing({ u, v, r = 30 }: { u: number; v: number; r?: number }) {
