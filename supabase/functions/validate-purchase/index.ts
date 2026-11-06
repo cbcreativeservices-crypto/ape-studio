@@ -69,6 +69,25 @@ function decodeJwtPayload<T>(jwt: string): T {
   return JSON.parse(new TextDecoder().decode(b64urlToBytes(jwt.split('.')[1]))) as T;
 }
 
+/**
+ * The payload of a StoreKit 2 signed transaction, or null for anything else (a
+ * Google token, nothing at all, junk). A JWS header names ES256 and carries the
+ * x5c certificate chain, which no Google token does. Never throws. Not a proof
+ * of anything: it only chooses the store that is then asked.
+ */
+function appleJwsPayload(token: string | null | undefined): { transactionId?: string } | null {
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const header = JSON.parse(new TextDecoder().decode(b64urlToBytes(parts[0]))) as { alg?: string; x5c?: unknown };
+    if (header.alg !== 'ES256' || !Array.isArray(header.x5c)) return null;
+    return JSON.parse(new TextDecoder().decode(b64urlToBytes(parts[1]))) as { transactionId?: string };
+  } catch {
+    return null;
+  }
+}
+
 // ── Apple: App Store Server API (get transaction by id) ──────────────────────
 async function appleAccessJwt(): Promise<string | null> {
   const issuer = Deno.env.get('APPLE_ISSUER_ID');
@@ -357,10 +376,17 @@ Deno.serve(async (req) => {
   // Route by platform; if the client didn't send one, infer from which
   // credential is present (Apple = transaction id, Google = purchase token).
   const plat = (body.platform ?? '').toLowerCase();
-  const isApple = plat.includes('ios') || (!body.purchaseToken && !!body.transactionId);
+  // ⛔ D-2026-11-06, first real iPhone purchase: expo-iap's Purchase has no
+  // `platform` (it has `store`), and on iOS purchaseToken is Apple's signed JWS,
+  // so every Apple receipt went to Google and came back "Invalid Value". The
+  // token's own shape routes it now, so the builds already in the store work.
+  // This only picks the route: verifyApple still asks Apple about the id.
+  const applePayload = appleJwsPayload(body.purchaseToken);
+  const isApple = plat.includes('ios') || !!applePayload || (!body.purchaseToken && !!body.transactionId);
+  const appleTransactionId = body.transactionId || applePayload?.transactionId || '';
   const kind: 'subs' | 'in-app' = plan === 'lifetime' ? 'in-app' : 'subs';
   const verified = isApple
-    ? await verifyApple(body.transactionId ?? '', sku, kind)
+    ? await verifyApple(appleTransactionId, sku, kind)
     : await verifyGoogle(body.purchaseToken ?? '', sku, kind);
 
   if (!verified.valid) {
@@ -442,7 +468,7 @@ Deno.serve(async (req) => {
   // `!verified.valid` above — so the field each branch needs is guaranteed
   // present here. The fallbacks are belt-and-braces, not load-bearing.
   const store_ref = isApple
-    ? body.transactionId || body.purchaseToken || sku
+    ? appleTransactionId || body.purchaseToken || sku
     : body.purchaseToken || body.transactionId || sku;
 
   // There is a UNIQUE (user_id, product); read the one row if it exists.

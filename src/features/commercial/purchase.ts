@@ -50,6 +50,8 @@ type IapPurchase = {
   purchaseToken?: string;
   transactionId?: string;
   platform?: string;
+  /** expo-iap: 'apple' | 'google' | ... */
+  store?: string;
   /** OpenIAP: 'pending' | 'purchased' | 'unknown'. */
   purchaseState?: string;
   /** Android only: false = Play is still waiting for the acknowledgement that
@@ -178,7 +180,9 @@ async function validateRequest(p: IapPurchase): Promise<{ status: number | null;
       () =>
         supabase.functions.invoke('validate-purchase', {
           body: {
-            platform: p.platform ?? null,
+            // expo-iap's Purchase has `store`, not `platform`, so this was null
+            // on every purchase and an Apple receipt went to Google (2026-11-06).
+            platform: p.platform ?? (p.store === 'apple' ? 'ios' : p.store ?? null),
             productId: p.productId ?? null,
             purchaseToken: p.purchaseToken ?? null,
             transactionId: p.transactionId ?? null,

@@ -99,7 +99,8 @@ describe('validate-purchase keys each row on the id that store will refund it by
 
   it('Apple rows are keyed on the TRANSACTION ID', () => {
     const appleArm = expr.slice(expr.indexOf('?') + 1, expr.indexOf(':'));
-    const txn = appleArm.indexOf('transactionId');
+    // appleTransactionId since 2026-11-06: the body's id, or the one in the JWS.
+    const txn = appleArm.search(/transactionId/i);
     const token = appleArm.indexOf('purchaseToken');
     assert.ok(txn >= 0, 'the Apple arm must reference transactionId');
     assert.ok(token < 0 || txn < token, 'transactionId must be preferred over purchaseToken for Apple');
