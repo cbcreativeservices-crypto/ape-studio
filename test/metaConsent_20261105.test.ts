@@ -152,6 +152,10 @@ function phone(
       calls.push(['initNative']);
       return true;
     },
+    activateApp: () => {
+      calls.push(['activate']);
+      return true;
+    },
     loadSettings: () => {
       calls.push(['loadSettings']);
       return {
@@ -222,9 +226,9 @@ function phone(
   };
   const count = (name: string) => calls.filter((c) => c[0] === name).length;
   const sdkTouched = () =>
-    calls.some((c) => ['initNative', 'loadSettings', 'initializeSDK', 'loadLogger', 'event', 'purchase', 'flush'].includes(c[0]));
+    calls.some((c) => ['initNative', 'loadSettings', 'initializeSDK', 'loadLogger', 'activate', 'event', 'purchase', 'flush'].includes(c[0]));
   /** Everything that would ever leave the phone. */
-  const sent = () => calls.filter((c) => c[0] === 'event' || c[0] === 'purchase' || c[0] === 'flush').length;
+  const sent = () => calls.filter((c) => ['activate', 'event', 'purchase', 'flush'].includes(c[0])).length;
   return { engine, calls, saved, facts, popup, pass, settle, count, sdkTouched, sent };
 }
 
@@ -253,7 +257,7 @@ describe('off by default', () => {
     p.engine.noteMemberGate('open');
     await p.settle();
     assert.equal(p.engine.phase(), 'on');
-    assert.equal(p.count('event'), 1);
+    assert.equal(p.count('activate'), 1);
     assert.equal(p.count('popup'), 0, 'a yes is not asked again');
   });
 });
@@ -535,6 +539,90 @@ describe('Settings off stops events', () => {
     p.engine.notePurchase(SALE);
     assert.equal(p.count('purchase'), 1);
   });
+});
+
+describe("Meta's real activate call obeys every consent rule", () => {
+  const OPEN_GAP_MS = 60_000;
+  const yes = (): { value: ConsentRead } => ({ value: 'yes' });
+
+  for (const platform of ['ios', 'android']) {
+    it(`${platform}: not before the yes, and on the yes`, async () => {
+      const p = phone({ platform, choice: 'yes' });
+      p.engine.noteMemberGate('open');
+      await p.settle();
+      assert.equal(p.count('activate'), 0);
+      await p.pass(600_000);
+      assert.equal(p.engine.phase(), 'on');
+      assert.equal(p.count('activate'), 1);
+    });
+
+    it(`${platform}: never after No, or a closed popup`, async () => {
+      for (const choice of ['no', 'dismissed'] as const) {
+        const p = phone({ platform, choice });
+        p.engine.noteMemberGate('open');
+        await p.pass(600_000);
+        assert.equal(p.count('activate'), 0, choice);
+      }
+    });
+
+    it(`${platform}: after turn-off, a return to the app reaches neither call`, async () => {
+      const p = phone({ platform, saved: yes() });
+      p.engine.noteMemberGate('open');
+      await p.settle();
+      const before = p.sent();
+      assert.ok(p.count('activate') > 0);
+      p.engine.withdrawConsent();
+      await p.pass(3_600_000);
+      p.engine.noteAppOpen();
+      await p.pass(3_600_000);
+      p.engine.noteAppOpen();
+      await p.settle();
+      assert.equal(p.sent(), before);
+      assert.equal(p.engine.phase(), 'idle');
+    });
+
+    it(`${platform}: the wipe stops it the same way`, async () => {
+      const p = phone({ platform, saved: yes() });
+      p.engine.noteMemberGate('open');
+      await p.settle();
+      const before = p.sent();
+      assert.ok(p.count('activate') > 0);
+      p.engine.noteConsentWiped();
+      await p.pass(3_600_000);
+      p.engine.noteAppOpen();
+      await p.settle();
+      assert.equal(p.sent(), before);
+    });
+
+    it(`${platform}: a known guest is not asked and does not reach it`, async () => {
+      const p = phone({ platform, saved: yes() });
+      p.engine.noteMemberGate('locked', true);
+      await p.pass(600_000);
+      assert.equal(p.count('popup'), 0);
+      assert.equal(p.count('activate'), 0);
+    });
+
+    it(`${platform}: off then on in one launch reports again, on the same rule`, async () => {
+      const p = phone({ platform, saved: yes(), choice: 'yes' });
+      p.engine.noteMemberGate('open');
+      await p.settle();
+      p.engine.withdrawConsent();
+      await p.pass(OPEN_GAP_MS);
+      p.engine.offerConsent();
+      await p.settle();
+      assert.equal(p.engine.phase(), 'on');
+      assert.equal(p.count('activate'), 2);
+    });
+  }
+
+  for (const region of ['GB', 'DE', null]) {
+    it(`region ${region}: not reached, even with a stored yes`, async () => {
+      const p = phone({ region, saved: yes() });
+      p.engine.noteMemberGate('open');
+      await p.pass(600_000);
+      assert.equal(p.count('activate'), 0);
+    });
+  }
 });
 
 describe('a person with no account', () => {

@@ -23,10 +23,14 @@
  *    account wipe, and a guest is wiped at every launch: a guest's No could not
  *    be kept, so asking would re-ask it for ever. For the same reason a stored
  *    yes does not start Meta for a guest. Settings still works for this launch.
- *  • Only three things reach Meta: activate/app open, and a purchase with the
+ *  • Only these reach Meta: Meta's install report, the app open with iOS's
+ *    session length (`realActivateReportsOpen`), and a purchase with the
  *    store's price and currency. No user id, no email, no Advanced Matching,
  *    no learning data. `buildPurchaseEvent` is an allowlist.
- *  • Automatic logging stays off.
+ *  • Automatic logging stays off. On Android that flag is also what keeps the
+ *    SDK's session tracker quiet: it cannot be stopped once started, and every
+ *    event it makes is dropped while the flag is off, so it cannot count an
+ *    open twice or log one after a turn-off.
  *  • After a yes, iOS asks once, at a calm moment after the first run, and only
  *    if iOS has never been asked. After a no, it never asks. "Denied" just
  *    means no IDFA, and the same events go out with limited data.
@@ -50,10 +54,22 @@ export const META_CONSENT_ROW_HINT = 'Lets us tell Meta when the app is opened o
 export const META_CONSENT_ROW_UNREADABLE = 'This setting could not be read on this phone, so it stays off.';
 
 /** Meta's own standard name for an app activation (Android
- *  AppEventsConstants.EVENT_NAME_ACTIVATED_APP, iOS AppEvents.Name.activatedApp).
- *  The library has no activateApp call, and that native call would also start
- *  session tracking, so this is sent as a plain event. */
+ *  AppEventsConstants.EVENT_NAME_ACTIVATED_APP, iOS AppEvents.Name.activatedApp). */
 export const META_ACTIVATE_EVENT = 'fb_mobile_activate_app';
+
+/**
+ * Does Meta's real activate call report the open by itself? (Read from Meta's
+ * source: Android 18.3.0, the version withMetaGuards.js pins, iOS 18.0 to 18.1.1.)
+ *
+ * The call runs on both platforms, and both send the install report, once ever.
+ * Only iOS also reports the open and the session length, through the public
+ * logger (FBSDKTimeSpentData). Android's go through InternalAppEventsLogger,
+ * which drops them while automatic logging is off. So on Android the plain
+ * event is the only open there is, and sending it counts nothing twice.
+ */
+export function realActivateReportsOpen(platform: string): boolean {
+  return platform === 'ios';
+}
 
 /** Meta's session rule of thumb: a return within a minute is the same open. */
 export const OPEN_GAP_MS = 60_000;
@@ -193,6 +209,9 @@ export type MetaDevice = {
   /** Android: runs FacebookSdk.sdkInitialize (see modules/ape-meta-init).
    *  iOS: nothing to do, Settings.initializeSDK does the real work. */
   initNative(): Promise<boolean>;
+  /** Meta's real activate call (see realActivateReportsOpen). False when this
+   *  build has no such call. */
+  activateApp(): boolean;
   loadSettings(): FbSettings | null;
   /** Evaluating the library's logger creates its native module, so this comes
    *  only after the SDK is initialized (Android throws otherwise). */
@@ -233,6 +252,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   let settings: FbSettings | null = null;
   let logger: FbLogger | null = null;
   let lastOpenAt: number | null = null;
+  let activateReportsOpen = false;
   let startChecks = 0;
   let queued: PurchaseNote[] = [];
   /** Null until read. A change made meanwhile outranks a read still out. */
@@ -356,7 +376,13 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     const now = device.now();
     if (lastOpenAt !== null && now - lastOpenAt < OPEN_GAP_MS) return;
     lastOpenAt = now;
-    logger?.logEvent(META_ACTIVATE_EVENT);
+    let activated = false;
+    try {
+      activated = device.activateApp();
+    } catch {
+      activated = false;
+    }
+    if (!activated || !activateReportsOpen) logger?.logEvent(META_ACTIVATE_EVENT);
   };
 
   const begin = async () => {
@@ -365,6 +391,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     phase = 'starting';
     try {
       const { platform } = device.gateFacts();
+      activateReportsOpen = realActivateReportsOpen(platform);
       // Off and on again in one launch: the SDK is still up, so it is not
       // started twice, it is only told to send again.
       const resuming = settings !== null && logger !== null;

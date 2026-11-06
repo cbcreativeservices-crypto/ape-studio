@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 00:05 · ccode · (this commit)
+changed: Meta real activate call: iOS replaces the plain event, Android adds the install report and keeps the plain open [MD:E1]
+affects other side: nothing yet; the App Privacy and Data safety drafts in the plan still hold (session length is iOS only).
+needs: nothing
+
+
+### 2026-11-05 23:30 · ccode · d5c5fa0d
+changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
+affects other side: nothing; merge only, client-only 1.0.1 branch.
+needs: nothing
+
+
 ### 2026-11-05 22:11 · ccode · e88c6b7f
 changed: Community: a plain About line for the musicians area (owner 2026-11-05) [MD:D57]
 affects other side: nothing; client-only control fixes.

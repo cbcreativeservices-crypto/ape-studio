@@ -22,6 +22,7 @@ import {
   isCalmNow,
   memberGateSettled,
   metaAllowed,
+  realActivateReportsOpen,
   regionAllowed,
   type CalmFacts,
   type MemberGateState,
@@ -64,6 +65,8 @@ function phone(over: {
   appSessions?: number | null;
   calm?: Partial<CalmFacts>;
   initOk?: boolean;
+  /** false: this build has no real activate call. 'throws': the call blew up. */
+  activate?: boolean | 'throws';
 }) {
   const calls: Call[] = [];
   const timers: { at: number; run: () => void }[] = [];
@@ -82,6 +85,12 @@ function phone(over: {
     initNative: async () => {
       calls.push(['initNative']);
       return over.initOk ?? true;
+    },
+    activateApp: () => {
+      if (over.activate === 'throws') throw new Error('native call failed');
+      if (over.activate === false) return false;
+      calls.push(['activate']);
+      return true;
     },
     loadSettings: () => ({
       initializeSDK: () => void calls.push(['initializeSDK']),
@@ -284,7 +293,8 @@ describe('what reaches Meta', () => {
     const n = p.names();
     assert.ok(n.indexOf('initializeSDK') < n.indexOf('loadLogger'));
     assert.deepEqual(p.calls.find((c) => c[0] === 'autoLog'), ['autoLog', false]);
-    assert.deepEqual(p.calls.filter((c) => c[0] === 'event'), [['event', META_ACTIVATE_EVENT]]);
+    assert.equal(p.calls.filter((c) => c[0] === 'activate').length, 1);
+    assert.ok(n.indexOf('loadLogger') < n.indexOf('activate'));
   });
 
   it('Android start order: the native init comes before the logger is even loaded', async () => {
@@ -340,16 +350,19 @@ describe('what reaches Meta', () => {
     assert.equal(buildPurchaseEvent({ ...base, plan: 'pro' as 'monthly' }), null);
   });
 
-  it('a return within a minute is the same open', async () => {
-    const p = phone({ platform: 'android' });
-    p.engine.noteMemberGate('open');
-    await p.settle();
-    p.engine.noteAppOpen();
-    assert.equal(p.calls.filter((c) => c[0] === 'event').length, 1);
-    await p.pass(OPEN_GAP_MS);
-    p.engine.noteAppOpen();
-    assert.equal(p.calls.filter((c) => c[0] === 'event').length, 2);
-  });
+  for (const platform of ['android', 'ios']) {
+    it(`${platform}: a return within a minute is the same open`, async () => {
+      const p = phone({ platform });
+      const opens = () => p.calls.filter((c) => c[0] === 'activate').length;
+      p.engine.noteMemberGate('open');
+      await p.settle();
+      p.engine.noteAppOpen();
+      assert.equal(opens(), 1);
+      await p.pass(OPEN_GAP_MS);
+      p.engine.noteAppOpen();
+      assert.equal(opens(), 2);
+    });
+  }
 
   it('the source can only ever call the approved surface', () => {
     const src = code('src/features/growth/metaGate.ts') + code('src/features/growth/metaMeasurement.ts');
@@ -375,6 +388,126 @@ describe('what reaches Meta', () => {
     const logged = [...code('src/features/growth/metaGate.ts').matchAll(/logger\??\.log(\w+)\(/g)].map((m) => m[1]);
     assert.deepEqual([...new Set(logged)].sort(), ['Event', 'Purchase']);
     assert.equal(META_ACTIVATE_EVENT, 'fb_mobile_activate_app');
+  });
+});
+
+describe("Meta's real activate call (Option A, owner 2026-11-05)", () => {
+  const plain = (p: { calls: Call[] }) => p.calls.filter((c) => c[0] === 'event').length;
+  const real = (p: { calls: Call[] }) => p.calls.filter((c) => c[0] === 'activate').length;
+
+  it('iOS: the real call reports the open, so the plain event never goes', async () => {
+    const p = phone({ tracking: { granted: false, status: 'denied' } });
+    p.engine.noteMemberGate('open');
+    await p.settle();
+    assert.equal(real(p), 1);
+    assert.equal(plain(p), 0);
+    await p.pass(OPEN_GAP_MS);
+    p.engine.noteAppOpen();
+    assert.equal(real(p), 2);
+    assert.equal(plain(p), 0, 'not on a return either');
+  });
+
+  it('Android: the real call runs for the install report, and the open is one plain event', async () => {
+    // With automatic logging off the Android SDK drops its own open (18.3.0:
+    // SessionLogger -> InternalAppEventsLogger.logEvent). So this is the only one.
+    const p = phone({ platform: 'android' });
+    p.engine.noteMemberGate('open');
+    await p.settle();
+    assert.equal(real(p), 1);
+    assert.equal(plain(p), 1);
+    assert.deepEqual(p.calls.find((c) => c[0] === 'event'), ['event', META_ACTIVATE_EVENT]);
+    await p.pass(OPEN_GAP_MS);
+    p.engine.noteAppOpen();
+    assert.equal(real(p), 2);
+    assert.equal(plain(p), 2);
+  });
+
+  it('only iOS leaves the open to the real call', () => {
+    assert.equal(realActivateReportsOpen('ios'), true);
+    assert.equal(realActivateReportsOpen('android'), false);
+    assert.equal(realActivateReportsOpen('web'), false);
+  });
+
+  it('iOS, a build without the call: exactly one plain event, as before', async () => {
+    const p = phone({ activate: false, tracking: { granted: false, status: 'denied' } });
+    p.engine.noteMemberGate('open');
+    await p.settle();
+    assert.equal(p.engine.phase(), 'on');
+    assert.equal(plain(p), 1);
+  });
+
+  it('a native call that blows up is the plain event, and Meta stays up', async () => {
+    const p = phone({ activate: 'throws', tracking: { granted: false, status: 'denied' } });
+    p.engine.noteMemberGate('open');
+    await p.settle();
+    assert.equal(p.engine.phase(), 'on');
+    assert.equal(plain(p), 1);
+    await p.pass(OPEN_GAP_MS);
+    p.engine.noteAppOpen();
+    assert.equal(plain(p), 2);
+  });
+
+  it('runs after auto logging is off and Android ad id is on, before any held purchase', async () => {
+    const p = phone({ platform: 'android' });
+    p.engine.notePurchase({ plan: 'annual', amount: 59.99, currency: 'USD' });
+    p.engine.noteMemberGate('open');
+    await p.settle();
+    const n = p.names();
+    assert.ok(n.indexOf('autoLog') < n.indexOf('activate'));
+    assert.ok(n.indexOf('adId') < n.indexOf('activate'));
+    assert.ok(n.indexOf('activate') < n.indexOf('purchase'));
+  });
+
+  it('a build without the native values never reaches the call', async () => {
+    const p = phone({ nativeValuesPresent: false });
+    p.engine.noteMemberGate('open');
+    await p.pass(60_000);
+    assert.deepEqual(p.calls, []);
+  });
+
+  it('the device side hands over the module call, nothing else', () => {
+    const src = code('src/features/growth/metaMeasurement.ts');
+    assert.match(src, /activateApp: activateMetaApp/);
+    assert.match(code('src/features/growth/metaGate.ts'), /logger\?\.logEvent\(META_ACTIVATE_EVENT\)/);
+  });
+
+  it('Android native: the call lives in ape-meta-init and needs the Application', () => {
+    const kt = code('modules/ape-meta-init/android/src/main/java/expo/modules/apemetainit/ApeMetaInitModule.kt');
+    assert.match(kt, /import com\.facebook\.appevents\.AppEventsLogger/);
+    assert.match(kt, /AsyncFunction\("activateApp"\)/);
+    assert.match(kt, /as\? Application/);
+    assert.match(kt, /AppEventsLogger\.activateApp\(application\)/);
+  });
+
+  it('iOS native: the module is declared the way ape-dsp declares its own', () => {
+    const config = JSON.parse(read('modules/ape-meta-init/expo-module.config.json'));
+    assert.deepEqual(config.platforms, ['apple', 'android']);
+    assert.deepEqual(config.apple.modules, ['ApeMetaInitModule']);
+    assert.deepEqual(config.android.modules, ['expo.modules.apemetainit.ApeMetaInitModule']);
+    const pod = read('modules/ape-meta-init/ios/ApeMetaInit.podspec');
+    assert.match(pod, /s\.name\s+= 'ApeMetaInit'/);
+    assert.match(pod, /s\.dependency 'ExpoModulesCore'/);
+    assert.match(pod, /s\.dependency 'FBSDKCoreKit'/);
+    const swift = code('modules/ape-meta-init/ios/ApeMetaInitModule.swift');
+    assert.match(swift, /public class ApeMetaInitModule: Module/);
+    assert.match(swift, /Name\("ApeMetaInit"\)/);
+    assert.match(swift, /ApplicationDelegate\.shared\.initializeSDK\(\)/);
+    assert.match(swift, /AppEvents\.shared\.activateApp\(\)/);
+    assert.match(swift, /\.runOnQueue\(\.main\)/);
+  });
+
+  it('the JS side reaches the module on both platforms, never on web', () => {
+    const js = code('modules/ape-meta-init/index.ts');
+    assert.match(js, /Platform\.OS === 'web' \? null/);
+    assert.ok(!/Platform\.OS === 'android' \? requireOptional/.test(js));
+  });
+
+  it('what keeps Android from counting twice: auto logging off, and the SDK version that was read', () => {
+    // If either fails, re-read SessionLogger and InternalAppEventsLogger first.
+    const guards = require_(join(ROOT, 'plugins/withMetaGuards.js'));
+    assert.equal(guards.FACEBOOK_SDK_VERSION, '18.3.0');
+    assert.match(code('app.config.js'), /autoLogAppEventsEnabled: false/);
+    assert.match(code('src/features/growth/metaGate.ts'), /setAutoLogAppEventsEnabled\(false\)/);
   });
 });
 

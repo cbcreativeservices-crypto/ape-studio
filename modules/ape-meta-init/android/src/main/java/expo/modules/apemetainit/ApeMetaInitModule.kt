@@ -9,10 +9,13 @@
 // missing call, and JS makes it only after src/features/growth/metaGate.ts
 // says yes.
 //
-// Android only. On iOS the library's own initializeSDK does the real work.
+// On iOS the library's own initializeSDK does that part; ios/ has the activate
+// call only.
 package expo.modules.apemetainit
 
+import android.app.Application
 import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -30,6 +33,16 @@ class ApeMetaInitModule : Module() {
       FacebookSdk.sdkInitialize(context)
       FacebookSdk.fullyInitialize()
       FacebookSdk.isInitialized()
+    }.runOnQueue(Queues.MAIN)
+
+    /** Meta's real activate call: the install report, sent once ever by the
+     *  SDK. It also starts the SDK's session tracker, which logs nothing while
+     *  automatic logging is off, so metaGate.ts still sends the open. */
+    AsyncFunction("activateApp") {
+      val application = appContext.reactContext?.applicationContext as? Application
+        ?: throw Exceptions.ReactContextLost()
+      AppEventsLogger.activateApp(application)
+      true
     }.runOnQueue(Queues.MAIN)
   }
 }

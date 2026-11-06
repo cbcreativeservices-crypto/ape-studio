@@ -14,7 +14,7 @@
 import { AppState, Platform, type AppStateStatus } from 'react-native';
 import Constants from 'expo-constants';
 
-import { initializeMetaSdkAndroid } from '../../../modules/ape-meta-init';
+import { activateMetaApp, initializeMetaSdkAndroid } from '../../../modules/ape-meta-init';
 import { presentedModalCount, rootModalHoldMs } from '../../components/DimModal';
 import { TELEMETRY_ENABLED } from '../../config/telemetry';
 import { confirmDialog } from '../../lib/confirm';
@@ -84,6 +84,7 @@ const device: MetaDevice = {
     overlaysSuppressed: areOverlaysSuppressed(),
   }),
   initNative: () => (Platform.OS === 'android' ? initializeMetaSdkAndroid() : Promise.resolve(true)),
+  activateApp: activateMetaApp,
   loadSettings: () => libDefault<FbSettings>('react-native-fbsdk-next/lib/commonjs/FBSettings'),
   loadLogger: () => libDefault<FbLogger>('react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger'),
   loadTracking: () => optionalModule<TrackingApi>('expo-tracking-transparency'),
