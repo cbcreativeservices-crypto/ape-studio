@@ -307,6 +307,21 @@ const MemberGated = {
   TuningLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/tuning/TuningLabScreen').TuningLabScreen)),
 } as const;
 
+// The one place every way out of a lab passes through (labThanks.ts).
+type RootStackShape = { index: number; routes: readonly { key: string; name: string }[] };
+let lastRootState: RootStackShape | undefined;
+const ROOT_LISTENERS = {
+  state: (e: { data: { state?: RootStackShape } }) => {
+    const prev = lastRootState;
+    const next = e.data.state;
+    lastRootState = next;
+    // Only a pop can leave a lab, and the catalog stays out of app start until one happens.
+    if (prev && next && next.routes.length < prev.routes.length) {
+      (require('../features/lab/labThanks') as typeof import('../features/lab/labThanks')).onRootPop(prev, next);
+    }
+  },
+};
+
 export function RootNavigator() {
   // gestureEnabled:false is the app-wide DEFAULT (owner 2026-08-11): the iOS
   // edge swipe-back was stealing full-width sliders' horizontal drags on every
@@ -336,6 +351,7 @@ export function RootNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Splash"
+      screenListeners={ROOT_LISTENERS}
       screenOptions={{ headerShown: false, gestureEnabled: false, ...navOrientation, ...push }}
       /*
        * LOW-LIGHT WASH LIVES HERE, not at the app root (owner 2026-08-31:

@@ -135,6 +135,7 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:homeFirstOpenDone', // device's first app open already happened (Start Here landing, owner 2026-09-29)
+  'ape:labThanksShown', // the once-per-device thank-you after a first lab exit (owner 2026-11-05)
   'ape:dev:entitlement', // dev-only override
   'ape:devSuppressPopups', // dev-only override
   // A password reset in progress (toddler hunt 2026-10-14, item 8): verifyOtp's
@@ -201,6 +202,7 @@ const GUEST_KEEP: ReadonlySet<string> = new Set<string>([
   'ape:calc:usageLocal',
   'ape:deviceId',
   'ape:homeFirstOpenDone',
+  'ape:labThanksShown',
   'ape:splCalOffset',
   'ape:finalExamQueue',
   'ape:finalExamQueue:damaged',
