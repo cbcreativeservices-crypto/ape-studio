@@ -31,6 +31,7 @@ export const INTEREST_TOPICS = [
   'Mixing',
   'Mastering',
   'Music Production',
+  'Musician / Artist',
   'Podcasting',
   'Broadcast',
   'Film & Game Audio',
