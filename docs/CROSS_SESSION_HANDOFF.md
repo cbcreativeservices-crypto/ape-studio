@@ -677,8 +677,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-06 06:53 · ccode · 47f78e11
 changed: Intro video: the Skip change itself, which e2fa5108 left out (owner 2026-11-06, Always show Skip) [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-06 06:52 · ccode · e2fa5108
