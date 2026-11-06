@@ -677,14 +677,14 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-05 18:23 · ccode · 23f2123f
 changed: Must-do: owner approved the fourth OTA on the phones [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 17:54 · ccode · 3f7eaa0d
 changed: Must-do: D54 and D56 brought up to date before the OTA [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 17:48 · ccode · da25d0ee
