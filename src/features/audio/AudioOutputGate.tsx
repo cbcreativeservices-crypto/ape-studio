@@ -432,8 +432,8 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
           tap always works, so it leads. */}
       <View style={styles.shakeCard}>
         <Text style={styles.shakeText}>
-          ⚠ To mute at any time, tap the red AUDIO OUTPUT row, or shake the phone if it has a
-          motion sensor.
+          ⚠ To mute at any time, tap the red line at the top of the screen, or shake the phone if
+          it has a motion sensor.
         </Text>
       </View>
       {/* Enable-audio card. */}

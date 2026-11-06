@@ -11,7 +11,9 @@ export const metadata: Metadata = {
     title: "Get the App · Pro Audio Training Academy",
     description:
       "Download Pro Audio Training Academy — structured professional audio training with verifiable credentials.",
+    images: [{ url: "/og/og-home.png", width: 1200, height: 630, alt: "Pro Audio Training Academy app: the whole craft of audio, right in your pocket" }],
   },
+  twitter: { card: "summary_large_image", images: ["/og/og-home.png"] },
 };
 
 export default function GetLayout({ children }: { children: ReactNode }) {

@@ -690,6 +690,12 @@ needs: nothing
 ### 2026-11-05 23:30 · ccode · d5c5fa0d
 changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
 affects other side: nothing; merge only, client-only 1.0.1 branch.
+### 2026-11-06 07:39 · ccode · 7e21574d
+changed: Must-do: eighth OTA published, iPad tuner closed by the owner [MD:A2]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
 ### 2026-11-06 06:53 · ccode · 47f78e11
 changed: Intro video: the Skip change itself, which e2fa5108 left out (owner 2026-11-06, Always show Skip) [MD:D57]
 affects other side: nothing; client-only control fixes.
