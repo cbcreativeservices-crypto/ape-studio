@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 17:18 · ccode · 96ac9a06
+changed: Owner-approved decisions, instrument gaps and metal PART marks: controls now show what they promise [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
 ### 2026-11-05 14:31 · ccode · a4e3ba6d
 changed: Function audit: controls that did not do their job, fixed across the labs [MD:D57]
 affects other side: nothing; client-only control fixes.
