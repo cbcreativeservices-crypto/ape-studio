@@ -675,6 +675,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 06:52 · ccode · e2fa5108
+changed: Intro video: Skip on every viewing (owner 2026-11-06, Always show Skip) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-05 23:29 · ccode · ea73e10f
+changed: Must-do: owner decisions of 11-05 night, musicians rows live [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
 ### 2026-11-05 22:11 · ccode · e88c6b7f
 changed: Community: a plain About line for the musicians area (owner 2026-11-05) [MD:D57]
 affects other side: nothing; client-only control fixes.
