@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 08:09 · ccode · 3e8329ed
+changed: Must-do: ninth OTA published [MD:A2]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-06 07:39 · ccode · 7e21574d
 changed: Must-do: eighth OTA published, iPad tuner closed by the owner [MD:A2]
 affects other side: nothing; client-only control fixes.
