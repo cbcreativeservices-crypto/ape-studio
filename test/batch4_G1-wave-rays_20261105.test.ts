@@ -95,13 +95,14 @@ test('every reflection layer is wired to the energy, the direct ray is not', () 
   assert.match(VIZ, /<Path path=\{rays\.arrows\[0\]\} color=\{RAY_COLORS\[0\]\} opacity=\{0\.9\} \/>/);
 });
 
-test('only Reflection and Absorption opt in, so every other room is unchanged', () => {
+test('only Reflection, Absorption and Reverberation opt in, so every other room is unchanged', () => {
   assert.match(VIZ, /p\.raysShowLoss && rays \? rayOpacity\(base, rays\.energy\[order\]\) : base/);
   assert.equal(MOD.match(/^\s+raysShowLoss$/gm)?.length, 2);
   const inside = (from: string, to: string) => MOD.slice(MOD.indexOf(from), MOD.indexOf(to));
   assert.match(inside('export function ReflectionModule', 'export function AbsorptionModule'), /^\s+raysShowLoss$/m);
   assert.match(inside('export function AbsorptionModule', 'export function DiffusionModule'), /^\s+raysShowLoss$/m);
-  assert.doesNotMatch(read('src/screens/lab/wave/modules/modWaveB.tsx'), /raysShowLoss/);
+  // Reverb joined them on the owner's go (section 5, 2026-11-05): its rays fade the same way.
+  assert.equal(read('src/screens/lab/wave/modules/modWaveB.tsx').match(/^\s+raysShowLoss$/gm)?.length, 1);
 });
 
 test('Diffusion: ENERGY RETURNED stays SAME ON OR OFF, the fan keeps its fixed strength', () => {

@@ -28,8 +28,9 @@ export function bassPlan(kind: BassKind): BowedPlanLayout {
     P,
     hands: kind,
     objects,
-    near: { u0: -1500, u1: 2100, v0: -2450, v1: 2450 },
-    wide: { u0: -1600, u1: 3700, v0: -2650, v1: 2650 },
+    // Upstage room for the whole ring round the piano (z − r − 40, and its line).
+    near: { u0: -1500, u1: 2100, v0: -3100, v1: 2450 },
+    wide: { u0: -1600, u1: 3700, v0: -3150, v1: 2650 },
     cue: {
       wall: 'u0',
       hubAt: 0,

@@ -28,14 +28,17 @@ import type { Prediction } from '../../../engine/model/types.ts';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PlanStage, MicOnPlan, type SportMic } from '../sports/sportsPages';
 import { PlanPath, TargetRing, venueLabels } from '../sports/VenueArt';
-import { aimShort, aimWords, degOf, dirFromDeg, fmtM1, planUV, type P2 } from '../sports/venuePlan.ts';
-import { CoverageWedge, ImmersiveScene } from './AudienceArt';
+import { aimShort, aimWords, degOf, dirFromDeg, fmtM1, planRange, planUV, type P2 } from '../sports/venuePlan.ts';
+import { CoverageWedge, ImmersiveScene, PatternLobe, nearSeatSide, paAngleSide } from './AudienceArt';
 import { DOMINATE_DB, EVENT, EVENT_SCENE, FACE_H, STUDIO, STUDIO_SCENE, VENUES, nearSeatBias, pairReading, paAngle, type VenueId } from './venue.ts';
 
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
 const GREEN = '#5bff85';
 const db1 = (d: number) => `${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1)} dB`;
+/** The plans look down, so height and tilt live in this corner box (top left: the mic stays clear). */
+const NEAR_SIDE_AT = { x: 0.02, y: 0.02, w: 0.42, h: 0.46 };
+const PA_SIDE_AT = { x: 0.02, y: 0.02, w: 0.5, h: 0.46 };
 
 /** The PA clusters of a venue and where each points (drawing defaults). */
 const PA_AIMS: Readonly<Record<VenueId, { c: P2; dirDeg: number; halfDeg: number; reach: number }[]>> = {
@@ -127,8 +130,7 @@ export function useVenueTourStep(spec: { words: { looking: string; prompt: strin
       badge: 'From above · the stage at the bottom · seats drawn without people · the PA’s wedge is a simplified picture of where it points',
       bezel: [
         { k: 'VENUE', v: venue === 'studio' ? 'STUDIO' : 'EVENT', flex: 1 },
-        { k: 'LAYER', v: L.short, flex: 1 },
-        { k: 'LOOKED AT', v: `${Math.min(seen.size, 8)} / 8`, flex: 1 },
+        { k: 'LOOKED AT', v: L.short, flex: 1 },
       ],
       params: [
         {
@@ -186,6 +188,7 @@ export function useNearSeatStep(spec: { prediction?: Prediction; words: { lookin
   const mic = { x: 0, y };
   const B = nearSeatBias(mic, h, STUDIO.N, STUDIO.S);
   const m: SportMic = { id: 'crowd', kind: 'compact', label: 'crowd mic', at: mic, h, aimAt: STUDIO.S, aimH: FACE_H, pattern: 'cardioid' };
+  const side = nearSeatSide({ y, h, nearY: STUDIO.N.y, midY: STUDIO.S.y, faceH: FACE_H, pattern: 'cardioid', at: NEAR_SIDE_AT });
   const words = `The crowd mic ${fmtM1(h)} up: the nearest seat ${fmtM1(B.rNear)} away, the middle of the section ${fmtM1(B.rCentre)} — the nearest person about ${Math.abs(B.db).toFixed(1)} dB louder at the mic than one in the middle.`;
   const labels: StaticLabel[] = [
     ...venueLabels(STUDIO_SCENE, { targets: true, marks: false }),
@@ -197,7 +200,7 @@ export function useNearSeatStep(spec: { prediction?: Prediction; words: { lookin
     layout: 'rack',
     rack: {
       render: (w, hh) => (
-        <PlanStage w={w} h={hh} scene={STUDIO_SCENE} box={{ x0: -6, y0: -1.5, x1: 6, y1: 9 }} a11y={words} labels={labels} show={{ targets: true, marks: false }}>
+        <PlanStage w={w} h={hh} scene={STUDIO_SCENE} box={{ x0: -6, y0: -1.5, x1: 6, y1: 9 }} a11y={words} labels={labels} show={{ targets: true, marks: false }} inset={side}>
           {(px, g) => (
             <>
               <PlanPath a={STUDIO.S} b={mic} px={px} color={AMBER} width={2.4} />
@@ -208,7 +211,7 @@ export function useNearSeatStep(spec: { prediction?: Prediction; words: { lookin
           )}
         </PlanStage>
       ),
-      badge: 'From above · red = the nearest seat, amber = the middle of the section · by distance alone: a simplified picture · silent',
+      badge: 'From above · corner box = from the side · red = nearest seat, amber = middle · by distance alone: simplified · silent',
       bezel: [
         { k: 'HEIGHT', v: fmtM1(h), flex: 0.9 },
         { k: 'NEAREST', v: fmtM1(B.rNear), flex: 0.9 },
@@ -273,7 +276,7 @@ export function useImmersiveStep(spec: { words: { looking: string; prompt: strin
       bezel: [
         { k: 'MIC', v: S ? '5 CAPSULES' : '4 CAPSULES', flex: 1.2 },
         { k: 'SIGNALS', v: S ? '5 CHANNELS' : '4 TRACKS', flex: 1.1 },
-        { k: 'LOOKED AT', v: `${seen.size} / 2`, flex: 0.9 },
+        { k: 'LOOKED AT', v: S ? 'SURROUND' : 'AMBISONIC', flex: 1.1 },
       ],
       params: [
         {
@@ -344,6 +347,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
     if (good) onDone();
   }, [good, onDone]);
   const m: SportMic = { id: 'crowd', kind: 'compact', label: 'crowd mic', at, h: hMic, aimAt, aimH, pattern };
+  const side = paAngleSide({ hMic, rPa: planRange(at, EVENT.paL), hPa: EVENT.paH, rFaces: planRange(at, EVENT.CC), faceH: FACE_H, aimRun: planRange(at, aimAt), aimRise: aimH - hMic, pattern, at: PA_SIDE_AT });
   return {
     key: 'paAngle',
     title: 'Faces, not the PA',
@@ -351,17 +355,18 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the center section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false }).filter((l) => l.id !== 't.R')} show={{ targets: true, marks: false, routes: false }}>
+        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the center section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false }).filter((l) => l.id !== 't.R' && l.id !== 't.L')} show={{ targets: true, marks: false, routes: false }} inset={side}>
           {(px, g) => (
             <>
               <PaCoverage venue="event" px={px} />
               <PlanPath a={EVENT.paL} b={at} px={px} color={RED} width={2.4} />
-              <MicOnPlan m={m} px={px} g={g} />
+              <MicOnPlan m={m} px={px} g={g} lobe={false} />
+              <PatternLobe u={planUV(at).u} v={planUV(at).v} dir={Math.atan2(-ahead.y, ahead.x)} pattern={pattern} r={g * 2.4} px={px} />
             </>
           )}
         </PlanStage>
       ),
-      badge: 'From above · red = the path from the PA cluster · white dashed = an ideal pattern’s shape · angles in 3-D, calculated from the drawing · silent',
+      badge: 'From above · corner box = from the side · red = the PA’s path · dashed = a pattern’s shape · angles calculated in 3-D · silent',
       bezel: [
         { k: 'PA OFF AXIS', v: `${Math.round(pa.deg)}°`, tint: pa.deg >= 110 ? GREEN : RED, flex: 1.1 },
         { k: 'PA PICKUP', v: db1(pa.db), flex: 1 },
@@ -372,9 +377,9 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
           kind: 'fader',
           id: 'turn',
           label: 'TURN',
-          value: (turn + 90) / 180,
+          value: (90 - turn) / 180,
           onChange: (v) => {
-            setTurn(Math.round(v * 180 - 90));
+            setTurn(Math.round(90 - v * 180));
             setTouched(true);
           },
           // "left/right of center" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).

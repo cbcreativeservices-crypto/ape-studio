@@ -55,6 +55,7 @@ import { usePhaseClock } from './foundations/viz';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
+import { fitValue } from '../../theme/legibility';
 import { ECHO_SPAN_MS, echoSpacingFrac } from '../../features/lab/sliderMaps';
 
 // Shared lab grammar (fxViz palette): amber = processed, dim = dry/reference,
@@ -301,6 +302,66 @@ function dynLin(db: number): number {
   'worklet';
   const a = Math.pow(10, (db - DYN_TOP_DB) / 20);
   return a > 1 ? 1 : a;
+}
+
+/* ── the GR trace (audit decision 20, 2026-11-05) ─────────────────────────
+ * On the compressor's CLICK the drawn spike barely moves with RATIO or THRESH:
+ * the 5 ms ping is nearly over before GR peaks. So the reduction itself hangs
+ * under OUT, on OUT's own time base, like the ladder: from 0 downward. It comes
+ * from the drawing's detector, not from fxGrStatus: a 50 ms poll can miss a
+ * kick, and there is nothing to poll while stopped. */
+/** The strip's 0 dB line, this far above the panel's foot. */
+const GR_TRACE_TOP = 30;
+/** The strip's height at GR_TRACE_MAX_DB. */
+const GR_TRACE_H = 22;
+/** Scale: the deepest CLICK kick the fader reaches at ATTACK 5 ms is ~16 dB. */
+const GR_TRACE_MAX_DB = 20;
+
+/** The engine's detector across [u, u + span) ms after a hit of the click
+ *  train: [the level it ends on, the highest it reached]. Inside a ping, every
+ *  48 kHz sample; between pings it only releases. */
+function dynPingStep(env0: number, u0: number, span: number, periodMs: number, aAtk: number, aRel: number, relMs: number): number[] {
+  'worklet';
+  let env = env0;
+  let top = env0;
+  let u = u0;
+  let rem = span;
+  while (rem > 1e-9) {
+    if (u >= periodMs) u -= periodMs;
+    if (u < PING_MS) {
+      const uEnd = u + rem < PING_MS ? u + rem : PING_MS;
+      for (let j = Math.ceil(u / PING_DT - 1e-9); j < PING_N && j * PING_DT < uEnd - 1e-9; j++) {
+        const xp = dynPingAbs(j * PING_DT);
+        env += (xp > env ? aAtk : aRel) * (xp - env);
+        if (env > top) top = env;
+      }
+      rem -= uEnd - u;
+      u = uEnd;
+    } else {
+      const uEnd = u + rem < periodMs ? u + rem : periodMs;
+      env *= Math.exp(-(uEnd - u) / relMs);
+      rem -= uEnd - u;
+      u = uEnd;
+    }
+  }
+  return [env, top];
+}
+
+/** dB of reduction for a detector level: over × (1 − 1/ratio), as the engine. */
+function dynGrDb(env: number, thrDb: number, ratio: number): number {
+  'worklet';
+  const over = 20 * Math.log10(env + 1e-12) - thrDb;
+  return over > 0 ? over * (1 - 1 / ratio) : 0;
+}
+
+/** The kick the strip reaches once the click train has settled. */
+function dynPingGrPeakDb(thrDb: number, ratio: number, atkMs: number, relMs: number, periodMs: number): number {
+  const aAtk = 1 - Math.exp(-PING_DT / atkMs);
+  const aRel = 1 - Math.exp(-PING_DT / relMs);
+  const hits = Math.ceil((5 * relMs) / periodMs) + 2;
+  let r = [0, 0];
+  for (let i = 0; i < hits; i++) r = dynPingStep(r[0], 0, periodMs, periodMs, aAtk, aRel, relMs);
+  return dynGrDb(r[1], thrDb, ratio);
 }
 
 /** Mirror of fxViz TransferCurveGraph's outAt — keep in lockstep (the transfer
@@ -1845,6 +1906,7 @@ function DynamicsFlow({
    *  scale (levelColor: "the colour tracks true level regardless of vertical
    *  zoom"), so a −20 dBFS hit reads in the quiet colours it really is. */
   const fsHalf = A * Math.pow(10, -DYN_TOP_DB / 20);
+  const ts = useStageTextScale();
 
   const inPath = useDerivedValue(() => {
     const now = (clock.value / PI2) * 1000;
@@ -2079,6 +2141,50 @@ function DynamicsFlow({
     return p;
   }, [thrG, ceilG, mode, inX0, inX1, outX0, outX1, mid, A]);
 
+  // The GR trace: same columns and time base as OUT, one detector step a column.
+  const grPath = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (!ping) return p;
+    const now = (clock.value / PI2) * 1000;
+    const cols = Math.max(2, Math.floor(outX1 - outX0));
+    const cw = (outX1 - outX0) / cols;
+    const dt = cw * msPerPx;
+    const atk = Math.max(atkG.value, 0.1);
+    const rel = Math.max(relG.value, 1);
+    const ratV = Math.max(ratG.value, 1);
+    const thr = thrG.value;
+    const aAtk = 1 - Math.exp(-PING_DT / atk);
+    const aRel = 1 - Math.exp(-PING_DT / rel);
+    const tOld = now - (outX1 - stageX) * msPerPx;
+    const pre = Math.ceil(Math.min(2500, Math.max(periodMs, 5 * rel)) / dt);
+    let u = tOld - pre * dt;
+    u -= Math.floor(u / periodMs) * periodMs;
+    let env = 0;
+    const y0 = h - GR_TRACE_TOP;
+    const pxPerDb = GR_TRACE_H / GR_TRACE_MAX_DB;
+    const depth: number[] = [];
+    for (let c = 0; c < cols; c++) depth.push(0);
+    for (let k = 0; k < pre + cols; k++) {
+      const r = dynPingStep(env, u, dt, periodMs, aAtk, aRel, rel);
+      env = r[0];
+      u += dt;
+      if (u >= periodMs) u -= periodMs;
+      if (k >= pre) depth[cols - 1 - (k - pre)] = dynGrDb(r[1], thr, ratV);
+    }
+    p.moveTo(outX0, y0);
+    for (let c = 0; c < cols; c++) {
+      const db = depth[c] > GR_TRACE_MAX_DB ? GR_TRACE_MAX_DB : depth[c];
+      p.lineTo(outX0 + (c + 0.5) * cw, y0 + db * pxPerDb);
+    }
+    p.lineTo(outX1, y0);
+    p.close();
+    return p;
+  }, [clock, thrG, ratG, atkG, relG, ping, outX0, outX1, stageX, msPerPx, h, periodMs]);
+  const grPeakDb = useMemo(
+    () => (ping ? dynPingGrPeakDb(thresholdDb, ratio, Math.max(attackMs, 0.1), Math.max(releaseMs, 1), periodMs) : 0),
+    [ping, thresholdDb, ratio, attackMs, releaseMs, periodMs],
+  );
+
   // What the IN half is: the source as the hero models it (RN text, ≥ 9 pt).
   // A steady source holds the GR still, so ATK/REL and RLS cannot show on it:
   // the compressor and limiter notes say TRY CLICK, as Delay and Reverb do.
@@ -2102,7 +2208,24 @@ function DynamicsFlow({
           : `DRUM-HIT MODEL · ${Math.round(60000 / periodMs)} BPM`;
 
   return (
-    <FlowScene w={w} h={h} label={label} glow={glow} note={note} noteColor={DIM}>
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      glow={glow}
+      note={note}
+      noteColor={DIM}
+      overlay={
+        ping ? (
+          <Text
+            {...fitValue(10 * ts)}
+            style={[flowStyles.tag, { fontSize: 10 * ts, letterSpacing: 0.5 * ts, left: (stageX + 14) * ts, top: (h - GR_TRACE_TOP - 13) * ts, width: 96 * ts, color: AMBER }]}
+          >
+            {`GR PEAK ${grPeakDb.toFixed(1)} dB`}
+          </Text>
+        ) : undefined
+      }
+    >
       <Path path={guidePath} color="rgba(255,198,77,.55)" style="stroke" strokeWidth={1}>
         <DashPathEffect intervals={[4, 3]} />
       </Path>
@@ -2115,6 +2238,9 @@ function DynamicsFlow({
         <WaveMidiGradient h={h} y0={mid - fsHalf} y1={mid + fsHalf} />
       </Path>
       <FlowGlow path={outPath} width={1.4} gradH={h} gradY={[mid - fsHalf, mid + fsHalf]} />
+      {ping ? <SkLine p1={{ x: outX0, y: h - GR_TRACE_TOP }} p2={{ x: outX1, y: h - GR_TRACE_TOP }} color={AMBER} strokeWidth={1} opacity={0.4} /> : null}
+      {ping ? <Path path={grPath} color={AMBER} opacity={0.45} /> : null}
+      {ping ? <Path path={grPath} color={AMBER} style="stroke" strokeWidth={1.2} strokeJoin="round" /> : null}
     </FlowScene>
   );
 }

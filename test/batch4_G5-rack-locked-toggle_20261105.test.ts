@@ -26,12 +26,12 @@ const React = {
   Fragment: 'Fragment',
 };
 
-/** Every element in a tree, depth first. */
+/** Every element in a tree, depth first. A DockStrip's keys are its render prop's. */
 function walk(n: any, out: El[] = []): El[] {
   if (Array.isArray(n)) n.forEach((c) => walk(c, out));
   else if (n && typeof n === 'object' && 'props' in n) {
     out.push(n);
-    walk(n.props.children, out);
+    walk(n.type === 'DockStrip' ? n.props.children[0](() => undefined) : n.props.children, out);
   }
   return out;
 }
@@ -59,7 +59,7 @@ function cut(src: string, from: string, to: string) {
 }
 
 const rackSrc = read('rack/RackUnit.tsx');
-const dockJs = compile(cut(rackSrc, 'const dockFor = (inFull: boolean) => (', '\n  const closeTray'));
+const dockJs = compile(cut(rackSrc, 'const shownIn = (inFull: boolean) =>', '\n  const closeTray'));
 const boundJs = compile(cut(rackSrc, 'const effBoundId = ', '\n  const bound = '));
 
 /** One rack dock: the renderer run as RackUnit runs it, with its note state held here. */
@@ -68,7 +68,7 @@ function dock(params: any[], inFull = false) {
   const DockButton = 'DockButton';
   const render = () =>
     run(dockJs, {
-      React, DockButton, params, lockedNoteId: note, bound: null, trayParam: null, openTrayId: null, effBoundId: '', styles: blob,
+      React, DockButton, DockStrip: 'DockStrip', isLabelOnly: () => false, params, lockedNoteId: note, bound: null, trayParam: null, openTrayId: null, effBoundId: '', styles: blob,
       setLockedNoteId: (v: any) => { note = typeof v === 'function' ? v(note) : v; },
     }, 'dockFor')(inFull);
   return {
@@ -185,18 +185,18 @@ describe('Foundations Module 7: the keys wait for the TIME or SPACE call', () =>
 describe('Room Design: the item key with nothing in the room', () => {
   const src = read('roomdesign/modules/modTreatment.tsx');
   const js = compile(`const key = ${cut(src, "{\n      kind: 'toggle',\n      id: 'ab',", "\n    },\n    {\n      kind: 'group',\n      id: 'items',")}\n    };`);
-  const NO_ITEM_LOCK = 'nothing here';
+  const NO_ITEM_SWITCH = 'nothing here';
   const build = (sel: unknown, setItems: unknown = () => {}) =>
-    new Function('sel', 'setItems', 'NO_ITEM_LOCK', `${js}; return key;`)(sel, setItems, NO_ITEM_LOCK);
+    new Function('sel', 'setItems', 'NO_ITEM_SWITCH', `${js}; return key;`)(sel, setItems, NO_ITEM_SWITCH);
 
-  it('ADD FIRST is locked with the same reason as SIZE, and says so in the dock', () => {
+  it('ADD FIRST is locked with its own reason, and says so in the dock', () => {
     const p = build(null);
     assert.equal(p.label, 'ADD FIRST');
-    assert.equal(p.locked, NO_ITEM_LOCK);
+    assert.equal(p.locked, NO_ITEM_SWITCH);
     const d = dock([p]);
     assert.equal(d.key('ab')!.props.value, 'LOCKED');
     d.key('ab')!.props.onPress();
-    assert.equal(d.note(), `ADD FIRST — locked: ${NO_ITEM_LOCK}`);
+    assert.equal(d.note(), `ADD FIRST — locked: ${NO_ITEM_SWITCH}`);
   });
 
   it('with an item selected the key is live and switches that item', () => {

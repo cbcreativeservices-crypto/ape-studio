@@ -22,7 +22,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Circle } from '@shopify/react-native-skia';
 import type { SourcePageId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
-import { Body, Card, Landing, Point } from '../../engine/kit';
+import { Card, Landing, Point } from '../../engine/kit';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
 import type { PageProps } from '../../pages/pageTypes';
 import { factsStep, startStep } from '../shared/journeyPages';
@@ -55,7 +55,6 @@ const PARTS: readonly { id: string; label: string; at: { u: number; v: number };
 
 function usePartsStep(): MikingStep {
   const [k, setK] = useState(0);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set(['bowl']));
   const pt = PARTS[k];
   return {
     key: 'parts',
@@ -76,8 +75,7 @@ function usePartsStep(): MikingStep {
       ),
       badge: 'The dish cut along its axis · amber ring = the part you chose · a simplified picture',
       bezel: [
-        { k: 'PART', v: pt.label.replace('THE ', ''), flex: 1.6 },
-        { k: 'LOOKED AT', v: `${seen.size} / ${PARTS.length}`, flex: 1 },
+        { k: 'PART', v: pt.label.replace('THE ', ''), flex: 1 },
       ],
       params: [
         {
@@ -85,12 +83,8 @@ function usePartsStep(): MikingStep {
           id: 'part',
           label: 'PART',
           value: k / (PARTS.length - 1),
-          onChange: (v) => {
-            const i = Math.round(v * (PARTS.length - 1));
-            setK(i);
-            setSeen((s) => (s.has(PARTS[i].id) ? s : new Set([...s, PARTS[i].id])));
-          },
-          format: () => `${k + 1} of ${PARTS.length} · ${pt.label.toLowerCase()}`,
+          onChange: (v) => setK(Math.round(v * (PARTS.length - 1))),
+          format: () => pt.label.toLowerCase(),
           formatShort: () => pt.label.replace('THE ', '').slice(0, 8),
         },
       ],
@@ -102,7 +96,6 @@ function usePartsStep(): MikingStep {
         <Card>
           <Point title={pt.label}>{pt.text}</Point>
         </Card>
-        <Body>{`Looked at: ${seen.size} of ${PARTS.length}.`}</Body>
       </>
     ),
   };

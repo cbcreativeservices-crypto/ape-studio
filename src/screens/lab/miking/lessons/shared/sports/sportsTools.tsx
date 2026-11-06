@@ -263,7 +263,6 @@ export function usePlantStep({ onInteractive, done }: { onInteractive: (id: stri
       bezel: [
         { k: 'MOUNT', v: W.short, flex: 1.2 },
         { k: 'HEARS', v: mount === 'isolated' ? 'MOSTLY AIR' : mount === 'rigid' ? 'AIR + STRUCTURE' : 'STRUCTURE', flex: 1.6 },
-        { k: 'LOOKED AT', v: `${seen.size} / ${PLANT_IDS.length}`, flex: 1 },
       ],
       params: [
         {

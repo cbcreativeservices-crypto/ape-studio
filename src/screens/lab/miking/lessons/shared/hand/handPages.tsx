@@ -34,6 +34,7 @@ import { guideFor } from '../../../engine/geometry/guides.ts';
 import { deriveReadouts } from '../../../engine/geometry/readouts.ts';
 import { dist } from '../../../engine/geometry/vec.ts';
 import { arrivalAngle, gainDb, isModelled, nearNull, nullAngles } from '../../../engine/physics/polar.ts';
+import { PatternInset, patternInsetBadge } from '../../../engine/scene/PatternInset';
 import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb, notchesHz, pathDiffMm } from '../../../engine/physics/twoMic.ts';
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
@@ -171,13 +172,9 @@ function HandInstrument(spec: HandSpec) {
     const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: lesson.micTypeIds[0], pattern: 'cardioid', pose: lesson.zones[0].start }] });
     const [view, setView] = useState<ViewId>(spec.figure.view);
     const [partId, setPartId] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const parts = model.parts;
     const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
-    const pick = (id: string) => {
-      setPartId(id);
-      setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
-    };
+    const pick = (id: string) => setPartId(id);
     const shown = parts.find((p) => p.id === partId);
     const region = model.regions.find((r) => r.partId === partId);
     const tag = (v: ViewId) => (model.viewTags?.[v] ?? v).toLowerCase();
@@ -196,7 +193,6 @@ function HandInstrument(spec: HandSpec) {
           badge: spec.partsBadge,
           bezel: [
             { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.5 },
-            { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
             { k: 'VIEW', v: (model.viewTags?.[view] ?? view).split(' ')[0] === 'FROM' ? (view === 'top' ? 'ABOVE' : 'SIDE') : view.toUpperCase() },
           ],
           params: [
@@ -210,7 +206,7 @@ function HandInstrument(spec: HandSpec) {
                   const p = parts[Math.round(v * (parts.length - 1))];
                   if (p) pick(p.id);
                 },
-                format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+                format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
                 formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
               parts.length,
@@ -597,7 +593,9 @@ function HandContext(spec: HandSpec) {
     const [pattern, setPattern] = useState<PatternId>('cardioid');
     const [wedgeId, setWedgeId] = useState(C.creditWedge);
     const [view, setView] = useState<ViewId>('top');
-    const [aimAxis, setAimAxis] = useState<'az' | 'el'>('az');
+    // A mic this steep turns on its own axis under LEFT–RIGHT: only tilt moves its aim.
+    const [tiltOnly] = useState(() => Math.abs(rig.mics[0].pose.el) >= 60);
+    const [aimAxis, setAimAxis] = useState<'az' | 'el'>(tiltOnly ? 'el' : 'az');
     const [predicted, setPredicted] = useState<string | null>(null);
     const [aimed, setAimed] = useState(false);
     const pose = rig.mics[0].pose;
@@ -643,15 +641,19 @@ function HandContext(spec: HandSpec) {
           return `${sw ? `${sw} · ` : ''}${Math.abs(x) < 0.5 ? 'as it started' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'} of where it started`}`;
         },
         formatShort: () => fmtAngle(a),
-        chooser: {
-          title: 'TURN THE MIC',
-          selectedId: aimAxis,
-          onSelect: (id) => setAimAxis(id as 'az' | 'el'),
-          options: [
-            { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way (seen from above).` },
-            { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down (seen from the side).` },
-          ],
-        },
+        ...(tiltOnly
+          ? {}
+          : {
+              chooser: {
+                title: 'TURN THE MIC',
+                selectedId: aimAxis,
+                onSelect: (id: string) => setAimAxis(id as 'az' | 'el'),
+                options: [
+                  { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way (seen from above).` },
+                  { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down (seen from the side).` },
+                ],
+              },
+            }),
       },
       {
         kind: 'options',
@@ -691,8 +693,12 @@ function HandContext(spec: HandSpec) {
         kind: 'LIVE',
         layout: 'rack',
         rack: {
-          render: (w, h) => <PlacementScene rig={rig} art={spec.art} view={view} w={w} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />,
-          badge: `A simplified pattern (white dashed: shape, not range) · monitors where a stage often puts them · counts within ±${NULL_TOL}° of a null`,
+          render: (w, h) => (
+            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? C.plan : C.side} avoid={live ? [pose.p, wedge.p] : [pose.p]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
+              {(sceneW) => <PlacementScene rig={rig} art={spec.art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+            </PatternInset>
+          ),
+          badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
           bezel,
           params,
           initialParam: 'aim',
@@ -799,16 +805,24 @@ function HandTwoMic(spec: HandSpec) {
     const params: DockParam[] = [
       ...posParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, words: spec.axes, aimWords: spec.aimWords, azCentre }),
       { kind: 'toggle', id: 'mic', label: `EDIT MIC ${slot}`, value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) },
+      // A value key, as on HTwoMic: MIC B POLARITY + will not fit a toggle key at phone width, and the sign must stay in view.
       {
-        kind: 'toggle',
+        kind: 'options',
         id: 'polarity',
-        label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
-        value: B.polarity === -1,
-        onToggle: () => {
-          const next = B.polarity === 1 ? -1 : 1;
+        label: 'POLARITY',
+        valueLabel: `MIC B ${B.polarity === 1 ? '+' : '−'}`,
+        valueA11y: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+        selectedId: B.polarity === 1 ? 'normal' : 'inverted',
+        onSelect: (id) => {
+          const next = id === 'inverted' ? -1 : 1;
+          if (next === B.polarity) return;
           rig.setPolarity('B', next);
           setFlips((f) => (next === -1 ? { ...f, toInv: true } : { ...f, toNorm: true }));
         },
+        options: [
+          { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+          { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. Δt does not change.' },
+        ],
       },
       {
         kind: 'options',

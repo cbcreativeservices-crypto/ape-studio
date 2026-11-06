@@ -82,6 +82,18 @@ const RED = '#ff6b5e';
 /** The IDEAL-model colour (charter: blue = SOURCED, amber = TRIAL, grey = ILLUSTRATIVE). */
 const IDEAL = '#e8eaee';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
+/** …and never under this many px on the glass: on a 3 m frame 170 mm is about
+ *  20 px, sitting on the instrument, and every pattern reads as the same blob
+ *  (owner 2026-11-05, decision 3). Still a drawing size, not a range. */
+export const LOBE_MIN_PX = 48;
+/** The same floor in the mini view, whose glass is about a quarter as wide. */
+export const LOBE_MIN_MINI_PX = 14;
+/** The on-axis lobe's drawn radius (mm of the drawing) at scale `s`. */
+// A worklet default may not read a module constant: 48 is LOBE_MIN_PX, spelled out (emulator crash 2026-10-14).
+export function lobeDrawnR(s: number, hk = 1, minPx = 48): number {
+  'worklet';
+  return Math.max(POLAR_R * hk, minPx / s);
+}
 const MAX_ZOOM = 5;
 /** Below this fit scale (px per mm) no part label is drawn. Above it the
  *  level-of-detail layout (artLabels.ts) keeps only labels with clear space
@@ -91,6 +103,9 @@ const PAD = 8;
 /** The aim ring sits this far behind the mic's tail, at this radius (screen px). */
 const RING_OFFSET_PX = 20;
 const RING_R_PX = 12;
+/** The ring round the mic a two-mic page's EDIT key moves (px on the glass). */
+export const EDIT_RING_PX = 26;
+export const EDIT_RING_MINI_PX = 9;
 
 export type SceneOptions = {
   slots?: MicSlot[];
@@ -103,6 +118,8 @@ export type SceneOptions = {
    *  the dashed sight line runs from the mic to `src` (its baffle). */
   wedge?: { at: Vec3; faces: Vec3; src: Vec3; glyph?: 'wedge' | 'none' } | null;
   highlight?: string | null;
+  /** Two mics, one set of keys: the mic those keys move wears a ring. */
+  editing?: MicSlot | null;
   onTapPart?: (partId: string) => void;
   /** Only these suggested starting points are drawn (a STARTING SETUPS
    *  drawing shows the setup's own zones, not every one in the lesson). */
@@ -346,6 +363,9 @@ export const MARK_THIN_PX = 16;
 export const MARK_STROKE_PX = 3;
 /** The marker's stroke (mm of the drawing) at a fit scale. */
 export const markStroke = (s: number) => Math.max(7, MARK_STROKE_PX / s);
+/** The pointer that stands in for a marker whose part is off the glass. */
+export const MARK_POINTER_PX = 14;
+export type MarkPointer = { u: number; v: number; du: number; dv: number };
 
 /** How a marker found its part (see partMark). */
 export type PartMarkHow = 'solid' | 'region' | 'hit' | 'label' | 'placed' | 'ground' | 'otherView';
@@ -498,20 +518,39 @@ function shapeView(s: Shape3, view: ViewId): ViewBox | null {
  * on the glass and is at least MARK_MIN_PX long and MARK_THIN_PX wide (an
  * amber box you can find, not a hairline); every point gets a ring at
  * least MARK_MIN_PX across; so does an outline too small to see. `off`: what
- * the marker stands for lies wholly off this glass, so it waits at the edge.
+ * the marker stands for lies wholly off this glass. Such a box or ring is
+ * tagged `off` (an empty frame there would mark nothing) and a `pointers`
+ * entry stands in for it: a place on the glass and the way to the part.
  */
-export function markOnGlass(mark: PartMark, view: ViewId, s: number, vis: ViewBox): { rects: ViewBox[]; rings: { u: number; v: number; r: number }[]; off: boolean } {
+export function markOnGlass(mark: PartMark, view: ViewId, s: number, vis: ViewBox): { rects: (ViewBox & { off?: boolean })[]; rings: { u: number; v: number; r: number; off?: boolean }[]; off: boolean; pointers: MarkPointer[] } {
   const edge = (MARK_STROKE_PX + 2) / s;
   const hold = (x: number, lo: number, hi: number) => (hi < lo ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, x)));
   const r = Math.max(70, MARK_MIN_PX / 2 / s);
   let off = false;
+  const pointers: MarkPointer[] = [];
+  // One pointer per place: two parts of one mark off the same side share it.
+  const pointAt = (u: number, v: number) => {
+    const m = MARK_POINTER_PX / s;
+    const at = { u: hold(u, vis.u0 + m, vis.u1 - m), v: hold(v, vis.v0 + m, vis.v1 - m) };
+    if (pointers.some((p) => Math.hypot(p.u - at.u, p.v - at.v) * s < MARK_MIN_PX)) return;
+    const l = Math.hypot(u - at.u, v - at.v) || 1;
+    pointers.push({ ...at, du: (u - at.u) / l, dv: (v - at.v) / l });
+  };
   const ring = (u: number, v: number) => {
-    if (u < vis.u0 || u > vis.u1 || v < vis.v0 || v > vis.v1) off = true;
+    const gone = u < vis.u0 || u > vis.u1 || v < vis.v0 || v > vis.v1;
+    if (gone) {
+      off = true;
+      pointAt(u, v);
+    }
     const m = r + edge;
-    return { u: hold(u, vis.u0 + m, vis.u1 - m), v: hold(v, vis.v0 + m, vis.v1 - m), r };
+    return { u: hold(u, vis.u0 + m, vis.u1 - m), v: hold(v, vis.v0 + m, vis.v1 - m), r, ...(gone ? { off: true } : {}) };
   };
   const rects = mark.rects.map((b) => {
-    if (b.u1 < vis.u0 || b.u0 > vis.u1 || b.v1 < vis.v0 || b.v0 > vis.v1) off = true;
+    const gone = b.u1 < vis.u0 || b.u0 > vis.u1 || b.v1 < vis.v0 || b.v0 > vis.v1;
+    if (gone) {
+      off = true;
+      pointAt((b.u0 + b.u1) / 2, (b.v0 + b.v1) / 2);
+    }
     const u0 = hold(b.u0, vis.u0 + edge, vis.u1 - edge);
     const u1 = hold(b.u1, vis.u0 + edge, vis.u1 - edge);
     const v0 = hold(b.v0, vis.v0 + edge, vis.v1 - edge);
@@ -521,7 +560,7 @@ export function markOnGlass(mark: PartMark, view: ViewId, s: number, vis: ViewBo
     const wv = Math.max(v1 - v0, least);
     const cu = hold((u0 + u1) / 2, vis.u0 + edge + wu / 2, vis.u1 - edge - wu / 2);
     const cv = hold((v0 + v1) / 2, vis.v0 + edge + wv / 2, vis.v1 - edge - wv / 2);
-    return { u0: cu - wu / 2, u1: cu + wu / 2, v0: cv - wv / 2, v1: cv + wv / 2 };
+    return { u0: cu - wu / 2, u1: cu + wu / 2, v0: cv - wv / 2, v1: cv + wv / 2, ...(gone ? { off: true } : {}) };
   });
   const rings = mark.rings.map((p) => ring(p.u, p.v));
   for (const sh of mark.shapes) {
@@ -530,7 +569,18 @@ export function markOnGlass(mark: PartMark, view: ViewId, s: number, vis: ViewBo
     const gone = b.u1 < vis.u0 || b.u0 > vis.u1 || b.v1 < vis.v0 || b.v0 > vis.v1;
     if (gone || Math.max(b.u1 - b.u0, b.v1 - b.v0) * s < MARK_MIN_PX) rings.push(ring((b.u0 + b.u1) / 2, (b.v0 + b.v1) / 2));
   }
-  return { rects, rings, off };
+  return { rects, rings, off, pointers };
+}
+
+/** A chevron at (u, v), its tip toward the part (drawn solid, in px on the glass). */
+function addPointer(path: ReturnType<typeof Skia.Path.Make>, q: MarkPointer, s: number) {
+  const L = MARK_POINTER_PX / s;
+  const W = (MARK_POINTER_PX * 0.72) / s;
+  path.moveTo(q.u + q.du * L, q.v + q.dv * L);
+  path.lineTo(q.u - q.dv * W, q.v + q.du * W);
+  path.lineTo(q.u + q.du * L * 0.1, q.v + q.dv * L * 0.1);
+  path.lineTo(q.u + q.dv * W, q.v - q.du * W);
+  path.close();
 }
 
 function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
@@ -1523,7 +1573,12 @@ function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pos
   );
 }
 
-function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern; shotgun?: boolean; /* lab6 group 2: hardwareScale */ hk?: number }) {
+function PolarSlice({ pose, view, pattern, xf, minPx, shotgun = false, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern; xf: SharedValue<ViewXform>; minPx: number; shotgun?: boolean; /* lab6 group 2: hardwareScale */ hk?: number }) {
+  // The dashes keep their size on the glass (a 2.5 mm line is a hair on a 3 m
+  // frame): the Field Reporter's shape, the same line on every drawing.
+  const lineW = useDerivedValue(() => 1.6 / xf.value.s);
+  const dash = useDerivedValue(() => [6 / xf.value.s, 4 / xf.value.s]);
+  const dashFine = useDerivedValue(() => [2.5 / xf.value.s, 3 / xf.value.s]);
   // lab6 group 1: a SHORT SHOTGUN — its base pattern below the tube's
   // transition, and the narrower lobe it tends toward at high frequencies
   // (engine/physics/shotgun.ts): a simplified picture, drawn inside the base.
@@ -1537,7 +1592,7 @@ function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: Sh
     for (let i = 0; i <= 120; i++) {
       const phi = (i / 120) * Math.PI * 2;
       const d = view === 'side' ? { x: Math.cos(phi), y: Math.sin(phi), z: 0 } : { x: Math.cos(phi), y: 0, z: Math.sin(phi) };
-      const g = shotgunLobe(angleBetween(aim, d), 'high') * POLAR_R * 1.35 * hk;
+      const g = shotgunLobe(angleBetween(aim, d), 'high') * lobeDrawnR(xf.value.s, hk, minPx) * 1.35;
       const u = cu + g * Math.cos(phi);
       const v = cv + g * Math.sin(phi);
       if (i === 0) p.moveTo(u, v);
@@ -1556,7 +1611,7 @@ function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: Sh
     for (let i = 0; i <= 90; i++) {
       const phi = (i / 90) * Math.PI * 2;
       const d = view === 'side' ? { x: Math.cos(phi), y: Math.sin(phi), z: 0 } : { x: Math.cos(phi), y: 0, z: Math.sin(phi) };
-      const g = Math.abs(gain(pattern, angleBetween(aim, d))) * POLAR_R * hk;
+      const g = Math.abs(gain(pattern, angleBetween(aim, d))) * lobeDrawnR(xf.value.s, hk, minPx);
       const u = cu + g * Math.cos(phi);
       const v = cv + g * Math.sin(phi);
       if (i === 0) p.moveTo(u, v);
@@ -1570,15 +1625,15 @@ function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: Sh
   // never the zone blue, which means SOURCED (review M4).
   return (
     <>
-      <Path path={path} color={IDEAL} opacity={0.06} />
-      <Path path={path} style="stroke" strokeWidth={2.5} color={IDEAL} opacity={0.7}>
-        <DashPathEffect intervals={[10, 7]} />
+      <Path path={path} color={IDEAL} opacity={0.08} />
+      <Path path={path} style="stroke" strokeWidth={lineW} color={IDEAL} opacity={0.75}>
+        <DashPathEffect intervals={dash} />
       </Path>
       {shotgun ? (
         <>
           <Path path={high} color={IDEAL} opacity={0.1} />
-          <Path path={high} style="stroke" strokeWidth={2.5} color={IDEAL} opacity={0.85}>
-            <DashPathEffect intervals={[4, 5]} />
+          <Path path={high} style="stroke" strokeWidth={lineW} color={IDEAL} opacity={0.85}>
+            <DashPathEffect intervals={dashFine} />
           </Path>
         </>
       ) : null}
@@ -1587,10 +1642,37 @@ function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: Sh
 }
 
 /** The lobe's in-canvas tag, following the mic (UI thread; no React work). */
-/** A kept part label's place, for the lobe tag to step round (opt-in). */
+/** A kept part label's place, for the lobe tag to step round. */
 type LabelBox = { u: number; v: number; W: number; align: 'left' | 'center' | 'right' };
+type PxBox = { x0: number; y0: number; x1: number; y1: number };
 
-function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null, shown, avoid = null }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number; labelBoxes?: LabelBox[] | null; shown: SharedValue<number>; avoid?: { x0: number; y0: number; x1: number; y1: number } | null }) {
+/** The mics the lobe tag keeps off: each one's body and its amber aim ring. */
+type TagMics = { poses: SharedValue<MicPose>[]; lens: number[]; hk: number } | null;
+
+/**
+ * Where the lobe tag goes (px): above the lobe, above it slid clear of the
+ * inset's corner, below it, then beside it, the
+ * first spot on the glass that touches none of `keepOff`; null when none does
+ * (the badge under the display says it anyway). `x`, `y` are the mic.
+ */
+export function lobeTagSpot(x: number, y: number, r: number, gap: number, W: number, H: number, maxX: number, maxY: number, minY: number, keepOff: PxBox[]): { x: number; y: number } | null {
+  'worklet';
+  const mid = Math.max(2, Math.min(maxX - W - 2, x - W / 2));
+  const spots = [
+    { x: mid, y: y - r - gap },
+    { x: Math.min(mid, maxX * 0.7 - W - 2), y: y - r - gap },
+    { x: mid, y: y + r + 2 },
+    { x: x + r + 6, y: y - H / 2 },
+    { x: x - r - 6 - W, y: y - H / 2 },
+  ];
+  for (const q of spots) {
+    if (q.x < 2 || q.x + W > maxX - 2 || q.y <= minY || q.y >= maxY - 34) continue;
+    if (!keepOff.some((b) => q.x < b.x1 && q.x + W > b.x0 && q.y < b.y1 && q.y + H > b.y0)) return q;
+  }
+  return null;
+}
+
+function LobeTag({ pose, view, xf, scale, maxX, maxY, minY, labelBoxes = null, shown, avoid = null, mics = null, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number; minY: number; labelBoxes?: LabelBox[] | null; shown: SharedValue<number>; avoid?: { x0: number; y0: number; x1: number; y1: number } | null; mics?: TagMics; /* lab6 group 2: hardwareScale */ hk?: number }) {
   const text = 'PATTERN SHAPE, NOT RANGE';
   const W = labelWidth(text, scale, maxX);
   const H = 9.5 * scale * 1.25;
@@ -1598,37 +1680,42 @@ function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null, shown, 
     const p = pose.value;
     const c = xf.value;
     const x = c.ox + p.p.x * c.s;
-    const above = c.oy + (vOf(view, p.p) - POLAR_R) * c.s - 14 * scale;
-    const below = c.oy + (vOf(view, p.p) + POLAR_R) * c.s + 2;
-    const left = Math.max(2, Math.min(maxX - W - 2, x - W / 2));
-    // Above the lobe, unless that lands in the top-right corner the glass's
-    // inset owns — then below it.
-    const inInset = left + W > maxX * 0.7 && above < maxY * 0.62;
-    // A lesson whose labels yield to the mic also keeps this tag off them.
-    const hitsLabel = (y: number) => {
-      if (!labelBoxes) return false;
-      for (const b of labelBoxes) {
-        const bx = c.ox + b.u * c.s;
-        const bl = Math.max(2, Math.min(maxX - b.W - 2, b.align === 'left' ? bx : b.align === 'right' ? bx - b.W : bx - b.W / 2));
-        const bt = c.oy + b.v * c.s - 7 * scale;
-        if (left < bl + b.W && left + W > bl && y < bt + H && y + H > bt) return true;
+    const y = c.oy + vOf(view, p.p) * c.s;
+    // What the tag stays off: the top-right corner the glass's inset owns, the
+    // caller's rect (DualView's inset, wherever it sits), every kept part name
+    // (FLOOR on the kick: decision 31), and the mics and their aim rings.
+    const keepOff: PxBox[] = [{ x0: maxX * 0.7, y0: -1e6, x1: 1e6, y1: maxY * 0.62 }];
+    if (avoid) keepOff.push(avoid);
+    for (const b of labelBoxes ?? []) {
+      const bx = c.ox + b.u * c.s;
+      const bl = Math.max(2, Math.min(maxX - b.W - 2, b.align === 'left' ? bx : b.align === 'right' ? bx - b.W : bx - b.W / 2));
+      const bt = c.oy + b.v * c.s - 7 * scale;
+      keepOff.push({ x0: bl, y0: bt, x1: bl + b.W, y1: bt + H });
+    }
+    if (mics) {
+      for (let i = 0; i < mics.poses.length; i++) {
+        const m = mics.poses[i].value;
+        const mx = c.ox + m.p.x * c.s;
+        const my = c.oy + vOf(view, m.p) * c.s;
+        keepOff.push({ x0: mx - 14, y0: my - 14, x1: mx + 14, y1: my + 14 });
+        const k = mics.lens[i] * mics.hk + RING_OFFSET_PX / c.s;
+        const aim = aimVec(m.az, m.el);
+        const tail = sub(m.p, { x: aim.x * k, y: aim.y * k, z: aim.z * k });
+        const tx = c.ox + tail.x * c.s;
+        const ty = c.oy + vOf(view, tail) * c.s;
+        keepOff.push({ x0: tx - RING_R_PX - 3, y0: ty - RING_R_PX - 3, x1: tx + RING_R_PX + 3, y1: ty + RING_R_PX + 3 });
       }
-      return false;
-    };
-    // The caller's keep-off rect (DualView's inset, wherever it sits).
-    const hitsAvoid = (yy: number) => !!avoid && left < avoid.x1 && left + W > avoid.x0 && yy < avoid.y1 && yy + H > avoid.y0;
-    let y = inInset ? below : above;
-    if (hitsLabel(y) || hitsAvoid(y)) y = y === above ? below : above;
-    if (hitsAvoid(y)) y = -1000;
+    }
+    const spot = lobeTagSpot(x, y, lobeDrawnR(c.s, hk) * c.s, 14 * scale, W, H, maxX, maxY, Math.max(4, minY), keepOff);
     // No clean spot (the badge still says it): hidden rather than on top of
     // another label. A mic tilted well down seen from the side (a hand
     // drum's, aimed at a head) has its body, handle and boom rising out of
     // the lobe, and the part labels sit beside it: no clean spot either.
     const steep = view === 'side' && Math.abs(p.el) > 30;
-    const ok = !steep && y > 4 && y < maxY - 34 && !hitsLabel(y) && !(y === above && inInset);
+    const ok = !steep && !!spot;
     // Shown while a mic moves, never at rest (the badge under the display
     // says it once: owner ruling 2026-10-05, less on the drawing).
-    return { opacity: ok ? shown.value : 0, transform: [{ translateX: left }, { translateY: y }] };
+    return { opacity: ok ? shown.value : 0, transform: [{ translateX: spot?.x ?? 0 }, { translateY: spot?.y ?? -1000 }] };
   });
   return (
     <Animated.View pointerEvents="none" style={[styles.label, { width: W }, style]}>
@@ -1636,6 +1723,27 @@ function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null, shown, 
         {text}
       </Text>
     </Animated.View>
+  );
+}
+
+/** A two-mic page: the ring round the mic its keys move, round the body and
+ *  at least `rPx` across on the glass, whatever the frame. */
+function EditRing({ pose, view, len, hk, xf, rPx }: { pose: SharedValue<MicPose>; view: ViewId; len: number; hk: number; xf: SharedValue<ViewXform>; rPx: number }) {
+  const c = useDerivedValue(() => {
+    const p = pose.value;
+    const k = (len * hk) / 2;
+    const aim = aimVec(p.az, p.el);
+    const mid = sub(p.p, { x: aim.x * k, y: aim.y * k, z: aim.z * k });
+    return vec(mid.x, vOf(view, mid));
+  });
+  const r = useDerivedValue(() => Math.max(rPx / xf.value.s, (len * hk) / 2 + 8 / xf.value.s));
+  const under = useDerivedValue(() => 5.5 / xf.value.s);
+  const line = useDerivedValue(() => 2.5 / xf.value.s);
+  return (
+    <>
+      <Circle c={c} r={r} style="stroke" strokeWidth={under} color="#0b0c0f" opacity={0.8} />
+      <Circle c={c} r={r} style="stroke" strokeWidth={line} color={AMBER} />
+    </>
   );
 }
 
@@ -2103,7 +2211,7 @@ export function PlacementScene(props: PlacementSceneProps) {
   return inFull ? <GestureHandlerRootView style={{ width: props.w, height: props.h }}>{body}</GestureHandlerRootView> : body;
 }
 
-function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart, zoneIds, guides = false }: PlacementSceneProps) {
+function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, editing = null, onTapPart, zoneIds, guides = false }: PlacementSceneProps) {
   const model = rig.lesson.model;
   // With no mic on the drawing (the parts, the instrument alone) the scene
   // fits the instrument's own CONTENT FRAME, not the generous authored box
@@ -2594,7 +2702,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const Instrument = memoArt(art.Instrument);
   // The chosen part's marker, sized from this view's scale so it reads on a
   // 30 m site as on a tambourine (partMark, markOnGlass).
-  const highlightPath = useMemo(() => {
+  const highlightMark = useMemo(() => {
     if (!highlight) return null;
     const floor = model.floorByVariant?.[variant] ?? model.yFloorByVariant?.[variant] ?? model.yFloor.mm;
     const mark = partMark(model, art, view, variant, box, highlight, floor);
@@ -2607,23 +2715,48 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       if (o) p.addPath(o);
     }
     const corner = Math.max(10, 6 / base.s);
-    for (const q of drawn.rects) p.addRRect(Skia.RRectXY(Skia.XYWHRect(q.u0, q.v0, q.u1 - q.u0, q.v1 - q.v0), corner, corner));
-    for (const c of drawn.rings) p.addCircle(c.u, c.v, c.r);
-    return p;
-  }, [highlight, model, art, view, variant, box, base, w, h, reserveTop]);
+    for (const q of drawn.rects) if (!q.off) p.addRRect(Skia.RRectXY(Skia.XYWHRect(q.u0, q.v0, q.u1 - q.u0, q.v1 - q.v0), corner, corner));
+    for (const c of drawn.rings) if (!c.off) p.addCircle(c.u, c.v, c.r);
+    // A part off the glass: never an empty frame at the edge, but a chevron
+    // toward it with the part's name (owner 2026-11-05, decision 17). Clear of
+    // the inset, which hides what is under it, and of the view's tag.
+    const part = model.parts.find((q) => q.id === highlight);
+    const name = (part?.short ?? part?.label ?? partLabel(art, view, variant, highlight)?.text ?? '').toUpperCase();
+    const toward = Skia.Path.Make();
+    const tags: { id: string; u: number; v: number; text: string; align: 'left' | 'center' | 'right' }[] = [];
+    drawn.pointers.forEach((q0, i) => {
+      const x = base.ox + q0.u * base.s;
+      let y = Math.min(h - 30, base.oy + q0.v * base.s);
+      if (avoid && x > avoid.x0 && x < avoid.x1 && y > avoid.y0 - MARK_POINTER_PX && y < avoid.y1 + MARK_POINTER_PX) y = avoid.y1 + MARK_POINTER_PX * 2 <= h - 30 ? avoid.y1 + MARK_POINTER_PX * 2 : avoid.y0 - MARK_POINTER_PX * 2;
+      const q = { ...q0, v: (y - base.oy) / base.s };
+      addPointer(toward, q, base.s);
+      if (mini || !name || i > 0) return;
+      const side = Math.abs(q.du) >= 0.5;
+      const push = (MARK_POINTER_PX + 6) / base.s;
+      tags.push({ id: `edge:${highlight}`, u: side ? q.u - q.du * push : q.u, v: side ? q.v : q.v - Math.sign(q.dv || 1) * push, text: name, align: !side ? 'center' : q.du > 0 ? 'right' : 'left' });
+    });
+    return { path: p, toward, tags };
+  }, [highlight, model, art, view, variant, box, base, w, h, reserveTop, mini, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
   const hkView = model.hardwareScaleByView?.[view] ?? model.hardwareScale ?? 1;
   // The shown mics' types, for the art's own dressing (sceneTypes Instrument.micTypes).
   const micTypesKey = micsShown.map((m) => m.typeId).join(',');
   const micTypes = useMemo<readonly string[]>(() => (micTypesKey ? micTypesKey.split(',') : NO_MIC_TYPES), [micTypesKey]);
-  const labelBoxes = useMemo<LabelBox[] | null>(() => (art.labelsYieldToMic ? labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, labelScale, w), align: l.align })) : null), [art.labelsYieldToMic, labels, labelScale, w]);
+  const labelBoxes = useMemo<LabelBox[]>(() => labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, labelScale, w), align: l.align })), [labels, labelScale, w]);
   // The mics the part labels step back from (opt-in per lesson).
   const shownKey = micsShown.map((m) => `${m.slot}:${m.typeId}`).join(',');
   const yieldTo = useMemo<MicYield>(
     () => (art.labelsYieldToMic ? { poses: micsShown.map((m) => rig.pose[m.slot]), lens: micsShown.map((m) => micType(m.typeId).body.length.mm), surf: micsShown.map((m) => micType(m.typeId).mount === 'surface') } : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- by the shown mics' slots and types
     [art.labelsYieldToMic, shownKey, rig.pose],
+  );
+
+  // The mics the lobe tag keeps off (with their aim rings).
+  const tagMics = useMemo<TagMics>(
+    () => ({ poses: micsShown.map((m) => rig.pose[m.slot]), lens: micsShown.map((m) => micType(m.typeId).body.length.mm), hk: hkView }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- by the shown mics' slots and types
+    [shownKey, rig.pose, hkView],
   );
 
   const canvas = (
@@ -2646,7 +2779,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {zones.map((z) => (
             <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
           ))}
-          {highlightPath ? <Path path={highlightPath} style="stroke" strokeWidth={markStroke(base.s)} color={AMBER} /> : null}
+          {highlightMark ? <Path path={highlightMark.path} style="stroke" strokeWidth={markStroke(base.s)} color={AMBER} /> : null}
+          {highlightMark ? <Path path={highlightMark.toward} color={AMBER} /> : null}
           {pathsFrom ? <PathsOverlay rig={rig} view={view} from={pathsFrom} /> : null}
           {wedge ? (
             <>
@@ -2671,7 +2805,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <LavLead key={`lead:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} xf={xf} />
           ))}
           {showPolar
-            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={hkView} />)
+            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} xf={xf} minPx={mini ? LOBE_MIN_MINI_PX : LOBE_MIN_PX} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={hkView} />)
             : null}
           {guideData.map((d) => (
             <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />
@@ -2682,16 +2816,22 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {micsShown.map((m) => (
             <HeldFistGlyph key={`fist:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
+          {micsShown.filter((m) => m.slot === editing).map((m) => (
+            <EditRing key={`edit:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} len={micType(m.typeId).body.length.mm} hk={hkView} xf={xf} rPx={mini ? EDIT_RING_MINI_PX : EDIT_RING_PX} />
+          ))}
         </Group>
       </Canvas>
       {labels.map((l) => (
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={isZoneLabel(l.id) ? 'zone' : l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
+      {highlightMark?.tags.map((l) => (
+        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} scale={labelScale} maxX={w} view={view} />
+      ))}
       {guideData.filter((d) => !d.hide).map((d) => (
         <GuideLabel key={`gl:${d.slot}`} xf={xf} u={d.au} v={d.av} nx={d.nx} ny={d.ny} W={d.W} H={d.H} text={d.text} scale={textScale} maxX={w} maxY={h} />
       ))}
       {showPolar && !mini && showLabels
-        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} shown={lobeOpacity} avoid={avoid ?? null} />)
+        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} minY={reserveTop} labelBoxes={labelBoxes} shown={lobeOpacity} avoid={avoid ?? null} mics={tagMics} hk={hkView} />)
         : null}
       {envelopes.map((e) => (
         <EnvelopeReason key={`why:${e.id}`} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} xf={xf} scale={textScale} maxX={w} maxY={h} />

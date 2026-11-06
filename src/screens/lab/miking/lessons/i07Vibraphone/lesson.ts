@@ -10,6 +10,7 @@ import type { LessonCopy } from '../../engine/model/copy.ts';
 import { BRAND_REASON, CLEAR_REASON, cardioidNull, firstNotch, gainCheck, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, setupOrder } from '../shared/concert/commonItems.ts';
 import { BEFORE_STANDS, coincidentCheck, hearingCheckM, malletAxes, malletWedges, monoSymptomM, quickHearingM, shurePairs, spacedMonoCheck, weakEndSymptom, type MW } from '../shared/mallets/content.ts';
 import type { MalletLesson, MalletWords } from '../shared/mallets/family.ts';
+import type { DampedStrike } from '../shared/mallets/MSound';
 import { FAMILY_UNKNOWNS } from '../shared/mallets/malletModel.ts';
 import { VIBE_GEOM, VIBE_MODEL } from './geometry.ts';
 import { VIBE_FAM, VIBE_ZONES } from './model.ts';
@@ -488,7 +489,7 @@ const diagnostic: DiagnosticItem[] = [
   quickHearingM(W),
 ];
 
-const words: MalletWords = {
+const words: MalletWords & { sound: { damped: DampedStrike } } = {
   sound: {
     stages: [
       { title: 'The mallet lands', text: 'A yarn-wrapped mallet lands on the middle of a bar. That brief contact is the ATTACK — softer mallets and touch make it rounder, harder ones brighter.' },
@@ -504,6 +505,16 @@ const words: MalletWords = {
     looking: 'One bar and its tube · seen from the low end · the player at the left',
     reveal: 'The middle goes down while the ends come up: a bar bends about two still points, like a skipping rope held in two places.',
     after: 'Then the bar keeps ringing: how long depends on the pedal, the hand damping, the mallet and the room — all the player’s choices.',
+    // PEDAL UP: the same four events, with the felt already on the bar.
+    damped: {
+      stages: [
+        { title: 'The mallet lands', text: 'A yarn-wrapped mallet lands on the middle of a bar. That brief contact is the ATTACK — softer mallets and touch make it rounder, harder ones brighter.' },
+        { title: 'The bar bends, the felt stops it', text: 'The bar bends — the middle down, both ends up — and springs back: its lowest shape, drawn far larger than it moves. With the pedal up the felt damper is on the bar, so the movement dies away almost at once. Two points a little under a quarter of the way in from each end stay still: the cord passes through them.' },
+        { title: 'The air in the tube gets a brief push', text: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. With the felt on the bar its air gets only a brief push, so the note stays short and muted. The fan in its top can open and close it.', byVariant: { nomotor: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. With the felt on the bar its air gets only a brief push, so the note stays short and muted. Without a motor, the tube stays open: no pulsing.' } },
+        { title: 'Sound leaves — up and out', text: 'A short, muted sound leaves the bar and the tube’s mouth, up and out around the keyboard. With the pedal up, the felt damper stops the note almost at once.' },
+      ],
+      after: 'With the pedal up the note ends almost at once. How long a note lasts depends on the pedal, the hand damping, the mallet and the room — all the player’s choices.',
+    },
     pedal: { down: 'PEDAL DOWN: the felt damper is pushed away from the bars, and the notes ring on.', up: 'PEDAL UP: the felt damper touches the bars, and the notes stop — a muted sound.', note: 'The pedal is the player’s phrasing, not a mic setting.' },
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, a little under a quarter of the way in from each end, where the cord passes.',

@@ -148,7 +148,8 @@ test('1. a legacy key that could not be removed never wipes measurements saved s
 test('2. the history export never passes today off as the whole history', async () => {
   // Recent days, not fixed dates: fixed ones aged out of the 45-day retention on 2026-11-05.
   const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
-  const [d20, d21, d22] = [daysAgo(3), daysAgo(2), daysAgo(1)];
+  // Never daysAgo(1): after 4 pm Pacific the UTC yesterday is the local TODAY, held in memory and not read from the store.
+  const [d20, d21, d22] = [daysAgo(4), daysAgo(3), daysAgo(2)];
   const exposure = await import('../src/features/audio/exposureMonitor.ts');
   const dayBlob = (date: string, activeSec: number) =>
     JSON.stringify({

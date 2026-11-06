@@ -38,6 +38,9 @@
  * 1 ms (gateConfig anim attackMs). The CLICK drawing is still called a model.
  * PINK NOISE is route-dependent (the speaker's high-pass drops its level about
  * 3 dB, enough to flip the gate at −35) — so no step quotes a number on it.
+ * RANGE, HOLD and RLS show on GR on the CLICK, but the sound is only 5 ms long,
+ * so they are barely HEARD there: the SOURCE line and the screen's caption send
+ * the ear to PINK NOISE (audit decision 2, 2026-11-05; not yet heard on a phone).
  * Change a label, a default or the source level → update this file;
  * test/screenGuide_gate_20261031.test.ts pins names + numbers.
  *
@@ -63,7 +66,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     control: [
       '▶ in the header, or a tap on the display, plays the SOURCE through the gate; ■ stops it. The THRESH fader runs from −50 to −20 dB.',
       'RANGE key: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD key: 0, 10 or 100 ms. RLS key: 20 ms CHATTER, 100 ms or 500 ms.',
-      'SOURCE key: CLICK 90 or PINK NOISE.',
+      'SOURCE key: CLICK 90 or PINK NOISE. On the 5 ms click, RANGE, HOLD and RLS show on GR but barely in the sound: to hear them, use PINK NOISE with THRESH near its level.',
       'Long-press any key or readout for its lesson entry. Below, LAB NOTES: the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [

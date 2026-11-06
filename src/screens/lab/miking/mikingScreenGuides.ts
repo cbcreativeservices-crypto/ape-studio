@@ -141,7 +141,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     changes: 'A part’s card names the places its sound leaves: those are where a mic can hear it best.',
     tryThis: [
       'Tap the part the sound leaves from and read its WHERE SOUND COMES FROM line.',
-      'Go through every part with PART: LOOKED AT on the bezel climbs as you go.',
+      'Go through every part with PART: the bezel names each one as you reach it.',
     ],
   },
   // STARTING SETUPS (pages/PSetups.tsx)
@@ -151,7 +151,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     control: (s) => `${has(s, 'SETUP') ? 'Step through SETUP, or pick one by name in SETUPS' : 'Pick each setup by name in SETUPS'}. The mics are placed for you here; nothing is dragged.`,
     changes: 'Each card gives the mic type and pattern, a START line (distance and aim) and what it TENDS TO do — a suggested starting point, not a rule.',
     tryThis: [
-      (s) => `Go through every setup${has(s, 'SETUP') ? ' with SETUP' : ' in SETUPS'}: LOOKED AT climbs, and looking at the main setups is part of this module’s credit.`,
+      (s) => `Go through every setup${has(s, 'SETUP') ? ' with SETUP' : ' in SETUPS'}: looking at the main setups is part of this module’s credit.`,
       'End on the setup you would try first: the Placement Studio starts from the last one you look at.',
     ],
   },

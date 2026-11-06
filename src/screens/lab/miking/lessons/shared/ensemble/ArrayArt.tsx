@@ -147,6 +147,10 @@ function lobePath(view: StageView, q: Capsule, R: number): SkPath {
   return p;
 }
 
+/** A lone omni has no front, so it has no aim to draw: its circle says so. An
+ *  omni in an array keeps its line (the array as a whole is aimed). */
+const soloOmni = (id: ArrayPresetId, q: Capsule) => ARRAYS[id].family === 'single' && q.pattern === 'omni';
+
 /**
  * An array in a stage view. `px` = mm per screen pixel (1 / the view's
  * scale), so strokes and dashes stay a constant screen width.
@@ -250,6 +254,7 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
     const lobesP = caps.map((q) => lobePath(view, q, q.pattern === 'omni' ? 260 : 340));
     const aimP = make();
     for (const q of caps) {
+      if (soloOmni(spec.id, q)) continue;
       const a = uv(view, q.p);
       const d = uvDir(view, q.dir);
       aimP.moveTo(a.u, a.v);

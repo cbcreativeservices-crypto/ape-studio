@@ -50,7 +50,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       '▶ at the top right (or a tap on the display) plays the source through the chorus; ■ stops it.',
       'RATE fader (0.10–3.00 Hz, starts at 0.25 Hz): how fast the copy’s delay wobbles — the LFO.',
       'DEPTH: SUBTLE, CLASSIC or DEEP — how far the delay swings. DELAY (VOICE DELAY): 15, 20 or 35 ms — how far behind the copy sits.',
-      'MIX: 30%, 50% or 100% = VIBRATO — how much copy is mixed in. SOURCE: SINE 440 Hz or PINK NOISE.',
+      'MIX: 30%, 50% or 100% = VIBRATO — how much copy is mixed in. SOURCE: SINE 440 Hz or PINK NOISE. Compare DELAY on PINK NOISE: on a sine, each setting should sound the same.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
     ],
     changes: [

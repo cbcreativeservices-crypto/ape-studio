@@ -145,7 +145,7 @@ test('at equal paths the readout and the words follow the polarity', () => {
   assert.match(normal.words.join(' '), /no comb/i);
   assert.doesNotMatch(normal.words.join(' '), /cancels/i);
 
-  normal.params.find((p) => p.id === 'polarity')!.onToggle!();
+  normal.params.find((p) => p.id === 'polarity')!.onSelect!('inverted');
   render('pair');
   const inverted = render('pair');
   assert.equal(cell(inverted, /1ST NOTCH/).v, 'CANCELS');
@@ -154,7 +154,7 @@ test('at equal paths the readout and the words follow the polarity', () => {
   assert.match(said, /cancels/i);
   assert.doesNotMatch(said, /no comb/i, 'the words must not say no comb while the sum cancels');
 
-  inverted.params.find((p) => p.id === 'polarity')!.onToggle!();
+  inverted.params.find((p) => p.id === 'polarity')!.onSelect!('normal');
   render('pair');
   assert.equal(cell(render('pair'), /1ST NOTCH/).v, 'NO COMB');
 });

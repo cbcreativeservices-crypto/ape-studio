@@ -23,7 +23,7 @@ import { Body, Card, Landing, Note, Point } from '../../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../../engine/journeyKit';
 import { journeyIntro } from '../../../../engine/journey.ts';
 import type { PageProps } from '../../../../pages/pageTypes';
-import { lookedAtCount } from '../../../../pages/PInstrument';
+import { livePartId } from '../../../../pages/PInstrument';
 import { handOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
@@ -42,22 +42,17 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
   }, [variant, rig]);
   const [view, setView] = useState<ViewId>('side');
   const [partId, setPartId] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const parts = uniqueParts(model.parts.filter((p) => !p.variants || p.variants.includes(variant)));
   // A tap on a second leg of a stand names the stand (its first entry).
   const canon = (id: string) => {
     const p = model.parts.find((q) => q.id === id);
     return p ? parts.find((q) => q.label === p.label)?.id ?? id : id;
   };
-  const shown = parts.find((p) => p.id === partId) ?? null;
-  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
-  const pick = (raw: string) => {
-    const id = canon(raw);
-    setPartId(id);
-    setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
-  };
-  const lookedAt = lookedAtCount(parts, seen);
-  const region = model.regions.find((r) => r.partId === partId);
+  const live = livePartId(partId && canon(partId), variant, parts, model.variants.map((v) => v.id));
+  const shown = parts.find((p) => p.id === live) ?? null;
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === live));
+  const pick = (raw: string) => setPartId(canon(raw));
+  const region = model.regions.find((r) => r.partId === live);
   const multi = model.variants.length > 1;
   const vLabel = model.variants.find((v) => v.id === variant)?.label ?? '';
 
@@ -73,11 +68,11 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shown ? `${shown.label.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shown ? shown.label.toUpperCase() : 'step through the parts'),
           formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
-        parts.findIndex((p) => p.id === partId),
+        parts.findIndex((p) => p.id === live),
         (i) => parts[i].short.toUpperCase(),
         (i) => pick(parts[i].id),
       ),
@@ -97,10 +92,10 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parts, partIdx, shown, seen, view, variant, model.variants],
+    [parts, partIdx, shown, view, variant, model.variants],
   );
 
-  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shown?.label ?? partId}.` : undefined);
+  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], shown ? `Highlighted: ${shown.label}.` : undefined);
   const steps: MikingStep[] = [
     {
       key: 'start',
@@ -139,11 +134,10 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
       kind: 'TRY',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />,
+        render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={live} onTapPart={pick} labelFor={labelFor} />,
         badge: H.partsBadge,
         bezel: [
           { k: 'PART', v: shown ? shown.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           ...(multi ? [{ k: H.variantKey, v: vLabel.split(' ')[0] }] : []),
         ],
         params,

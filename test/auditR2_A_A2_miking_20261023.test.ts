@@ -63,7 +63,8 @@ describe('pattern 5: the shared two-mic widget says MIC B, never a bare B', () =
   }
   it('the sports step and every A2 lesson prompt', () => {
     const sp = read('lessons/shared/sports/sportsPages.tsx');
-    assert.match(sp, /label: 'MIC B POLARITY'/);
+    // A value key since the audit of 2026-11-05: the full words are read aloud.
+    assert.match(sp, /valueA11y: pol === 1 \? 'MIC B POLARITY \+' : 'MIC B POLARITY −'/);
     assert.doesNotMatch(sp, /k: 'B POL'|Flip B’s polarity/);
     const bad = FILES.filter(({ s }) => /Flip B POLARITY|\b[Ff]lip B’s polarity/.test(s)).map(({ f }) => f);
     assert.deepEqual(bad, []);

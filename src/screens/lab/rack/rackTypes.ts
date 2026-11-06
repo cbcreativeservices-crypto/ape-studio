@@ -189,6 +189,8 @@ export type DockParam =
       helpKey?: string;
     }
   | {
+      /** With one option this is drawn as a plain label: no tray, no press
+       *  (dockFit isLabelOnly). */
       kind: 'options';
       id: string;
       label: string;

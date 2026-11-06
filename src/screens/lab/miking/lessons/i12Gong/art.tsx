@@ -18,9 +18,10 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import type { VariantId, ViewBox, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { BRONZE, Floor, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, WOOD } from '../shared/metal/metalArt';
+import { BRONZE, Floor, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, WOOD } from '../shared/metal/metalArt';
 import { DiscField } from '../shared/metal/metalFigures';
 import type { FrontArt } from '../shared/metal/metalPages';
+import { FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { buildUpWeights, DISC_SHAPES, discAt, discPeak } from '../shared/metal/metalModes.ts';
 import { CY, frameW, GONG, kindOf, MALLET_REACH, playerAt, radiusOf, strikeFrac, strikePoint } from './model.ts';
 import { topBarY } from './geometry.ts';
@@ -51,7 +52,7 @@ const SIDE_BODY_U = 362;
 
 /** The gong's face, face-on, centred at (u, v): bronze, lathe rings, the
  *  turned rim, the cord holes — and a boss. */
-function GongFace({ u, v, R, bossed, glow }: { u: number; v: number; R: number; bossed: boolean; glow?: string | null }): ReactElement {
+function GongFace({ u, v, R, bossed }: { u: number; v: number; R: number; bossed: boolean }): ReactElement {
   const rings = make();
   for (let q = R * 0.12; q < R * 0.93; q += R / 34) rings.addCircle(u, v, q);
   const holes = [-1, 1].map((s) => [u + s * R * 0.69, v - R * 0.69] as const);
@@ -67,8 +68,6 @@ function GongFace({ u, v, R, bossed, glow }: { u: number; v: number; R: number; 
       {/* the turned rim: a darker band with a lit lip */}
       <Circle cx={u} cy={v} r={R * 0.965} style="stroke" strokeWidth={R * 0.07} color={BRONZE[4]} opacity={0.55} />
       <Circle cx={u} cy={v} r={R * 0.995} style="stroke" strokeWidth={R / 90} color={BRONZE[0]} opacity={0.55} />
-      {glow === 'gg.rim' ? <Circle cx={u} cy={v} r={R * 0.96} style="stroke" strokeWidth={R * 0.1} color={HIGHLIGHT} opacity={0.35} /> : null}
-      {glow === 'gg.face' || glow === 'gg.faceB' ? <Circle cx={u} cy={v} r={R * 0.85} color={HIGHLIGHT} opacity={0.18} /> : null}
       {holes.map(([hu, hv], i) => (
         <Circle key={i} cx={hu} cy={hv} r={R / 70 + 4} color="#1c1208" />
       ))}
@@ -81,7 +80,6 @@ function GongFace({ u, v, R, bossed, glow }: { u: number; v: number; R: number; 
           <Circle cx={u - BOSS_R * 0.35} cy={v - BOSS_R * 0.4} r={BOSS_R * 0.25} color="#ffffff" opacity={0.35}>
             <BlurMask blur={BOSS_R * 0.15} style="normal" />
           </Circle>
-          {glow === 'gg.boss' ? <Circle cx={u} cy={v} r={BOSS_R * 1.4} color={HIGHLIGHT} opacity={0.35} /> : null}
         </Group>
       ) : null}
       <Circle cx={u - R * 0.4} cy={v - R * 0.45} r={R * 0.22} color="#ffffff" opacity={0.08}>
@@ -219,36 +217,75 @@ export function gongHitTest(view: ViewId, variant: VariantId, u: number, v: numb
 
 /* ═══════════════ front (from the audience) ═══════════════ */
 
+/** The rim's holes and the cords' anchors on the top bar, from the audience. */
+const cordsOf = (v: VariantId) => {
+  const R = radiusOf(v);
+  const top = topBarY(v);
+  return [-1, 1].map((s) => ({ a: [s * R * 0.52, top] as [number, number], hole: [s * R * 0.69, CY - R * 0.69] as [number, number] }));
+};
+
+/** The chosen part on the face-on drawing, each kind of gong. The frame is its
+ *  three bars, never the space inside them. */
+export function gongMark(variant: VariantId, id: string | null): FrontMark[] {
+  const R = radiusOf(variant);
+  const W = frameW(variant) / 2;
+  const top = topBarY(variant);
+  const px = mmPerPx(frontBox(variant));
+  const w = 18 * px;
+  switch (id) {
+    case 'gg.face':
+      return [{ kind: 'ring', u: 0, v: CY, r: R * 0.8 }];
+    case 'gg.faceB':
+      // Hollow, or at this small a gong it is the boss's ring by another name.
+      return [{ kind: 'ring', u: 0, v: CY, r: R * 0.86, inner: BOSS_R * 1.5 }];
+    case 'gg.boss':
+      return [{ kind: 'ring', u: 0, v: CY, r: Math.max(BOSS_R * 1.5, 24 * px) }];
+    case 'gg.rim':
+      return [{ kind: 'ring', u: 0, v: CY, r: R * 0.96, band: Math.max(R * 0.1, 8 * px) }];
+    case 'gg.cords':
+      return cordsOf(variant).map(({ a, hole }) => ({ kind: 'run', a, b: hole, w }));
+    case 'gg.frame':
+    case 'gg.frameB':
+      return [
+        { kind: 'run', a: [-W, top], b: [W, top], w },
+        { kind: 'run', a: [-W, top], b: [-W, -20], w },
+        { kind: 'run', a: [W, top], b: [W, -20], w },
+      ];
+    case 'gg.mallet': {
+      const { headAt, grip } = frontMallet(variant);
+      return [{ kind: 'run', a: headAt, b: grip, w: Math.max(2 * MH + 8 * px, 20 * px) }];
+    }
+    default:
+      return [];
+  }
+}
+
 function frontArt(variant: VariantId, highlight: string | null): ReactElement {
   const R = radiusOf(variant);
   const W = frameW(variant) / 2;
   const top = topBarY(variant);
   const bossed = isBossed(variant);
   const { headAt, grip } = frontMallet(variant);
-  const holes = [-1, 1].map((s) => [s * R * 0.69, CY - R * 0.69] as [number, number]);
-  const anchors = [-1, 1].map((s) => [s * R * 0.52, top] as [number, number]);
-  const hl = (id: string) => highlight === id || (highlight === `${id}B`);
   return (
     <Group>
       <Floor u0={-3000} u1={3000} />
       {/* the frame */}
-      {hl('gg.frame') ? <RoundedRect x={-W - 40} y={top - 40} width={2 * W + 80} height={-top + 20} r={40} color={HIGHLIGHT} opacity={0.18} /> : null}
       <Rod path={polyPath([[-W, -20], [-W, top], [W, top], [W, -20]])} d={GONG.post.mm} pal={STEEL} />
       {[-W, W].map((u) => (
         <RoundedRect key={u} x={u - 40} y={-40} width={80} height={36} r={8} color={STEEL[3]} />
       ))}
       {/* the cords, from the top bar to the rim's holes */}
-      {anchors.map((a, i) => (
-        <Path key={i} path={polyPath([a, holes[i]])} style="stroke" strokeWidth={hl('gg.cords') ? 9 : 4} color={hl('gg.cords') ? HIGHLIGHT : '#c9b48c'} />
+      {cordsOf(variant).map(({ a, hole }, i) => (
+        <Path key={i} path={polyPath([a, hole])} style="stroke" strokeWidth={4} color="#c9b48c" />
       ))}
-      <GongFace u={0} v={CY} R={R} bossed={bossed} glow={highlight} />
+      <GongFace u={0} v={CY} R={R} bossed={bossed} />
       {/* the player beside the frame (screen right), in front of its post (nearer the
           audience), the mallet hand reaching in past it (figure pass 2) */}
       <Group transform={[{ translateX: FU(playerAt(variant).z) }]}>
         <PlayerInk path={playerFront([[grip[0] - FU(playerAt(variant).z) + 10, grip[1] + 10]])} faint head="front" />
       </Group>
-      {hl('gg.mallet') ? <Path path={polyPath([grip, headAt])} style="stroke" strokeWidth={70} strokeCap="round" color={HIGHLIGHT} opacity={0.25} /> : null}
       <Mallet grip={grip} head={headAt} />
+      <FrontMarks marks={gongMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );
 }

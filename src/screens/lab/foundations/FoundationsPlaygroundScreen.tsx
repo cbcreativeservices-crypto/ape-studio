@@ -73,6 +73,7 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { fitValue } from '../../../theme/legibility';
+import { EQ_OTHER_BANDS_OFF } from '../fxLabConfigs';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -254,8 +255,11 @@ export function FoundationsPlaygroundScreen() {
     } else {
       ApeDsp.fxSet(FX.delay, FX_PARAM.enabled, 0);
     }
-    // EQ low-pass + Q on band 0.
+    // EQ low-pass + Q on band 0. Bands 1 to 5 off first, as the Equalizer Lab
+    // does: an EQ audition can leave them live, and a reset clears only
+    // `enabled`, so they would stay in the sound.
     if (eqCut > 0) {
+      for (const band of EQ_OTHER_BANDS_OFF) ApeDsp.fxSet(FX.eq, band.paramId, band.value);
       ApeDsp.fxSet(FX.eq, FX_PARAM.eqBand(0, 'type'), EQ_BAND_TYPES.lowPass);
       ApeDsp.fxSet(FX.eq, FX_PARAM.eqBand(0, 'freq'), eqCut);
       ApeDsp.fxSet(FX.eq, FX_PARAM.eqBand(0, 'q'), eqQ);

@@ -30,8 +30,9 @@ export const mmPerPx = (b: ViewBox) => Math.max((b.u1 - b.u0) / (STAGE_W - 2 * P
 
 type Pt = readonly [number, number];
 export type FrontMark =
-  /** An outline round a spot; `band`, a thick ring ON the circle (a rim). */
-  | { kind: 'ring'; u: number; v: number; r: number; band?: number }
+  /** An outline round a spot; `band`, a thick ring ON the circle (a rim);
+   *  `inner`, a hollow middle (the face round a boss: the boss stays clear). */
+  | { kind: 'ring'; u: number; v: number; r: number; band?: number; inner?: number }
   /** A capsule `w` wide along a rod, a cord, a handle. */
   | { kind: 'run'; a: Pt; b: Pt; w: number }
   /** A closed outline round an irregular group. */
@@ -54,12 +55,25 @@ function Run({ a, b, w, line }: { a: Pt; b: Pt; w: number; line: number }): Reac
   );
 }
 
-function Ring({ u, v, r, band, line }: { u: number; v: number; r: number; band?: number; line: number }): ReactElement {
+function Ring({ u, v, r, band, inner, line }: { u: number; v: number; r: number; band?: number; inner?: number; line: number }): ReactElement {
   if (band) {
     return (
       <Group>
         <Circle cx={u} cy={v} r={r} style="stroke" strokeWidth={band + line * 1.8} color={DARK} opacity={0.5} />
         <Circle cx={u} cy={v} r={r} style="stroke" strokeWidth={band} color={HIGHLIGHT} opacity={0.75} />
+      </Group>
+    );
+  }
+  if (inner) {
+    return (
+      <Group>
+        <Circle cx={u} cy={v} r={(r + inner) / 2} style="stroke" strokeWidth={r - inner} color={HIGHLIGHT} opacity={FILL * 2} />
+        {[r, inner].map((q) => (
+          <Group key={q}>
+            <Circle cx={u} cy={v} r={q} style="stroke" strokeWidth={line * 1.8} color={DARK} opacity={0.5} />
+            <Circle cx={u} cy={v} r={q} style="stroke" strokeWidth={line} color={HIGHLIGHT} />
+          </Group>
+        ))}
       </Group>
     );
   }
@@ -91,7 +105,7 @@ export function FrontMarks({ marks, box }: { marks: readonly FrontMark[]; box: V
   return (
     <Group>
       {marks.map((m, i) =>
-        m.kind === 'ring' ? <Ring key={i} u={m.u} v={m.v} r={m.r} band={m.band} line={line} /> : m.kind === 'run' ? <Run key={i} a={m.a} b={m.b} w={m.w} line={line} /> : <Shape key={i} pts={m.pts} line={line} />,
+        m.kind === 'ring' ? <Ring key={i} u={m.u} v={m.v} r={m.r} band={m.band} inner={m.inner} line={line} /> : m.kind === 'run' ? <Run key={i} a={m.a} b={m.b} w={m.w} line={line} /> : <Shape key={i} pts={m.pts} line={line} />,
       )}
     </Group>
   );

@@ -31,6 +31,7 @@ import { fitLabels, LABEL_AIR, labelRect, leaderLine, segHitsRect, segsCross, ty
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { add, DEG, dist, fmtM, mul, planDir, unit, uv, uvDir, v3, type StageView } from './frameS.ts';
 import { arrayCapsules } from './stereoArray.ts';
+import { sliceFor } from './ensembleModel.ts';
 import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
 import { isClassical, SeatingView, seatShapes, SECTION_SLICE, type SeatShape } from './SeatingArt';
 import { ArrayDetail, ArrayRig, rigHardware, rigPoints, type RigSpec } from './ArrayArt';
@@ -545,8 +546,10 @@ function shapeTools(shapes: readonly SeatShape[]) {
 }
 
 export function EnsembleStage(p: EnsembleStageProps) {
-  const { w, h, seating, view, hi = null, rigs = NONE, singles = NONE, zones = NONE, radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = NONE, spill = NONE, rings = NONE, onTapSection } = p;
+  const { w, h, seating: seated, view, hi = null, rigs = NONE, singles = NONE, zones = NONE, radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = NONE, spill = NONE, rings = NONE, onTapSection } = p;
   const textScale = useStageTextScale();
+  // A family picked from the stage's edges still has its players in the side view.
+  const seating = useMemo(() => (view === 'section' ? sliceFor(seated, radiate, SECTION_SLICE) : seated), [seated, view, radiate]);
   const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles, view === 'plan' ? rings.flatMap((r) => [v3(r.c.x - r.r, 0, r.c.z - r.r), v3(r.c.x + r.r, 0, r.c.z + r.r)]) : [], p.focus), [p.box, seating, view, rigs, singles, rings, p.focus]);
   const xf: ViewXform = useMemo(() => fitXform(view === 'front' ? 'side' : 'top', box, w, h, 6), [view, box, w, h]);
   const px = 1 / xf.s;

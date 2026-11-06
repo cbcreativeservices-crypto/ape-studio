@@ -38,12 +38,23 @@ import { viewToggle } from '../engine/scene/viewToggle.ts';
 /** The front head is one tap target with a part id per variant. */
 const oneTarget = (id: string) => (id === 'kick.resoPorted' ? 'kick.reso' : id);
 
-/** How many of the parts on THIS list have been looked at. `seen` outlives a
- *  variant change, and a tap can land on a part that is drawn but not listed,
- *  so the size of `seen` could read "8 of 6". */
-export function lookedAtCount(parts: readonly { id: string }[], seen: ReadonlySet<string>): number {
-  const looked = new Set([...seen].map(oneTarget));
-  return parts.filter((p) => looked.has(oneTarget(p.id))).length;
+type PartRow = { id: string; variants?: readonly string[] };
+
+/** A part's name across the variants: its id without the variant suffix. */
+function partKey(id: string, variantIds: readonly string[]): string {
+  const v = variantIds.find((x) => id.endsWith(`.${x}`));
+  return oneTarget(v ? id.slice(0, -(v.length + 1)) : id);
+}
+
+/** The part a pick means in this variant: the same part under whichever id it
+ *  has here, or null if this variant has none. A pick outlives a variant
+ *  switch, so every Meet It page reads this, never the raw pick. */
+export function livePartId(partId: string | null, variant: string, parts: readonly PartRow[], variantIds: readonly string[]): string | null {
+  if (!partId) return null;
+  const here = parts.filter((p) => !p.variants || p.variants.includes(variant));
+  if (here.some((p) => p.id === partId)) return partId;
+  const key = partKey(partId, variantIds);
+  return here.find((p) => partKey(p.id, variantIds) === key)?.id ?? null;
 }
 
 export function PInstrument({ lesson, art, variant, setVariant, hidden, journey }: PageProps) {
@@ -55,20 +66,14 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
   }, [variant, rig]);
   const [view, setView] = useState<ViewId>('side');
   const [partId, setPartId] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const regions = model.regions;
   const parts = model.parts.filter((p) => (!p.variants || p.variants.includes(variant)) && (!p.listIn || p.listIn.includes(variant)));
   const variantLabel = model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
-  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')));
-
-  const pick = (id: string) => {
-    setPartId(id);
-    setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
-  };
-  const lookedAt = lookedAtCount(parts, seen);
-  const region = regions.find((r) => r.partId === partId);
-  // The front head is one tap target; its part differs by variant.
-  const shownPart = partId === 'kick.reso' || partId === 'kick.resoPorted' ? model.parts.find((p) => p.id === (variant === 'ported' ? 'kick.resoPorted' : 'kick.reso')) : model.parts.find((p) => p.id === partId);
+  const livePart = livePartId(partId, variant, model.parts, model.variants.map((v) => v.id));
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === livePart));
+  const shownPart = model.parts.find((p) => p.id === livePart);
+  // The front head's sound line is written once, against its tap target.
+  const region = livePart ? regions.find((r) => r.partId === oneTarget(livePart)) : undefined;
 
   const params: DockParam[] = useMemo(
     () => [
@@ -80,15 +85,15 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
           value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
           onChange: (v) => {
             const p = parts[Math.round(v * (parts.length - 1))];
-            if (p) pick(p.id);
+            if (p) setPartId(p.id);
           },
-          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shownPart ? shownPart.short.toUpperCase() : 'step through the parts'),
           formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
-        parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')),
+        parts.findIndex((p) => p.id === livePart),
         (i) => parts[i].short.toUpperCase(),
-        (i) => pick(parts[i].id),
+        (i) => setPartId(parts[i].id),
       ),
       ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       {
@@ -102,10 +107,10 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parts, partIdx, shownPart, seen, view, variant, model.variants, C.variantKey, variantLabel],
+    [parts, partIdx, shownPart, view, variant, model.variants, C.variantKey, variantLabel],
   );
 
-  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
+  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], shownPart ? `Highlighted: ${shownPart.label}.` : undefined);
   const steps: MikingStep[] = [
     {
       key: 'start',
@@ -158,12 +163,11 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />
+          <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={livePart} onTapPart={setPartId} labelFor={labelFor} />
         ),
         badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           { k: C.variantKey, v: variantLabel },
         ],
         params,

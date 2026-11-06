@@ -142,7 +142,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
   // T1-01): every setup the SETUP fader crossed remounted the stage (a scene
   // compile + clear-pose search + the full DualView) and wrote START FROM
   // into the host, so a flick end to end cost up to ~1 s per move. The card
-  // and the bezel follow at once; the drawing, LOOKED AT and START FROM
+  // and the bezel follow at once; the drawing, the seen list and START FROM
   // follow the setup that was actually drawn (a flick no longer counts every
   // setup it crossed as looked at).
   // …and never while a finger is still on the SETUP fader (onCommit lets go).
@@ -249,7 +249,6 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
     { k: 'SETUP', v: sel ? `${i + 1} / ${setups.length}` : '—', flex: 0.8 },
     { k: 'MIC', v: t0 ? t0.short : '—', flex: 1.2 },
     { k: 'DISTANCE', v: d0 != null ? fmtLen(d0).replace(/ \(.*\)$/, '') : '—', sub: sel?.mics.length === 2 && guides[1] ? `B ${fmtLen(guides[1].distance).replace(/ \(.*\)$/, '')}` : undefined, flex: 1.1 },
-    { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
   ];
   // The drawing's own label names the setup it DRAWS (it lags the fader).
   const dd0 = drawnGuides[0]?.distance;
@@ -279,7 +278,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
         <>
           <Landing looking={sel ? `${roleWords(sel)} · ${variantShort}` : variantShort} prompt={`${fewStops(setups.length) ? 'Pick each setup by name in SETUPS.' : 'Step through SETUP, or pick one by name in SETUPS.'} Each one is drawn where the mic goes: the mic and its stand, where it points (amber) and its distance (white).`} />
           {sel ? <SetupCard s={sel} where={where} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
-          <Body>{`Looked at: ${seenCore} of ${core.length} setup${core.length === 1 ? '' : 's'}${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
+          <Body>The Placement Studio starts from the last one you look at.</Body>
         </>
       ),
     },

@@ -12,20 +12,27 @@
  * learner moves a mic.
  */
 import { useEffect, useMemo } from 'react';
+import { View } from 'react-native';
+import { Group } from '@shopify/react-native-skia';
 import type { ViewBox, ViewId, Vec3 } from '../model/types.ts';
 import type { LessonArt } from './sceneTypes.ts';
 import type { StartingSetup } from '../setups.ts';
 import { useRig } from './useRig.ts';
 import { DualView } from './DualView';
+import { CLOSE_UP_BELOW_PT, CLOSE_UP_H, DISH_MARK_PT, DishMark, MicCloseUp, closeUpBody } from './MicCloseUp';
 import { assembly } from '../geometry/collision.ts';
 import { guideFor } from '../geometry/guides.ts';
+import { fitXform } from '../geometry/frame.ts';
 import { setupFrame } from '../geometry/contentFrame.ts';
 import { viewsOf } from '../model/types.ts';
 import { aimVec } from '../geometry/vec.ts';
 import { sceneLabel } from './sceneWords.ts';
 import type { Lesson } from '../model/types.ts';
+import { micType } from '../../data/micTypes.ts';
 
-export function SetupStage({ lesson, art, setup, view, setView, w, h, label }: { lesson: Lesson; art: LessonArt; setup: StartingSetup; view: ViewId; setView: (v: ViewId) => void; w: number; h: number; label: string }) {
+/** `closeUp` (Microphones step 1): the chosen mic close up under the scene,
+ *  on a drawing where this lesson's mics are too small to tell apart. */
+export function SetupStage({ lesson, art, setup, view, setView, w, h, label, closeUp = false }: { lesson: Lesson; art: LessonArt; setup: StartingSetup; view: ViewId; setView: (v: ViewId) => void; w: number; h: number; label: string; closeUp?: boolean }) {
   const rig = useRig(lesson, {
     variant: setup.variant,
     zones: setup.zones.map((z) => z.id),
@@ -74,21 +81,52 @@ export function SetupStage({ lesson, art, setup, view, setView, w, h, label }: {
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- by the committed poses
   }, [key, rig.variant, rig.scene, model]);
+  // The glass's scale in this view: the strip is decided on the lesson's
+  // longest mic, so it does not come and go as TYPE changes.
+  const box = frames[view] ?? frames.side ?? frames.top;
+  const hk = model.hardwareScaleByView?.[view] ?? model.hardwareScale ?? 1;
+  const longest = Math.max(...lesson.micTypeIds.map((id) => {
+    const b = closeUpBody(micType(id));
+    return b.len + b.fore;
+  }));
+  const strip = closeUp && !!box && longest * hk * fitXform(view, box, w, h, 8).s < CLOSE_UP_BELOW_PT;
+  const stageH = strip ? h - CLOSE_UP_H : h;
+  // The sports dish's body is only its element: its reflector goes on the
+  // scene here, through the art, so it pinches and frames with the drawing.
+  const dishPose = rig.mics.find((m) => slots.includes(m.slot) && m.typeId === 'spDish')?.pose ?? null;
+  const stageArt = useMemo<LessonArt>(() => {
+    if (!dishPose) return art;
+    const Base = art.Instrument;
+    const Instrument: LessonArt['Instrument'] = (p) => {
+      const b = frames[p.view];
+      const s = b ? fitXform(p.view, b, w, stageH, 8).s : 1;
+      return (
+        <Group>
+          <Base {...p} />
+          <DishMark pose={dishPose} view={p.view} size={DISH_MARK_PT / s} px={1 / s} />
+        </Group>
+      );
+    };
+    return { ...art, Instrument };
+  }, [art, dishPose, frames, w, stageH]);
   return (
-    <DualView
-      rig={rig}
-      art={art}
-      view={view}
-      setView={setView}
-      w={w}
-      h={h}
-      slots={slots}
-      interactive={false}
-      showLive={false}
-      zoneIds={setup.zones.map((z) => z.id)}
-      guides
-      frames={frames}
-      labelFor={(v) => sceneLabel(rig, v, slots, label)}
-    />
+    <View style={{ width: w, height: h }}>
+      <DualView
+        rig={rig}
+        art={stageArt}
+        view={view}
+        setView={setView}
+        w={w}
+        h={stageH}
+        slots={slots}
+        interactive={false}
+        showLive={false}
+        zoneIds={setup.zones.map((z) => z.id)}
+        guides
+        frames={frames}
+        labelFor={(v) => sceneLabel(rig, v, slots, label)}
+      />
+      {strip ? <MicCloseUp type={micType(first?.typeId ?? rig.mics[0].typeId)} w={w} /> : null}
+    </View>
   );
 }

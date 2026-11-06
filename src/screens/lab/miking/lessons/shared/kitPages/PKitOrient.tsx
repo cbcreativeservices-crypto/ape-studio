@@ -24,7 +24,7 @@ import { DualView } from '../../../engine/scene/DualView';
 import { InstrumentFigure } from '../../../engine/scene/InstrumentFigure';
 import { sceneLabel } from '../../../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
-import { lookedAtCount } from '../../../pages/PInstrument';
+import { livePartId } from '../../../pages/PInstrument';
 import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../engine/journeyKit';
 import { journeyIntro } from '../../../engine/journey.ts';
@@ -52,18 +52,15 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
   }, [variant, rig]);
   const [view, setView] = useState<ViewId>('side');
   const [partId, setPartId] = useState<string | null>(null);
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const parts = model.parts.filter((p) => (!p.variants || p.variants.includes(variant)) && (!p.listIn || p.listIn.includes(variant)));
   const variantLabel = model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
-  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId));
-  const shownPart = parts.find((p) => p.id === partId);
-  const lookedAt = lookedAtCount(parts, seen);
-  const region = model.regions.find((r) => r.partId === partId);
+  const livePart = livePartId(partId, variant, parts, model.variants.map((v) => v.id));
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === livePart));
+  const shownPart = parts.find((p) => p.id === livePart);
+  const region = model.regions.find((r) => r.partId === livePart);
 
   const pick = (id: string) => {
-    if (!parts.some((p) => p.id === id)) return;
-    setPartId(id);
-    setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
+    if (parts.some((p) => p.id === id)) setPartId(id);
   };
 
   const params: DockParam[] = useMemo(
@@ -78,11 +75,11 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
             const p = parts[Math.round(v * (parts.length - 1))];
             if (p) pick(p.id);
           },
-          format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${lookedAt} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          format: () => (shownPart ? shownPart.short.toUpperCase() : 'step through the parts'),
           formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
         parts.length,
-        parts.findIndex((p) => p.id === partId),
+        parts.findIndex((p) => p.id === livePart),
         (i) => parts[i].short.toUpperCase(),
         (i) => pick(parts[i].id),
       ),
@@ -98,10 +95,10 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parts, partIdx, shownPart, seen, view, variant, model.variants, C.variantKey, variantLabel],
+    [parts, partIdx, shownPart, view, variant, model.variants, C.variantKey, variantLabel],
   );
 
-  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
+  const labelFor = (v: ViewId) => sceneLabel(rig, v, [], shownPart ? `Highlighted: ${shownPart.label}.` : undefined);
   const steps: MikingStep[] = [
     {
       key: 'start',
@@ -140,11 +137,10 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
       kind: 'TRY',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />,
+        render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={livePart} onTapPart={pick} labelFor={labelFor} />,
         badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'LOOKED AT', v: `${lookedAt} / ${parts.length}` },
           { k: C.variantKey, v: variantLabel },
         ],
         params,

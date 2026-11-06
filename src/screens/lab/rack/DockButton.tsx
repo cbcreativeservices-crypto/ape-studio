@@ -9,15 +9,45 @@
  *   ▪  fader param — tap BINDS the shared lane
  *   ▸  options/group param — tap OPENS a tray
  * Toggles render as ON/OFF keys; actions as plain keys. Long-press = the
- * param's guided lesson (v4 §5), wired via RackUnit.
+ * param's guided lesson (v4 §5), wired via RackUnit. `plain` is neither verb:
+ * a label and its value with nothing to press (a chooser with one choice).
  */
-import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import { dockFitSize, dockLabelFit } from './dockFit';
+import { LABEL_FIT_MARGIN_PX, VALUE_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockStripFit } from './dockFit';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
+
+/** What DockStrip hands each key: its width when the keys are not equal, and
+ *  where to report the least width its words need. */
+export type DockKeyFit = { keyW?: number; onNeed: (px: number) => void };
+
+/** The row of keys. Equal keys wherever every word fits; see dockStripFit. */
+export function DockStrip({
+  ids,
+  style,
+  children,
+}: {
+  /** The keys actually drawn, in order. */
+  ids: string[];
+  style?: StyleProp<ViewStyle>;
+  children: (fitFor: (id: string) => DockKeyFit) => ReactNode;
+}) {
+  const [stripW, setStripW] = useState(0);
+  const [needs, setNeeds] = useState<Readonly<Record<string, number>>>({});
+  const note = useCallback((id: string, px: number) => {
+    setNeeds((cur) => (cur[id] === px ? cur : { ...cur, [id]: px }));
+  }, []);
+  const order = ids.join('|');
+  const row = useMemo(() => dockStripFit(order.split('|').map((id) => needs[id] ?? 0), stripW), [order, needs, stripW]);
+  return (
+    <View style={[style, row && { gap: row.gap, flexWrap: row.wrap ? 'wrap' : 'nowrap' }]} onLayout={(e: LayoutChangeEvent) => setStripW(e.nativeEvent.layout.width)}>
+      {children((id) => ({ keyW: row?.widths[ids.indexOf(id)], onNeed: (px) => note(id, px) }))}
+    </View>
+  );
+}
 
 export function DockButton({
   label,
@@ -32,6 +62,8 @@ export function DockButton({
   onLongPress,
   a11y,
   dim,
+  plain,
+  fit,
 }: {
   label: string;
   /** Current value (mono amber). Key-variant buttons pass ''. */
@@ -60,6 +92,10 @@ export function DockButton({
   a11y: string;
   /** A LOCKED control (rackTypes fader `locked`): drawn dimmed. */
   dim?: boolean;
+  /** Nothing to press: the words and no more (dockFit isLabelOnly). */
+  plain?: boolean;
+  /** This key's place in the row (DockStrip). */
+  fit?: DockKeyFit;
 }) {
   const isKey = variant === 'key';
   // Toggles and actions share the flat KEY skin; only a toggle carries an LED.
@@ -113,7 +149,7 @@ export function DockButton({
   const fitsLabel = !isKey || labelLines === 1;
   const hasGlyph = !isKey && !!glyph;
   const { fs: labelFs, tight, tracked } = fitsLabel
-    ? dockLabelFit(LABEL_FS, labelW, inner, hasGlyph ? spacedW : 0, hasGlyph ? spacedGlyphW : 0, (label.length + 1) * LABEL_SPACING)
+    ? dockLabelFit(LABEL_FS, labelW, inner, hasGlyph ? spacedW : 0, hasGlyph ? spacedGlyphW : 0, (label.length + 1) * LABEL_SPACING, LABEL_FIT_MARGIN_PX)
     : { fs: LABEL_FS, tight: false, tracked: true };
   const valueFs = (value ? dockFitSize(VALUE_FS, valueW, inner) : VALUE_FS) ?? VALUE_FS;
   // A shrunk label keeps its tracking in proportion; a shrunk value keeps its
@@ -121,35 +157,29 @@ export function DockButton({
   const labelSize = labelFs !== LABEL_FS ? { fontSize: labelFs, letterSpacing: tracked ? (LABEL_SPACING * labelFs) / LABEL_FS : 0 } : null;
   const valueSize = valueFs !== VALUE_FS ? { fontSize: valueFs, ...(valueH > 0 ? { lineHeight: valueH } : null) } : null;
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.btn,
-        isKey && styles.key,
-        // frameTint applies to KEY buttons as well (a green REPLAY border) —
-        // it used to be value-buttons only.
-        !selected && frameTint ? { borderColor: frameTint + (isKey ? 'aa' : '88') } : null,
-        !isKey && selected && styles.btnSel,
-        // A param with an IDENTITY colour (OSC 1 cyan, OSC 2 purple, an EQ
-        // band…) shows its bound/open state in THAT colour, not amber — the
-        // key must match the lane and the readout it drives (owner 2026-09-05:
-        // "the OSC 1 button container should match the blue"). Untinted params
-        // keep the amber selected skin.
-        !isKey && selected && frameTint ? { borderColor: frameTint + 'b3', backgroundColor: frameTint + '1f' } : null,
-        // Every key now answers the finger.
-        pressed && styles.btnPressed,
-        fired && styles.btnFired,
-        dim && { opacity: 0.45 },
-      ]}
-      onPress={handlePress}
-      onLongPress={onLongPress}
-      delayLongPress={350}
-      accessibilityRole="button"
-      accessibilityState={{ selected: !!selected || !!led }}
-      aria-pressed={!!selected || !!led}
-      accessibilityLabel={a11y}
-      onLayout={(e: LayoutChangeEvent) => setBtnW(e.nativeEvent.layout.width)}
-    >
+  // The least width that holds these words (dockKeyNeed). A fader's value is
+  // left out: it changes under the drag, and the keys must not shift with it.
+  const need = dockKeyNeed({
+    chrome: 2 + 2 * 4 + (isKey && led != null ? 14 : 0),
+    labelBase: LABEL_FS,
+    label: labelW,
+    spaced: hasGlyph ? spacedW : 0,
+    spacedGlyph: hasGlyph ? spacedGlyphW : 0,
+    trackPx: (label.length + 1) * LABEL_SPACING,
+    lines: fitsLabel ? 1 : 2,
+    valueBase: VALUE_FS,
+    value: glyph === '▪' ? 0 : valueW,
+  });
+  const onNeed = fit?.onNeed;
+  useEffect(() => {
+    if (need > 0) onNeed?.(need);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [need]);
+  const sized = fit?.keyW != null ? { width: fit.keyW } : styles.even;
+  const onBtnLayout = (e: LayoutChangeEvent) => setBtnW(e.nativeEvent.layout.width);
+
+  const face = (
+    <>
       {/* The off-screen measures (invisible, never read aloud). */}
       <Measure>
         {/* the line as drawn today */}
@@ -169,7 +199,7 @@ export function DockButton({
           </>
         ) : null}
         {!isKey && value ? (
-          <MeasureLine style={styles.value} onWidth={setValueW} onHeight={setValueH}>
+          <MeasureLine style={styles.value} onWidth={(w) => setValueW(w + VALUE_FIT_MARGIN_PX)} onHeight={setValueH}>
             {value}
           </MeasureLine>
         ) : null}
@@ -201,6 +231,48 @@ export function DockButton({
           ) : null}
         </>
       )}
+    </>
+  );
+
+  if (plain) {
+    return (
+      <View style={[styles.btn, styles.plain, sized]} accessible accessibilityRole="text" accessibilityLabel={a11y} onLayout={onBtnLayout}>
+        {face}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.btn,
+        sized,
+        isKey && styles.key,
+        // frameTint applies to KEY buttons as well (a green REPLAY border) —
+        // it used to be value-buttons only.
+        !selected && frameTint ? { borderColor: frameTint + (isKey ? 'aa' : '88') } : null,
+        !isKey && selected && styles.btnSel,
+        // A param with an IDENTITY colour (OSC 1 cyan, OSC 2 purple, an EQ
+        // band…) shows its bound/open state in THAT colour, not amber — the
+        // key must match the lane and the readout it drives (owner 2026-09-05:
+        // "the OSC 1 button container should match the blue"). Untinted params
+        // keep the amber selected skin.
+        !isKey && selected && frameTint ? { borderColor: frameTint + 'b3', backgroundColor: frameTint + '1f' } : null,
+        // Every key now answers the finger.
+        pressed && styles.btnPressed,
+        fired && styles.btnFired,
+        dim && { opacity: 0.45 },
+      ]}
+      onPress={handlePress}
+      onLongPress={onLongPress}
+      delayLongPress={350}
+      accessibilityRole="button"
+      accessibilityState={{ selected: !!selected || !!led }}
+      aria-pressed={!!selected || !!led}
+      accessibilityLabel={a11y}
+      onLayout={onBtnLayout}
+    >
+      {face}
     </Pressable>
   );
 }
@@ -240,8 +312,8 @@ function MeasureLine({ style, onWidth, onHeight, children }: { style: StyleProp<
 const styles = StyleSheet.create({
   measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
   measureRow: { position: 'absolute', left: 0, top: 0, width: 1000, flexDirection: 'row', alignItems: 'flex-start' },
+  even: { flex: 1 },
   btn: {
-    flex: 1,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#26262c',
@@ -253,6 +325,8 @@ const styles = StyleSheet.create({
     minHeight: 48,
     justifyContent: 'center',
   },
+  /** A label, not a key: same words in the same place, no key face. */
+  plain: { backgroundColor: 'transparent', borderColor: 'transparent' },
   // Selected = bound/open — the PopupOpt selected treatment, so labs and tools
   // light up identically.
   btnSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
@@ -262,7 +336,9 @@ const styles = StyleSheet.create({
   btnFired: { borderColor: 'rgba(255,198,77,.85)', backgroundColor: '#241a06' },
   // Toggles/actions: the flat KEY skin — no value slot, no amber-selected.
   key: { backgroundColor: '#17171c', borderColor: '#2c2c33' },
-  keyRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  // maxWidth: a long label stays inside its key instead of printing over the
+  // next one (it pushed the page 13 px sideways at 375 on Overheads).
+  keyRow: { flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: '100%' },
   /** In the key ROW the label must be allowed to shrink before it can wrap —
    *  without flexShrink a row child measures at its full single-line width and
    *  numberOfLines={2} never gets the chance to break it. */

@@ -234,7 +234,10 @@ export function ExposureCheckin() {
           <Text style={styles.mid}>
             {snap.currentDb != null ? `${Math.round(snap.currentDb)} dBA estimated` : 'Level estimate unavailable'}
           </Text>
-          <Text style={styles.mid}>{fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose)} remaining</Text>
+          <Text style={styles.mid}>
+            {fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose, snap.belowStandardRange)}
+            {snap.remainingSec != null && snap.todayDose < 1 ? ' remaining' : ''}
+          </Text>
         </View>
         <Text style={styles.route}>
           {snap.routeLabel}

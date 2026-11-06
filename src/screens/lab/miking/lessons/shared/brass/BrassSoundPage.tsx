@@ -32,7 +32,7 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import { fmtLen } from '../../../engine/model/units.ts';
 import type { PageProps } from '../../../pages/pageTypes';
-import { AirColumn, BellRadiation, MuteView, SlideEnvelope, ValveTube, lobe, lobeWords, type Band, type MuteId } from './BrassSoundArt';
+import { AirColumn, BellRadiation, MIC_ANGLE_MAX, MuteView, SlideEnvelope, ValveTube, lobe, lobeWords, type Band, type MuteId } from './BrassSoundArt';
 import { addedTube, ATTACH, SLIDE_POSITIONS, VALVES } from './brassSpec.ts';
 import { slidePose, type HornPose } from './brassPosture.ts';
 
@@ -232,8 +232,8 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         kind: 'fader',
         id: 'angle',
         label: 'MIC ANGLE',
-        value: deg / 180,
-        onChange: (v) => setDeg(Math.round((v * 180) / 5) * 5),
+        value: deg / MIC_ANGLE_MAX,
+        onChange: (v) => setDeg(Math.round((v * MIC_ANGLE_MAX) / 5) * 5),
         format: () => `${deg}° off the bell’s axis · ${where.toLowerCase()}`,
         formatShort: () => `${deg}°`,
       },
@@ -334,7 +334,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         },
         well: (
           <>
-            <Landing looking="The bell from above, and a mic round it" prompt="Choose a BAND, then swing the MIC ANGLE from on axis round to behind the player." />
+            <Landing looking="The bell from above, and a mic round it" prompt="Choose a BAND, then swing the MIC ANGLE from on axis round to behind the bell." />
             <Card>
               <Point title={`${BAND_LABEL[band]} · ${BAND_RANGE[band].toUpperCase()}`}>{(cfg.bands[variant] ?? cfg.bands[cfg.fallback])[band]}</Point>
             </Card>

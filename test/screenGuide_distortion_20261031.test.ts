@@ -155,7 +155,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     });
   }
   it('the sources, keys and readouts are exactly the ones the guide lists', () => {
-    assert.match(DIST, /sources: \[srcSine\(220\), SRC_PINK\],/);
+    assert.match(DIST, /sources: \[srcSine\(220\), SRC_SINE_5K, SRC_PINK\],/);
     assert.deepEqual([...DIST.matchAll(/^\s{6}label: '([^']+)', (?:short: '[^']+', )?paramId:/gm)].map((m) => m[1]), ['DRIVE', 'TYPE', 'OVERSAMPLING', 'MIX']);
     assert.deepEqual([...DIST.matchAll(/\{ k: '([A-Z ]+)', paramId:/g)].map((m) => m[1]), ['TYPE', 'DRIVE', 'MIX']);
     // the SOURCE key is the last dock key on every FX lab

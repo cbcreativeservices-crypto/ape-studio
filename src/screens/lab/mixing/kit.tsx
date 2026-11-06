@@ -978,6 +978,10 @@ function Strip({
   );
 }
 
+/** Why the Ø button moves so little in this session (function audit decision
+ *  6, measured from an offline render). Shown while a track is flipped. */
+const POLARITY_NOTE = 'A flip changes very little here: these tracks are separate parts, not two mics on one source, so no pair really cancels.';
+
 /** The session console: a horizontal strip row (scrolls on phones), with an
  *  explicit swipe cue and the scroll indicator ON — off-screen strips must be
  *  discoverable (design pass 6). */
@@ -1029,6 +1033,11 @@ export function MiniConsole({
           />
         ))}
       </ScrollView>
+      {show.pol && tracks.some((id) => value[id]?.polarity) ? (
+        <Text style={styles.conceptNote} accessibilityLiveRegion="polite">
+          {POLARITY_NOTE}
+        </Text>
+      ) : null}
     </View>
   );
 }

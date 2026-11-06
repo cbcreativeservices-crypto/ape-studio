@@ -123,12 +123,22 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
       onSelect: setSrcId,
       options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} Drawn as one point for the path overlay.` })),
     },
+    // A value key, as on PTwoMic: MIC B POLARITY + will not fit a toggle key at phone width, and the sign must stay in view.
     {
-      kind: 'toggle',
+      kind: 'options',
       id: 'polarity',
-      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
-      value: B.polarity === -1,
-      onToggle: () => rig.setPolarity('B', B.polarity === 1 ? -1 : 1),
+      label: 'POLARITY',
+      valueLabel: `MIC B ${B.polarity === 1 ? '+' : '−'}`,
+      valueA11y: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
+      selectedId: B.polarity === 1 ? 'normal' : 'inverted',
+      onSelect: (id) => {
+        const next = id === 'inverted' ? -1 : 1;
+        if (next !== B.polarity) rig.setPolarity('B', next);
+      },
+      options: [
+        { id: 'normal', label: '+ NORMAL', blurb: 'Mic B’s signal passes as wired.' },
+        { id: 'inverted', label: '− INVERTED', blurb: 'Mic B’s signal is turned upside down. Δt does not change.' },
+      ],
     },
   ];
   const bezel: BezelItem[] = [

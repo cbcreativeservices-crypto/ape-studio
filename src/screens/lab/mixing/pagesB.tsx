@@ -67,7 +67,7 @@ function PageStaticMix({ ctx }: { ctx: PageCtx }) {
         <Body>Set the anchor where it feels strong, then add the others in order of importance — each one placed relative to what is already there. Mute anything the song does not need yet.</Body>
         <MixMapArt settings={mix} anchor={anchor} title={touched === 0 ? 'THE WALL · EVERY FADER AT 0' : 'YOUR BALANCE'} state={anchor ? `ANCHOR: ${track(anchor).name}` : undefined} />
         <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: true, pan: true, mute: true, pol: true }} />
-        <Text style={styles.consoleNote}>The picture follows the console: wider = louder, sideways = panned, dashed = muted. LEAD and BGV are synth stand-ins for the vocal parts of this session — real stems swap in identically.</Text>
+        <Text style={styles.consoleNote}>The picture follows the console: wider = louder, sideways = panned, dashed = muted, Ø = polarity flipped. LEAD and BGV are synth stand-ins for the vocal parts of this session — real stems swap in identically.</Text>
         <Btn label="RESET MIX" disabled={touched === 0} onPress={() => setMix({})} a11y="Reset every channel to flat" />
       </Card>
       <Card tone="note">

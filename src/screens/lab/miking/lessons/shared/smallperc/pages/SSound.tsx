@@ -38,9 +38,10 @@ import { spOf } from '../family.ts';
 const STEP_MS = 1300;
 
 /** These lessons draw one strike sequence whatever the variant, and their
- *  events read the same, so a chooser here would change one word over a frozen
- *  picture. Their variant is chosen on THE PARTS, where it redraws. */
-const ONE_STRIKE_DRAWING: ReadonlySet<string> = new Set(['I03a', 'I03b', 'I03c', 'I05a', 'I05b', 'I05c']);
+ *  events read all but the same, so a chooser here would change a few words
+ *  over a frozen picture. Their variant is chosen on THE PARTS, where it
+ *  redraws. */
+const ONE_STRIKE_DRAWING: ReadonlySet<string> = new Set(['F02', 'I03a', 'I03b', 'I03c', 'I05a', 'I05b', 'I05c']);
 
 function useFocusedSafe(): boolean {
   try {

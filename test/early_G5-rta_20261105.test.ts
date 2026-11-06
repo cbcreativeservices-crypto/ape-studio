@@ -93,7 +93,7 @@ describe('G5 RTA HI-RES words match what HI-RES does', () => {
     assert.doesNotMatch(chip, /disabled|mode\b/);
     assert.match(src, /cfg\.fftSize = on \? HIRES_FFT : FFT_SIZE;/);
   });
-  it('the 31-band blurb is untouched (with the owner)', () => {
-    assert.ok(src.includes("31: 'One-third octave — the live-sound standard, matching a 31-band graphic EQ fader for fader.'"));
+  it('the 31-band blurb promises the spacing and the real span, not 31 bars (decision 19)', () => {
+    assert.ok(src.includes("31: 'One-third octave — the live-sound standard, with the same band spacing as a 31-band graphic EQ, shown here from 25 Hz to 20 kHz.'"));
   });
 });

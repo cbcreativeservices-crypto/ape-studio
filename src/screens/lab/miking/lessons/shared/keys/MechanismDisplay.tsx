@@ -529,9 +529,10 @@ export function trem(phase: number): number {
 }
 
 /** The chosen part's outline in the inside view, floored for the screen at
- *  scale s (see hiFloor), then kept inside the picture: the drawing is clipped
- *  to its box and the scope panel covers what lies below it, so a key or a
- *  hammer running past either would lose a side of its frame. Null for a part
+ *  scale s (see hiFloor), then slid back inside the picture and only then
+ *  trimmed: the drawing is clipped to its box and the scope panel covers what
+ *  lies below it, so a key or a hammer running past either would lose a side of
+ *  its frame, and a trimmed mark falls under the floor. Null for a part
  *  this mechanism does not have. */
 export function mechHiRect(kind: MechKind, id: string | null | undefined, s: number): Rect | null {
   const S = MECH[kind];
@@ -540,7 +541,11 @@ export function mechHiRect(kind: MechKind, id: string | null | undefined, s: num
   const edge = Math.max(2.8, HI_STROKE_PX / s);
   const at = (u0: number, v0: number, u1: number, v1: number) => {
     const q = hiFloor({ u0, v0, u1, v1 }, s);
-    return { u0: Math.max(q.u0, box.u0 + edge), v0: Math.max(q.v0, box.v0 + edge), u1: Math.min(q.u1, box.u1 - edge), v1: Math.min(q.v1, scope.v0 - edge) };
+    const lo = { u: box.u0 + edge, v: box.v0 + edge };
+    const hi = { u: box.u1 - edge, v: scope.v0 - edge };
+    const du = Math.max(0, lo.u - q.u0) - Math.max(0, q.u1 - hi.u);
+    const dv = Math.max(0, lo.v - q.v0) - Math.max(0, q.v1 - hi.v);
+    return { u0: Math.max(q.u0 + du, lo.u), v0: Math.max(q.v0 + dv, lo.v), u1: Math.min(q.u1 + du, hi.u), v1: Math.min(q.v1 + dv, hi.v) };
   };
   switch (id) {
     case 'k.bar':

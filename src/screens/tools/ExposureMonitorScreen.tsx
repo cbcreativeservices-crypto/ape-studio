@@ -278,7 +278,7 @@ export function ExposureMonitorScreen() {
             levelDba={snap.todayMaxDb > 0 ? snap.todayMaxDb : null}
           />
           <Row label="Check-ins today" value={String(snap.checkinsToday)} />
-          <Row label="Time remaining" value={fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose)} />
+          <Row label="Time remaining" value={fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose, snap.belowStandardRange)} />
           {snap.hadGap ? (
             <Text style={styles.note}>
               The microphone stream dropped samples during this session, so measured time may be undercounted — treat

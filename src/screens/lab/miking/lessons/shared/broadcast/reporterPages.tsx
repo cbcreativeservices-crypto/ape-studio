@@ -35,7 +35,11 @@ const AMBER = '#ffc64d';
 const BLUE = '#8fbcff';
 const RED = '#ff6b5e';
 const cm = (mm: number) => (mm < 95 ? `${Math.round(mm / 5) * 5} mm` : `${Math.round(mm / 10)} cm`);
-const db = (d: number) => `${d >= 0 ? '+' : '−'}${Math.abs(Math.round(d))} dB`;
+/** Signed whole dB, from the rounded value: a level that rounds to nothing reads 0 dB, never −0 or +0. */
+const db = (d: number) => {
+  const r = Math.round(d);
+  return r === 0 ? '0 dB' : `${r > 0 ? '+' : '−'}${Math.abs(r)} dB`;
+};
 
 /** A pattern's shape from above, round the mic at `p`, its front along the
  *  plan direction of `aim` (a first-order pattern; an omni is a circle). */

@@ -131,7 +131,8 @@ function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, acces
     if (wd) return { u: wd.at.u, v: wd.at.v, r: 420 };
     return null;
   };
-  const rings = [...lit].map(ringAt).filter((x): x is { u: number; v: number; r: number } => !!x);
+  // 'pa' is two stacks: a ring on each. The audience is marked on its chairs.
+  const rings = [...lit].flatMap((id) => (id === 'pa' ? (scene === 'stage' ? STAGE.pa.map((p) => ({ u: p.u, v: p.v, r: 480 })) : []) : [ringAt(id)])).filter((x): x is { u: number; v: number; r: number } => !!x);
   const tap = (sx: number, sy: number) => {
     const u = (sx - xf.ox) / xf.s;
     const v = (sy - xf.oy) / xf.s;
@@ -196,7 +197,7 @@ function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, acces
                     <PlanPaStack />
                   </Group>
                 ))}
-                <ChairsTop seats={f.chairs.seats} backs={f.chairs.backs} color="#7d828d" />
+                <ChairsTop seats={f.chairs.seats} backs={f.chairs.backs} color={lit.has('audience') ? AMBER : '#7d828d'} strokeWidth={lit.has('audience') ? 24 : 10} />
               </>
             ) : null}
             {scene !== 'kit' ? (

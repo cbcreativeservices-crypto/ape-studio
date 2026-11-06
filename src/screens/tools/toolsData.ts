@@ -208,14 +208,14 @@ TOOLS.push({
   subtitle: 'All-In-One Live Meter · Mono',
   tint: 'steel',
   purpose:
-    'Every meter on one screen: weighted level with peak/RMS and peak hold, a 31-band spectrum ' +
+    'Every meter on one screen: weighted level with peak/RMS and peak hold, a 61-band (1/6-octave) spectrum ' +
     'with a fine FFT overlay and cursor, a scrolling spectrogram, a live oscilloscope, dominant ' +
     'frequency with musical note and cents, and smart detection of likely signal conditions ' +
     '(hum, clipping, feedback onset, rumble). One tap saves the whole state as a snapshot. ' +
     'Levels read as estimated dB SPL (A- or C-weighted) from an uncalibrated phone microphone, with raw dBFS a tap away — a seeing instrument, not a certified meter.',
   measures: [
     'Weighted level (A- or C-weighted Fast) as estimated dB SPL, plus digital peak/RMS and peak hold',
-    'Energy per 1/3-octave band plus a fine FFT spectrum overlay with a tap/drag cursor',
+    'Energy per 1/6-octave band plus a fine FFT spectrum overlay with a tap/drag cursor',
     'Frequency content over time (compact scrolling spectrogram)',
     'Amplitude vs time with clipping markers (compact oscilloscope)',
     'Dominant frequency, musical note and cents deviation (A4 = 440 Hz)',

@@ -74,6 +74,20 @@ export function settleHeight(c: Vec3, zones: readonly { box: { min: Vec3; max: V
   return z ? v3(c.x, Math.max(z.box.min.y, Math.min(z.box.max.y, c.y)), c.z) : c;
 }
 
+/* ── the side view's slice: it draws the players near the center line, so a
+ *  family picked from the stage's edges had no player and no arcs at all. ── */
+/** The seating to draw in the side view for these arcs: a picked section with
+ *  nobody in the slice steps to the slice's edge, with its gear. Only x moves,
+ *  and the side view has no x (u = −z, v = y): each is drawn where it stands.
+ *  Every section picked at once stays the plain slice. A new id: the art caches by id. */
+export function sliceFor(s: Seating, radiate: readonly string[] | null | undefined, slice: number): Seating {
+  if (!radiate?.length || radiate.length >= s.sections.length) return s;
+  const out = new Set(radiate.filter((id) => seatsOf(s, id).every((q) => Math.abs(q.p.x) > slice)));
+  if (!out.size) return s;
+  const step = <T extends { p: Vec3 }>(t: T): T => ({ ...t, p: { ...t.p, x: Math.sign(t.p.x) * Math.min(Math.abs(t.p.x), slice) } });
+  return { ...s, id: `${s.id}|in:${[...out].join('+')}` as string as Seating['id'], seats: s.seats.map((q) => (out.has(q.section) ? step(q) : q)), gear: s.gear?.map((g) => (g.section && out.has(g.section) ? step(g) : g)) };
+}
+
 /** Bowed strings. A double bass alone (jazz, a trio) is plucked here; among
  *  the orchestra's strings the violins, violas and cellos already say so. */
 const BOWED = new Set<string>(['violin', 'viola', 'cello']);

@@ -49,6 +49,10 @@ function useFocusedSafe(): boolean {
   }
 }
 
+/** What STRIKE TO SOUND says with the damper on the bar (PEDAL UP), where the
+ *  lesson's ordinary words would still have the note ringing. */
+export type DampedStrike = { stages: readonly { title: string; text: string; byVariant?: Partial<Record<string, string>> }[]; after: string };
+
 /** A STRIKE TO SOUND bezel word: with the damper on the bar, nothing rings. */
 export const strikeWord = (word: string, damped: boolean): string => (damped && word === 'RINGING' ? 'DAMPED' : word);
 
@@ -205,8 +209,13 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
     if (shown >= n && !interactiveDone.has('soundPath')) onInteractive('soundPath');
   }, [shown, n, interactiveDone, onInteractive]);
 
-  const stage = W.stages[shown - 1];
+  const damped = hasDamper && !pedalDown; // the damper is touching the bar
+  const dampedWords = damped ? (W as typeof W & { damped?: DampedStrike }).damped : undefined;
+  const stagesNow = dampedWords?.stages ?? W.stages;
+  const stage = stagesNow[shown - 1];
   const stageText = (i: number) => W.stages[i].byVariant?.[v] ?? W.stages[i].text;
+  /** The words for the state on screen: with the damper on the bar, its own. */
+  const stageNow = (i: number) => (dampedWords ? (dampedWords.stages[i].byVariant?.[v] ?? dampedWords.stages[i].text) : stageText(i));
   const setupParam: DockParam = {
     kind: 'options',
     id: 'setup',
@@ -229,7 +238,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       },
       n,
       shown - 1,
-      (i) => `${i + 1} · ${W.stages[i].title}`,
+      (i) => `${i + 1} · ${stagesNow[i].title}`,
       (i) => goTo(i + 1),
     ),
     { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
@@ -252,7 +261,6 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       : []),
     ...(setupRedraws(G, midBarOf) ? [setupParam] : []),
   ];
-  const damped = hasDamper && !pedalDown; // the damper is touching the bar
   const strikeBezel: BezelItem[] = [
     { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
     ...W.cells.map((c) => {
@@ -391,7 +399,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: (w, h) => <BarStrike w={w} h={h} o={mid} reveal={reveal} shown={shown} damperUp={damped} accessibilityLabel={`One bar (${noteName(midBar.key)}) and the tube under it, seen from the low end. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}${damped ? ' Pedal up: the damper is on the bar, so the note stops.' : ''}`} />,
+        render: (w, h) => <BarStrike w={w} h={h} o={mid} reveal={reveal} shown={shown} damperUp={damped} accessibilityLabel={`One bar (${noteName(midBar.key)}) and the tube under it, seen from the low end. Event ${shown} of ${n}: ${stage.title}. ${stageNow(shown - 1)}${damped ? ' Pedal up: the damper is on the bar, so the note stops.' : ''}`} />,
         badge: 'The order of events, not their speed · bar motion drawn much larger than it really is · silent',
         bezel: strikeBezel,
         params: strikeParams,
@@ -402,11 +410,11 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking={W.looking} prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
-            <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
+            <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageNow(shown - 1)}</Point>
           </Card>
           {hasDamper && W.pedal ? <Note>{pedalDown ? W.pedal.down : W.pedal.up}</Note> : null}
           {reached && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. ${W.reveal}`}</Note> : null}
-          {reached ? <Note>{W.after}</Note> : null}
+          {reached ? <Note>{dampedWords?.after ?? W.after}</Note> : null}
         </>
       ),
     },

@@ -609,5 +609,7 @@ export const E15_LESSON: EnsembleLesson = {
       'If one player dominates, try the pair’s distance and height — or the players’ positions, with their agreement — before adding a support.',
     ],
     plot: true,
+    // The amp setup's overheads hang far upstage, over the kit: the lane must reach them.
+    placeAxes: { z: { lo: -2400, hi: 4000 } },
   },
 };

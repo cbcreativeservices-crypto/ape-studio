@@ -201,3 +201,21 @@ test('EDIT MIC still swaps which mic the dock edits', () => {
   key(r, 'mic').onToggle!();
   assert.equal(key(s.render(), 'mic').label, 'EDIT MIC A');
 });
+
+test('a drawn dock label keeps a margin: "POSITION …" and "MAKEUP …" at 375', async () => {
+  const { LABEL_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockKeyWidths } = await import('../src/screens/lab/rack/dockFit.ts');
+  // The sizes are floored, so the line must clear its key by the margin.
+  const r = dockLabelFit(12, 66, 57, 54.4, 65, 4.5, LABEL_FIT_MARGIN_PX);
+  assert.ok(r.tight && r.fs >= 9);
+  assert.ok((54.4 * r.fs) / 12 + (65 - 54.4) <= 57 - LABEL_FIT_MARGIN_PX, `${r.fs}`);
+  // The web measures 57.25 px as 57: a line that only just fits on paper shrinks.
+  assert.ok(dockFitSize(12, 57, 57, 0, LABEL_FIT_MARGIN_PX)! < 12);
+  assert.equal(dockFitSize(12, 56.4, 57, 0, LABEL_FIT_MARGIN_PX), 12, 'one with room stays as authored');
+  // A key given exactly its need still reaches the 9 pt floor.
+  const k = { chrome: 10, labelBase: 12, label: 66, spaced: 54.4, spacedGlyph: 65, trackPx: 4.5 };
+  const need = dockKeyNeed(k);
+  const f = dockLabelFit(12, k.label, need - k.chrome, k.spaced, k.spacedGlyph, k.trackPx, LABEL_FIT_MARGIN_PX);
+  assert.ok(f.fs >= 9 && f.tight, `${f.fs}`);
+  // A key a pixel short of its need is not left at the even width.
+  assert.notEqual(dockKeyWidths([need, 40], need + 39), null);
+});

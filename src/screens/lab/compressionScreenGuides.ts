@@ -63,6 +63,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     control: [
       '▶ in the header, or a tap on the display, plays the SOURCE through the compressor; ■ stops it. The THRESH fader runs from −50 to −10 dB.',
       'RATIO key: 2:1 GLUE, 4:1, 8:1 or 20:1 LIMIT. ATK/REL key: ATTACK from 0.5 ms FAST to 100 ms, RELEASE 30, 120 or 500 ms.',
+      'On CLICK, the amber strip under OUT is the model’s GR: THRESH and RATIO change how deep it hangs. GR PEAK prints its deepest point; live GR can read lower.',
       'MAKEUP key: 0 dB or +6 dB. SOURCE key: CLICK 120, SINE 440 Hz or PINK NOISE.',
       'Long-press any key or readout for its lesson entry. Below, LAB NOTES: the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],

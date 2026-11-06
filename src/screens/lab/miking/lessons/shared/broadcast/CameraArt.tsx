@@ -11,17 +11,28 @@
  *   FrameWedge               the frame's edges from the lens (dashed), the
  *                            shot as a faint area, and — from the side — the
  *                            HEADROOM band above the talker's head (red,
- *                            faint): where a boom would show in the picture.
+ *                            faint): where a boom would show in the picture;
+ *   boomMicLook              a boom mic's drawn size, from the mic data: a
+ *                            short shotgun against a compact hypercardioid.
  */
 import { useMemo } from 'react';
 import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
-import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
+import type { PatternId, ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { CameraRig, type CameraSpec } from '../field/LocationArt';
+import { FIELD_MIC_TYPES } from '../field/fieldMics.ts';
 import { cameraAxes, cameraBody, frameEdgeRays, type BroadcastCamera } from './cameraFrame.ts';
 
 const make = () => Skia.Path.Make();
 const RED = '#ff6b5e';
 const vOf = (view: ViewId, p: Vec3) => (view === 'side' ? p.y : p.z);
+
+/** What a boom carries, drawn at its real size (fieldMics): the short shotgun
+ *  against the compact hypercardioid, under half its length. */
+export function boomMicLook(pattern: PatternId) {
+  const t = pattern === 'hypercardioid' ? FIELD_MIC_TYPES.locBoomHyper : FIELD_MIC_TYPES.locBoomSg;
+  const len = t.body.length.mm;
+  return { type: t, art: t.art, r: t.body.radius.mm, len, length: `${Math.round(len / 10)} cm` };
+}
 
 /** The camera body behind the lens (a drawing default: 32 cm long, 19 cm
  *  tall, 16 cm wide — the location kit's camera). For a camera looking

@@ -113,6 +113,9 @@ export type ExposureSnapshot = {
   measured: boolean;
   /** Estimated recommended seconds remaining at the current level (null = n/a). */
   remainingSec: number | null;
+  /** A level exists but sits below the chosen standard's floor: no time limit
+   *  applies, so remainingSec is null for a different reason than "no level". */
+  belowStandardRange: boolean;
   checkinsToday: number;
   /** True when the mic capture dropped/overran samples during THIS session while
    *  it was the measured source (Phase 1 A1): the integrated dose spanned a gap,
@@ -842,13 +845,10 @@ export function getExposureSnapshot(): ExposureSnapshot {
   const d = day;
   const avg = d && d.activeSec > 0 ? Math.round(10 * Math.log10(d.energySum / d.activeSec) * 10) / 10 : null;
   let remaining: number | null = null;
-  if (d) {
-    const level = currentDb ?? avg;
-    if (level != null) {
-      const allow = allowableSec(level, settings.standard);
-      remaining = Number.isFinite(allow) ? Math.max(0, (1 - d.dose) * allow) : null;
-    }
-  }
+  const level = currentDb ?? avg;
+  const allow = level != null ? allowableSec(level, settings.standard) : null;
+  const belowStandardRange = allow === Infinity;
+  if (d && allow != null && Number.isFinite(allow)) remaining = Math.max(0, (1 - d.dose) * allow);
   return {
     enabled: settings.enabled,
     soundingNow: sounding,
@@ -877,6 +877,7 @@ export function getExposureSnapshot(): ExposureSnapshot {
           : 'general',
     measured: route === 'environmental' && currentMeasured,
     remainingSec: remaining,
+    belowStandardRange,
     checkinsToday: d?.checkins ?? 0,
     hadGap: sessionHadGap,
     doseUnreadable: dayReadFailed,
@@ -1056,8 +1057,9 @@ export function fmtDuration(sec: number): string {
 }
 
 /** Remaining-time wording with confidence-appropriate rounding (§12). */
-export function fmtRemaining(sec: number | null, confidence: Confidence, dose: number): string {
+export function fmtRemaining(sec: number | null, confidence: Confidence, dose: number, belowStandardRange: boolean): string {
   if (dose >= 1) return 'Recommended dose reached';
+  if (belowStandardRange) return 'Level is below this standard’s range';
   if (sec == null) return 'Unavailable until a level is estimated';
   if (sec < 300) return 'Less than 5 min';
   const rounded = Math.round(sec / 300) * 300; // 5-minute steps — no false precision
@@ -1074,8 +1076,10 @@ export function exposureMessage(snap: ExposureSnapshot): string {
     return 'You are approaching your recommended daily exposure. Reduce the level or take a listening break.';
   if ((snap.currentDb ?? 0) >= 88)
     return 'Your estimated listening level has been elevated. Consider lowering the level or taking a quiet break.';
+  if (snap.todayDose >= 0.25 && snap.belowStandardRange)
+    return `You have been listening for ${fmtDuration(snap.todayActiveSec)}. The current level is below this standard’s range, so it adds nothing to today’s dose.`;
   if (snap.todayDose >= 0.25)
-    return `You have been listening for ${fmtDuration(snap.todayActiveSec)}. ${fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose)} of recommended exposure remain at the current estimate.`;
+    return `You have been listening for ${fmtDuration(snap.todayActiveSec)}. ${fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose, snap.belowStandardRange)} of recommended exposure remain at the current estimate.`;
   return `Your exposure remains low. You have used approximately ${Math.max(1, pct)}% of today’s recommended dose.`;
 }
 

@@ -214,6 +214,9 @@ export type FxLabConfig = {
   subtitle: string;
   intro: string;
   exploreCaption: string;
+  /** Added after the caption: words that follow the control values as well as
+   *  the source. '' adds nothing. */
+  captionExtra?: (values: Record<number, number>, source: FxSourceSpec) => string;
   /** A source that needs its own caption, by its label (owner 2026-11-05). */
   exploreCaptionBySource?: Record<string, string>;
   sources: FxSourceSpec[];
@@ -675,6 +678,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
   const faderParam = config.params.find((p) => p.fader);
   const AnimHero = animOnStage ? fxAnim!.FxAnimHero : null;
+  const sourceCaption = config.exploreCaptionBySource?.[sources[sourceIdx]?.label] ?? config.exploreCaption;
+  const captionExtra = config.captionExtra?.(values, sources[sourceIdx]);
 
   return (
     <LabShell
@@ -682,7 +687,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       title={config.title}
       subtitle={config.subtitle}
       intro={config.intro}
-      exploreCaption={config.exploreCaptionBySource?.[sources[sourceIdx]?.label] ?? config.exploreCaption}
+      exploreCaption={captionExtra ? `${sourceCaption} ${captionExtra}` : sourceCaption}
       guide={config.guide}
       accuracy={config.accuracy ?? true}
       // The what's-left screen under the CHECK (every lab ends on one; D41):

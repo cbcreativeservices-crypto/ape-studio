@@ -351,7 +351,6 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
     const items = lesson.setting.items;
     const nearItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
     const [nearSel, setNearSel] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [where, setWhere] = useState<'stage' | 'studio'>('stage');
     const [wideSel, setWideSel] = useState<string | null>(null);
     const wideItems = items.filter((i) => i.scene === where || i.scene === 'all');
@@ -359,7 +358,6 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
     const pickNear = (id: string) => {
       if (!nearItems.some((i) => i.id === id)) return;
       setNearSel(id);
-      setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
     };
     const pickWide = (id: string) => {
       if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -385,10 +383,10 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
         (i) => pick(list[i].id),
       );
     };
-    const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+    const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
       { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
-      extra,
+      ...(extra ? [extra] : []),
     ];
     const card = (it: SettingItem | undefined, prompt: string) =>
       it ? (
@@ -409,7 +407,7 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
         rack: {
           render: (w, h) => <LowBrassPlan w={w} h={h} cfg={cfg} orient={orient} box={cfg.near} scene="kit" wedges={lesson.live.wedges} items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={cfg.nearA11y} />,
           badge: 'From above · a typical layout · gray hatch = the player’s space',
-          bezel: bezel(nearSelItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
+          bezel: bezel(nearSelItem),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',
         },

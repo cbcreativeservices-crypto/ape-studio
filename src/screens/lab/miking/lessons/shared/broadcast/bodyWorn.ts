@@ -44,10 +44,11 @@
  * adapter, the wearer can always remove it.
  */
 import type { Dim, Vec3 } from '../../../engine/model/types.ts';
+import { pt, type PlayerPose } from '../players/playerPose.ts';
 import { EAR, EAR_HALF, HEAD_C, VOICE_DIMS, dd } from '../voice/voiceSpec.ts';
-import { SINGER_NECK, SINGER_SOLIDS } from '../voice/voicePose.ts';
+import { SINGER_NECK, SINGER_SIDE, SINGER_SOLIDS } from '../voice/voicePose.ts';
 import { micToMouth } from '../field/location.ts';
-import { TURN_PIVOT, turnHead } from './talkerPose.ts';
+import { SEATED_SIDE, TURN_PIVOT, turnHead } from './talkerPose.ts';
 
 const DEG = Math.PI / 180;
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -207,6 +208,42 @@ export const MOVES: Readonly<Record<'stand' | 'sit' | 'turn' | 'gesture', { labe
 };
 export type MoveId = keyof typeof MOVES;
 export const MOVE_IDS: readonly MoveId[] = ['stand', 'sit', 'turn', 'gesture'];
+
+const N = SINGER_NECK;
+/**
+ * The wearer in profile for each move (THE LOOPS). Every joint is a drawing
+ * default on the shared figure; the upper arm stays about 294 mm and the
+ * forearm about 260 mm, the standing figure's own, and the head, the collar
+ * and the chest's front never move, so the lav's place holds in every pose.
+ *   sit      the seated talker's body, a hand palm-down on each knee (no desk);
+ *   turn     still standing: the near shoulder and arm carried back, as a turn
+ *            toward the viewer takes them (the art adds the arrow at the waist);
+ *   gesture  both arms out and a little up, the elbows bent, the open hands
+ *            well clear of the body.
+ */
+export const MOVE_POSES: Readonly<Record<MoveId, PlayerPose>> = {
+  stand: SINGER_SIDE,
+  sit: {
+    ...SEATED_SIDE,
+    elbowR: pt(N.x + 24, N.y + 350),
+    elbowL: pt(N.x + 10, N.y + 338),
+    handR: { wrist: pt(N.x + 275, N.y + 428), dir: 0.12, kind: 'keys' },
+    handL: { wrist: pt(N.x + 257, N.y + 420), dir: 0.12, kind: 'keys' },
+  },
+  turn: {
+    ...SINGER_SIDE,
+    shoulderR: pt(N.x - 28, N.y + 58),
+    elbowR: pt(N.x - 58, N.y + 350),
+    handR: { wrist: pt(N.x - 62, N.y + 610), dir: Math.PI / 2 + 0.02, kind: 'rest' },
+  },
+  gesture: {
+    ...SINGER_SIDE,
+    elbowR: pt(N.x + 152, N.y + 307),
+    elbowL: pt(N.x + 129, N.y + 302),
+    handR: { wrist: pt(N.x + 406, N.y + 253), dir: -0.16, kind: 'rest' },
+    handL: { wrist: pt(N.x + 379, N.y + 230), dir: -0.22, kind: 'rest' },
+  },
+};
 /** The spare cable each loop holds (drawing defaults). */
 export const LOOPS = { broadcast: dd(60, 'the spare cable in a small broadcast loop at the clip'), secondary: dd(50, 'the spare cable in the secondary, taped loop lower down') } as const;
 

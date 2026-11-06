@@ -36,9 +36,9 @@ export function ContactMark({ c, w = 70, opacity = 1, round = false }: { c: read
 }
 
 /** The entry's crown, `k` 0…1 its growth (0 = nothing). The water's surface
- *  at y = c[1]; `rimY`: the container's rim — the crown shows above it only
- *  (the near wall hides its foot). */
-export function SplashCrown({ c, k, rimY }: { c: readonly [number, number]; k: number; rimY?: number }) {
+ *  at y = c[1], where the crown's foot stands: the basin is drawn cut through,
+ *  so nothing hides it. */
+export function SplashCrown({ c, k }: { c: readonly [number, number]; k: number }) {
   const g = useMemo(() => {
     const wall = make();
     const drops = make();
@@ -69,7 +69,7 @@ export function SplashCrown({ c, k, rimY }: { c: readonly [number, number]; k: n
   }, [c, k]);
   if (k <= 0) return null;
   return (
-    <Group clip={rimY != null ? Skia.XYWHRect(c[0] - 400, rimY - 600, 800, 600) : undefined}>
+    <Group>
       <Path path={g.wall} color={WATER_LIGHT} opacity={0.75} />
       <Path path={g.wall} style="stroke" strokeWidth={2.4} strokeJoin="round" color={WATER_LINE} />
       <Path path={g.drops} color={WATER_LIGHT} />

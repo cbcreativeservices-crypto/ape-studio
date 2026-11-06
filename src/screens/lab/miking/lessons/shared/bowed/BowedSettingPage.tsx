@@ -362,6 +362,8 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   }, [box]);
   const sel = cfg.objects.find((o) => o.id === highlight) ?? null;
   const selItem = items.find((i) => i.id === highlight);
+  // The audience is no object on the plan: its item lights the stage edge and its name.
+  const audienceLit = highlight === 'audience';
   // Collision pass 2026-10-15: every word keeps clear of every object (the
   // plan's footprints, bowedPlanModel); a name with no clear spot beside its
   // object moves to free space with a leader back to it. The lesson's own
@@ -383,7 +385,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
     labels.push(nameAt(o.id, r, o.label.toUpperCase(), o.short?.toUpperCase(), { u: o.at.x, v: o.at.z }, highlight === o.id ? undefined : 'muted'));
   }
   // beyond the deck's dashed edge, centred under the plan (turned: the bottom edge)
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA ↓', short: 'AUDIENCE ↓', u: box.u1 - 110, v: (box.v0 + box.v1) / 2, align: 'center', tone: 'muted', point: { u: box.u1 - 110, v: (box.v0 + box.v1) / 2 } });
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA ↓', short: 'AUDIENCE ↓', u: box.u1 - 110, v: (box.v0 + box.v1) / 2, align: 'center', tone: audienceLit ? 'amber' : 'muted', point: { u: box.u1 - 110, v: (box.v0 + box.v1) / 2 } });
   if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 160, v: box.v1 - 160, align: 'left', point: { u: box.u0 + 160, v: box.v1 - 200 }, tone: 'muted' });
   if (cue) labels.push(...cueLabels(cue, undefined, ['self']).map((l) => ({ ...l, tone: 'illustrative' as const })));
   const tap = (u: number, v: number) => {
@@ -419,7 +421,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             <LinearGradient start={vec(box.u0, box.v0)} end={vec(box.u1, box.v1)} colors={scene === 'studio' ? ['#2a2420', '#1a1613'] : ['#1d1e22', '#121316']} />
           </Path>
           {scene === 'studio' ? <Path path={room} style="stroke" strokeWidth={60} color="#3a332c" opacity={0.9} /> : null}
-          {scene === 'stage' ? <Path path={(() => { const p = make(); p.moveTo(box.u1 - 220, box.v0); p.lineTo(box.u1 - 220, box.v1); return p; })()} style="stroke" strokeWidth={10} color="#ffc64d" opacity={0.35}><DashPathEffect intervals={[60, 40]} /></Path> : null}
+          {scene === 'stage' ? <Path path={(() => { const p = make(); p.moveTo(box.u1 - 220, box.v0); p.lineTo(box.u1 - 220, box.v1); return p; })()} style="stroke" strokeWidth={audienceLit ? 34 : 10} color="#ffc64d" opacity={audienceLit ? 1 : 0.35}><DashPathEffect intervals={[60, 40]} /></Path> : null}
           {shown.map((o) => (
             <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
               {o.kind === 'stand' ? (
@@ -465,7 +467,6 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
     const items = lesson.setting.items;
     const nearItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
     const [nearSel, setNearSel] = useState<string | null>(null);
-    const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [where, setWhere] = useState<'stage' | 'studio'>('stage');
     const [wideSel, setWideSel] = useState<string | null>(null);
     const wideItems = items.filter((i) => i.scene === where || i.scene === 'all');
@@ -473,7 +474,6 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
     const pickNear = (id: string) => {
       if (!nearItems.some((i) => i.id === id)) return;
       setNearSel(id);
-      setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
     };
     const pickWide = (id: string) => {
       if (wideItems.some((i) => i.id === id)) setWideSel(id);
@@ -499,10 +499,10 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         (i) => pick(list[i].id),
       );
     };
-    const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
+    const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
       { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
-      extra,
+      ...(extra ? [extra] : []),
     ];
     const card = (it: SettingItem | undefined, prompt: string) =>
       it ? (
@@ -523,7 +523,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         rack: {
           render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.near} scene="kit" wedges={lesson.live.wedges} items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={cfg.nearA11y} />,
           badge: cfg.hands === 'pluck' ? 'From above · a typical layout · gray hatch = the plucking hand’s path' : 'From above · a typical layout · gray hatch = the bow’s sweep',
-          bezel: bezel(nearSelItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
+          bezel: bezel(nearSelItem),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',
         },

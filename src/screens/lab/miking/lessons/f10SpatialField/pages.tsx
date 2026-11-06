@@ -212,11 +212,7 @@ function F10Meet(p: PageProps) {
   const items = useMemo(() => sceneItems(lesson, variant), [lesson, variant]);
   const [k, setK] = useState(0);
   const [view, setView] = useState<ViewId>('top');
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const item = items[Math.min(k, items.length - 1)];
-  useEffect(() => {
-    if (item) setSeen((prev) => (prev.has(item.id) ? prev : new Set([...prev, item.id])));
-  }, [item?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // WHERE THE SOUND COMES FROM: the walker scrubbed along the footpath.
   const [t, setT] = useState(WALKER_AT);
@@ -281,7 +277,6 @@ function F10Meet(p: PageProps) {
         bezel: [
           { k: 'PART', v: item?.short ?? '—', flex: 1.4 },
           { k: 'FROM LISTENER', v: item && item.id !== 'sp.listener' && item.id !== 'front' ? fmtM(Math.hypot(item.at.x - LISTENER.x, item.at.z - LISTENER.z)) : '—', flex: 1.1 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${items.length}`, flex: 1 },
         ],
         params: [
           tapsWhenFew(
@@ -291,7 +286,7 @@ function F10Meet(p: PageProps) {
               label: 'PART',
               value: items.length > 1 ? k / (items.length - 1) : 0,
               onChange: (v) => setK(Math.round(v * (items.length - 1))),
-              format: () => `${k + 1} of ${items.length} · ${item?.label ?? ''}`,
+              format: () => item?.label ?? '',
               formatShort: () => item?.short.slice(0, 8) ?? '',
             },
             items.length,
@@ -312,7 +307,7 @@ function F10Meet(p: PageProps) {
               <Point title={item.label.toUpperCase()}>{item.text}</Point>
             </Card>
           ) : null}
-          <Body>{`Looked at: ${seen.size} of ${items.length}. Switch WHERE for the other scene.`}</Body>
+          <Body>Switch WHERE for the other scene.</Body>
         </>
       ),
     },
@@ -531,7 +526,6 @@ function F10Setups(p: PageProps) {
           { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
           { k: 'RIG', v: rig ? ARRAYS[rig.id].short : '—', flex: 1.2 },
           { k: 'HEIGHT', v: rig ? fmtM(-rig.c.y) : '—', flex: 0.9 },
-          { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
         ],
         params: [
           ...faderUnlessFew(list.length, {
@@ -571,7 +565,7 @@ function F10Setups(p: PageProps) {
               {sel.rigs.some((r) => ARRAYS[r.id].example) ? <Text style={styles.small}>Drawn as an example layout: the spacing is chosen for the place and the taste, so no number is given.</Text> : null}
             </Card>
           ) : null}
-          <Body>{`Looked at: ${seenCore} of ${core.length} main setups (ANOTHER START is there to explore).`}</Body>
+          <Body>Go through the main setups. ANOTHER START is there to explore.</Body>
         </>
       ),
     },
@@ -687,7 +681,6 @@ function F10Microphone(p: PageProps) {
         bezel: [
           { k: 'SYSTEM', v: sys.short, flex: 1.3 },
           { k: 'CHANNELS', v: sys.channels.split(' (')[0], flex: 1.4 },
-          { k: 'LOOKED AT', v: `${seen.size} / ${SYSTEMS.length}`, flex: 1 },
         ],
         params: [
           {

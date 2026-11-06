@@ -11,7 +11,7 @@
  * CAUTION card (over-tensioning, hoops, inserts, drum key only) sits on the
  * seating page.
  */
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
@@ -20,7 +20,7 @@ import { ChapterSteps, StepHostContext } from '../steps';
 import { Body, Card, Checklist, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, YourRun, fmtHz } from '../kit';
 import { CAUTION_TEXT, CAUTION_TITLE, DRUM_KEY_TERMS, PREP_ITEMS, type PrepFault } from '../drumContent';
 import { DRUMS, DRUM_LIST, TURN_NPM, evenHead, fundamentalHz, lugAngle, meanTension, spreadCents, type DrumKind, type HeadState, type LugCount, type StrikeParams } from '../drumEngine';
-import { ANAT_ASPECT, AnatomyStage, DrumTopStage, STAR_ORDER, TOP_ASPECT, type DrumFaults, type DrumPart, type LookAt } from '../stagesDrum';
+import { ANAT_ASPECT, AnatomyStage, DrumTopStage, STAR_ORDER, TOP_ASPECT, type DrumFaults, type DrumPart, type LookAt, type SoundSync } from '../stagesDrum';
 import { MODEL_BADGE, syncOf, useStrike, type ChapterProps } from './shared';
 
 const LUG_OPTIONS: { key: LugCount; label: string; short: string; blurb: string }[] = [
@@ -31,24 +31,62 @@ const LUG_OPTIONS: { key: LugCount; label: string; short: string; blurb: string 
 
 const KNOWN_T = 1200;
 
-/** The "known condition" demo: even quarter-turn rounds vs big random turns
- *  on one rod at a time. */
-function knownSequence(approach: 'even' | 'random', step: number, lugs: LugCount): HeadState {
-  if (approach === 'even') {
-    // A quarter turn on EVERY rod per round: the mean rises, the map stays one colour.
-    return { tension: KNOWN_T + TURN_NPM * 0.25 * step, turns: new Array(lugs).fill(0) };
-  }
+/** The RANDOM approach: `step` big turns, one rod each, and the head they leave. */
+function randomRun(step: number, lugs: LugCount): { moves: { lug: number; turn: number }[]; turns: number[] } {
   let s = 0x9e37 + lugs;
   const rnd = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 0x100000000;
   };
   const turns = new Array<number>(lugs).fill(0);
+  const moves: { lug: number; turn: number }[] = [];
   for (let k = 0; k < step; k++) {
     const i = Math.floor(rnd() * lugs);
+    const before = turns[i];
     turns[i] += 0.5 + rnd() * 1.0; // a big, random turn on one rod
+    moves.push({ lug: i, turn: turns[i] - before });
   }
-  return { tension: KNOWN_T, turns };
+  return { moves, turns };
+}
+
+/** The rods a step of the "known condition" demo moves. EVEN: this step's whole
+ *  round, every rod a quarter turn, in star order. RANDOM: every big turn so
+ *  far, one rod each. */
+export function knownMoves(approach: 'even' | 'random', step: number, lugs: LugCount): { lug: number; turn: number }[] {
+  if (step <= 0) return [];
+  if (approach === 'even') return STAR_ORDER[lugs].map((lug) => ({ lug, turn: 0.25 }));
+  return randomRun(step, lugs).moves;
+}
+
+/** The "known condition" demo: even quarter-turn rounds vs big random turns
+ *  on one rod at a time. */
+export function knownSequence(approach: 'even' | 'random', step: number, lugs: LugCount): HeadState {
+  if (approach === 'even') {
+    // A quarter turn on EVERY rod per round: the mean rises, the map stays one colour.
+    return { tension: KNOWN_T + TURN_NPM * 0.25 * step, turns: new Array(lugs).fill(0) };
+  }
+  return { tension: KNOWN_T, turns: randomRun(step, lugs).turns };
+}
+
+/** One rod every 200 ms when an EVEN step is taken: the key walks that round. */
+const WALK_MS = 200;
+const KNOWN_LUGS: LugCount = 8;
+
+/** The floor tom of "Start from a known condition", with the rods on it: the
+ *  numbers are the order they turned, the key sits on the current rod, a bar
+ *  shows how far each one has turned. An EVEN step is a whole round, so taking
+ *  one walks the key round the star and rests with the round finished. A
+ *  lesson display the learner started, so the motion gate does not stop it. */
+function KnownStage({ width, height, approach, step, walk, head, strikeSync }: { width: number; height: number; approach: 'even' | 'random'; step: number; walk: number | null; head: HeadState; strikeSync: SoundSync }) {
+  const moves = knownMoves(approach, step, KNOWN_LUGS);
+  const shown = walk == null ? moves : moves.slice(0, walk + 1);
+  const last = shown[shown.length - 1];
+  const current = last?.lug ?? null;
+  // EVEN: every earlier round already reached every rod.
+  const rodTurns = new Array<number>(KNOWN_LUGS).fill(approach === 'even' ? 0.25 * Math.max(0, step - 1) : 0);
+  for (const m of shown) rodTurns[m.lug] += m.turn;
+  const title = step === 0 ? 'finger-tight' : approach === 'even' ? `round ${step} · every rod ¼ turn` : `move ${step} · one rod, big turn`;
+  return <DrumTopStage width={width} height={height} drum="floor" head={head} title={title} strikeSync={strikeSync} order={shown.map((m) => m.lug)} orderStep={shown.length - 1} selected={current} keyTurn={last?.turn} rodTurns={rodTurns} />;
 }
 
 type InspectPoint = { id: string; label: string; short: string; blurb: string };
@@ -115,6 +153,31 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
     if (!running && step >= order.length - 1) setStep(0);
     setRunning((r) => !r);
   };
+
+  // The rod the key is on while an EVEN step walks its round, null at rest.
+  // Held here: the rack remounts its drawing, so the stage cannot remember.
+  const [kWalk, setKWalk] = useState<number | null>(null);
+  const lastKStep = useRef(kStep);
+  useLayoutEffect(() => {
+    const rose = kStep > lastKStep.current;
+    lastKStep.current = kStep;
+    if (!rose || approach !== 'even' || hidden) {
+      setKWalk(null);
+      return;
+    }
+    setKWalk(0);
+    let at = 0;
+    const t = setInterval(() => {
+      at += 1;
+      if (at >= KNOWN_LUGS) {
+        clearInterval(t);
+        setKWalk(null);
+      } else {
+        setKWalk(at);
+      }
+    }, WALK_MS);
+    return () => clearInterval(t);
+  }, [kStep, approach, hostStep, hidden]);
 
   const known = useMemo(() => knownSequence(approach, kStep, 8), [approach, kStep]);
   const knownSpread = spreadCents(known);
@@ -291,7 +354,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
         {
           key: 'known', title: 'Start from a known condition', kind: 'HEAR', layout: 'rack',
           rack: {
-            render: (w, h) => <DrumTopStage width={w} height={h} drum="floor" head={known} title={approach === 'even' ? 'even quarter-turns, round the star' : 'big random turns'} strikeSync={syncOf(knownStrike)} />,
+            render: (w, h) => <KnownStage width={w} height={h} approach={approach} step={kStep} walk={kWalk} head={known} strikeSync={syncOf(knownStrike)} />,
             aspect: TOP_ASPECT,
             size: 'L',
             badge: MODEL_BADGE,
@@ -311,10 +374,10 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
+              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug. The numbers on the head are the order the rods turned, the key is on the current rod, and each bar is how far that rod has turned." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
               <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
               <Card>
-                <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one color and the pitch climbs clean. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
+                <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one color and the pitch climbs clean: each step is a whole round of the star. Rod 1, 5, 3, 7, 2, 6, 4, 8, as numbered on the hoop. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
                 <Point title="When a drum is a mess, do not chase it">Back every rod off to finger-tight and come up again in the pattern, an eighth or a quarter of a turn at a time. It is faster than hunting one lug, and it finds hardware faults on the way.</Point>
               </Card>
             </>

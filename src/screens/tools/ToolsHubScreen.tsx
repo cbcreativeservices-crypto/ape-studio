@@ -285,7 +285,7 @@ const TOOL_STRIP: Record<ToolKey, FC<SvgProps>> = {
 /** Screen-reader description per strip (strips carry zero glyphs — Booth §6). */
 const STRIP_LABEL: Record<ToolKey, string> = {
   spl: 'SPL reference meter: analog VU meter with needle beside a segmented LED level ladder',
-  rta: 'Spectrum analyzer: thirty-one frequency bands as vertical bars with peak-hold markers',
+  rta: 'Spectrum analyzer: bars with peak-hold markers, same band spacing as a 31-band graphic EQ, shown here from 25 Hz to 20 kHz',
   waveform: 'Waveform viewer: oscilloscope waveform around a center zero line',
   spectrogram: 'Spectrogram: frequency content over time as a color heat map',
   rt60: 'RT60 reverb decay: decay curve falling to a noise floor with a fitted decay line',
