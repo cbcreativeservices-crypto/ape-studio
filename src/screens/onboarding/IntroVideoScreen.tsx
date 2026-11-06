@@ -12,6 +12,10 @@
  *  - A voluntary REPLAY can be left (owner 2026-11-05, bug test report item 5):
  *    a Close button and Android BACK return to where it was started from. Close
  *    is the same on iOS, which has no BACK; swipe-back stays off.
+ *  - A LATER viewing can be skipped (owner 2026-11-05, launch feedback): the
+ *    first viewing stays no-skip, but one that was interrupted restarted from
+ *    zero for 2:35 with no way past it. Skip counts as seen. A new account on
+ *    a phone that has played it still gets the video, with Skip.
  *  - The video is bundled in the app (works offline and for the reviewer); a
  *    new cut can still go out by update.
  *  - If it cannot play, go straight to the landing page and do NOT mark it
@@ -20,7 +24,7 @@
  * The file is silent (on-screen text only), so it is muted and never touches
  * the audio session the tools share.
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -30,6 +34,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { markIntroVideoSeenOnAccount } from '../../features/profile/api';
+import { introVideoStartedBefore, markIntroVideoStarted } from '../../features/intro/introVideoAttempt';
 import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { fonts } from '../../theme/tokens';
 
@@ -39,6 +44,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'IntroVideo'>;
 const INTRO_VIDEO = require('../../../assets/onboarding/intro_v1_1080p30.mp4');
 /** A file that has not started within this long is treated as failed. */
 const LOAD_TIMEOUT_MS = 8000;
+export const ORIENTATION_NOTICE = 'Orientation video: the Academy is huge, so here is a quick look around before you enter.';
 
 export function IntroVideoScreen({ navigation, route }: Props) {
   const replay = route.params?.replay === true;
@@ -48,6 +54,18 @@ export function IntroVideoScreen({ navigation, route }: Props) {
   const { dismiss } = useScreenIntro('introVideo');
   const doneRef = useRef(false);
   const startedRef = useRef(false);
+  // Read once, before this viewing marks itself.
+  const [startedBefore] = useState(() => introVideoStartedBefore().catch(() => false));
+  const [canSkip, setCanSkip] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void startedBefore.then((before) => {
+      if (alive) setCanSkip(before);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [startedBefore]);
 
   const player = useVideoPlayer(INTRO_VIDEO, (p) => {
     p.loop = false;
@@ -76,6 +94,7 @@ export function IntroVideoScreen({ navigation, route }: Props) {
   useEventListener(player, 'statusChange', ({ status }) => {
     if (status === 'readyToPlay') {
       startedRef.current = true;
+      if (!replay) void startedBefore.then(() => markIntroVideoStarted());
       // The setup's play() can land before the view is attached (web does
       // this); ask again once the file is ready.
       if (!player.playing) player.play();
@@ -161,7 +180,21 @@ export function IntroVideoScreen({ navigation, route }: Props) {
         >
           <Text style={styles.closeText}>Close</Text>
         </Pressable>
+      ) : canSkip ? (
+        <Pressable
+          style={[styles.close, { top: insets.top + 8 }]}
+          onPress={() => finish(true)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Skip video"
+        >
+          <Text style={styles.closeText}>Skip</Text>
+        </Pressable>
       ) : null}
+      {/* A notice, not a control: it says what this is (owner 2026-11-05). */}
+      <View pointerEvents="none" style={[styles.notice, { bottom: insets.bottom + 12 }]}>
+        <Text style={styles.noticeText}>{ORIENTATION_NOTICE}</Text>
+      </View>
     </View>
   );
 }
@@ -179,4 +212,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   closeText: { fontFamily: fonts.barlowMedium, fontSize: 16, color: '#fff' },
+  notice: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    alignItems: 'center',
+  },
+  noticeText: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 14,
+    lineHeight: 19,
+    color: '#fff',
+    textAlign: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
 });

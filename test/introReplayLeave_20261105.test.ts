@@ -21,7 +21,7 @@ test('Android BACK leaves a replay and is still swallowed on the first run', () 
 
 test('the Close button exists only on a replay', () => {
   assert.match(video, /\{replay \? \(\s*<Pressable[\s\S]*?onPress=\{leaveReplay\}[\s\S]*?accessibilityLabel="Close video"/);
-  assert.equal(video.match(/<Pressable/g)?.length, 1, 'no other control on this screen');
+  assert.equal(video.match(/<Pressable/g)?.length, 2, 'Close and the later-viewing Skip, nothing else');
 });
 
 test('a screen reader can reach Close: the label sits on the video, not the whole screen', () => {

@@ -675,15 +675,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-11-05 · ccode · branch next-store-build-1.0.1
-changed: 1.0.1 Meta SDK part + purchase events on `next-store-build-1.0.1` (worktree ape-101), per the owner-approved plan. Not on the OTA branch.
-affects other side: when the store forms change, Apple and Google need the section 6 answers; Aptabase gains four purchase events.
-needs: Comp A to confirm the live privacy forms before 1.0.1 [MD:E1]
+### 2026-11-05 21:46 · ccode · a8fb13b2
+changed: Profile: Musician / Artist choice, carried to the community role (owner 2026-11-05) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-05 21:35 · ccode · 254854b3
+changed: Must-do: sixth OTA published, intro video Skip and notice [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-05 20:35 · ccode · 52dc2697
+changed: Must-do: owner lifts the paid ads hold before 1.0.1 [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-05 20:26 · ccode · b072b97a
+changed: Must-do: 1.0.1 Meta plan on hold, Apple open [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
 
 ### 2026-11-05 19:50 · ccode · 87753024
 changed: Must-do: launched, website public [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 19:45 · ccode · 104fb0f2

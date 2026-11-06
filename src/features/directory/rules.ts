@@ -55,8 +55,8 @@ export function aboutProblem(text: string): string | null {
  * The old profile's single flat list, sorted into the concept each value
  * actually belongs to.
  *
- * The two `role` entries are the whole point. "Education" and "Sales" were
- * never work areas — they describe what someone DOES in a field, which is what
+ * The `role` entries are the whole point. "Musician / Artist" (owner
+ * 2026-11-05), "Education" and "Sales" were never work areas — they describe what someone DOES in a field, which is what
  * "How I'm Involved" is for. Copying them across as areas would have carried
  * the original confusion into the new taxonomy.
  */
@@ -87,6 +87,7 @@ export const LEGACY_INTEREST_MAP: Readonly<
     area: 'electronics-equipment-manufacturing-repair',
     specialty: 'maintenance-diagnostics-repair',
   },
+  'Musician / Artist': { role: 'creating-performing' },
   Education: { role: 'teaching-mentoring' },
   Sales: { role: 'sales-product-support' },
 };
