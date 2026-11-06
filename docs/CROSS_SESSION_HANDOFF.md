@@ -684,6 +684,21 @@ needs: nothing
 ### 2026-11-05 23:30 · ccode · d5c5fa0d
 changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
 affects other side: nothing; merge only, client-only 1.0.1 branch.
+### 2026-11-06 06:53 · ccode · 47f78e11
+changed: Intro video: the Skip change itself, which e2fa5108 left out (owner 2026-11-06, Always show Skip) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-06 06:52 · ccode · e2fa5108
+changed: Intro video: Skip on every viewing (owner 2026-11-06, Always show Skip) [MD:D57]
+affects other side: nothing; client-only control fixes.
+needs: nothing
+
+
+### 2026-11-05 23:29 · ccode · ea73e10f
+changed: Must-do: owner decisions of 11-05 night, musicians rows live [MD:D57]
+affects other side: nothing; client-only control fixes.
 needs: nothing
 
 
