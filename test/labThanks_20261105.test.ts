@@ -54,5 +54,5 @@ test('the words the owner asked for are on it', () => {
   assert.match(SRC, /one of our very first users/);
   assert.match(SRC, /your support and your understanding/);
   assert.match(SRC, /more and more labs, subjects and technology/);
-  assert.doesNotMatch(SRC, /btopicsb/i, 'owner 2026-11-05: we are not adding more of them');
+  assert.doesNotMatch(SRC, /topics/i, 'owner 2026-11-05: we are not adding more of them');
 });
