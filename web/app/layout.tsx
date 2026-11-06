@@ -70,13 +70,13 @@ export const metadata: Metadata = {
     title: "Pro Audio Training Academy",
     description: DESCRIPTION,
     url: SITE_URL,
-    images: [{ url: "/logo-hero.png", alt: "Pro Audio Training Academy" }],
+    images: [{ url: "/og/og-home.png", width: 1200, height: 630, alt: "Pro Audio Training Academy app: the whole craft of audio, right in your pocket" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Pro Audio Training Academy",
     description: DESCRIPTION,
-    images: ["/logo-hero.png"],
+    images: ["/og/og-home.png"],
   },
 };
 
