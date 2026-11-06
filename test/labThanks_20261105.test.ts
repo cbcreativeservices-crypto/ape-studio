@@ -53,5 +53,6 @@ test('once per device, through a guest wipe and a sign-out', () => {
 test('the words the owner asked for are on it', () => {
   assert.match(SRC, /one of our very first users/);
   assert.match(SRC, /your support and your understanding/);
-  assert.match(SRC, /topics, labs, subjects and technology/);
+  assert.match(SRC, /more and more labs, subjects and technology/);
+  assert.doesNotMatch(SRC, /btopicsb/i, 'owner 2026-11-05: we are not adding more of them');
 });

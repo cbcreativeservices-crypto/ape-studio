@@ -20,7 +20,7 @@ import { createLocalStore } from '../storage/localStore';
 
 export const LAB_THANKS_TITLE = 'Thank you';
 export const LAB_THANKS_BODY =
-  'Thank you for being one of our very first users. We appreciate your support and your understanding as we resolve bugs, polish the details and fix errors.\n\nOur goal is to keep improving the app and to keep adding excellent content. There is so much to learn, and we are eager to bring you more and more topics, labs, subjects and technology.';
+  'Thank you for being one of our very first users. We appreciate your support and your understanding as we resolve bugs, polish the details and fix errors.\n\nOur goal is to keep improving the app and to keep adding excellent content. There is so much to learn, and we are eager to bring you more and more labs, subjects and technology.';
 
 /** Long enough for the pop to finish; the dialog's own hold covers a modal still closing. */
 const AFTER_POP_MS = 450;
