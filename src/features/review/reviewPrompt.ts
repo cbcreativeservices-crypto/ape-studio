@@ -99,6 +99,13 @@ export async function recordAppSession(): Promise<void> {
   await save(recordSession(s, new Date()));
 }
 
+/** App opens counted on this device, or null when storage could not be read.
+ *  Meta's prompt reads it to wait until after the first run. */
+export async function appSessionCount(): Promise<number | null> {
+  const s = await load();
+  return s ? s.sessions : null;
+}
+
 /** Contexts that veto a prompt right now, regardless of the counters. */
 function currentBlockers(): ReviewBlocker[] {
   const b: ReviewBlocker[] = [];

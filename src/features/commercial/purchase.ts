@@ -20,12 +20,19 @@ import { withDeadline } from '../../lib/boundedCall';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from './realAccount';
 import { optionalModule } from '../tools/capture/optionalModule';
+import { trackEvent } from '../telemetry/telemetry';
 import {
   INAPP_SKUS,
   PLANS,
   SUBSCRIPTION_SKUS,
+  isRenewalDelivery,
   planIdForSku,
+  restoreFailureOf,
+  storeChargeFor,
+  storeFailureOf,
+  verifyFailureOf,
   type PlanId,
+  type PurchaseFailure,
 } from './iapProducts';
 
 /** The subset of the expo-iap (OpenIAP) API we call — typed without importing. */
@@ -55,6 +62,9 @@ type IapPurchase = {
   /** Android only: false = Play is still waiting for the acknowledgement that
    *  finishTransaction sends — refunded automatically after 3 days without it. */
   isAcknowledgedAndroid?: boolean | null;
+  /** iOS: why StoreKit delivered this transaction ('renewal' is not a sale). */
+  reasonIOS?: string | null;
+  transactionReasonIOS?: string | null;
 };
 
 export type PurchaseHandlers = {
@@ -84,6 +94,62 @@ function getIap(): IapApi | null {
 let connected = false;
 let listeners: Sub[] = [];
 let handlers: PurchaseHandlers | null = null;
+
+/** The plan on the store's sheet right now. The error listener and buyPlan's
+ *  rejection can report one failure twice; whichever comes first clears this. */
+let planInFlight: PlanId | null = null;
+/** The last store answer: the price and currency a verified purchase reports. */
+let storeProducts: unknown[] = [];
+/** Purchases already counted this app run (listener and re-check can overlap). */
+const countedPurchases = new Set<string>();
+
+function trackFailure(plan: PlanId | null, failure: PurchaseFailure): void {
+  trackEvent('purchase_failed', { plan: plan ?? 'unknown', stage: failure.stage, reason: failure.reason });
+}
+
+function trackStoreFailure(err: { code?: unknown; message?: unknown } | null | undefined): void {
+  if (!planInFlight) return;
+  const plan = planInFlight;
+  planInFlight = null;
+  trackFailure(plan, storeFailureOf(err));
+}
+
+/**
+ * A NEW purchase the server verified: Aptabase, then Meta. Never a renewal and
+ * never a restore (restorePurchases does not come here), so a Meta purchase
+ * event is money that just changed hands. Callers report only after the store
+ * accepted finishTransaction: an unfinished transaction comes back, and that
+ * delivery is the one that counts, so a purchase is never counted twice across
+ * launches. The transaction id stops an overlap inside one run and goes no
+ * further. Analytics must never touch the purchase itself.
+ */
+function reportCompleted(p: IapPurchase): void {
+  try {
+    planInFlight = null;
+    const sku = p.productId;
+    const plan = sku ? planIdForSku(sku) : null;
+    if (!sku || !plan || isRenewalDelivery(p)) return;
+    const key = p.transactionId ?? p.id ?? p.purchaseToken ?? null;
+    if (key && countedPurchases.has(key)) return;
+    if (key) countedPurchases.add(key);
+    trackEvent('purchase_completed', { plan });
+    void reportToMeta(plan, sku);
+  } catch {
+    /* analytics must never throw into the purchase path */
+  }
+}
+
+async function reportToMeta(plan: PlanId, sku: string): Promise<void> {
+  try {
+    const known = storeChargeFor(storeProducts, sku);
+    const charge = known ?? storeChargeFor(await loadStoreProducts(), sku);
+    if (!charge) return;
+    // On demand, never a static import: the start graph is at its cap.
+    require('../growth/metaMeasurement').noteMetaPurchase({ plan, amount: charge.amount, currency: charge.currency });
+  } catch {
+    /* Meta is off or absent: the purchase is unaffected */
+  }
+}
 
 export function isCancel(code: unknown): boolean {
   return String(code ?? '').toLowerCase().includes('cancel');
@@ -311,15 +377,19 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
                 'finishTransaction',
                 15000,
               );
+              reportCompleted(purchase);
             } catch (e) {
               console.warn('[iap] finishTransaction failed:', (e as Error).message);
             }
+            planInFlight = null;
             // Tell the app its tier changed even when nothing is listening for a
             // UI callback, or the member stays on the free experience until the
             // next cold start.
             onEntitlementMayHaveChanged?.();
             handlers?.onSuccess();
           } else {
+            planInFlight = null;
+            trackFailure(purchase?.productId ? planIdForSku(purchase.productId) : null, verifyFailureOf(result.reason));
             handlers?.onError(purchaseErrorMessage(result.reason));
           }
         })();
@@ -328,6 +398,7 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
     listeners.push(
       iap.purchaseErrorListener((err) => {
         handlers?.onError(storeErrorMessage(err));
+        trackStoreFailure(err);
       }),
     );
   }
@@ -432,7 +503,9 @@ export async function loadStoreProducts(): Promise<unknown[]> {
       withDeadline(() => iap.fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }), 'iap/fetchSubs', 15000).catch(() => []),
       withDeadline(() => iap.fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }), 'iap/fetchInApp', 15000).catch(() => []),
     ]);
-    return [...(subs as unknown[]), ...(inapp as unknown[])];
+    const products = [...(subs as unknown[]), ...(inapp as unknown[])];
+    if (products.length > 0) storeProducts = products;
+    return products;
   } catch {
     return [];
   }
@@ -516,6 +589,7 @@ async function runUnfinishedRecheck(): Promise<number | 'no-session'> {
     }
     try {
       await withDeadline(() => iap.finishTransaction({ purchase: p, isConsumable: false }), 'finishTransaction', 15000);
+      reportCompleted(p);
     } catch (e) {
       console.warn('[iap] finishTransaction (unfinished re-check) failed:', (e as Error)?.message);
     }
@@ -537,13 +611,20 @@ export async function buyPlan(planId: PlanId): Promise<void> {
   const { data } = await safeSession(supabase.auth.getSession(), 'iap/buy-tag');
   const uid = data.session?.user?.id;
   const tag = uid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uid) ? uid : undefined;
-  await iap.requestPurchase({
-    request: {
-      apple: { sku: plan.sku, ...(tag ? { appAccountToken: tag } : {}) },
-      google: { skus: [plan.sku], ...(tag ? { obfuscatedAccountId: tag } : {}) },
-    },
-    type: plan.kind,
-  });
+  planInFlight = planId;
+  trackEvent('purchase_started', { plan: planId });
+  try {
+    await iap.requestPurchase({
+      request: {
+        apple: { sku: plan.sku, ...(tag ? { appAccountToken: tag } : {}) },
+        google: { skus: [plan.sku], ...(tag ? { obfuscatedAccountId: tag } : {}) },
+      },
+      type: plan.kind,
+    });
+  } catch (e) {
+    trackStoreFailure(e as { code?: unknown; message?: unknown } | null);
+    throw e;
+  }
 }
 
 /**
@@ -571,6 +652,14 @@ export const LINKED_MESSAGE = purchaseErrorMessage('receipt_already_linked');
  * a RestoreResult the UI can state honestly.
  */
 export async function restorePurchases(): Promise<RestoreResult> {
+  const result = await runRestore();
+  if (result === 'restored') trackEvent('purchase_restored');
+  const failure = restoreFailureOf(result);
+  if (failure) trackFailure(null, failure);
+  return result;
+}
+
+async function runRestore(): Promise<RestoreResult> {
   const iap = getIap();
   if (!iap) return 'unavailable';
   try {

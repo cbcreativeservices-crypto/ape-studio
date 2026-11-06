@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 · ccode · branch next-store-build-1.0.1
+changed: 1.0.1 Meta SDK part + purchase events on `next-store-build-1.0.1` (worktree ape-101), per the owner-approved plan. Not on the OTA branch.
+affects other side: when the store forms change, Apple and Google need the section 6 answers; Aptabase gains four purchase events.
+needs: Comp A to confirm the live privacy forms before 1.0.1 [MD:E1]
+
 ### 2026-11-05 19:50 · ccode · 87753024
 changed: Must-do: launched, website public [MD:D57]
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

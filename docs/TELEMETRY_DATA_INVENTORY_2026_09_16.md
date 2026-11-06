@@ -5,6 +5,8 @@ and Google Data-Safety forms. Source of truth in code: `src/features/telemetry/t
 (SDK config) and `src/features/telemetry/scrub.ts` (the filters), pinned by
 `test/telemetry.test.ts`. Kill switch for BOTH: `src/config/telemetry.ts` → `TELEMETRY_ENABLED`.
 
+> **1.0.1 (branch `next-store-build-1.0.1`):** this page still describes Sentry and Aptabase exactly. The Meta SDK is a separate path (`src/features/growth`) and changes the store forms: see the plan of 2026-11-05, section 6. Aptabase gains four events, `purchase_started`, `purchase_completed`, `purchase_failed` and `purchase_restored`, with fixed-word props only (D98).
+
 ## Explicit confirmations
 
 | Question | Answer |

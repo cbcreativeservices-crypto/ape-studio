@@ -62,6 +62,7 @@ const STUBS: Record<string, string> = {
     }
   `,
   'ape-tdd:entitlement': `export const ENTITLEMENTS = ['anonymous','free','academy','lapsed'];`,
+  'ape-tdd:telemetry': `export function trackEvent() {}`,
 };
 
 registerHooks({
@@ -70,6 +71,7 @@ registerHooks({
     if (specifier.endsWith('lib/supabase')) return { url: 'ape-tdd:supabase', shortCircuit: true };
     if (specifier.endsWith('capture/optionalModule')) return { url: 'ape-tdd:optional', shortCircuit: true };
     if (specifier.endsWith('commercial/EntitlementProvider')) return { url: 'ape-tdd:entitlement', shortCircuit: true };
+    if (specifier.endsWith('telemetry/telemetry')) return { url: 'ape-tdd:telemetry', shortCircuit: true };
     if (context.parentURL?.includes('/src/') && /^\.{1,2}\//.test(specifier) && !/\.[cm]?[jt]sx?$/.test(specifier)) {
       return next(`${specifier}.ts`, context);
     }

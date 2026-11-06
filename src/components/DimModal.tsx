@@ -198,6 +198,12 @@ export function useModalHostOpen(exceptPublishers: boolean | string | string[] =
   return useSyncExternalStore(subscribe, count, count) > 0;
 }
 
+/** Every DimModal on screen, nested or not. For work that must not start
+ *  beside a popup and has no React tree to subscribe from. */
+export function presentedModalCount(): number {
+  return presentedCount;
+}
+
 /** Milliseconds a root Modal should still wait for a closing host to finish
  *  animating away (0 = present now). See HOST_DISMISS_MS. */
 export function rootModalHoldMs(now = Date.now()): number {

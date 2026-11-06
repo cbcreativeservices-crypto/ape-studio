@@ -38,10 +38,11 @@ import { AppState, Platform, type AppStateStatus } from 'react-native';
 
 import { useEntitlement } from './EntitlementProvider';
 import { recheckUnfinishedAndroidPurchases, startPurchaseListeners } from './purchase';
-import { tierOf } from './tier';
+import { memberGateOf, tierOf } from './tier';
+import { runSoon } from '../../lib/afterInteractions';
 
 export function PurchaseListenerRoot(): null {
-  const { refreshEntitlement, entitlement, resolved, tierKnown } = useEntitlement();
+  const { refreshEntitlement, entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   /** The listeners' start (the store connection), which the re-check below
    *  must wait for — it queries the same connection. */
   const started = useRef<Promise<boolean> | null>(null);
@@ -95,6 +96,28 @@ export function PurchaseListenerRoot(): null {
       alive = false;
     };
   }, [sessionReady, open]);
+
+  /**
+   * META MEASUREMENT (1.0.1). Lives here because this is the one quiet
+   * component that already sees the account and adds no module: the start graph
+   * is at its cap, so metaMeasurement is required on demand, off the render
+   * path. Its gate decides everything, and on most devices that is "off".
+   */
+  const gate = memberGateOf(tierOf(entitlement, resolved), tierKnown, tierReadFailed);
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    const soon = runSoon(
+      () => {
+        try {
+          require('../growth/metaMeasurement').noteMemberGate(gate);
+        } catch {
+          /* no Meta in this build: nothing else depends on it */
+        }
+      },
+      { idleTimeoutMs: 3000 },
+    );
+    return () => soon.cancel();
+  }, [gate]);
 
   return null;
 }

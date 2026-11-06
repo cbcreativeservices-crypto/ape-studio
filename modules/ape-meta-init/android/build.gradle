@@ -1,0 +1,24 @@
+// ape-meta-init — Android build (1.0.1, 2026-11-05). The expo-module-gradle-plugin
+// supplies Kotlin + expo-modules-core + compileSdk/minSdk/targetSdk; do NOT set
+// those here. facebook-core follows the version plugins/withMetaGuards.js pins
+// for react-native-fbsdk-next, so the two can never disagree.
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.cbcreativeservices.apemetainit'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.apemetainit"
+
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+}
+
+dependencies {
+  implementation "com.facebook.android:facebook-core:${rootProject.ext.get('facebookSdkVersion')}"
+}

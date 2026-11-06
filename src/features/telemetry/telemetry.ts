@@ -20,6 +20,9 @@
  *     os name/version, app version/build, SDK version, a per-launch random
  *     session id and a debug flag — no device model, no identifiers.
  *   • ONE kill switch for both: src/config/telemetry.ts TELEMETRY_ENABLED.
+ *   • Meta measurement (1.0.1) is a separate path, src/features/growth, with its
+ *     own rules. Sentry and Aptabase stay as above: neither ever sees an
+ *     advertising id, and the switch turns Meta off too.
  *
  * Both SDKs carry a native module that the CURRENT dev client (2026-08 pair)
  * does not have. Each init is wrapped so a missing module degrades to JS-only

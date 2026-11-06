@@ -95,13 +95,18 @@
         }
       ],
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "com.google.android.gms.permission.AD_ID"
       ],
       "blockedPermissions": [
         "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VIDEO",
-        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.ACCESS_ADSERVICES_AD_ID",
+        "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+        "android.permission.ACCESS_ADSERVICES_CUSTOM_AUDIENCE",
+        "android.permission.ACCESS_ADSERVICES_TOPICS"
       ]
     },
     "web": {
@@ -109,6 +114,8 @@
     },
     "plugins": [
       "./plugins/withAndroidNavTransitions",
+      "./plugins/withMetaGuards",
+      "./plugins/withAndroidCameraOptional",
       [
         "expo-build-properties",
         {
@@ -177,7 +184,14 @@
           "supportsBackgroundPlayback": false,
           "supportsPictureInPicture": false
         }
-      ]
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "This helps us see whether our ads brought you to the app. Your lesson progress and study data are not used for this."
+        }
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {

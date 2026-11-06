@@ -68,6 +68,15 @@ const LOADERS: Record<string, () => unknown> = {
   // so the caller must gate the control on a SUCCESSFUL capture and fall back
   // to the PDF, never offer it as a dead button. Untested on a device.
   'react-native-webview': () => require('react-native-webview'),
+  // Meta measurement (1.0.1): reached only from src/features/growth, and only
+  // after its gate says yes. The library's two SUB-PATHS, never its root: the
+  // root evaluates every native module at once, and FBAppEventsLogger throws on
+  // Android until the SDK is initialized (see growth/metaMeasurement.ts).
+  'expo-localization': () => require('expo-localization'),
+  'expo-tracking-transparency': () => require('expo-tracking-transparency'),
+  'react-native-fbsdk-next/lib/commonjs/FBSettings': () => require('react-native-fbsdk-next/lib/commonjs/FBSettings'),
+  'react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger': () =>
+    require('react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger'),
 };
 /* eslint-enable @typescript-eslint/no-var-requires */
 
