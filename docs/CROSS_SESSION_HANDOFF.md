@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 21:58 · ccode · dbbf3cef
+changed: Must-do: seventh OTA published, Musician / Artist [MD:D57]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-05 21:46 · ccode · a8fb13b2
 changed: Profile: Musician / Artist choice, carried to the community role (owner 2026-11-05) [MD:D57]
 affects other side: nothing; client-only control fixes.
