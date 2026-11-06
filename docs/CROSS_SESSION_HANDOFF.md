@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-05 21:35 · ccode · 254854b3
+changed: Must-do: sixth OTA published, intro video Skip and notice [MD:D57]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-05 20:35 · ccode · 52dc2697
 changed: Must-do: owner lifts the paid ads hold before 1.0.1 [MD:D57]
 affects other side: nothing; client-only control fixes.
