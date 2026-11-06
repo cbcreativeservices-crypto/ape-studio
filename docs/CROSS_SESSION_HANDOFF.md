@@ -677,8 +677,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-05 17:20 · ccode · cfcb8a7a
 changed: Must-do: function audit and 39 decisions committed, OTA waits for the owner [MD:D57]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing; client-only control fixes.
+needs: nothing
 
 
 ### 2026-11-05 17:18 · ccode · 96ac9a06
