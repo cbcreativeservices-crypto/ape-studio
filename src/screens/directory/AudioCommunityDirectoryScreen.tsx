@@ -1,6 +1,6 @@
 /**
- * AUDIO COMMUNITY DIRECTORY (spec §5) — one screen, three compact
- * destinations: Explore · My Profile · Requests.
+ * AUDIO COMMUNITY DIRECTORY (spec §5) — one screen, four compact
+ * destinations: Directory · Forum · My Profile · Requests.
  *
  * Deliberately NOT a new bottom-navigation tab. The existing architecture is a
  * single native stack with a custom bottom nav rendered inside screens, and the
@@ -37,14 +37,28 @@ import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import { setSampleDirectory } from '../../features/directory/sampleThreads';
+import { setSampleForum } from '../../features/forum/sampleSwitch';
 import { ChannelBadge } from './ChannelBadge';
 
-type Tab = 'explore' | 'profile' | 'requests';
+type Tab = 'explore' | 'forum' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'explore', label: 'EXPLORE' },
+  { key: 'explore', label: 'DIRECTORY' },
+  { key: 'forum', label: 'FORUM' },
   { key: 'profile', label: 'MY PROFILE' },
   { key: 'requests', label: 'REQUESTS' },
 ];
+
+/** Which tab a route's params ask for (a link can carry anything). */
+function tabOf(params: unknown, requests: boolean): Tab | null {
+  if (requests) return 'requests';
+  const t = (params as { tab?: unknown } | undefined)?.tab;
+  return t === 'forum' || t === 'profile' ? t : null;
+}
+
+/** The forum's code loads the first time its tab opens, not with the directory. */
+function loadForumHome() {
+  return (require('./forum/ForumHomeView') as typeof import('./forum/ForumHomeView')).ForumHomeView;
+}
 
 export function AudioCommunityDirectoryScreen() {
   const insets = useSafeAreaInsets();
@@ -53,7 +67,7 @@ export function AudioCommunityDirectoryScreen() {
   // A tapped member alert lands here as `directory/requests/<id>` (owner
   // 2026-10-04). Validated: anything else opens the screen as before.
   const linked = directoryParams(route.params);
-  const [tab, setTab] = useState<Tab>(linked.requests ? 'requests' : 'explore');
+  const [tab, setTab] = useState<Tab>(tabOf(route.params, linked.requests) ?? 'explore');
   /** The conversation a tap asked for; RequestsView opens it once its list
    *  has loaded and finds it there, then hands it back (consumed once). */
   const [openThreadId, setOpenThreadId] = useState<string | null>(linked.thread);
@@ -72,11 +86,18 @@ export function AudioCommunityDirectoryScreen() {
     if (lastParams.current === params) return;
     lastParams.current = params;
     const next = directoryParams(params);
-    if (next.requests) setTab('requests');
+    const wanted = tabOf(params, next.requests);
+    if (wanted) setTab(wanted);
     if (next.thread) setOpenThreadId(next.thread);
   }, [params]);
   // The dev visual index's sample chat ends when the directory closes.
   useEffect(() => () => setSampleDirectory(false), []);
+  // …and so does the forum's sample.
+  useEffect(() => () => setSampleForum(null), []);
+  // Kept mounted once opened: the search and the scroll survive a tab switch.
+  const forumOpened = useRef(tab === 'forum');
+  if (tab === 'forum') forumOpened.current = true;
+  const ForumHome = forumOpened.current ? loadForumHome() : null;
   const inbox = useCommunityInbox();
   const [memberToken, setMemberToken] = useState<string | null>(null);
   /** The tapped card's display name, so the sheet's title is right from its
@@ -154,6 +175,11 @@ export function AudioCommunityDirectoryScreen() {
       <View style={tab === 'explore' ? st.pane : st.paneHidden}>
         <ExploreView onOpenMember={openMember} hiddenTokens={blockedTokens} active={tab === 'explore'} />
       </View>
+      {ForumHome ? (
+        <View style={tab === 'forum' ? st.pane : st.paneHidden}>
+          <ForumHome active={tab === 'forum'} onOpenProfile={() => setTab('profile')} />
+        </View>
+      ) : null}
       {tab === 'profile' ? <MyProfileView /> : null}
       {tab === 'requests' ? (
         <RequestsView
@@ -670,11 +696,11 @@ const st = StyleSheet.create({
   backGlyph: { fontFamily: fonts.barlowRegular, fontSize: 26, color: P.sub },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.76, color: P.text },
   sub: { fontFamily: fonts.barlowMedium, fontSize: 12, color: P.muted, marginTop: 1 },
-  // The segmented control: one panel, three equal segments, the chosen one raised.
+  // The segmented control: one panel, four equal segments, the chosen one raised.
   tabs: {
     flexDirection: 'row',
-    marginHorizontal: 18,
-    marginBottom: 14,
+    marginHorizontal: 14,
+    marginBottom: 12,
     padding: 3,
     backgroundColor: P.panel,
     borderWidth: 1,
@@ -692,7 +718,7 @@ const st = StyleSheet.create({
     borderColor: 'transparent',
   },
   tabOn: { backgroundColor: P.raised, borderColor: P.line2 },
-  tabText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 1.25, color: P.muted, textAlign: 'center' },
+  tabText: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.92, color: P.muted, textAlign: 'center' },
   tabTextOn: { color: P.text },
   tabLabelRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' },
   // The amber count sits inline after REQUESTS.

@@ -96,6 +96,19 @@
       ],
       "port": 8091,
       "autoPort": false
+    },
+    {
+      "name": "forum-web-8145",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web",
+        "--port",
+        "8145"
+      ],
+      "port": 8145,
+      "autoPort": false
     }
   ]
 }

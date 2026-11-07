@@ -55,6 +55,14 @@ import { CareerFinderResultsScreen } from '../screens/careerfinder/CareerFinderR
 import { CareerFamilyScreen } from '../screens/careerfinder/CareerFamilyScreen';
 import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyListScreen';
 import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
+// Audio Community Forum (2026-11-07): `#forumpreview` lists every mockup state.
+import { ForumPreviewScreen } from './ForumPreview';
+import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
+import { ForumCategoryScreen } from '../screens/directory/forum/ForumCategoryScreen';
+import { ForumThreadScreen } from '../screens/directory/forum/ForumThreadScreen';
+import { ForumAskScreen } from '../screens/directory/forum/ForumAskScreen';
+import { ForumIdeasScreen } from '../screens/directory/forum/ForumIdeasScreen';
+import { ForumNoticesScreen } from '../screens/directory/forum/ForumNoticesScreen';
 // Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
 // all five modes in the browser harness.
 import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
@@ -383,6 +391,21 @@ export function renderWebPreview(hash: string): ReactElement | null {
               { name: 'CareerFamily', component: CareerFamilyScreen as ComponentType },
               { name: 'CareerFamilyList', component: CareerFamilyListScreen as ComponentType },
               { name: 'CareerFinderAbout', component: CareerFinderAboutScreen as ComponentType },
+            ],
+          }
+      : hash === '#forumpreview'
+        // The Audio Community Forum: every mockup screen and state on the dev
+        // sample (forum_enabled is false, so the real calls have nothing to show).
+        ? {
+            name: 'ForumPreview',
+            component: ForumPreviewScreen as ComponentType,
+            screens: [
+              { name: 'AudioCommunityDirectory', component: AudioCommunityDirectoryScreen as ComponentType },
+              { name: 'ForumCategory', component: ForumCategoryScreen as ComponentType },
+              { name: 'ForumThread', component: ForumThreadScreen as ComponentType },
+              { name: 'ForumAsk', component: ForumAskScreen as ComponentType },
+              { name: 'ForumIdeas', component: ForumIdeasScreen as ComponentType },
+              { name: 'ForumNotices', component: ForumNoticesScreen as ComponentType },
             ],
           }
       : hash === '#soundsystemspreview'

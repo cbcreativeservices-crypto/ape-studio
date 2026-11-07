@@ -179,6 +179,14 @@ export type RootStackParamList = {
    *  how a tapped member alert lands (2026-10-04). Validated on arrival
    *  (communityRules.directoryParams): a link can carry anything. */
   AudioCommunityDirectory: { tab?: string; thread?: string } | undefined;
+  /** The Audio Community Forum (next store build only). */
+  ForumCategory: { slug?: string; lounge?: boolean } | undefined;
+  ForumThread: { topicId?: string; welcome?: boolean } | undefined;
+  ForumAsk:
+    | { slug?: string; edit?: { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean } }
+    | undefined;
+  ForumIdeas: undefined;
+  ForumNotices: undefined;
   /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
   EmployerAdmin: undefined;
   /** Admin-only: the abuse-report queue. Guarded by is_admin() in the DB.

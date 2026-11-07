@@ -25,6 +25,7 @@ import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { openMembershipGate } from '../commercial/MembershipGate';
 import { setSampleDirectory, setSampleInbox } from '../directory/sampleThreads';
+import { FORUM_SAMPLE_STATES, setSampleForum } from '../forum/sampleSwitch';
 import { refreshCommunityInbox } from '../directory/CommunityBadge';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
@@ -230,6 +231,18 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
         },
       },
     ],
+  },
+  {
+    // Every forum mockup screen and state, on made-up data. Nothing reaches the
+    // live database; leaving the directory turns the sample off (sampleSwitch.ts).
+    section: 'FORUM (SAMPLE DATA)',
+    items: FORUM_SAMPLE_STATES.map((state) => ({
+      label: state.label,
+      go: (n) => {
+        setSampleForum(state);
+        n.navigate('AudioCommunityDirectory', { tab: 'forum' });
+      },
+    })),
   },
   {
     section: 'TOOLS',
