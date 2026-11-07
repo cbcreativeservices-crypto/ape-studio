@@ -226,7 +226,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The card at the top counts how many are correct so far and says whether the page is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick shows the explanation and stays open — try again.',
+      'Tap an answer. A wrong pick stays open: the first miss asks you to try again; from the second miss on, the explanation shows as a hint.',
       'All six right completes this page. NEXT › then moves on to the lab’s final check.',
     ],
     changes: [
@@ -235,7 +235,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Whether each idea stuck: the transient, piano sustain, rise time, peak vs average, crest factor vs dynamic range, envelope vs propagation.',
-      'Wrong picks are part of it: each explanation says why.',
+      'Wrong picks are part of it: from the second miss on, the explanation says why.',
     ],
     tryThis: [
       'Unsure about rise time? Go back to The Envelope Explorer, tap RESET and read where the two gold dots sit on the climb.',
