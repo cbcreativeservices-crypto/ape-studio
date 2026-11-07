@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 13:01 · ccode · a70f8e2f
+changed: Merge OTA into 1.0.1: Commercial 70V meeting room image [MD:E1]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-06 08:20 · ccode · b9a06b14
 changed: Merge OTA into 1.0.1: red line mutes on tap, website preview [MD:E1]
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
