@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 · ccode · website instructor page wording (commit hash in git log)
+changed: web/components/InstructorDashboard.tsx + new web/lib/instructorRules.ts (import-free, mirrors the app's classRules.ts on forum-next-build). Quiz scores are counts of right answers, printed alone ("Best quiz: 24 right", "Quiz #2 · 24 right"); a value above 30 is explained in words ("No quiz score on record" / "no score on record"), never printed; no more "%" after a score. No "N of total": the class row reads "2 topics done · 3 in progress · 7 labs done" (was "Topics 2 complete of 5", "Labs 7 / 12"); the labs heading reads "· N labs done" (was "N of M complete"); an unfinished lab reads "Not yet" (was "—"). Final exam "27 / 30" kept (a score, D41). Test: test/webInstructorWording_20261107.test.ts. tsc 0 (root + web), next build OK. Page not rendered with data (needs an instructor sign-in).
+affects other side: website only; NOT published (audio-tools-engine untouched, no deploy).
+needs: owner: go to merge to audio-tools-engine when the website should change [MD:E3]
+
 ### 2026-11-07 15:20 · ccode · 66150ef8 (merge e1013367)
 changed: Lab text audit commit 66150ef8 on lab-text-audit-20261107, merged to ota-after-approval-39-23 as e1013367. tsc 0 errors; suite-gate GREEN, 19,093 tests, 0 failed. fingerprint-eol-sync clean (49 same, 0 real diffs); fingerprints still match both store builds: Android a903813a… (7fac1daa), iOS 91355451… (07d79e60).
 affects other side: nothing beyond the entry below; JS only, NOT published.
