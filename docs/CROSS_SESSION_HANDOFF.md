@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 10:45 · ccode · 85505dc5
+changed: Must-do D44: forum ships in one store build with the Meta work (owner 2026-11-07) [MD:D57]
+affects other side: must-do note only, forum one-build decision.
+needs: nothing
+
+
 ### 2026-11-07 09:42 · ccode · ad1da903
 changed: nightly: live server snapshot 2026-11-07
 affects other side: none (snapshot only)
