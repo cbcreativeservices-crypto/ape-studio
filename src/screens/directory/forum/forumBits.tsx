@@ -26,6 +26,7 @@ import {
   dotOf,
   plateOf,
   topicA11y,
+  showsUnreadDot,
   topicReviewStamp,
   topicStat,
   topicTag,
@@ -279,7 +280,7 @@ export const TopicRow = memo(function TopicRow({
       <ChannelBadge name={badgeName(topic.author.name)} led="off" steel={!!topic.author.verifiedKind} size={38} />
       <View style={st.tpBody}>
         <Text style={st.tt}>
-          {topic.unread ? <Text style={st.unread}>● </Text> : null}
+          {showsUnreadDot(topic) ? <Text style={st.unread}>● </Text> : null}
           {topic.title}
         </Text>
         <View style={st.meta}>

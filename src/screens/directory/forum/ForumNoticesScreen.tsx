@@ -3,15 +3,18 @@
  * steps in. A plain notice with the rule and the excerpt, Edit and Repost, and
  * Appeal. Every notice says whether automation was used.
  *
- * `forum_notices_mine` gives the post's id and a 280-character excerpt, not its
- * topic or full text, so Edit and Repost starts from the excerpt here. The same
- * card inside the thread starts from the whole post.
+ * Once `forum_notices_mine` also gives the post's topic (SERVER_GAPS row 2),
+ * Edit and Repost reads the thread and starts from the whole post, as the same
+ * card inside the thread does. A server without it, or a thread read that
+ * failed: it starts from the 280-character excerpt and says it is only the
+ * start.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
-import { fetchMyModeration, markNoticeRead, type MyModeration } from '../../../features/forum/api';
+import { useLatchedPress } from '../../../lib/latch';
+import { fetchMyModeration, fetchNoticeEdit, markNoticeRead, type MyModeration } from '../../../features/forum/api';
 import { EXCERPT_MAX, noticeFace } from '../../../features/forum/rules';
 import type { ForumNotice } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
@@ -45,6 +48,23 @@ export function ForumNoticesScreen() {
     for (const n of value.notices) if (!n.readAt) void markNoticeRead(n.id);
   }, [value]);
 
+  /** The whole post when the thread is known and readable, else the excerpt. */
+  const editFrom = useLatchedPress(async (n: ForumNotice, postId: string) => {
+    const full = await fetchNoticeEdit(n.topicId, postId);
+    if (full) {
+      navigation.navigate('ForumAsk', { slug: full.slug, edit: full.edit });
+      return;
+    }
+    navigation.navigate('ForumAsk', {
+      edit: {
+        postId,
+        isOpening: false,
+        body: (n.excerpt ?? '').replace(/^…|…$/g, ''),
+        partial: (n.excerpt ?? '').length >= EXCERPT_MAX,
+      },
+    });
+  });
+
   const renderItem = useCallback(
     ({ item }: { item: ForumNotice }) => {
       const face = noticeFace(item);
@@ -65,10 +85,7 @@ export function ForumNoticesScreen() {
                   {
                     label: 'EDIT AND REPOST',
                     primary: true,
-                    onPress: () =>
-                      navigation.navigate('ForumAsk', {
-                        edit: { postId, isOpening: false, body: (item.excerpt ?? '').replace(/^…|…$/g, ''), partial: (item.excerpt ?? '').length >= EXCERPT_MAX },
-                      }),
+                    onPress: () => editFrom(item, postId),
                   },
                 ]
               : []),
@@ -79,7 +96,7 @@ export function ForumNoticesScreen() {
         />
       );
     },
-    [navigation, sent, value],
+    [editFrom, sent, value],
   );
 
   return (

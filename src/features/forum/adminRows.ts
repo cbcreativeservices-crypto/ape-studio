@@ -116,8 +116,16 @@ export const ADMIN_UNREADABLE = 'Could not read the queue. Check your connection
 /** The refusal is a fact about the account, not about the network. */
 export const ADMIN_NOT_SAVED = 'That was not saved: it may already be gone. Reload and try again.';
 
+/** The server refused the action for THIS post (forum:not_allowed): since the
+ *  2026-11-07 package, a child-safety post is never restored, published, sent
+ *  back for editing or overturned. A fact about the post, never "could not
+ *  read the queue". */
+export const ADMIN_NOT_ALLOWED =
+  'The server does not allow that on this post. A child-safety post is never restored, published, sent back for editing or overturned. It stays in the queue.';
+
 export function adminError(message: string | null | undefined): { error: string; code: string | null } {
   if (message === 'not saved') return { error: ADMIN_NOT_SAVED, code: 'not_saved' };
+  if (/\bforum:not_allowed\b/.test(message ?? '')) return { error: ADMIN_NOT_ALLOWED, code: 'not_allowed' };
   return /not permitted|permission denied/i.test(message ?? '')
     ? { error: ADMIN_NOT_PERMITTED, code: 'not_permitted' }
     : { error: ADMIN_UNREADABLE, code: null };

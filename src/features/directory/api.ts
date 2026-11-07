@@ -20,6 +20,7 @@ import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
 import { sampleForumOn } from '../forum/sampleSwitch.ts';
 import { employerPageToken } from '../employer/publicPage.ts';
+import { cardOf } from './kinds.ts';
 import {
   sampleAllowance,
   sampleBlock,
@@ -314,13 +315,29 @@ export type SearchOutcome =
   | { status: 'ok'; results: DirectoryCard[]; total: number }
   | { status: 'error'; error: string };
 
+/** `directory_search`'s arguments for these filters and this page. Shared by
+ *  the kind chips (kinds.ts), which add `p_kind` once the server has it. */
+export function directorySearchArgs(f: DirectoryFilters, page = 0, pageSize = 30): Record<string, unknown> {
+  const none = <T,>(a: T[] | undefined) => (a && a.length ? a : null);
+  return {
+    p_q: f.q?.trim() || null,
+    p_areas: none(f.areas),
+    p_specialties: none(f.specialties),
+    p_roles: none(f.roles),
+    p_open_to: none(f.openTo),
+    p_country: f.country || null,
+    p_work_pref: f.workPref ?? null,
+    p_limit: pageSize,
+    p_offset: page * pageSize,
+  };
+}
+
 export async function searchDirectory(
   f: DirectoryFilters,
   page = 0,
   pageSize = 30,
 ): Promise<SearchOutcome> {
   if (sampleForumOn()) return (require('../forum/sampleData') as typeof import('../forum/sampleData')).sampleMembers(f);
-  const none = <T,>(a: T[] | undefined) => (a && a.length ? a : null);
   try {
     /**
      * ⛔ BOUNDED (2026-09-23 overnight hunt). ExploreView does
@@ -335,17 +352,7 @@ export async function searchDirectory(
      */
     const { data, error } = await withDeadline(
       // `async () =>`: the Supabase builder is a thenable, not a Promise.
-      async () => await supabase.rpc('directory_search', {
-        p_q: f.q?.trim() || null,
-        p_areas: none(f.areas),
-        p_specialties: none(f.specialties),
-        p_roles: none(f.roles),
-        p_open_to: none(f.openTo),
-        p_country: f.country || null,
-        p_work_pref: f.workPref ?? null,
-        p_limit: pageSize,
-        p_offset: page * pageSize,
-      }),
+      async () => await supabase.rpc('directory_search', directorySearchArgs(f, page, pageSize) as never),
       'directory_search',
       10000,
     );
@@ -354,17 +361,7 @@ export async function searchDirectory(
     return {
       status: 'ok',
       total: rows.length ? Number(rows[0].total_count ?? rows.length) : 0,
-      results: rows.map((r) => ({
-        publicToken: r.public_token as string,
-        displayName: (r.display_name as string) ?? 'Member',
-        primaryArea: (r.primary_area as string) ?? null,
-        specialties: Array.isArray(r.specialties) ? (r.specialties as string[]) : [],
-        roles: Array.isArray(r.roles) ? (r.roles as string[]) : [],
-        countryCode: (r.country_code as string) ?? null,
-        workPref: (r.work_pref as WorkPref) ?? null,
-        credentialCount: Number(r.credential_count ?? 0),
-        contactEnabled: !!r.contact_enabled,
-      })),
+      results: rows.map(cardOf),
     };
   } catch (e) {
     // The 10-second deadline above REJECTS ("directory_search timeout after

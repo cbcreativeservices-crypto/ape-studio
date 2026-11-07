@@ -21,7 +21,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { fonts } from '../../../theme/tokens';
 import {
   POSTS_PAGE,
-  blockAuthor,
+  blockPostAuthor,
   deletePost,
   fetchMyAppeals,
   fetchThread,
@@ -71,7 +71,10 @@ import {
   readMarkPostId,
   refusalNeedsProfile,
   RULES_NOT_SAVED,
+  asksForRules,
   replyBlock,
+  solutionMarker,
+  threadMentionNames,
   timeAgo,
   tomorrowMorning,
   type MentionPerson,
@@ -208,13 +211,16 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
 
   /** Everyone in this thread: who @ can suggest, and whose mentions are drawn. */
   const people = useMemo<MentionPerson[]>(
-    () =>
-      posts
+    () => [
+      ...posts
         .filter((p) => !p.isMine && p.author.token)
         .map((p) => ({ name: p.author.name, token: p.author.token as string })),
+      // People the posts mention, once the server says who (SERVER_GAPS row 17).
+      ...posts.flatMap((p) => p.mentions),
+    ],
     [posts],
   );
-  const names = useMemo(() => posts.map((p) => p.author.name), [posts]);
+  const names = useMemo(() => threadMentionNames(posts), [posts]);
   const mineIds = useMemo(() => new Set(posts.filter((p) => p.isMine).map((p) => p.id)), [posts]);
 
   // Open at the first unread post, or at a bookmarked one.
@@ -363,6 +369,9 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     setSending(false);
     if (!r.ok) {
       setSendError(r.error);
+      // The server has no agreement for this account (its rules check is on):
+      // I AGREE records it there, then this reply is sent.
+      if (asksForRules(r.code)) setRulesOpen(true);
       return;
     }
     clientId.current = null;
@@ -423,17 +432,15 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
 
   const block = useCallback(
     (post: ForumPost) => {
-      const token = post.author.token;
-      if (!token) {
-        notify('Block member', 'This member has no community profile to block. You can report the post instead.');
-        return;
-      }
+      // By the post, so an author with no published profile can be blocked once
+      // the server has forum_block_author; before that, a member with no
+      // profile is told so and offered Report (blockPostAuthor).
       confirmDialog(
         `Block ${post.author.name}?`,
         'You won’t see each other anywhere.',
         'BLOCK',
         () => {
-          void blockAuthor(token).then((r) => {
+          void blockPostAuthor(post.id, post.author.token).then((r) => {
             if (!r.ok) {
               notify('Not blocked', r.error);
               return;
@@ -633,7 +640,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     ({ item }: { item: ForumPost }) => (
       <PostCard
         post={item}
-        askerName={value?.topic.author.former ? null : (value?.topic.author.name ?? null)}
+        askerName={solutionMarker(value?.topic, value?.topic.author.former ? null : (value?.topic.author.name ?? null))}
         pinned={!!announcements}
         qa={!!qa}
         reacting={reacting}
@@ -806,13 +813,13 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       <ReportPopup
         postId={reportOf?.id ?? null}
         authorName={reportOf?.author.name ?? ''}
-        canBlock={!!reportOf?.author.token}
+        canBlock={!!reportOf && !reportOf.isMine}
         onClose={() => setReportOf(null)}
         onDone={({ alsoBlock }) => {
           const p = reportOf;
           setReportOf(null);
-          if (alsoBlock && p?.author.token) {
-            void blockAuthor(p.author.token).then((b) => {
+          if (alsoBlock && p) {
+            void blockPostAuthor(p.id, p.author.token).then((b) => {
               if (!b.ok) notify('Report sent, not blocked', b.error);
               else if (p.isOpening) safeGoBack(navigation as never);
               else void read.reload();

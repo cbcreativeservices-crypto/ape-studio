@@ -4,6 +4,48 @@ The source for the next Comp A package. Each row is something the app cannot do 
 
 **Priority:** A = needed before launch. B = worth doing, the app works without it. C = polish.
 
+## Status: the Comp A package of 2026-11-07 (written, NOT applied to live)
+
+The package `Downloads/2026-11-07_FOR_COMP_A_FORUM_GAPS.zip` (F00 to F90, VERIFY, F99 rollback) builds the server side of most rows below. **It is not on the live server yet** (read-only check, 2026-11-07: `forum_topics_list` still has 4 arguments, `directory_search` 9, and `forum_rules_accept`, `forum_block_author`, `directory_verified` do not exist). The app on `forum-next-build` now works with BOTH shapes: it tries the new function, column or argument first, and falls back to today's path only when the server answers that it does not have it (PGRST202 / 42883, `missingFunction` in `src/features/forum/rules.ts`). Any other failure is told as a failure. The two-shape calls live in `src/features/forum/serverShapes.ts` and `src/features/directory/kinds.ts` (`kindChip`); tests: `test/forumServerGaps_20261107.test.ts`.
+
+| Row | Closed by | The app, once it lands | Still waits on |
+|---|---|---|---|
+| 1 | F90 (welcome post, pinned) | Nothing to change: the popup reads the pinned post's `unread`, which F40 leaves as it was. | **HOLD B**: F90 makes the "Admin" account the author. If the owner keeps "Admin CB" instead, the author moves. |
+| 2 | F40 (`topic_id`) | Edit and Repost from a notice reads the thread and starts from the whole post; the excerpt path stays as the fallback. | Nothing. |
+| 3 | F40 (`tracked_reason`, `area`) | Ideas takes every row's line from the list; no `forum_topic_get` per row. | Nothing. |
+| 4 | Not built (convention `v1.1: text` kept) | Unchanged. | Nothing. |
+| 5 | F40 (`area` returned) | The row's area is read. The Ask form does not yet OFFER an area on questions, and the header does not draw a sub-area: app work, not started. | App work. |
+| 6 | Not built: a privacy choice | Unchanged. | The owner's decision. |
+| 7 | F40 (`p_group`) | The Pro Lounge is one `forum_topics_list(p_group => 'pro_lounge')` read in the server's order, so Top this week truly ranks. | Nothing. |
+| 8 | F30 (`solution_marked_by_name`) | "MARKED BY" names the marker; the asker only on a server without it. | Nothing. |
+| 9 | F70 (`forum_block_author`) | Block (menu and Report) goes by the post, so an author with no profile can be blocked. Old server: the token block, and "no community profile" without a token. | Nothing. |
+| 10 | F50 (`forum_rules_accept`, check switched OFF) | I AGREE records it on the account AND on the phone; either is enough. A post refused with `rules_not_accepted` shows plain words and brings the rules popup back. | **HOLD C**: switch the check on only after a store build with this app is in members' hands. |
+| 11 | Not built (edge-function change) | Unchanged. | A later package. |
+| 12 | F30 (cards cleaned when read) | Nothing to change: the app reads only `lab_key`. | Nothing. |
+| 13 | F60 (`directory_search(p_kind)`, `verified_kind`) | A kind chip is one server search by kind, with paging; no 90-member scan, no "Looked through the first N". | Nothing. |
+| 14 | F60 (`directory_verified`, organizations only) | Employers / Companies / Institutions also list verified organizations with no community profile; the card opens their page on the website. Only with no filter but the name box. | Instructors with no profile stay unlisted (package choice 9.5). |
+| 15 | Not in the package | The switch row stays hidden. | **HOLD A**, after the website work. |
+| 16 | F40 (`ever_read`) | The blue dot is for new replies in a topic read before; a topic never opened has none. `unread` itself (the welcome popup) is unchanged. | Nothing. |
+| 17 | F30 (`mentions`) | A mention of someone outside the thread is drawn, and can be suggested by @. | Nothing. |
+| 18 | Not built | Unchanged. | A design decision. |
+| 19 | F70 (5 points, once) | Nothing to change. | Nothing. |
+| 20 | Not in the package | Unchanged: both admin accounts can use the queue. | **HOLD B**. |
+| 21 | F30 (Regular or Leader may mark one Solution in a lab thread) | The menu follows `can_mark_solution`, as before; MARKED BY now names them. | Nothing. |
+| 22 | Nothing to build | Unchanged. | The launch-day test (HOLD D day). |
+| 23, 24 | Nothing needed | Unchanged. | Nothing. |
+| 25 | F10 (`pending_body`, `pending_state`, `pending_title`) | RESTORE comes back on a held edit once all three arrive and the body is there; the card shows the whole edit and the new title. | Nothing. |
+| 26 | F30 (owner reads held, pending, hidden topics) | Not used yet: the queue's topic title is still a link only while the post is published (`queueTopicFace`). | App follow-up. |
+| 27 | F10 (title and excerpt masked) | Nothing to change: the app already hides them. | Nothing. |
+| 28 | F20 (child-safety lock, `forum:not_allowed`) | The owner sees a plain line about the post (`ADMIN_NOT_ALLOWED`), never "Could not read the queue". The app still never offers those buttons. | Nothing. |
+| 29 | F20 + F30 (`please_edit`, neutral sentence) | Edit and Repost on a held post follows `please_edit`; the sentence rule only on a server without it. | The neutral sentence is a draft: the owner's copy. |
+| 30 | F20 (`rule = 'reports_pending_review'`, `automated = false`) | The notice reads BEING REVIEWED by its rule as well as by its sentence (it would otherwise have read as REMOVED). | Nothing. |
+| 31 | F80 (reason-only change saved) | Not used yet: the app still refuses the same status with a new reason (`trackedProblem`), because the old server would not save it. | App follow-up once live. |
+| 32 | F80 (unmute returns null) | Nothing to change: the sentence stays true. | Nothing. |
+| 33 | F10 (`post_state` and the pending fields on appeals) | OVERTURN follows the pending fields, and the card shows THE EDIT APPEALED FOR before it. | Nothing. |
+| 34 | F20 item 1 (report hide drops the edit) | Nothing to change. | Nothing. |
+
+**Not verified:** the app has not been run against the new functions (the package is not applied, and no test server has it). The new shapes are tested against a fake server built from the package's exact names (`BRIEF_FOR_COMP_A.md` section 9.16 and the F10 to F70 `returns table` lines).
+
 ## From slice 1
 
 | # | Pri | What is missing | What the app does today | Smallest server change |

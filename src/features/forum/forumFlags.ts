@@ -1,6 +1,8 @@
 /**
  * The forum's two device flags: the welcome was seen here, and the community
- * rules were accepted (app-side, brief item h: the server has no check yet).
+ * rules were accepted. The rules agreement is also recorded on the account
+ * (forum_rules_accept, SERVER_GAPS row 10) once the server has it; the phone's
+ * record stays as the fallback for a server without it.
  *
  * A failed read is UNREADABLE and is never overwritten (createLocalStore), and
  * `known` stays false, so nothing interrupts on a guess. The dev sample has its
@@ -9,6 +11,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';
 import { sampleFlags, setSampleFlags, subscribeSample } from './sampleSwitch.ts';
+import { acceptForumRules } from './api';
 
 type Flags = { welcomeSeen: boolean; rulesAccepted: boolean };
 
@@ -37,7 +40,8 @@ export function useForumFlags(): Flags & {
       setSampleFlags({ rulesAccepted: true });
       return true;
     }
-    return store.mutate((f) => ({ ...f, rulesAccepted: true }));
+    // Kept on the phone AND recorded on the account; either one is enough.
+    return acceptForumRules(() => store.mutate((f) => ({ ...f, rulesAccepted: true })));
   }, []);
   const markWelcomeSeen = useCallback(async () => {
     if (sampleFlags()) {

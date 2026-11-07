@@ -4,8 +4,9 @@
  * answer, and the list keeps its order until the next read, so a row does not
  * jump away from the finger.
  *
- * `forum_topics_list` carries no status reason and no area, so each row with
- * something to say is filled in from `forum_topic_get`. Optional: a failed
+ * Once `forum_topics_list` sends `tracked_reason` and `area` (SERVER_GAPS rows
+ * 3 and 5), every row's line comes from the list itself. A server without them:
+ * the first rows are filled in from `forum_topic_get`. Optional: a failed
  * detail read leaves the row without its line, never without its status.
  */
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ import { notify } from '../../../lib/confirm';
 import { fonts } from '../../../theme/tokens';
 import { fetchTopicDetail, fetchTopics, voteIdea, type ForumTopic } from '../../../features/forum/api';
 import { IDEAS_SLUG, applyVote, sortIdeas, trackedFace } from '../../../features/forum/rules';
+import { ideaDetailsFromList } from '../../../features/forum/serverShapes';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { useReloadOnReturn } from '../../../features/forum/useReloadOnReturn';
 import { useSendingPer } from '../directoryBits';
@@ -52,6 +54,12 @@ export function ForumIdeasScreen() {
   const [details, setDetails] = useState<Record<string, Detail>>({});
   useEffect(() => {
     if (!value) return undefined;
+    // The list carries every row's line: no read per row.
+    const fromList = ideaDetailsFromList(value);
+    if (fromList) {
+      setDetails(fromList);
+      return undefined;
+    }
     let live = true;
     void Promise.all(
       sortIdeas(value)

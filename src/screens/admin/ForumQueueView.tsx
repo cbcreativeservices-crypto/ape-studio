@@ -37,6 +37,7 @@ import {
 } from '../../features/forum/adminApi';
 import {
   aiUsageLine,
+  appealEditOf,
   appealOverturn,
   isChildItem,
   memberReason,
@@ -376,6 +377,9 @@ function AppealList() {
       {read.value.map((a) => {
         const child = isChildItem({ urgentCategory: null, postBody: a.postBody });
         const overturn = appealOverturn(a, stateOf(a.postId));
+        // The edit this appeal is about, once the server sends it (SERVER_GAPS
+        // row 33): OVERTURN publishes it, so it is shown first.
+        const appealEdit = child ? null : appealEditOf(a);
         return (
         <View key={a.appealId} style={st.card}>
           <View style={st.rowTop}>
@@ -385,6 +389,14 @@ function AppealList() {
           {a.member ? <Text style={st.who}>{a.member.name}</Text> : null}
           {child ? (
             <Text style={st.child}>The text is preserved and not shown here. A child-safety removal is not restored from an appeal.</Text>
+          ) : appealEdit ? (
+            <>
+              <Text style={st.editHead}>THE EDIT APPEALED FOR</Text>
+              {appealEdit.title ? <Text style={st.ex}>{`New title: ${appealEdit.title}`}</Text> : null}
+              {appealEdit.text ? <Text style={st.ex}>{appealEdit.text}</Text> : null}
+              {a.postBody ? <Text style={st.editHead}>WHAT OTHERS SEE NOW</Text> : null}
+              {a.postBody ? <Text style={st.ex}>{a.postBody}</Text> : null}
+            </>
           ) : a.postBody ? (
             <>
               {/* An edit appeal: this is the old text, not the edit appealed for. */}

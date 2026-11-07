@@ -682,7 +682,9 @@ describe('three faces: a failed read is never "nothing here"', () => {
     const api = code('src/features/forum/api.ts');
     // failChecked: a "sign in" refusal is first checked against the session.
     assert.match(api, /if \(error\) return failChecked\(error\.message\)/);
-    assert.match(api, /const bad = lists\.find\(\(l\) => !l\.ok\)/);
+    // The lounge feed's merge moved to serverShapes.ts (2026-11-07 package): one
+    // failed category read still fails the whole feed.
+    assert.match(code('src/features/forum/serverShapes.ts'), /const bad = lists\.find\(\(l\) => l\.error\);\s*if \(bad\) return failed\(bad\.error\);/);
     assert.doesNotMatch(api.slice(api.indexOf('async function rpc'), api.indexOf('const rows =')), /value: \[\]/);
   });
 

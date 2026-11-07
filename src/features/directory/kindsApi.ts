@@ -1,13 +1,26 @@
 /**
  * The Directory's chips: Graduates through `directory_graduates`, the four
- * verified kinds through `directory_search` plus `directory_badges` (see
- * kinds.ts for why). Badges only decorate a list: when they cannot be read the
- * members still show, with no plate, and no plate is ever invented.
+ * verified kinds through `directory_search(p_kind)` and `directory_verified`
+ * once the server has them (kinds.ts `kindChip`), else through
+ * `directory_search` plus `directory_badges` (today's scan). Badges only
+ * decorate a list: when they cannot be read the members still show, with no
+ * plate, and no plate is ever invented.
  */
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
-import { searchDirectory, readableError, type DirectoryCard, type DirectoryFilters, type WorkPref } from './api';
-import { KIND_SCAN_PAGES, KIND_SCAN_SIZE, badgeOf, tokensOfKind, type DirectoryChip, type MemberBadge } from './kinds.ts';
+import { directorySearchArgs, searchDirectory, readableError, type DirectoryCard, type DirectoryFilters, type WorkPref } from './api';
+import {
+  KIND_SCAN_PAGES,
+  KIND_SCAN_SIZE,
+  badgeOf,
+  kindChip,
+  orgsListed,
+  tokensOfKind,
+  type ChipRpc,
+  type DirectoryChip,
+  type MemberBadge,
+  type VerifiedOrg,
+} from './kinds.ts';
 import { sampleForumOn } from '../forum/sampleSwitch.ts';
 import type { VerifierKind } from '../employer/verifierKind.ts';
 
@@ -23,6 +36,8 @@ export type ChipOutcome =
       badges: ReadonlyMap<string, MemberBadge>;
       /** A kind chip stopped early: how many members it read of how many. */
       scanned: { read: number; of: number } | null;
+      /** Verified organizations with no community profile (directory_verified). */
+      orgs: VerifiedOrg[];
     }
   | { status: 'error'; error: string };
 
@@ -115,8 +130,13 @@ async function scanKind(kind: VerifierKind, f: DirectoryFilters): Promise<ChipOu
     total: results.length,
     badges,
     scanned: total > seen.length ? { read: seen.length, of: total } : null,
+    orgs: [],
   };
 }
+
+/** The one client, bounded like every directory search (10 seconds). */
+const chipCall: ChipRpc = (fn, args) =>
+  withDeadline(async () => await supabase.rpc(fn as never, args as never), fn, 10000) as never;
 
 /** One search for whichever chip is on. */
 export async function searchByChip(chip: DirectoryChip, f: DirectoryFilters, page = 0): Promise<ChipOutcome> {
@@ -126,9 +146,18 @@ export async function searchByChip(chip: DirectoryChip, f: DirectoryFilters, pag
     const badges = new Map<string, MemberBadge>(
       out.results.map((r) => [r.publicToken, { verifiedKind: r.verifiedKind, graduate: true }]),
     );
-    return { status: 'ok', results: out.results, total: out.total, badges, scanned: null };
+    return { status: 'ok', results: out.results, total: out.total, badges, scanned: null, orgs: [] };
   }
-  if (chip !== 'all') return scanKind(chip, f);
+  if (chip !== 'all') {
+    if (sampleForumOn()) return scanKind(chip, f);
+    return kindChip(
+      chipCall,
+      chip,
+      { args: directorySearchArgs(f, page, KIND_SCAN_SIZE), q: f.q, withOrgs: orgsListed(chip, page, f) },
+      (m) => readableError(m ?? undefined),
+      () => scanKind(chip, f),
+    );
+  }
   const out = await searchDirectory(f, page);
   if (out.status === 'error') return out;
   return {
@@ -137,5 +166,6 @@ export async function searchByChip(chip: DirectoryChip, f: DirectoryFilters, pag
     total: out.total,
     badges: await fetchBadges(out.results.map((r) => r.publicToken)),
     scanned: null,
+    orgs: [],
   };
 }

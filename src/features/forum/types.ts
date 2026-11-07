@@ -61,6 +61,9 @@ export type ForumMe = {
   mutedUntil: string | null;
   unreadNotices: number;
   badges: ForumBadge[];
+  /** When this account accepted the community rules on the server (SERVER_GAPS
+   *  row 10). Null when it has not, or the server does not say yet. */
+  rulesAcceptedAt: string | null;
 };
 
 export type ForumTopic = {
@@ -84,6 +87,15 @@ export type ForumTopic = {
   unread: boolean;
   /** Where "jump to first unread" lands. */
   firstUnreadPostId: string | null;
+  /** False while the member has never opened the topic; null when the server
+   *  does not send `ever_read` (SERVER_GAPS row 16). */
+  everRead: boolean | null;
+  /** The tracked reason and the topic's area, once forum_topics_list sends
+   *  them (rows 3 and 5). `detailKnown` only when both columns came back, so a
+   *  missing column is never read as "no reason". */
+  detailKnown: boolean;
+  trackedReason: string | null;
+  area: string | null;
   lastPostAt: string | null;
   createdAt: string;
 };
@@ -104,6 +116,9 @@ export type ForumTopicDetail = {
   trackedStatus: TrackedStatus | null;
   trackedReason: string | null;
   solutionPostId: string | null;
+  /** Who marked the Solution, by forum name (SERVER_GAPS row 8). Null when the
+   *  server does not say. */
+  solutionMarkedByName: string | null;
   replyCount: number;
   voteCount: number;
   myVote: boolean;
@@ -145,7 +160,14 @@ export type ForumPost = {
   bookmarked: boolean;
   publishedAt: string | null;
   createdAt: string;
+  /** True only for the author while the post waits for their edit after an
+   *  edit request; null when the server does not send `please_edit` (row 29). */
+  pleaseEdit: boolean | null;
+  /** The people this post mentions who have a published profile (row 17). */
+  mentions: ForumMention[];
 };
+
+export type ForumMention = { name: string; token: string };
 
 export type ForumNotice = {
   id: number;
@@ -158,6 +180,8 @@ export type ForumNotice = {
   expiresAt: string | null;
   readAt: string | null;
   createdAt: string;
+  /** The post's topic, once forum_notices_mine sends it (row 2). */
+  topicId: string | null;
 };
 
 export type ForumBookmark = {

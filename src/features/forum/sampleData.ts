@@ -219,6 +219,10 @@ function post(
     bookmarked: false,
     publishedAt: ago(minutes),
     createdAt: ago(minutes),
+    // The server after the 2026-11-07 package: it says whether a post waits
+    // for its author's edit, and whom it mentions.
+    pleaseEdit: false,
+    mentions: [],
     ...over,
   };
 }
@@ -255,6 +259,11 @@ function topic(
     labKey: null,
     unread: false,
     firstUnreadPostId: null,
+    // The server after the 2026-11-07 package: a topic opened before, and its
+    // reason and area in the list itself.
+    everRead: true,
+    detailKnown: true,
+    area: null,
     lastPostAt: ago(minutes),
     createdAt: ago(minutes),
     fields: {},
@@ -310,6 +319,7 @@ function seed(): SampleTopic[] {
     topic(SAMPLE_TOPIC.welcome, 'announcements', WELCOME_TITLE, FOUNDER, minutesSince('2026-11-02T12:00:00Z'), {
       pinned: true,
       unread: !seen,
+      everRead: seen,
       posts: [
         post(FOUNDER, WELCOME_PARAGRAPHS.join('\n\n'), minutesSince('2026-11-02T12:00:00Z'), {
           isOpening: true,
@@ -411,6 +421,7 @@ function seedNotices(): ForumNotice[] {
     expiresAt: null,
     readAt: null,
     createdAt: ago(id * 10),
+    topicId: null,
     ...over,
   });
   return [
@@ -459,8 +470,8 @@ const findPost = (id: string): { topic: SampleTopic; post: ForumPost } | undefin
 };
 
 function bare(t: SampleTopic): ForumTopic {
-  const { fields: _f, trackedReason: _r, posts: _p, opened: _o, ...row } = t;
-  return row;
+  const { fields, posts: _p, opened: _o, ...row } = t;
+  return { ...row, area: typeof fields.area === 'string' ? fields.area : null };
 }
 
 /* ── Reads ───────────────────────────────────────────────────────────── */
@@ -500,6 +511,7 @@ export function sampleHome(): {
       trust: empty ? 'new' : 'member',
       mutedUntil: null,
       unreadNotices: empty ? 0 : unread,
+      rulesAcceptedAt: null,
       badges: empty
         ? []
         : [
@@ -567,6 +579,7 @@ export function sampleThread(id: string): { topic: ForumTopicDetail; posts: Foru
       trackedStatus: t.trackedStatus,
       trackedReason: t.trackedReason,
       solutionPostId: t.posts.find((p) => p.isSolution)?.id ?? null,
+      solutionMarkedByName: null,
       replyCount: t.replyCount,
       voteCount: t.voteCount,
       myVote: t.myVote,

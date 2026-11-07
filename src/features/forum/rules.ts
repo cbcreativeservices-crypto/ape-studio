@@ -81,6 +81,7 @@ const REFUSALS: Record<string, string> = {
   no_category: 'That category is no longer available.',
   already_open: 'Your appeal is already with us.',
   bad_reason: 'Choose a reason first.',
+  rules_not_accepted: 'Agree to the community rules to post. Read them, tap I AGREE, then try again.',
 };
 
 /** The `forum:<code>` a server refusal carries, or null. */
@@ -669,15 +670,19 @@ export function moderationFace(p: ForumPost): ModFace {
       kind: 'review',
       head: 'BEING REVIEWED',
       text: p.modReason ?? `Your ${noun(p)} is waiting for a review. Only you can see it for now.`,
-      // A "please edit" note carries its own words; a plain hold (by the AI, the
-      // cap or the owner) says the neutral HOLD_SENTENCE and waits for a person.
+      // Once the server sends `please_edit` (SERVER_GAPS row 29), that flag is
+      // the answer. Before it, a "please edit" note carries its own words and a
+      // plain hold (by the AI, the cap or the owner) says the neutral
+      // HOLD_SENTENCE and waits for a person.
       canEdit:
-        !urgent &&
-        !!p.modRule &&
-        p.modRule !== 'none' &&
-        !NOT_EDITABLE_RULES.includes(p.modRule) &&
-        !!p.modReason &&
-        p.modReason !== HOLD_SENTENCE,
+        p.pleaseEdit === true || p.pleaseEdit === false
+          ? p.pleaseEdit && !urgent && !NOT_EDITABLE_RULES.includes(p.modRule ?? '')
+          : !urgent &&
+            !!p.modRule &&
+            p.modRule !== 'none' &&
+            !NOT_EDITABLE_RULES.includes(p.modRule) &&
+            !!p.modReason &&
+            p.modReason !== HOLD_SENTENCE,
       crisis,
     };
   }
@@ -758,8 +763,10 @@ export function noticeFace(n: ForumNotice): NoticeFace {
       };
     case 'hidden':
       // Hidden by member reports, waiting for a review: not a removal yet, and
-      // no AI has looked at it.
-      if (n.message === HIDDEN_FOR_REVIEW && !n.rule) {
+      // no AI has looked at it. The server after the 2026-11-07 package stores
+      // that notice with its own rule (SERVER_GAPS row 30); before it, the
+      // sentence and no rule are how it is recognized.
+      if (n.rule === REPORTS_RULE || (n.message === HIDDEN_FOR_REVIEW && !n.rule)) {
         return { ...base, tone: 'hold', head: 'BEING REVIEWED', text: HIDDEN_FOR_REVIEW, how: null };
       }
       return {
@@ -800,6 +807,16 @@ export function topicA11y(t: ForumTopic): string {
   if (t.isNewMember) parts.push('new member');
   parts.push(t.replyCount === 1 ? '1 reply' : `${t.replyCount} replies`);
   return parts.join(', ');
+}
+
+/**
+ * The blue dot on a topic row. `unread` is true for every topic a member has
+ * never opened, so a new member saw a dot on nearly everything (SERVER_GAPS row
+ * 16). Once the server sends `ever_read`, the dot is for new replies in a topic
+ * the member has read before. A server without it keeps today's dot.
+ */
+export function showsUnreadDot(t: Pick<ForumTopic, 'unread' | 'everRead'>): boolean {
+  return t.unread && t.everRead !== false;
 }
 
 /** The Pro Lounge feed: every lounge category, newest activity first. */
@@ -1098,6 +1115,17 @@ export function appealOverturn(
   return { overturn: true, why: null };
 }
 
+/** The edit an appeal is about, when forum_admin_appeals sends it (row 33):
+ *  shown before OVERTURN, which publishes it. Never for child safety. */
+export function appealEditOf(
+  a: { postBody: string | null } & PendingFields,
+): { title: string | null; text: string | null } | null {
+  if (!a.pendingKnown || !a.pendingState) return null;
+  if (isChildItem({ urgentCategory: null, postBody: a.postBody })) return null;
+  if ((a.pendingBody ?? '').startsWith(CHILD_MASK_PREFIX)) return null;
+  return { title: a.pendingTitle ?? null, text: a.pendingBody ?? null };
+}
+
 export const APPEAL_EDIT_UNSEEN =
   'This appeal is about an edit the app cannot show yet, so OVERTURN is off. UPHOLD keeps the decision; the edit stays unpublished.';
 export const APPEAL_STATE_UNKNOWN =
@@ -1300,6 +1328,66 @@ export function hiddenOutcomeNote(o: { urgentCategory: string | null; reason: st
   return o.reason || CHILD_SAFETY_REMOVED;
 }
 
+/**
+ * The name after "MARKED BY" on a Solution. The server's marker once it sends
+ * one (SERVER_GAPS row 8): an admin, or a Regular in a lab thread, is not the
+ * asker. A server without it: the asker, as before, and nobody for a lab thread.
+ */
+export function solutionMarker(
+  topic: { solutionMarkedByName?: string | null } | null | undefined,
+  askerName: string | null,
+): string | null {
+  return topic?.solutionMarkedByName || askerName || null;
+}
+
+/**
+ * Names whose @mentions are drawn in a thread: everyone posting in it, and,
+ * once the server sends them (row 17), everyone a post mentions.
+ */
+export function threadMentionNames(posts: Pick<ForumPost, 'author' | 'mentions'>[]): string[] {
+  const out = new Set<string>();
+  for (const p of posts) {
+    out.add(p.author.name);
+    for (const m of p.mentions ?? []) out.add(m.name);
+  }
+  return [...out];
+}
+
+/* ── Two server shapes (the 2026-11-07 package) ──────────────────────── */
+
+/**
+ * "This server does not have that function, or not with these arguments, yet":
+ * PostgREST's PGRST202 (also its answer to an unknown argument name), or
+ * Postgres' undefined_function 42883. Every new call falls back on exactly this,
+ * and on nothing else: a network failure is told as one.
+ */
+export function missingFunction(err: { code?: unknown; message?: unknown } | null | undefined): boolean {
+  if (!err) return false;
+  if (err.code === 'PGRST202' || err.code === '42883') return true;
+  const m = typeof err.message === 'string' ? err.message : '';
+  return /could not find the function/i.test(m) || /function [\w.]+\(.*\) does not exist/i.test(m);
+}
+
+/** Block, when the server cannot block from a post and the author has no profile. */
+export const BLOCK_NO_PROFILE = 'This member has no community profile to block. You can report the post instead.';
+
 /** The rules agreement is kept on this phone; when the phone refused to keep it
  *  the post is not sent, and the member is told. */
 export const RULES_NOT_SAVED = 'This phone could not save that you agreed to the rules, so nothing was posted. Try again.';
+
+/**
+ * Whether the rules agreement counts as kept. The server's record
+ * (forum_rules_accept, SERVER_GAPS row 10) is the one that follows the account;
+ * the phone's record is the fallback for a server without it, or a call that
+ * did not land. Either one is enough to post: the server itself still refuses
+ * with `rules_not_accepted` when its own record is missing and its check is on.
+ */
+export function rulesKept(device: boolean, server: 'recorded' | 'missing' | 'failed'): boolean {
+  return server === 'recorded' || device;
+}
+
+/** A post refused because the server has no rules agreement for the account:
+ *  the popup is shown again, so I AGREE records it there. */
+export function asksForRules(code: string | null | undefined): boolean {
+  return code === 'rules_not_accepted';
+}

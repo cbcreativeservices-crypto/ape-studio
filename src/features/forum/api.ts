@@ -19,7 +19,16 @@ import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { blockMember } from '../directory/api';
-import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics, sessionKindOf, signInFace } from './rules.ts';
+import { BLOCK_NO_PROFILE, FORUM_CLOSED, FORUM_UNREADABLE, forumErrorText, sessionKindOf, signInFace } from './rules.ts';
+import {
+  acceptRulesBoth,
+  blockByPost,
+  loungeTopics,
+  noticeEditFrom,
+  type EditTarget,
+  type Got,
+  type RpcCall,
+} from './serverShapes.ts';
 import {
   appealOf,
   bookmarkOf,
@@ -104,6 +113,17 @@ async function rpc<T>(fn: string, args: Record<string, unknown> | undefined, map
   }
 }
 
+/** The one client, as the two-shape flows (serverShapes.ts) call it. */
+const call: RpcCall = (fn, args) => supabase.rpc(fn as never, args as never) as never;
+
+/** A two-shape flow's answer as a ForumResult: the server's message in words
+ *  (with the sign-in check), or words the flow already has. */
+async function resultOf<T>(g: Got<T>): Promise<ForumResult<T>> {
+  if (g.ok) return done(g.value);
+  if (g.words) return { ok: false, error: g.words, code: null };
+  return failChecked(g.message);
+}
+
 const rows = <T,>(map: (v: unknown) => T) => (raw: unknown): T[] => (Array.isArray(raw) ? raw.map(map) : []);
 const yes = (raw: unknown): true => {
   if (raw === false) throw new Error('refused');
@@ -156,19 +176,14 @@ export async function fetchTopics(
 }
 
 /**
- * The Pro Lounge reads as one feed. The server lists one category at a time, so
- * this merges them; one failed read fails the feed, never a feed with a
- * category quietly missing.
+ * The Pro Lounge reads as one feed: one `forum_topics_list(p_group)` call once
+ * the server has it, so Top this week ranks across the lounge; before that,
+ * the lounge categories merged, and one failed read fails the feed, never a
+ * feed with a category quietly missing (serverShapes.loungeTopics).
  */
 export async function fetchLoungeTopics(sort: TopicSort): Promise<ForumResult<ForumTopic[]>> {
   if (sampleForumOn()) return sampleRead(() => data().sampleLounge());
-  const categories = await rpc('forum_categories_list', undefined, rows(categoryOf));
-  if (!categories.ok) return categories;
-  const slugs = categories.value.filter((c) => c.groupSlug === PRO_LOUNGE_GROUP).map((c) => c.slug);
-  const lists = await Promise.all(slugs.map((s) => fetchTopics(s, sort, 30, 0)));
-  const bad = lists.find((l) => !l.ok);
-  if (bad && !bad.ok) return bad;
-  return done(mergeTopics(lists.map((l) => (l.ok ? l.value : []))));
+  return resultOf(await loungeTopics(call, sort));
 }
 
 export type ForumThread = { topic: ForumTopicDetail; posts: ForumPost[]; rights: ForumRights | null };
@@ -240,6 +255,22 @@ export async function fetchLabThread(labKey: string): Promise<ForumResult<string
 }
 
 export type MyModeration = { notices: ForumNotice[]; appeals: ForumAppeal[] };
+
+/**
+ * Edit and Repost from a notice: the whole post, read from its thread, once the
+ * notice says which thread (SERVER_GAPS row 2). Null when that is not known or
+ * the read failed: the notice's excerpt is used, and the screen says it is
+ * only the start.
+ */
+export async function fetchNoticeEdit(
+  topicId: string | null,
+  postId: string,
+): Promise<{ slug: string; edit: EditTarget } | null> {
+  if (!topicId) return null;
+  if (sampleForumOn()) return noticeEditFrom(data().sampleThread(topicId), postId);
+  const thread = await fetchThread(topicId);
+  return thread.ok ? noticeEditFrom(thread.value, postId) : null;
+}
 
 export async function fetchMyModeration(): Promise<ForumResult<MyModeration>> {
   if (sampleForumOn()) return sampleRead(() => data().sampleModeration());
@@ -349,11 +380,31 @@ export async function reportPost(postId: string, reason: string, detail?: string
   return rpc('forum_report', { p_post_id: postId, p_reason: reason, p_detail: detail ?? null }, () => true as const);
 }
 
-/** Block goes through the directory's own block, so it reaches Requests too. */
-export async function blockAuthor(token: string): Promise<ForumResult<true>> {
-  if (sampleForumOn()) return done(data().sampleBlock(token));
-  const r = await blockMember(token);
-  return r.ok ? done(true) : { ok: false, error: r.error, code: null };
+/**
+ * Block a post's author. The same block row as the Directory's, so it reaches
+ * Requests too: `forum_block_author` once the server has it (an author with no
+ * published profile can then be blocked), else the Directory's token block.
+ */
+export async function blockPostAuthor(postId: string, token: string | null): Promise<ForumResult<true>> {
+  if (sampleForumOn()) {
+    return token ? done(data().sampleBlock(token)) : { ok: false, error: BLOCK_NO_PROFILE, code: null };
+  }
+  return resultOf(
+    await blockByPost(call, postId, token, async (t) => {
+      const r = await blockMember(t);
+      return r.ok ? { ok: true } : { ok: false, error: r.error ?? FORUM_UNREADABLE };
+    }),
+  );
+}
+
+/**
+ * I AGREE to the community rules: kept on this phone AND recorded on the
+ * account with `forum_rules_accept()` (SERVER_GAPS row 10). True when either
+ * kept it; the phone's record covers a server without the function.
+ */
+export async function acceptForumRules(device: () => Promise<boolean>): Promise<boolean> {
+  if (sampleForumOn()) return device();
+  return acceptRulesBoth(device, call);
 }
 
 export async function voteIdea(topicId: string, on: boolean): Promise<ForumResult<number>> {

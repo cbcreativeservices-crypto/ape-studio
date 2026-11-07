@@ -11,6 +11,7 @@ import type {
   ForumBookmark,
   ForumCategory,
   ForumMe,
+  ForumMention,
   ForumNotice,
   ForumPost,
   ForumRights,
@@ -33,6 +34,9 @@ const str = (v: unknown): string => (typeof v === 'string' ? v : '');
 const strOr = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 ? v : null);
 const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
 const yes = (v: unknown): boolean => v === true;
+/** A boolean column, or null when the server did not send it at all (the
+ *  server before the 2026-11-07 package). Never a guess. */
+const flag = (r: Row, key: string): boolean | null => (key in r ? r[key] === true : null);
 
 const TRUST: readonly string[] = ['new', 'member', 'regular', 'leader'];
 const KINDS: readonly string[] = ['employer', 'company', 'institution', 'instructor'];
@@ -102,6 +106,7 @@ export function meOf(v: unknown): ForumMe {
     mutedUntil: strOr(r.muted_until),
     unreadNotices: num(r.unread_notices),
     badges: (Array.isArray(r.badges) ? r.badges : []).map(badgeOf).filter((b) => b.slug),
+    rulesAcceptedAt: strOr(r.rules_accepted_at),
   };
 }
 
@@ -132,6 +137,10 @@ export function topicOf(v: unknown): ForumTopic {
     labKey: strOr(r.lab_key),
     unread: yes(r.unread),
     firstUnreadPostId: strOr(r.first_unread_post_id),
+    everRead: flag(r, 'ever_read'),
+    detailKnown: 'tracked_reason' in r && 'area' in r,
+    trackedReason: strOr(r.tracked_reason),
+    area: strOr(r.area),
     lastPostAt: strOr(r.last_post_at),
     createdAt: str(r.created_at),
   };
@@ -154,6 +163,7 @@ export function topicDetailOf(v: unknown): ForumTopicDetail {
     trackedStatus: strOr(r.tracked_status) as TrackedStatus | null,
     trackedReason: strOr(r.tracked_reason),
     solutionPostId: strOr(r.solution_post_id),
+    solutionMarkedByName: strOr(r.solution_marked_by_name),
     replyCount: num(r.reply_count),
     voteCount: num(r.vote_count),
     myVote: yes(r.my_vote),
@@ -167,6 +177,19 @@ export function topicDetailOf(v: unknown): ForumTopicDetail {
 }
 
 const REACTIONS: readonly string[] = ['helpful', 'thanks', 'insightful'];
+
+/** `[{name, token}]` from forum_posts_list (row 17). A row without both is
+ *  dropped: a mention is only drawn for someone who can be opened. */
+export function mentionsOf(v: unknown): ForumMention[] {
+  if (!Array.isArray(v)) return [];
+  const out: ForumMention[] = [];
+  for (const m of v.map(obj)) {
+    const name = strOr(m.name);
+    const token = strOr(m.token);
+    if (name && token && !out.some((o) => o.token === token)) out.push({ name, token });
+  }
+  return out;
+}
 
 /** Lab keys only: a card's other fields are client text nobody moderated. */
 export function labKeysOf(cards: unknown): string[] {
@@ -210,6 +233,8 @@ export function postOf(v: unknown): ForumPost {
     bookmarked: yes(r.bookmarked),
     publishedAt: strOr(r.published_at),
     createdAt: str(r.created_at),
+    pleaseEdit: flag(r, 'please_edit'),
+    mentions: mentionsOf(r.mentions),
   };
 }
 
@@ -226,6 +251,7 @@ export function noticeOf(v: unknown): ForumNotice {
     expiresAt: strOr(r.expires_at),
     readAt: strOr(r.read_at),
     createdAt: str(r.created_at),
+    topicId: strOr(r.topic_id),
   };
 }
 

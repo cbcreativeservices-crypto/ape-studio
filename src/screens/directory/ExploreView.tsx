@@ -12,12 +12,14 @@
  * how you fish for the characteristics that are not allowed to be filters.
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { notify } from '../../lib/confirm';
+import { employerPageUrl } from '../../features/employer/publicPage';
 import { colors, fonts } from '../../theme/tokens';
 import { DirectoryChipRow, RecentGraduates } from './DirectoryChips';
 import { KindPlate, type PlateKey } from './KindPlate';
 import { searchByChip, type ChipOutcome, type GraduateCard } from '../../features/directory/kindsApi';
-import { badgeLabel, chipEmpty, scanNote, type DirectoryChip, type MemberBadge } from '../../features/directory/kinds';
+import { badgeLabel, chipEmpty, scanNote, type DirectoryChip, type MemberBadge, type VerifiedOrg } from '../../features/directory/kinds';
 import { sampleState } from '../../features/forum/sampleSwitch';
 import { cardColumn } from '../../theme/readingColumn';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
@@ -110,6 +112,39 @@ const MemberCard = memo(function MemberCard({
             {where ? <Text style={st.where}>{where}</Text> : null}
           </View>
         ) : null}
+      </View>
+      <Text style={st.chev}>›</Text>
+    </Pressable>
+  );
+});
+
+/**
+ * A verified organization with no community profile (directory_verified,
+ * SERVER_GAPS row 14). It has no Directory profile to open, so the card opens
+ * its public page on the website.
+ */
+const OrgCard = memo(function OrgCard({ org }: { org: VerifiedOrg }) {
+  const url = employerPageUrl(org.pageToken);
+  const plate = org.kind.toUpperCase();
+  return (
+    <Pressable
+      onPress={() => {
+        if (!url) return;
+        void Linking.openURL(url).catch(() => notify('Couldn’t open the page', `Open this address in your browser: ${url}`));
+      }}
+      disabled={!url}
+      style={({ pressed }) => [st.card, pressed && st.cardPressed]}
+      accessibilityRole="link"
+      accessibilityLabel={`${org.name}. ${plate}. Verified, no community profile`}
+      accessibilityHint="Opens their page on the website"
+    >
+      <ChannelBadge name={org.name} led="off" steel />
+      <View style={st.cardBody}>
+        <View style={st.nameRow}>
+          <Text style={st.cardName}>{org.name}</Text>
+          <KindPlate tone={org.kind as PlateKey} label={plate} />
+        </View>
+        <Text style={st.cardMeta}>Verified. No community profile yet: opens their page on the website.</Text>
       </View>
       <Text style={st.chev}>›</Text>
     </Pressable>
@@ -254,6 +289,8 @@ export function ExploreView({
   const [badges, setBadges] = useState<ReadonlyMap<string, MemberBadge>>(new Map());
   /** A kind chip stopped before the end of the members: say so. */
   const [scanned, setScanned] = useState<{ read: number; of: number } | null>(null);
+  /** Verified organizations with no community profile, under their kind chip. */
+  const [orgs, setOrgs] = useState<VerifiedOrg[]>([]);
   const [q, setQ] = useState('');
   const [rows, setRows] = useState<DirectoryCard[]>([]);
   const [total, setTotal] = useState(0);
@@ -324,6 +361,7 @@ export function ExploreView({
       setRows([]);
       setTotal(0);
       setScanned(null);
+      setOrgs([]);
       return;
     }
     setErr(null);
@@ -331,6 +369,7 @@ export function ExploreView({
     setTotal(out.total);
     setBadges(out.badges);
     setScanned(out.scanned);
+    setOrgs(out.orgs);
   }, []);
 
   /** Fetch the next page and APPEND. A failure here leaves what is already
@@ -535,7 +574,7 @@ export function ExploreView({
           clears the rows (run()), so an error never sits over stale results. */}
       {busy && visibleRows.length === 0 ? (
         <Loading label="Searching the directory…" />
-      ) : !busy && err ? null : !busy && visibleRows.length === 0 ? (
+      ) : !busy && err ? null : !busy && visibleRows.length === 0 && orgs.length === 0 ? (
         <EmptyState
           title={chip === 'all' ? 'No members match yet' : chipEmpty(chip).title}
           lines={[
@@ -550,10 +589,13 @@ export function ExploreView({
               ? 'Searching the directory…'
               : hasMore
                 ? `Showing ${visibleRows.length} of ${visibleTotal} ${chip === 'graduates' ? 'graduates' : 'members'}`
-                : countLine(chip, visibleTotal)}
+                : countLine(chip, visibleTotal + orgs.length)}
           </Text>
           {visibleRows.map((r) => (
             <MemberCard key={r.publicToken} r={r} badge={badges.get(r.publicToken) ?? null} onOpen={onOpenMember} />
+          ))}
+          {orgs.map((o) => (
+            <OrgCard key={`org-${o.pageToken}`} org={o} />
           ))}
           {scanned ? <Text style={st.scanned}>{scanNote(scanned.read, scanned.of)}</Text> : null}
           {alsoVisible.length > 0 ? <Text style={st.alsoHead}>ALSO IN THE DIRECTORY</Text> : null}

@@ -42,6 +42,7 @@ import {
   parseAskBody,
   refusalNeedsProfile,
   RULES_NOT_SAVED,
+  asksForRules,
   topicFrom,
   type AskFormKind,
 } from '../../../features/forum/rules';
@@ -231,11 +232,17 @@ function AskForm({
     if (problem || (!edit && !labThread && !category)) return;
     setPosting(true);
     setError(null);
+    // The server has no rules agreement for this account (its check is on):
+    // the popup comes back, and I AGREE records it there before posting.
+    const refused = (r: { error: string; code: string | null }) => {
+      setError(r.error);
+      if (asksForRules(r.code)) setRulesOpen(true);
+    };
     if (edit) {
       const body = guided ? composeAskBody(values) : values.body.trim();
       const r = await editPost(edit.postId, body, edit.isOpening ? values.title.trim() : undefined);
       setPosting(false);
-      if (!r.ok) setError(r.error);
+      if (!r.ok) refused(r);
       else safeGoBack(navigation as never);
       return;
     }
@@ -244,7 +251,7 @@ function AskForm({
       const r = await submitPost({ body: values.body.trim(), clientId: clientId.current, labThread });
       setPosting(false);
       if (!r.ok) {
-        setError(r.error);
+        refused(r);
         return;
       }
       void clearDraft(draftName);
@@ -273,7 +280,7 @@ function AskForm({
     });
     setPosting(false);
     if (!r.ok) {
-      setError(r.error);
+      refused(r);
       return;
     }
     void clearDraft(draftName);
