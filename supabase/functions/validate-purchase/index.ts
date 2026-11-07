@@ -651,11 +651,18 @@ Deno.serve(async (req) => {
     ? { error: null }
     : existing
     ? await admin.from('entitlements').update(row).eq('id', prior!.id)
-    : priorUnknown
-      ? await admin
-          .from('entitlements')
-          .upsert({ user_id: userId, product: ACADEMY_PRODUCT, ...row }, { onConflict: 'user_id,product' })
-      : await admin.from('entitlements').insert({ user_id: userId, product: ACADEMY_PRODUCT, ...row });
+    : await admin
+        .from('entitlements')
+        .upsert(
+          { user_id: userId, product: ACADEMY_PRODUCT, ...row },
+          // We read "no row", yet one can land before this write: Android checks
+          // a new purchase twice at once (the listener, and the re-check on
+          // returning from the Play sheet), and a plain insert then failed the
+          // loser with grant_failed (the first real sale, 2026-11-05). That row
+          // is this same purchase, so keep it. A store_ref held by another
+          // account is a different index and is still refused.
+          { onConflict: 'user_id,product', ignoreDuplicates: !priorUnknown },
+        );
 
   // The receipt verified but the grant did not land — do NOT tell the client
   // it succeeded, or it will finishTransaction and the paid user gets nothing.
