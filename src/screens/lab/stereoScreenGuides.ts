@@ -29,8 +29,9 @@
  * Deliberately NOT claimed (screen-code notes for the auditors): the
  * DESIGNED RESPONSE goniometer is drawn from WIDTH and SOURCE only (PAN and
  * MONO-FOLD do not reach LissajousGraph), so no step reads the goniometer
- * after a fold or a pan; and the flow display folds AFTER the pan while the
- * engine folds BEFORE it, so no step combines MONO CHECK with PAN L or R.
+ * after a fold or a pan. The flow display and the engine both fold AFTER the
+ * pan (engine since D41, must-do E5); no step combines MONO CHECK with PAN L
+ * or R.
  *
  * STEPPED: each section must fit SCREEN_GUIDE_BUDGET (types.ts).
  * Copy rules: plain language, short sentences; KNOWLEDGE, never skills; no

@@ -43,9 +43,10 @@ const LOADERS: Record<string, () => unknown> = {
   // In-app purchases (OpenIAP). Installed 2026-09-06; the paywall's lazy loader
   // in features/commercial/purchase.ts resolves it through here.
   'expo-iap': () => require('expo-iap'),
-  // (expo-location REMOVED for the final store build — owner 2026-10-24: "remove
-  //  location … return to that in a future build". Next build: reinstall it, add
-  //  'expo-location' here, restore the app.json keys. location.ts gates itself off.)
+  // MultiMeter snapshot TAG LOCATION. Out of the final store build (owner
+  // 2026-10-24), back for the next one (owner 2026-11-07, must-do E4). Foreground
+  // only, a single fix, kept on the device; location.ts stays gated on this.
+  'expo-location': () => require('expo-location'),
   // Ships inside the `expo` package (autolinked in every build); the CenterLock
   // stage tuner keeps the screen awake while it is open (2026-09-06).
   'expo-keep-awake': () => require('expo-keep-awake'),

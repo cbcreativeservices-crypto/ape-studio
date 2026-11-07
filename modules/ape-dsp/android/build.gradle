@@ -64,4 +64,7 @@ dependencies {
   // Oboe 1.10.0 (2024-09-15) — adds Android 15 16 KB-page support; AAudio path
   // on API 27+, honest OpenSL-ES fallback below (see the module's input logic).
   implementation 'com.google.oboe:oboe:1.10.0'
+  // ReactHost's before-destroy listener (ApeDspModule.kt, must-do D20). The
+  // same unversioned line expo-asset, expo-font and expo-image use.
+  implementation 'com.facebook.react:react-android'
 }

@@ -1656,11 +1656,14 @@ export const PhaseLabScreen = () => <FxLabScreen config={phaseConfig} />;
 function stereoCaptionExtras(v: Record<number, number>): string {
   const bass = !(v[P.bassMonoHz] > 0)
     ? ''
-    : v[P.monoFold] > 0.5 || v[P.widthPct] === 0
+    : (v[P.monoFold] > 0.5 && v[P.pan] === 0) || v[P.widthPct] === 0
       ? ' BASS-MONO changes nothing here: the SIDE is already gone.'
       : ` BASS-MONO ${v[P.bassMonoHz]} Hz: only content below ${v[P.bassMonoHz]} Hz changes, so nothing changes on the 440 Hz tone. Use PINK NOISE · STEREO on headphones; a phone speaker will not reproduce it.`;
   const pan = v[P.pan] !== 0 ? ' The goniometer above draws the width before the pan; the stage shows PAN.' : '';
-  return bass + pan;
+  // The engine folds AFTER the pan (D41): with one channel muted nothing is
+  // left to cancel against, so "the SIDE cancels" holds at centre only.
+  const foldedPan = v[P.monoFold] > 0.5 && v[P.pan] !== 0 ? ' With PAN off centre, the fold adds what the pan left, so the SIDE does not fully cancel.' : '';
+  return bass + pan + foldedPan;
 }
 
 // ────────────────────────────────────────────────────── LAB 15 · Stereo ──

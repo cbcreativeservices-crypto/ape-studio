@@ -20,6 +20,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -50,6 +52,15 @@ class ApeDspModule : Module() {
   // quiet room (real mic self-noise is never exact zero) never trips it.
   private var recordingCallback: AudioManager.AudioRecordingCallback? = null
   @Volatile private var osSilenced = false
+  // REACT INSTANCE DEATH (tuner soak freeze, must-do D20). OnDestroy arrives
+  // from inside ReactInstance.destroy(), and the 2026-09-13 logcat shows the
+  // engine still running after "Destroying ReactInstance" on a wedged reload,
+  // holding the mic into a dead runtime. ReactHost runs this listener just
+  // BEFORE that step, on reload as well as on destroy. It never runs on a
+  // screen handoff or on backgrounding, so the warm mic session is untouched:
+  // those are JS and activity events, and the instance lives on through them.
+  private var reactHost: ReactHost? = null
+  private var onInstanceDying: (() -> Unit)? = null
 
   companion object {
     init { System.loadLibrary("apedspjni") }
@@ -143,6 +154,27 @@ class ApeDspModule : Module() {
   private external fun nativeRt60Curve(h: Long): FloatArray
   private external fun nativeRt60CurveStep(h: Long): Double
 
+  private fun detachFromReactHost() {
+    onInstanceDying?.let { reactHost?.removeBeforeDestroyListener(it) }
+    onInstanceDying = null
+    reactHost = null
+  }
+
+  /** The hosting React instance is about to die: nothing of ours may keep the
+   *  audio hardware. The handle stays valid: OnDestroy still frees it, and a
+   *  second stop there is a no-op. Runs on the UI thread, ahead of OnDestroy
+   *  in ReactHost's task chain, so the two never overlap. */
+  private fun stopAudioForInstanceDeath() {
+    detachFromReactHost()
+    outputLostPoll.removeCallbacks(outputLostCheck)
+    if (handle != 0L) {
+      nativeStopCapture(handle)
+      nativeGenStop(handle)
+      nativeBinStop(handle)
+      nativeModStop(handle)
+    }
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ApeDsp")
 
@@ -154,6 +186,14 @@ class ApeDspModule : Module() {
     OnCreate {
       handle = nativeCreate()
       outputLostPoll.postDelayed(outputLostCheck, 1000)
+      // The module lives one React instance; the host outlives reloads, so the
+      // listener is removed again on the way out.
+      val listener: () -> Unit = { stopAudioForInstanceDeath() }
+      reactHost = (appContext.reactContext?.applicationContext as? ReactApplication)?.reactHost
+      reactHost?.let {
+        onInstanceDying = listener
+        it.addBeforeDestroyListener(listener)
+      }
       // React to output route changes (headphone plug/unplug, BT connect) so the
       // speaker-safety HPF follows the route even when only the generator runs.
       val ctx = appContext.reactContext
@@ -198,6 +238,7 @@ class ApeDspModule : Module() {
       }
     }
     OnDestroy {
+      detachFromReactHost()
       outputLostPoll.removeCallbacks(outputLostCheck)
       val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
       deviceCallback?.let { am?.unregisterAudioDeviceCallback(it) }

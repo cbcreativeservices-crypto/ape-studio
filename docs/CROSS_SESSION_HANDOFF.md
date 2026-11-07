@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 13:30 · ccode · next-build items (this commit)
+changed: forum-next-build [MD:E4] [MD:E5] [MD:D20]: MultiMeter TAG LOCATION restored (expo-location 57.0.23, iOS strings incl. both Always keys, Android coarse + fine); Fill-in/Matching end-of-round review with Research and learn more · View images; Stereo MONO CHECK folds after the pan (golden 209/209); Android stops capture and voices on React instance death (ReactHost before-destroy). Camera optional was already in. E3: no app view built (website /instructor is live and covers it).
+affects other side: location adds new store-form facts: Play location permission declaration and Data safety (precise + approximate location, on-device only), Apple App Privacy unchanged if location never leaves the device (lawyer to confirm). Privacy Policy §5 + §13.3 wording is drafted in Downloads/2026-10-24_PRIVACY_LOCATION_AND_LOGOUT_WORDING.md. Nothing on the server changed (read-only checks only).
+needs: [MD:E4] owner + lawyer: Privacy Policy §5/§13.3 before the build ships; Comp A: Play location declaration and Data safety update; owner reviews the review-panel copy. [MD:E3] owner decides whether the app needs its own instructor view.
+
 ### 2026-11-07 14:30 · ccode · forum slice 2 (this commit)
 changed: Audio Community Forum slice 2 on forum-next-build [MD:D44]: rest of the launch set, Directory kinds and graduates, owner queue in Abuse reports, Discuss this lab, iPhone swipe on the five forum screens (owner-approved one-time addition). Nothing on the server changed; read-only checks only. Forum stays OFF.
 affects other side: docs/forum/SERVER_GAPS.md is the source for the next Comp A package (24 rows, each with the smallest server change). Not exercised against the live server: every screen was seen on the dev sample at 375 wide in the web preview.

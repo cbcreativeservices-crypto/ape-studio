@@ -1099,6 +1099,47 @@ int main() {
         if (std::fabs(L2[i] + R2[i]) > 1e-4f) { anti = false; break; }
       truthy("Stereo: R-polarity invert → L = -R (cancels in mono)", anti);
     }
+    // 12i-b. MONO CHECK folds AFTER the pan (D41, must-do E5): the sum a mono
+    //      speaker plays, on both channels, whatever the pan. Before this it
+    //      folded first, so PAN L left the right channel silent.
+    {
+      auto fold = [&](double pan, bool monoCheck, double& outL, double& outR) {
+        StereoEffect st;
+        st.configure(fs);
+        st.setEnabled(true);
+        st.setParam(2, pan);
+        st.setParam(3, monoCheck ? 1.0 : 0.0);
+        std::vector<float> L(512), R(512);
+        for (size_t i = 0; i < L.size(); ++i) {
+          L[i] = (float)(0.5 * std::sin(0.05 * i));
+          R[i] = (float)(0.25 * std::sin(0.11 * i));
+        }
+        double eIn = 0.0;
+        for (size_t i = 0; i < L.size(); ++i) eIn += L[i] * L[i];
+        st.processStereo(L.data(), R.data(), (uint32_t)L.size());
+        double eL = 0.0, eR = 0.0, diff = 0.0;
+        for (size_t i = 0; i < L.size(); ++i) {
+          eL += L[i] * L[i];
+          eR += R[i] * R[i];
+          diff += (L[i] - R[i]) * (L[i] - R[i]);
+        }
+        outL = eL / eIn;
+        outR = eR / eIn;
+        if (monoCheck) truthy("MONO CHECK: L == R at pan " + std::to_string(pan), diff < 1e-6 * eL);
+      };
+      double l0, r0, lL, rL, lR, rR, lP, rP;
+      fold(0.0, true, l0, r0);
+      fold(-1.0, true, lL, rL);
+      fold(1.0, true, lR, rR);
+      fold(-1.0, false, lP, rP);
+      truthy("MONO CHECK + PAN L: the right channel is not silent", rL > 0.05);
+      truthy("MONO CHECK + PAN R: the left channel is not silent", lR > 0.005);
+      near("PAN L, no fold: right channel still muted", rP, 0.0, 1e-9);
+      // The hard-left output is sqrt(2) x input L; each folded channel carries
+      // half of it, so its energy is 2 x 1/4 = 1/2 of input L's.
+      near("MONO CHECK + PAN L: each side = half the panned L", lL, 0.5, 0.01);
+      near("MONO CHECK at centre: L = R (dB)", 10.0 * std::log10(l0 / r0), 0.0, 0.01);
+    }
     // 12k. PING-PONG on a MONO source (engine 10, next-build queue item 10):
     //      the repeats ALTERNATE L, R, L — each repeat on one side only. Off:
     //      unchanged, both sides echo together on every repeat.

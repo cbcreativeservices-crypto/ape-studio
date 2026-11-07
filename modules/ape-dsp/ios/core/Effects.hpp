@@ -700,9 +700,14 @@ class StereoEffect {
       sSig *= width;
       l = m + sSig;
       r = m - sSig;
+      l *= panL * 1.41421356;
+      r *= panR * 1.41421356;
+      // MONO CHECK sums the FINAL left and right, as a mono speaker would, so
+      // it comes AFTER the pan. Folded before it, MONO CHECK + PAN L played on
+      // the left only instead of the mono sum (D41, must-do E5).
       if (fold) { l = r = 0.5 * (l + r); }
-      L[i] = static_cast<float>(l * panL * 1.41421356);
-      R[i] = static_cast<float>(r * panR * 1.41421356);
+      L[i] = static_cast<float>(l);
+      R[i] = static_cast<float>(r);
     }
   }
 

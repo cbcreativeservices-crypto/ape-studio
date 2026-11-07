@@ -188,7 +188,7 @@ describe('3. each guide quotes the screen’s real names', () => {
         if (/goniometer|CORRELATION/.test(line)) assert.doesNotMatch(line, /FOLD|MONO CHECK|PAN/, `${id}: reads the goniometer after a fold/pan — it does not show them`);
       }
     }
-    // …and never combines MONO CHECK with PAN L/R (the flow folds after the pan, the engine before).
+    // …and never combines MONO CHECK with PAN L/R (kept off the guides; both now fold after the pan).
     for (const [id, gd] of allGuides) for (const line of gd.tryThis) assert.ok(!(/MONO CHECK/.test(line) && /PAN to [LR]\b/.test(line)), `${id}: combines fold and pan`);
   });
   it('the CHECK guide names the four questions the check asks; right answers survive a tab switch (D41)', () => {
@@ -262,7 +262,7 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
     const hpp = read('modules/ape-dsp/ios/core/Effects.hpp');
     assert.match(hpp, /const double panL = std::cos\(\(pan \+ 1\.0\) \* fx::kPi \/ 4\.0\);/);
     assert.match(hpp, /const double panR = std::sin\(\(pan \+ 1\.0\) \* fx::kPi \/ 4\.0\);/);
-    assert.match(hpp, /R\[i\] = static_cast<float>\(r \* panR \* 1\.41421356\);/);
+    assert.match(hpp, /r \*= panR \* 1\.41421356;/);
     assert.match(STEREO_FLOW, /const gR = Math\.sin\(\(\(panG\.value \+ 1\) \* Math\.PI\) \/ 4\) \* Math\.SQRT2;/);
     const gL = Math.cos(0) * Math.SQRT2;
     const gR = Math.sin(0) * Math.SQRT2;
@@ -273,7 +273,7 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
     assert.match(GUIDES.explore.tryThis.join(' '), /With FOLD on STEREO, set PAN to L: the blue R trace on OUT goes flat/);
     // 2026-10-31 review: PAN is a balance on the finished stereo signal — the R input
     // never reaches L (L = l·panL·√2), so it is muted, not moved.
-    assert.match(hpp, /L\[i\] = static_cast<float>\(l \* panL \* 1\.41421356\);/);
+    assert.match(hpp, /l \*= panL \* 1\.41421356;/);
     assert.match(GUIDES.explore.control.join(' '), /PAN key: L, CENTER or R — a balance control: at L the right channel is muted and the left is lifted 3 dB/);
     assert.match(GUIDES.explore.tryThis.join(' '), /the right channel is muted, not moved/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /moves the whole image|everything moves to the/, `${id}: PAN does not move the image`);

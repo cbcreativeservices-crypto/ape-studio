@@ -57,6 +57,8 @@ import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyList
 import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 // Audio Community Forum (2026-11-07): `#forumpreview` lists every mockup state.
 import { ForumLabStub, ForumPreviewScreen, withDialogs } from './ForumPreview';
+// Fill-in / Matching end-of-round review (2026-11-07, must-do E4).
+import { RoundReviewPreview } from './RoundReviewPreview';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ForumCategoryScreen } from '../screens/directory/forum/ForumCategoryScreen';
 import { ForumThreadScreen } from '../screens/directory/forum/ForumThreadScreen';
@@ -489,7 +491,9 @@ export function renderWebPreview(hash: string): ReactElement | null {
                             component: AwardsScreen as ComponentType,
                             initialParams: { category: hash.split('/')[1] || 'specialization' },
                           }
-                        : labPreviewFromHash(hash);
+                        : hash.startsWith('#roundreviewpreview')
+                          ? { name: 'RoundReview', component: withDialogs(RoundReviewPreview as ComponentType) }
+                          : labPreviewFromHash(hash);
   if (toolPreview) {
     return (
       <SafeAreaProvider>
