@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-06 20:50 · ccode · d7872193
+changed: Sign-in: a taken email says so, and a wrong LOGIN shows every way forward on the first miss (owner 2026-11-06) [MD:D57]
+affects other side: clearer sign-in messages, app only, OTA waits for owner go.
+needs: nothing
+
+
 ### 2026-11-06 12:57 · ccode · a629e02a
 changed: Must-do: tenth OTA published [MD:A2]
 affects other side: validate-purchase server change, deployed separately on owner go.
