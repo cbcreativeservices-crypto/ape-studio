@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-11-05T00:30:00-08:00",
-  "taken_by": "ccode session 2026-11-05, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; after Comp A applied H5",
+  "taken_at": "2026-11-07T09:38:00-08:00",
+  "taken_by": "nightly reconciliation 2026-11-07, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 0 added, 0 removed since 2026-11-05",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
