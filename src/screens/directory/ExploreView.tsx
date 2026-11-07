@@ -14,6 +14,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
+import { DirectoryChipRow, RecentGraduates } from './DirectoryChips';
+import { KindPlate, type PlateKey } from './KindPlate';
+import { searchByChip, type ChipOutcome, type GraduateCard } from '../../features/directory/kindsApi';
+import { badgeLabel, chipEmpty, scanNote, type DirectoryChip, type MemberBadge } from '../../features/directory/kinds';
+import { sampleState } from '../../features/forum/sampleSwitch';
 import { cardColumn } from '../../theme/readingColumn';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
 import { ChannelBadge } from './ChannelBadge';
@@ -50,14 +55,18 @@ const WORK_PREFS: { key: WorkPref; label: string }[] = [
 const MemberCard = memo(function MemberCard({
   r,
   onOpen,
+  badge,
 }: {
   r: DirectoryCard;
   onOpen: (token: string, name?: string) => void;
+  badge: MemberBadge | null;
 }) {
   // One meta line, as in the mockup: what they do (specialties), then how
   // they are involved (roles).
   const meta = [...r.specialties.slice(0, 4), ...r.roles].join(' · ');
   const where = [r.countryCode, workPrefShort(r.workPref)].filter(Boolean).join(' · ');
+  const plate = badgeLabel(badge);
+  const latest = (r as Partial<GraduateCard>).latestCredential ?? null;
   return (
     <Pressable
       onPressIn={() => prefetchPublicProfile(r.publicToken)}
@@ -66,6 +75,7 @@ const MemberCard = memo(function MemberCard({
       accessibilityRole="button"
       accessibilityLabel={[
         r.displayName,
+        plate,
         r.primaryArea,
         r.roles.join(', '),
         r.credentialCount ? `${r.credentialCount} verified credentials` : null,
@@ -77,10 +87,14 @@ const MemberCard = memo(function MemberCard({
     >
       {/* The channel badge: green LED = accepts contact requests, dark = does
           not (Explore's one LED fact — see ChannelBadge). */}
-      <ChannelBadge name={r.displayName} led={r.contactEnabled ? 'green' : 'off'} />
+      <ChannelBadge name={r.displayName} led={r.contactEnabled ? 'green' : 'off'} steel={!!badge?.verifiedKind} />
       <View style={st.cardBody}>
-        <Text style={st.cardName}>{r.displayName}</Text>
+        <View style={st.nameRow}>
+          <Text style={st.cardName}>{r.displayName}</Text>
+          {plate ? <KindPlate tone={(badge?.verifiedKind ?? 'graduate') as PlateKey} label={plate} /> : null}
+        </View>
         {r.primaryArea ? <Text style={st.cardArea}>{r.primaryArea}</Text> : null}
+        {latest ? <Text style={st.cardMeta}>{latest}</Text> : null}
         {meta ? (
           <Text style={st.cardMeta} numberOfLines={2}>
             {meta}
@@ -101,6 +115,20 @@ const MemberCard = memo(function MemberCard({
     </Pressable>
   );
 });
+
+/** "6 graduates", "1 employer": what the chip is listing. */
+function countLine(chip: DirectoryChip, n: number): string {
+  const one: Record<DirectoryChip, string> = {
+    all: 'member',
+    graduates: 'graduate',
+    employer: 'employer',
+    company: 'company',
+    institution: 'institution',
+    instructor: 'instructor',
+  };
+  const word = one[chip];
+  return `${n} ${n === 1 ? word : word === 'company' ? 'companies' : `${word}s`}`;
+}
 
 /** The card's "where" words: country code and how they like to work. */
 function workPrefShort(w: WorkPref | null): string | null {
@@ -220,6 +248,12 @@ export function ExploreView({
 }) {
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [f, setF] = useState<DirectoryFilters>({});
+  const [chip, setChip] = useState<DirectoryChip>(sampleState()?.chip ?? 'all');
+  const chipRef = useRef(chip);
+  chipRef.current = chip;
+  const [badges, setBadges] = useState<ReadonlyMap<string, MemberBadge>>(new Map());
+  /** A kind chip stopped before the end of the members: say so. */
+  const [scanned, setScanned] = useState<{ read: number; of: number } | null>(null);
   const [q, setQ] = useState('');
   const [rows, setRows] = useState<DirectoryCard[]>([]);
   const [total, setTotal] = useState(0);
@@ -278,9 +312,9 @@ export function ExploreView({
     // language, not by reaching the next statement. searchDirectory is bounded
     // now and returns its errors rather than throwing, but a future throw
     // between these lines would leave the view spinning for good.
-    let out: Awaited<ReturnType<typeof searchDirectory>>;
+    let out: ChipOutcome;
     try {
-      out = await searchDirectory(filters);
+      out = await searchByChip(chipRef.current, filters);
     } finally {
       if (id === reqId.current) setBusy(false);
     }
@@ -289,11 +323,14 @@ export function ExploreView({
       setErr(out.error);
       setRows([]);
       setTotal(0);
+      setScanned(null);
       return;
     }
     setErr(null);
     setRows(out.results);
     setTotal(out.total);
+    setBadges(out.badges);
+    setScanned(out.scanned);
   }, []);
 
   /** Fetch the next page and APPEND. A failure here leaves what is already
@@ -303,9 +340,9 @@ export function ExploreView({
     const next = page + 1;
     const id = reqId.current;
     setLoadingMore(true);
-    let out: Awaited<ReturnType<typeof searchDirectory>>;
+    let out: ChipOutcome;
     try {
-      out = await searchDirectory(f, next);
+      out = await searchByChip(chipRef.current, f, next);
     } finally {
       if (id === reqId.current) setLoadingMore(false);
     }
@@ -330,12 +367,32 @@ export function ExploreView({
       const seen = new Set(prev.map((r) => r.publicToken));
       return [...prev, ...out.results.filter((r) => !seen.has(r.publicToken))];
     });
+    setBadges((prev) => new Map([...prev, ...out.badges]));
     setTotal(out.total);
   }, [f, page]);
 
   useEffect(() => {
     void run(f);
-  }, [f, run]);
+  }, [f, chip, run]);
+
+  // "Also in the Directory" under the Graduates list: the verified accounts
+  // among the first members read. Optional: a failed read shows nothing.
+  const [also, setAlso] = useState<DirectoryCard[]>([]);
+  useEffect(() => {
+    if (chip !== 'graduates') {
+      setAlso([]);
+      return undefined;
+    }
+    let alive = true;
+    void searchByChip('all', {}).then((r) => {
+      if (!alive || r.status === 'error') return;
+      setBadges((prev) => new Map([...prev, ...r.badges]));
+      setAlso(r.results.filter((m) => !!r.badges.get(m.publicToken)?.verifiedKind).slice(0, 3));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [chip]);
 
   // Back on this tab (see `active`): refresh the current search behind the
   // list already on screen. Not on mount — the effect above has just run it.
@@ -409,6 +466,13 @@ export function ExploreView({
         </Pressable>
       </View>
 
+      {sampleState() ? <Text style={st.sample}>SAMPLE DATA · NOTHING HERE IS REAL</Text> : null}
+      <DirectoryChipRow chip={chip} onChange={setChip} />
+
+      {(chip === 'all' || chip === 'graduates') && !activeCount && !q ? (
+        <RecentGraduates onOpen={onOpenMember} onSeeAll={chip === 'all' ? () => setChip('graduates') : undefined} />
+      ) : null}
+
       {activeCount || q ? (
         <View style={st.clearRow}>
           <Pressable
@@ -460,7 +524,7 @@ export function ExploreView({
         <Loading label="Searching the directory…" />
       ) : !busy && err ? null : !busy && visibleRows.length === 0 ? (
         <EmptyState
-          title="No members match yet"
+          title={chip === 'all' ? 'No members match yet' : chipEmpty(chip).title}
           lines={[
             'The directory is new, so it is still filling up.',
             activeCount ? 'Try removing a filter or choosing a broader area.' : 'Check back soon.',
@@ -472,11 +536,16 @@ export function ExploreView({
             {busy
               ? 'Searching the directory…'
               : hasMore
-                ? `Showing ${visibleRows.length} of ${visibleTotal} members`
-                : `${visibleTotal} ${visibleTotal === 1 ? 'member' : 'members'}`}
+                ? `Showing ${visibleRows.length} of ${visibleTotal} ${chip === 'graduates' ? 'graduates' : 'members'}`
+                : countLine(chip, visibleTotal)}
           </Text>
           {visibleRows.map((r) => (
-            <MemberCard key={r.publicToken} r={r} onOpen={onOpenMember} />
+            <MemberCard key={r.publicToken} r={r} badge={badges.get(r.publicToken) ?? null} onOpen={onOpenMember} />
+          ))}
+          {scanned ? <Text style={st.scanned}>{scanNote(scanned.read, scanned.of)}</Text> : null}
+          {also.length > 0 ? <Text style={st.alsoHead}>ALSO IN THE DIRECTORY</Text> : null}
+          {also.map((r) => (
+            <MemberCard key={`also-${r.publicToken}`} r={r} badge={badges.get(r.publicToken) ?? null} onOpen={onOpenMember} />
           ))}
           {/* Not while a new search is out: run() has already reset `page` for
               the NEW filters, so a page fetched now would be appended to the
@@ -591,6 +660,10 @@ const st = StyleSheet.create({
   },
   cardPressed: { backgroundColor: P.raised },
   cardBody: { flex: 1, minWidth: 0 },
+  nameRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
+  sample: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: '#5bb0ff', textAlign: 'center', paddingVertical: 4, marginBottom: 10 },
+  scanned: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: P.muted, marginTop: 10 },
+  alsoHead: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.84, color: P.muted, marginTop: 16, marginBottom: 8 },
   cardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16.5, letterSpacing: 0.3, color: P.text },
   cardArea: { fontFamily: fonts.barlowSemiBold, fontSize: 13, color: colors.amber, marginTop: 2 },
   cardMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: P.sub, marginTop: 5 },

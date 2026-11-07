@@ -52,12 +52,15 @@ export type ForumRights = {
   reason: string | null;
 };
 
+export type ForumBadge = { slug: string; name: string; awardedAt: string | null };
+
 export type ForumMe = {
   canPost: boolean;
   reason: string | null;
   trust: TrustLevel | null;
   mutedUntil: string | null;
   unreadNotices: number;
+  badges: ForumBadge[];
 };
 
 export type ForumTopic = {
@@ -79,6 +82,8 @@ export type ForumTopic = {
   isNewMember: boolean;
   labKey: string | null;
   unread: boolean;
+  /** Where "jump to first unread" lands. */
+  firstUnreadPostId: string | null;
   lastPostAt: string | null;
   createdAt: string;
 };
@@ -106,6 +111,7 @@ export type ForumTopicDetail = {
   locked: boolean;
   canMarkSolution: boolean;
   canVote: boolean;
+  followLevel: FollowLevel | null;
   createdAt: string;
 };
 
@@ -129,10 +135,14 @@ export type ForumPost = {
   myReactions: ReactionKind[];
   quotePostId: string | null;
   quoteExcerpt: string | null;
+  correctionOfPostId: string | null;
+  /** suggested · accepted · dismissed */
+  correctionState: string | null;
   labKeys: string[];
   safetyNote: boolean;
   edited: boolean;
   isFirstPost: boolean;
+  bookmarked: boolean;
   publishedAt: string | null;
   createdAt: string;
 };
@@ -148,6 +158,14 @@ export type ForumNotice = {
   expiresAt: string | null;
   readAt: string | null;
   createdAt: string;
+};
+
+export type ForumBookmark = {
+  postId: string;
+  topicId: string;
+  topicTitle: string;
+  excerpt: string;
+  remindAt: string | null;
 };
 
 export type ForumAppeal = { id: string; postId: string; status: string };
@@ -201,5 +219,12 @@ export type SubmitInput = {
   fields?: Record<string, unknown>;
   quotePostId?: string;
   quoteExcerpt?: string;
+  /** A lab linked from the Ask form: shown as a card. */
   labKey?: string | null;
+  /** The post that this suggests a correction to. */
+  correctionOf?: string;
+  /** Public tokens of the people @mentioned. */
+  mentionTokens?: string[];
+  /** "Discuss this lab": the post opens or joins that lab's one thread. */
+  labThread?: { key: string; title: string };
 };

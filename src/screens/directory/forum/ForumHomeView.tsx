@@ -33,7 +33,7 @@ import {
   refusalNeedsProfile,
   refusalText,
 } from '../../../features/forum/rules';
-import { takeSampleOpen } from '../../../features/forum/sampleSwitch';
+import { sampleState, takeSampleOpen } from '../../../features/forum/sampleSwitch';
 import type { ForumSearchHit, TopicSort } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { useReloadOnReturn } from '../../../features/forum/useReloadOnReturn';
@@ -54,7 +54,9 @@ import {
   SortChips,
   StaleNote,
   TopicRow,
+  topicRoute,
 } from './forumBits';
+import { DiscussLabLink } from './DiscussLabLink';
 import { ForumWelcomePopup } from './ForumWelcomePopup';
 
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
@@ -121,7 +123,7 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
   );
   const openLounge = useCallback(() => navigation.navigate('ForumCategory', { lounge: true }), [navigation]);
   const openTopic = useCallback(
-    (t: { id: string }) => navigation.navigate('ForumThread', { topicId: t.id }),
+    (t: ForumTopic) => navigation.navigate('ForumThread', topicRoute(t)),
     [navigation],
   );
   const openAnnouncements = useCallback(() => {
@@ -172,6 +174,7 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
         keyboardDismissMode="on-drag"
       >
         <SampleStamp />
+        <SamplePanel />
         <SearchBar value={query} onChange={setQuery} onAsk={ask} />
         {searching ? (
           <SearchResults hits={hits} categories={value.categories} onOpen={(id) => navigation.navigate('ForumThread', { topicId: id })} />
@@ -207,7 +210,7 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
                 </Chips>
               </View>
             ))}
-            <SecHead>Latest posts</SecHead>
+            <SecHead link={{ label: 'YOUR FORUM', onPress: () => navigation.navigate('ForumMine') }}>Latest posts</SecHead>
             <SortChips value={sort} onChange={setSort} />
             <LatestList read={latest} onOpen={openTopic} sort={sort} />
           </>
@@ -216,6 +219,22 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
       <ForumWelcomePopup due={due && focused && !suppressed} onEnter={enterForum} />
     </>
   );
+}
+
+/** Dev sample only: parts that live on screens the harness cannot reach. */
+function SamplePanel() {
+  const panel = sampleState()?.panel;
+  if (panel === 'kind-switch') {
+    const { KindSwitchRow } = require('../../profile/KindSwitchRow') as typeof import('../../profile/KindSwitchRow');
+    return <KindSwitchRow />;
+  }
+  if (panel === 'discuss-lab') {
+    return <DiscussLabLink labTitle="Gain Staging" lab={{ key: 'gain-staging', title: 'Gain Staging' }} />;
+  }
+  if (panel === 'discuss-lab-new') {
+    return <DiscussLabLink labTitle="Equalizer" lab={{ key: 'equalizer', title: 'Equalizer' }} />;
+  }
+  return null;
 }
 
 function LatestList({

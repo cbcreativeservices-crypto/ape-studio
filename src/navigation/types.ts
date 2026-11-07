@@ -181,17 +181,22 @@ export type RootStackParamList = {
   AudioCommunityDirectory: { tab?: string; thread?: string } | undefined;
   /** The Audio Community Forum (next store build only). */
   ForumCategory: { slug?: string; lounge?: boolean } | undefined;
-  ForumThread: { topicId?: string; welcome?: boolean } | undefined;
+  ForumThread: { topicId?: string; welcome?: boolean; jumpTo?: string; unread?: boolean } | undefined;
   ForumAsk:
-    | { slug?: string; edit?: { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean } }
+    | {
+        slug?: string;
+        edit?: { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean; suggestion?: string };
+        labThread?: { key: string; title: string };
+      }
     | undefined;
   ForumIdeas: undefined;
   ForumNotices: undefined;
+  ForumMine: undefined;
   /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
   EmployerAdmin: undefined;
   /** Admin-only: the abuse-report queue. Guarded by is_admin() in the DB.
    *  Deliberately NOT in linking.ts — an admin deep link is a URL worth guessing. */
-  ReportsAdmin: undefined;
+  ReportsAdmin: { tab?: 'forum' } | undefined;
   // Measurement & Analysis tools module (Booth 2026-07-09; MVP = hub + info
   // screens — the native DSP engine is Spike 0, a separate ruling/build).
   ToolsHub: undefined;

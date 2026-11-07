@@ -39,6 +39,9 @@ import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import { setSampleDirectory } from '../../features/directory/sampleThreads';
 import { setSampleForum } from '../../features/forum/sampleSwitch';
 import { ChannelBadge } from './ChannelBadge';
+import { KindPlate, type PlateKey } from './KindPlate';
+import { fetchBadges } from '../../features/directory/kindsApi';
+import { badgeLabel, type MemberBadge } from '../../features/directory/kinds';
 
 type Tab = 'explore' | 'forum' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -52,7 +55,7 @@ const TABS: { key: Tab; label: string }[] = [
 function tabOf(params: unknown, requests: boolean): Tab | null {
   if (requests) return 'requests';
   const t = (params as { tab?: unknown } | undefined)?.tab;
-  return t === 'forum' || t === 'profile' ? t : null;
+  return t === 'forum' || t === 'profile' ? t : t === 'directory' ? 'explore' : null;
 }
 
 /** The forum's code loads the first time its tab opens, not with the directory. */
@@ -221,6 +224,20 @@ function MemberSheet({
     credentialsState: 'ok' | 'unavailable';
   } | null>(null);
   const [busy, setBusy] = useState(false);
+  // The member's plate. Optional: unknown shows none, never a guess.
+  const [sheetBadge, setSheetBadge] = useState<MemberBadge | null>(null);
+  useEffect(() => {
+    setSheetBadge(null);
+    if (!token) return undefined;
+    let alive = true;
+    void fetchBadges([token]).then((m) => {
+      if (alive) setSheetBadge(m.get(token) ?? null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [token]);
+  const sheetPlate = badgeLabel(sheetBadge);
   // M19 (2026-09-07): distinguish "loaded but null" (not-found / error) from
   // "still loading" — fetchPublicProfile resolves null on both, so the old
   // `busy || !p` guard span "Loading profile…" forever on a failed/missing load.
@@ -301,6 +318,7 @@ function MemberSheet({
             <Text accessibilityRole="header" style={[st.sheetTitle, st.memberTitle]}>
               {p ? p.displayName.toUpperCase() : !settled && seedName ? seedName.toUpperCase() : 'MEMBER'}
             </Text>
+            {sheetPlate ? <KindPlate tone={(sheetBadge?.verifiedKind ?? 'graduate') as PlateKey} label={sheetPlate} /> : null}
             <Pressable
               onPress={onClose}
               hitSlop={10}

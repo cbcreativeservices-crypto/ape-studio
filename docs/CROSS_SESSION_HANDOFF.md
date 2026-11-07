@@ -675,16 +675,21 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 14:30 · ccode · forum slice 2 (this commit)
+changed: Audio Community Forum slice 2 on forum-next-build [MD:D44]: rest of the launch set, Directory kinds and graduates, owner queue in Abuse reports, Discuss this lab, iPhone swipe on the five forum screens (owner-approved one-time addition). Nothing on the server changed; read-only checks only. Forum stays OFF.
+affects other side: docs/forum/SERVER_GAPS.md is the source for the next Comp A package (24 rows, each with the smallest server change). Not exercised against the live server: every screen was seen on the dev sample at 375 wide in the web preview.
+needs: [MD:D44] Comp A package from docs/forum/SERVER_GAPS.md; the A rows are 1 (seed the welcome post), 10 (server rules acceptance), 13 and 14 (directory kinds), 15 (open new kinds), 20 (owner vs both admins), 22 (test reminders at launch).
+
 ### 2026-11-07 11:31 · ccode · 7257e741
 changed: Audio Community Forum, first slice: FORUM tab and the approved screens [MD:D44]
 affects other side: nothing on the server changed; the app now calls 20 forum_* functions and forum-moderate on branch forum-next-build (allow-list shrunk to match). Forum stays OFF: forum_enabled false, COMMUNITY_VISIBLE false, next store build only, never OTA. Read-only server checks only. Not exercised against the live server: every screen was seen on the dev sample, because forum_enabled is false.
-needs (none blocks this slice; owner decides before launch): (1) seed the pinned welcome post in Announcements, zero topics are live, and until then "once per account" is per device only; (2) add topic_id to forum_notices_mine, without it Edit and Repost from a notice starts from the 280-character excerpt; (3) add tracked_reason and fields to forum_topics_list, the Ideas screen now makes one forum_topic_get per row (capped at 30); (4) a server check for rules acceptance (brief item h) and a shipped-version field remain open.
+needs: [MD:D44] (none blocks this slice; owner decides before launch): (1) seed the pinned welcome post in Announcements, zero topics are live, and until then "once per account" is per device only; (2) add topic_id to forum_notices_mine, without it Edit and Repost from a notice starts from the 280-character excerpt; (3) add tracked_reason and fields to forum_topics_list, the Ideas screen now makes one forum_topic_get per row (capped at 30); (4) a server check for rules acceptance (brief item h) and a shipped-version field remain open.
 
 
 ### 2026-11-06 20:55 · ccode · 1078b803
 changed: Merge OTA into 1.0.1: purchase race fix, clearer sign-in messages [MD:E1]
 affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
-needs: confirm the deployed validate-purchase matches this commit.
+needs: [MD:E1] confirm the deployed validate-purchase matches this commit.
 
 
 ### 2026-11-06 13:01 · ccode · a70f8e2f
@@ -702,7 +707,7 @@ needs: nothing
 ### 2026-11-06 07:42 · ccode · b43323e5
 changed: Merge OTA fixes into 1.0.1: Skip on every viewing, Apple purchase routing [MD:E1]
 affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
-needs: confirm the deployed validate-purchase matches this commit.
+needs: [MD:E1] confirm the deployed validate-purchase matches this commit.
 
 
 ### 2026-11-06 00:05 · ccode · (this commit)

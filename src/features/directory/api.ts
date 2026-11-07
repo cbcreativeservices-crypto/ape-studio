@@ -18,6 +18,7 @@ import { withDeadline } from '../../lib/boundedCall';
 import { LIMITS, readableError } from './rules';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
+import { sampleForumOn } from '../forum/sampleSwitch.ts';
 import { employerPageToken } from '../employer/publicPage.ts';
 import {
   sampleAllowance,
@@ -318,6 +319,7 @@ export async function searchDirectory(
   page = 0,
   pageSize = 30,
 ): Promise<SearchOutcome> {
+  if (sampleForumOn()) return (require('../forum/sampleData') as typeof import('../forum/sampleData')).sampleMembers(f);
   const none = <T,>(a: T[] | undefined) => (a && a.length ? a : null);
   try {
     /**
@@ -432,6 +434,7 @@ export type PublicCredentialsResult =
 export async function fetchPublicProfile(
   token: string,
 ): Promise<{ profile: PublicProfile; credentials: PublicCredential[]; credentialsState: 'ok' | 'unavailable' } | null> {
+  if (sampleForumOn()) return (require('../forum/sampleData') as typeof import('../forum/sampleData')).sampleProfile(token);
   try {
     const [p, c] = await Promise.all([
       supabase.rpc('community_profile_public', { p_token: token }),

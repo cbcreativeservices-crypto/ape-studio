@@ -56,13 +56,16 @@ import { CareerFamilyScreen } from '../screens/careerfinder/CareerFamilyScreen';
 import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyListScreen';
 import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 // Audio Community Forum (2026-11-07): `#forumpreview` lists every mockup state.
-import { ForumPreviewScreen } from './ForumPreview';
+import { ForumLabStub, ForumPreviewScreen, withDialogs } from './ForumPreview';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ForumCategoryScreen } from '../screens/directory/forum/ForumCategoryScreen';
 import { ForumThreadScreen } from '../screens/directory/forum/ForumThreadScreen';
 import { ForumAskScreen } from '../screens/directory/forum/ForumAskScreen';
 import { ForumIdeasScreen } from '../screens/directory/forum/ForumIdeasScreen';
 import { ForumNoticesScreen } from '../screens/directory/forum/ForumNoticesScreen';
+import { ForumMineScreen } from '../screens/directory/forum/ForumMineScreen';
+import { ReportsAdminScreen } from '../screens/admin/ReportsAdminScreen';
+import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 // Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
 // all five modes in the browser harness.
 import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
@@ -400,12 +403,17 @@ export function renderWebPreview(hash: string): ReactElement | null {
             name: 'ForumPreview',
             component: ForumPreviewScreen as ComponentType,
             screens: [
-              { name: 'AudioCommunityDirectory', component: AudioCommunityDirectoryScreen as ComponentType },
-              { name: 'ForumCategory', component: ForumCategoryScreen as ComponentType },
-              { name: 'ForumThread', component: ForumThreadScreen as ComponentType },
-              { name: 'ForumAsk', component: ForumAskScreen as ComponentType },
-              { name: 'ForumIdeas', component: ForumIdeasScreen as ComponentType },
-              { name: 'ForumNotices', component: ForumNoticesScreen as ComponentType },
+              { name: 'AudioCommunityDirectory', component: withDialogs(AudioCommunityDirectoryScreen) },
+              { name: 'ForumCategory', component: withDialogs(ForumCategoryScreen) },
+              { name: 'ForumThread', component: withDialogs(ForumThreadScreen) },
+              { name: 'ForumAsk', component: withDialogs(ForumAskScreen) },
+              { name: 'ForumIdeas', component: withDialogs(ForumIdeasScreen) },
+              { name: 'ForumNotices', component: withDialogs(ForumNoticesScreen) },
+              { name: 'ForumMine', component: withDialogs(ForumMineScreen) },
+              { name: 'ReportsAdmin', component: withDialogs(ReportsAdminScreen) },
+              { name: 'Awards', component: AwardsScreen as ComponentType },
+              { name: 'PublicGlossary', component: PublicGlossaryScreen as ComponentType },
+              { name: 'GainLabHome', component: ForumLabStub as ComponentType },
             ],
           }
       : hash === '#soundsystemspreview'

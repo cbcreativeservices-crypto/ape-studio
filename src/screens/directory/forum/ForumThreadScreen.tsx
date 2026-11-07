@@ -16,6 +16,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
+import { runSoon } from '../../../lib/afterInteractions';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { fonts } from '../../../theme/tokens';
 import {
@@ -23,23 +24,39 @@ import {
   blockAuthor,
   deletePost,
   fetchThread,
+  flagSafety,
   markRead,
   markSolution,
   reactToPost,
+  resolveCorrection,
+  setBookmark,
+  setTopicFollow,
   submitPost,
+  type FollowLevel,
   type ForumPost,
   type ForumThread,
 } from '../../../features/forum/api';
+import { amIForumAdmin, setTopicFlags } from '../../../features/forum/adminApi';
+import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
 import { useForumFlags } from '../../../features/forum/forumFlags';
+import { searchDirectory } from '../../../features/directory/api';
+import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import {
   ANNOUNCEMENTS_SLUG,
   ASK_SLUG,
   BODY_MAX,
   PRO_LOUNGE_REFUSAL,
+  applyMention,
   badgeName,
+  correctionFace,
+  draftKey,
   firstName,
   firstPostHint,
-  labChipText,
+  jumpIndex,
+  levelMark,
+  mentionMatches,
+  mentionQuery,
+  mentionTokensIn,
   monthYear,
   moderationFace,
   orderPosts,
@@ -49,6 +66,8 @@ import {
   refusalNeedsProfile,
   replyBlock,
   timeAgo,
+  tomorrowMorning,
+  type MentionPerson,
 } from '../../../features/forum/rules';
 import type { ReactionKind } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
@@ -62,7 +81,6 @@ import {
   F,
   ForumLoading,
   ForumUnreadable,
-  LabChip,
   LockedNotice,
   MenuPopup,
   ModCard,
@@ -75,8 +93,9 @@ import {
   type MenuItem,
 } from './forumBits';
 import { AppealPopup, ReportPopup, RulesPopup } from './forumPopups';
+import { LabCard, PostBody } from './PostBody';
 
-type Params = { topicId?: string; welcome?: boolean };
+type Params = { topicId?: string; welcome?: boolean; jumpTo?: string; unread?: boolean };
 type Nav = {
   navigate: (route: string, params?: Record<string, unknown>) => void;
   push?: (route: string, params?: Record<string, unknown>) => void;
@@ -98,9 +117,13 @@ const SAFETY_NOTE =
 
 export function ForumThreadScreen() {
   const route = useRoute();
-  const { topicId, welcome } = (route.params ?? {}) as Params;
+  const { topicId, welcome, jumpTo, unread } = (route.params ?? {}) as Params;
   if (welcome || !topicId) return <LocalWelcome />;
-  return <Thread topicId={topicId} />;
+  return (
+    <GlossaryLinkProvider>
+      <Thread topicId={topicId} jumpTo={jumpTo ?? null} unreadMark={!!unread} />
+    </GlossaryLinkProvider>
+  );
 }
 
 /** 0b before the owner's pinned post exists on the server: the same words. */
@@ -143,7 +166,7 @@ function AnnouncementsNotice({ onAsk }: { onAsk: () => void }) {
   );
 }
 
-function Thread({ topicId }: { topicId: string }) {
+function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: string | null; unreadMark: boolean }) {
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
   const list = useRef<FlatList<ForumPost>>(null);
@@ -171,6 +194,39 @@ function Thread({ topicId }: { topicId: string }) {
 
   // Back from Edit and Repost.
   useReloadOnReturn(read.reload);
+
+  /** Everyone in this thread: who @ can suggest, and whose mentions are drawn. */
+  const people = useMemo<MentionPerson[]>(
+    () =>
+      posts
+        .filter((p) => !p.isMine && p.author.token)
+        .map((p) => ({ name: p.author.name, token: p.author.token as string })),
+    [posts],
+  );
+  const names = useMemo(() => posts.map((p) => p.author.name), [posts]);
+  const mineIds = useMemo(() => new Set(posts.filter((p) => p.isMine).map((p) => p.id)), [posts]);
+
+  // Open at the first unread post, or at a bookmarked one.
+  const jumped = useRef(false);
+  useEffect(() => {
+    if (jumped.current || posts.length === 0) return undefined;
+    jumped.current = true;
+    const index = jumpIndex(posts, jumpTo);
+    if (index === null) return undefined;
+    const soon = runSoon(() => list.current?.scrollToIndex({ index, animated: false, viewPosition: 0 }));
+    return () => soon.cancel();
+  }, [jumpTo, posts]);
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void amIForumAdmin().then((yes) => {
+      if (alive) setIsAdmin(yes);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   /* ── Reactions: the count comes from the server's answer ─────────── */
   const [reacting, runReact] = useSendingPer();
@@ -204,6 +260,7 @@ function Thread({ topicId }: { topicId: string }) {
   /* ── The reply box ───────────────────────────────────────────────── */
   const [draft, setDraft] = useState('');
   const [quote, setQuote] = useState<{ postId: string; excerpt: string; name: string } | null>(null);
+  const [correcting, setCorrecting] = useState<{ postId: string; name: string } | null>(null);
   const [sendError, setSendError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const clientId = useRef<string | null>(null);
@@ -218,6 +275,59 @@ function Thread({ topicId }: { topicId: string }) {
   const flags = useForumFlags();
   const [rulesOpen, setRulesOpen] = useState(false);
 
+  /* ── Draft saved ─────────────────────────────────────────────────── */
+  const draftName = draftKey({ topicId });
+  const typed = useRef(false);
+  const [draftSaved, setDraftSaved] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void readDraft(draftName).then((stored) => {
+      if (live && stored && !typed.current) setDraft(stored);
+    });
+    return () => {
+      live = false;
+    };
+  }, [draftName]);
+  useEffect(() => {
+    if (!typed.current) return undefined;
+    let live = true;
+    const t = setTimeout(() => {
+      void saveDraft(draftName, draft).then((ok) => {
+        if (live) setDraftSaved(ok && !!draft.trim());
+      });
+    }, 800);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [draft, draftName]);
+  const typeDraft = useCallback((text: string) => {
+    typed.current = true;
+    setDraft(text);
+  }, []);
+
+  /* ── @mentions ───────────────────────────────────────────────────── */
+  const mention = mentionQuery(draft);
+  const [found, setFound] = useState<MentionPerson[]>([]);
+  useEffect(() => {
+    if (mention === null || mention.length < 2) {
+      setFound([]);
+      return undefined;
+    }
+    let live = true;
+    const t = setTimeout(() => {
+      void searchDirectory({ q: mention }).then((r) => {
+        if (live) setFound(r.status === 'ok' ? r.results.map((m) => ({ name: m.displayName, token: m.publicToken })) : []);
+      });
+    }, 300);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [mention]);
+  const allPeople = useMemo(() => [...people, ...found], [found, people]);
+  const suggestions = mention === null ? [] : mentionMatches(mention, allPeople);
+
   const sendNow = useCallback(async () => {
     const body = draft.trim();
     if (!body) return;
@@ -231,6 +341,8 @@ function Thread({ topicId }: { topicId: string }) {
       topicId,
       quotePostId: quote?.postId,
       quoteExcerpt: quote?.excerpt,
+      correctionOf: correcting?.postId,
+      mentionTokens: mentionTokensIn(body, allPeople),
     });
     setSending(false);
     if (!r.ok) {
@@ -238,8 +350,12 @@ function Thread({ topicId }: { topicId: string }) {
       return;
     }
     clientId.current = null;
+    typed.current = false;
     setDraft('');
+    setDraftSaved(false);
     setQuote(null);
+    setCorrecting(null);
+    void clearDraft(draftName);
     // Shown once the new post has been laid out (onContentSizeChange).
     pinToEnd.current = true;
     await read.reload();
@@ -249,7 +365,7 @@ function Thread({ topicId }: { topicId: string }) {
     } else if (outcomeKind(r.value.state) === 'removed') {
       setSendError(null);
     }
-  }, [draft, quote, read, topicId]);
+  }, [allPeople, correcting, draft, draftName, quote, read, topicId]);
 
   const send = useLatchedPress(async () => {
     if (!flags.rulesAccepted) {
@@ -266,6 +382,8 @@ function Thread({ topicId }: { topicId: string }) {
 
   /* ── ··· on any post ─────────────────────────────────────────────── */
   const [menuPost, setMenuPost] = useState<ForumPost | null>(null);
+  const [threadMenu, setThreadMenu] = useState(false);
+  const [following, setFollowing] = useState<FollowLevel | null>(null);
   const [reportOf, setReportOf] = useState<ForumPost | null>(null);
   const [appealId, setAppealId] = useState<string | null>(null);
   const [appealed, setAppealed] = useState<string[]>([]);
@@ -344,9 +462,73 @@ function Thread({ topicId }: { topicId: string }) {
     [read, topicId],
   );
 
-  const menuItems = useMemo<MenuItem[]>(() => {
-    const p = menuPost;
-    if (!p || !topic) return [];
+  const bookmark = useCallback(async (post: ForumPost, on: boolean, remindAt?: string) => {
+    const r = await setBookmark(post.id, on, remindAt);
+    if (!r.ok) {
+      notify('Not saved', r.error);
+      return;
+    }
+    setPosts((rows) => rows.map((p) => (p.id === post.id ? { ...p, bookmarked: on } : p)));
+    if (remindAt) notify('Reminder set', 'We will remind you tomorrow morning.');
+  }, []);
+
+  const flag = useCallback(async (post: ForumPost) => {
+    const r = await flagSafety(post.id);
+    if (r.ok) notify('Flag sent', 'Thank you. It is being reviewed now.');
+    else notify('Not sent', r.error);
+  }, []);
+
+  const resolve = useCallback(
+    (post: ForumPost, accept: boolean) => {
+      void resolveCorrection(post.id, accept).then(async (r) => {
+        if (!r.ok) {
+          notify('Not saved', r.error);
+          return;
+        }
+        await read.reload();
+        const target = posts.find((p) => p.id === post.correctionOfPostId);
+        if (accept && target) {
+          navigation.navigate('ForumAsk', {
+            slug: topic?.categorySlug,
+            edit: { postId: target.id, isOpening: target.isOpening, body: target.body, suggestion: post.body },
+          });
+        }
+      });
+    },
+    [navigation, posts, read, topic],
+  );
+
+  const followItems = useMemo<MenuItem[]>(() => {
+    const level = following ?? topic?.followLevel ?? 'off';
+    const choose = (next: FollowLevel) => {
+      void setTopicFollow(topicId, next).then((r) => {
+        if (r.ok) setFollowing(next);
+        else notify('Not saved', r.error);
+      });
+    };
+    return [
+      { key: 'follow-all', label: `Every reply${level === 'all' ? ' ✓' : ''}`, note: 'Follow this thread', onPress: () => choose('all') },
+      { key: 'follow-replies', label: `Replies to me only${level === 'replies' ? ' ✓' : ''}`, onPress: () => choose('replies') },
+      { key: 'follow-off', label: `Off${level === 'off' ? ' ✓' : ''}`, onPress: () => choose('off') },
+    ];
+  }, [following, topic, topicId]);
+
+  const adminItems = useMemo<MenuItem[]>(() => {
+    if (!isAdmin || !topic) return [];
+    const toggle = (flags: { pinned?: boolean; locked?: boolean }) => {
+      void setTopicFlags(topicId, flags).then(async (r) => {
+        if (r.ok) await read.reload();
+        else notify('Not saved', r.error);
+      });
+    };
+    return [
+      { key: 'pin', label: topic.pinned ? 'Unpin topic' : 'Pin topic', onPress: () => toggle({ pinned: !topic.pinned }) },
+      { key: 'lock', label: topic.locked ? 'Unlock topic' : 'Lock topic', onPress: () => toggle({ locked: !topic.locked }) },
+    ];
+  }, [isAdmin, read, topic, topicId]);
+
+  const itemsFor = useCallback((p: ForumPost): MenuItem[] => {
+    if (!topic) return [];
     const items: MenuItem[] = [];
     const published = p.modState === 'published';
     if (published && !announcements) {
@@ -359,6 +541,25 @@ function Thread({ topicId }: { topicId: string }) {
         },
       });
     }
+    if (published && !p.isMine && !p.isOpening && !announcements && p.postKind !== 'correction') {
+      items.push({
+        key: 'correct',
+        label: 'Suggest a correction',
+        note: 'The author sees it first and can accept it',
+        onPress: () => {
+          setCorrecting({ postId: p.id, name: p.author.name });
+          input.current?.focus();
+        },
+      });
+    }
+    if (published) {
+      items.push(
+        p.bookmarked
+          ? { key: 'unmark', label: 'Remove the bookmark', onPress: () => void bookmark(p, false) }
+          : { key: 'mark', label: 'Bookmark', note: 'Kept in Your forum', onPress: () => void bookmark(p, true) },
+      );
+      items.push({ key: 'remind', label: 'Remind me tomorrow', onPress: () => void bookmark(p, true, tomorrowMorning()) });
+    }
     if (topic.canMarkSolution && published && !p.isOpening) {
       items.push(
         p.isSolution
@@ -370,6 +571,14 @@ function Thread({ topicId }: { topicId: string }) {
       items.push({ key: 'edit', label: 'Edit', note: 'Checked again before others see it', onPress: () => edit(p) });
       items.push({ key: 'delete', label: 'Delete', danger: true, onPress: () => remove(p) });
     } else {
+      if (published) {
+        items.push({
+          key: 'safety',
+          label: 'Flag a safety concern',
+          note: 'Mains power, rigging or hearing: reviewed straight away',
+          onPress: () => void flag(p),
+        });
+      }
       items.push({ key: 'report', label: 'Report post', note: 'Reviewed straight away', onPress: () => setReportOf(p) });
       items.push({
         key: 'block',
@@ -380,7 +589,14 @@ function Thread({ topicId }: { topicId: string }) {
       });
     }
     return items;
-  }, [announcements, block, edit, menuPost, remove, setSolution, topic]);
+  }, [announcements, block, bookmark, edit, flag, remove, setSolution, topic]);
+
+  const menuItems = useMemo(() => (menuPost ? itemsFor(menuPost) : []), [itemsFor, menuPost]);
+  const opening_ = posts.find((p) => p.isOpening) ?? null;
+  const threadItems = useMemo(
+    () => [...followItems, ...adminItems, ...(opening_ ? itemsFor(opening_) : [])],
+    [adminItems, followItems, itemsFor, opening_],
+  );
 
   const renderPost = useCallback(
     ({ item }: { item: ForumPost }) => (
@@ -395,9 +611,13 @@ function Thread({ topicId }: { topicId: string }) {
         onEdit={edit}
         onAppeal={(p) => setAppealId(p.id)}
         appealed={appealed.includes(item.id)}
+        names={names}
+        targetIsMine={!!item.correctionOfPostId && mineIds.has(item.correctionOfPostId)}
+        onResolve={resolve}
+        firstUnread={unreadMark && item.id === jumpTo}
       />
     ),
-    [announcements, appealed, edit, qa, react, reacting, value],
+    [announcements, appealed, edit, jumpTo, mineIds, names, qa, react, reacting, resolve, unreadMark, value],
   );
 
   /* ── Faces ───────────────────────────────────────────────────────── */
@@ -428,7 +648,7 @@ function Thread({ topicId }: { topicId: string }) {
       <ThreadHeader
         label={label}
         title={topic.title}
-        onMore={opening ? () => setMenuPost(opening) : undefined}
+        onMore={() => setThreadMenu(true)}
       />
       <FlatList
         ref={list}
@@ -437,6 +657,9 @@ function Thread({ topicId }: { topicId: string }) {
         renderItem={renderPost}
         contentContainerStyle={st.msgs}
         keyboardShouldPersistTaps="handled"
+        onScrollToIndexFailed={(info) => {
+          list.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: false });
+        }}
         onContentSizeChange={() => {
           if (!pinToEnd.current) return;
           pinToEnd.current = false;
@@ -458,7 +681,7 @@ function Thread({ topicId }: { topicId: string }) {
         <AnnouncementsNotice onAsk={() => navigation.navigate('ForumCategory', { slug: ASK_SLUG })} />
       ) : reply.kind === 'closed' ? (
         reply.text === PRO_LOUNGE_REFUSAL ? (
-          <LockedNotice action={{ label: 'SEE CREDENTIALS', onPress: () => navigation.navigate('Certificates') }}>
+          <LockedNotice action={{ label: 'SEE CREDENTIALS', onPress: () => navigation.navigate('Awards', { category: 'specialization' }) }}>
             {`${reply.text} You can read every thread. Earn a credential to post here.`}
           </LockedNotice>
         ) : (
@@ -475,6 +698,34 @@ function Thread({ topicId }: { topicId: string }) {
         )
       ) : (
         <View style={[st.compWrap, { paddingBottom: 12 + insets.bottom }]}>
+          {suggestions.length > 0 ? (
+            <View style={st.mentions}>
+              {suggestions.map((p) => (
+                <Pressable
+                  key={p.token}
+                  onPress={() => typeDraft(applyMention(draft, p.name))}
+                  style={st.mentionRow}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Mention ${p.name}`}
+                >
+                  <Text style={st.mentionText}>@{p.name}</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+          {correcting ? (
+            <View style={st.quoting}>
+              <Text style={st.quotingText}>Suggesting a correction to {firstName(correcting.name)}’s reply</Text>
+              <Pressable
+                onPress={() => setCorrecting(null)}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel the correction"
+              >
+                <Text style={st.quotingClear}>✕</Text>
+              </Pressable>
+            </View>
+          ) : null}
           {quote ? (
             <View style={st.quoting}>
               <Text style={st.quotingText} numberOfLines={2}>
@@ -490,8 +741,8 @@ function Thread({ topicId }: { topicId: string }) {
             <TextInput
               ref={input}
               value={draft}
-              onChangeText={setDraft}
-              placeholder="Write a reply"
+              onChangeText={typeDraft}
+              placeholder={correcting ? 'Write the correction' : 'Write a reply'}
               placeholderTextColor={F.muted}
               multiline
               maxLength={BODY_MAX}
@@ -511,10 +762,12 @@ function Thread({ topicId }: { topicId: string }) {
               <Text style={st.sendText}>↑</Text>
             </Pressable>
           </View>
+          {draftSaved ? <Text style={st.draftNote}>Draft saved on this phone.</Text> : null}
         </View>
       )}
 
       <MenuPopup visible={!!menuPost} onClose={() => setMenuPost(null)} items={menuItems} />
+      <MenuPopup visible={threadMenu} onClose={() => setThreadMenu(false)} items={threadItems} />
       <ReportPopup
         postId={reportOf?.id ?? null}
         authorName={reportOf?.author.name ?? ''}
@@ -558,6 +811,10 @@ const PostCard = memo(function PostCard({
   onEdit,
   onAppeal,
   appealed,
+  names,
+  targetIsMine,
+  onResolve,
+  firstUnread,
 }: {
   post: ForumPost;
   askerName: string | null;
@@ -569,8 +826,15 @@ const PostCard = memo(function PostCard({
   onEdit: (p: ForumPost) => void;
   onAppeal: (p: ForumPost) => void;
   appealed: boolean;
+  names: string[];
+  /** This correction is about my post, so I may answer it. */
+  targetIsMine: boolean;
+  onResolve: (p: ForumPost, accept: boolean) => void;
+  firstUnread: boolean;
 }) {
   const face = moderationFace(post);
+  const correction = correctionFace(post, targetIsMine);
+  const level = levelMark(post.author);
   const fields = post.isOpening ? parseAskBody(post.body) : null;
   const solution = qa && post.isSolution;
   const published = post.modState === 'published';
@@ -578,6 +842,7 @@ const PostCard = memo(function PostCard({
 
   return (
     <View style={st.stack}>
+      {firstUnread ? <Text style={st.unreadMark}>NEW SINCE YOUR LAST VISIT</Text> : null}
       {face.kind === 'review' ? (
         <ModCard
           tone="hold"
@@ -605,13 +870,16 @@ const PostCard = memo(function PostCard({
       {face.kind === 'removed' && !published ? null : (
         <View style={[st.post, solution && st.postSol]}>
           {solution ? <View style={st.solBar} /> : null}
+          {correction ? (
+            <Text style={[st.correctionHead, correction.tone === 'good' && st.correctionGood]}>{correction.head}</Text>
+          ) : null}
           {solution ? (
             <Text style={st.solhd}>✓ SOLUTION{askerName ? ` · MARKED BY ${firstName(askerName).toUpperCase()}` : ''}</Text>
           ) : null}
           <View style={st.who}>
             <ChannelBadge name={badgeName(post.author.name)} led="off" steel={!!post.author.verifiedKind || pinned} size={30} />
             <Text style={st.nm}>{post.author.name}</Text>
-            {post.author.trust === 'new' ? <NewMark /> : null}
+            {level === 'NEW' ? <NewMark /> : level ? <Text style={st.level}>{level}</Text> : null}
             <AuthorPlate author={post.author} />
             {pinned ? <PinStamp /> : null}
             <Text style={st.tm}>{when}</Text>
@@ -622,20 +890,38 @@ const PostCard = memo(function PostCard({
           {post.quoteExcerpt ? <Text style={st.quote}>{post.quoteExcerpt}</Text> : null}
           {fields ? (
             <View style={st.fields}>
-              {fields.trying ? <Answer label="TRYING TO" text={fields.trying} /> : null}
-              {fields.gear ? <Answer label="GEAR" text={fields.gear} /> : null}
-              {fields.tried ? <Answer label="TRIED" text={fields.tried} /> : null}
+              {fields.trying ? <Answer label="TRYING TO" text={fields.trying} names={names} /> : null}
+              {fields.gear ? <Answer label="GEAR" text={fields.gear} names={names} /> : null}
+              {fields.tried ? <Answer label="TRIED" text={fields.tried} names={names} /> : null}
             </View>
           ) : (
             post.body.split(/\n{2,}/).map((para, i) => (
-              <Text key={`${post.id}:${i}`} style={st.body}>
-                {para}
-              </Text>
+              <PostBody key={`${post.id}:${i}`} text={para} names={names} style={st.body} />
             ))
           )}
           {post.labKeys.map((k) => (
-            <LabChip key={k}>{labChipText(k)}</LabChip>
+            <LabCard key={k} labKey={k} />
           ))}
+          {correction?.canResolve ? (
+            <View style={st.resolve}>
+              <Pressable
+                onPress={() => onResolve(post, true)}
+                style={[st.resolveKey, st.resolveAccept]}
+                accessibilityRole="button"
+                accessibilityLabel="Accept this correction"
+              >
+                <Text style={[st.resolveText, st.resolveTextOn]}>ACCEPT AND EDIT</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => onResolve(post, false)}
+                style={st.resolveKey}
+                accessibilityRole="button"
+                accessibilityLabel="Decline this correction"
+              >
+                <Text style={st.resolveText}>DECLINE</Text>
+              </Pressable>
+            </View>
+          ) : null}
           {post.safetyNote ? <Text style={st.safety}>{SAFETY_NOTE}</Text> : null}
           {post.edited ? <Text style={st.edited}>Edited</Text> : null}
           {published ? (
@@ -669,11 +955,11 @@ const PostCard = memo(function PostCard({
   );
 });
 
-function Answer({ label, text }: { label: string; text: string }) {
+function Answer({ label, text, names }: { label: string; text: string; names: string[] }) {
   return (
     <Text style={st.answer}>
       <Text style={st.answerLabel}>{label} </Text>
-      {text}
+      <PostBody text={text} names={names} style={st.answer} />
     </Text>
   );
 }
@@ -769,5 +1055,18 @@ const st = StyleSheet.create({
   },
   quotingText: { flex: 1, fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 17, color: F.sub },
   quotingClear: { fontFamily: fonts.barlowMedium, fontSize: 14, color: F.sub, padding: 2 },
+  draftNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: F.muted, marginTop: 6 },
+  mentions: { marginBottom: 8, backgroundColor: F.raised, borderWidth: 1, borderColor: F.line2, borderRadius: 12, overflow: 'hidden' },
+  mentionRow: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: F.line },
+  mentionText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, color: F.amber },
+  level: { fontFamily: fonts.mono, fontSize: 9.5, letterSpacing: 0.57, color: F.sub, borderWidth: 1, borderColor: F.line2, borderRadius: 5, paddingVertical: 2, paddingHorizontal: 6 },
+  unreadMark: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: F.blue, textAlign: 'center' },
+  correctionHead: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: F.steel, marginBottom: 6 },
+  correctionGood: { color: F.green },
+  resolve: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  resolveKey: { minHeight: 32, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: F.line2 },
+  resolveAccept: { backgroundColor: F.amber, borderColor: F.amber },
+  resolveText: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.2, color: F.sub },
+  resolveTextOn: { color: '#111' },
   sendError: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.red, marginBottom: 8 },
 });

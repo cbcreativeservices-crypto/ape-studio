@@ -240,7 +240,8 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
       label: state.label,
       go: (n) => {
         setSampleForum(state);
-        n.navigate('AudioCommunityDirectory', { tab: 'forum' });
+        if (state.tab === 'directory') setSampleDirectory(true);
+        n.navigate('AudioCommunityDirectory', { tab: state.tab ?? 'forum' });
       },
     })),
   },

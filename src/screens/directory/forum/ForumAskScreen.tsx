@@ -22,6 +22,7 @@ import {
   type ForumCategory,
   type ForumRights,
 } from '../../../features/forum/api';
+import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
 import { useForumFlags } from '../../../features/forum/forumFlags';
 import {
   ASK_SLUG,
@@ -32,6 +33,7 @@ import {
   askFormOf,
   askProblem,
   composeAskBody,
+  draftKey,
   glossaryWords,
   labKeyOf,
   parseAskBody,
@@ -57,8 +59,9 @@ import {
 } from './forumBits';
 import { AI_DISCLOSURE, RulesPopup } from './forumPopups';
 
-type EditTarget = { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean };
-type Params = { slug?: string; edit?: EditTarget };
+type EditTarget = { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean; suggestion?: string };
+type LabThread = { key: string; title: string };
+type Params = { slug?: string; edit?: EditTarget; labThread?: LabThread };
 type Nav = {
   navigate: (route: string, params?: Record<string, unknown>) => void;
   replace?: (route: string, params?: Record<string, unknown>) => void;
@@ -76,7 +79,7 @@ const POST_LABEL: Record<AskFormKind, string> = {
 
 export function ForumAskScreen() {
   const route = useRoute();
-  const { slug, edit } = (route.params ?? {}) as Params;
+  const { slug, edit, labThread } = (route.params ?? {}) as Params;
   const home = useForumRead(fetchForumHome, []);
 
   if (home.face === 'loading') {
@@ -95,17 +98,19 @@ export function ForumAskScreen() {
       </View>
     );
   }
-  return <AskForm slug={slug} edit={edit} categories={home.value.categories} rights={home.value.rights} />;
+  return <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />;
 }
 
 function AskForm({
   slug,
   edit,
+  labThread,
   categories,
   rights,
 }: {
   slug?: string;
   edit?: EditTarget;
+  labThread?: LabThread;
   categories: ForumCategory[];
   rights: ForumRights[] | null;
 }) {
@@ -130,7 +135,11 @@ function AskForm({
     if (!edit) return EMPTY_ASK;
     return { ...EMPTY_ASK, title: edit.title ?? '', ...(guided ?? { body: edit.body }) };
   });
-  const set = useCallback((patch: Partial<AskValues>) => setValues((v) => ({ ...v, ...patch })), []);
+  const touched = useRef(false);
+  const set = useCallback((patch: Partial<AskValues>) => {
+    touched.current = true;
+    setValues((v) => ({ ...v, ...patch }));
+  }, []);
   const [lab, setLab] = useState<string | null>(null);
   const [job, setJob] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -141,6 +150,38 @@ function AskForm({
   const [pickingLab, setPickingLab] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const flags = useForumFlags();
+
+  /* ── Draft saved ─────────────────────────────────────────────────── */
+  const draftName = draftKey({ slug: labThread ? `lab:${labThread.key}` : category?.slug });
+  const [draftSaved, setDraftSaved] = useState(false);
+  useEffect(() => {
+    if (edit) return undefined;
+    let live = true;
+    void readDraft(draftName).then((stored) => {
+      if (!live || !stored || touched.current) return;
+      try {
+        setValues({ ...EMPTY_ASK, ...(JSON.parse(stored) as Partial<AskValues>) });
+      } catch {
+        // Not ours to read: leave the form blank.
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [draftName, edit]);
+  useEffect(() => {
+    if (edit || !touched.current) return undefined;
+    let live = true;
+    const t = setTimeout(() => {
+      void saveDraft(draftName, hasStarted(values) ? JSON.stringify(values) : '').then((ok) => {
+        if (live) setDraftSaved(ok && hasStarted(values));
+      });
+    }, 800);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [draftName, edit, values]);
 
   /* ── Similar topics while typing the title ───────────────────────── */
   const [similar, setSimilar] = useState<{ topics: ForumSearchHit[]; terms: string[] }>({ topics: [], terms: [] });
@@ -166,12 +207,13 @@ function AskForm({
 
   /* ── Posting ─────────────────────────────────────────────────────── */
   // An edit changes the post's text, whatever form first wrote it.
-  const shownForm: AskFormKind = edit ? (guided ? 'question' : 'discussion') : form;
+  const shownForm: AskFormKind = labThread ? 'discussion' : edit ? (guided ? 'question' : 'discussion') : form;
   const replyEdit = !!edit && !edit.isOpening;
-  const problem = replyEdit ? (values.body.trim() ? null : 'Write something first.') : askProblem(shownForm, values);
+  const problem =
+    replyEdit || labThread ? (values.body.trim() ? null : 'Write something first.') : askProblem(shownForm, values);
 
   const postNow = useCallback(async () => {
-    if (problem || (!edit && !category)) return;
+    if (problem || (!edit && !labThread && !category)) return;
     setPosting(true);
     setError(null);
     if (edit) {
@@ -180,6 +222,18 @@ function AskForm({
       setPosting(false);
       if (!r.ok) setError(r.error);
       else safeGoBack(navigation as never);
+      return;
+    }
+    if (labThread) {
+      clientId.current = clientId.current ?? Crypto.randomUUID();
+      const r = await submitPost({ body: values.body.trim(), clientId: clientId.current, labThread });
+      setPosting(false);
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
+      else navigation.navigate('ForumThread', { topicId: r.value.topicId });
       return;
     }
     const draft = topicFrom(form, values, {
@@ -199,10 +253,11 @@ function AskForm({
       setError(r.error);
       return;
     }
+    void clearDraft(draftName);
     // The author sees their own post here, whatever the check decided.
     if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
     else navigation.navigate('ForumThread', { topicId: r.value.topicId });
-  }, [category, edit, form, guided, job, lab, navigation, problem, values]);
+  }, [category, draftName, edit, form, guided, job, lab, labThread, navigation, problem, values]);
 
   const post = useLatchedPress(async () => {
     if (!flags.rulesAccepted) {
@@ -217,12 +272,14 @@ function AskForm({
     if (ok) await postNow();
   });
 
-  const headerTitle = edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
+  const headerTitle = labThread ? `Discuss: ${labThread.title}` : edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
   const headerSub = edit?.partial
     ? 'Only the start of your post is shown. What you repost replaces all of it.'
     : edit
       ? 'Checked again before others see it'
-      : 'Pick the category; we’ll show similar topics';
+      : labThread
+        ? 'Start the discussion for this lab'
+        : 'Pick the category; we’ll show similar topics';
 
   return (
     <KeyboardAvoidingView style={forumStyles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -233,13 +290,13 @@ function AskForm({
         keyboardShouldPersistTaps="handled"
       >
         <SampleStamp />
-        {!edit ? (
+        {!edit && !labThread ? (
           <View>
             <FieldLabel>CATEGORY</FieldLabel>
             <PickField label="Category" value={category?.name ?? 'Choose one'} onPress={() => setPicking(true)} />
           </View>
         ) : null}
-        {!edit || edit.isOpening ? (
+        {(!edit || edit.isOpening) && !labThread ? (
           <View>
             <FieldLabel>TITLE</FieldLabel>
             <Field
@@ -285,15 +342,22 @@ function AskForm({
           </View>
         ) : null}
 
+        {edit?.suggestion ? (
+          <View style={st.sim}>
+            <Text style={st.simHead}>THE CORRECTION YOU ACCEPTED</Text>
+            <Text style={st.simText}>{edit.suggestion}</Text>
+          </View>
+        ) : null}
+
         <FormFields form={shownForm} values={values} set={set} />
 
-        {!edit && form === 'question' ? (
+        {!edit && !labThread && form === 'question' ? (
           <View>
             <FieldLabel>LINK A LAB (OPTIONAL)</FieldLabel>
             <PickField label="Link a lab" value={lab ?? 'Choose a lab'} onPress={() => setPickingLab(true)} />
           </View>
         ) : null}
-        {!edit && canPostJob ? (
+        {!edit && !labThread && canPostJob ? (
           <ChipWrap>
             <Chip label={job ? 'This is a job post ✓' : 'This is a job post'} on={job} onPress={() => setJob((j) => !j)} />
           </ChipWrap>
@@ -303,7 +367,7 @@ function AskForm({
         <View style={st.btnrow}>
           <QuietButton label="CANCEL" onPress={() => safeGoBack(navigation as never)} />
           <AmberButton
-            label={edit ? 'REPOST' : POST_LABEL[form]}
+            label={edit ? 'REPOST' : labThread ? 'POST' : POST_LABEL[form]}
             onPress={post}
             busy={posting}
             disabled={!!problem}
@@ -311,6 +375,7 @@ function AskForm({
           />
         </View>
         {problem && hasStarted(values) ? <Text style={st.problem}>{problem}</Text> : null}
+        {draftSaved ? <Text style={st.problem}>Draft saved on this phone.</Text> : null}
         <Text style={st.ai}>{AI_DISCLOSURE}</Text>
       </ScrollView>
 
@@ -349,13 +414,9 @@ function AskForm({
 
 const hasStarted = (v: AskValues) => Object.values(v).some((x) => x.trim().length > 0);
 
-/** The lab catalog is required here, on the tap: it is not in the start graph. */
+/** Required on the tap: the lab catalog is not in the start graph. */
 function labNames(): string[] {
-  const { LAB_CATEGORIES, categoryLeaves } = require('../../lab/labCatalog') as typeof import('../../lab/labCatalog');
-  const names = LAB_CATEGORIES.flatMap((c) => categoryLeaves(c))
-    .filter((l) => l.status !== 'development')
-    .map((l) => l.name);
-  return [...new Set(names)].sort((a, b) => a.localeCompare(b));
+  return (require('../../../features/forum/labLinks') as typeof import('../../../features/forum/labLinks')).labNames();
 }
 
 function FormFields({

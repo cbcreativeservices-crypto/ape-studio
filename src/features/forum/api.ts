@@ -21,6 +21,7 @@ import { blockMember } from '../directory/api';
 import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics } from './rules.ts';
 import {
   appealOf,
+  bookmarkOf,
   categoryOf,
   meOf,
   noticeOf,
@@ -35,6 +36,7 @@ import { sampleForumOn, sampleState } from './sampleSwitch.ts';
 import type {
   FollowLevel,
   ForumAppeal,
+  ForumBookmark,
   ForumCategory,
   ForumMe,
   ForumNotice,
@@ -199,6 +201,23 @@ export async function glossaryMatches(words: string[]): Promise<string[]> {
   }
 }
 
+/** forum_me, for Your forum. Null when there is no account. */
+export async function fetchForumMe(): Promise<ForumResult<ForumMe | null>> {
+  if (sampleForumOn()) return sampleRead(() => data().sampleHome().me);
+  return rpc('forum_me', undefined, (raw) => (raw ? meOf(raw) : null));
+}
+
+export async function fetchBookmarks(): Promise<ForumResult<ForumBookmark[]>> {
+  if (sampleForumOn()) return sampleRead(() => data().sampleBookmarks());
+  return rpc('forum_bookmarks_mine', undefined, rows(bookmarkOf));
+}
+
+/** The one thread of a lab, or null while nobody has started it. */
+export async function fetchLabThread(labKey: string): Promise<ForumResult<string | null>> {
+  if (sampleForumOn()) return sampleRead(() => data().sampleLabThread(labKey));
+  return rpc('forum_lab_thread', { p_lab_key: labKey }, (raw) => (typeof raw === 'string' ? raw : null));
+}
+
 export type MyModeration = { notices: ForumNotice[]; appeals: ForumAppeal[] };
 
 export async function fetchMyModeration(): Promise<ForumResult<MyModeration>> {
@@ -261,6 +280,10 @@ export async function submitPost(input: SubmitInput): Promise<ForumResult<PostOu
     p_quote_post_id: input.quotePostId,
     p_quote_excerpt: input.quoteExcerpt,
     p_cards: input.labKey ? [{ type: 'lab', lab_key: input.labKey }] : undefined,
+    p_correction_of: input.correctionOf,
+    p_mention_tokens: input.mentionTokens?.length ? input.mentionTokens : undefined,
+    p_lab_key: input.labThread?.key,
+    p_lab_title: input.labThread?.title,
     p_client_id: input.clientId,
   });
 }
@@ -318,6 +341,30 @@ export async function voteIdea(topicId: string, on: boolean): Promise<ForumResul
     if (typeof raw !== 'number') throw new Error('no_result');
     return raw;
   });
+}
+
+/** `remindAt`: when the server should send the reminder. Delivery is the server's. */
+export async function setBookmark(postId: string, on: boolean, remindAt?: string): Promise<ForumResult<true>> {
+  if (sampleForumOn()) return done(data().sampleSetBookmark(postId, on, remindAt ?? null));
+  return rpc('forum_bookmark_set', { p_post_id: postId, p_on: on, p_remind_at: remindAt ?? null }, yes);
+}
+
+/** The corrected post's author accepts or declines. Accepting does not change
+ *  the post: the author then edits it, and the edit is checked as usual. */
+export async function resolveCorrection(correctionPostId: string, accept: boolean): Promise<ForumResult<true>> {
+  if (sampleForumOn()) return done(data().sampleResolveCorrection(correctionPostId, accept));
+  return rpc('forum_correction_resolve', { p_correction_post_id: correctionPostId, p_accept: accept }, yes);
+}
+
+/** "This could hurt someone": reviewed straight away. */
+export async function flagSafety(postId: string): Promise<ForumResult<true>> {
+  if (sampleForumOn()) return done(true);
+  return rpc('forum_safety_flag', { p_post_id: postId }, yes);
+}
+
+export async function setTopicFollow(topicId: string, level: FollowLevel): Promise<ForumResult<true>> {
+  if (sampleForumOn()) return done(true);
+  return rpc('forum_follow_set', { p_category: null, p_topic_id: topicId, p_level: level }, yes);
 }
 
 export async function setFollow(category: string, level: FollowLevel): Promise<ForumResult<true>> {

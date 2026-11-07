@@ -19,6 +19,7 @@ import type {
   TopicKind,
   TopicSort,
   TrackedStatus,
+  TrustLevel,
   VerifiedKind,
 } from './types.ts';
 
@@ -35,6 +36,8 @@ export const SEARCH_MIN = 3;
 export const ANNOUNCEMENTS_SLUG = 'announcements';
 export const ASK_SLUG = 'ask-the-community';
 export const IDEAS_SLUG = 'ideas-requests';
+/** The server allows five @mentions in a post (forum_settings). */
+export const MENTIONS_MAX = 5;
 export const PRO_LOUNGE_GROUP = 'pro_lounge';
 
 /* ── Refusals ────────────────────────────────────────────────────────── */
@@ -102,6 +105,9 @@ export function forumErrorText(message: string | null | undefined): { error: str
   if (/permission denied for function/i.test(message ?? '')) return { error: FORUM_SIGN_IN, code: 'sign_in' };
   return { error: FORUM_UNREADABLE, code: null };
 }
+
+/** A lab screen's "Discuss this lab" could not open. */
+export const LAB_THREAD_UNREADABLE = 'We could not open this lab’s discussion. Check your connection and try again.';
 
 /** The refusals a member fixes in My Profile. */
 export function refusalNeedsProfile(code: string | null | undefined): boolean {
@@ -698,4 +704,207 @@ export function topicA11y(t: ForumTopic): string {
 export function mergeTopics(lists: ForumTopic[][]): ForumTopic[] {
   const at = (t: ForumTopic) => t.lastPostAt ?? t.createdAt;
   return lists.flat().sort((a, b) => (at(a) < at(b) ? 1 : at(a) > at(b) ? -1 : 0));
+}
+
+
+/* ── Levels and badges ───────────────────────────────────────────────── */
+
+const LEVELS: Record<TrustLevel, { label: string; mark: string | null; next: string | null }> = {
+  new: { label: 'New member', mark: 'NEW', next: 'A few days of reading and a few posts nobody had to hide make you a Member.' },
+  member: { label: 'Member', mark: null, next: 'Steady helpful replies over the weeks make you a Regular.' },
+  regular: { label: 'Regular', mark: 'REGULAR', next: null },
+  leader: { label: 'Leader', mark: 'LEADER', next: null },
+};
+
+/** The small mark beside a name. A plain Member wears none. */
+export function levelMark(a: Pick<ForumAuthor, 'trust' | 'former'>): string | null {
+  if (a.former || !a.trust) return null;
+  return LEVELS[a.trust]?.mark ?? null;
+}
+
+export function levelFace(trust: TrustLevel | null | undefined): { label: string; next: string | null } | null {
+  if (!trust || !LEVELS[trust]) return null;
+  return { label: LEVELS[trust].label, next: LEVELS[trust].next };
+}
+
+/** The launch set's badges, with what each one means. */
+export const BADGE_MEANINGS: Record<string, string> = {
+  'first-solution': 'A reply of yours was marked as the Solution.',
+  mentor: 'Ten of your replies were marked as the Solution.',
+  'glossary-contributor': 'A glossary correction of yours was accepted.',
+  'bug-hunter': 'A bug you reported was confirmed.',
+  welcomer: 'Your replies helped new members with their first questions.',
+};
+
+/* ── @mentions ───────────────────────────────────────────────────────── */
+
+export type MentionPerson = { name: string; token: string };
+
+/** The name being typed at the end of the box, or null. */
+export function mentionQuery(text: string): string | null {
+  const m = /(?:^|\s)@([\p{L}][\p{L}\p{M}.' -]{0,30})?$/u.exec(text);
+  if (!m) return null;
+  return (m[1] ?? '').trimStart();
+}
+
+/** Finish the mention being typed. */
+export function applyMention(text: string, name: string): string {
+  return text.replace(/(^|\s)@[^@]*$/u, `$1@${name} `);
+}
+
+/** The people still named in the text, once each, within the server's limit. */
+export function mentionTokensIn(body: string, people: MentionPerson[]): string[] {
+  const out: string[] = [];
+  for (const p of people) {
+    if (body.includes(`@${p.name}`) && !out.includes(p.token)) out.push(p.token);
+  }
+  return out.slice(0, MENTIONS_MAX);
+}
+
+/** Thread people to suggest: others only, once each, closest match first. */
+export function mentionMatches(query: string, people: MentionPerson[]): MentionPerson[] {
+  const q = query.trim().toLowerCase();
+  const seen = new Set<string>();
+  return people
+    .filter((p) => (seen.has(p.token) ? false : (seen.add(p.token), true)))
+    .filter((p) => !q || p.name.toLowerCase().includes(q))
+    .sort((a, b) => Number(b.name.toLowerCase().startsWith(q)) - Number(a.name.toLowerCase().startsWith(q)))
+    .slice(0, 5);
+}
+
+export type BodyPart = { text: string; mention: boolean };
+
+/** Cut "@Maya R." out of a text so it can be drawn as a mention. */
+export function splitMentions(text: string, names: string[]): BodyPart[] {
+  const known = [...new Set(names)].filter(Boolean).sort((a, b) => b.length - a.length);
+  if (known.length === 0) return [{ text, mention: false }];
+  const parts: BodyPart[] = [];
+  let rest = text;
+  for (;;) {
+    let at = -1;
+    let hit = '';
+    for (const n of known) {
+      const i = rest.indexOf(`@${n}`);
+      if (i >= 0 && (at < 0 || i < at)) {
+        at = i;
+        hit = `@${n}`;
+      }
+    }
+    if (at < 0) break;
+    if (at > 0) parts.push({ text: rest.slice(0, at), mention: false });
+    parts.push({ text: hit, mention: true });
+    rest = rest.slice(at + hit.length);
+  }
+  if (rest) parts.push({ text: rest, mention: false });
+  return parts;
+}
+
+/* ── Bookmarks, unread, corrections ──────────────────────────────────── */
+
+/** "Remind me tomorrow": nine in the morning, the member's own time. */
+export function tomorrowMorning(now: Date = new Date()): string {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0, 0);
+  return d.toISOString();
+}
+
+/** Where a thread opens, or null to start at the top. */
+export function jumpIndex(posts: Pick<ForumPost, 'id'>[], firstUnread: string | null | undefined): number | null {
+  if (!firstUnread) return null;
+  const i = posts.findIndex((p) => p.id === firstUnread);
+  return i > 0 ? i : null;
+}
+
+export type CorrectionFace = { head: string; canResolve: boolean; tone: 'plain' | 'good' };
+
+/** A correction reply. Only the corrected post's author may answer it. */
+export function correctionFace(
+  p: Pick<ForumPost, 'postKind' | 'correctionState'>,
+  targetIsMine: boolean,
+): CorrectionFace | null {
+  if (p.postKind !== 'correction') return null;
+  if (p.correctionState === 'accepted') return { head: 'CORRECTION ACCEPTED', canResolve: false, tone: 'good' };
+  if (p.correctionState === 'dismissed') return { head: 'CORRECTION DECLINED', canResolve: false, tone: 'plain' };
+  return { head: 'SUGGESTED CORRECTION', canResolve: targetIsMine, tone: 'plain' };
+}
+
+/** The draft's name: one per reply box, one per Ask form. */
+export function draftKey(target: { topicId?: string; slug?: string; correctionOf?: string }): string {
+  if (target.correctionOf) return `correct:${target.correctionOf}`;
+  if (target.topicId) return `reply:${target.topicId}`;
+  return `ask:${target.slug ?? 'new'}`;
+}
+
+/* ── Labs ────────────────────────────────────────────────────────────── */
+
+type LabLeafLike = { name: string; route?: string; params?: object; status?: string };
+
+/**
+ * The lab a screen belongs to, so "Discuss this lab" and the Ask form's lab
+ * link give one key. One route can serve several labs through its params, so
+ * the params decide; a lab with no params matches on its route.
+ */
+export function labNameForRoute(
+  leaves: LabLeafLike[],
+  route: string,
+  params?: Record<string, unknown> | null,
+): string | null {
+  const live = leaves.filter((l) => l.route === route && l.status !== 'development');
+  const exact = live.find(
+    (l) =>
+      l.params &&
+      Object.entries(l.params as Record<string, unknown>).every(([k, v]) => (params ?? {})[k] === v),
+  );
+  return (exact ?? live.find((l) => !l.params) ?? live[0])?.name ?? null;
+}
+
+/** Where a lab card opens, or null when the lab is no longer in the catalog. */
+export function labForKey(leaves: LabLeafLike[], key: string): LabLeafLike | null {
+  return leaves.find((l) => l.route && l.status !== 'development' && labKeyOf(l.name) === key) ?? null;
+}
+
+/* ── The owner's queue ───────────────────────────────────────────────── */
+
+const URGENT_LABELS: Record<string, string> = {
+  threat: 'THREAT OF VIOLENCE',
+  self_harm: 'SELF-HARM RISK',
+  child_safety: 'CHILD SAFETY',
+};
+
+export function urgentLabel(category: string | null | undefined): string | null {
+  return (category && URGENT_LABELS[category]) || null;
+}
+
+/** "auto_hide_reports" as words. The queue never shows a machine code. */
+export function queueWords(code: string | null | undefined): string {
+  return (code ?? '').replace(/^recommend_/, '').replace(/_/g, ' ').trim();
+}
+
+/** What the queue offers on an item. A child-safety post is never restored or
+ *  sent back for editing from here. */
+export function queueOffers(item: { postId: string | null; urgentCategory: string | null }): {
+  restore: boolean;
+  hide: boolean;
+  pleaseEdit: boolean;
+  delete: boolean;
+} {
+  const has = !!item.postId;
+  const child = item.urgentCategory === 'child_safety';
+  return { restore: has && !child, hide: has && !child, pleaseEdit: has && !child, delete: has };
+}
+
+/** forum_admin_set_tracked_status: "accepted" is for glossary items; a decline needs a reason. */
+export function trackedChoices(kind: TopicKind): TrackedStatus[] {
+  const base: TrackedStatus[] = ['under_review', 'planned', 'in_progress', 'shipped', 'declined'];
+  return kind === 'glossary' ? [...base, 'accepted'] : base;
+}
+
+export function trackedProblem(status: TrackedStatus, reason: string): string | null {
+  return status === 'declined' && !reason.trim() ? 'A declined item needs a reason.' : null;
+}
+
+/** "$3.20 of the $50.00 cap, 412 checks" for the AI usage line. */
+export function aiUsageLine(u: { calls: number; costUsd: number; capUsd: number } | null): string {
+  if (!u) return 'No AI use recorded this month.';
+  const calls = u.calls === 1 ? '1 check' : `${u.calls} checks`;
+  return `$${u.costUsd.toFixed(2)} of the $${u.capUsd.toFixed(2)} cap · ${calls}`;
 }

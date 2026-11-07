@@ -10,11 +10,17 @@
 import { TITLE_MIN, orderPosts } from './rules.ts';
 import { SAMPLE_TOPIC, sampleForumOn, sampleState } from './sampleSwitch.ts';
 import { WELCOME_PARAGRAPHS, WELCOME_TITLE } from './welcome.ts';
+import type { AdminAppeal, QueueItem } from './adminRows.ts';
+import type { DirectoryCard, PublicCredential, PublicProfile } from '../directory/api.ts';
+import type { GraduateCard } from '../directory/kindsApi.ts';
+import type { MemberBadge } from '../directory/kinds.ts';
+import type { VerifiedStatus, VerifierKind } from '../employer/verifierKind.ts';
 import type {
   CategoryKind,
   FollowLevel,
   ForumAppeal,
   ForumAuthor,
+  ForumBookmark,
   ForumCategory,
   ForumMe,
   ForumNotice,
@@ -57,7 +63,8 @@ function person(
 const ME = person('Alex P.');
 const FOUNDER = person('Prof. Channing Booth', { trust: 'leader' });
 const JORDAN = person('Jordan L.', { trust: 'new' });
-const MAYA = person('Maya R.', { graduate: true, trust: 'regular' });
+// The same public token as her row in the sample directory: real data has one.
+const MAYA = { ...person('Maya R.', { graduate: true, trust: 'regular' }), token: '00000000-0000-4000-9000-000000000001' };
 const DIEGO = person('Diego M.');
 const RK = person('Ravi K.', { graduate: true, trust: 'regular' });
 const AV = person('Ana V.');
@@ -171,6 +178,7 @@ type SampleTopic = ForumTopic & {
   fields: Record<string, unknown>;
   trackedReason: string | null;
   posts: ForumPost[];
+  opened?: boolean;
 };
 
 let serial = 1000;
@@ -202,10 +210,13 @@ function post(
     myReactions: [],
     quotePostId: null,
     quoteExcerpt: null,
+    correctionOfPostId: null,
+    correctionState: null,
     labKeys: [],
     safetyNote: false,
     edited: false,
     isFirstPost: false,
+    bookmarked: false,
     publishedAt: ago(minutes),
     createdAt: ago(minutes),
     ...over,
@@ -243,6 +254,7 @@ function topic(
     isNewMember: false,
     labKey: null,
     unread: false,
+    firstUnreadPostId: null,
     lastPostAt: ago(minutes),
     createdAt: ago(minutes),
     fields: {},
@@ -277,13 +289,13 @@ function seed(): SampleTopic[] {
     MAYA,
     "Ring out the wedge before soundcheck: raise its level slowly until it just starts to ring, then cut that band 3–6 dB on the wedge's graphic. Also check the mic is pointed away from the wedge.",
     8,
-    { isSolution: true, helpfulCount: 6, thanksCount: 3, insightfulCount: 1, myReactions: ['helpful'] },
+    { isSolution: true, helpfulCount: 6, thanksCount: 3, insightfulCount: 1, myReactions: ['helpful'], bookmarked: true },
   );
   const opener = post(
     JORDAN,
     'TRYING TO: Stop a ring around 2.5 kHz from the lead vocal wedge\nGEAR: Dynamic vocal mic · 12" wedge · 31-band graphic\nTRIED: Lowered the master; it still comes back',
     12,
-    { isOpening: true, postKind: 'opening', isFirstPost: true, labKeys: ['feedback-lab'] },
+    { isOpening: true, postKind: 'opening', isFirstPost: true, labKeys: ['gain-staging'] },
   );
   const diego = post(
     DIEGO,
@@ -292,7 +304,7 @@ function seed(): SampleTopic[] {
     { helpfulCount: 2 },
   );
   const luis = post(LUIS, 'Check the graphic is on the wedge send and not across the main mix.', 3);
-  const aiko = post(AIKO, 'Welcome, Jordan. A small cut goes a long way on a wedge.', 2);
+  const aiko = post(AIKO, 'Welcome, Jordan. As @Maya R. says, a small cut goes a long way. Watch your gain and the feedback stays down.', 2);
 
   return [
     topic(SAMPLE_TOPIC.welcome, 'announcements', WELCOME_TITLE, FOUNDER, minutesSince('2026-11-02T12:00:00Z'), {
@@ -313,9 +325,12 @@ function seed(): SampleTopic[] {
       solved: true,
       posts: [opener, solution, diego, luis, aiko],
     }),
+    topic(SAMPLE_TOPIC.correction, 'new-to-audio', 'How much does a 3 dB cut really change?', LUIS, 400, {
+      posts: correctionPosts(),
+    }),
     topic(uid(201), 'labs-lessons', 'Gain staging lab: why does PROC read −24 at the bottom edge?', RK, 60, {
       solved: true,
-      labKey: 'gain-staging-lab',
+      labKey: 'gain-staging',
       replyCount: 7,
     }),
     topic(uid(202), 'glossary-corrections', 'Glossary: "Haas effect" range should be 1–40 ms, not 5–35', AV, 180, {
@@ -373,6 +388,17 @@ function seed(): SampleTopic[] {
   ];
 }
 
+function correctionPosts(): ForumPost[] {
+  const opening = post(LUIS, 'TRYING TO: Understand what a 3 dB cut does to my wedge', 400, { isOpening: true, postKind: 'opening' });
+  const mine = post(ME, 'A 3 dB cut halves the voltage going to the wedge.', 380);
+  const correction = post(RK, 'A 3 dB cut halves the power. It takes 6 dB to halve the voltage.', 300, {
+    postKind: 'correction',
+    correctionOfPostId: mine.id,
+    correctionState: 'suggested',
+  });
+  return [opening, mine, correction];
+}
+
 function seedNotices(): ForumNotice[] {
   const notice = (id: number, over: Partial<ForumNotice>): ForumNotice => ({
     id,
@@ -413,6 +439,9 @@ function ready(): SampleTopic[] {
   if (id !== seededFor || topics.length === 0) {
     seededFor = id;
     followLevels.clear();
+    queue = null;
+    adminAppeals = null;
+    reminders.clear();
     topics = seed();
     notices = seedNotices();
     appeals = [];
@@ -430,7 +459,7 @@ const findPost = (id: string): { topic: SampleTopic; post: ForumPost } | undefin
 };
 
 function bare(t: SampleTopic): ForumTopic {
-  const { fields: _f, trackedReason: _r, posts: _p, ...row } = t;
+  const { fields: _f, trackedReason: _r, posts: _p, opened: _o, ...row } = t;
   return row;
 }
 
@@ -441,13 +470,14 @@ function rightsFor(slug: string, pro: boolean): ForumRights {
   const proOnly = c?.groupSlug === 'pro_lounge';
   const barred = proOnly && !pro;
   const staff = !!c?.staffOnlyTopics;
+  const refusal = sampleState()?.refusal ?? null;
   return {
     slug,
     proOnly,
-    canStartTopic: !barred && !staff,
-    canReply: !barred,
+    canStartTopic: !barred && !staff && !refusal,
+    canReply: !barred && !refusal,
     canPostJob: false,
-    reason: barred ? 'pro_lounge_members_only' : staff ? 'staff_only' : null,
+    reason: refusal ?? (barred ? 'pro_lounge_members_only' : staff ? 'staff_only' : null),
   };
 }
 
@@ -464,13 +494,26 @@ export function sampleHome(): {
   return {
     categories: categories(),
     rights: categories().map((c) => rightsFor(c.slug, pro)),
-    me: { canPost: true, reason: null, trust: 'member', mutedUntil: null, unreadNotices: empty ? 0 : unread },
+    me: {
+      canPost: true,
+      reason: null,
+      trust: empty ? 'new' : 'member',
+      mutedUntil: null,
+      unreadNotices: empty ? 0 : unread,
+      badges: empty
+        ? []
+        : [
+            { slug: 'first-solution', name: 'First Solution', awardedAt: ago(4000) },
+            { slug: 'welcomer', name: 'Welcomer', awardedAt: ago(9000) },
+          ],
+    },
     announcements: empty ? [] : ready().filter((t) => t.categorySlug === 'announcements').map(bare),
   };
 }
 
 export function sampleTopics(category: string | null, sort: TopicSort): ForumTopic[] {
   if (sampleState()?.face === 'empty') return [];
+  markUnread();
   const pool = ready().filter(
     (t) =>
       (category === null ? t.categorySlug !== 'announcements' : t.categorySlug === category) &&
@@ -484,6 +527,15 @@ export function sampleTopics(category: string | null, sort: TopicSort): ForumTop
       sort === 'top_week' ? score(b) - score(a) : at(a) < at(b) ? 1 : -1,
     )
     .map(bare);
+}
+
+/** One row shows the unread dot; its tap lands on the third post. */
+function markUnread(): void {
+  const t = find(SAMPLE_TOPIC.discussion);
+  if (t && !t.opened) {
+    t.unread = true;
+    t.firstUnreadPostId = t.posts[2]?.id ?? null;
+  }
 }
 
 export function sampleLounge(): ForumTopic[] {
@@ -522,6 +574,7 @@ export function sampleThread(id: string): { topic: ForumTopicDetail; posts: Foru
       locked: t.locked,
       canMarkSolution: kind === 'qa' && t.isMine,
       canVote: t.topicKind === 'idea',
+      followLevel: null,
       createdAt: t.createdAt,
     },
     posts: orderPosts(t.posts, kind === 'qa').map((p) => ({ ...p })),
@@ -579,7 +632,20 @@ export function sampleSubmit(input: SubmitInput): ForumResult<PostOutcome> {
     quotePostId: input.quotePostId ?? null,
     quoteExcerpt: input.quoteExcerpt ?? null,
     labKeys: input.labKey ? [input.labKey] : [],
+    postKind: input.correctionOf ? 'correction' : 'reply',
+    correctionOfPostId: input.correctionOf ?? null,
+    correctionState: input.correctionOf ? 'suggested' : null,
   });
+  if (input.labThread) {
+    const { key, title } = input.labThread;
+    const existing = ready().find((t) => t.labKey === key);
+    const t =
+      existing ??
+      topic(nextId(), 'labs-lessons', `Lab: ${title}`, FOUNDER, 0, { labKey: key, posts: [] });
+    if (!existing) topics.unshift(t);
+    t.posts.push(fresh);
+    return { ok: true, value: { postId: fresh.id, topicId: t.id, state: v.state, reason: v.reason, urgentCategory: null } };
+  }
   if (input.topicId) {
     const t = find(input.topicId);
     if (!t) return refuse('not_found', 'This is no longer available.');
@@ -660,7 +726,10 @@ export function sampleMarkSolution(topicId: string, postId: string | null): true
 
 export function sampleMarkRead(topicId: string): void {
   const t = find(topicId);
-  if (t) t.unread = false;
+  if (t) {
+    t.unread = false;
+    t.opened = true;
+  }
 }
 
 export function sampleBlock(token: string): true {
@@ -695,3 +764,289 @@ export function sampleNoticeRead(id: number): void {
   if (n) n.readAt = ago(0);
 }
 
+
+/* ── Launch set ──────────────────────────────────────────────────────── */
+
+export function sampleBookmarks(): ForumBookmark[] {
+  if (sampleState()?.face === 'empty') return [];
+  return ready().flatMap((t) =>
+    t.posts
+      .filter((p) => p.bookmarked)
+      .map((p) => ({
+        postId: p.id,
+        topicId: t.id,
+        topicTitle: t.title,
+        excerpt: p.body.slice(0, 160),
+        remindAt: reminders.get(p.id) ?? null,
+      })),
+  );
+}
+
+const reminders = new Map<string, string>();
+
+export function sampleSetBookmark(postId: string, on: boolean, remindAt: string | null): true {
+  const found = findPost(postId);
+  if (found) found.post.bookmarked = on;
+  if (on && remindAt) reminders.set(postId, remindAt);
+  else reminders.delete(postId);
+  return true;
+}
+
+export function sampleResolveCorrection(postId: string, accept: boolean): true {
+  const found = findPost(postId);
+  if (found) found.post.correctionState = accept ? 'accepted' : 'dismissed';
+  return true;
+}
+
+export function sampleLabThread(key: string): string | null {
+  return ready().find((t) => t.labKey === key)?.id ?? null;
+}
+
+/* ── Directory ───────────────────────────────────────────────────────── */
+
+type SampleMember = DirectoryCard & { kind: VerifierKind | null; graduate: boolean; latest: string | null; at: number };
+
+function member(
+  n: number,
+  displayName: string,
+  primaryArea: string,
+  over: Partial<SampleMember> = {},
+): SampleMember {
+  return {
+    publicToken: `00000000-0000-4000-9000-${String(n).padStart(12, '0')}`,
+    displayName,
+    primaryArea,
+    specialties: [],
+    roles: [],
+    countryCode: 'US',
+    workPref: 'either',
+    credentialCount: 0,
+    contactEnabled: true,
+    kind: null,
+    graduate: false,
+    latest: null,
+    at: n,
+    ...over,
+  };
+}
+
+const MEMBERS: SampleMember[] = [
+  member(1, 'Maya R.', 'Live Sound & Events', { graduate: true, credentialCount: 2, latest: 'Live Sound Technician credential' }),
+  member(2, 'Tomás S.', 'Studio & Recording', { graduate: true, credentialCount: 2, latest: 'Audio Fundamentals + Studio credential' }),
+  member(3, 'Aiko K.', 'Broadcast', { graduate: true, credentialCount: 1, latest: 'Broadcast Audio credential' }),
+  member(4, 'Bree O.', 'Live Sound & Events', { graduate: true, credentialCount: 1, latest: 'Monitor Engineering credential' }),
+  member(5, 'Luis N.', 'Worship Audio', { graduate: true, credentialCount: 1, latest: 'Worship Audio credential' }),
+  member(6, 'Northside Production Rentals', 'Rental house', { kind: 'company', countryCode: 'US' }),
+  member(7, 'Harbor Venue Group', 'Hiring: A1 / A2', { kind: 'employer' }),
+  member(8, 'Coastal Technical College', 'Audio technology program', { kind: 'institution' }),
+  member(9, 'Dana W.', 'Live sound instructor', { kind: 'instructor', graduate: true, credentialCount: 3, latest: 'Live Sound Technician credential' }),
+  member(10, 'Diego M.', 'Studio & Recording', {}),
+];
+
+const card = (m: SampleMember): DirectoryCard => {
+  const { kind: _k, graduate: _g, latest: _l, at: _a, ...row } = m;
+  return row;
+};
+
+function directoryFails(): { status: 'error'; error: string } | null {
+  return sampleState()?.face === 'unreadable'
+    ? { status: 'error', error: 'No connection. Check your signal and try again.' }
+    : null;
+}
+
+export function sampleMembers(f: { q?: string }): { status: 'ok'; results: DirectoryCard[]; total: number } | { status: 'error'; error: string } {
+  const bad = directoryFails();
+  if (bad) return bad;
+  if (sampleState()?.face === 'empty') return { status: 'ok', results: [], total: 0 };
+  const q = (f.q ?? '').trim().toLowerCase();
+  const rows = MEMBERS.filter((m) => !q || m.displayName.toLowerCase().includes(q));
+  return { status: 'ok', results: rows.map(card), total: rows.length };
+}
+
+export function sampleGraduates():
+  | { status: 'ok'; results: GraduateCard[]; total: number }
+  | { status: 'error'; error: string } {
+  const bad = directoryFails();
+  if (bad) return bad;
+  if (sampleState()?.face === 'empty') return { status: 'ok', results: [], total: 0 };
+  const rows = MEMBERS.filter((m) => m.graduate).map((m) => ({
+    ...card(m),
+    latestCredential: m.latest,
+    verifiedKind: m.kind,
+  }));
+  return { status: 'ok', results: rows, total: rows.length };
+}
+
+export function sampleBadges(tokens: string[]): Map<string, MemberBadge> {
+  return new Map(
+    MEMBERS.filter((m) => tokens.includes(m.publicToken)).map((m) => [
+      m.publicToken,
+      { verifiedKind: m.kind, graduate: m.graduate },
+    ]),
+  );
+}
+
+export function sampleProfile(token: string): {
+  profile: PublicProfile;
+  credentials: PublicCredential[];
+  credentialsState: 'ok' | 'unavailable';
+} | null {
+  const m = MEMBERS.find((x) => x.publicToken === token);
+  if (!m) return null;
+  return {
+    profile: {
+      displayName: m.displayName,
+      about: 'A made-up member of the sample directory.',
+      countryCode: m.countryCode,
+      region: null,
+      workPref: m.workPref,
+      primaryArea: m.primaryArea,
+      areas: m.primaryArea ? [m.primaryArea] : [],
+      specialties: [],
+      roles: [],
+      openTo: [],
+      languages: [],
+      contactEnabled: m.contactEnabled,
+    },
+    credentials: m.latest
+      ? [{ credentialType: 'certificate', credentialName: m.latest, levelOrTier: null, earnedAt: ago(40000), verifyToken: null }]
+      : [],
+    credentialsState: 'ok',
+  };
+}
+
+let sampleKind: 'employer' | 'company' = 'employer';
+
+export function sampleVerifiedStatus(): VerifiedStatus {
+  return { kind: sampleKind, canSwitch: true, switchTo: sampleKind === 'employer' ? 'company' : 'employer', nextSwitchAt: null };
+}
+
+export function sampleSwitchKind(to: VerifierKind): { ok: true; kind: VerifierKind } {
+  if (to === 'employer' || to === 'company') sampleKind = to;
+  return { ok: true, kind: to };
+}
+
+/* ── The owner's queue ───────────────────────────────────────────────── */
+
+let queue: QueueItem[] | null = null;
+let adminAppeals: AdminAppeal[] | null = null;
+
+function queueRow(n: number, over: Partial<QueueItem>): QueueItem {
+  return {
+    logId: n,
+    createdAt: ago(n * 20),
+    mode: 'check',
+    action: 'hold',
+    actor: 'claude-haiku',
+    rule: null,
+    reason: null,
+    excerpt: null,
+    urgentCategory: null,
+    recommendation: null,
+    postId: uid(800 + n),
+    topicId: SAMPLE_TOPIC.mine,
+    topicTitle: 'Why does my sub rattle the stage on one note?',
+    postBody: null,
+    postState: 'held',
+    author: DIEGO,
+    targetUser: uid(700 + n),
+    openReports: 0,
+    openAppealId: null,
+    ...over,
+  };
+}
+
+export function sampleQueue(): QueueItem[] {
+  if (sampleState()?.face === 'empty') return [];
+  queue ??= [
+    queueRow(1, {
+      urgentCategory: 'threat',
+      rule: 'threat',
+      action: 'urgent',
+      actor: 'word-filter',
+      reason: 'Word filter matched a threat pattern. Held for the owner; never auto-resolved.',
+      postBody: 'A made-up post held for the owner to read.',
+    }),
+    queueRow(2, {
+      urgentCategory: 'child_safety',
+      rule: 'child_safety',
+      action: 'child_safety_preserve',
+      actor: 'word-filter',
+      postState: 'hidden',
+      reason: 'Text preserved, hidden, NOT sent to the AI.',
+      recommendation: 'recommend_ban',
+    }),
+    queueRow(3, {
+      mode: 'report',
+      action: 'auto_hide_reports',
+      rule: 'harassment',
+      reason: '3 member report(s); hidden pending review.',
+      postBody: 'You people never read anything.',
+      openReports: 3,
+      recommendation: 'warn',
+    }),
+    queueRow(4, {
+      mode: 'sweep',
+      action: 'hold',
+      actor: 'claude-sonnet',
+      rule: 'self_promotion',
+      reason: 'Promotes a business outside Careers & Business.',
+      postBody: 'Book our studio today, best rates in town.',
+    }),
+  ];
+  return queue;
+}
+
+export function sampleDecide(logId: number): true {
+  queue = (queue ?? []).filter((q) => q.logId !== logId);
+  return true;
+}
+
+export function sampleAdminAppeals(): AdminAppeal[] {
+  if (sampleState()?.face === 'empty') return [];
+  adminAppeals ??= [
+    {
+      appealId: uid(600),
+      postId: uid(601),
+      topicId: SAMPLE_TOPIC.mine,
+      member: ME,
+      reason: 'I was talking about the mix, not about a person.',
+      status: 'open',
+      postBody: 'That kick is an insult to the whole mix.',
+      modRule: 'respect',
+      modReason: 'This reply was removed because it insults another member.',
+      recommendation: null,
+      createdAt: ago(45),
+    },
+  ];
+  return adminAppeals;
+}
+
+export function sampleDecideAppeal(id: string): true {
+  adminAppeals = (adminAppeals ?? []).filter((a) => a.appealId !== id);
+  return true;
+}
+
+export function sampleAiUsage(): { calls: number; costUsd: number; capUsd: number; capHitAt: string | null } | null {
+  return sampleState()?.face === 'empty' ? null : { calls: 412, costUsd: 3.2, capUsd: 50, capHitAt: null };
+}
+
+export function sampleTracked(): ForumTopic[] {
+  if (sampleState()?.face === 'empty') return [];
+  return ready().filter((t) => t.trackedStatus).map(bare);
+}
+
+export function sampleSetStatus(topicId: string, status: TrackedStatus, reason: string | null): true {
+  const t = find(topicId);
+  if (t) {
+    t.trackedStatus = status;
+    t.trackedReason = reason;
+  }
+  return true;
+}
+
+export function sampleTopicFlags(topicId: string, flags: { pinned?: boolean; locked?: boolean }): true {
+  const t = find(topicId);
+  if (t) Object.assign(t, flags);
+  return true;
+}

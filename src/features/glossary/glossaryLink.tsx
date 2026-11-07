@@ -64,6 +64,9 @@ export function linkifyGlossary(text: string): Seg[] {
 
 const OpenCtx = createContext<((name: string) => void) | null>(null);
 
+/** For a body that draws its own segments. Null with no provider above it. */
+export const useGlossaryOpener = () => useContext(OpenCtx);
+
 /** Wrap a screen once; holds the single shared glossary popup. */
 export function GlossaryLinkProvider({ children }: { children: ReactNode }) {
   const [term, setTerm] = useState<string | null>(null);

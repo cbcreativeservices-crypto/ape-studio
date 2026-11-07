@@ -325,6 +325,7 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   ForumAsk: [false, null],
   ForumIdeas: [false, null],
   ForumNotices: [false, null],
+  ForumMine: [false, null],
   AudioLearning: [false, null],
   Auth: [false, null],
   AutotuneLab: [true, 'Autotune'],

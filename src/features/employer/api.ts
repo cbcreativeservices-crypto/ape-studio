@@ -13,7 +13,7 @@
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
-import { verifierKindOf, type VerifierKind } from './verifierKind.ts';
+import { switchRefusal, verifiedStatusOf, verifierKindOf, type VerifiedStatus, type VerifierKind } from './verifierKind.ts';
 import { employerPageToken } from './publicPage.ts';
 
 /**
@@ -345,5 +345,40 @@ export async function setEmployerRevoked(userId: string, revoked: boolean): Prom
     // Not a connection failure: supabase-js RESOLVES with `{ error }`
     // when the network drops, so only a thrown exception lands here.
     return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+  }
+}
+
+
+/* ── Employer ⇄ Company ───────────────────────────────────────────────── */
+
+/** Null when the status could not be read: the switch then simply isn't drawn. */
+export async function fetchVerifiedStatus(): Promise<VerifiedStatus | null> {
+  const { sampleForumOn } = require('../forum/sampleSwitch') as typeof import('../forum/sampleSwitch');
+  if (sampleForumOn()) {
+    const { sampleVerifiedStatus } = require('../forum/sampleData') as typeof import('../forum/sampleData');
+    return sampleVerifiedStatus();
+  }
+  try {
+    const { data, error } = await supabase.rpc('verified_account_status');
+    return error ? null : verifiedStatusOf(data);
+  } catch {
+    return null;
+  }
+}
+
+export type KindSwitchResult = { ok: true; kind: VerifierKind } | { ok: false; error: string };
+
+export async function switchVerifiedKind(to: VerifierKind): Promise<KindSwitchResult> {
+  const { sampleForumOn } = require('../forum/sampleSwitch') as typeof import('../forum/sampleSwitch');
+  if (sampleForumOn()) {
+    const { sampleSwitchKind } = require('../forum/sampleData') as typeof import('../forum/sampleData');
+    return sampleSwitchKind(to);
+  }
+  try {
+    const { data, error } = await supabase.rpc('verified_account_switch_kind', { p_to: to });
+    if (error) return { ok: false, error: switchRefusal(error.message) };
+    return { ok: true, kind: verifierKindOf(data) };
+  } catch {
+    return { ok: false, error: switchRefusal(null) };
   }
 }

@@ -30,11 +30,11 @@ import {
   topicTag,
   trackedFace,
   type DotTone,
-  type PlateTone,
   type StatusTone,
 } from '../../../features/forum/rules';
 import type { ForumAuthor, ForumCategory, ForumTopic, TopicSort } from '../../../features/forum/types';
 import { ChannelBadge } from '../ChannelBadge';
+import { KindPlate } from '../KindPlate';
 import { Loading, RetryOrSignIn } from '../directoryBits';
 
 /** The mockup's :root. */
@@ -125,19 +125,9 @@ export function SampleStamp() {
 
 /* ── Stamps, plates, tags ────────────────────────────────────────────── */
 
-const PLATE: Record<PlateTone, { text: string; border: string; bg: string }> = {
-  graduate: { text: F.amber, border: 'rgba(255,198,77,.5)', bg: 'rgba(255,198,77,.08)' },
-  employer: { text: F.steel, border: 'rgba(159,180,200,.45)', bg: 'rgba(159,180,200,.08)' },
-  company: { text: F.blue, border: 'rgba(91,176,255,.45)', bg: 'rgba(91,176,255,.08)' },
-  institution: { text: F.green, border: 'rgba(55,224,95,.45)', bg: 'rgba(55,224,95,.07)' },
-  instructor: { text: F.purple, border: 'rgba(197,140,255,.45)', bg: 'rgba(197,140,255,.08)' },
-};
-
 export function AuthorPlate({ author }: { author: ForumAuthor }) {
   const plate = plateOf(author);
-  if (!plate) return null;
-  const c = PLATE[plate.tone];
-  return <Text style={[st.plate, { color: c.text, borderColor: c.border, backgroundColor: c.bg }]}>{plate.label}</Text>;
+  return plate ? <KindPlate tone={plate.tone} label={plate.label} /> : null;
 }
 
 export function Tag({ children }: { children: string }) {
@@ -171,22 +161,42 @@ export function StatusStamp({ tone, children }: { tone: StatusTone; children: st
   return <Text style={[st.status, { color: s.color, borderColor: s.border }]}>{children}</Text>;
 }
 
-/** A lab named in a post: a quiet chip until the lab cards slice opens it. */
-export function LabChip({ children }: { children: string }) {
-  return (
-    <View style={st.labChip}>
-      <Text style={st.labChipText}>◉ {children}</Text>
-    </View>
-  );
+/** Unread: where a row's tap lands. A thread opens at the first post the
+ *  member has not read. */
+export function topicRoute(t: ForumTopic): { topicId: string; jumpTo?: string; unread?: boolean } {
+  return t.unread && t.firstUnreadPostId
+    ? { topicId: t.id, jumpTo: t.firstUnreadPostId, unread: true }
+    : { topicId: t.id };
 }
 
 /* ── Section heads and chips ─────────────────────────────────────────── */
 
-export function SecHead({ children, style }: { children: string; style?: StyleProp<TextStyle> }) {
+export function SecHead({
+  children,
+  style,
+  link,
+}: {
+  children: string;
+  style?: StyleProp<TextStyle>;
+  /** `.sec a`: a small amber link at the end of the line. */
+  link?: { label: string; onPress: () => void };
+}) {
+  if (!link) {
+    return (
+      <Text accessibilityRole="header" style={[st.sec, style]}>
+        {children}
+      </Text>
+    );
+  }
   return (
-    <Text accessibilityRole="header" style={[st.sec, style]}>
-      {children}
-    </Text>
+    <View style={st.secRow}>
+      <Text accessibilityRole="header" style={[st.sec, style]}>
+        {children}
+      </Text>
+      <Pressable onPress={link.onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel={link.label}>
+        <Text style={st.secLink}>{link.label}</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -267,7 +277,10 @@ export const TopicRow = memo(function TopicRow({
     >
       <ChannelBadge name={badgeName(topic.author.name)} led="off" steel={!!topic.author.verifiedKind} size={38} />
       <View style={st.tpBody}>
-        <Text style={st.tt}>{topic.title}</Text>
+        <Text style={st.tt}>
+          {topic.unread ? <Text style={st.unread}>● </Text> : null}
+          {topic.title}
+        </Text>
         <View style={st.meta}>
           {topic.pinned ? <PinStamp /> : null}
           {inReview ? <StatusStamp tone="planned">IN REVIEW</StatusStamp> : null}
@@ -548,6 +561,7 @@ export function MenuPopup({ visible, onClose, items }: { visible: boolean; onClo
   return (
     <Popup visible={visible} onClose={onClose} label="Post options">
       <View style={st.menu}>
+        <PopupScroll>
         {items.map((m, i) => (
           <Pressable
             key={m.key}
@@ -563,6 +577,7 @@ export function MenuPopup({ visible, onClose, items }: { visible: boolean; onClo
             {m.note ? <Text style={st.menuNote}>{m.note}</Text> : null}
           </Pressable>
         ))}
+        </PopupScroll>
       </View>
     </Popup>
   );
@@ -705,16 +720,6 @@ const st = StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
   },
-  plate: {
-    fontFamily: fonts.mono,
-    fontSize: 9,
-    letterSpacing: 0.63,
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingVertical: 1,
-    paddingHorizontal: 5,
-    overflow: 'hidden',
-  },
   tag: {
     flexShrink: 1,
     fontFamily: fonts.barlowMedium,
@@ -770,16 +775,6 @@ const st = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 6,
   },
-  labChip: {
-    alignSelf: 'flex-start',
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.35)',
-    borderRadius: 999,
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-  },
-  labChipText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: F.amber },
   sec: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 11.5,
@@ -789,6 +784,8 @@ const st = StyleSheet.create({
     marginTop: 18,
     marginBottom: 8,
   },
+  secRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  secLink: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.1, color: F.amber },
   grp: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 11,
@@ -820,6 +817,7 @@ const st = StyleSheet.create({
   tp: { flexDirection: 'row', gap: 11, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: F.line },
   tpBody: { flex: 1, minWidth: 0 },
   tt: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 19, color: F.text },
+  unread: { fontSize: 10, color: F.blue },
   meta: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6, marginTop: 5 },
   stat: { marginLeft: 'auto', fontFamily: fonts.mono, fontSize: 10.5, color: F.muted },
   face: { paddingVertical: 34, paddingHorizontal: 8, alignItems: 'center' },

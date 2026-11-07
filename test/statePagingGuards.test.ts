@@ -90,7 +90,7 @@ describe('a server total is not shown over an unreachable page', () => {
   test('the directory can reach past page 1', () => {
     const view = strip(read('src', 'screens', 'directory', 'ExploreView.tsx'));
     // The header renders the SERVER's total_count; the page holds 30.
-    assert.match(view, /searchDirectory\(f, next\)/, 'the directory lost its next-page fetch');
+    assert.match(view, /searchByChip\(chipRef\.current, f, next\)/, 'the directory lost its next-page fetch');
     assert.match(view, /hasMore/, 'the directory no longer knows it is truncated');
     assert.ok(
       view.includes('Show more members'),

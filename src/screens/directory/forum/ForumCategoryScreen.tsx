@@ -41,6 +41,7 @@ import {
   ThreadHeader,
   TopicRow,
   forumStyles,
+  topicRoute,
 } from './forumBits';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -89,7 +90,7 @@ export function ForumCategoryScreen() {
 
   useReloadOnReturn(topics.reload);
 
-  const open = useCallback((t: ForumTopic) => navigation.navigate('ForumThread', { topicId: t.id }), [navigation]);
+  const open = useCallback((t: ForumTopic) => navigation.navigate('ForumThread', topicRoute(t)), [navigation]);
   const changeSort = useCallback((s: TopicSort) => {
     setMore([]);
     setSort(s);
@@ -121,7 +122,7 @@ export function ForumCategoryScreen() {
   const label = lounge
     ? `★ PRO LOUNGE · ${SORT_LABELS[sort].toUpperCase()}`
     : `${(category?.name ?? 'Forum').toUpperCase()} · ${SORT_LABELS[sort].toUpperCase()}`;
-  const seeCredentials = () => navigation.navigate('Certificates');
+  const seeCredentials = () => navigation.navigate('Awards', { category: 'specialization' });
   const startLabel = category?.kind === 'qa' ? 'ASK A QUESTION' : 'START A TOPIC';
   const startSlug = lounge ? loungeSlugs[0] : slug;
 

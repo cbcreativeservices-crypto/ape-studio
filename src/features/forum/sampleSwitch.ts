@@ -30,6 +30,16 @@ export type ForumSampleState = {
   rulesAccepted: boolean;
   /** A graduate or a verified account: may post in the Pro Lounge. */
   pro: boolean;
+  /** A refusal every category answers with. */
+  refusal?: string;
+  /** Draws the owner's rows in a thread. */
+  admin?: boolean;
+  /** Which directory tab opens. Forum unless it says otherwise. */
+  tab?: 'forum' | 'directory';
+  /** The Directory chip that starts selected. */
+  chip?: 'all' | 'graduates' | 'employer' | 'company' | 'institution' | 'instructor';
+  /** A part the harness cannot otherwise reach, drawn on the forum home. */
+  panel?: 'kind-switch' | 'discuss-lab' | 'discuss-lab-new';
   /** The screen to open on top of the forum tab. */
   open?: { route: string; params?: Record<string, unknown> };
 };
@@ -43,6 +53,7 @@ export const SAMPLE_TOPIC = {
   discussion: '00000000-0000-4000-8000-000000000103',
   mine: '00000000-0000-4000-8000-000000000104',
   empty: '00000000-0000-4000-8000-000000000105',
+  correction: '00000000-0000-4000-8000-000000000106',
 } as const;
 
 /** One row per mockup screen and state. */
@@ -125,6 +136,27 @@ export const FORUM_SAMPLE_STATES: ForumSampleState[] = [
   },
   { ...base, id: 'ideas', label: '6 · Ideas & Requests', open: { route: 'ForumIdeas' } },
   { ...base, id: 'moderation', label: '7 · When Claude steps in', open: { route: 'ForumNotices' } },
+  { ...base, id: 'no-profile', label: 'Posting refused: publish your profile first', refusal: 'profile_unpublished' },
+  { ...base, id: 'thread-correction', label: 'Thread: a correction to accept or decline', open: { route: 'ForumThread', params: { topicId: SAMPLE_TOPIC.correction } } },
+  { ...base, id: 'thread-admin', label: 'Thread: owner sees Pin and Lock (header ···)', admin: true, open: { route: 'ForumThread', params: { topicId: SAMPLE_TOPIC.discussion } } },
+  { ...base, id: 'mine', label: 'Your forum: level, badges, bookmarks', open: { route: 'ForumMine' } },
+  { ...base, id: 'mine-empty', label: 'Your forum: nothing yet', face: 'empty', open: { route: 'ForumMine' } },
+  { ...base, id: 'mine-unreadable', label: 'Your forum: could not be read', face: 'unreadable', open: { route: 'ForumMine' } },
+  { ...base, id: 'discuss', label: 'Discuss this lab: thread exists', panel: 'discuss-lab' },
+  { ...base, id: 'discuss-new', label: 'Discuss this lab: start the discussion', panel: 'discuss-lab-new' },
+  { ...base, id: 'kind-switch', label: 'Employer to Company switch', panel: 'kind-switch' },
+  { ...base, id: 'dir-all', label: '2 · Directory: All', tab: 'directory', chip: 'all' },
+  { ...base, id: 'dir-graduates', label: '2 · Directory: Graduates', tab: 'directory', chip: 'graduates' },
+  { ...base, id: 'dir-employers', label: '2 · Directory: Employers', tab: 'directory', chip: 'employer' },
+  { ...base, id: 'dir-companies', label: '2 · Directory: Companies', tab: 'directory', chip: 'company' },
+  { ...base, id: 'dir-institutions', label: '2 · Directory: Institutions', tab: 'directory', chip: 'institution' },
+  { ...base, id: 'dir-instructors', label: '2 · Directory: Instructors', tab: 'directory', chip: 'instructor' },
+  { ...base, id: 'dir-empty', label: '2 · Directory: nothing listed', tab: 'directory', chip: 'graduates', face: 'empty' },
+  { ...base, id: 'dir-unreadable', label: '2 · Directory: could not be read', tab: 'directory', chip: 'graduates', face: 'unreadable' },
+  { ...base, id: 'queue', label: 'Owner queue', admin: true, open: { route: 'ReportsAdmin', params: { tab: 'forum' } } },
+  { ...base, id: 'queue-empty', label: 'Owner queue: nothing waiting', admin: true, face: 'empty', open: { route: 'ReportsAdmin', params: { tab: 'forum' } } },
+  { ...base, id: 'queue-unreadable', label: 'Owner queue: could not be read', admin: true, face: 'unreadable', open: { route: 'ReportsAdmin', params: { tab: 'forum' } } },
+  { ...base, id: 'queue-refused', label: 'Owner queue: not the owner', face: 'closed', open: { route: 'ReportsAdmin', params: { tab: 'forum' } } },
 ];
 
 let state: ForumSampleState | null = null;

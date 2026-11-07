@@ -7,6 +7,8 @@ import type {
   FollowLevel,
   ForumAppeal,
   ForumAuthor,
+  ForumBadge,
+  ForumBookmark,
   ForumCategory,
   ForumMe,
   ForumNotice,
@@ -89,7 +91,13 @@ export function meOf(v: unknown): ForumMe {
     trust: TRUST.includes(trust) ? (trust as TrustLevel) : null,
     mutedUntil: strOr(r.muted_until),
     unreadNotices: num(r.unread_notices),
+    badges: (Array.isArray(r.badges) ? r.badges : []).map(badgeOf).filter((b) => b.slug),
   };
+}
+
+function badgeOf(v: unknown): ForumBadge {
+  const r = obj(v);
+  return { slug: str(r.slug), name: str(r.name), awardedAt: strOr(r.awarded_at) };
 }
 
 export function topicOf(v: unknown): ForumTopic {
@@ -113,6 +121,7 @@ export function topicOf(v: unknown): ForumTopic {
     isNewMember: yes(r.is_new_member),
     labKey: strOr(r.lab_key),
     unread: yes(r.unread),
+    firstUnreadPostId: strOr(r.first_unread_post_id),
     lastPostAt: strOr(r.last_post_at),
     createdAt: str(r.created_at),
   };
@@ -142,6 +151,7 @@ export function topicDetailOf(v: unknown): ForumTopicDetail {
     locked: yes(r.locked),
     canMarkSolution: yes(r.can_mark_solution),
     canVote: yes(r.can_vote),
+    followLevel: strOr(r.follow_level) as FollowLevel | null,
     createdAt: str(r.created_at),
   };
 }
@@ -181,10 +191,13 @@ export function postOf(v: unknown): ForumPost {
     ),
     quotePostId: strOr(r.quote_post_id),
     quoteExcerpt: strOr(r.quote_excerpt),
+    correctionOfPostId: strOr(r.correction_of_post_id),
+    correctionState: strOr(r.correction_state),
     labKeys: labKeysOf(r.cards),
     safetyNote: yes(r.safety_note),
     edited: yes(r.edited),
     isFirstPost: yes(r.is_first_post),
+    bookmarked: yes(r.bookmarked),
     publishedAt: strOr(r.published_at),
     createdAt: str(r.created_at),
   };
@@ -203,6 +216,17 @@ export function noticeOf(v: unknown): ForumNotice {
     expiresAt: strOr(r.expires_at),
     readAt: strOr(r.read_at),
     createdAt: str(r.created_at),
+  };
+}
+
+export function bookmarkOf(v: unknown): ForumBookmark {
+  const r = obj(v);
+  return {
+    postId: str(r.post_id),
+    topicId: str(r.topic_id),
+    topicTitle: str(r.topic_title),
+    excerpt: str(r.excerpt),
+    remindAt: strOr(r.remind_at),
   };
 }
 
