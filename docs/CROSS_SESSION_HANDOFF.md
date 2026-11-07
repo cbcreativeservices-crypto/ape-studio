@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 15:49 · ccode · 7a86378a
+changed: Must-do: E3 E4 E5 D20 built on forum-next-build (one store build) [MD:D57]
+affects other side: must-do note only, forum one-build decision.
+needs: nothing
+
+
 ### 2026-11-07 · ccode · website instructor page wording (commit hash in git log)
 changed: web/components/InstructorDashboard.tsx + new web/lib/instructorRules.ts (import-free, mirrors the app's classRules.ts on forum-next-build). Quiz scores are counts of right answers, printed alone ("Best quiz: 24 right", "Quiz #2 · 24 right"); a value above 30 is explained in words ("No quiz score on record" / "no score on record"), never printed; no more "%" after a score. No "N of total": the class row reads "2 topics done · 3 in progress · 7 labs done" (was "Topics 2 complete of 5", "Labs 7 / 12"); the labs heading reads "· N labs done" (was "N of M complete"); an unfinished lab reads "Not yet" (was "—"). Final exam "27 / 30" kept (a score, D41). Test: test/webInstructorWording_20261107.test.ts. tsc 0 (root + web), next build OK. Page not rendered with data (needs an instructor sign-in).
 affects other side: website only; NOT published (audio-tools-engine untouched, no deploy).
