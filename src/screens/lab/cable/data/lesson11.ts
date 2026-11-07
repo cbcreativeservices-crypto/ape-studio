@@ -403,7 +403,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'line_level',
         'correct',
-        'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it line-level audio. Its power arrives separately, on a mains cable — two connections, two different things traveling.',
+        'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it line-level audio. Its power arrives separately, on a power cable — two connections, two different things traveling.',
       ),
       travels(
         'speaker_level',
@@ -414,7 +414,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'ac_mains',
         'wrong',
-        'You picked AC MAINS POWER. The cabinet’s power arrives on its own mains cordset into its power inlet — never through the signal connector. Keeping power and signal on separate connections is the point of this design. What travels here is LINE-LEVEL AUDIO.',
+        'You picked AC POWER. The cabinet’s power arrives on its own power cordset into its power inlet — never through the signal connector. Keeping power and signal on separate connections is the point of this design. What travels here is LINE-LEVEL AUDIO.',
         'danger',
       ),
       travels(
@@ -457,24 +457,24 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'ac_mains',
         'correct',
-        'Wall power — AC mains. It runs the cabinet’s internal amplifier and shares nothing with the signal connection beside it. It is dangerous to handle carelessly, and it never shares a connector with signal.',
+        'Wall power — AC power. It runs the cabinet’s internal amplifier and shares nothing with the signal connection beside it. It is dangerous to handle carelessly, and it never shares a connector with signal.',
       ),
       travels(
         'speaker_level',
         'wrong',
-        'You picked LOUDSPEAKER-LEVEL AUDIO. A powered cabinet contains its own amplifier — no speaker-level line ever reaches it, and loudspeaker and mains connections are never interchangeable in either direction. What travels here is AC MAINS POWER.',
+        'You picked LOUDSPEAKER-LEVEL AUDIO. A powered cabinet contains its own amplifier — no speaker-level line ever reaches it, and loudspeaker and AC power connections are never interchangeable in either direction. What travels here is AC POWER.',
         'danger',
       ),
       travels(
         'line_level',
         'wrong',
-        'You picked LINE-LEVEL AUDIO — but that is the SIGNAL connection, arriving separately on XLR. What comes out of a wall receptacle is mains voltage, whatever it gets called; treat every wall line as power. What travels here is AC MAINS POWER.',
+        'You picked LINE-LEVEL AUDIO — but that is the SIGNAL connection, arriving separately on XLR. What comes out of a wall receptacle is AC voltage, whatever it gets called; treat every wall line as power. What travels here is AC POWER.',
         'danger',
       ),
       travels(
         'dc_power',
         'wrong',
-        'You picked LOW-VOLTAGE DC POWER. Wall receptacles supply AC mains — low-voltage DC exists only after a power adapter built for a specific device. Treating a mains line as harmless low voltage is how mains gets handled carelessly. What travels here is AC MAINS POWER.',
+        'You picked LOW-VOLTAGE DC POWER. Wall receptacles supply AC power — low-voltage DC exists only after a power adapter built for a specific device. Treating an AC power line as harmless low voltage is how AC power gets handled carelessly. What travels here is AC POWER.',
         'danger',
       ),
     ],
@@ -482,28 +482,28 @@ const A_PICKS: ConnectionPick[] = [
     q2: [
       cable(
         'iec',
-        'IEC C13/C14 detachable mains cordset',
+        'IEC C13/C14 detachable power cordset',
         'correct',
-        'A detachable IEC C13/C14 cordset into the cabinet’s power inlet — three conductors: line, neutral and protective earth. The printed rating on the cord jacket governs, and a damaged mains cord leaves service immediately.',
+        'A detachable IEC C13/C14 cordset into the cabinet’s power inlet — three conductors: line, neutral and safety ground. The printed rating on the cord jacket governs, and a damaged power cord leaves service immediately.',
       ),
       cable(
         'pcon',
-        'powerCON-type locking mains cordset',
+        'powerCON-type locking power cordset',
         'accepted',
-        'Also defensible: many stage cabinets carry a locking powerCON-type inlet instead — the inlet on the equipment decides which cordset is right. Same seriousness either way: it is a mains connection, de-energized before connecting or disconnecting.',
+        'Also defensible: many stage cabinets carry a locking powerCON-type inlet instead — the inlet on the equipment decides which cordset is right. Same seriousness either way: it is an AC power connection, de-energized before connecting or disconnecting.',
       ),
       cable(
         'spk_lead',
         'speakON-style loudspeaker lead',
         'wrong',
-        'You picked a speakON-style loudspeaker lead. It is NEVER a mains connector — the twist-lock resemblance to power connectors is a look-alike, not an equivalence, and no adapter between loudspeaker and mains connections is ever acceptable. The correct choice is the mains cordset made for the cabinet’s power inlet.',
+        'You picked a speakON-style loudspeaker lead. It is NEVER an AC power connector — the twist-lock resemblance to power connectors is a look-alike, not an equivalence, and no adapter between loudspeaker and AC power connections is ever acceptable. The correct choice is the power cordset made for the cabinet’s power inlet.',
         'danger',
       ),
       cable(
         'ts_inst',
         '1/4-inch TS instrument cable',
         'wrong',
-        'You picked an instrument cable. Signal connectors never carry mains power — an instrument cable is neither built nor insulated for wall voltage, and using signal connectors for mains is never acceptable. The correct choice is a proper mains cordset.',
+        'You picked an instrument cable. Signal connectors never carry AC power — an instrument cable is neither built nor insulated for wall voltage, and using signal connectors for AC power is never acceptable. The correct choice is a proper power cordset.',
         'danger',
       ),
     ],
@@ -588,7 +588,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'ac_mains',
         'wrong',
-        'You picked AC MAINS POWER. The amplifier’s output is audio drive, not mains — and loudspeaker and mains connections are never interchangeable, in either direction. What travels here is LOUDSPEAKER-LEVEL AUDIO.',
+        'You picked AC POWER. The amplifier’s output is audio drive, not AC power — and loudspeaker and AC power connections are never interchangeable, in either direction. What travels here is LOUDSPEAKER-LEVEL AUDIO.',
         'danger',
       ),
     ],
@@ -609,9 +609,9 @@ const A_PICKS: ConnectionPick[] = [
       ),
       cable(
         'iec',
-        'IEC mains cordset',
+        'IEC power cordset',
         'wrong',
-        'You picked a mains cordset. Mains cordsets carry wall power — a mains connector never lands on loudspeaker wiring, and no adapter between loudspeaker and mains connections is ever acceptable. The correct choice is a loudspeaker lead.',
+        'You picked a power cordset. Power cordsets carry wall power — an AC power connector never lands on loudspeaker wiring, and no adapter between loudspeaker and AC power connections is ever acceptable. The correct choice is a loudspeaker lead.',
         'danger',
       ),
       cable(
@@ -1018,7 +1018,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'ac_mains',
         'wrong',
-        'You picked AC MAINS POWER. Mains stops at the adapter — the wall side. What travels from the adapter to the device is low-voltage DC. (Some adapters DO output AC from the same barrel — the label states which; one more reason the label, never the plug, governs.)',
+        'You picked AC POWER. AC power stops at the adapter — the wall side. What travels from the adapter to the device is low-voltage DC. (Some adapters DO output AC from the same barrel — the label states which; one more reason the label, never the plug, governs.)',
         'equipment_risk',
       ),
       travels(
@@ -1106,7 +1106,7 @@ const B_DATA: PickStage = {
           'usb_rev',
           'Type-B end to the computer, Type-A end to the interface',
           'wrong',
-          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — so the other end of this cable (A, or C on a C-to-B cable) is the host end, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way round. The correct answer is A/C to the computer, B to the interface.',
+          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — so the other end of this cable (A, or C on a C-to-B cable) is the host end, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way around. The correct answer is A/C to the computer, B to the interface.',
           'no_signal',
         ),
         cable(

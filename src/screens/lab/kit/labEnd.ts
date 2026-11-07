@@ -58,7 +58,7 @@ export function reviewCreditLine(opts: { guest: boolean; preview?: boolean; carr
   const { guest, preview, carry = true, account } = opts;
   if (preview) return 'This is a members-only preview, so nothing here is saved or credited.';
   if (guest && !carry) return 'You are not signed in, so nothing here is saved.';
-  if (guest) return 'You are not signed in, so this is kept for this session only — sign in before you close the app to keep it toward your Audio Fundamentals credit.';
+  if (guest) return 'You are not signed in, so this is kept for this session only — sign in before you close the app to count it toward your Audio Fundamentals credit.';
   if (account) return accountWhy(account);
   return null;
 }
@@ -217,7 +217,7 @@ export function endNote(mode: 'credit' | 'progress', startOver: boolean): string
       : 'Practicing again or reviewing never removes credit you have already earned.';
   }
   return startOver
-    ? 'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the ticks for a fresh run.'
+    ? 'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the check marks for a fresh run.'
     : 'Practicing again or reviewing never clears what you have already done.';
 }
 

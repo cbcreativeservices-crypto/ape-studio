@@ -33,7 +33,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the path from the reeds to the desk — which feeds hear the air and which are wires — what sits round the instrument, and what to do before any mic.',
+    goal: 'Know the path from the reeds to the desk — which feeds hear the air and which are wires — what sits around the instrument, and what to do before any mic.',
     credit: { scenarios: ['wu.set.1', 'wu.set.2', 'wu.set.3'], note: 'Answer the three checks.' },
     takeaway: 'A mic at a grille hears air; the auxiliary output is a separate electrical source. A speaker output never goes to a desk input. Keep the case closed, the player’s hands, knees and pedal clear, and protect your hearing.',
   },
@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalized).' },
-    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, a shock, a hot smell, or hum that new cables and the DI’s ground lift do not cure is not a mic problem: stop, and involve the owner or a technician.',
+    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, a shock, a hot smell — or hum that new cables and the DI’s ground lift do not cure — is not a mic problem: stop, and involve the owner or a technician.',
   },
   practice: {
     title: 'Practice',
@@ -111,9 +111,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Close to one of the oval speakers, how does the center tend to compare with the outer end?',
     options: ['Brighter at the center, rounder toward the end', 'Rounder at the center, brighter toward the end', 'The same, as the speaker is so small'],
     correct: 'Brighter at the center, rounder toward the end',
-    explain: 'As on most speakers, more of the highs come from the middle of the cone, so close in the center tends to be brighter and the outer end rounder. A small oval in a lid may behave differently — a tendency to test by ear.',
+    explain: 'As on most speakers, more of the highs come from the middle of the cone, so, close in, the center tends to be brighter and the outer end rounder. A small oval in a lid may behave differently — a tendency to test by ear.',
     why: {
-      'Rounder at the center, brighter toward the end': 'Most often it is the other way round — check on the real speaker.',
+      'Rounder at the center, brighter toward the end': 'Most often it is the other way around — check on the real speaker.',
       'The same, as the speaker is so small': 'Even a small speaker changes with the spot, close in. Test it.',
     },
   },
@@ -258,7 +258,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It hears what is near the player, like their wedge',
     explain: 'The close mic faces the grille, so its back points toward the player — and their wedge. Aim its rejection at the wedge, or move the wedge, and watch gain before feedback.',
     why: {
-      'It hears only the instrument, because it faces the grille': 'A directional mic still hears behind and around it — shallower than the picture.',
+      'It hears only the instrument, because it faces the grille': 'A directional mic still hears behind and around it — its nulls are shallower than the picture shows.',
       'It hears the audience side most': 'It faces the instrument; its rear faces the player’s side of the stage.',
     },
   },
@@ -388,7 +388,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You plan to blend the auxiliary output with the close mic. What do you confirm first?',
     options: ['The model, the labeled jack and its level, with the owner', 'That the headphone jack can stand in for it', 'That whichever jack sits nearest on the case will do the job'],
     correct: 'The model, the labeled jack and its level, with the owner',
-    explain: 'Not every model has a usable auxiliary output, and a headphone, auxiliary or speaker jack are not interchangeable. Confirm the jack and its level with the owner or the manual before connecting.',
+    explain: 'Not every model has a usable auxiliary output, and headphone, auxiliary and speaker jacks are not interchangeable. Confirm the jack and its level with the owner or the manual before connecting.',
     why: {
       'That the headphone jack can stand in for it': 'Headphone, auxiliary and speaker outputs differ: confirm the right one.',
       'That whichever jack sits nearest on the case will do the job': 'A jack can be a speaker output. Confirm what it is before plugging in.',
@@ -425,12 +425,12 @@ const symptoms: Symptom[] = [
     id: 's.weak',
     observation: 'Weak low or high notes',
     firstChecks: 'Does the source itself differ between registers? Hear each grille and the auxiliary output separately; do not diagnose by EQ alone.',
-    options: ['Hear each grille and the auxiliary output separately', 'Boost the weak range with EQ on the keyboard’s channel', 'Swap to a bigger mic straight away'],
+    options: ['Hear each grille and the auxiliary output separately', 'Boost the weak range with EQ on the keyboard’s channel', 'Swap to a bigger mic right away'],
     correct: 'Hear each grille and the auxiliary output separately',
     explain: 'Find where the weakness lives: if it is in the auxiliary output too, it is the instrument. If only at one grille, try the other, or another spot.',
     why: {
       'Boost the weak range with EQ on the keyboard’s channel': 'EQ can only mask a weak note in the instrument; find the cause first.',
-      'Swap to a bigger mic straight away': 'Check the source first, then change one thing at a time.',
+      'Swap to a bigger mic right away': 'Check the source first, then change one thing at a time.',
     },
   },
   {
@@ -460,13 +460,13 @@ const symptoms: Symptom[] = [
   {
     id: 's.hum',
     observation: 'Hum, or any electrical concern',
-    firstChecks: 'Is it there at the source and the auxiliary output with every mic muted? Stop if unsafe; a qualified technician — no ground defeat.',
-    options: ['Mute the mics, check the source; stop and call a technician', 'Lift the mains ground with an adapter so the hum stops at once', 'Open the case carefully to find the loose wire'],
+    firstChecks: 'Is it there at the source and the auxiliary output with every mic muted? Stop if unsafe and call a qualified technician — no ground defeat.',
+    options: ['Mute the mics, check the source; stop and call a technician', 'Lift the safety ground with an adapter so the hum stops at once', 'Open the case carefully to find the loose wire'],
     correct: 'Mute the mics, check the source; stop and call a technician',
     explain: 'Hum on an old instrument with a high-voltage pickup is a technician’s problem. Never lift the ground or open the case; stop using it if it shocks, smells hot or arcs.',
     why: {
-      'Lift the mains ground with an adapter so the hum stops at once': 'That removes a safety path and can make a fault dangerous.',
-      'Open the case carefully to find the loose wire': 'The case stays closed: mains power and high voltage inside.',
+      'Lift the safety ground with an adapter so the hum stops at once': 'That removes a safety path and can make a fault dangerous.',
+      'Open the case carefully to find the loose wire': 'The case stays closed: AC power and high voltage inside.',
     },
   },
   {
@@ -485,11 +485,11 @@ const symptoms: Symptom[] = [
     id: 's.clip',
     observation: 'Amp breakup or clipping',
     firstChecks: 'Which stage distorts, and is it musical? Ask the player; restore the mic and preamp headroom without erasing the tone they chose.',
-    options: ['Ask the player; find the stage and restore its headroom', 'Turn the instrument’s volume right down', 'Lower the channel fader until the hard chords sound clean'],
+    options: ['Ask the player; find the stage and restore its headroom', 'Turn the instrument’s volume all the way down', 'Lower the channel fader until the hard chords sound clean'],
     correct: 'Ask the player; find the stage and restore its headroom',
     explain: 'Breakup in the instrument’s amplifier may be the sound the player wants; overload at the mic or the desk input is not. Find which stage it is, then fix that one.',
     why: {
-      'Turn the instrument’s volume right down': 'The breakup may be the player’s sound. Ask, then find the unwanted stage.',
+      'Turn the instrument’s volume all the way down': 'The breakup may be the player’s sound. Ask, then find the unwanted stage.',
       'Lower the channel fader until the hard chords sound clean': 'Input clipping happens before the fader.',
     },
   },
@@ -543,17 +543,17 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dynamic close at the better grille, plus a dynamic 60–90 cm from the case for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one and check in mono.' },
       { id: 'b', label: 'A dynamic close at each grille, compared alone and in mono before keeping both', ok: true, power: 'none', feedback: 'Two grilles can give options — checked in mono, and kept only if the pair adds something.' },
       { id: 'c', label: 'A small condenser close in, and a dynamic for the room', ok: false, power: 'phantom', feedback: 'These inputs have no phantom power for the condenser.' },
-      { id: 'd', label: 'A dynamic inside the case, by the reeds', ok: false, power: 'none', feedback: 'The case stays closed: mains power and high voltage inside.' },
+      { id: 'd', label: 'A dynamic inside the case, by the reeds', ok: false, power: 'none', feedback: 'The case stays closed: AC power and high voltage inside.' },
       { id: 'e', label: 'Two dynamics at the same grille, side by side', ok: false, power: 'none', feedback: 'Two mics hearing the same spot add little and can comb.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-source pickup.' }, STEREO_REASON, CLAMP_REASON],
-    explain: 'Two pickups pass. What passes is the reasoning: two different views of the instrument, from outside and off the lid, powered by what these inputs supply, checked in mono.',
+    explain: 'Two plans pass. What passes is the reasoning: two different views of the instrument, from outside and off the lid, powered by what these inputs supply, checked in mono.',
   },
 ];
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you begin: a hammer strikes a steel reed. Where does most of the sound you will mic come from?', options: ['The instrument’s speakers', 'The reed itself', 'The hammer'], after: 'Now step through the five events.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the center toward the oval’s outer end. What changes?', options: ['Brighter', 'Rounder and warmer', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each suggests you listen for.' },
   context: { prompt: 'The speakers face the player. Where will the close mic’s rear point?', options: ['Toward the player and their wedge', 'Toward the audience', 'Down at the floor'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the auxiliary output’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip POLARITY both ways, then move the mic. Watch which readout each action changes.' },
@@ -628,7 +628,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Is it safe to open the case to see where the speakers are?',
     options: ['No — keep it closed; there is high voltage inside', 'Yes, once it has been unplugged from the wall', 'Yes, as long as you touch only the speakers'],
     correct: 'No — keep it closed; there is high voltage inside',
-    explain: 'Old reed pianos combine mains power with a high-voltage pickup, and stored charge can remain after unplugging. Find the grilles from outside; leave the inside to a qualified technician.',
+    explain: 'Old reed pianos combine AC power with a high-voltage pickup, and stored charge can remain after unplugging. Find the grilles from outside; leave the inside to a qualified technician.',
     why: {
       'Yes, once it has been unplugged from the wall': 'Unplugging alone does not make it safe: charge can remain.',
       'Yes, as long as you touch only the speakers': 'Speaker terminals and wiring are inside, near the high voltage. Keep it closed.',
@@ -671,7 +671,7 @@ export const I11B_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'player', label: 'the reeds and the pickup', short: 'REEDS', note: 'The struck reeds and the charged pickup start the sound — inside the closed case. Ask for the player’s level, vibrato setting and pedal use.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'ASK FIRST', scene: 'all' },
-      { id: 'amp', label: 'the reed piano, its amplifier inside', short: 'AMP INSIDE', note: 'The preamp, the vibrato and the amplifier are built into the instrument, with mains power and a high-voltage pickup. It stays closed. Its level and vibrato are the player’s sound.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'amp', label: 'the reed piano, its amplifier inside', short: 'AMP INSIDE', note: 'The preamp, the vibrato and the amplifier are built into the instrument, with AC power and a high-voltage pickup. It stays closed. Its level and vibrato are the player’s sound.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the two oval speakers in the lid', short: 'SPEAKERS', note: 'Two small 4 × 8 in speakers behind the grilles, facing the player. This is what the mic hears. Two grilles do not prove stereo.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
       { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of one speaker, the lid and the room — and, because the speakers face the player, of what is near the player too.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
       { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Where every source arrives and the input gain is set — the mic and the auxiliary output each on its own, labeled channel.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },

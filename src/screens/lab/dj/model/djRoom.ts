@@ -95,7 +95,7 @@ export const PLACEMENTS: Record<Placement, { label: string; tops: { L: Speaker; 
   },
   BEHIND: {
     label: 'BEHIND THE DJ',
-    blurb: 'Against the back wall either side of the DJ, aimed out over the booth at the floor.',
+    blurb: 'Against the back wall on either side of the DJ, aimed out over the booth at the floor.',
     tops: {
       L: { id: 'topL', at: { x: -0.9, y: 0.3 }, aim: { x: -0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
       R: { id: 'topR', at: { x: 0.9, y: 0.3 }, aim: { x: 0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },

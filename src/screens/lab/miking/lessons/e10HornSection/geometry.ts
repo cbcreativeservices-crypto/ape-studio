@@ -177,7 +177,7 @@ export const E10_MODEL = ensembleModel({
   name: 'horn section on its stage',
   variants: [
     { id: 'line', label: 'A horn line on stage', short: 'Stage', blurb: LN.blurb, seating: LN },
-    { id: 'arc', label: 'A section round one mic', short: 'Studio', blurb: AR.blurb, seating: AR },
+    { id: 'arc', label: 'A section around one mic', short: 'Studio', blurb: AR.blurb, seating: AR },
   ],
   views,
   viewsByVariant: { line: stageViews([LN], { zMax: 2400, hMax: 2600 }), arc: stageViews([AR], { zMax: 2400, hMax: 2600 }) },

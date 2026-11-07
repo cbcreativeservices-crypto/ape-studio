@@ -95,7 +95,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
       answers,
       onAnswered,
       <Card>
-        <Point title="A BED AND ITS EVENTS">A place sounds like a continuous layer — water, wind in the trees, a city’s traffic — with events on top that come and go: a call, a bus, a voice. A take needs long enough to hold a normal cycle of them.</Point>
+        <Point title="A BED AND ITS EVENTS">A place sounds like a continuous layer — water, wind in the trees, a city’s traffic — with events on top that come and go: a call, a bus, a voice. A take needs to be long enough to hold a normal cycle of them.</Point>
         <Point title="WHAT THE TRACK IS FOR">An honest record of the site, a background under a picture, a live feed or a measurement: decide first. An unwanted event in a film bed may be the evidence in a documentary.</Point>
       </Card>,
     ),
@@ -156,7 +156,7 @@ function F06TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
     words: {
       title: 'A pair and its image',
       badge: 'Textbook patterns, free field · the image from level and time is a simplified picture',
-      looking: city ? 'The plaza, a source swept round the pair' : 'The wood, a bird swept round the pair',
+      looking: city ? 'The plaza, a source swept around the pair' : 'The wood, a bird swept around the pair',
       prompt: 'Sweep BEARING from left to right, then change PAIR and sweep again.',
       after: 'X/Y and M/S place the source by level alone and hold together in mono; ORTF and the spaced omnis add time differences — wider, and a comb in a mono sum to listen for. Width is not the same as depth.',
     },
@@ -186,7 +186,7 @@ function F06TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
             <Point title="M/S STAYS LABELED">Record the Mid and the Side as their own tracks, or decode them correctly to left and right. The raw Side is not a right channel.</Point>
             <Point title="TWO SPACED MICS ARE NOT ONE OMNI">Summing two spaced mics does not recreate one omni at the middle: the time difference between them stays in the sum.</Point>
           </Card>
-          <Note>For ORTF the 110° is the angle between the two capsules’ axes — 55° each side of the front — not 110° to each side.</Note>
+          <Note>For ORTF the 110° is the angle between the two capsules’ axes — 55° on each side of the front — not 110° to each side.</Note>
         </>
       ),
     },

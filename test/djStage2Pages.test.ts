@@ -75,6 +75,6 @@ describe('DJ Systems Lab — Stage 2 screens', () => {
     assert.match(read(`${PAGES}/p18Dvs.tsx`), /played the tone quietly/);
   });
   it('hum is cured by the signal ground, never by lifting the mains earth', () => {
-    assert.match(read(`${PAGES}/p17Vinyl.tsx`), /never (lift the mains plug’s earth|a reason to touch the mains earth)/);
+    assert.match(read(`${PAGES}/p17Vinyl.tsx`), /never (lift the power plug’s ground|a reason to touch the safety ground)/);
   });
 });

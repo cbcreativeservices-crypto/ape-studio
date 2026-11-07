@@ -78,7 +78,7 @@ export const A01_COPY: Partial<LessonCopy> = {
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a balanced main mic, and perhaps a farther view in a good room. Live: a closer directional mic or a bell clip for control against the band.' },
         { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA, the drums and the other horns. Aim the pattern’s rejection — and remember the bell beams forward, so the mic need not sit on top of it.' },
-        { title: 'MOVEMENT', text: 'Players move and turn. A stand mic has a working zone — agree it; a bell clip keeps one distance as the bell moves.' },
+        { title: 'MOVEMENT', text: 'Players move and turn. A stand mic has a working zone — agree on it; a bell clip keeps one distance as the bell moves.' },
         { title: 'THE LOUDEST NOTE', text: 'A trumpet’s peaks can overload a mic’s own capsule and electronics before the desk shows it. Check the mic’s rating and pad, then set gain on the strongest real accent.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a trumpet mic is normal; the question is how much the music can take.',

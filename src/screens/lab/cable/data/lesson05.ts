@@ -54,19 +54,19 @@ export const FOUR_CONNECTIONS: SpeakerConnection[] = [
     servedBy: 'Two or more heavier unshielded conductors, sized for the current, the run length and the load.',
     // speakon_nl2.constructionNote, quote-faithful.
     detail:
-      'Not shielded small-conductor instrument or microphone cable. The connector does not enforce this: a speakON-style shell can be wrongly fitted to the wrong cable, so the cable itself must be verified, not assumed from the plug.',
+      'Not shielded small-conductor instrument or microphone cable. The connector does not enforce this: a speakON-style shell can be fitted to the wrong cable, so the cable itself must be verified, not assumed from the plug.',
   },
   {
     id: 'powered_ac',
-    title: 'POWERED LOUDSPEAKER → AC MAINS',
-    travels: 'AC mains power — wall power. It runs the cabinet, and it is dangerous to handle carelessly.',
+    title: 'POWERED LOUDSPEAKER → AC POWER',
+    travels: 'AC power — wall power. It runs the cabinet, and it is dangerous to handle carelessly.',
     // mains_wall / iec_c13_c14 / powercon_xx / powercon_true1
     // typicalDestinations all list powered loudspeakers.
     servedBy:
       'A regional wall plug feeding a detachable cordset into the cabinet’s power inlet — IEC C13/C14, or a locking powerCON-family / TRUE1 inlet.',
     // speakon safety caution + notInterchangeableWith consequence, quote-faithful.
     detail:
-      'Signal input and power input are SEPARATE connections on a powered loudspeaker. A speakON-style connector carries loudspeaker output only — it is never an AC mains connector; the twist-lock resemblance to power connectors is a look-alike, not an equivalence, and no adapter between them is ever acceptable.',
+      'Signal input and power input are SEPARATE connections on a powered loudspeaker. A speakON-style connector carries loudspeaker output only — it is never an AC power connector; the twist-lock resemblance to power connectors is a look-alike, not an equivalence, and no adapter between them is ever acceptable.',
   },
 ];
 
@@ -160,12 +160,12 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
       { id: 'line_xlr', label: 'LINE LEVEL — balanced cable (typically XLR)' },
       { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
       { id: 'inst_cable', label: 'INSTRUMENT — shielded 1/4-inch instrument cable' },
-      { id: 'mains_cord', label: 'AC MAINS — mains cordset' },
+      { id: 'mains_cord', label: 'AC POWER — power cordset' },
     ],
     correct: 'line_xlr',
     // speakon_nl2.commonMistakes + limitations; xlr3.typicalDestinations.
     explain:
-      'A powered loudspeaker amplifies inside the cabinet, so its signal input takes line-level audio — typically on XLR. A speakON-style lead carries amplifier output only; it is not how a line-level feed reaches a powered loudspeaker. The cabinet’s power arrives separately, on its own mains connection.',
+      'A powered loudspeaker amplifies inside the cabinet, so its signal input takes line-level audio — typically on XLR. A speakON-style cable carries amplifier output only; it is not how a line-level feed reaches a powered loudspeaker. The cabinet’s power arrives separately, on its own AC power connection.',
     wrongHint:
       'The amplifier is INSIDE this cabinet. Think about what its SIGNAL input needs — its power arrives on a different connection entirely.',
   },
@@ -177,7 +177,7 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
       { id: 'line_bal', label: 'LINE LEVEL — balanced cable into the amplifier input' },
       { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
       { id: 'bare_pair', label: 'SPEAKER LEVEL — bare-wire pair into binding posts' },
-      { id: 'mains_cord', label: 'AC MAINS — mains cordset' },
+      { id: 'mains_cord', label: 'AC POWER — power cordset' },
     ],
     correct: 'line_bal',
     // xlr3.typicalDestinations ('Amplifier and processor inputs');
@@ -231,23 +231,23 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
   {
     id: 'powered_ac',
     from: 'Powered loudspeaker',
-    to: 'AC mains',
+    to: 'AC power',
     options: [
-      { id: 'mains_cord', label: 'AC MAINS — the cabinet’s mains cordset, matched to its inlet' },
+      { id: 'mains_cord', label: 'AC POWER — the cabinet’s power cordset, matched to its inlet' },
       { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
-      { id: 'adapter', label: 'AC MAINS — an adapter from a speakON-style lead to the power inlet' },
+      { id: 'adapter', label: 'AC POWER — an adapter from a speakON-style lead to the power inlet' },
       { id: 'line_xlr', label: 'LINE LEVEL — balanced XLR cable' },
     ],
     correct: 'mains_cord',
     // iec_c13_c14 / powercon records (de-energize first) + speakon safety
     // caution and adapter consequence — quote-faithful.
     explain:
-      'The cabinet’s power is its own separate mains connection — a cordset matched to its inlet (IEC C13/C14 or a locking powerCON-family inlet), connected de-energized. A speakON-style connector carries loudspeaker output only: it is never an AC mains connector, and no adapter between loudspeaker and mains connections is ever acceptable.',
+      'The cabinet’s power is its own separate AC power connection — a cordset matched to its inlet (IEC C13/C14 or a locking powerCON-family inlet), connected de-energized. A speakON-style connector carries loudspeaker output only: it is never an AC power connector, and no adapter between loudspeaker and AC power connections is ever acceptable.',
     wrongHint:
-      'This is the POWER side of the cabinet. Signal and power are two separate connections on a powered loudspeaker — and loudspeaker connectors never carry mains.',
+      'This is the POWER side of the cabinet. Signal and power are two separate connections on a powered loudspeaker — and loudspeaker connectors never carry AC power.',
   },
 ];
 
 /** Lesson takeaway (LessonBanner idiom). */
 export const L05_LESSON =
-  'Line level into a powered cabinet, amplifier output into a passive one, the loudspeaker cable that carries it, and the mains that powers the cabinet are four different connections. The connector never enforces the cable behind it — verify what travels, confirm the lock de-energized, and never let loudspeaker and mains connectors trade jobs.';
+  'Line level into a powered cabinet, amplifier output into a passive one, the loudspeaker cable that carries it, and the AC power that runs the cabinet are four different connections. The connector never enforces the cable behind it — verify what travels, confirm the lock de-energized, and never let loudspeaker and AC power connectors trade jobs.';

@@ -591,7 +591,7 @@ export function EnsemblePlacement(p: PageProps) {
         { title: 'WHERE TO BEGIN', text: `${worked!.title}. ${WW.begin}`, view: av('plan'), cell: 0 },
         { title: single ? 'THE MIC' : 'THE ARRAY', text: `${ARRAYS[exRig.id].name}: ${ARRAYS[exRig.id].what}`, view: av('plan'), cell: 0 },
         { title: 'THE HEIGHT', text: WW.height ?? `${fmtStage(-exC.y)} above the floor — high enough to see past the front players to the rows behind. Higher hears more of the back rows and the hall; lower, more of the front desks.`, view: av('section'), cell: 1 },
-        { title: 'HOW FAR FORWARD', text: WW.forward ?? `${exC.z >= 0 ? `${fmtStage(exC.z)} in front of the front row` : `${fmtStage(-exC.z)} behind it`}${s.podium ? ', over or just behind the podium' : ''}. Closer tends to more direct sound and more front-row weight; farther back, more blend and more of the room.`, view: av('section'), cell: 2 },
+        { title: 'HOW FAR FORWARD', text: WW.forward ?? `${exC.z >= 0 ? `${fmtStage(exC.z)} in front of the front row` : `${fmtStage(-exC.z)} behind it`}${s.podium ? ', over or just behind the podium' : ''}. Closer tends to give more direct sound and more front-row weight; farther back, more blend and more of the room.`, view: av('section'), cell: 2 },
         { title: 'THE AIM', text: WW.aim ?? `${ARRAYS[exRig.id].recordingAngle ? `Facing the middle of the ensemble; its ${ARRAYS[exRig.id].recordingAngle}° recording angle (the amber wedge) should take in the whole width.` : 'Facing the middle of the ensemble, tilted down toward it.'} Move the whole array to change what it covers — not one mic of it.`, view: av('plan'), cell: 3 },
         { title: 'CLEARANCE', text: WW.clearance, view: av('front'), cell: 3 },
       ]

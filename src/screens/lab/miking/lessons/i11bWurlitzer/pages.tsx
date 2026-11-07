@@ -93,7 +93,7 @@ export const I11B_SPEC: KeysPagesSpec = {
     { id: 'wur.grille', title: 'SPEAKER GRILLES', text: 'Two grilles in the lid’s front slope, one oval speaker behind each, facing the player. Two grilles do not mean stereo: check what feeds each before panning anything.', views: ['front', 'side'] },
     { id: 'wur.cone', title: 'OVAL SPEAKER', text: 'A small 4 × 8 in oval speaker: the source you mic. On the earlier model it sits on the amplifier’s rail behind the grille; on the later one, on the lid itself.', views: ['side'] },
     { id: 'wur.controls', title: 'VOLUME AND VIBRATO', text: 'The player’s level and the “vibrato” — really a tremolo, a pulse in level. Part of their sound: ask, and leave them as set. An auxiliary output sits nearby; on the later model a small trim sets its level.', views: ['front'] },
-    { id: 'wur.case', title: 'CASE', text: 'The reeds, the pickup and the amplifier live inside, with mains power and a high-voltage pickup. It stays closed during miking.', views: ['front', 'side'] },
+    { id: 'wur.case', title: 'CASE', text: 'The reeds, the pickup and the amplifier live inside, with AC power and a high-voltage pickup. It stays closed during miking.', views: ['front', 'side'] },
     { id: 'wur.legs', title: 'LEGS', text: 'The instrument stands on its own legs. Mic stands stay independent of it — a stand touching the case can rattle it, or bridge metal to a fault.', views: ['front'] },
     { id: 'wur.pedal', title: 'SUSTAIN PEDAL', text: 'Under the player’s foot. Keep stands and cables out of the foot’s way.', views: ['front'] },
     { id: 'k.key', title: 'KEY', text: 'A lever on a balance point: pressing the front lifts the back, which throws the hammer.', views: ['inside'] },

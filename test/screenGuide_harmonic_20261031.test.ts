@@ -264,9 +264,9 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.doesNotMatch(textOf(GUIDES.live), /the room or the mic/);
     assert.match(g.live.changes[0], /by the speaker or the mic, or something rattling nearby\. A room changes levels but adds no new frequencies\./);
   });
-  it('▶ starts the tone only once the override is ticked', () => {
+  it('▶ starts the tone only once the override is checked', () => {
     assert.match(v, /void start\(\);\s*if \(isFeedbackAllowed\(\)\) void startTone\(\);/);
-    assert.match(g.live.control[0], /starts the mic \(and the tone, once the override is ticked\)/);
+    assert.match(g.live.control[0], /starts the mic \(and the tone, once the override is checked\)/);
   });
   it('first live experiment starts at the top of the F0 fader and is hedged (speaker high-pass at 100 Hz ≈ −7.8 dB)', () => {
     const hpfDb = (f: number) => { const r4 = (f / 150) ** 4; return 10 * Math.log10(r4 / (1 + r4)); };

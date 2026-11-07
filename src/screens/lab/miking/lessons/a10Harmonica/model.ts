@@ -55,9 +55,9 @@ export const HH = HARMONICA.height.mm;
 export type HandState = 'open' | 'half' | 'cupped' | 'mic';
 export const HAND_STATES: readonly { id: HandState; label: string; short: string; text: string }[] = [
   { id: 'open', label: 'OPEN HANDS', short: 'OPEN', text: 'The hands hold the harmonica loosely and open toward the front: the sound from the back of the cover plates goes straight out.' },
-  { id: 'half', label: 'PARTLY CUPPED', short: 'PARTLY', text: 'The hands close round the back of the harmonica, leaving an opening at the front: a small chamber the sound passes through.' },
+  { id: 'half', label: 'PARTLY CUPPED', short: 'PARTLY', text: 'The hands close around the back of the harmonica, leaving an opening at the front: a small chamber the sound passes through.' },
   { id: 'cupped', label: 'FULLY CUPPED', short: 'CUPPED', text: 'The hands close the chamber almost completely. Opening and closing it as they play is the “hand wah” — part of the player’s sound.' },
-  { id: 'mic', label: 'CUPPED ROUND A HARP MIC', short: 'HARP MIC', text: 'A bullet-shaped harp mic is held against the back of the harmonica and the hands close round both: one chamber, harmonica and mic together. That chamber is part of the amplified sound.' },
+  { id: 'mic', label: 'CUPPED AROUND A HARP MIC', short: 'HARP MIC', text: 'A bullet-shaped harp mic is held against the back of the harmonica and the hands close around both: one chamber, harmonica and mic together. That chamber is part of the amplified sound.' },
 ];
 
 /**

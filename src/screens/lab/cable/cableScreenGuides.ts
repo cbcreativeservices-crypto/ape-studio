@@ -139,7 +139,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     tryThis: [
       'On the first pair (TS instrument cable vs TS speaker cable), tap YES: NOT QUITE — fit is never the test. Look again at what is behind each shell.',
       'Reach the XLR analog vs AES3 (two-channel digital audio on XLR) pair and compare cards A and B: one plug, a different cable cut open behind it.',
-      'Reach the TRS pair: a third card, C, appears — one plug drawn once, three cables behind it: balanced mono, unbalanced stereo and an insert lead.',
+      'Reach the TRS pair: a third card, C, appears — one plug drawn once, three cables behind it: balanced mono, unbalanced stereo and an insert cable.',
     ],
   },
 
@@ -157,12 +157,12 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       'ROUTING PICKS: for each source → destination, tap the level and cable. Wrong picks stay open; NEXT SCENARIO › moves on, and the last shows FINISH CHECK ✓.',
     ],
     changes: [
-      'A powered loudspeaker has its own amplifier: it takes line level, plus its own mains cord.',
+      'A powered loudspeaker has its own amplifier: it takes line level, plus its own power cord.',
       'A passive loudspeaker has none: it takes the amplifier’s output — whole volts to over a hundred, with real current — on heavy conductors.',
       'On that current, a thin instrument cable heats, loses level and can fail. A 4-pole lead carries two circuits, for a bi-amplified box.',
     ],
     teaches: [
-      'Line level, speaker level and mains: three separate jobs around one loudspeaker.',
+      'Line level, speaker level and AC power: three separate jobs around one loudspeaker.',
       'Why an instrument cable must never stand in for a speaker cable.',
       'How powered and passive loudspeakers are fed. Follows Lesson 4’s look-alikes; Lesson 6 turns to digital and network links.',
     ],
@@ -207,7 +207,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   // ── Lesson 7 ──────────────────────────────────────────────────────────────
   l07_power: {
     seeing: [
-      'TWO KINDS OF POWER: AC MAINS and LOW-VOLTAGE DC.',
+      'TWO KINDS OF POWER: AC POWER and LOW-VOLTAGE DC.',
       'THREE CONDUCTORS, THREE ROLES: a drawn wall-plug face (NEMA 5-15) and a role card.',
       'POWER CONNECTOR BROWSER · 10 RECORDS: three families, each card led by ⚠ cautions.',
       'THE NEVER LIST in red, RECOGNIZE — NEVER HANDLE, then five questions.',
@@ -220,18 +220,18 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     changes: [
       'On this North American plug the narrow blade is line (hot), the energized conductor; the wide blade is neutral, the return.',
-      'The round pin is protective earth: it gives fault current a safe path, so it is never removed or bypassed.',
+      'The round pin is safety ground: it gives fault current a safe path, so it is never removed or bypassed.',
       'A DC plug shows nothing about voltage, polarity or current — only the printed labels do. The wrong supply can destroy equipment.',
     ],
     teaches: [
       'How to identify power connectors and the role of each conductor.',
-      'Where the line sits: identification is yours; mains wiring and repair belong to qualified persons.',
+      'Where the line sits: identification is yours; AC wiring and repair belong to qualified persons.',
       'Follows Lesson 6; Lesson 8 puts every connection type together to select cables.',
     ],
     tryThis: [
-      'Tap ROUND PIN: Protective earth — the fault-current path that protects people. Never removed, never bypassed.',
+      'Tap ROUND PIN: Safety ground — the fault-current path that protects people. Never removed, never bypassed.',
       'Tap DC & NEGOTIATED, then DC BARREL, and open CABLE BEHIND IT: nothing on the plug shows voltage, polarity or current.',
-      'Read THE NEVER LIST: a ground-lift adapter is never the cure for hum — hum is diagnosed on the signal side, and the safety earth always stays.',
+      'Read THE NEVER LIST: a ground-lift adapter is never the cure for hum — hum is diagnosed on the signal side, and the safety ground always stays.',
     ],
   },
 
@@ -282,13 +282,13 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       'Credit lands when all twelve are judged correctly.',
     ],
     teaches: [
-      'The handling habits that keep cables reliable: grip, latch, support, coil over-under, keep signal apart from mains.',
+      'The handling habits that keep cables reliable: grip, latch, support, coil over-under, keep signal apart from AC power.',
       'The names of faults, so the eye can find them.',
       'Follows Lesson 8. Next, the Virtual Cable Tester proves faults the eye cannot see.',
     ],
     tryThis: [
       'Tap COIL OVER-UNDER, then NO KNOTS, NO TIGHT BENDS: both cards describe damage built up inside a cable — permanent twists, and pairs that lose their geometry.',
-      'Tap SIGNAL APART FROM MAINS: where signal and mains must meet, they cross at right angles.',
+      'Tap SIGNAL APART FROM AC POWER: where signal and AC power must meet, they cross at right angles.',
       'The second scene item is a power cord with only two poles. Tap FAULT: NOT QUITE — the nudge asks whether this cord was ever built with a third contact.',
     ],
   },
@@ -296,7 +296,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   // ── Tester ────────────────────────────────────────────────────────────────
   l10_tester: {
     seeing: [
-      'VIRTUAL CABLE TESTER: eight leads on a bench, with a count cleared. The badge says it is simulated — a training model, not a live measurement.',
+      'VIRTUAL CABLE TESTER: eight leads on a bench, with a count of leads cleared. The badge says it is simulated — a training model, not a live measurement.',
       'Once a test runs: INSIDE THE CABLE, a drawn wiring trace, and the continuity map — PATH, EXPECTED and MEASURED.',
       'A ✓ marks a reading that matches; ✕ … FAULT marks one that does not.',
     ],
@@ -319,7 +319,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     tryThis: [
       'Test cable A: every row ✓ — each MEASURED value matches EXPECTED.',
       'Test cable B: Pin 2 → Pin 2 reads OPEN and Pin 2 → Pin 3 reads CLOSED. What does that pattern say about pins 2 and 3?',
-      'Test cable H: Round → EARTH reads OPEN. Which conductor is that, and what job does it do?',
+      'Test cable H: Round → GROUND reads OPEN. Which conductor is that, and what job does it do?',
     ],
   },
 
@@ -348,7 +348,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     tryThis: [
       'In SHOW A’s POWER-UP SEQUENCE, put Powered main loudspeakers first and confirm: the order is refused and cleared.',
-      'Swap the network switch and the computer in your order: either way round can be accepted — the source group’s order is flexible; only where amplification goes is fixed.',
+      'Swap the network switch and the computer in your order: either way around can be accepted — the source group’s order is flexible; only where amplification goes is fixed.',
       'In STUDIO B’s DATA & CONTROL, answer WHAT TRAVELS HERE? and the next question reads WHICH WAY AROUND? — data has direction.',
     ],
   },
@@ -374,7 +374,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     teaches: [
       'The whole lab in one check: identification, routing, construction, contact roles and troubleshooting.',
-      'Some rules are not judgment calls: protective earth, damaged cords, speaker outputs and mains work.',
+      'Some rules are not judgment calls: safety ground, damaged cords, speaker outputs and AC power work.',
       'Next lab: Audio Connectors & Cable Selection applies this to real systems.',
     ],
     tryThis: [

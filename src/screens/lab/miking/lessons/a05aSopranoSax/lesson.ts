@@ -68,7 +68,7 @@ export const A05A_LESSON: Lesson = buildSaxLesson({
   setup: (R) => saxSetupTasks('ss', 'soprano', R),
   neighbours: [
     { id: 'n1', label: 'an alto beside (a saxophone quartet)', short: 'ALTO', note: 'In a quartet or a section the next horn sits close: a close soprano mic hears it too, more so from the side.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'n2', label: 'a tenor on the other side', short: 'TENOR', note: 'The other neighbor. Every horn mic in a group hears the horns either side of it.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
+    { id: 'n2', label: 'a tenor on the other side', short: 'TENOR', note: 'The other neighbor. Every horn mic in a group hears the horns on either side of it.', prov: { kind: 'illustrative', reason: 'a typical quartet arc' }, tag: 'SPILL', scene: 'kit' },
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A soprano player moves the straight horn a lot: a closer, aimed mic — or a clip on the bell that moves with it — helps against the stage and feedback.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can blend the straight bell and the body and make the soprano feel less “inside the bell”.',

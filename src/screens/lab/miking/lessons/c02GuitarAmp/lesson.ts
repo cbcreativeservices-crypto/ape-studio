@@ -35,7 +35,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the path from the strings to the desk — which feeds hear the air and which are wires — what sits round the amp on a stage and in a studio, and what to do before any mic.',
+    goal: 'Know the path from the strings to the desk — which feeds hear the air and which are wires — what sits around the amp on a stage and in a studio, and what to do before any mic.',
     credit: { scenarios: ['eg.set.1', 'eg.set.2', 'eg.set.3'], note: 'Answer the three checks.' },
     takeaway: 'A mic on the amp hears air; a DI or the amp’s direct output is a separate electrical source. A speaker output goes to a speaker, never into a desk input. Keep the player’s pedals and the amp’s vents clear, and protect your hearing.',
   },
@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A magnetic pickup senses the string moving over it. At a still point (a node) that harmonic does not move the string, so the pickup hears almost none of it. That is why each pickup position has its own sound.',
     why: {
       'Most of it, since a still string is easy to sense': 'The pickup senses MOTION. Where a shape is still, it has nothing to sense.',
-      'Twice as much, from the two halves of the string': 'The halves move in opposite directions round the still point; the pickup only senses the string right above it, which is not moving.',
+      'Twice as much, from the two halves of the string': 'The halves move in opposite directions around the still point; the pickup only senses the string right above it, which is not moving.',
     },
   },
   {
@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The guitarist works the pedals with their feet while they play, and the amp needs its vents clear to cool. Route the cable away from both — and never drape anything over the vents to cut spill.',
     why: {
       'Under the pedalboard, where nobody can see it': 'The pedalboard is the player’s working space: a cable under it can snag a foot or move a pedal.',
-      'Along the back of the amp, tucked close to the vents': 'The vents get hot and need open air round them. Keep cables and stands clear of them.',
+      'Along the back of the amp, tucked close to the vents': 'The vents get hot and need open air around them. Keep cables and stands clear of them.',
     },
   },
   {
@@ -416,11 +416,11 @@ const symptoms: Symptom[] = [
     id: 's.hum',
     observation: 'Hum or buzz on the DI channel',
     firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
-    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the guitar playing covers the hum'],
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the ground pin off the amp’s power plug to break the loop', 'Turn the DI channel up so the guitar playing covers the hum'],
     correct: 'Swap one cable at a time, then try the DI’s ground lift',
-    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s safety ground stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
     why: {
-      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Pull the ground pin off the amp’s power plug to break the loop': 'Never. The ground pin is the safety path that stops a fault becoming a shock. Only a qualified technician deals with AC wiring.',
       'Turn the DI channel up so the guitar playing covers the hum': 'More gain raises the hum with the instrument.',
     },
   },
@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the speaker itself', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has the phantom power it needs — check its level rating.' },
-      { id: 'c', label: 'Instrument dynamic half-way out across the cone, turned a little toward the edge', ok: true, power: 'none', feedback: 'Another good first listen; fine if it suits the player’s tone.' },
+      { id: 'c', label: 'Instrument dynamic halfway out across the cone, turned a little toward the edge', ok: true, power: 'none', feedback: 'Another good first listen; fine if it suits the player’s tone.' },
       { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and monitors and lowers the margin before feedback.' },
       { id: 'e', label: 'A dynamic in the middle of the grille, wherever the speaker is', ok: false, power: 'none', feedback: 'On a combo the middle of the grille may not be the speaker. Find it first.' },
     ],
@@ -557,7 +557,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dynamic at the dust cap’s edge, plus a dynamic 15–30 cm behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair from outside, checked in mono — dynamics need no phantom.' },
       { id: 'b', label: 'A dynamic close at the cap’s edge, plus a dynamic 60–90 cm back for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one and check in mono.' },
       { id: 'c', label: 'A small condenser 60–90 cm back, and a dynamic close in', ok: false, power: 'phantom', feedback: 'These inputs have no phantom power for the condenser.' },
-      { id: 'd', label: 'A dynamic inside the open back, by the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the valves get very hot, and high voltage is close by inside.' },
+      { id: 'd', label: 'A dynamic inside the open back, by the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the tubes get very hot, and high voltage is close by inside.' },
       { id: 'e', label: 'Two dynamics side by side at the same spot on the cone', ok: false, power: 'none', feedback: 'Two mics hearing the same thing add little and can comb — give the second a different view.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-mic pickup.' }, BRAND_REASON, BASS_REASON],
@@ -567,7 +567,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you begin: an electric guitar’s strings vibrate over the pickups. Where does most of the sound you will mic come from?', options: ['The amp’s speaker', 'The strings themselves', 'The guitar’s body'], after: 'Now step through the harmonics and the pickups.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the dust cap’s edge toward the cone’s edge. What changes?', options: ['Brighter', 'Smoother and darker', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the guitarist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -713,7 +713,7 @@ export const C02_LESSON: Lesson = {
       { id: 'site', label: 'Spot on the cone, distance from the grille, angle', kind: 'text' },
       { id: 'tone', label: 'Clean and driven: what you heard (tendencies, in words)', kind: 'text' },
       { id: 'mono', label: 'Second mic or DI: alone, together, in mono', kind: 'text' },
-      { id: 'notes', label: 'Stand, cable, vents checked; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Stand, cable, vents checked; hum checked (the DI’s ground lift as its manual says — the safety ground never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   // INTERNAL record (never shown).

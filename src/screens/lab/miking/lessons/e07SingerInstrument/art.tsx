@@ -60,7 +60,7 @@ function useInstrumentStep(p: { variant: VariantId }): MikingStep {
             </>
           ) : (
             <>
-              <Point title="THE GUITAR">The strings drive the bridge; the top moves the air — much of the sound leaves the lower top round the bridge, the low end breathes through the sound hole, and the strings’ detail is heard near the neck.</Point>
+              <Point title="THE GUITAR">The strings drive the bridge; the top moves the air — much of the sound leaves the lower top around the bridge, the low end breathes through the sound hole, and the strings’ detail is heard near the neck.</Point>
               <Point title="THE VOICE ABOVE IT">The singer’s mouth is about 40 cm above the strings, a little behind the guitar’s top. The guitar reaches the vocal mic; the voice reaches the guitar mic — a little later and quieter.</Point>
             </>
           )}
@@ -83,11 +83,11 @@ export const E07_ART: LessonArt = {
     sound: makeVoiceSound({
       where: ['THE LUNGS', 'THE THROAT', 'THROAT · MOUTH', 'THE MOUTH'],
       air: {
-        vowel: { title: 'A vowel: sound only', text: 'An open vowel sends sound out of the mouth and round the front of the singer — toward the vocal mic, and down toward the instrument too.' },
+        vowel: { title: 'A vowel: sound only', text: 'An open vowel sends sound out of the mouth and around the front of the singer — toward the vocal mic, and down toward the instrument too.' },
         plosive: { title: 'P or B: a puff of air', text: 'The lips hold the air and let it go at once: a puff shoots straight out along the mouth’s axis — at the vocal mic, not down at the instrument.' },
         sibilant: { title: 'S: a narrow hiss', text: 'Air forced past the tongue and the teeth makes a narrow hiss straight ahead. A vocal mic dead on the axis hears the most of it.' },
       },
-      highs: 'The voice’s highest frequencies go out ahead of the mouth, the lows spread round the head — so an instrument mic below and in front of the singer hears a duller voice than the vocal mic does. The shape of that spread is not drawn here, only its direction.',
+      highs: 'The voice’s highest frequencies go out ahead of the mouth, the lows spread around the head — so an instrument mic below and in front of the singer hears a duller voice than the vocal mic does. The shape of that spread is not drawn here, only its direction.',
       silentNote: 'This lab never plays a sound and draws no frequency curve: how a real performance sounds depends on the performer, the instrument, the mics and the room. The pictures show where the sounds come from.',
       reveal: 'The folds make the raw buzz, the throat and the mouth shape it, and it leaves through the mouth — a few tens of centimeters from the instrument, so every mic hears both.',
       useExtra: useInstrumentStep,

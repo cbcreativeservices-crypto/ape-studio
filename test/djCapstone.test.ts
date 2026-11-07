@@ -120,7 +120,7 @@ describe('hints never print the answers (second reviews 2026-10-18)', () => {
         const q = debriefOptions(f, p, 3);
         assert.equal(q.why.length, q.options.length);
         q.options.forEach((o, i) => {
-          if (i === q.correct || /^Lift the mains earth/.test(o)) return;
+          if (i === q.correct || /^Lift the safety ground/.test(o)) return;
           assert.ok(FAULTS[f].wrong[p].some((w) => w.t === o), `${f}.${p}: ${o} is not one of its own wrong options`);
           assert.ok(q.why[i].length > 15);
         });
@@ -150,7 +150,7 @@ describe('the debrief', () => {
     for (const f of FAULT_IDS)
       for (const p of ['repair', 'prevention'] as const) {
         const q = debriefOptions(f, p, 7);
-        const k = q.options.findIndex((o) => /mains earth/.test(o) && /^Lift/.test(o));
+        const k = q.options.findIndex((o) => /safety ground/.test(o) && /^Lift/.test(o));
         assert.ok(k >= 0 && k !== q.correct);
       }
   });

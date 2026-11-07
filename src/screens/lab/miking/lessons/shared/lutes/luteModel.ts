@@ -382,7 +382,7 @@ export function buildLute(kind: LuteKind, words: Record<string, PartWords>, name
       { id: 'oud.env.legs', label: 'the player’s legs', shape: boxE(f.legs), prov: PLAYER },
     );
     const reg = (id: string, partId: string, label: string, p: Vec3, note: string) => regions.push({ id: pid(kind, id), partId: pid(kind, partId), label, anchor: P(p), prov: ill('a point chosen to stand for the region'), note });
-    reg('face', 'face', 'the face round the bridge', v(60, 0, 2), 'The thin face round the bridge moves the most: much of the oud’s sound leaves from here, toward the listener and a mic in front.');
+    reg('face', 'face', 'the face around the bridge', v(60, 0, 2), 'The thin face around the bridge moves the most: much of the oud’s sound leaves from here, toward the listener and a mic in front.');
     reg('roses', 'roseMain', 'the rosettes', v(OUD.roseMainX.mm, 0, 2), 'The air inside the bowl breathes through the three rosettes — a big part of the low, warm bloom. Close to the main rose, a mic hears more of it.');
     reg('strings', 'strings', 'the strings near the neck', v(g.joint, 0, OUD.stringH.mm + 2), 'The strings, the risha’s click and the left hand’s slides are heard most directly toward the neck.');
   }
@@ -466,7 +466,7 @@ export function buildLute(kind: LuteKind, words: Record<string, PartWords>, name
     surf('neck', 'neck', 'the neck, above the gourd', 'the neck line');
     surf('board', 'tabli', 'the soundboard (tabli)', 'the board’s center line');
   } else {
-    surf('plate', 'plate', 'the top plate, round its middle on the far side of the bridge from the neck', 'the top-plate line');
+    surf('plate', 'plate', 'the top plate, around its middle on the far side of the bridge from the neck', 'the top-plate line');
     surf('bridge', 'bridge', 'the main bridge', 'the bridge line');
     surf('top', 'plate', 'the top plate’s center', 'the plate’s center line');
   }

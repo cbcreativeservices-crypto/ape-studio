@@ -20,9 +20,9 @@ export const L07_LEAD: L07Lead[] = [
   {
     // Sources: lesson01 ac_mains category blurb (ratified lesson copy) +
     // mains_wall.constructionNote (three conductors: line/neutral/earth).
-    title: 'AC MAINS',
+    title: 'AC POWER',
     body:
-      'Wall power — the building’s electrical system. In a grounded cord it rides three conductors: line, neutral and protective earth. It runs the equipment, it is dangerous to handle carelessly, and it never shares a connector with signal.',
+      'Wall power — the building’s electrical system. In a grounded cord it rides three conductors: line, neutral and safety ground. It runs the equipment, it is dangerous to handle carelessly, and it never shares a connector with signal.',
   },
   {
     // Sources: lesson01 dc_power category blurb + dc_barrel.constructionNote
@@ -58,7 +58,7 @@ export const POWER_GROUPS: L07Group[] = [
     // about the voltage or the gauge behind it; the printed rating on the
     // cord jacket does") + friction locking on all five records.
     blurb:
-      'Friction-retained mains connections. The coupler shape never tells you the voltage or the cord rating behind it — the printed markings do.',
+      'Friction-retained AC power connections. The coupler shape never tells you the voltage or the cord rating behind it — the printed markings do.',
     connectors: [
       { id: 'mains_wall', chip: 'WALL PLUG' },
       { id: 'iec_c13_c14', chip: 'IEC C13/C14' },
@@ -74,7 +74,7 @@ export const POWER_GROUPS: L07Group[] = [
     // reliability, not the stakes"), both records' notInterchangeableWith
     // (families do not intermate) and hotPlug (de-energize first default).
     blurb:
-      'Locking stage mains — the lock changes reliability, not the stakes. The two families do not intermate despite the shared name. The original family must never be connected or disconnected under power. Some TRUE1 models are rated to break a live load, but check the exact product; de-energizing first stays the default for both.',
+      'Locking stage AC power — the lock changes reliability, not the stakes. The two families do not intermate despite the shared name. The original family must never be connected or disconnected under power. Some TRUE1 models are rated to break a live load, but check the exact product; de-energizing first stays the default for both.',
     connectors: [
       { id: 'powercon_xx', chip: 'powerCON 20 A' },
       { id: 'powercon_true1', chip: 'powerCON TRUE1' },
@@ -115,7 +115,7 @@ export const NEVER_ITEMS: string[] = [
   // mains_wall.commonMistakes (ground pin removal/adaptation)
   'Removing, bending back or adapting away a ground pin so a plug will fit.',
   // mains_wall.commonMistakes (ground-lift adapter; hum solved on signal side)
-  'Using a three-to-two “ground-lift” adapter to cure hum. Hum is diagnosed on the signal side — the safety earth is never the thing removed.',
+  'Using a three-to-two “ground-lift” adapter to cure hum. Hum is diagnosed on the signal side — the safety ground is never the thing removed.',
   // mains_wall.commonMistakes + inspectionPoints (damaged cord in service)
   'Using a power cable with visible damage — cracked jacket, exposed conductors, heat marks.',
   // nema_twist_lock / stage_pin cautions ("never tape it up", "never tape or improvise")
@@ -132,17 +132,17 @@ export const NEVER_ITEMS: string[] = [
   // ("never modify a coupler to force the fit"; keying protects the wiring)
   'Forcing a connector into a mating part it was not built for, or adapting across keyed families to make it fit.',
   // mains_wall.commonMistakes (male-to-male mains cable)
-  'Building or using a male-to-male mains cable — for any purpose. The free end carries live, exposed pins the instant the other end is plugged in.',
+  'Building or using a male-to-male power cable — for any purpose. The free end carries live, exposed pins the instant the other end is plugged in.',
   // mains_wall.safety.cautions ("Never defeat polarization or grounding";
   // GFCI required in damp/outdoor locations) + keying-protection claims.
   // Derived phrasing — flagged for owner review.
   'Bypassing any built-in protection — polarization, grounding, connector keying — or powering a damp or outdoor location without the GFCI (RCD) protection it requires.',
   // powercon_xx.commonMistakes ("a loudspeaker connector is never used for
   // mains, and a mains connector is never used for loudspeakers")
-  'Using a signal or loudspeaker connector for mains power, or a mains connector for loudspeakers — in either direction.',
+  'Using a signal or loudspeaker connector for AC power, or an AC power connector for loudspeakers — in either direction.',
   // mains_wall.safety.cautions ("Internal wiring, termination or repair of any
   // mains plug, cord or receptacle is qualified-person work — never beginner work")
-  'Internal wiring, termination or repair of any mains connector by anyone but a qualified person.',
+  'Internal wiring, termination or repair of any AC power connector by anyone but a qualified person.',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -181,14 +181,14 @@ export const L07_CHECKS: L07Check[] = [
       'A rack hums whenever it connects to the PA. A three-to-two “ground-lift” adapter on its power cord would silence it. What is the correct move?',
     options: [
       'Use the adapter — a clean signal matters most during the show',
-      'Diagnose the hum on the signal side; the protective earth stays',
+      'Diagnose the hum on the signal side; the safety ground stays',
       'Remove the ground pin so no adapter is needed',
       'Lift the ground only until the hum is fixed properly',
     ],
     correctIdx: 1,
     reveal:
-      'Hum is solved with isolation transformers, balanced lines and proper grounding practice — such as powering the whole system from one source — never by defeating the safety earth. The earth pin is what keeps a fault from energizing the equipment chassis.',
-    wrongHint: 'The protective earth is a life-safety path. Is any amount of hum worth removing it?',
+      'Hum is solved with isolation transformers, balanced lines and proper grounding practice — such as powering the whole system from one source — never by defeating the safety ground. The ground pin is what keeps a fault from energizing the equipment chassis.',
+    wrongHint: 'The safety ground is a life-safety path. Is any amount of hum worth removing it?',
   },
   {
     // Source: iec_c13_c14.commonMistakes ("damaged mains cords leave service
@@ -203,7 +203,7 @@ export const L07_CHECKS: L07Check[] = [
     ],
     correctIdx: 2,
     reveal:
-      'Damaged mains cords leave service immediately — cracked couplers, heat marks and loose strain reliefs disqualify a cord even when the equipment still powers up. “It still works” is not a safety test.',
+      'Damaged power cords leave service immediately — cracked couplers, heat marks and loose strain reliefs disqualify a cord even when the equipment still powers up. “It still works” is not a safety test.',
     wrongHint: 'Powering up proves the circuit conducts. It proves nothing about what the damage does next.',
   },
   {
@@ -225,7 +225,7 @@ export const L07_CHECKS: L07Check[] = [
   {
     // Source: mains_wall.safety.cautions ("Internal wiring, termination or
     // repair … is qualified-person work — never beginner work").
-    question: 'A mains plug on a stage cable needs rewiring. Who does that work?',
+    question: 'A power plug on a stage cable needs rewiring. Who does that work?',
     options: [
       'Anyone careful, once the cable is unplugged',
       'Whoever is free when it fails',
@@ -234,16 +234,16 @@ export const L07_CHECKS: L07Check[] = [
     ],
     correctIdx: 2,
     reveal:
-      'Internal wiring, termination or repair of any mains plug, cord or receptacle is qualified-person work — never beginner work. Unplugging the cable makes it safe to inspect and report, not to rewire.',
+      'Internal wiring, termination or repair of any power plug, cord or receptacle is qualified-person work — never beginner work. Unplugging the cable makes it safe to inspect and report, not to rewire.',
     wrongHint: 'Being careful is not the standard here. Qualification is.',
   },
 ];
 
 /** CheckDoneBanner copy once all four are genuinely solved. */
 export const L07_DONE =
-  'Lesson check complete — the earth stays connected, damaged cords retire, a good fit proves nothing, and mains wiring stays with qualified persons.';
+  'Lesson check complete — the ground stays connected, damaged cords retire, a good fit proves nothing, and AC wiring stays with qualified persons.';
 
 /** Lesson takeaway (LessonBanner idiom) — derived from the power records'
  *  shared cautions and inspection discipline. */
 export const L07_LESSON =
-  'Treat power connectors with respect, not fear: know what each one carries, inspect before use, keep the protective earth intact, retire damage on sight — and leave everything inside a mains connector to a qualified person.';
+  'Treat power connectors with respect, not fear: know what each one carries, inspect before use, keep the safety ground intact, retire damage on sight — and leave everything inside an AC power connector to a qualified person.';

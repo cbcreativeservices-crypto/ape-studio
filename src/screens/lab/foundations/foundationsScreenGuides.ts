@@ -30,7 +30,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   // ── Module 1 · WHAT IS SOUND? ────────────────────────────────────────────
   m1: {
     seeing: [
-      'Air from the side: grey dots are air molecules, with an ear at the right. One or two coloured dots are tracers, each with a fixed mark.',
+      'Air from the side: gray dots are air molecules, with an ear at the right. One or two colored dots are tracers, each with a fixed mark.',
       'COLORIZED PRESSURE on: warm orange bands = squeezed air (compression), cool blue = stretched air (rarefaction).',
       'Readouts: FREQ (the real tone), MODEL (the slowed rate the drawing moves at) and TONE (LIVE while sounding).',
     ],
@@ -43,16 +43,16 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     changes: [
       'A higher PITCH: each molecule rocks more often, and MODEL rises.',
       'In real air every pitch travels at one speed, so higher pitches pack their squeezes closer. This picture keeps the spacing fixed; Module 6 shows the real spacing.',
-      'Each molecule only rocks around its home and nudges its neighbour. The pattern travels; the air stays put.',
+      'Each molecule only rocks around its home and nudges its neighbor. The pattern travels; the air stays put.',
       'The drawing is slowed: real air at 880 Hz rocks 880 times a second.',
     ],
     teaches: [
-      'Sound is a travelling pattern of pressure changes in air — not a wind, not electricity, not a graph.',
+      'Sound is a traveling pattern of pressure changes in air — not a wind, not electricity, not a graph.',
       'Compression and rarefaction are the two halves of every sound wave.',
-      'Every animation of sound is a slowed model. Builds on Understanding Level & Amplitude (its blue→red colours mark level here too); Module 2 adds the speaker and the graph.',
+      'Every animation of sound is a slowed model. Builds on Understanding Level & Amplitude (its blue→red colors mark level here too); Module 2 adds the speaker and the graph.',
     ],
     tryThis: [
-      'Follow one coloured tracer dot for a few seconds: it swings around its mark and never leaves it, while the bands keep travelling.',
+      'Follow one colored tracer dot for a few seconds: it swings around its mark and never leaves it, while the bands keep traveling.',
       'Switch PITCH from LOW to HIGH: FREQ goes 110 → 880 Hz while MODEL goes 0.45 → 1.31 Hz — real air is hundreds of times faster.',
       'Press PLAY, then switch between LOW and HIGH while you listen and watch: the rate you hear and the rate you see rise together.',
     ],
@@ -83,7 +83,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     tryThis: [
       'Watch the cone moving forward through its middle: the squeeze forms right beside it, with the crest under it in THE GRAPH.',
-      'Turn COLORIZED PRESSURE off: the molecules still bunch and spread — the colour only labels what they already do.',
+      'Turn COLORIZED PRESSURE off: the molecules still bunch and spread — the color only labels what they already do.',
       'Tap ⤢ FULL SCREEN and follow one crest of THE GRAPH from the speaker to the right edge.',
     ],
   },
@@ -178,9 +178,9 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   // ── Module 6 · WAVELENGTH ────────────────────────────────────────────────
   m6: {
     seeing: [
-      'A real room from the side, drawn to scale: 0 to 7 m, ticks every metre, a person for size. Air molecules fill it.',
+      'A real room from the side, drawn to scale: 0 to 7 m, ticks every meter, a person for size. Air molecules fill it.',
       'The amber bracket marked λ is exactly one wavelength at the chosen frequency.',
-      'Readouts: FREQ, λ (one wavelength, in metres) and FITS (how many wavelengths fit across the room).',
+      'Readouts: FREQ, λ (one wavelength, in meters) and FITS (how many wavelengths fit across the room).',
     ],
     control: [
       'FREQ fader (55–880 Hz, four octaves): reshapes the wave across the room. It starts at 110 Hz.',
@@ -190,10 +190,10 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     changes: [
       'λ = speed of sound ÷ frequency = 343 ÷ FREQ. Double FREQ and λ halves.',
       'While one compression travels away at 343 m/s, the next is made behind it; the gap between them is λ.',
-      'The coloured tracer dots only rock in place: the wave crosses the room, the air does not.',
+      'The colored tracer dots only rock in place: the wave crosses the room, the air does not.',
     ],
     teaches: [
-      'Wavelength: low notes take up metres of air, high notes centimetres.',
+      'Wavelength: low notes take up meters of air, high notes centimeters.',
       'Why bass wraps around obstacles and builds up in rooms: its waves are as big as the room.',
       'Builds on Module 5’s rate; Module 7 joins this space view to the time view a microphone sees.',
     ],
@@ -207,12 +207,12 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   // ── Module 7 · ONE WAVE, TWO QUESTIONS (after the prediction) ────────────
   m7: {
     seeing: [
-      'Top: THE ROOM — CAMERA FLASH. Pressure everywhere at one instant, ruler in metres. The ringed mic is the one point the lower graph hears.',
+      'Top: THE ROOM — CAMERA FLASH. Pressure everywhere at one instant, ruler in meters. The ringed mic is the one point the lower graph hears.',
       'Bottom: THE MIC’S OUTPUT. Pressure at the mic only, drawn into MIC INPUT at the NOW line, ruler in milliseconds.',
       'The green PROBE marks one spot in both graphs: one vertical line through the ROOM and the MIC INPUT. The SAME SPOT chip names it in time and distance.',
     ],
     control: [
-      'PROBE fader: moves the green bookmark. Its lane reads that spot in metres and milliseconds.',
+      'PROBE fader: moves the green bookmark. Its lane reads that spot in meters and milliseconds.',
       'FREEZE: stops the display like a camera flash; MODE reads FROZEN instead of RUN.',
       'FREQ key: 110 Hz or 220 Hz (the start).',
       'PLAY: sounds the chosen frequency; tap again to stop.',
@@ -220,16 +220,16 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     changes: [
       'THE MIC’S OUTPUT slides left because it is recording: new sound lands at NOW and older sound moves left. Left = earlier.',
-      'Sound covers 343 m each second, so a spot that has travelled farther past the mic was felt longer ago.',
-      'Lower FREQ → longer waves and periods: the same PROBE spot reads more metres and more milliseconds.',
+      'Sound covers 343 m each second, so a spot that has traveled farther past the mic was felt longer ago.',
+      'Lower FREQ → longer waves and periods: the same PROBE spot reads more meters and more milliseconds.',
     ],
     teaches: [
       'A waveform display draws TIME at one point; the room view draws SPACE at one instant.',
       'distance = speed × time ties the two rulers together at every point.',
-      'Builds on Module 6’s metres; every recording screen you meet later draws the time view. Module 8 returns to pitch.',
+      'Builds on Module 6’s meters; every recording screen you meet later draws the time view. Module 8 returns to pitch.',
     ],
     tryThis: [
-      'At 220 Hz, leave PROBE where it starts: the PROBE lane reads 1.56 m · 4.5 ms — one spot, named in metres and in milliseconds.',
+      'At 220 Hz, leave PROBE where it starts: the PROBE lane reads 1.56 m · 4.5 ms — one spot, named in meters and in milliseconds.',
       'Switch FREQ to 110 Hz: the lane now reads 3.12 m · 9.1 ms for the same PROBE spot — both double.',
       'FREEZE, then slide PROBE to the end of its lane: the lane reads 2.26 m · 6.6 ms at 220 Hz. Check it: 2.26 ÷ 343 ≈ 6.6 ms.',
     ],
@@ -268,8 +268,8 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   // ── Module 9 · LOUDNESS vs AMPLITUDE ─────────────────────────────────────
   m9: {
     seeing: [
-      'A simplified ear-sensitivity curve (low to high frequency, 40 Hz to past 10k), with a dB colour scale at the left.',
-      'Amber line: YOU SEND — same at every Hz. Coloured curve: YOU HEAR. A dot marks your tone; its EAR tag is the ear’s adjustment there (minus = less sensitive, plus = more).',
+      'A simplified ear-sensitivity curve (low to high frequency, 40 Hz to past 10k), with a dB color scale at the left.',
+      'Amber line: YOU SEND — same at every Hz. Colored curve: YOU HEAR. A dot marks your tone; its EAR tag is the ear’s adjustment there (minus = less sensitive, plus = more).',
       'Readouts: FREQ, SEND and HEARD (SEND plus EAR). The inset, WHAT YOU HEAR — LEVEL × EAR CURVE, shrinks with HEARD.',
     ],
     control: [
@@ -280,7 +280,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     changes: [
       'FREQ changes HEARD but never SEND: the ear is less sensitive at low frequencies, so the same amplitude sounds quieter.',
       'The curve peaks around 3–4 kHz, where the ear canal resonates — the range that makes consonants clear — and falls steeply toward the lows (and again above about 9 kHz).',
-      'LEVEL moves SEND and HEARD together and re-colours the whole curve.',
+      'LEVEL moves SEND and HEARD together and re-colors the whole curve.',
     ],
     teaches: [
       'Amplitude is physics; loudness is perception. Equal amplitude is not equal loudness.',
@@ -298,7 +298,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   m10: {
     seeing: [
       'INPUTS (top): two identical waves, purple and blue, offset by the PHASE you set. Both travel.',
-      'SUM = A + B (bottom): their exact sum, coloured by level. When they cancel it lies flat and glows red.',
+      'SUM = A + B (bottom): their exact sum, colored by level. When they cancel it lies flat and glows red.',
       'Readouts: PHASE (degrees), SUM (ALIGNED, PARTIAL or CANCELED) and OUT (the tones playing, if any).',
     ],
     control: [
@@ -328,7 +328,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   // ── Module 11 · HARMONICS ────────────────────────────────────────────────
   m11: {
     seeing: [
-      'Six sine layers, H1 (the fundamental) at the bottom up to H6, and their SUM below. Each row’s colour shows its level.',
+      'Six sine layers, H1 (the fundamental) at the bottom up to H6, and their SUM below. Each row’s color shows its level.',
       'Every layer is a whole-number multiple of 220 Hz: H2 = 440, H3 = 660 … H6 = 1320.',
       'Readouts: F0 (220 Hz), SEL (the selected harmonic), LEVEL (its level) and TONE.',
     ],
@@ -398,7 +398,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     changes: [
       'Nothing on this display reacts to settings: each card swaps the model for a live measurement.',
       'Ears adapt, compare and tire; instruments hold still. The meter gives the number; the model explains it.',
-      'Readings are labelled honestly — dBFS · uncalibrated (digital level, not checked against a reference meter) where that is the truth.',
+      'Readings are labeled honestly — dBFS · uncalibrated (digital level, not checked against a reference meter) where that is the truth.',
     ],
     teaches: [
       'Why measurement tools exist: ears estimate, meters measure.',
@@ -459,7 +459,7 @@ export const FOUNDATIONS_M7_COVER_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'This module joins two ways of reading one wave.',
-    'It builds on Module 6’s wavelength in metres.',
+    'It builds on Module 6’s wavelength in meters.',
   ],
   tryThis: [
     'Say your answer out loud, and why, before you tap it.',
@@ -480,7 +480,7 @@ export const FOUNDATIONS_END_GUIDE: ScreenGuide = {
   ],
   changes: [
     'A module counts once you open it, so the list shrinks as you visit.',
-    'Practising again or reviewing never removes credit you have already earned.',
+    'Practicing again or reviewing never removes credit you have already earned.',
   ],
   teaches: [
     'What is left of the course — and that every module stays open for practice.',

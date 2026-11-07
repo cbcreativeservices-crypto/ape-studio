@@ -48,13 +48,13 @@ const FILTERS: { id: Filter; label: string }[] = [
   { id: 'plate', label: 'Plate' },
   { id: 'liquid', label: 'Dish' },
   { id: 'membrane', label: 'Drum' },
-  { id: 'fav', label: '★ Favourites' },
+  { id: 'fav', label: '★ Favorites' },
 ];
 const STUDIO_ROUTE: Record<StudioId, 'CymaticsPlateStudio' | 'CymaticsLiquidStudio' | 'CymaticsMembraneStudio'> = { plate: 'CymaticsPlateStudio', liquid: 'CymaticsLiquidStudio', membrane: 'CymaticsMembraneStudio' };
 const STUDIO_TAG: Record<StudioId, string> = { plate: 'PLATE', liquid: 'DISH', membrane: 'DRUM' };
 /** A failed READ of the pattern list (hunt 4): said in BROWSE and in OPEN. */
 const PATTERNS_UNREADABLE = 'Your saved patterns could not be read from this device just now — they are not lost, and nothing is written over them. Leave the gallery and come back to try again.';
-const ART_UNREADABLE = 'Your colourings could not be read from this device just now, so the thumbnails may show without them — they are not lost. Leave the gallery and come back to try again.';
+const ART_UNREADABLE = 'Your colorings could not be read from this device just now, so the thumbnails may show without them — they are not lost. Leave the gallery and come back to try again.';
 
 // Geometry per (pattern, STATE) — the science chain runs once per distinct
 // state; a rename or a note edit does not recompute the field.
@@ -356,7 +356,7 @@ export function GalleryScreen() {
   );
 
   const title = mode === 'art' ? 'ART STUDIO' : mode === 'compare' ? 'COMPARE' : mode === 'open' && current ? current.name.toUpperCase() : 'PATTERN GALLERY & ART STUDIO';
-  const subtitle = mode === 'browse' ? 'Saved patterns from the three studios — reopen, colour, compare, print.' : 'Cymatics Lab: Sound Made Visible';
+  const subtitle = mode === 'browse' ? 'Saved patterns from the three studios — reopen, color, compare, print.' : 'Cymatics Lab: Sound Made Visible';
   // Tablet (owner 2026-09-29, tablet pass): the gallery sits in the centred
   // card column and GAINS columns — two squares sized off a 1024 pt window
   // were 490 pt tiles (655 pt in landscape). The open pattern is also held
@@ -449,7 +449,7 @@ export function GalleryScreen() {
               ) : patterns.length === 0 ? (
                 <View style={styles.empty}>
                   <Text style={styles.emptyTitle}>NOTHING SAVED YET</Text>
-                  <Text style={styles.body}>Every studio has a SAVE key in its header. Press it while a figure is on the plate, in the dish or on the drumhead — the exact experiment comes here, ready to reopen, colour, compare and print.</Text>
+                  <Text style={styles.body}>Every studio has a SAVE key in its header. Press it while a figure is on the plate, in the dish or on the drumhead — the exact experiment comes here, ready to reopen, color, compare and print.</Text>
                   <View style={styles.chips}>
                     <LabChip label="Open the plate studio ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} />
                     <LabChip label="The dish ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsLiquidStudio', {})} />
@@ -476,7 +476,7 @@ export function GalleryScreen() {
                         // The ★ key is nested in this card, so on iOS it was
                         // unreachable to a screen reader; it rides here as a
                         // custom action (APE-STUDIO-W/R/S nested-element sweep).
-                        accessibilityActions={[{ name: 'favourite', label: p.favourite ? 'Remove from favourites' : 'Add to favourites' }]}
+                        accessibilityActions={[{ name: 'favourite', label: p.favourite ? 'Remove from favorites' : 'Add to favorites' }]}
                         onAccessibilityAction={(e) => {
                           if (e.nativeEvent.actionName === 'favourite') toggleFav(p);
                         }}
@@ -488,7 +488,7 @@ export function GalleryScreen() {
                           <Text style={styles.cardName} numberOfLines={1}>
                             {p.name}
                           </Text>
-                          <Pressable onPress={() => toggleFav(p)} hitSlop={8} accessible={false} accessibilityRole="button" accessibilityLabel={p.favourite ? 'Remove from favourites' : 'Add to favourites'}>
+                          <Pressable onPress={() => toggleFav(p)} hitSlop={8} accessible={false} accessibilityRole="button" accessibilityLabel={p.favourite ? 'Remove from favorites' : 'Add to favorites'}>
                             <Text style={[styles.star, p.favourite && styles.starOn]}>★</Text>
                           </Pressable>
                         </View>
@@ -517,9 +517,9 @@ export function GalleryScreen() {
               {artUnreadable && !currentArt ? <Text style={styles.caption}>{ART_UNREADABLE}</Text> : null}
               <View style={styles.chips}>
                 <LabChip label="Open in studio ›" selected={false} onPress={openInStudio} onLongPress={() => help('save_pattern')} />
-                <LabChip label="Colour ›" selected={false} onPress={openArt} onLongPress={() => help('art_fill')} />
+                <LabChip label="Color ›" selected={false} onPress={openArt} onLongPress={() => help('art_fill')} />
                 <LabChip label="Duplicate" selected={false} onPress={doDuplicate} />
-                <LabChip label={current.favourite ? '★ Favourited' : '★ Favourite'} selected={current.favourite} onPress={() => toggleFav(current)} />
+                <LabChip label={current.favourite ? '★ Favorited' : '★ Favorite'} selected={current.favourite} onPress={() => toggleFav(current)} />
                 <LabChip label="Delete" selected={false} onPress={doDelete} />
               </View>
               <View style={styles.block}>
@@ -540,7 +540,7 @@ export function GalleryScreen() {
               was loading, or when its READ FAILED, the screen was BLANK — the
               hunt-4 unreadable notice covered BROWSE only. */}
           {mode === 'open' && !current ? (
-            <Text style={styles.caption}>{patterns === null ? 'Loading…' : patternsUnreadable(patterns) ? PATTERNS_UNREADABLE : 'This pattern is not in the gallery any more. Tap ‹ to see every saved pattern.'}</Text>
+            <Text style={styles.caption}>{patterns === null ? 'Loading…' : patternsUnreadable(patterns) ? PATTERNS_UNREADABLE : 'This pattern is not in the gallery anymore. Tap ‹ to see every saved pattern.'}</Text>
           ) : null}
 
           {mode === 'compare' ? (

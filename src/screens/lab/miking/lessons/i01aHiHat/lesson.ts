@@ -141,7 +141,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why should a hat mic stay out of the space just beyond the pair’s edge, level with the gap?',
     options: ['Air rushes out there each time the pedal closes the pair', 'Nothing moves there; the rule is only to keep the kit looking tidy', 'The bottom cymbal turns to face the audience there'],
     correct: 'Air rushes out there each time the pedal closes the pair',
-    explain: 'As the pair closes, air is squeezed out from between the edges. A mic in that air hears a thump or wind noise — so a close mic sits above the edge, or round from it.',
+    explain: 'As the pair closes, air is squeezed out from between the edges. A mic in that air hears a thump or wind noise — so a close mic sits above the edge, or around from it.',
     why: {
       'Nothing moves there; the rule is only to keep the kit looking tidy': 'Air moves there, fast, every time the pair closes — a thump or wind noise in the mic.',
       'The bottom cymbal turns to face the audience there': 'The bottom cymbal stays on its seat. It is the air between the edges that matters.',
@@ -154,7 +154,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic just past the pair’s edge, level with the gap, hears what as the pedal closes?',
     options: ['A rush of air — a thump or wind noise', 'Nothing at all: closing the pair is silent', 'Only the stick, since the pedal is quiet'],
     correct: 'A rush of air — a thump or wind noise',
-    explain: 'The closing pair squeezes air out of the edges. Close mics stay above or round from the edge, out of that air.',
+    explain: 'The closing pair squeezes air out of the edges. Close mics stay above or around from the edge, out of that air.',
     why: {
       'Nothing at all: closing the pair is silent': 'Closing makes the “chick” — and pushes air out of the edges.',
       'Only the stick, since the pedal is quiet': 'The foot alone makes a sound and a burst of air. A mic there hears both.',
@@ -214,11 +214,11 @@ const scenarios: MikingScenario[] = [
     id: 'hh.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · From which side does the stick usually come to the hats?',
-    options: ['The player’s side, crossing over from the throne', 'The audience side, reaching round the stand', 'From underneath, between the pedal and the pair'],
+    options: ['The player’s side, crossing over from the throne', 'The audience side, reaching around the stand', 'From underneath, between the pedal and the pair'],
     correct: 'The player’s side, crossing over from the throne',
     explain: 'The player sits behind the kit and the stick lands near the edge on that side — often the right hand crossing over. Mics start on the far side, out of its way.',
     why: {
-      'The audience side, reaching round the stand': 'The player plays from behind the kit. The audience side is where a mic can go.',
+      'The audience side, reaching around the stand': 'The player plays from behind the kit. The audience side is where a mic can go.',
       'From underneath, between the pedal and the pair': 'The foot works the pedal below; the stick plays the top cymbal from the player’s side.',
     },
   },
@@ -252,7 +252,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Studio, good room, and the overheads give a crisp hi-hat. What could justify no hat mic at all?',
     options: ['The overheads already carry it — fewer open mics', 'A close hat mic would stop the overheads working', 'Studio drums are recorded with a single mic only'],
     correct: 'The overheads already carry it — fewer open mics',
-    explain: 'A well placed overhead pair often carries the hats clearly. A close mic adds focus when the music needs it — otherwise it is one more channel to manage.',
+    explain: 'A well-placed overhead pair often carries the hats clearly. A close mic adds focus when the music needs it — otherwise it is one more channel to manage.',
     why: {
       'A close hat mic would stop the overheads working': 'The overheads still work. A close mic is a choice, made for what it adds.',
       'Studio drums are recorded with a single mic only': 'Studios use one mic or many. The question is what this music needs.',
@@ -368,7 +368,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: with the pedal down, the stick strikes the top cymbal. How long does the pair ring?', options: ['Briefly — the cymbals hold each other', 'As long as a crash rings', 'It depends only on the stick'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to open the pair.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you slide the mic’s aim from the edge toward the cup. What changes?', options: ['More of the lower tones', 'More of the high overtones', 'It depends on these hats'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the hats points up. Where will a supercardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

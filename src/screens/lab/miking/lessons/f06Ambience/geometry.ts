@@ -57,7 +57,7 @@ const REGIONS: RadiatingRegion[] = [
   { id: 'birdA', partId: 'birds', label: 'a bird to the left', anchor: AMB_WOODS.sources[1].p, prov: SITE, variants: ['woodland'], note: 'A call from the canopy ahead and to the left: an event that comes and goes.' },
   { id: 'birdB', partId: 'birds', label: 'a bird to the right', anchor: AMB_WOODS.sources[2].p, prov: SITE, variants: ['woodland'], note: 'Another call, ahead and to the right, higher up.' },
   { id: 'leaves', partId: 'canopy', label: 'leaves in the wind', anchor: AMB_WOODS.sources[3].p, prov: SITE, variants: ['woodland'], note: 'Wind moving through the trees: part of the place — different from wind on the mic itself.' },
-  { id: 'trafficNear', partId: 'road', label: 'the near lane', anchor: PLAZA_SITE.sources[0].p, prov: SITE, variants: ['plaza'], note: 'Tyres and engines in the near lane: the steady bed, rising and falling as vehicles pass.' },
+  { id: 'trafficNear', partId: 'road', label: 'the near lane', anchor: PLAZA_SITE.sources[0].p, prov: SITE, variants: ['plaza'], note: 'Tires and engines in the near lane: the steady bed, rising and falling as vehicles pass.' },
   { id: 'trafficFar', partId: 'road', label: 'the far lane', anchor: PLAZA_SITE.sources[1].p, prov: SITE, variants: ['plaza'], note: 'The far lane, a little quieter, moving the other way.' },
   { id: 'voices', partId: 'cafe', label: 'voices at the café', anchor: PLAZA_SITE.sources[2].p, prov: SITE, variants: ['plaza'], note: 'Conversation and cups at the tables to the left.' },
   { id: 'steps', partId: 'walkway', label: 'steps on the walkway', anchor: PLAZA_SITE.sources[3].p, prov: SITE, variants: ['plaza'], note: 'People walking to and from the door, close by on the left.' },

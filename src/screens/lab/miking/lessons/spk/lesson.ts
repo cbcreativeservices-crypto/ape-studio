@@ -25,7 +25,7 @@ const FLOOR = cabLayout('1x12').floorY;
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the speakers',
-    goal: 'Get to know what a mic on a speaker really hears — the cone, the cabinet and the rotary cabinet — before any microphone.',
+    goal: 'Get to know what a mic on a speaker really hears — the cone, the cabinet and the rotary cabinet — before placing any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
     takeaway: 'A mic on a cabinet hears the AIR the speaker moves: one speaker, its box and the room. Find the speaker that is really sounding before you place anything. A rotary cabinet has a turning horn and a turning drum in one box, and it stays closed.',
   },
@@ -342,7 +342,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'spk.two.3',
     page: 'twoMic',
-    prompt: 'Two upper mics, one each side of a rotary cabinet, are panned left and right. What should you check?',
+    prompt: 'Two upper mics, one on each side of a rotary cabinet, are panned left and right. What should you check?',
     options: ['The sum in mono, through a full turn and a speed change', 'That both meters move together while it plays', 'That the horn faces one of the two side mics while it is at rest'],
     correct: 'The sum in mono, through a full turn and a speed change',
     explain: 'As the horn turns it faces one side mic, then the other: the two arrive at different times and levels. That can sound wide in stereo and uneven in mono — so listen in mono, across a whole rotation and a speed change.',
@@ -557,7 +557,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the cone moves forward, what does the air BEHIND it do?', options: ['It is pulled toward the cone', 'It is pushed away too', 'Nothing — only the front air moves'], after: 'Now STEP through (or PLAY ONCE), with the back open and closed.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the center toward the edge. What changes?', options: ['Brighter', 'Mellower', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the guitarist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the rear mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip REAR POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -583,12 +583,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What is a speaker’s dust cap?',
-    options: ['The dome in the middle of the cone, over the coil', 'The cloth stretched over the front of the cabinet', 'The flexible ring round the edge of the cone'],
+    options: ['The dome in the middle of the cone, over the coil', 'The cloth stretched over the front of the cabinet', 'The flexible ring around the edge of the cone'],
     correct: 'The dome in the middle of the cone, over the coil',
     explain: 'The dust cap covers the voice coil at the middle of the cone; its edge is a common first aiming point.',
     why: {
       'The cloth stretched over the front of the cabinet': 'That is the grille cloth — the surface the distances are measured from.',
-      'The flexible ring round the edge of the cone': 'That is the surround, which lets the cone move.',
+      'The flexible ring around the edge of the cone': 'That is the surround, which lets the cone move.',
     },
   },
   {
@@ -699,7 +699,7 @@ export const SPK_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a one-mic cabinet setup for a given amp and show, describe an alternative, and say what would justify a second channel — then build a rotary cabinet’s pickup from outside. With a real amp and the player’s agreement, you can log what you tried below.',
+    task: 'Choose a one-mic cabinet setup for a given amp and gig, describe an alternative, and say what would justify a second channel — then build a rotary cabinet’s pickup from outside. With a real amp and the player’s agreement, you can log what you tried below.',
     fields: [
       { id: 'source', label: 'Source and channel (which speaker, or upper / lower)', kind: 'text' },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['instrument dynamic', 'small condenser', 'large dynamic', 'other'] },

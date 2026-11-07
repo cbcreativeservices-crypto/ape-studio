@@ -170,7 +170,7 @@ export const PIANO_MODEL: InstrumentModel = {
   lines,
   envelopes,
   variants: [
-    { id: 'grand', label: 'GRAND · FULL STICK', blurb: 'A 2.1 m grand with its lid propped on the full stick — the usual set-up for a solo piano or a quiet room.', phrase: 'its lid on the full stick' },
+    { id: 'grand', label: 'GRAND · FULL STICK', blurb: 'A 2.1 m grand with its lid propped on the full stick — the usual setup for a solo piano or a quiet room.', phrase: 'its lid on the full stick' },
     { id: 'short', label: 'GRAND · SHORT STICK', blurb: 'The same grand with the lid on the short stick: less sound thrown out, more separation on a loud stage — and little room under it.', phrase: 'its lid on the short stick' },
     { id: 'baby', label: 'BABY GRAND', blurb: 'A 1.55 m baby grand, lid on the full stick: the same layout, less room inside, a different scale — listen, don’t assume.', phrase: 'its lid on the full stick' },
     { id: 'upright', label: 'UPRIGHT · TOP OPEN', blurb: 'A 1.32 m upright with its top lid open: strings standing upright, the soundboard at the back, pulled out from the wall.', phrase: 'its top open' },

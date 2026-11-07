@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up tom mics in the right order, choose and justify a plan for two briefs (from no tom mics to three), and say what would justify a bottom mic.',
     credit: { scenarios: ['tm.prac.order', 'tm.prac.gain', 'tm.prac.setup1', 'tm.prac.setup2', 'tm.prac.3', 'tm.mix.1', 'tm.mix.2', 'tm.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a drum’s name or a genre do not decide it — and more than one plan can pass.',
+    takeaway: 'Safe clearance, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a drum’s name or a genre does not decide it — and more than one plan can pass.',
   },
 };
 
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tm.set.2',
     page: 'setting',
-    prompt: 'Where do a tom mic and its mount have to stay clear of, beyond the head itself?',
+    prompt: 'What do a tom mic and its mount have to stay clear of, beyond the head itself?',
     options: ['The sticks’ path across every tom, and the cymbals’ swing', 'The front of the kick, so the audience can see its head', 'Only the tom it is aimed at — the others are not its business'],
     correct: 'The sticks’ path across every tom, and the cymbals’ swing',
     explain: 'Fills sweep the sticks across all the toms, and the cymbals above them swing when struck. A floor tom mic also keeps clear of the player’s leg and the legs of the drum.',
@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the stick pushes a tom’s batter head down, what does its bottom head do?', options: ['It moves down too, pushed by the air', 'It moves up, toward the batter head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic’s aim from the rim toward the center of the head. What changes?', options: ['More attack', 'More low end and body', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The crash hangs above the tom mic. Where will this supercardioid reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

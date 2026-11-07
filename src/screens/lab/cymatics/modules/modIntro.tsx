@@ -39,8 +39,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
-        Sound is a travelling change in pressure. In air, molecules bunch up and spread out as the wave passes — a compression, then a
-        rarefaction — and each molecule only moves back and forth a tiny distance around where it started.
+        Sound is a traveling change in pressure. In air, molecules bunch up and spread out as the wave passes — a compression, then a rarefaction — and each molecule only moves back and forth a tiny distance around where it started.
       </Text>
       {viz ? (
         // FULL SCREEN (house rule D35, 2026-09-30): a live figure in a document
@@ -77,7 +76,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           width={width - 26}
           aspect={1 / 0.66}
           title="SAND ON THE PLATE"
-          badge="SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN"
+          badge="SIMULATION · 240 mm ALUMINUM · CENTER-DRIVEN"
           // The page's own AT / OFF RESONANCE chips ride along, docked under
           // the plate in full screen (they share this module's state).
           controls={
@@ -89,7 +88,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           render={(w, h) => (
             <View style={{ width: w, height: h, borderRadius: 8, overflow: 'hidden' }}>
               <PlateDemo width={w} height={h} spec={spec} hz={hz} view="particles" running={focused} />
-              <FigBadge text="SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN" />
+              <FigBadge text="SIMULATION · 240 mm ALUMINUM · CENTER-DRIVEN" />
             </View>
           )}
         />
@@ -103,9 +102,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
 
       <Text style={P.h}>NODE AND ANTINODE</Text>
       <Text style={P.body}>
-        A <Text style={P.strong}>node</Text> is a place of minimal movement — the sand collects there. An <Text style={P.strong}>antinode</Text> is a
-        place of maximal movement — the sand is thrown clear. Regions on opposite sides of a nodal line move in opposite directions: while
-        one lobe rises, its neighbour falls.
+        A <Text style={P.strong}>node</Text> is a place of minimal movement — the sand collects there. An <Text style={P.strong}>antinode</Text> is a place of maximal movement — the sand is thrown clear. Regions on opposite sides of a nodal line move in opposite directions: while one lobe rises, its neighbor falls.
       </Text>
       <ExpandableFigure
         width={width}
@@ -122,9 +119,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
 
       <Text style={P.h}>WHY ONLY AT RESONANCE</Text>
       <Text style={P.body}>
-        Every plate has a set of natural ways to flex — its <Text style={P.strong}>normal modes</Text>, each with its own frequency and its own
-        pattern of still lines. Drive the plate near one of those frequencies and that mode responds strongly and cleanly, so the figure
-        is sharp. Between them, several modes respond weakly at once and nothing organises.
+        Every plate has a set of natural ways to flex — its <Text style={P.strong}>normal modes</Text>, each with its own frequency and its own pattern of still lines. Drive the plate near one of those frequencies and that mode responds strongly and cleanly, so the figure is sharp. Between them, several modes respond weakly at once and nothing organizes.
       </Text>
 
       {/* ── THE QUESTION, NOT THE ANSWER (2026-09-18, design review) ────────────

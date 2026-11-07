@@ -192,7 +192,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       label: 'OS RATE',
       valueLabel: `${os}×`,
       valueA11y: `oversampling ${os} times`,
-      options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves up around ${c * 48} kHz, so the analog filter can be gentler.` })),
+      options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves up to around ${c * 48} kHz, so the analog filter can be gentler.` })),
       selectedId: String(os),
       onSelect: (id) => {
         setOs(Number(id) as 1 | 2 | 4 | 8);
@@ -395,7 +395,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             correctIdx: 2,
             reveal:
               'The samples describe exactly one band-limited signal, and the DAC + reconstruction filter produce it — a continuous analog waveform via band-limited interpolation. The steps are an intermediate stage; connect-the-dots never happens at all.',
-            wrongHint: 'Look at the hero view: the bright output curve never touches a step corner and is never a straight segment.',
+            wrongHint: 'Look at the main display: the bright output curve never touches a step corner and is never a straight segment.',
           }}
         />
         <CheckQuestion
@@ -408,7 +408,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             ],
             correctIdx: 1,
             reveal:
-              'True. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
+              'Yes. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
             wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
           }}
         />

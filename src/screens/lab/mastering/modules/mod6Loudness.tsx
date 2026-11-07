@@ -230,7 +230,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
             <>
               <SectionTitle>PLAYBACK LOUDNESS NORMALIZATION</SectionTitle>
               <Card>
-                <Body>Many services and players turn every track to a similar playback loudness. That does not make careful mastering irrelevant: normalization is a playback gain. Aggressive processing still changes the dynamics and the sound, and a heavily limited master can end up played at the same loudness as, or quieter than, a dynamic one, having spent its transients for nothing — and services differ on whether they turn quiet masters up.</Body>
+                <Body>Many services and players turn every track to a similar playback loudness. That does not make careful mastering irrelevant: normalization is a playback gain. Aggressive processing still changes the dynamics and the sound. A heavily limited master can end up played at the same loudness as, or quieter than, a dynamic one, having spent its transients for nothing — and services differ on whether they turn quiet masters up.</Body>
               </Card>
               <SectionTitle>TRANSLATION CHECKS</SectionTitle>
               <Card>

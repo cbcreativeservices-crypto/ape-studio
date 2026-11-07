@@ -1131,7 +1131,7 @@ const STEER_SPACING = 2.0; // m between boxes
 const STEER_N_CHIPS = [4, 5, 6];
 
 const STEER_CHECK: CheckSpec = {
-  question: 'You need the sub array’s beam aimed 20° toward the far corner. What does it?',
+  question: 'You need the sub array’s beam aimed 20° toward the far corner. What does the job?',
   options: [
     'Physically tilt every cabinet 20°',
     'Progressive per-box delays — on the order of a couple of milliseconds each here',

@@ -252,7 +252,7 @@ const VDROP: Workspace = {
     'the load. Enter the wire gauge, the run length, and the current, and see the round-trip ' +
     'resistance, the voltage lost, and the percentage that never arrives.',
   whyItMatters:
-    'Long DC runs to pedals, remote 48 V supplies, powered-speaker mains, and lighting all sag if ' +
+    'Long DC runs to pedals, remote 48 V supplies, AC power to powered speakers, and lighting all sag if ' +
     'the wire is too thin. A supply that reads fine at the rack can arrive out of spec at the far ' +
     'end. This is how you size a gauge before the gear misbehaves.',
   example:
@@ -422,7 +422,7 @@ const RACK: Workspace = {
   reportPrefix: 'RACK',
   intro:
     'Every watt a rack draws that isn’t sent down speaker cables ends up as heat. Enter the total device ' +
-    'wattage (a safe high guess for amp racks) and read the mains current it pulls, the heat it dumps in BTU/hr, and the airflow ' +
+    'wattage (a safe high guess for amp racks) and read the AC current it pulls, the heat it dumps in BTU/hr, and the airflow ' +
     'needed to hold a chosen temperature rise.',
   whyItMatters:
     'Racks trip breakers and cook gear when nobody added up the load. This sizes the circuit ' +
@@ -437,7 +437,7 @@ const RACK: Workspace = {
     'Sealing gear in a rack with no airflow path — heat has to leave or the thermal protection will end your night.',
   ],
   warnings:
-    'BTU/hr = W × 3.4121 (NIST SP 811); mains current I = P/V; cooling airflow CFM = BTU/hr ÷ (1.08·ΔT°F), ' +
+    'BTU/hr = W × 3.4121 (NIST SP 811); AC current I = P/V; cooling airflow CFM = BTU/hr ÷ (1.08·ΔT°F), ' +
     'where 1.08 is standard sea-level air (0.075 lb/ft³ × 0.24 BTU/lb·°F × 60 min/hr) — thinner air at ' +
     'altitude needs MORE airflow than shown. ' +
     'I = P/V ASSUMES A POWER FACTOR OF 1 — gear with a lower power factor (many switch-mode ' +
@@ -446,7 +446,7 @@ const RACK: Workspace = {
   glossary: ['Power', 'Current', 'Voltage', 'Amplifier'],
   fields: [
     { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', positive: true, warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },
-    { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
+    { key: 'mains', name: 'AC VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
     { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', positive: true, warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
     { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', nonNegative: true, placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
   ],
@@ -457,15 +457,15 @@ const RACK: Workspace = {
       inputs: ['watts', 'mains', 'dTempF'],
       formula: 'I = P/V; BTU/hr = W·3.4121; CFM = BTU/hr / (1.08·ΔT)',
       plainFormula:
-        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.4121 (BTU per hour for each watt); and the cooling airflow equals the heat output divided by the product of 1.08 and the temperature rise in °F.',
+        'The AC current equals the power over the voltage; the heat output equals the wattage times 3.4121 (BTU per hour for each watt); and the cooling airflow equals the heat output divided by the product of 1.08 and the temperature rise in °F.',
       explain:
-        'Every watt a rack draws that isn’t sent down speaker cables ends up as heat, so total wattage is a safe high guess for amp racks. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
+        'Every watt a rack draws that isn’t sent down speaker cables ends up as heat, so total wattage is a safe high guess for amp racks. From the total device wattage this gives the AC current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
       keySymbols: ['Δ', '·', '/'],
       compute: (v) => {
         const W = n(v.watts);
         const btu = W * BTU_PER_HR_PER_W;
         return [
-          { label: 'MAINS CURRENT', value: W / n(v.mains), quantity: 'current', meaning: 'current:load' },
+          { label: 'AC CURRENT', value: W / n(v.mains), quantity: 'current', meaning: 'current:load' },
           { label: 'HEAT OUTPUT (BTU/hr)', value: btu, quantity: 'number', chainable: false },
           { label: 'COOLING AIRFLOW (CFM)', value: btu / (1.08 * n(v.dTempF)), quantity: 'number', chainable: false },
         ];
@@ -487,7 +487,7 @@ const RACK: Workspace = {
       formula: 'P_safe = 0.8 · I_breaker · V',
       plainFormula: 'The safe continuous power equals 0.8 times the breaker’s current rating times the voltage.',
       explain:
-        'The 80% rule for continuous loads (US NEC, 3 hours or more): keep a circuit’s ongoing draw under 80% of its breaker rating so the breaker and wiring don’t overheat or trip. This turns a breaker’s amp rating and the mains voltage into the safe continuous wattage — and the absolute maximum for reference.',
+        'The 80% rule for continuous loads (US NEC, 3 hours or more): keep a circuit’s ongoing draw under 80% of its breaker rating so the breaker and wiring don’t overheat or trip. This turns a breaker’s amp rating and the AC voltage into the safe continuous wattage — and the absolute maximum for reference.',
       keySymbols: ['·'],
       note: 'The US 80% rule for loads that run for hours keeps the breaker and wires from getting too hot or tripping.',
       compute: (v) => {

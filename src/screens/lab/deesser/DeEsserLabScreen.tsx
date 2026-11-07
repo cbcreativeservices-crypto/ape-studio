@@ -598,7 +598,7 @@ export function DeEsserLabScreen() {
     <PagedLab
       labId="deesser"
       title="De-Esser & Sibilance Control"
-      subtitle="A compressor that listens only to the hiss — Smart Processors, V1."
+      subtitle="A compressor that listens only to the hiss — one of the Smart Processors."
       pages={PAGES}
       pageGuide={deEsserPageGuide}
       endGuide={DEESSER_END_GUIDE}

@@ -113,11 +113,7 @@ export function EarTrainingLabScreen() {
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
-          Every drill here renders real signals, plays them, and then shows you the same buffers
-          on the analyzers — the habit this lab builds is hearing something and knowing what the
-          measurement will say before you look. Short focused sets beat an hour of grinding — the
-          level adapts on your last twenty answers at the current level, so give it a full twenty
-          before expecting it to move.
+          Every drill here renders real signals, plays them, and then shows you the same buffers on the analyzers. The habit this lab builds is hearing something and knowing what the measurement will say before you look. Short focused sets beat an hour of grinding — the level adapts on your last twenty answers at the current level, so give it a full twenty before expecting it to move.
         </Text>
         <Text style={styles.noteLine}>
           🎧 Headphones recommended throughout — modules note when they truly matter.

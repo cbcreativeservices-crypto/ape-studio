@@ -212,11 +212,11 @@ const scenarios: MikingScenario[] = [
     id: 'dj.place.2',
     page: 'placement',
     prompt: 'The top mic gives plenty of slap but little bass. What do you check first?',
-    options: ['The top mic’s aim and distance, and whether the opening is clear', 'Add a low mic straight away, whatever the drum is standing on or held by', 'Boost the lows until the bass returns'],
+    options: ['The top mic’s aim and distance, and whether the opening is clear', 'Add a low mic right away, whatever the drum is standing on or held by', 'Boost the lows until the bass returns'],
     correct: 'The top mic’s aim and distance, and whether the opening is clear',
     explain: 'Re-aim or back off safely; if needed and possible, try a low mic and a mono blend.',
     why: {
-      'Add a low mic straight away, whatever the drum is standing on or held by': 'Only where the opening and the support allow it — and after the top mic has been tried.',
+      'Add a low mic right away, whatever the drum is standing on or held by': 'Only where the opening and the support allow it — and after the top mic has been tried.',
       'Boost the lows until the bass returns': 'Move the mic before processing: position decides what it hears.',
     },
   },
@@ -240,7 +240,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The player’s feet and the drum’s support',
     explain: 'Keep the lower mic and cable out of foot traffic and from under an unstable instrument; confirm the stand’s stability.',
     why: {
-      'The rope ring, so the drum stays in tune': 'Clamp nothing to the ropes, but the base and cable must first stay out of the player’s feet and the support.',
+      'The rope ring, so the drum stays in tune': 'Clamp nothing to the ropes, but the base and cable must first stay clear of the player’s feet and the support.',
       'The front of the drum, so it can be seen': 'How it looks is not the safety question.',
     },
   },
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a loud stage, should you add a low mic for more bass?',
     options: ['Only if the top mic cannot capture it and feedback margin allows', 'Yes — on a loud stage a second mic helps the djembe cut through the band', 'Yes, and turn its low frequencies up in the wedge'],
     correct: 'Only if the top mic cannot capture it and feedback margin allows',
-    explain: 'More open mics and low-frequency gain can challenge usable level. Work with the operator on a stable top mic; add a low mic if the bass cannot be captured otherwise and the margin permits.',
+    explain: 'More open mics and low-frequency gain can lower the level you can reach before feedback. Work with the operator on a stable top mic; add a low mic if the bass cannot be captured otherwise and the margin permits.',
     why: {
       'Yes — on a loud stage a second mic helps the djembe cut through the band': 'Each open mic adds spill and feedback risk. Add it only for a real need.',
       'Yes, and turn its low frequencies up in the wedge': 'More low-frequency monitor level is exactly what eats feedback margin.',
@@ -535,7 +535,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand pushes the head down. Where does the air in the bowl go?', options: ['Down through the waist and out of the foot', 'Up, back out through the head', 'Nowhere — the air stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the top mic from 5 cm above the head to about 40 cm away. What changes?', options: ['More of the whole drum and the room', 'More slap', 'It depends on this drum and room'], after: 'Farther tends to integrate the strokes with more room — and drums and rooms vary, so “it depends” is fair too.' },
   context: { prompt: 'Where can this mic, aimed at the head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -782,7 +782,7 @@ export const M05_LESSON: HandLesson = {
       prompt: 'The wedge stays where the player needs it. Tilt the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still faces the head.',
       learn: [
         { title: 'HOW MUCH ROOM', text: 'Studio: one stable upper or front mic with the whole phrase; the room and the floor’s reflection shape it. Live: a directional mic fairly close, outside all hand motion.' },
-        { title: 'HOW MANY MICS', text: 'Studio: a low mic only for demonstrably useful bass control. Live: more open mics and low-frequency gain challenge usable level — add the low mic only if the margin permits.' },
+        { title: 'HOW MANY MICS', text: 'Studio: a low mic only for demonstrably useful bass control. Live: more open mics and low-frequency gain lower the level you can reach before feedback — add the low mic only if the margin permits.' },
         { title: 'WHAT THE PART NEEDS', text: 'An exposed solo djembe might welcome room perspective; a live mono PA might need one reliable, focused feed.' },
         { title: 'MOUNTING', text: 'A freely played drum is not immobilized for a mic diagram. Ask whether a fixed stand stays aligned through the performance, and test the full movement.' },
       ],

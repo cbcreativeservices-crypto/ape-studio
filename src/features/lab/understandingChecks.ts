@@ -1315,7 +1315,7 @@ const AMP: readonly Q[] = [
     prompt: 'Going from a 100 W amplifier to a 200 W amplifier gains you about…',
     options: ['+3 dB', '+6 dB', '+10 dB', 'Twice the loudness'],
     correct: '+3 dB',
-    explanation: '10 × log₁₀(200 ÷ 100) ≈ 3 dB — small but clearly audible, but far from twice as loud, which takes roughly ten times the power.',
+    explanation: '10 × log₁₀(200 ÷ 100) ≈ 3 dB — small but clearly audible, yet far from twice as loud, which takes roughly ten times the power.',
   },
   {
     id: 'crossover',

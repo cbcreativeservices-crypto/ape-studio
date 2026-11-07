@@ -82,7 +82,7 @@ const VARIANTS: Variant[] = [
 
 function parts(): Part[] {
   return [
-    { id: 'f02.artist', label: 'the Foley artist', short: 'artist', role: 'The performer makes the cloth sound in time with the picture — their breath, jewellery, shoes and other clothes are near the mic too.', moving: true, prov: ill('the shared adult figure (drawing default)') },
+    { id: 'f02.artist', label: 'the Foley artist', short: 'artist', role: 'The performer makes the cloth sound in time with the picture — their breath, jewelry, shoes and other clothes are near the mic too.', moving: true, prov: ill('the shared adult figure (drawing default)') },
     { id: 'f02.jacketHeld', label: 'leather jacket, held', short: 'jacket', role: 'A whole jacket, not a swatch: leather and full jackets often need the whole item. Flexed and moved precisely — never just crumpled into a ball.', moving: true, prov: src('FF-CLOTH', 'holding fabric in hands (about "90%" of the time)'), variants: ['held', 'live'] },
     { id: 'f02.jacketWorn', label: 'leather jacket, worn', short: 'jacket', role: 'Worn and walked in: the sleeves brush the body and the coat flaps — the sound of the whole garment on a moving body.', moving: true, prov: src('FF-CLOTH', 'dressing in the clothes ("especially applicable to winter synthetic fabrics")'), variants: ['worn'] },
     { id: 'f02.hands', mark: { as: ['f02.artist', 'f02.jacketWorn'] }, label: 'the hands', short: 'hands', role: 'The hands set the fold moving. Finger rub and a clasping hand can make their own small sounds close to a mic.', moving: true, prov: ill('the shared figure’s hands (drawing default)') },

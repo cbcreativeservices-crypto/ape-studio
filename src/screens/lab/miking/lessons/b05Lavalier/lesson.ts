@@ -55,7 +55,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a lav on the sternum in the studio, a headset by the corner of the mouth live — then move the mic and see what changes.',
-    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The place on the body, the distance and the angle off the mouth are separate controls; comfort, the clothes and the cable come first.',
   },
   context: {
@@ -80,7 +80,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Fit a body mic in the right order, choose and justify a setup for a studio interview and for a live talk, and say what would justify a second mic.',
     credit: { scenarios: ['b5.prac.order', 'b5.prac.gain', 'b5.prac.setup1', 'b5.prac.setup2', 'b5.prac.3', 'b5.mix.1', 'b5.mix.2', 'b5.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real, agreeing presenter.' },
-    takeaway: 'Consent, a centered place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'Consent, a centered place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -144,7 +144,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.set.3',
     page: 'setting',
-    prompt: 'A bodypack lav’s plug fits a 48 V phantom input. May you plug it in?',
+    prompt: 'A bodypack lav’s plug fits a 48 V phantom input. Should you plug it in?',
     options: ['Only through its own specified adapter', 'Straight in — a plug that fits is wired right', 'Through a spare adapter from the kit'],
     correct: 'Only through its own specified adapter',
     explain: 'A miniature mic needs the right bias, wiring and level. Never plug a bodypack lav straight into a phantom-powered input — only through the adapter or power module made for it.',
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The presenter’s headset is live; they still stand at the lectern. The lectern mic?',
     options: ['Muted, so one voice has one open mic', 'Open as well, for a fuller and warmer voice', 'Up a little, to back up the headset'],
     correct: 'Muted, so one voice has one open mic',
-    explain: 'Two open mics on one voice hear it at two times: the sum combs, and the PA has another mic to feed back through. Agree who mutes which.',
+    explain: 'Two open mics on one voice hear it at two times: the sum combs, and the PA has another mic to feed back through. Agree on who mutes which.',
     why: {
       'Open as well, for a fuller and warmer voice': 'Two copies of one voice sound hollower, not fuller.',
       'Up a little, to back up the headset': 'A backup is a tested fallback you switch to — not a second open mic in the mix.',
@@ -288,7 +288,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.ctx.2',
     page: 'context',
-    prompt: 'Where should the PA sit for a directional headset’s most rejection?',
+    prompt: 'Where should the PA sit so a directional headset’s rejection is greatest?',
     options: ['Behind the capsule, past the cheek', 'Straight in front of the presenter', 'Anywhere — a headset is too close to care'],
     correct: 'Behind the capsule, past the cheek',
     explain: 'A cardioid rejects most straight behind it. A tighter pattern rejects most toward the rear sides, about 110–125° off its front. Aimed in at the lips from beside the mouth, its rear points out past the cheek — so the PA on that side sits nearest the rejection.',
@@ -413,7 +413,7 @@ const symptoms: Symptom[] = [
   {
     id: 'b5.sym.rub',
     observation: 'Scratching and rustling as the presenter moves',
-    firstChecks: 'Is cloth, a tie, hair or jewellery touching the capsule? Is the cable rubbing on a seam?',
+    firstChecks: 'Is cloth, a tie, hair or jewelry touching the capsule? Is the cable rubbing on a seam?',
     options: ['Lift the capsule off the cloth; reroute the cable', 'Add noise reduction to the presenter’s channel later', 'Clip the lav a little lower down on the shirt'],
     correct: 'Lift the capsule off the cloth; reroute the cable',
     explain: 'Rubbing is contact: give the capsule a little space from the cloth (a mount made for it), keep the cable off moving seams, and secure it in more than one place.',
@@ -503,7 +503,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'pack', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
       { id: 'e', label: 'The bodypack lav plugged straight into a phantom input', ok: false, power: 'phantom', feedback: 'Never — only through its own specified adapter.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewellery'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
+    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewelry'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, the capsule clear of the clothes, the wearer’s agreement — and no promise that hidden sounds the same.',
   },
   {
@@ -645,7 +645,7 @@ export const B05_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'presenter', label: 'the presenter', short: 'PRESENTER', note: 'Standing, the mouth at the point every distance is read from. The head turns, reads down and smiles; the body sits, stands and gestures.', prov: { kind: 'illustrative', reason: 'the shared figure standing (drawing default)' }, tag: 'THE SOURCE', scene: 'all' },
-      { id: 'clothes', label: 'the clothes', short: 'CLOTHES', note: 'The jacket, the shirt, a tie, a scarf or jewellery: they hold the clip, and they can rub, tap and cover the capsule. Wardrobe approves any change.', prov: { kind: 'illustrative', reason: 'the lesson L6, L21' }, tag: 'NOISE', scene: 'all' },
+      { id: 'clothes', label: 'the clothes', short: 'CLOTHES', note: 'The jacket, the shirt, a tie, a scarf or jewelry: they hold the clip, and they can rub, tap and cover the capsule. Wardrobe approves any change.', prov: { kind: 'illustrative', reason: 'the lesson L6, L21' }, tag: 'NOISE', scene: 'all' },
       { id: 'cable', label: 'the cable and the pack', short: 'CABLE', note: 'From the capsule down the chest to the bodypack on the belt: loops and a second fixing take the tug of a move.', prov: { kind: 'illustrative', reason: 'the lesson L24' }, tag: 'STRAIN', scene: 'all' },
       { id: 'camera', label: 'the camera', short: 'CAMERA', note: 'The shot decides between a visible lav, a hidden one and a headset.', prov: { kind: 'illustrative', reason: 'the lesson L6' }, tag: 'PICTURE', scene: 'studio' },
       { id: 'lectern', label: 'the lectern mic', short: 'LECTERN', note: 'A second mic on the same voice: muted whenever the body mic is live.', prov: { kind: 'illustrative', reason: 'the lesson L33' }, tag: 'BLEED', scene: 'stage' },

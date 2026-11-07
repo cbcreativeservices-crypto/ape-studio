@@ -50,7 +50,7 @@ export const PA_C = v3(2200, -1800, -2600);
 export const B11_VARIANTS: Variant[] = [
   { id: 'coach', label: 'COACH', blurb: 'A coach at the sideline: an approved chest mic or a broadcast headset — their own team headset is a separate system — and a perimeter boom outside play if a mount is refused.', phrase: 'on a coach at the sideline' },
   { id: 'official', label: 'OFFICIAL', blurb: 'An official with an announcement headset, opened on purpose to the PA; the officials’ private circuit stays closed.', phrase: 'on an official' },
-  { id: 'athlete', label: 'ATHLETE', blurb: 'An athlete in contact kit, where the event approves a mount: a body mic at the approved place only — protective equipment only if that is the approved place.', phrase: 'on an athlete, where approved' },
+  { id: 'athlete', label: 'ATHLETE', blurb: 'An athlete in contact gear, where the event approves a mount: a body mic at the approved place only — protective equipment only if that is the approved place.', phrase: 'on an athlete, where approved' },
 ];
 
 export const B11_VIEWS: Record<'coach' | 'official' | 'athlete', { side: ViewBox; top: ViewBox }> = {
@@ -67,7 +67,7 @@ const parts: Part[] = [
   { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },
   { id: 'v.nose', ...W.nose, prov: FIG },
   { id: 'v.head', ...W.head, label: 'head and face', role: 'The head turns to the play, to the bench, to a player: a headset boom turns with it; a chest mic does not.', solid: S.head, prov: FIG },
-  { id: 'v.chest', label: 'chest (frame T)', short: 'chest', role: 'A body mic clips at the breastbone — at the APPROVED place only, clear of fabric edges, zips, badges, straps and pads.', solid: S.torso, prov: FIG },
+  { id: 'v.chest', label: 'chest', short: 'chest', role: 'A body mic clips at the breastbone — at the APPROVED place only, clear of fabric edges, zippers, badges, straps and pads.', solid: S.torso, prov: FIG },
   { id: 'player.neck', label: 'neck', short: 'neck', role: 'The neck, chin to collar.', solid: S.neck, listIn: [], prov: FIG },
   { id: 'player.legs', label: 'legs', short: 'legs', role: 'Where the wearer stands and runs: no cable loop a hand or a foot can catch.', solid: S.legs, listIn: [], prov: FIG },
   { id: 'b11.pack', label: 'the bodypack at the small of the back', short: 'pack', role: 'In its approved low-profile place, retained so it cannot move, no hard edge pressing in; the antenna straight, never coiled or folded.', prov: DD },

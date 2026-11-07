@@ -147,7 +147,7 @@ const DUALS: { id: string; label: string; ratio: number | null }[] = [
 const VIEWS: { id: LiquidViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'rig', label: 'The rig', short: 'Rig', blurb: 'Side view of the apparatus: lamp, dish, liquid layer, coupling platform, shaker. The platform bobs at the drive frequency; the surface answers at half of it.' },
   { id: 'surface', label: 'Liquid surface', short: 'Surf', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
-  { id: 'height', label: 'Height map', short: 'Height', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
+  { id: 'height', label: 'Height map', short: 'Height', blurb: 'Surface displacement on the amplitude ramp: dark = still, red = the highest crests and deepest troughs.' },
   { id: 'contours', label: 'Contours', short: 'Cont', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
   { id: 'refraction', label: 'Refraction', short: 'Refr', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web under the raised crests, which act like small lenses.' },
   { id: 'liquid3d', label: '3D surface', short: '3D', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
@@ -639,7 +639,7 @@ function LiquidStudio() {
           </View>
         ) : null}
         {view === 'height' || view === 'contours' || view === 'liquid3d' || view === 'section' ? (
-          <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the largest motion">
+          <View style={styles.keyRow} accessible accessibilityLabel="Color key: black is still, red is the largest motion">
             <Text style={styles.keyText}>STILL</Text>
             <LinearGradient colors={HEAT_KEY} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.keyBar} />
             <Text style={styles.keyText}>LARGEST MOTION</Text>

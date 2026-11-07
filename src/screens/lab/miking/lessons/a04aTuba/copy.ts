@@ -78,7 +78,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: hear the tuba with the room first; a farther mic can carry its size. Live: decide what the tuba already gives the audience, and what the PA must add.' },
         { title: 'SPILL AND LOW END', text: 'A tuba mic hears the bass guitar, the kick and the subwoofers — and the stage floor’s vibration. Close pickup helps; the pattern helps less in the lowest octaves.' },
-        { title: 'MOVEMENT', text: 'The bell sways as the player breathes and moves. A boom over an upward bell needs room above and round it; a front bell, room in front of it.' },
+        { title: 'MOVEMENT', text: 'The bell sways as the player breathes and moves. A boom over an upward bell needs room above and around it; a front bell, room in front of it.' },
         { title: 'MOUNTING', text: 'A trumpet or trombone clip is not proof it grips a tuba bell. Only a mount its maker confirms for this bell, with the player’s agreement — or a stable stand.' },
       ],
       body: 'With a front bell and a wedge in front, a pattern’s rejection is a tool to aim — tilting the mic as well as turning it. Some stage sound in a tuba mic is normal; the question is how much the music can take.',

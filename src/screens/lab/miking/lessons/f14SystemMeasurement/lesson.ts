@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Before any trace',
     goal: 'Settle the question, the chain and the route, and the safe level, before any test signal.',
     credit: { scenarios: ['sy.set.1', 'sy.set.2', 'sy.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Write the question first. The measurement mic goes to the analyzer only. Agree a safe level with the operator — and stop if the measurement cannot be done safely.',
+    takeaway: 'Write the question first. The measurement mic goes to the analyzer only. Agree on a safe level with the operator — and stop if the measurement cannot be done safely.',
   },
   microphone: {
     title: 'The chain, the tap and the delay',
@@ -390,7 +390,7 @@ const symptoms: Symptom[] = [
     correct: 'The geometry and the drive first',
     explain: 'Verify that the source and mic geometry — not an accidental level or processor change — caused it, and check the room’s paths before calling it directivity.',
     why: {
-      'The tweeter, which must be failing': 'A failing driver is a late suspect: an accidental change in radius or drive is far commoner.',
+      'The tweeter, which must be failing': 'A failing driver is a late suspect: an accidental change in radius or drive is far more common.',
       'The analyzer’s color settings': 'Display colors do not change a measurement.',
     },
   },
@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'grid', label: 'The same radius, 0° then 30°, before and after, the drive fixed', ok: true, power: 'phantom', feedback: 'One change at a time, at a fixed radius: an honest angle comparison.' },
       { id: 'grid2', label: 'The same radius, 0°, 15° and 30°, before and after, the drive fixed', ok: true, power: 'phantom', feedback: 'More angles, still one radius and a fixed drive: also sound.' },
-      { id: 'walk', label: 'Hand-held mic, walked round the cabinet, level adjusted to taste', ok: false, power: 'phantom', feedback: 'The radius and the drive both change: the angle cannot be separated out.' },
+      { id: 'walk', label: 'Hand-held mic, walked around the cabinet, level adjusted to taste', ok: false, power: 'phantom', feedback: 'The radius and the drive both change: the angle cannot be separated out.' },
     ],
     reasons: [
       R('radius', 'The radius and the drive stay the same', 'required', 'Only the angle may change.'),
@@ -495,7 +495,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'sy.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · How even is the left main’s coverage across its half of the venue? The operator has agreed a level and a time.',
+    brief: 'BRIEF 2 · How even is the left main’s coverage across its half of the venue? The operator has agreed on a level and a time.',
     setups: [
       { id: 'seats', label: 'Front, middle and rear seats at a seated ear height, the main alone', ok: true, power: 'phantom', feedback: 'Its coverage sampled where people sit, one source at a time.' },
       { id: 'seats2', label: 'Front, middle, rear and an edge seat, the main alone, each trace kept', ok: true, power: 'phantom', feedback: 'An edge seat as well: a fuller picture, still one source.' },
@@ -637,7 +637,7 @@ export const F14_LESSON: Lesson = {
       { id: 'others', label: 'the other sources', short: 'OTHER SOURCES', note: 'Mute what you are not measuring: a second source in the trace turns a delay finder and a reading toward it.', prov: { kind: 'sourced', src: 'F14-LESSON', quote: 'Name every position and active source (F14 L15)' }, tag: 'MUTED', scene: 'all' },
       { id: 'walls', label: 'the floor, the walls and the desk', short: 'BOUNDARIES', note: 'Every surface near the mic sends a second arrival; a desk or a floor bounce can carve a narrow dip at one spot. Log the nearest ones.', prov: { kind: 'sourced', src: 'F14-LESSON', quote: 'low-frequency modes and early floor, desk or wall reflections often dominate (F14 L30)' }, tag: 'REFLECTIONS', scene: 'all' },
       { id: 'routes', label: 'the walkways and the cables', short: 'ROUTES', note: 'Stands out of access routes, cables secured, loudspeakers on rated supports; nothing flown or energized moved for a practice run.', prov: { kind: 'sourced', src: 'F14-LESSON', quote: 'Keep stands out of access routes, secure cables and use rated speaker support (F14 L47)' }, tag: 'KEEP CLEAR', scene: 'stage' },
-      { id: 'level', label: 'the monitors’ level', short: 'LEVEL', note: 'Studio monitors can reach hazardous levels in a small room too. Agree a safe test level and keep it.', prov: { kind: 'sourced', src: 'F14-LESSON', quote: 'Studio monitors can also produce hazardous levels in a small room (F14 L47)' }, tag: 'SAFE LEVEL', scene: 'studio' },
+      { id: 'level', label: 'the monitors’ level', short: 'LEVEL', note: 'Studio monitors can reach hazardous levels in a small room too. Agree on a safe test level and keep it.', prov: { kind: 'sourced', src: 'F14-LESSON', quote: 'Studio monitors can also produce hazardous levels in a small room (F14 L47)' }, tag: 'SAFE LEVEL', scene: 'studio' },
     ],
     stage: 'IN A VENUE: check each subsystem alone across its intended seats, then the overlaps with the intended sources on; record the arrivals and phase before and after any change. Coordinate muting with the operator and keep the mic out of the PA.',
     studio: 'IN A STUDIO: measure left and right separately at the working listening position, then the nearby head positions; compare the height, the desk and floor reflections and the bass. Keep the monitor level and settings written down.',

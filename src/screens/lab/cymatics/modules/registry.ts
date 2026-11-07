@@ -31,7 +31,7 @@ export const CYMATICS_MODULES: { id: CymaticsModuleId; title: string; blurb: str
   { id: 'harmonics', title: 'Harmonics vs Plate Modes', blurb: 'String · air column · membrane · plate — why only the first two form a harmonic series, and why Chladni figures are not pictures of chords.' },
   { id: 'harmony', title: 'Harmony in Motion', blurb: 'Frequency ratios made visible and audible — wave addition, Lissajous figures, spectra and beats — kept honestly apart from plate modes.' },
   { id: 'systems', title: 'Other Cymatic Systems', blurb: 'Strings, air columns, water surfaces, a loudspeaker with particles, bells and gongs, acoustic levitation — what is actually vibrating in each.' },
-  { id: 'myth', title: 'Evidence vs Myth', blurb: 'What the patterns genuinely show, what they do not, and why every pattern in this lab is labelled Simulation.' },
+  { id: 'myth', title: 'Evidence vs Myth', blurb: 'What the patterns genuinely show, what they do not, and why every pattern in this lab is labeled Simulation.' },
   { id: 'experiments', title: 'Guided Experiments', blurb: 'Seventeen structured activities — predict first, then open the studio in exactly the situation each step describes.' },
 ];
 

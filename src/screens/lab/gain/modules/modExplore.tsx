@@ -191,9 +191,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         </GlossaryText>
         <ZoneLegend />
         <Text style={styles.caption}>
-          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. The preamp rides
-          the dock lane; the rest of the chain lives in the PROCESS and LEVELS trays. The MASTER
-          feeds a powered nearfield monitor over a line lead.
+          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. The preamp rides the dock lane; the rest of the chain lives in the PROCESS and LEVELS trays. The MASTER feeds a powered nearfield monitor over a line cable.
         </Text>
         <View style={[styles.note, healthy && styles.noteGood]}>
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>

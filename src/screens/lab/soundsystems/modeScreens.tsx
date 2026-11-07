@@ -72,7 +72,7 @@ export function SoundSystemsRouteScreen() {
     <PagedLab
       labId={SS_ROUTE_ID}
       title="Sound Systems · Route"
-      subtitle="The console under your fingers: pre and post-fader sends, subgroups, DCAs, mute groups, matrices and the output patch — with every bus showing who hears what."
+      subtitle="The console under your fingers: pre- and post-fader sends, subgroups, DCAs, mute groups, matrices and the output patch — with every bus showing who hears what."
       pages={SS_ROUTE_PAGES}
       pageGuide={(i) => ssGuideFor(SS_ROUTE_GUIDES, ROUTE_TITLES, i)}
       endGuide={SS_END_GUIDE}

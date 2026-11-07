@@ -614,7 +614,7 @@ export const SECTION_CAPTION: Record<SectionId, string> = {
   instrument_unbalanced: 'Drawn to scale: Ø 6 mm instrument cable — one small conductor inside a braid shield.',
   speaker_2c: 'Drawn to scale: Ø 8.5 mm speaker cable — two 2.5 mm² fine-stranded conductors, no shield. Markings vary by maker.',
   ac_3c_grounded:
-    'Drawn to scale: Ø 8 mm cord, three 16 AWG conductors in the North American colors (black line, white neutral, green earth). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
+    'Drawn to scale: Ø 8 mm cord, three 16 AWG conductors in the North American colors (black line, white neutral, green ground). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
   ethernet_4pair: 'Drawn to scale: Ø 5.3 mm Cat 5e — four pairs in the T568 colors, each twisted at its own rate.',
   coax: 'Drawn to scale: Ø 6.1 mm 75-ohm coax — one center conductor, foam dielectric, braid shield.',
   optical_fiber: 'Drawn to scale: Ø 3 mm fiber patch cord. The glass is only 0.125 mm across, so the lens shows it enlarged: cladding around a 0.05 mm core.',

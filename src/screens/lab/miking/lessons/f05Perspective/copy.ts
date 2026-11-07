@@ -19,7 +19,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
   axesBlurb: 'Up or down (y). The keys at the middle of the path are height 0.',
   instrument: {
     figureBadge: 'A Foley artist carrying keys across a marked path',
-    figureLabel: 'Side view of a Foley artist holding a key ring at hand level, mid-way along a marked path on the stage.',
+    figureLabel: 'Side view of a Foley artist holding a key ring at hand level, midway along a marked path on the stage.',
     partsBadge: 'A moving Foley action · tap a part to name it',
     partsLooking: { side: 'Side view · from the artist’s right', top: 'From above · the marked path across the stage' },
     partsIdle: 'One action, carried across a marked path: the keys move, the room stays. Tap the keys, the path, the artist — then think about what each mic would hear.',

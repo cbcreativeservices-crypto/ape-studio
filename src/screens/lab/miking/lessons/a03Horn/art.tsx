@@ -47,11 +47,11 @@ export const HORN_ART: LessonArt = {
       wall: true,
       subject: 'A horn player seen from the right side, the bell beside the right thigh pointing back, a wall behind the player',
       shapesNote: 'This is a simplified pipe. The real horn is a long, narrow, mostly conical tube with a flaring bell, coiled up — the coiling changes nothing about the air inside. The right hand in the bell changes the shapes a little too: that is how it shades the pitch and the tone.',
-      spreadNote: 'Only the overall trend is drawn: low notes spread all round, the higher overtones go mostly where the bell points — behind the player. A listener in front hears the horn largely by way of the room; behind the bell it sounds more forceful. Rooms differ: walk to both places and listen before placing a mic.',
+      spreadNote: 'Only the overall trend is drawn: low notes spread all around, the higher overtones go mostly where the bell points — behind the player. A listener in front hears the horn largely by way of the room; behind the bell it sounds more forceful. Rooms differ: walk to both places and listen before placing a mic.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the horn: how a real horn sounds depends on the horn, the player’s hand and the room. The pictures show where the sound comes from and where it goes.',
       reveal: 'The bell points behind the player, so the room — the wall or shell behind — is part of what a listener in front hears. That is why the front and the back of a horn sound so different.',
       registers: {
-        low: 'The lowest notes spread nearly all round the player — the bell’s direction matters least here.',
+        low: 'The lowest notes spread nearly all around the player — the bell’s direction matters least here.',
         mid: 'In the middle of the range the bell’s direction starts to show: more of the sound goes back and out than forward.',
         high: 'The high overtones — the edge and the brilliance — go mostly where the bell points: behind the player. In front, they arrive mainly by way of the wall.',
       },

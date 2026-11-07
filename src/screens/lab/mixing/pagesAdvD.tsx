@@ -162,7 +162,7 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
         question="The label asks for “the stems”. Before bouncing anything, the professional question is:"
         options={['Which DAW should the bounces come from', 'WHICH stem set — how many, split how, with or without the bus processing and FX?', 'What loudness the stems should each hit', 'Whether MP3 stems are acceptable']}
         correct={1}
-        explain="“Stems” names a CATEGORY, not a list. Five music-video stems, eight remix stems, and a TV-mix split are all “stems” — bounce before agreeing the set and you will bounce twice."
+        explain="“Stems” names a CATEGORY, not a list. Five music-video stems, eight remix stems, and a TV-mix split are all “stems” — bounce before agreeing on the set and you will bounce twice."
         wrong={[
           'The DAW is invisible in a WAV — and this answer still leaves you not knowing what to bounce.',
           undefined,
@@ -325,7 +325,7 @@ const DELIVERY = [
 /** The checklist ENACTED (design pass P2-5): "ticked, not remembered" — so
  *  the page renders it as an actual tickable list, not more reading. */
 const DELIVERY_TICKS = [
-  { id: 'set', label: 'Stem set agreed in writing' },
+  { id: 'set', label: 'Stem set agreed on in writing' },
   { id: 'formats', label: 'Formats confirmed (rate, depth, file type)' },
   { id: 'starts', label: 'Every file starts at the same timestamp' },
   { id: 'inspected', label: 'Every bounce opened and inspected' },
@@ -339,7 +339,7 @@ function PageDelivery({ ctx }: { ctx: PageCtx }) {
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Open all three practices', hit: seen.size >= DELIVERY.length },
-    { label: 'Tick the whole checklist', hit: ticked.size >= DELIVERY_TICKS.length },
+    { label: 'Check the whole checklist', hit: ticked.size >= DELIVERY_TICKS.length },
     { label: 'Pass the check', hit: checkDone },
   ];
   const latched = useVisitGoals(ctx, goals);
@@ -351,8 +351,8 @@ function PageDelivery({ ctx }: { ctx: PageCtx }) {
         <ConceptList items={DELIVERY.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
       </Card>
       <Card>
-        <Eyebrow>THE DELIVERY CHECKLIST — TICKED, NOT REMEMBERED</Eyebrow>
-        <Prompt>Run it like the real thing: tick each line as if this were your delivery.</Prompt>
+        <Eyebrow>THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED</Eyebrow>
+        <Prompt>Run it like the real thing: check each line as if this were your delivery.</Prompt>
         {DELIVERY_TICKS.map((t) => {
           const on = ticked.has(t.id);
           return (
@@ -362,7 +362,7 @@ function PageDelivery({ ctx }: { ctx: PageCtx }) {
               tone={on ? 'primary' : 'plain'}
               selected={on}
               onPress={() => setTicked((s) => new Set(s).add(t.id))}
-              a11y={`${t.label}: ${on ? 'ticked' : 'not ticked'}`}
+              a11y={`${t.label}: ${on ? 'checked' : 'not checked'}`}
             />
           );
         })}

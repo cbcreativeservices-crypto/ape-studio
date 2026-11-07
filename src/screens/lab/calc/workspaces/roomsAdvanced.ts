@@ -216,7 +216,7 @@ const DIFFUSER: Workspace = {
   mistakes: [
     'Choosing a non-prime N — the quadratic-residue trick only spreads energy evenly for PRIME N (7, 11, 13, 17, 23…).',
     'Making wells too wide — the high-frequency limit is c/(2·width); wide wells stop diffusing early and start reflecting.',
-    'Sitting too close — a diffuser needs several wavelengths of distance to form its scattered field; nearfield it just adds comb filtering.',
+    'Sitting too close — a diffuser needs several wavelengths of distance to form its scattered field; in the near field it just adds comb filtering.',
   ],
   warnings:
     'Idealized QRD geometry: well depth dₙ = sₙ·λ₀/(2N) with sₙ = n² mod N, low edge ≈ the design ' +
@@ -298,7 +298,7 @@ const ABSORBER: Workspace = {
     'flexes a mass over a sealed air gap; a HELMHOLTZ (perforated-panel) absorber resonates the ' +
     'air in its holes against the cavity. Both are tuned to a target frequency — here is the math.',
   whyItMatters:
-    'Low-frequency room problems need absorbers that WORK low, and porous foam that thin doesn’t. ' +
+    'Low-frequency room problems need absorbers that WORK low, and thin porous foam doesn’t. ' +
     'Panel and Helmholtz resonators put absorption in the band where a mode or a boom lives, using ' +
     'depth and mass instead of meters of foam.',
   example:
@@ -338,7 +338,7 @@ const ABSORBER: Workspace = {
       plainFormula:
         'The resonant frequency equals the speed of sound over two pi, times the square root of the air density over the panel mass times the air-gap depth — about 59.9 divided by the square root of mass times depth for air at 20 °C.',
       explain:
-        'A panel (membrane) absorber flexes a mass over a sealed air gap, resonating at a low frequency where thin porous foam fails. A heavier panel or a deeper gap tunes it lower. It works across roughly a half-octave either side of this frequency, and only if the cavity is sealed so the trapped air acts as the spring.',
+        'A panel (membrane) absorber flexes a mass over a sealed air gap, resonating at a low frequency where thin porous foam fails. A heavier panel or a deeper gap tunes it lower. It works across roughly a half-octave on either side of this frequency, and only if the cavity is sealed so the trapped air acts as the spring.',
       keySymbols: ['≈', '/', '√', '·', 'f', 'x₁'],
       compute: (v) => {
         const f0 = PANEL_K / Math.sqrt(n(v.mass) * n(v.gap));

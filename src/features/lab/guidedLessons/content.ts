@@ -51,7 +51,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Cut first to clean up, then boost sparingly to flatter — level-match before/after, since boosts trick the ear into "better".',
-      'Teach Q with pink noise: the same +6 dB boost at Q=0.7 vs Q=8 — hear "tone" vs "ring".',
+      'Try Q with pink noise: the same +6 dB boost at Q=0.7 vs Q=8 — hear "tone" vs "ring".',
     ],
     formula: 'Q ≈ Fc / bandwidth. Filter slope = 6/12/18/24 dB per octave (1/2/3/4-pole). Shelf vs bell vs pass = which part of the band is affected.',
   },
@@ -249,7 +249,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'ratio', name: 'Ratio', definition: 'How hard it squeezes above the threshold: 2:1 is gentle glue, 8:1+ acts like a limiter. For every N dB the input rises ABOVE the threshold, the output rises only 1 dB — below the threshold nothing changes.', range: '2:1 … 20:1' },
       { key: 'attack', name: 'Attack', definition: 'How fast it clamps down once the sound crosses the threshold. Fast tames transients; slow lets the initial punch through first.', range: '0.5 – 100 ms' },
       { key: 'release', name: 'Release', definition: 'How fast the gain returns after the level drops back. Too fast pumps; too slow keeps the level held down too long.', range: '30 – 500 ms' },
-      { key: 'makeup_gain', name: 'Makeup gain', definition: 'Turns the whole signal back up after compression lowered it — so the compressed track sits as loud (or louder) than before.' },
+      { key: 'makeup_gain', name: 'Makeup gain', definition: 'Turns the whole signal back up after compression lowered it — so the compressed track sits as loud as (or louder than) before.' },
       { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the compressor is turning the signal down RIGHT NOW, in dB — this is a real reading from the engine, not a drawing. It rises when the signal goes over the threshold, then falls back to 0 during release; more reduction = harder compression.' },
     ],
     commonMistakes: [
@@ -360,7 +360,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'harmonics. Symmetric shaping adds odd harmonics (hollow/harsh); asymmetric adds even ' +
       'harmonics too (warm). Aliasing is both a hazard and a teaching target here.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The moving display is the signal path: a sine enters at IN ▸ (“IN = −20 dBFS sine”), passes the green DRIVE stage and leaves at ▸ OUT. The faint dashed wave is DRIVEN (before clip), the input × DRIVE. The red dashed lines are 0 dBFS, the ceiling HARD CLIP and SOFT never pass. The bright wave is what comes out after the shaper and MIX; its colour shows level, red at the 0 dBFS lines. Where its tops flatten, new harmonics appear, and the SHAPE decides which: symmetric clipping makes odd harmonics; asymmetry (a tube) adds even ones too. LAB NOTES, under DESIGNED RESPONSE, draws one still cycle of the same waves; where the moving display cannot run, that still drawing takes its place." },
+      { key: 'display', name: 'What the display shows', definition: "The moving display is the signal path: a sine enters at IN ▸ (“IN = −20 dBFS sine”), passes the green DRIVE stage and leaves at ▸ OUT. The faint dashed wave is DRIVEN (before clip), the input × DRIVE. The red dashed lines are 0 dBFS, the ceiling HARD CLIP and SOFT never pass. The bright wave is what comes out after the shaper and MIX; its color shows level, red at the 0 dBFS lines. Where its tops flatten, new harmonics appear, and the SHAPE decides which: symmetric clipping makes odd harmonics; asymmetry (a tube) adds even ones too. LAB NOTES, under DESIGNED RESPONSE, draws one still cycle of the same waves; where the moving display cannot run, that still drawing takes its place." },
       { key: 'hard_clip', name: 'Type (clip shape)', definition: 'The shaping curve. Symmetric clipping (hard/soft) chops top and bottom the SAME → odd harmonics; the tube’s asymmetry adds EVEN harmonics — the “warm” signature.' },
       { key: 'saturation', name: 'Drive', definition: 'How hard you push the signal into the shaper. More drive = more of the wave reshaped = more harmonics and grit.', range: '+6 … +36 dB' },
       { key: 'oversampling', name: 'Oversampling', definition: 'Processes at a higher internal rate so the new high harmonics land above hearing, then filters most of them out before they can fold back. OFF lets aliasing in. On the 220 Hz sine it only matters on HARD CLIP (SOFT and TUBE bend too smoothly to make harmonics that high), and even there the folded tones stay very faint.' },
@@ -376,7 +376,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'DC offset from asymmetric shaping — builds up → click/headroom loss; HPF after the shaper.',
     ],
     proTips: [
-      'A/B HARD CLIP vs TUBE (ASYM) on the sine and compare the bend: even top and bottom → odd harmonics only; uneven → even ones too. A spectrum analyser (FFT) shows them as two different stacks.',
+      'A/B HARD CLIP vs TUBE (ASYM) on the sine and compare the bend: even top and bottom → odd harmonics only; uneven → even ones too. A spectrum analyzer (FFT) shows them as two different stacks.',
       'Aliasing is easiest to hear on a high-pitched tone driven into a hard clip: its first few harmonics already pass Nyquist and fold back off-key. With this lab’s 220 Hz sine, OVERSAMPLING OFF adds only very faint aliasing, loudest on HARD CLIP at +36 dB.',
     ],
     formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; odd-symmetric f → odd only, asymmetric f → even + odd. A harmonic above fs/2 folds back to |f − k·fs|, where k is the whole number nearest f/fs (between fs/2 and fs, that is fs − f). THD = RMS of the harmonics ÷ RMS of the fundamental (an amplitude ratio).',
@@ -413,7 +413,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Forgetting masking — a noise can be inaudible when masked by louder nearby content; SNR alone doesn’t predict audibility.',
     ],
     proTips: [
-      'Put white and pink side-by-side on the spectrum and let students hear both — the "why does white sound brighter?" moment.',
+      'Put white and pink side-by-side on the spectrum and hear both — the "why does white sound brighter?" moment.',
       'Use the spectrogram to identify a mystery noise (hum vs buzz vs RF) as a challenge — on a tool that has one; this lab draws the five color slopes, not a spectrogram.',
     ],
     formula: 'Color = spectral slope (dB/octave); pink ∝ 1/f power. SNR (dB) = 20·log₁₀(signal RMS ÷ noise RMS), an amplitude ratio (use 10·log₁₀ for a power ratio). Masking threshold rises with masker level within the critical band.',
@@ -467,7 +467,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'wave_shape', name: 'Wave shape / Preset', definition: 'The chosen waveform — sine (fundamental only), square (odd harmonics), sawtooth (all harmonics), triangle (odd, steep rolloff), pulse (fixed at 25% duty here). Each carries a characteristic harmonic series.' },
       { key: 'frequency', name: 'Frequency (fundamental)', definition: 'The fundamental pitch in Hz. Every harmonic is an integer multiple of it (2f, 3f, 4f…), so moving the fundamental shifts the whole series up or down together.' },
       { key: 'amplitude', name: 'Amplitude', definition: 'An idea, not a key here: the tone plays at a fixed output level, and the stems set each harmonic’s own level. Raising the overall level scales every partial equally — it does NOT add harmonics (a common confusion).' },
-      { key: 'duty_cycle', name: 'Duty cycle (PWM)', definition: 'An idea, not a key here: the PULSE preset is fixed at 25% duty. Duty is the high/low ratio of a pulse wave. It changes timbre and nulls specific harmonics (amplitude ∝ sin(nπd)/(nπ); at 25%, every 4th harmonic drops out) but does NOT change the pitch.' },
+      { key: 'duty_cycle', name: 'Duty cycle (PWM)', definition: 'An idea, not a key here: the PULSE preset is fixed at 25% duty. Duty is the share of each cycle a pulse wave spends high. It changes timbre and nulls specific harmonics (amplitude ∝ sin(nπd)/(nπ); at 25%, every 4th harmonic drops out) but does NOT change the pitch.' },
       { key: 'add_remove_harmonics', name: 'Add / Remove harmonics', definition: 'Toggle or drag individual partials to build a waveform from its Fourier components — e.g. stack the odd harmonics one at a time to approach a square.' },
       { key: 'harmonic_phase', name: 'Harmonic phase', definition: 'The phase of each partial. Changing phases redraws the waveform shape dramatically, yet a steady tone sounds nearly identical (the ear’s phase-deafness).' },
       { key: 'view', name: 'View (MODEL / LIVE)', definition: 'Switches the display between MODEL — the analytic harmonic recipe you’re editing, drawn exactly from the math — and LIVE, the real spectrum captured from the mic. MODEL is exact and editable; LIVE is measured and labeled uncalibrated.' },
@@ -511,7 +511,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'pulse', name: 'Pulse', definition: 'A rectangular wave; here it is fixed at a 25% duty cycle (PULSE 25%). Duty shapes the harmonic content (nulls where n·d is an integer, so at 25% every 4th harmonic drops out) — it changes timbre, not pitch.' },
       { key: 'frequency', name: 'Frequency', definition: 'The fundamental pitch in Hz. All harmonics move with it; near Nyquist even band-limited waves run out of harmonics and thin out.' },
       { key: 'noise', name: 'Noise', definition: 'Reading only — not a WAVE choice in this lab. Aperiodic signal with a continuous spectrum instead of discrete harmonics — see the Noise lab for the colors.' },
-      { key: 'fm', name: 'FM', definition: 'Theory only — no control in this lab. Frequency modulation — the modulator wobbles the carrier’s frequency, creating sidebands at fc ± n·fm (Bessel amplitudes). Whole-number ratios sound brassy or organ-like; odd ratios sound like bells. When the modulator is a whole-number multiple of the carrier, pitch stays at the carrier.' },
+      { key: 'fm', name: 'FM', definition: 'Theory only — no control in this lab. Frequency modulation — the modulator wobbles the carrier’s frequency, creating sidebands at fc ± n·fm (Bessel amplitudes). Whole-number ratios sound brassy or organ-like; odd, complex ratios sound like bells. When the modulator is a whole-number multiple of the carrier, pitch stays at the carrier.' },
       { key: 'am', name: 'AM', definition: 'Theory only — no control in this lab. Amplitude modulation — the modulator rides the carrier’s level, creating one sideband pair at fc ± fm (tremolo at slow rates). Ring mod is AM with the carrier suppressed.' },
     ],
     commonMistakes: [
@@ -562,7 +562,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Workflow: set Bass-Mono first, then Width, then mono-check and read correlation, then level-match A/B.',
-      'Teach with pink noise + a centered vocal: widen and watch the vocal stay put while the sides balloon, then hit mono and hear the sides fold.',
+      'Try pink noise + a centered vocal: widen and watch the vocal stay put while the sides balloon, then hit mono and hear the sides fold.',
     ],
     formula: 'M/S encode: M = (L + R)/√2, S = (L − R)/√2. Decode: L = (M + S)/√2, R = (M − S)/√2. Width = scaling S relative to M. Correlation = normalized cross-correlation of L and R (+1 / 0 / −1).',
   },
@@ -576,7 +576,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     tagline: 'See musical intervals as figures.',
     whatItIs:
       'A virtual harmonograph: damped sinusoids drive a pen to draw deterministic figures set by ' +
-      'frequency ratios, phase, and damping. Driven by two oscillators, students hear the interval ' +
+      'frequency ratios, phase, and damping. With two oscillators driving it, you hear the interval ' +
       'while watching the figure — simple ratios draw stable closed loops.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The figure is drawn straight from the two damped oscillations. A simple whole-number ratio closes into a stable shape; a slightly detuned ratio slowly rotates — that drift IS beating, made visible." },
@@ -763,7 +763,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     controls: [
       { key: 'display', name: 'What the display shows', definition: "An overhead view of the stage: your head at center, each dot a sound object. Angle around you = azimuth, distance from center = how far away. Drag a dot to move it; the readout shows the resulting ITD/ILD cues." },
       { key: 'azimuth', name: 'Azimuth', definition: 'The source’s angle around your head: 0° = front, ±90° = hard side, ±180° = behind. Drives ITD (delay) and ILD/shadow (level + tone) together, as physics does.', range: '−180°..+180°' },
-      { key: 'distance', name: 'Distance', definition: 'Inverse-distance level (−6 dB per doubling, re 1 m). Distance perception also uses reflections/air absorption — not modeled here (stated).', range: '0.5–4 m' },
+      { key: 'distance', name: 'Distance', definition: 'Inverse-distance level (−6 dB per doubling, re 1 m). Distance perception also uses reflections/air absorption — not modeled here.', range: '0.5–4 m' },
       { key: 'source_type', name: 'Source type', definition: 'Sine, white or pink noise per object. Noise localizes much more strongly than a pure tone — broadband content feeds timing cues in the lows and level cues in the highs at the same time.' },
       { key: 'objects', name: 'Sound objects (up to 3)', definition: 'Independent sources mixed to one binaural bus. The bus is peak-bounded (norm shown when attenuating).' },
       { key: 'tone_freq', name: 'Tone frequency', definition: 'Sets the pitch of the selected object’s sine test tone, in Hz. Localization changes with frequency: LOW tones are located mainly by ITD (timing between the ears), HIGH tones by ILD (the head shadows the far ear). For a steady tone, timing works only up to about 800 Hz: with a top ITD near 0.66 ms, the two ears are 180° apart at about 760 Hz. Above that the timing cue gets confused, and a pure tone is hardest to place around 1.5–2 kHz, before the head shadow takes over. A pure tone also lacks onsets and spectral detail — switch it to noise to hear the difference.', range: 'preset steps' },
@@ -843,7 +843,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'air', name: 'Air particles', definition: 'What actually exists: molecules rocking back and forth around a home position. The pattern of squeezes travels; the air itself stays put.' },
       { key: 'pressure_graph', name: 'Pressure graph', definition: 'Pressure at one point plotted over time. It is a GRAPH — not the shape of the sound. Above the zero line = compression, below = rarefaction, zero = atmospheric.' },
       { key: 'speaker_cone', name: 'Speaker cone', definition: 'The source: electricity → motion → air. Forward strokes compress, backward strokes rarefy.' },
-      { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration swings from rest — bigger swings mean bigger pressure changes mean louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
+      { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration swings from rest — bigger swings mean bigger pressure changes and louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
       // Playground controls (each drives every view at once).
       { key: 'frequency', name: 'Frequency', definition: 'How FAST the air vibrates — cycles per second (Hz). More cycles = a higher pitch, and the compression bands sit closer together.', range: '55 Hz – 3.5 kHz' },
       { key: 'waveform', name: 'Waveform', definition: 'The SHAPE of one cycle. A sine is pure; square/saw/triangle add harmonics — extra sine waves stacked on top that change the timbre.' },
@@ -1158,7 +1158,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'lra', name: 'Loudness Range (LRA)', definition: 'The statistical spread between the program\'s soft and loud sections (in LU). A movie might span 20+; a pop master 4–6. It quantifies "how dynamic is this program" — not how loud.' },
       { key: 'true_peak_meter', name: 'True peak (dBTP)', definition: 'The reconstructed analog waveform can rise ABOVE the highest sample between samples. True-peak meters oversample to catch it — why platforms ask for −1 dBTP ceilings, and why "no clipped samples" isn\'t "no clipping".' },
       { key: 'spectrum_read', name: 'Reading a spectrum', definition: 'Left = lows, right = highs, height = energy. Ask three things: where is the energy centered, is the shape smooth or spiky, and is anything sticking up that shouldn\'t be?' },
-      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Guitar = a midrange hill of harmonic peaks. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp on an FFT display (flat on a 1/3-octave RTA). Learn seven shapes and you can read most sessions.' },
+      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Guitar = a midrange hill of harmonic peaks. Cymbal = dense HF wash. Hum = needle spikes at exact power-line harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp on an FFT display (flat on a 1/3-octave RTA). Learn seven shapes and you can read most sessions.' },
       { key: 'spectrogram_axes', name: 'Spectrogram axes', definition: 'On most spectrograms time runs HORIZONTAL, frequency VERTICAL, level is COLOR (some scroll downward — check the axes). It is a spectrum filmed over time — the most misread display in audio because people try to read it like a waveform.' },
       { key: 'spectrogram_patterns', name: 'Spectrogram patterns', definition: 'Speech = stacked formant bands with pitch striations. Birdsong = rising/falling thin chirps. Cymbal = bright HF wash fading right. Feedback = one horizontal line getting brighter. Whistle = a single thin steady line. White noise = uniform confetti.' },
       { key: 'waterfall_axes', name: 'Waterfall axes (CSD)', definition: 'Frequency across, level up, TIME stepping TOWARD you: the loud start (t = 0) stands tall at the back, and each slice in front of it is the spectrum a moment later. The front edge is the latest instant — the range decaying toward you IS the decay.' },
@@ -1251,7 +1251,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     { key: 'gallery', name: 'Pattern Gallery', definition: 'Every SAVE from a studio lands here with its exact experiment state — the plate or dish or head, the drive, the level, the view — and the honesty badge it carried. Reopen it and the studio comes back to that configuration. The gallery itself draws the figure as line art on the object; the live views live in the studio.' },
     { key: 'save_pattern', name: 'Saving a pattern', definition: 'SAVE stores numbers, not a picture: the studio’s full state, so the figure is reproducible. Artwork you add later is stored separately and never changes the science underneath.' },
     { key: 'art_fill', name: 'Fill', definition: 'Tap a region — one of the areas enclosed by nodal lines — to fill it. Regions are the parts of the plate moving together, in phase; a fill never crosses a still line because the still line is the boundary. ERASE clears a region; UNDO and REDO live on the bezel.' },
-    { key: 'art_style', name: 'Solid or gradient', definition: 'Solid paints the region flat. Gradient shades it from its centre outward, which reads as height: the antinode in the middle, the still line at the edge. NODAL LINES here sets the line colour.' },
+    { key: 'art_style', name: 'Solid or gradient', definition: 'Solid paints the region flat. Gradient shades it from its center outward, which reads as height: the antinode in the middle, the still line at the edge. NODAL LINES here sets the line color.' },
     { key: 'art_weight', name: 'Line weight', definition: 'The nodal lines’ stroke, 0–4 px. At zero they vanish and only the fills speak — the figure is still there, drawn by the colors’ edges.' },
     { key: 'art_paper', name: 'Paper', definition: 'What sits under the figure: the object’s own face (aluminum, brass, the drumhead, the liquid), a plain color, or nothing at all for a transparent PNG you can composite elsewhere.' },
     { key: 'art_symmetry', name: 'Symmetry fill', definition: 'Most Chladni figures share the symmetry of their plate. With SYM on, filling one region also fills its rotated partners — 4 for a square, 6 for a hexagon, 2 for a rectangle — so a full coloring takes a few taps instead of dozens.' },

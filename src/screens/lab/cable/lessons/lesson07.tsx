@@ -122,8 +122,7 @@ export function Lesson07Body() {
 
       <Eyebrow text="THREE CONDUCTORS, THREE ROLES" />
       <Text style={s.body}>
-        Every grounded mains cord carries the same three roles. Tap each contact of the wall plug to identify its job —
-        identification is the skill here; wiring is not.
+        Every grounded power cord carries the same three roles. Tap each contact of the wall plug to identify its job — identification is the skill here; wiring is not.
       </Text>
       {/* ART SLOT: owner-supplied NEMA 5-15 plug-face illustration (narrow
           blade / wide blade / round pin, labeled) mounts here — the tappable

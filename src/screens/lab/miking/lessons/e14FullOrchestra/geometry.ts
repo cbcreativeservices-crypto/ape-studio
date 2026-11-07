@@ -147,7 +147,7 @@ export const E14_MODEL = ensembleModel({
  *  (live, with a soloist or a choir): a drawing default. */
 export const E14_WEDGES: Wedge[] = [
   { id: 'fill', label: 'the side-fill monitor at the front right', short: 'SIDE-FILL', p: v3(3600, 0, 2600), lift: 380, faces: unit(v3(-0.35, 0, -1)), note: 'A monitor facing the players from the front right: the support mic’s rejection can be turned toward it.', prov: ill('a typical side-fill position: a drawing default') },
-  { id: 'paL', label: 'the PA loudspeaker at the front left', short: 'PA LEFT', p: v3(-5600, 0, 3300), lift: 3000, faces: v3(0, 0, 1), glyph: 'none', note: 'High at the front left, facing the hall: farther off the support’s axis, and the hall’s system — level and routing do the rest.', prov: ill('a typical PA position: a drawing default') },
+  { id: 'paL', label: 'the PA loudspeaker at the front left', short: 'PA LEFT', p: v3(-5600, 0, 3300), lift: 3000, faces: v3(0, 0, 1), glyph: 'none', note: 'High at the front left, facing the hall: farther off the support mic’s axis, and part of the hall’s system — level and routing do the rest.', prov: ill('a typical PA position: a drawing default') },
 ];
 
 /* ── STARTING SETUPS (drawn whole on the stage) ── */

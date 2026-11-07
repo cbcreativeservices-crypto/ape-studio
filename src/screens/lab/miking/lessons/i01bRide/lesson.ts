@@ -302,24 +302,24 @@ const scenarios: MikingScenario[] = [
     id: 'rd.mix.2',
     page: 'practice',
     prompt: 'MIXED · The ride channel is full of floor tom. What is a good first move?',
-    options: ['Aim and distance: move the mic’s front off the floor tom', 'Turn the ride channel up until the floor tom is covered over', 'Remove the floor tom’s bottom head to quieten it'],
+    options: ['Aim and distance: move the mic’s front off the floor tom', 'Turn the ride channel up until the floor tom is covered over', 'Remove the floor tom’s bottom head to quiet it'],
     correct: 'Aim and distance: move the mic’s front off the floor tom',
     explain: 'Above the ride, the mic’s front faces down toward the floor tom; from the far side, or from underneath with its rear toward the floor, it hears less of it. Some floor tom always belongs.',
     why: {
       'Turn the ride channel up until the floor tom is covered over': 'More gain raises the floor tom in that channel too.',
-      'Remove the floor tom’s bottom head to quieten it': 'The drums are the player’s. Move the mic, not the drum.',
+      'Remove the floor tom’s bottom head to quiet it': 'The drums are the player’s. Move the mic, not the drum.',
     },
   },
   {
     id: 'rd.mix.3',
     page: 'practice',
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
-    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns round to face down'],
+    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face down'],
     correct: 'The sign of its signal; the delay stays the same',
     explain: 'Polarity flips the sign; only distance changes when a sound arrives. Compare both states in mono.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
-      'The mic’s pattern turns round to face down': 'The pattern stays where the mic points. Only the sign flips.',
+      'The mic’s pattern turns around to face down': 'The pattern stays where the mic points. Only the sign flips.',
     },
   },
 ];
@@ -351,13 +351,13 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Keep it off the cymbal and its wing nut: they swing and are struck. Use a stand.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the ride’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
-    explain: 'Two plans pass: no ride mic, or a dynamic spot. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
+    explain: 'Two plans pass: no ride mic, or a dynamic spot. What passes is the reasoning: start from the overheads, keep clear, and use a mic this input can power.',
   },
 ];
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the tip strikes the ride’s bow. What do you expect to hear first?', options: ['A clear ping, then the wash', 'A big wash at once', 'A short click and nothing after'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the spot mic’s aim from the bow toward the bell. What changes?', options: ['More of the wash', 'A brighter, cutting sound', 'It depends on this ride'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the ride points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

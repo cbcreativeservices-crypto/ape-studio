@@ -207,7 +207,7 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     assert.ok(t.includes(`+3.0 dB it reads ${wave('speech', 3).clip} and the wave turns red`));
     assert.ok(t.includes(`CREST drops from ${wave('speech', 0).crest} dB to ${wave('whitenoise', 0).crest} dB`));
     const d = wave('speech', 0, 0.3);
-    assert.ok(t.includes(`DC reads ${d.dc} % (the clip carries ${wave('speech', 0).dc} % of its own) and CLIP trips ${d.clip}`));
+    assert.ok(t.includes(`DC reads ${d.dc} % (the recording carries ${wave('speech', 0).dc} % of its own) and CLIP trips ${d.clip}`));
     // Ø POL: with DC at 0 only DC's sign flips; with an offset it does not simply mirror.
     const inv = (s: string, g: number, dc: number) => {
       const p = E.renderSignal(s).map((v: number) => -v * gl(g) + dc).map((v: number) => Math.max(-1, Math.min(1, v)));

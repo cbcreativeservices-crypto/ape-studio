@@ -136,7 +136,7 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   if (ex) {
     const stepsLine = 'Open ▸ WORKED STEPS under the answer: the example numbers go into the formula, one line at a time.';
     const unitLine = (shown: string, next: string) => `Tap ${shown} itself: it reads ${next} — the same quantity in another unit.`;
-    tryThis.push(`Type the grey example value into each box (then CALCULATE, if it shows): ${ex.label} reads ${ex.at4}.`);
+    tryThis.push(`Type the gray example value into each box (then CALCULATE, if it shows): ${ex.label} reads ${ex.at4}.`);
     let usedSig = false;
     let usedUnit = false;
     let usedSteps = false;
@@ -177,16 +177,16 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
     }
     if (tryThis.length < 2) tryThis.push('Change one input and watch which results move — then open π KEY to see why the formula moves them.');
   } else {
-    tryThis.push('Type the grey example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER.');
+    tryThis.push('Type the gray example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER.');
     tryThis.push('Change one input and watch which results move — then open π KEY to see why the formula moves them.');
   }
 
   const control = [
     fields.some((f) => f.quantity === 'list')
-      ? `INPUTS: ${names}. A list box takes several numbers, separated by commas; grey text in an empty box is an example.`
+      ? `INPUTS: ${names}. A list box takes several numbers, separated by commas; gray text in an empty box is an example.`
       : fields.length === 1
-        ? `INPUTS: ${names}. Type a number; a grey number in an empty box is an example value.`
-        : `INPUTS: ${names}. Type a number in each; a grey number in an empty box is an example value.`,
+        ? `INPUTS: ${names}. Type a number; a gray number in an empty box is an example value.`
+        : `INPUTS: ${names}. Type a number in each; a gray number in an empty box is an example value.`,
     '⇄ switches a box’s unit; ⓘ says what an input means; a ⚠ under a box flags a value worth a second look.',
     picker,
     'In the answer: tap a number for another unit; SEND → (if an input takes it) passes it on; SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
@@ -259,7 +259,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'Tap a category tile: its calculators open in a popup, grouped by job. Tap one to open it; ✕ or a tap outside closes the popup.',
       '▸ CUSTOM CALCULATOR WORKFLOWS opens ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your recent workflow (RECENT · TAP TO RUN).',
       '⛓ CHAIN ACTIVE: ✕ CLEAR drops the result you sent.',
-      'π KEY: the Greek letters and maths symbols the calculators use.',
+      'π KEY: the Greek letters and math symbols the calculators use.',
     ],
     changes: [
       'Calculators that solve one job several ways share a page: WHAT ARE YOU CALCULATING? picks the one you need, and the inputs change to match.',
@@ -267,7 +267,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'A workflow runs several calculators in order and carries the answers forward for you.',
     ],
     teaches: [
-      'The maths behind everyday audio work — levels, distance, power, rooms, digital — with the reasoning shown, not just the result.',
+      'The math behind everyday audio work — levels, distance, power, rooms, digital — with the reasoning shown, not just the result.',
       'Every calculator shows its FORMULA, WORKED STEPS, WHY THIS MATTERS, a PRACTICAL EXAMPLE and COMMON MISTAKES.',
       'It has its own card on Home (OPEN CALCULATORS): a reference for whenever a lab, a course or a job needs the numbers.',
     ],
@@ -281,9 +281,9 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   // ── CalcSymbolsKeyScreen ──────────────────────────────────────────────────
   symbols: {
     seeing: [
-      'SYMBOL KEY: the Greek letters and maths symbols used in the calculators, in groups.',
+      'SYMBOL KEY: the Greek letters and math symbols used in the calculators, in groups.',
       'GREEK LETTERS, OPERATORS & RELATIONS, CALCULUS & LOGARITHMS, POWERS, SUBSCRIPTS & PREFIXES, COMMON VARIABLES, VALUES THAT KEEP TURNING UP.',
-      'Each row: the symbol, its name, what it means in audio maths, and often a formula where it appears.',
+      'Each row: the symbol, its name, what it means in audio math, and often a formula where it appears.',
     ],
     control: [
       'Scroll to browse.',
@@ -431,7 +431,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'That a venue’s fixed numbers — room size, temperature, distances — can be stored once with their units and reused for every plan in that room or rig.',
     ],
     tryThis: [
-      'Tap ＋ NEW, name it, add a value labelled Listener distance as Length / distance, type 12, and SAVE.',
+      'Tap ＋ NEW, name it, add a value labeled Listener distance as Length / distance, type 12, and SAVE.',
       'Run a workflow, attach the project, and look for ⤵ USE … (PROJECT) under a distance input.',
     ],
   },

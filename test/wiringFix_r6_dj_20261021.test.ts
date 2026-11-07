@@ -81,7 +81,7 @@ describe('R4-DJ-02 — Screen 20 SYSTEM: the amp is powered, CH B goes to TOP R'
     assert.match(p20, /export const AMP_MAINS_LANE_Y = SYS_AMP_AT\.y \+ AMP_H \+ 8;/);
   });
   it('a mains lead is drawn into AC IN: IEC C13 seated, ribbed mains cord at true scale, a mains plug at its far end', () => {
-    assert.match(sv, /<CableRun r=\{\{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'MAINS', farKind: 'mains' \}\} \/>/);
+    assert.match(sv, /<CableRun r=\{\{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'AC POWER', farKind: 'mains' \}\} \/>/);
     assert.doesNotMatch(sv.match(/id: 'ampAc'[^}]*\}/)![0], /quiet/, 'full width (⌀ 6.2 drawn), not the thinned secondary cord');
     assert.match(read(DJ + 'art/cables.tsx'), /iec: 6\.2 \}/);
     assert.match(p20, /export const AMP_AC: \[number, number\]\[\] = \[\n  \[SYS_AMP_AT\.x \+ AMP_REAR\.ac\.x, SYS_AMP_AT\.y \+ AMP_REAR\.ac\.y\],\n  \[SYS_AMP_AT\.x \+ AMP_REAR\.ac\.x, AMP_MAINS_LANE_Y\],\n  \[S_FRAME\.x - AMP_LEAD_RUN_OFF, AMP_MAINS_LANE_Y\],\n\];/);
@@ -164,7 +164,7 @@ describe('R4-DJ-02 — Screen 20 SYSTEM: the amp is powered, CH B goes to TOP R'
     assert.match(p20, /'POWER AMP \(BACK\)'/);
   });
   it('the a11y and MODEL say so; the stale "CH B stands empty" is gone', () => {
-    assert.match(p20, /The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN\./);
+    assert.match(p20, /The amp’s CH B output feeds the other top, TOP R, on its own Speakon cable out of view, and the amp’s power cable is plugged into its AC IN\./);
     assert.doesNotMatch(p20, /CH B \(the\s+\* other top\) stands empty/);
     const model = read('docs/labs/dj/MODEL.md');
     assert.doesNotMatch(model, /CH B \(the other top\) stands empty/);

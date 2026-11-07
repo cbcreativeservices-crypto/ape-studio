@@ -25,7 +25,7 @@ import { MODEL_BADGE, syncOf, useStrike, type ChapterProps } from './shared';
 
 const LUG_OPTIONS: { key: LugCount; label: string; short: string; blurb: string }[] = [
   { key: 6, label: '6 lugs (a 10"–13" tom)', short: '6 LUGS', blurb: 'Three opposite pairs: 1 → 4 → 2 → 5 → 3 → 6.' },
-  { key: 8, label: '8 lugs (a 14"–16" floor tom, some kicks)', short: '8 LUGS', blurb: 'Four pairs, skipping round the star: 1 → 5 → 3 → 7 → 2 → 6 → 4 → 8.' },
+  { key: 8, label: '8 lugs (a 14"–16" floor tom, some kicks)', short: '8 LUGS', blurb: 'Four pairs, skipping around the star: 1 → 5 → 3 → 7 → 2 → 6 → 4 → 8.' },
   { key: 10, label: '10 lugs (a 14" snare)', short: '10 LUGS', blurb: 'Five pairs: 1 → 6 → 3 → 8 → 5 → 10 → 7 → 2 → 9 → 4.' },
 ];
 
@@ -94,7 +94,7 @@ type InspectPoint = { id: string; label: string; short: string; blurb: string };
 const HARDWARE_CHIPS: { id: DrumPart; label: string; text: string }[] = [
   { id: 'rods', label: 'RODS', text: 'Each turns freely, none bent. A rod that backs out under playing loses tension at its lug: the drum "will not hold tuning".' },
   { id: 'lugs', label: 'LUGS', text: 'Casings tight on the shell, inserts not stripped, washers present and flat. One bad lug makes one unreliable rod.' },
-  { id: 'hoop', label: 'HOOPS', text: 'Flat and round — set one on a table; it should touch all the way round. A bent hoop cannot press the head down evenly.' },
+  { id: 'hoop', label: 'HOOPS', text: 'Flat and round — set one on a table; it should touch all the way around. A bent hoop cannot press the head down evenly.' },
   { id: 'batter', label: 'HEAD', text: 'Coating worn through, dents, a stretched collar, a year kept at very high tension — replace it. Old heads tune unevenly and drift.' },
   { id: 'edge', label: 'EDGE', text: 'Clean, level, no chips. Grit between head and edge is a buzz or a dead spot that LOOKS like a tuning problem.' },
 ];
@@ -234,7 +234,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
   };
   const seen = (() => {
     if (inspect === 'head') return faults.present.has('worn') ? 'The coating is scuffed and there is a dent near the center.' : 'The coating is even; no dents.';
-    if (inspect === 'edge') return faults.present.has('debris') ? 'Specks of grit sit between the head and the edge on one side.' : 'The edge is clean all the way round.';
+    if (inspect === 'edge') return faults.present.has('debris') ? 'Specks of grit sit between the head and the edge on one side.' : 'The edge is clean all the way around.';
     if (inspect === 'map') return faults.present.has('uneven') || faults.present.has('loose') ? 'The map is mottled — the lugs are not at one pitch.' : 'The map is one color — the lugs agree.';
     if (selLug != null) return faults.present.has('loose') && selLug === faults.looseLug ? `Rod ${selLug + 1} is backed out: a gap under its washer, the rod loose in the lug.` : `Rod ${selLug + 1} is seated; the washer sits flat.`;
     return '';
@@ -342,7 +342,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             <>
               <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
               <Card>
-                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all round — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
+                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all around — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
                 <Point title="Why opposing">Tightening neighbors in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
               </Card>
               <Card tone="warn">
@@ -406,7 +406,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="a snare with one to three things wrong; the dashed ring is where you are looking." prompt="Ride INSPECT round it, flag what you find in the list, then ✓ REVEAL KEY." />
+              <Landing looking="a snare with one to three things wrong; the dashed ring is where you are looking." prompt="Ride INSPECT around it, flag what you find in the list, then ✓ REVEAL KEY." />
               <Feedback tone="info">{seen}</Feedback>
               <Checklist items={checkItems} chosen={flags} onToggle={(id) => { if (revealed) return; setFlags((f) => { const n = new Set(f); if (n.has(id)) n.delete(id); else n.add(id); return n; }); }} reveal={revealed} />
               {revealed ? (

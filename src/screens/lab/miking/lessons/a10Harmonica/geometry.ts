@@ -47,7 +47,7 @@ const harmonicaParts: Part[] = [
     id: 'hm.harp',
     label: 'harmonica',
     short: 'harmonica',
-    role: 'A 10-hole harmonica, about 10 cm long: the player’s lips on the holes, the hands round the back. The sound leaves the back of the cover plates and the ends — into the hands.',
+    role: 'A 10-hole harmonica, about 10 cm long: the player’s lips on the holes, the hands around the back. The sound leaves the back of the cover plates and the ends — into the hands.',
     solid: { kind: 'box', min: at(0, -HH / 2, -HL / 2), max: at(HD, HH / 2, HL / 2) },
     listIn: ['acoustic'],
     prov: HARMONICA.length.prov,
@@ -93,7 +93,7 @@ const harmonicaParts: Part[] = [
   { id: 'hm.comb', label: 'comb', short: 'comb', role: 'The body between the plates, cut into ten channels — one behind each hole.', listIn: ['acoustic'], prov: HARMONICA.holes.prov },
   { id: 'hm.reeds', label: 'reed plates and reeds', short: 'reeds', role: 'Two plates of reeds (usually brass), twenty reeds in all: in each channel one reed sounds when you blow and one when you draw. The reeds are the sound source.', listIn: ['acoustic'], prov: HARMONICA.reeds.prov },
   { id: 'hm.holes', label: 'holes 1–10', short: 'holes', role: 'Ten holes along the mouth side, low notes at hole 1 (the player’s left) to high at hole 10. The player changes harmonicas to change key.', listIn: ['acoustic'], prov: HARMONICA.holes.prov },
-  { id: 'hm.hands', label: 'the hands (the hand chamber)', short: 'hands', role: 'The hands round the back of the harmonica make a chamber the sound passes through. Opening and closing it changes the tone — part of the player’s sound, so record how they hold it.', listIn: ['acoustic'], prov: { kind: 'trial', src: 'LESSON-HM', note: 'the hand chamber is part of the sound (lesson L31); its envelope is a drawing default' } },
+  { id: 'hm.hands', label: 'the hands (the hand chamber)', short: 'hands', role: 'The hands around the back of the harmonica make a chamber the sound passes through. Opening and closing it changes the tone — part of the player’s sound, so record how they hold it.', listIn: ['acoustic'], prov: { kind: 'trial', src: 'LESSON-HM', note: 'the hand chamber is part of the sound (lesson L31); its envelope is a drawing default' } },
 ];
 
 const envelopes: Envelope[] = [
@@ -133,7 +133,7 @@ const ACOUSTIC_ZONES: DocumentedZone[] = [
     requires: { variant: 'acoustic', micTypeIds: STAND_MICS },
     start: { p: at(220, 0, 0), az: 0, el: 0 },
     draw: conePolys(H0, N, null, HARMONICA.standMin.mm, HARMONICA.standMax.mm, 0, 20),
-    tendency: 'The harmonica and the air round it, with the hands’ shaping. Closer gives more detail and isolation — and more breath; farther, in a quiet room, a more integrated sound.',
+    tendency: 'The harmonica and the air around it, with the hands’ shaping. Closer gives more detail and isolation — and more breath; farther, in a quiet room, a more integrated sound.',
     checks: ['A whole phrase, low and high, at matched monitor level', 'Breath bursts and hand wah', 'The stand clear of the mouth, the hands and any neck holder'],
   },
   {
@@ -205,7 +205,7 @@ export const A10_MODEL: InstrumentModel = {
   ],
   envelopes: [...envelopes, ...ampEnvelopes],
   variants: [
-    { id: 'acoustic', label: 'ACOUSTIC · STAND MIC', blurb: 'A stand mic in front of the acoustic harmonica: it hears the harmonica, the hands and the air round them.' },
+    { id: 'acoustic', label: 'ACOUSTIC · STAND MIC', blurb: 'A stand mic in front of the acoustic harmonica: it hears the harmonica, the hands and the air around them.' },
     { id: 'amp', label: 'HARP AMP · SPEAKER MIC', blurb: 'A mic on the harp amp’s speaker: it hears the amplified system — the cupped harp mic, the amp, its distortion and the speaker.' },
   ],
   defaultVariant: 'acoustic',

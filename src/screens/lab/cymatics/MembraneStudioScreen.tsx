@@ -90,15 +90,15 @@ const DAMPS: { id: number; label: string }[] = [
   { id: 0.95, label: 'Hand on the head' },
 ];
 const STRIKES: { id: string; label: string; r: number; theta: number }[] = [
-  { id: 'centre', label: 'Centre', r: 0, theta: 0 },
+  { id: 'centre', label: 'Center', r: 0, theta: 0 },
   { id: 'quarter', label: 'Quarter in (timpani)', r: 0.25, theta: 0 },
   { id: 'half', label: 'Halfway', r: 0.5, theta: 30 },
   { id: 'edge', label: 'Near the rim', r: 0.85, theta: 30 },
 ];
 const VIEWS: { id: MembraneViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'head', label: 'The drum', short: 'Drum', blurb: 'The head from above, lit — it bulges and dips in the mode you are driving, strobed to a few hertz.' },
-  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point of the head moves, on the Academy ramp: black = still, red = the most. Dark between resonances.' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — the lobes either side of a nodal diameter move in opposite directions. Neither colour is on the amplitude ramp: this is direction, not level.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point of the head moves, on the amplitude ramp: black = still, red = the most. Dark between resonances.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — the lobes on either side of a nodal diameter move in opposite directions. Neither color is on the amplitude ramp: this is direction, not level.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal diameters and circles of the nearest mode — the lines a pinch of sand would gather on.' },
   { id: 'head3d', label: '3D head', short: '3D', blurb: 'Exaggerated head motion, strobed so you can see it (the real head moves at the drive frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the head. Drag on the drum to move the slice.' },
@@ -273,7 +273,7 @@ function MembraneStudio() {
         { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance f_s`, blurb: 'The suspension resonance: mass and suspension spring balance here, so the cone moves most easily.' },
         { id: 'piston', hz: driver.fs * 3, label: `${formatHz(driver.fs * 3)} · piston band`, blurb: 'Mass-controlled: the whole cone moves as one and excursion falls as 1/f², while the on-axis output stays flat (in a baffle, up to about ka = 1).' },
         { id: 'ka1', hz: 343 / (Math.PI * (driver.diameterMm / 1000)), label: `${formatHz(343 / (Math.PI * (driver.diameterMm / 1000)))} · ka = 1`, blurb: 'The wavelength equals the cone circumference: above this the driver begins to beam.' },
-        { id: 'edge', hz: driver.breakupHz * 0.45, label: `${formatHz(driver.breakupHz * 0.45)} · edge flexing`, blurb: 'The surround and outer cone stop following the coil rigidly — the centre leads the rim.' },
+        { id: 'edge', hz: driver.breakupHz * 0.45, label: `${formatHz(driver.breakupHz * 0.45)} · edge flexing`, blurb: 'The surround and outer cone stop following the coil rigidly — the center leads the rim.' },
         { id: 'breakup', hz: driver.breakupHz * 1.3, label: `${formatHz(driver.breakupHz * 1.3)} · breakup`, blurb: 'Above the first bending frequency the cone no longer moves as one: peaks, dips, distortion.' },
       ]
     : modes
@@ -375,7 +375,7 @@ function MembraneStudio() {
             ))}
             <LabChip label="Drag on drum" selected={dragTarget === 'strike'} onPress={() => setDragTarget(dragTarget === 'strike' ? null : 'strike')} />
           </View>
-          <Text style={styles.trayBlurb}>A mode is driven in proportion to how much it moves under the mallet. Dead centre wakes only the ring modes (the dull thud); a quarter of the way in favours the (1,1) mode the timpanist tunes to.</Text>
+          <Text style={styles.trayBlurb}>A mode is driven in proportion to how much it moves under the mallet. Dead center wakes only the ring modes (the dull thud); a quarter of the way in favors the (1,1) mode the timpanist tunes to.</Text>
         </View>
       ),
     },
@@ -560,7 +560,7 @@ function MembraneStudio() {
           </View>
         ) : null}
         {view === 'heat' || view === 'head3d' || view === 'section' || view === 'speaker' ? (
-          <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the most motion">
+          <View style={styles.keyRow} accessible accessibilityLabel="Color key: black is still, red is the most motion">
             <Text style={styles.keyText}>STILL</Text>
             <LinearGradient colors={HEAT_KEY} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.keyBar} />
             <Text style={styles.keyText}>MOST MOTION</Text>

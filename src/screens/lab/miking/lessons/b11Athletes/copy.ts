@@ -47,12 +47,12 @@ export const B11_COPY: Partial<LessonCopy> = {
   ...BASE,
   variantKey: 'WHO',
   variantShort: { coach: 'coach', official: 'official', athlete: 'athlete' },
-  sceneSubject: { coach: 'a coach at the sideline', official: 'an official with an announcement headset', athlete: 'an athlete in contact kit' },
+  sceneSubject: { coach: 'a coach at the sideline', official: 'an official with an announcement headset', athlete: 'an athlete in contact gear' },
   viewTag: { side: 'SIDE · FROM THE WEARER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
     x: { plus: 'toward the field', minus: 'toward the wearer', label: 'IN–OUT', blurb: 'Out from the wearer toward the field, or back toward them (x). Distances are read from the lips.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). The lips are at height 0: below them the chin, the breastbone and the belt.' },
-    z: { plus: 'to wearer’s right', minus: 'to wearer’s left', label: 'ACROSS', blurb: 'Toward the wearer’s right or left (z).' },
+    z: { plus: 'to the wearer’s right', minus: 'to the wearer’s left', label: 'ACROSS', blurb: 'Toward the wearer’s right or left (z).' },
   },
   instrument: {
     ...BASE.instrument!,
@@ -81,7 +81,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     ...BASE.placement!,
     workedZone: { coach: 'b11.lav', official: 'b11.official', athlete: 'b11.athlete' },
     workedAim: 'Aim it toward the mouth — the lab counts it while the mic points within about {tol}° of the lips.',
-    workedClear: 'Clear of the body’s equipment: the capsule off fabric edges, zips, badges and straps, nothing on a helmet or a pad without the athlete’s and the team’s approval, the cable with a loop and slack. Approval and clearance come first, before any number.',
+    workedClear: 'Clear of the body’s equipment: the capsule off fabric edges, zippers, badges and straps, nothing on a helmet or a pad without the athlete’s and the team’s approval, the cable with a loop and slack. Approval and clearance come first, before any number.',
     reveal: 'Moving the chest mic down to the belt puts it farther from the lips: the voice is quieter against the crowd, so it needs more gain. A chest mic tends to sound fuller in the chest, but it does not turn with the head, so its tone and level shift as the head turns; a headset boom keeps one distance and hears more breath. People and kit vary, so “it depends on this person” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with a body mic: at the approved place, its capsule toward the mouth, clear of rubbing fabric; listen through a turn, an arm raise, a jog and the breathing after it.',

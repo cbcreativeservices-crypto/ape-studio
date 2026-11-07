@@ -202,11 +202,11 @@ const scenarios: MikingScenario[] = [
     id: 'wb.place.3',
     page: 'placement',
     prompt: 'One block of a set disappears. What do you check first?',
-    options: ['Whether it is off axis, quieter or farther away', 'A second mic for that block straight away, on its own channel', 'An EQ boost at that block’s pitch'],
+    options: ['Whether it is off axis, quieter or farther away', 'A second mic for that block right away, on its own channel', 'An EQ boost at that block’s pitch'],
     correct: 'Whether it is off axis, quieter or farther away',
     explain: 'Re-aim for the whole set or adjust the layout before adding a mic.',
     why: {
-      'A second mic for that block straight away, on its own channel': 'A second channel adds bleed; re-aim first.',
+      'A second mic for that block right away, on its own channel': 'A second channel adds bleed; re-aim first.',
       'An EQ boost at that block’s pitch': 'EQ cannot bring back a block the mic does not face.',
     },
   },
@@ -278,7 +278,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Main mics plus a woodblock spot sound hollow. What do you check?',
     options: ['Both together in mono, at the intended levels', 'The spot soloed, at a high listening level', 'The main mics alone, since they hear the room'],
     correct: 'Both together in mono, at the intended levels',
-    explain: 'With two mics hearing the same block, listen together and in mono for colouration from the different arrival times.',
+    explain: 'With two mics hearing the same block, listen together and in mono for coloration from the different arrival times.',
     why: {
       'The spot soloed, at a high listening level': 'Soloed, the spot hides how it combines.',
       'The main mics alone, since they hear the room': 'The combination is the question.',
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the mallet strikes near the opening. What rings?', options: ['The wall over the slot, and the air in it', 'Only the spot the mallet touched', 'The table under the block'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the wall over the slot.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: toward the opening, or toward the playing surface — which sounds fuller?', options: ['The opening', 'The surface', 'It depends on this block'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

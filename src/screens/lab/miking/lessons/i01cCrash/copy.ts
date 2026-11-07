@@ -39,7 +39,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. Crashes are loud and spread widely: every open mic on stage hears them.',
     studioIdle: 'No monitors on the floor. The overheads usually carry the crashes first — they hang closest to them.',
     before: [
-      { title: 'ASK THE PLAYER FIRST', text: 'Hear the crashes at full strength, in the song. Do the overheads already carry them — they usually hang right by them? A crash’s height and angle are the player’s; the mic works round them.' },
+      { title: 'ASK THE PLAYER FIRST', text: 'Hear the crashes at full strength, in the song. Do the overheads already carry them — they usually hang right by them? A crash’s height and angle are the player’s; the mic works around them.' },
       { title: 'WATCH THE WHOLE MOTION', text: 'A crash is struck with a glancing blow that carries the stick on past the edge, and it swings and rocks hard after. Watch the biggest crash in the song before you choose a place.' },
     ],
   },
@@ -91,7 +91,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'c1.under' },
     opposite: {
       surface: 'c1Top',
-      note: 'One mic over the crash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states, no setting is required.',
+      note: 'One mic over the crash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; no setting is required.',
     },
     learn: [
       'A crash reaches every mic on the kit at a different time — the overheads, a close mic, the tom mic below, a vocal mic nearby. Each pair is a two-mic problem: compare in mono, at matched levels.',

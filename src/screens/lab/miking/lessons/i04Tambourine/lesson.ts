@@ -130,8 +130,8 @@ const scenarios: MikingScenario[] = [
     id: 'tmb.set.2',
     page: 'setting',
     prompt: 'For more level, could you ask the player to swing toward the capsule?',
-    options: ['No — agree a comfortable zone and place the mic for it', 'Yes — a little closer on the accents helps the channel', 'Yes, as long as the mic is out of the way at rest'],
-    correct: 'No — agree a comfortable zone and place the mic for it',
+    options: ['No — agree on a comfortable zone and place the mic for it', 'Yes — a little closer on the accents helps the channel', 'Yes, as long as the mic is out of the way at rest'],
+    correct: 'No — agree on a comfortable zone and place the mic for it',
     explain: 'Do not ask a player to swing toward an exposed capsule to increase level: it risks the mic and the player, and jumps in level.',
     why: {
       'Yes — a little closer on the accents helps the channel': 'Level jumps and a struck capsule are the price; place the mic, not the player.',
@@ -168,12 +168,12 @@ const scenarios: MikingScenario[] = [
     id: 'tmb.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the jingles hears what, mostly?',
-    options: ['Bright, brief clashes with high peaks', 'A deep body from the middle of the ring', 'Mostly the room round the player'],
+    options: ['Bright, brief clashes with high peaks', 'A deep body from the middle of the ring', 'Mostly the room around the player'],
     correct: 'Bright, brief clashes with high peaks',
     explain: 'The jingles are the source: bright, metallic and peaky. Close, they dominate; the room joins farther away.',
     why: {
       'A deep body from the middle of the ring': 'There is no head: no body in the middle.',
-      'Mostly the room round the player': 'Close to the jingles they are far louder than the room.',
+      'Mostly the room around the player': 'Close to the jingles they are far louder than the room.',
     },
   },
   {
@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     explain: 'From above, a lateral motion moves the instrument across the mic’s view, not toward and away — though it depends on the arc and the pattern.',
     why: {
       'Sound rises, so a higher mic hears it louder': 'Sound does not rise; the geometry of the motion is the point.',
-      'The jingles point up, so the mic is on their axis': 'Jingles radiate all round; the steadier distance is the point.',
+      'The jingles point up, so the mic is on their axis': 'Jingles radiate all around; the steadier distance is the point.',
     },
   },
   {
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand shakes the frame one way. What do the jingles do at first?', options: ['They lag behind the frame', 'They move exactly with it', 'They stay pressed to one side'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the jingles.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the mic sits 20 cm in front of the tambourine. Is that its clearance?', options: ['No — the swing may come closer', 'Yes — 20 cm is the gap', 'It depends on the stroke'], after: 'Rest the mic in two zones and read FROM and CLEAR — two different numbers.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -503,7 +503,7 @@ export const I04_LESSON: SpLesson = {
       { title: 'The hand moves the frame', text: 'The hand shakes the frame (or strikes it into the other hand). The jingles, loose on their pins, do not move with it at first.', byVariant: { struck: 'The frame is struck into the other hand: one sharp jolt.', mounted: 'A stick strikes the frame: one sharp jolt.' } },
       { title: 'The jingles lag', text: 'The frame moves on; the jingle pairs lag behind it, loose in their slots.' },
       { title: 'The pairs clash', text: 'The jingles are thrown against each other and their pins: a bright, metallic clash — the ATTACK.' },
-      { title: 'Sound leaves all round', text: 'From the jingles all round the frame — brief and bright, with peaks far above the average. There is no head to add a body.' },
+      { title: 'Sound leaves all around', text: 'From the jingles all around the frame — brief and bright, with peaks far above the average. There is no head to add a body.' },
     ],
     attack: 'The jingle pairs clashing on each change of direction — or all at once when the frame is struck. Brief, bright, with high peaks.',
     body: 'A short shimmer as the jingles settle. No head, so no low body: the frame mostly holds the jingles. Tendencies — jingles, rows and players vary.',

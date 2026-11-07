@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Acoustic guitar:",
-      "text": "the center of the style — steel-string flat-top (dreadnought for strumming, smaller parlor/OM bodies for fingerpicking), often in open or alternate tunings, sometimes nylon-string or 12-string. Live it arrives as a pickup (undersaddle piezo, soundhole magnetic, or internal mic blend) plus, ideally, a small-diaphragm condenser.",
+      "text": "the center of the style — steel-string flat-top (dreadnought for strumming, smaller parlor/OM bodies for fingerpicking), often in open or alternate tunings, sometimes nylon-string or 12-string. Live, it arrives as a pickup (undersaddle piezo, soundhole magnetic, or internal mic blend) plus, ideally, a small-diaphragm condenser.",
       "bullet": true
     },
     {

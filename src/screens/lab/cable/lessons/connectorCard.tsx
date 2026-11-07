@@ -118,7 +118,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
           style={styles.imageFrame}
           accessible
           accessibilityRole="image"
-          accessibilityLabel={`Photograph of a ${rec.displayName} connector${active.label ? `, ${active.label.toLowerCase()} view` : ''}`}
+          accessibilityLabel={`Photograph of the ${rec.displayName} connector${active.label ? `, ${active.label.toLowerCase()} view` : ''}`}
         >
           {/* The frame is the one element; the image is not a second one
               nested inside it (APE-STUDIO-W/R/S nested-element sweep). */}

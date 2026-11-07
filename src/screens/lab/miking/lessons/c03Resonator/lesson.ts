@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a resonator player — the bar, the picking hand, the posture — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a resonator player — the bar, the picking hand, the posture — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The bar, the picking hand and the player’s posture set the keep-clear space. Do not touch the cone or the coverplate: that is for the owner or a qualified repairer. Ask the player first, and protect your hearing.',
   },
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one resonator mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second channel.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real instrument.' },
-    takeaway: 'A stable, playable position, power and level checks, a mono check of any blend, and no contact with the resonator hardware pass. A brand or a “loudest spot” do not.',
+    takeaway: 'A stable, playable position, power and level checks, a mono check of any blend, and no contact with the resonator hardware pass. A brand or a “loudest spot” does not.',
   },
 };
 
@@ -102,7 +102,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A spider-bridge single cone, a biscuit-bridge single cone and a three-cone design do not present the same sound field. Look at the instrument — without opening it — and test by ear.',
     why: {
       'Yes: resonators all radiate in exactly the same way': 'Designs differ: one cone or three, spider or biscuit bridge, the body and its ports.',
-      'Yes, as long as the coverplates look the same': 'What is under the coverplate decides it. Listen round the instrument first.',
+      'Yes, as long as the coverplates look the same': 'What is under the coverplate decides it. Listen around the instrument first.',
     },
   },
   hearingCheck(P, RESO),
@@ -161,7 +161,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guitar starting points say “near the sound hole”. Why can’t you copy that onto a resonator as it is?',
     options: ['Resonators are much too loud to be miked with a stand at all', 'It has a coverplate over a cone, not a flat-top sound hole', 'Its sound leaves only from the back, toward the player'],
     correct: 'It has a coverplate over a cone, not a flat-top sound hole',
-    explain: 'A flat-top’s sound-hole picture does not transfer literally: the cone radiates through the coverplate and the ports. Listen round the instrument, then begin at the coverplate and upper body.',
+    explain: 'A flat-top’s sound-hole picture does not transfer literally: the cone radiates through the coverplate and the ports. Listen around the instrument, then begin at the coverplate and upper body.',
     why: {
       'Resonators are much too loud to be miked with a stand at all': 'They are miked with stands all the time; the reference point is the coverplate.',
       'Its sound leaves only from the back, toward the player': 'Most of it leaves through the coverplate and the ports, out of the instrument’s face.',
@@ -304,7 +304,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Clip-on mini near the coverplate’s edge', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting on the coverplate, aimed into its holes', ok: false, power: 'none', feedback: 'Never rest anything on the coverplate. Keep the mic off the hardware.' },
     ],
-    reasons: [DOC_REASON, clearReason('the bar or slide, the picking hand and the player’s turn'), POWER_REASON, { id: 'r.listen', label: 'I will listen round the instrument before committing to a spot', role: 'optional', feedback: 'A fair reason: the cone and the ports radiate differently.' }, brandReason(RESO), LOUD_REASON],
+    reasons: [DOC_REASON, clearReason('the bar or slide, the picking hand and the player’s turn'), POWER_REASON, { id: 'r.listen', label: 'I will listen around the instrument before committing to a spot', role: 'optional', feedback: 'A fair reason: the cone and the ports radiate differently.' }, brandReason(RESO), LOUD_REASON],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point from the coverplate, clear of the player, powered by what this input can supply.',
   },
 ];
@@ -422,7 +422,7 @@ export const C03_LESSON: Lesson = {
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio, the room and a reflective floor change both the direct sound and its reflections as the mic or the instrument moves.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a wedge in front, the band and its voices round the player, the PA facing out. Close positions give more gain before feedback; a pickup may carry the level.',
+    stage: 'LIVE: a wedge in front, the band and its voices around the player, the PA facing out. Close positions give more gain before feedback; a pickup may carry the level.',
     studio: 'STUDIO: no wedges, repeated trials when the player stops; check the room, the floor and the neighbors before committing.',
   },
   diagnostic,

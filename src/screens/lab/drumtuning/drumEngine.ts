@@ -289,7 +289,7 @@ export function evenness(h: HeadState, prevSpread?: number, detail: 'full' | 'br
   const verdict: Evenness['verdict'] = spread <= 25 ? 'close' : 'uneven';
   if (detail === 'brief') {
     const head = verdict === 'close' ? `Close: ${Math.round(spread)} cents between the highest and lowest lug.` : `Uneven: ${Math.round(spread)} cents between lugs.`;
-    return { verdict, outlier, high, low, message: `${head} Tap round the head, find the highest and the lowest, and move them toward each other in small opposing steps.${trend}` };
+    return { verdict, outlier, high, low, message: `${head} Tap around the head, find the highest and the lowest, and move them toward each other in small opposing steps.${trend}` };
   }
   const moveHi = turnWords(turnsForCents(high.cents, m));
   const moveLo = turnWords(turnsForCents(low.cents, m));
@@ -941,7 +941,7 @@ export const SYMPTOMS: readonly SymptomCase[] = [
     cause: ['Damping'],
     fixes: [
       { id: 'undamp', label: 'Take the pillow out', why: 'A thick damper in a floor tom kills the fundamental along with the ring.' },
-      { id: 'tighten', label: 'Tighten the batter a quarter turn all round', why: 'More tension raises the pitch; it does not give a muffled drum its sustain back — and the drum is now higher than you left it.' },
+      { id: 'tighten', label: 'Tighten the batter a quarter turn all around', why: 'More tension raises the pitch; it does not give a muffled drum its sustain back — and the drum is now higher than you left it.' },
       { id: 'wires', label: 'Loosen the snare strainer', why: 'A floor tom has no snare wires.' },
     ],
     clears: ['undamp'],
@@ -956,7 +956,7 @@ export const SYMPTOMS: readonly SymptomCase[] = [
       { id: 'reso', label: 'Retune the resonant head away from the batter', why: 'Two heads near the same pitch exchange energy and sustain each other; moving the resonant head changes the sustain and where the ring sits.' },
       { id: 'damp', label: 'Add a gel pad near the rim', why: 'Damping takes the high ring first and shortens it; the heads keep their relationship. A different sound from retuning the resonant head — both are legitimate fixes.' },
       { id: 'even', label: 'Even the batter lugs', why: 'The batter is already even in this case — evening it again changes nothing.' },
-      { id: 'tighten', label: 'Tighten both heads a quarter turn all round', why: 'Higher tension moves the ring up; it does not shorten it — and cranking every rod on a drum that is already high stretches the heads and chokes the tone.' },
+      { id: 'tighten', label: 'Tighten both heads a quarter turn all around', why: 'Higher tension moves the ring up; it does not shorten it — and cranking every rod on a drum that is already high stretches the heads and chokes the tone.' },
     ],
     clears: ['reso', 'damp'],
     strike: 0.6,

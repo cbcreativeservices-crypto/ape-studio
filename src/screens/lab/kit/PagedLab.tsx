@@ -500,8 +500,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     const message = pageCredit
       ? `Starts ${title} again from its first page. Credited pages keep their ✓.`
       : checkCredit
-        ? `Starts ${title} again from its first page and clears its page ticks. Credit you have already earned stays.`
-        : `Starts ${title} again from its first page and clears its page ticks.`;
+        ? `Starts ${title} again from its first page and clears its page check marks. Credit you have already earned stays.`
+        : `Starts ${title} again from its first page and clears its page check marks.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;

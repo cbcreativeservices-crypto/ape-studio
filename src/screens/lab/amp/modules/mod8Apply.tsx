@@ -286,7 +286,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const chSetup = () => (
     <View style={{ gap: 10 }}>
       <SegRow<'stereo' | 'bridge'> label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); unsubmit(); }} />
-      <SegRow<'healthy' | 'sagging'> label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); unsubmit(); }} />
+      <SegRow<'healthy' | 'sagging'> label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak AC power)' }]} value={chSupply} onChange={(v) => { setChSupply(v); unsubmit(); }} />
       <SegRow<8 | 4 | 2> label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); unsubmit(); }} />
       <SegRow<'clear' | 'blocked'> label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); unsubmit(); }} />
     </View>

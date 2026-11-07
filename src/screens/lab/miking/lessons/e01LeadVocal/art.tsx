@@ -22,11 +22,11 @@ export const E01_ART: LessonArt = {
     sound: makeVoiceSound({
       where: ['THE LUNGS', 'THE THROAT', 'THROAT · MOUTH', 'THE MOUTH'],
       air: {
-        vowel: { title: 'A vowel: sound only', text: 'An open “ah” sends sound out of the mouth and round the front of the singer — no jet of air worth the name. The voice’s highs favor the front.' },
+        vowel: { title: 'A vowel: sound only', text: 'An open “ah” sends sound out of the mouth and around the front of the singer — no jet of air worth the name. The voice’s highs favor the front.' },
         plosive: { title: 'P or B: a puff of air', text: 'The lips hold the air and let it go at once: a puff shoots straight out along the mouth’s axis. A capsule in its path hears a thump — a pop.' },
         sibilant: { title: 'S: a narrow hiss', text: 'Air forced past the tongue and the teeth makes a narrow, bright hiss, straight ahead. A mic dead on the axis hears the most of it.' },
       },
-      highs: 'The voice’s highest frequencies are very directional: they go out ahead of the mouth, while the lows spread round the head. So a mic off to the side, or on the cheek, hears a duller voice than one in front — the shape of that spread is not drawn here, only its direction.',
+      highs: 'The voice’s highest frequencies are very directional: they go out ahead of the mouth, while the lows spread around the head. So a mic off to the side, or on the cheek, hears a duller voice than one in front — the shape of that spread is not drawn here, only its direction.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the voice: how a real voice sounds depends on the singer, the song, the mic and the room. The pictures show where the sound comes from and where it goes.',
       reveal: 'The folds make the raw buzz, the throat and the mouth shape it, and it leaves through the mouth — so every distance is read from the lips.',
     }),

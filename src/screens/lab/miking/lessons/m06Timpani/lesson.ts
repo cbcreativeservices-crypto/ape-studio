@@ -92,7 +92,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The mallet strikes the exact center of a timpani head. What changes?',
     options: ['Only the ring shapes move: more thud, less of the note', 'All of the shapes move equally, so the note gets louder', 'Nothing changes: the strike point does not affect a drum'],
     correct: 'Only the ring shapes move: more thud, less of the note',
-    explain: 'The note lives in the see-saw shapes, which are still at the center. A center strike drives only the ring shapes — the thud — which is why a timpanist usually plays about a third of the way in from the hoop.',
+    explain: 'The note lives in the see-saw shapes, which stay still at the center. A center strike drives only the ring shapes — the thud — which is why a timpanist usually plays about a third of the way in from the hoop.',
     why: {
       'All of the shapes move equally, so the note gets louder': 'A shape is driven only as much as the head moves at the strike point; the see-saw shapes do not move at the center.',
       'Nothing changes: the strike point does not affect a drum': 'The strike point decides which shapes are driven — that is why players choose it.',
@@ -129,7 +129,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A boom over the timpani is safe from the mallets. What else must it keep clear of?',
     options: ['The player’s sightline to the conductor', 'The audience’s view of the copper bowls', 'The brass row, so it hears less of the brass'],
     correct: 'The player’s sightline to the conductor',
-    explain: 'The timpanist watches the conductor constantly. Mark the sightline along with the mallets’ sweep, the path round the set and the pedals before placing a stand.',
+    explain: 'The timpanist watches the conductor constantly. Mark the sightline along with the mallets’ sweep, the path around the set and the pedals before placing a stand.',
     why: {
       'The audience’s view of the copper bowls': 'How it looks is not the safety question; the player’s sightline and motion are.',
       'The brass row, so it hears less of the brass': 'Spill matters, but the player must first see the conductor.',
@@ -237,7 +237,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Your boom is clear of the mallets. What else do you check with the player?',
     options: ['Their sightline to the conductor and the pedals', 'The color of the bowls under the stage lights', 'How the stand looks from out in the audience seats'],
     correct: 'Their sightline to the conductor and the pedals',
-    explain: 'The timpanist’s space includes the mallets’ sweep, the path round the set, the pedals and the line of sight to the conductor.',
+    explain: 'The timpanist’s space includes the mallets’ sweep, the path around the set, the pedals and the line of sight to the conductor.',
     why: {
       'The color of the bowls under the stage lights': 'How it looks is not the question; the player’s space and sightline are.',
       'How the stand looks from out in the audience seats': 'Appearance matters less than the player’s sightline and motion.',
@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the mallet strikes the head a third of the way in from the hoop. What does the far side of the head do?', options: ['It moves up while the struck side goes down', 'It moves down with the struck side', 'It stays still — only the struck side moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole head.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the shared spot high between the drums to a closer spot on one drum. What changes?', options: ['More of both drums', 'More attack from one drum', 'It depends on the hall and the passage'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits off to the side of a mic looking down at a drum. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -450,7 +450,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Why does a timpanist usually strike about a third of the way in from the hoop, not the center?',
     options: ['It drives the pitched shapes well; the center gives mostly thud', 'The center of a timpani head is much too hard to strike cleanly', 'It keeps the mallet away from the tuning pedal mechanism'],
     correct: 'It drives the pitched shapes well; the center gives mostly thud',
-    explain: 'The note lives in the see-saw shapes, still at the center; a center strike drives only the ring shapes — more thud, less note.',
+    explain: 'The note lives in the see-saw shapes, which stay still at the center; a center strike drives only the ring shapes — more thud, less note.',
     why: {
       'The center of a timpani head is much too hard to strike cleanly': 'The center can be struck; it just drives the wrong shapes for the note.',
       'It keeps the mallet away from the tuning pedal mechanism': 'The pedal is under the drum; the strike point is about which shapes ring.',
@@ -522,7 +522,7 @@ export const M06_LESSON: Lesson = {
     items: [
       { id: 'timpani', label: 'the timpani (and their player)', short: 'TIMPANI', note: 'At the back of the orchestra, the player behind the drums facing the conductor. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'Another big, low drum along the row. A timpani spot hears it — and the bass drum’s mics hear the timpani.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Crisp and loud further along the row; part of what every percussion mic hears.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Crisp and loud farther along the row; part of what every percussion mic hears.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Trombones and tuba just downstage of the timpani, the trombones’ bells toward the conductor and the tuba’s pointing up. Loud, and heard by every timpani mic — one reason a more distant spot admits more bleed.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'downstage', label: 'a floor wedge downstage of the timpani', short: 'WEDGE', note: 'On the audience side of the drums, facing back toward the percussion. A loud source a spot can turn its rejection toward.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },

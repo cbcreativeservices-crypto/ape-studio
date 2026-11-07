@@ -32,7 +32,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
   // content ships first; other regions add sibling records keyed by `region`.
   {
     id: 'mains_wall',
-    displayName: 'Mains wall plug (NEMA 5-15)',
+    displayName: 'AC wall plug (NEMA 5-15)',
     aliases: [
       'Edison plug (informal)',
       'wall plug / grounded three-prong plug',
@@ -54,7 +54,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'Grounded North American flexible cord carries three conductors — line, neutral and protective earth. The conventional NA insulation colors are black (line), white (neutral) and green (earth); that is a regional color code, not a worldwide one, and it is recognition knowledge only — cord wiring and plug termination are qualified-person work.',
+      'Grounded North American flexible cord carries three conductors — line, neutral and safety ground. The conventional NA insulation colors are black (line), white (neutral) and green (ground); that is a regional color code, not a worldwide one, and it is recognition knowledge only — cord wiring and plug termination are qualified-person work.',
     pinouts: [
       {
         id: 'nema_5_15',
@@ -74,7 +74,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
           },
           {
             label: 'Round pin',
-            role: 'Protective earth (equipment ground)',
+            role: 'Safety ground (equipment ground)',
             ink: 'groundEarth',
             note: 'The fault-current path that protects people. Never removed, never bypassed.',
           },
@@ -90,7 +90,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
         'Fully seated: no blade metal visible at the receptacle face. Friction is the only retention, so dress cables away from feet and traffic.',
     },
     directionality:
-      'Energized contacts always live on the recessed (female) side — receptacles and cord sockets. Exposed pins belong to the load side — but during insertion and removal there is a moment when a partially seated plug has energized blade metal exposed at the receptacle face, because NEMA blades carry no insulating sleeves. Insert and remove in one full motion, grip only the plug body, and keep fingers and anything metallic away from the receptacle face. This is also exactly why a male-to-male mains cable is never acceptable: it puts live mains voltage on fully exposed pins.',
+      'Energized contacts always live on the recessed (female) side — receptacles and cord sockets. Exposed pins belong to the load side — but during insertion and removal there is a moment when a partially seated plug has energized blade metal exposed at the receptacle face, because NEMA blades carry no insulating sleeves. Insert and remove in one full motion, grip only the plug body, and keep fingers and anything metallic away from the receptacle face. This is also exactly why a male-to-male power cable is never acceptable: it puts live AC voltage on fully exposed pins.',
     hotPlug: {
       policy: 'de_energize_first',
       rationale:
@@ -98,20 +98,20 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     },
     advantages: [
       'Polarized — the wide (neutral) and narrow (line) blades keep conductor roles consistent through the system',
-      'Grounded — the earth pin provides the fault-current path that protects users',
+      'Grounded — the ground pin provides the fault-current path that protects users',
       'Universally available in North American buildings and venues',
     ],
     limitations: [
       'Region-specific: this pattern is North American; other regions use different plugs, voltages and frequencies',
       'No locking or retention — a snagged cable pulls free, or worse, partway free',
-      'Two-blade plugs on double-insulated (Class II) devices share the same receptacles; the absence of an earth pin is only correct on equipment designed without one',
+      'Two-blade plugs on double-insulated (Class II) devices share the same receptacles; the absence of a ground pin is only correct on equipment designed without one',
     ],
     commonMistakes: [
-      'Removing, bending back, or adapting away the ground pin so a three-prong plug fits a two-slot outlet — never acceptable; the earth pin is what keeps a fault from energizing the equipment chassis',
-      'Using a ground-lift (“cheater”) adapter to cure hum — never acceptable; never defeat the safety earth. The safe hum fixes: a DI or isolator ground-lift switch (pin 1 at the DI only), an isolation transformer, balanced connections, and powering the gear from the same circuit',
+      'Removing, bending back, or adapting away the ground pin so a three-prong plug fits a two-slot outlet — never acceptable; the ground pin is what keeps a fault from energizing the equipment chassis',
+      'Using a ground-lift (“cheater”) adapter to cure hum — never acceptable; never defeat the safety ground. The safe hum fixes: a DI or isolator ground-lift switch (pin 1 at the DI only), an isolation transformer, balanced connections, and powering the gear from the same circuit',
       'Keeping a damaged cord in service because “it still works” — cracked jackets, exposed conductors and heat-marked plugs leave service immediately',
       'Unplugging by pulling the cord instead of gripping the plug body — cord-yanking is how strain reliefs fail and conductors pull loose inside the plug; grip the plug itself, every time',
-      'Building or using a male-to-male mains cable for any purpose — the free end carries live, exposed pins the instant the other end is plugged in',
+      'Building or using a male-to-male power cable for any purpose — the free end carries live, exposed pins the instant the other end is plugged in',
       'Handling plugs, receptacles or connections with wet hands, in rain, or in standing water while anything is energized',
       'Drawing a heavy load through a coiled extension reel — a coiled cord traps its own heat; uncoil fully before loading it',
     ],
@@ -144,14 +144,14 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Environment: cords dry, protected from traffic (cable ramps in walkways), and rated for outdoor use before going outdoors',
     ],
     basicTest:
-      'Only with the cord unplugged from every supply and every device: continuity end-to-end on each conductor, and no continuity between line, neutral or earth in any combination. Any conductor-to-conductor bridge — especially anything touching earth — removes the cord from service. There is no beginner live test on mains equipment.',
+      'Only with the cord unplugged from every supply and every device: continuity end-to-end on each conductor, and no continuity between line, neutral or ground in any combination. Any conductor-to-conductor bridge — especially anything touching ground — removes the cord from service. There is no beginner live test on AC-powered equipment.',
     safety: {
       level: 'mains',
       cautions: [
-        'Internal wiring, termination or repair of any mains plug, cord or receptacle is qualified-person work — never beginner work.',
-        'Outdoors and in damp locations, use GFCI (RCD) protected circuits: they disconnect quickly when current leaks to earth. Confirm protection before powering anything where water is possible.',
+        'Internal wiring, termination or repair of any power plug, cord or receptacle is qualified-person work — never beginner work.',
+        'Outdoors and in damp locations, use GFCI (RCD) protected circuits: they disconnect quickly when current leaks to ground. Confirm protection before powering anything where water is possible.',
         'Use cords and connectors rated for the environment — indoor-rated cords do not belong outdoors, and cords crossing walkways belong under cable ramps.',
-        'Never defeat polarization or grounding. The wide blade, narrow blade and earth pin each has a specific safety role.',
+        'Never defeat polarization or grounding. The wide blade, narrow blade and ground pin each have a specific safety role.',
       ],
     },
     glossary: ['Edison Plug', 'Cable Ramp'],
@@ -192,11 +192,11 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'Three-conductor cord — line, neutral and protective earth. The identical coupler ships on 120 V and 230 V cordsets worldwide, in several conductor gauges. The coupler tells you nothing about the voltage or the gauge behind it; the printed rating on the cord jacket does.',
+      'Three-conductor cord — line, neutral and safety ground. The identical coupler ships on 120 V and 230 V cordsets worldwide, in several conductor gauges. The coupler tells you nothing about the voltage or the gauge behind it; the printed rating on the cord jacket does.',
     pinouts: [
       {
         id: 'c13_c14',
-        application: 'Earthed appliance coupler, Class I equipment (recognition only)',
+        application: 'Grounded appliance coupler, Class I equipment (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           {
@@ -206,7 +206,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
             note: 'Terminal designations are recognition knowledge; cord termination is factory or qualified-person work.',
           },
           { label: 'N', role: 'Neutral (grounded return conductor)', ink: 'neutral' },
-          { label: 'E', role: 'Protective earth', ink: 'groundEarth' },
+          { label: 'E', role: 'Safety ground', ink: 'groundEarth' },
         ],
         confidence: 'standard',
       },
@@ -228,7 +228,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     advantages: [
       'Detachable, replaceable cordset — a damaged cord is replaced whole, never repaired inline',
       'One worldwide equipment-side coupler; the regional wall plug lives at the other end of the cord',
-      'Earthed (Class I) connection rated generously for most rack and stage equipment',
+      'Grounded (Class I) connection rated generously for most rack and stage equipment',
     ],
     limitations: [
       'Friction retention only — easily kicked or vibrated loose unless the cable is secured',
@@ -238,7 +238,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     commonMistakes: [
       'Grabbing “any IEC lead” without reading the printed cord rating — the coupler fits, but the conductor gauge may not match the load',
       'Treating a cord that fits as proof the equipment accepts the local voltage — the device’s rated input range governs, not the coupler',
-      'Keeping a cord with a cracked coupler, heat marks or loose strain relief in service — damaged mains cords leave service immediately',
+      'Keeping a cord with a cracked coupler, heat marks or loose strain relief in service — damaged power cords leave service immediately',
       'Feeding a chain of power strips through one light-duty cordset',
     ],
     notInterchangeableWith: [
@@ -264,12 +264,12 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'A coupler that sits loose in its inlet — weak contact pressure overheats',
     ],
     basicTest:
-      'Only with the cord unplugged from everything: continuity end-to-end per conductor (wall-plug blade to coupler contact) and no continuity between any two conductors. Any bridge between conductors — above all anything touching earth — removes the cord from service.',
+      'Only with the cord unplugged from everything: continuity end-to-end per conductor (wall-plug blade to coupler contact) and no continuity between any two conductors. Any bridge between conductors — above all anything touching ground — removes the cord from service.',
     safety: {
       level: 'mains',
       cautions: [
-        'Internal wiring or termination of mains couplers and cords is qualified-person work.',
-        'The earth contact is part of the equipment’s fault protection — a cord with a broken earth conductor is not a working cord, even though the equipment powers up.',
+        'Internal wiring or termination of AC power couplers and cords is qualified-person work.',
+        'The ground contact is part of the equipment’s fault protection — a cord with a broken ground conductor is not a working cord, even though the equipment powers up.',
         'Indoor-class connection: keep couplers dry and off the ground; wet locations require assemblies rated for the environment and GFCI/RCD-protected circuits.',
       ],
     },
@@ -307,12 +307,12 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     pinouts: [
       {
         id: 'c19_c20',
-        application: 'High-current earthed appliance coupler (recognition only)',
+        application: 'High-current grounded appliance coupler (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           { label: 'L', role: 'Line (energized conductor)', ink: 'lineHot' },
           { label: 'N', role: 'Neutral (grounded return conductor)', ink: 'neutral' },
-          { label: 'E', role: 'Protective earth', ink: 'groundEarth' },
+          { label: 'E', role: 'Safety ground', ink: 'groundEarth' },
         ],
         confidence: 'standard',
       },
@@ -334,7 +334,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     advantages: [
       'Higher current class than C13/C14 in the same detachable-cordset system',
       'Keyed so lighter-family cords cannot serve high-current loads',
-      'Earthed (Class I) connection standard on high-power equipment',
+      'Grounded (Class I) connection standard on high-power equipment',
     ],
     limitations: [
       'Friction retention only — heavy cords put real strain on the coupler; secure them',
@@ -362,11 +362,11 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'A loose-fitting coupler under a high-current load is an overheating point — verify a firm fit',
     ],
     basicTest:
-      'Identical discipline to every mains cord: unplugged from everything, continuity end-to-end per conductor, no conductor-to-conductor continuity in any combination. Any anomaly removes the cord from service.',
+      'Identical discipline to every power cord: unplugged from everything, continuity end-to-end per conductor, no conductor-to-conductor continuity in any combination. Any anomaly removes the cord from service.',
     safety: {
       level: 'mains',
       cautions: [
-        'Internal wiring or termination of mains couplers and cords is qualified-person work.',
+        'Internal wiring or termination of AC power couplers and cords is qualified-person work.',
         'High-current circuits make contact quality matter more, not less — loose or damaged couplers overheat at these loads.',
         'Indoor-class connection; wet or outdoor use requires rated assemblies and GFCI/RCD protection.',
       ],
@@ -398,16 +398,16 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'A light three-conductor cord — line, neutral and protective earth — despite the small size. The three-lobed shape carries a full earth contact; this is the earthed small-appliance coupler, unlike the two-pole figure-8 (C7/C8).',
+      'A light three-conductor cord — line, neutral and safety ground — despite the small size. The three-lobed shape carries a full ground contact; this is the grounded small-appliance coupler, unlike the two-pole figure-8 (C7/C8).',
     pinouts: [
       {
         id: 'c5_c6',
-        application: 'Low-current earthed appliance coupler, Class I equipment (recognition only)',
+        application: 'Low-current grounded appliance coupler, Class I equipment (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           { label: 'L', role: 'Line (energized conductor)', ink: 'lineHot' },
           { label: 'N', role: 'Neutral (grounded return conductor)', ink: 'neutral' },
-          { label: 'E', role: 'Protective earth', ink: 'groundEarth' },
+          { label: 'E', role: 'Safety ground', ink: 'groundEarth' },
         ],
         confidence: 'standard',
       },
@@ -426,7 +426,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
         'Low current class, same discipline: ordinary appliance couplers are not certified to be connected or disconnected under load. Switch the equipment off before connecting or disconnecting.',
     },
     advantages: [
-      'Compact earthed coupler for small equipment',
+      'Compact grounded coupler for small equipment',
       'Keyed shape cannot be confused with higher-current couplers',
       'Detachable cord — regional wall plugs swap without touching the power brick',
     ],
@@ -436,17 +436,17 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Not weatherproof',
     ],
     commonMistakes: [
-      'Confusing it with the two-pole figure-8 (C7) — the third lobe is a protective earth contact the equipment requires',
-      'Keeping a frayed or crushed light cord in service because the equipment is small — damaged mains cords leave service regardless of size',
-      'Treating the small size as a low-stakes connection — it is still mains voltage',
+      'Confusing it with the two-pole figure-8 (C7) — the third lobe is a safety ground contact the equipment requires',
+      'Keeping a frayed or crushed light cord in service because the equipment is small — damaged power cords leave service regardless of size',
+      'Treating the small size as a low-stakes connection — it is still AC voltage',
     ],
     notInterchangeableWith: [
       {
         otherId: 'iec_c7_c8',
         otherName: 'IEC C7 / C8 (figure-8) coupler',
-        why: 'C7 is the two-pole, unearthed cousin. C5 carries a third, earth contact and a different three-lobed shape.',
+        why: 'C7 is the two-pole, ungrounded cousin. C5 carries a third, ground contact and a different three-lobed shape.',
         consequence:
-          'They do not mate. Equipment with a C6 inlet requires the earth path — never adapt an earthed inlet onto an unearthed cord.',
+          'They do not mate. Equipment with a C6 inlet requires the ground path — never adapt a grounded inlet onto an ungrounded cord.',
       },
     ],
     inspectionPoints: [
@@ -456,12 +456,12 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Loose fit in the inlet',
     ],
     basicTest:
-      'Unplugged from everything: continuity end-to-end on all three conductors, no continuity between any two. An earth conductor that reads open means the cord leaves service even though the equipment would still power up.',
+      'Unplugged from everything: continuity end-to-end on all three conductors, no continuity between any two. A ground conductor that reads open means the cord leaves service even though the equipment would still power up.',
     safety: {
       level: 'mains',
       cautions: [
-        'Internal wiring or termination of mains couplers and cords is qualified-person work.',
-        'The earth contact exists because the connected equipment is designed to need it — a missing or broken earth path is a fault, not a detail.',
+        'Internal wiring or termination of AC power couplers and cords is qualified-person work.',
+        'The ground contact exists because the connected equipment is designed to need it — a missing or broken ground path is a fault, not a detail.',
       ],
     },
     glossary: ['IEC Connector'],
@@ -486,11 +486,11 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Small power bricks, compact players and chargers with C8 inlets',
     ],
     constructionNote:
-      'A two-conductor Class II cord — there is no earth conductor anywhere in the cable, by design. Class II means the equipment protects users with double or reinforced insulation instead of a protective earth. The missing third contact is a design property of the equipment, not a defect — but it is only safe because the equipment is built that way.',
+      'A two-conductor Class II cord — there is no ground conductor anywhere in the cable, by design. Class II means the equipment protects users with double or reinforced insulation instead of a safety ground. The missing third contact is a design property of the equipment, not a defect — but it is only safe because the equipment is built that way.',
     pinouts: [
       {
         id: 'c7_c8',
-        application: 'Two-pole Class II appliance coupler — no protective earth (recognition only)',
+        application: 'Two-pole Class II appliance coupler — no safety ground (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           {
@@ -524,25 +524,25 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     },
     advantages: [
       'Very compact two-pole coupler for double-insulated devices',
-      'Cannot be mistaken for an earthed coupler — visibly two-pole',
+      'Cannot be mistaken for a grounded coupler — visibly two-pole',
       'Detachable cord keeps regional wall plugs off the device',
     ],
     limitations: [
-      'No protective earth — correct only for equipment designed as Class II (double insulated)',
+      'No safety ground — correct only for equipment designed as Class II (double insulated)',
       'Low current class; light cords only',
       'Polarized and unpolarized variants exist and look nearly identical — match the cord to the inlet',
     ],
     commonMistakes: [
-      'Treating the missing earth contact as a defect and trying to “add a ground” — Class II equipment is designed without one',
+      'Treating the missing ground contact as a defect and trying to “add a ground” — Class II equipment is designed without one',
       'Forcing a polarized C7 (one squared edge) where it does not seat, or forcing any coupler that resists — keying differences are intentional',
-      'Keeping a kinked, crushed or split figure-8 cord in service — thin two-conductor cords damage easily and still carry mains voltage',
+      'Keeping a kinked, crushed or split figure-8 cord in service — thin two-conductor cords damage easily and still carry AC voltage',
     ],
     notInterchangeableWith: [
       {
         otherId: 'iec_c5_c6',
         otherName: 'IEC C5 / C6 (cloverleaf) coupler',
-        why: 'The earthed small-appliance coupler — three contacts and a different shape.',
-        consequence: 'They do not mate; the equipment classes they serve (earthed vs double-insulated) are different by design.',
+        why: 'The grounded small-appliance coupler — three contacts and a different shape.',
+        consequence: 'They do not mate; the equipment classes they serve (grounded vs double-insulated) are different by design.',
       },
       {
         otherName: 'Polarized vs unpolarized C7 (within the family)',
@@ -558,13 +558,13 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Loose fit in the inlet',
     ],
     basicTest:
-      'Unplugged from everything: continuity end-to-end on both conductors, no continuity between the two. Both-pole integrity matters — an intermittent pole makes the device cut in and out at mains voltage.',
+      'Unplugged from everything: continuity end-to-end on both conductors, no continuity between the two. Both-pole integrity matters — an intermittent pole makes the device cut in and out at AC voltage.',
     safety: {
       level: 'mains',
       cautions: [
-        'Internal wiring or termination of mains couplers and cords is qualified-person work.',
-        'No earth does not mean low stakes: both conductors carry mains voltage. Damaged figure-8 cords leave service immediately.',
-        'Never adapt Class I (earthed) equipment onto a two-pole cord — the earth path is part of that equipment’s protection.',
+        'Internal wiring or termination of AC power couplers and cords is qualified-person work.',
+        'No ground does not mean low stakes: both conductors carry AC voltage. Damaged figure-8 cords leave service immediately.',
+        'Never adapt Class I (grounded) equipment onto a two-pole cord — the ground path is part of that equipment’s protection.',
       ],
     },
     glossary: ['IEC Connector'],
@@ -580,7 +580,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
   {
     id: 'powercon_xx',
     displayName: 'powerCON (20 A family)',
-    aliases: ['powerCON (original blue/gray family)', 'locking mains connector (stage power)'],
+    aliases: ['powerCON (original blue/gray family)', 'locking AC power connector (stage power)'],
     category: 'power_mains',
     tier: 'core',
     carried: ['ac_mains'],
@@ -595,11 +595,11 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'Three-conductor mains cable (line, neutral, protective earth) in a locking stage shell. The locking shell changes reliability, not the stakes: this is a mains connection, identical in seriousness to a wall plug.',
+      'Three-conductor power cable (line, neutral, safety ground) in a locking stage shell. The locking shell changes reliability, not the stakes: this is an AC power connection, identical in seriousness to a wall plug.',
     pinouts: [
       {
         id: 'powercon_20a',
-        application: 'Locking mains power, stage and touring equipment (recognition only)',
+        application: 'Locking AC power, stage and touring equipment (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           {
@@ -609,10 +609,10 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
             note: 'Contact roles are marked on the connector insert; the exact model’s datasheet governs.',
           },
           { label: 'N', role: 'Neutral (grounded return conductor)', ink: 'neutral' },
-          { label: 'E', role: 'Protective earth', ink: 'groundEarth' },
+          { label: 'E', role: 'Safety ground', ink: 'groundEarth' },
         ],
         confidence: 'convention',
-        verifyAgainst: 'The exact connector model’s datasheet and the L/N/earth markings on the insert.',
+        verifyAgainst: 'The exact connector model’s datasheet and the L/N/ground markings on the insert.',
       },
     ],
     balanced: 'n/a',
@@ -630,7 +630,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
         'The original powerCON family has no breaking capacity — it is not rated to make or break the circuit under load, and the manufacturer prohibits connecting or disconnecting while energized. De-energize first, every time.',
     },
     advantages: [
-      'Locking mains connection — cannot be kicked or vibrated loose like a friction coupler',
+      'Locking AC power connection — cannot be kicked or vibrated loose like a friction coupler',
       'Keyed input/output versions prevent miswiring a daisy-chain',
       'Rugged shell built for touring conditions',
     ],
@@ -640,7 +640,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Ratings and environmental capability are model-specific — the exact product’s documentation governs',
     ],
     commonMistakes: [
-      'Assuming a loudspeaker twist-lock connector and a powerCON are interchangeable because they look and lock similarly — a loudspeaker connector is never used for mains, and a mains connector is never used for loudspeakers',
+      'Assuming a loudspeaker twist-lock connector and a powerCON are interchangeable because they look and lock similarly — a loudspeaker connector is never used for AC power, and an AC power connector is never used for loudspeakers',
       'Treating powerCON and TRUE1 as one system — they are separate, non-intermateable families',
       'Breaking a powered connection “just this once” — this family has no breaking capacity; de-energize first is the rule, not a preference',
       'Handling stage power connections in rain or standing water while energized',
@@ -656,9 +656,9 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       {
         otherId: 'speakon_nl4',
         otherName: 'speakON loudspeaker connector',
-        why: 'The loudspeaker twist-lock family shares the insert-and-twist gesture and a similar shell style. speakON carries loudspeaker signal; powerCON carries mains.',
+        why: 'The loudspeaker twist-lock family shares the insert-and-twist gesture and a similar shell style. speakON carries loudspeaker signal; powerCON carries AC power.',
         consequence:
-          'They are keyed differently and must never be adapted to each other. A mismade adapter would put mains voltage on loudspeaker wiring — equipment damage and electrical danger.',
+          'They are keyed differently and must never be adapted to each other. A mismade adapter would put AC voltage on loudspeaker wiring — equipment damage and electrical danger.',
       },
       {
         otherName: 'Its own power-in vs power-out versions',
@@ -678,9 +678,9 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     safety: {
       level: 'mains',
       cautions: [
-        'This is a mains power connector. It is never a loudspeaker connector, whatever it visually resembles.',
+        'This is an AC power connector. It is never a loudspeaker connector, whatever it visually resembles.',
         'De-energize before making or breaking the connection — this family has no breaking capacity.',
-        'Internal termination of any mains connector is qualified-person work.',
+        'Internal termination of any AC power connector is qualified-person work.',
         'Verify environmental ratings from the exact model’s documentation before any outdoor use, and keep energized connections out of rain and standing water.',
       ],
     },
@@ -699,7 +699,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
   {
     id: 'powercon_true1',
     displayName: 'powerCON TRUE1',
-    aliases: ['TRUE1', 'locking mains connector with breaking capacity (model-specific)'],
+    aliases: ['TRUE1', 'locking AC power connector with breaking capacity (model-specific)'],
     category: 'power_mains',
     tier: 'core',
     carried: ['ac_mains'],
@@ -714,11 +714,11 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'Three-conductor mains cable in a locking shell, like the original powerCON — but a physically different, non-intermateable connector family. The related name does not make the parts compatible.',
+      'Three-conductor power cable in a locking shell, like the original powerCON — but a physically different, non-intermateable connector family. The related name does not make the parts compatible.',
     pinouts: [
       {
         id: 'true1',
-        application: 'Locking mains power, stage and touring equipment (recognition only)',
+        application: 'Locking AC power, stage and touring equipment (recognition only)',
         carried: ['ac_mains'],
         contacts: [
           {
@@ -728,10 +728,10 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
             note: 'Contact roles are marked on the connector insert; the exact model’s datasheet governs.',
           },
           { label: 'N', role: 'Neutral (grounded return conductor)', ink: 'neutral' },
-          { label: 'E', role: 'Protective earth', ink: 'groundEarth' },
+          { label: 'E', role: 'Safety ground', ink: 'groundEarth' },
         ],
         confidence: 'convention',
-        verifyAgainst: 'The exact connector model’s datasheet and the L/N/earth markings on the insert.',
+        verifyAgainst: 'The exact connector model’s datasheet and the L/N/ground markings on the insert.',
       },
     ],
     balanced: 'n/a',
@@ -739,17 +739,17 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     locking: {
       method: 'twist_lock',
       howToConfirm:
-        'With the circuit de-energized (the beginner default for every mains connection): insert and twist until the latch clicks home; the connector should not rotate back without pressing the release. Confirm the click and tug gently before power is applied.',
+        'With the circuit de-energized (the beginner default for every AC power connection): insert and twist until the latch clicks home; the connector should not rotate back without pressing the release. Confirm the click and tug gently before power is applied.',
     },
     directionality:
       'Input and output versions are keyed differently so a live output socket and an equipment inlet cannot be confused. As with the original family: parts that do not fit are the wrong parts.',
     hotPlug: {
       policy: 'de_energize_first',
       rationale:
-        'Some TRUE1-style couplers are certified with breaking capacity — rated to be connected and disconnected under load. That property is model-specific: the exact product’s documentation governs, and it is never assumed from the shape. The beginner default remains: de-energize before making or breaking any mains connection.',
+        'Some TRUE1-style couplers are certified with breaking capacity — rated to be connected and disconnected under load. That property is model-specific: the exact product’s documentation governs, and it is never assumed from the shape. The beginner default remains: de-energize before making or breaking any AC power connection.',
     },
     advantages: [
-      'Locking mains connection designed as a true appliance coupler',
+      'Locking AC power connection designed as a true appliance coupler',
       'Breaking capacity on models certified for it (model-specific — see documentation)',
       'Sealed variants offer environmental protection when fully mated (model-specific)',
     ],
@@ -761,7 +761,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     commonMistakes: [
       'Assuming every TRUE1-style connector may be disconnected under load because “TRUE1 can do that” — breaking capacity belongs to specific certified models, and the habit of de-energizing first costs nothing',
       'Forcing or adapting between TRUE1 and original powerCON — separate families, by design',
-      'Using a loudspeaker connector and a mains connector interchangeably in any direction — never acceptable',
+      'Using a loudspeaker connector and an AC power connector interchangeably in any direction — never acceptable',
       'Assuming outdoor capability without checking the exact model’s rating and confirming the connection is fully mated',
       'Keeping a scorched, cracked or unsealed-when-it-should-seal connector in service',
     ],
@@ -775,9 +775,9 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       {
         otherId: 'speakon_nl4',
         otherName: 'speakON loudspeaker connector',
-        why: 'Similar twist-lock stagecraft, entirely different job: loudspeaker signal vs mains power.',
+        why: 'Similar twist-lock stagecraft, entirely different job: loudspeaker signal vs AC power.',
         consequence:
-          'Never adapted to each other in either direction. Mains on loudspeaker wiring means equipment damage and electrical danger.',
+          'Never adapted to each other in either direction. AC power on loudspeaker wiring means equipment damage and electrical danger.',
       },
     ],
     inspectionPoints: [
@@ -792,9 +792,9 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     safety: {
       level: 'mains',
       cautions: [
-        'This is a mains power connector — never a loudspeaker connector.',
-        'Breaking capacity is a certified, model-specific property. The beginner rule that is always safe: de-energize before making or breaking mains connections.',
-        'Internal termination of any mains connector is qualified-person work.',
+        'This is an AC power connector — never a loudspeaker connector.',
+        'Breaking capacity is a certified, model-specific property. The beginner rule that is always safe: de-energize before making or breaking AC power connections.',
+        'Internal termination of any AC power connector is qualified-person work.',
         'Outdoor use requires the exact model’s environmental rating and a fully mated connection; energized connectors never live in rain or standing water.',
       ],
     },
@@ -908,7 +908,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       level: 'low_voltage_power',
       cautions: [
         'Low voltage does not mean no consequence — the wrong supply destroys equipment even where it cannot shock anyone.',
-        'Never open a power adapter: the mains side inside is qualified-person territory, and internal capacitors can hold charge after unplugging.',
+        'Never open a power adapter: the AC side inside is qualified-person territory, and internal capacitors can hold charge after unplugging.',
         'Check both labels every time: device requirement and supply output — voltage, DC (or AC) type, polarity symbol, and a supply current rating at or above the device’s requirement.',
       ],
     },
@@ -1023,7 +1023,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       cautions: [
         'USB PD can negotiate tens of volts and substantial current — enough that a damaged cable or connector can heat up. Discard cables with bent shells, scorched contacts or melted strain relief.',
         'Use certified cables for high-wattage charging; an uncertified cable may misreport what it can carry.',
-        'Never open a charger — the mains side inside is qualified-person territory.',
+        'Never open a charger — the AC side inside is qualified-person territory.',
       ],
     },
     glossary: [],

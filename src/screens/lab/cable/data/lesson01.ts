@@ -68,7 +68,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
   },
   {
     id: 'ac_mains',
-    label: 'AC MAINS POWER',
+    label: 'AC POWER',
     blurb: 'Wall power. It runs the equipment, it is dangerous to handle carelessly, and in this lab it never shares a connector with signal.',
   },
   {
@@ -126,7 +126,7 @@ export const CARRY_PAIRS: CarryPair[] = [
     options: ['line_level', 'speaker_level', 'ac_mains', 'network_audio'],
     correct: 'line_level',
     explain:
-      'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it line-level audio. Its power arrives separately — from the wall, on a mains cable. Two connections, two different things traveling.',
+      'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it line-level audio. Its power arrives separately — from the wall, on a power cable. Two connections, two different things traveling.',
   },
   {
     id: 'amp_passive',
@@ -181,7 +181,7 @@ export const CARRY_PAIRS: CarryPair[] = [
     options: ['ac_mains', 'speaker_level', 'dc_power', 'line_level'],
     correct: 'ac_mains',
     explain:
-      'This one is wall power — AC mains. It shares nothing with the loudspeaker-level connection an amplifier makes, even though history has seen similar-looking connectors on both. That is exactly why we identify what travels FIRST.',
+      'This one is wall power — AC power. It shares nothing with the loudspeaker-level connection an amplifier makes, even though history has seen similar-looking connectors on both. That is exactly why we identify what travels FIRST.',
   },
 ];
 

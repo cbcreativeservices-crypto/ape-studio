@@ -53,7 +53,7 @@ const TERMS = [
   { term: 'Input list', def: 'Which source is on which channel and input, written down and agreed before the night — so nobody has to guess what a cable feeds.' },
   { term: 'USB audio', def: 'A laptop’s music reaching the mixer over its USB cable. This lab’s mixer has two USB PORTS, printed USB 1 and USB 2: port 1 feeds CH 1 and port 2 feeds CH 2 when that channel’s input selector is on USB. A port is a whole USB connection — not the same thing as Screen 16’s USB 1/2 and USB 3/4, which are pairs of audio channels inside ONE USB connection. (Screen 16 shows more.)' },
   { term: 'Backup playback', def: 'A way to keep music going that does not depend on the thing most likely to fail: a stick in a player, ready on a channel, while a laptop plays.' },
-  { term: 'Ground loop', def: 'Two earthed paths between pieces of gear — a charger on another circuit, and the USB or audio lead — make a loop that picks up mains hum (60 Hz, 50 Hz in many countries). Break it in the audio or USB path with an isolator (a small box that breaks the ground in the lead), or power everything from one strip, which often cures it. A charger can still whine on the same strip: then try the battery. Never remove the protective earth — the mains earth that keeps a fault from making metal live.' },
+  { term: 'Ground loop', def: 'Two grounded paths between pieces of gear — a charger on another circuit, and the USB or audio cable — make a loop that picks up mains hum (60 Hz, 50 Hz in many countries). Break it in the audio or USB path with an isolator (a small box that breaks the ground in the cable), or power everything from one strip, which often cures it. A charger can still whine on the same strip: then try the battery. Never remove the safety ground — the ground pin that keeps a fault from making metal live.' },
 ] as const;
 
 export const GOALS_CHANGE = ['Predict what would stop the music', 'Connect with CH 2 down', 'Kill the hum safely', 'Match levels in the headphones', 'Change over with no gap', 'Recover from the frozen laptop', 'Pass the check'] as const;
@@ -161,7 +161,7 @@ function BoardExtras({ hum }: { hum: boolean }) {
       <Line p1={vec(WALL.x + WALL.w, y)} p2={vec(STRIP.x, y)} color={hum ? INK.amber : '#555a63'} strokeWidth={hum ? 2 : 1.4}>
         <DashPathEffect intervals={[3, 2.5]} />
       </Line>
-      <SceneText x={(WALL.x + WALL.w + STRIP.x) / 2} y={y - 3} size={lm} text="EARTH" color={hum ? INK.amber : INK.printDim} face="label" align="center" />
+      <SceneText x={(WALL.x + WALL.w + STRIP.x) / 2} y={y - 3} size={lm} text="GROUND" color={hum ? INK.amber : INK.printDim} face="label" align="center" />
       {/* the tags' key */}
       <Tag x={KEY.x + lm * 0.8} y={KEY.y + lm * 0.4} num={1} verdict={null} />
       <SceneText x={KEY.x + lm * 1.9} y={KEY.y + lm * 0.76} size={lm} text="–" color={INK.amber} face="label" />
@@ -202,7 +202,7 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
         />
         <LabChip label={l2.isolator ? 'USB ISOLATOR IN' : 'NO ISOLATOR'} selected={l2.isolator} onPress={() => updateBooth((x) => withLap(x, 2, { isolator: !evOf(x).lap2.isolator }))} compact />
       </Row>
-      <TrayNote tone="fine">A USB isolator breaks the ground in the USB lead. Check it supports your interface’s USB speed — many run only at full speed (USB 1.1), not the high speed most USB 2.0 interfaces use.</TrayNote>
+      <TrayNote tone="fine">A USB isolator breaks the ground in the USB cable. Check it supports your interface’s USB speed — many run only at full speed (USB 1.1), not the high speed most USB 2.0 interfaces use.</TrayNote>
       <Row head="DJ 1’S LAPTOP → THE MIXER’S USB PORT 1">
         <LabChip label={ev.lap1.usb ? 'USB PORT 1: CONNECTED (UNPLUG)' : 'CONNECT USB PORT 1'} selected={ev.lap1.usb} onPress={() => updateBooth((x) => withLap(x, 1, { usb: !evOf(x).lap1.usb }))} compact />
       </Row>
@@ -216,7 +216,7 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
         ))}
       </Row>
       <Row head="SOMEONE SUGGESTS">
-        <LabChip label="LIFT THE MAINS EARTH" selected={false} onPress={() => onEarth(EARTH_LIFT_REFUSAL)} compact />
+        <LabChip label="LIFT THE SAFETY GROUND" selected={false} onPress={() => onEarth(EARTH_LIFT_REFUSAL)} compact />
       </Row>
     </View>
   );
@@ -399,7 +399,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
         {earth ? <Note tone="safety">{earth}</Note> : null}
       </Step>
       <Step n={3}>
-        <P>The hum is a ground loop: DJ 2’s charger is earthed in another circuit, the building’s earth joins it to the booth strip, the mixer is on that strip, and the USB lead closes the loop. Break it safely — the battery, the booth strip, or a USB isolator. Never the mains earth.</P>
+        <P>The hum is a ground loop: DJ 2’s charger is grounded in another circuit, the building’s ground joins it to the booth strip, the mixer is on that strip, and the USB cable closes the loop. Break it safely — the battery, the booth strip, or a USB isolator. Never the safety ground.</P>
         <P>Play DJ 2 with CUE 2 on and CH 2 down; set TRIM 2 until CH 2 AVG sits within 2 dB of CH 1 AVG. Then bring CH 2 up and CH 1 down — the room should never go quiet.</P>
         {trans.current.failed ? <Note tone="try">{`${trans.current.failed} Bring CH 1 back up and CH 2 down to try again.`}</Note> : null}
         <Note>Talk to the engineer before you start: which channel is yours, where your level should sit, and that you will not touch the MASTER. Many changeovers are a mix: agree the last track, and the incoming DJ beatmatches into it from their own channel. Keep the outgoing laptop connected and playing until the new set is running.</Note>

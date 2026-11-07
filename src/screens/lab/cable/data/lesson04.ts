@@ -120,7 +120,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     id: 'trs_three_jobs',
     aLabel: 'TRS balanced mono line',
     bLabel: 'TRS unbalanced stereo lead',
-    cLabel: 'TRS insert lead (send/return)',
+    cLabel: 'TRS insert cable (send/return)',
     sameLooks:
       'One connector serves balanced mono, unbalanced stereo, and insert duty — and three contacts do not tell you which of its three jobs a jack performs.',
     question: 'Interchangeable?',

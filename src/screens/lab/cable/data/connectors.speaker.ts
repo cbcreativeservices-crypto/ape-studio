@@ -52,7 +52,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     ],
     construction: 'speaker_2c',
     constructionNote:
-      'Loudspeaker cable is two heavier unshielded conductors, sized for the current, the run length, and the load — not shielded small-conductor instrument or microphone cable. The connector does not enforce this: a speakON-style shell can be wrongly fitted to the wrong cable, so the cable itself must be verified, not assumed from the plug.',
+      'Loudspeaker cable is two heavier unshielded conductors, sized for the current, the run length, and the load — not shielded small-conductor instrument or microphone cable. The connector does not enforce this: a speakON-style shell can be fitted to the wrong cable, so the cable itself must be verified, not assumed from the plug.',
     pinouts: [
       {
         id: 'speaker_1ch',
@@ -105,9 +105,9 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
       {
         otherId: 'powercon_xx',
         otherName: 'powerCON-family AC power connector',
-        why: 'Similar-looking twist-lock shells; one carries loudspeaker output, the other carries AC mains.',
+        why: 'Similar-looking twist-lock shells; one carries loudspeaker output, the other carries AC power.',
         consequence:
-          'speakON-family and powerCON-family connectors are keyed differently and are not intended to mate — but never let fit be the test. Read the connector markings and the cable label before connecting: one carries loudspeaker output, the other AC mains. Loudspeaker and mains connections are never interchangeable, and no adapter between them is ever acceptable.',
+          'speakON-family and powerCON-family connectors are keyed differently and are not intended to mate — but never let fit be the test. Read the connector markings and the cable label before connecting: one carries loudspeaker output, the other AC power. Loudspeaker and AC power connections are never interchangeable, and no adapter between them is ever acceptable.',
       },
       {
         otherId: 'speakon_nl4',
@@ -128,7 +128,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     safety: {
       level: 'speaker',
       cautions: [
-        'speakON-style connectors carry loudspeaker output only. Never present, adapt, or wire one as an AC mains connector — the resemblance to twist-lock power connectors is a look-alike, not an equivalence.',
+        'speakON-style connectors carry loudspeaker output only. Never present, adapt, or wire one as an AC power connector — the resemblance to twist-lock power connectors is a look-alike, not an equivalence.',
         'High-power amplifier outputs can exceed voltage levels generally considered safe to touch. The enclosed contact design keeps them covered — one reason locking loudspeaker connectors displaced exposed terminals in high-power systems.',
         'Power down or mute before making or breaking the connection; separating a driven loudspeaker line can arc across the contacts.',
       ],
@@ -251,9 +251,9 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
       {
         otherId: 'powercon_xx',
         otherName: 'powerCON-family AC power connector',
-        why: 'Similar-looking twist-lock shells; one carries loudspeaker output, the other carries AC mains.',
+        why: 'Similar-looking twist-lock shells; one carries loudspeaker output, the other carries AC power.',
         consequence:
-          'speakON-family and powerCON-family connectors are keyed differently and are not intended to mate — but never let fit be the test. Read the connector markings and the cable label before connecting: one carries loudspeaker output, the other AC mains. Loudspeaker and mains connections are never interchangeable, and no adapter between them is ever acceptable.',
+          'speakON-family and powerCON-family connectors are keyed differently and are not intended to mate — but never let fit be the test. Read the connector markings and the cable label before connecting: one carries loudspeaker output, the other AC power. Loudspeaker and AC power connections are never interchangeable, and no adapter between them is ever acceptable.',
       },
       {
         otherId: 'speakon_nl8',
@@ -274,7 +274,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     safety: {
       level: 'speaker',
       cautions: [
-        'speakON-style connectors carry loudspeaker output only. Never present, adapt, or wire one as an AC mains connector — the twist-lock resemblance to power connectors is a look-alike, not an equivalence.',
+        'speakON-style connectors carry loudspeaker output only. Never present, adapt, or wire one as an AC power connector — the twist-lock resemblance to power connectors is a look-alike, not an equivalence.',
         'High-power amplifier outputs can exceed voltage levels generally considered safe to touch; the enclosed contact design is part of why this connector family exists.',
         'Power down or mute before making or breaking the connection; separating a driven loudspeaker line can arc across the contacts.',
       ],
@@ -466,10 +466,10 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     ],
     notInterchangeableWith: [
       {
-        otherName: 'Mains receptacle openings a banana pin can physically enter',
-        why: 'A bare 4 mm-class pin fits round openings it was never designed for; in some regions that includes mains receptacles.',
+        otherName: 'AC receptacle openings a banana pin can physically enter',
+        why: 'A bare 4 mm-class pin fits round openings it was never designed for; in some regions that includes AC receptacles.',
         consequence:
-          'Contact with an energized mains receptacle is an electrical danger. Never insert a banana plug into anything except the terminal its lead was wired for — fitting is not permission.',
+          'Contact with an energized AC receptacle is an electrical danger. Never insert a banana plug into anything except the terminal its cable was wired for — fitting is not permission.',
       },
       {
         otherName: 'Banana test leads on measurement equipment',
@@ -490,7 +490,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
       level: 'speaker',
       cautions: [
         'The output of a high-power amplifier can exceed voltage levels generally considered safe to touch. Treat exposed loudspeaker terminations on an energized system as live conductors — power down, and confirm the system has actually gone silent, before handling.',
-        'A banana pin can physically enter openings it was never meant for, including some mains receptacles depending on region. Physical fit is never proof of electrical correctness — this is the sharpest example in the lab.',
+        'A banana pin can physically enter openings it was never meant for, including some AC receptacles depending on region. Physical fit is never proof of electrical correctness — this is the sharpest example in the lab.',
       ],
     },
     glossary: ['Banana Plug'],
@@ -577,7 +577,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
         otherName: 'Any other bare-wire circuit (power, control, distributed audio)',
         why: 'Stripped wire has no connector identity at all — nothing about it indicates level, polarity, or purpose.',
         consequence:
-          'Landing a conductor on the wrong terminal ranges from no signal to equipment damage, and on mains or distributed-line terminals it is an electrical danger. The terminal labels and system documentation are the connection’s only identity.',
+          'Landing a conductor on the wrong terminal ranges from no signal to equipment damage, and on AC power or distributed-line terminals it is an electrical danger. The terminal labels and system documentation are the connection’s only identity.',
       },
     ],
     inspectionPoints: [
@@ -611,7 +611,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
   {
     id: 'ts_speaker_legacy',
     displayName: '1/4-inch TS (loudspeaker use: instrument amps, older PA)',
-    aliases: ['Speaker jack lead (informal)', 'Phone plug (loudspeaker use)', 'TS speaker cable'],
+    aliases: ['Speaker jack cable (informal)', 'Phone plug (loudspeaker use)', 'TS speaker cable'],
     category: 'loudspeaker',
     tier: 'core',
     carried: ['speaker_level'],
@@ -648,7 +648,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     hotPlug: {
       policy: 'de_energize_first',
       rationale:
-        'Power the amplifier down first. Inserting or removing the plug drags the tip across the sleeve contact, which can momentarily short-circuit the output — and some amplifier designs (notably valve output stages) also tolerate losing their load badly while driven, an equipment-dependent risk stated in the amplifier documentation.',
+        'Power the amplifier down first. Inserting or removing the plug drags the tip across the sleeve contact, which can momentarily short-circuit the output — and some amplifier designs (notably tube output stages) also tolerate losing their load badly while driven, an equipment-dependent risk stated in the amplifier documentation.',
     },
     advantages: [
       'The jack is ubiquitous and the lead is simple to build',

@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bcl.set.3',
     page: 'setting',
-    prompt: 'Before placing any mic, what do you ask a bass clarinettist?',
+    prompt: 'Before placing any mic, what do you ask a bass clarinetist?',
     options: ['Which model, and the lowest note the part really uses', 'Only how loud the loudest passage of the part will be', 'Nothing yet: the starting point already says where'],
     correct: 'Which model, and the lowest note the part really uses',
     explain: 'Some models reach low C, others stop at E♭. The lowest note of the part decides where the mic must hear the bell and how low any filter may go.',
@@ -206,11 +206,11 @@ const scenarios: MikingScenario[] = [
     id: 'bcl.place.3',
     page: 'placement',
     prompt: 'Can the bass clarinet’s neck hold a clip for a close mic?',
-    options: ['Yes — the bow is metal, so it can take a clamp', 'Yes, if the clamp is padded with foam', 'No — use only a mount made for the instrument'],
+    options: ['Yes — the neck is metal, so it can take a clamp', 'Yes, if the clamp is padded with foam', 'No — use only a mount made for the instrument'],
     correct: 'No — use only a mount made for the instrument',
     explain: 'The neck, rods, pads, tenons and finish are never improvised mounts. Use a clip confirmed for this instrument, with the player’s agreement — or a stand.',
     why: {
-      'Yes — the bow is metal, so it can take a clamp': 'Metal is not the question: a clamp on the neck can bend it or move the mouthpiece.',
+      'Yes — the neck is metal, so it can take a clamp': 'Metal is not the question: a clamp on the neck can bend it or move the mouthpiece.',
       'Yes, if the clamp is padded with foam': 'Padding does not make the neck a mount. Use a clip made for the instrument.',
     },
   },
@@ -375,7 +375,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'bcl.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A loud stage: a bass clarinettist in a band, a wedge in front, seated. Phantom power available.',
+    brief: 'BRIEF 2 · A loud stage: a bass clarinetist in a band, a wedge in front, seated. Phantom power available.',
     setups: [
       { id: 'a', label: 'A clip confirmed for this instrument on the bell’s rim, aimed between the bell and the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — re-test every register.' },
       { id: 'b', label: 'A cardioid on a weighted stand close in front, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — check the peg and the floor.' },
@@ -390,7 +390,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does most of a bass clarinet’s middle note leave?', options: ['The bell only', 'The holes and the bell together', 'The neck'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the blend view toward the bell. What changes?', options: ['More low-note weight', 'More key detail', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the instrument reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -449,7 +449,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     critical: true,
-    prompt: 'What must a stand and its cable stay clear of around a bass clarinettist?',
+    prompt: 'What must a stand and its cable stay clear of around a bass clarinetist?',
     options: ['The music stand, so the whole part stays readable', 'The peg and chair, the neck, the hands, the bell', 'The audience’s view of the instrument'],
     correct: 'The peg and chair, the neck, the hands, the bell',
     explain: 'Clearance comes first: the peg and its path, the chair and the feet, the neck at the lips, the hands and the bell.',
@@ -480,7 +480,7 @@ const copy: Partial<LessonCopy> = {
   instrument: {
     figureBadge: 'A bass clarinet, keys toward you · every part named',
     figureLabel: 'A bass clarinet seen from the side.',
-    partsBadge: 'A bass clarinettist from the audience · tap a part to name it',
+    partsBadge: 'A bass clarinetist from the audience · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience', top: 'Top view · from above' },
     partsIdle: 'The reed on the curved neck starts the sound; the long tube rings; the open holes and the upturned bell let it out together — the next page shows how. Switch MODEL to compare a low E♭ and a low C instrument.',
     variantNotes: { lowc: 'LOW C: a longer lower joint and a deeper bow, three more semitones down to about 58 Hz — the instrument sits lower and leans a little more; check the lowest note through any filter.' },
@@ -501,7 +501,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the middle of the instrument, the span from the lower body to the bell, the bell, the lowest keys. They are starting points and comparisons, not rules.',
       separate: 'Distance, height and the side angle are separate variables: change one at a time, and play the lowest note of the part, the middle and the top each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the peg and its path, the chair, the neck, the hands and the bell. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the peg and its path, the chair, the neck, the hands and the bell. The lab stops the mic and names what it would touch.',
       tendencies: 'Farther tends to blend the bell and the holes; toward the bell, more low-note weight; toward the keys, articulation and clicks. A directional mic up close also lifts the lows. These are tendencies, and instruments vary.',
     },
   },
@@ -605,7 +605,7 @@ export const A08B_LESSON: WindLesson = {
   sound: {
     stages: [
       { title: 'Breath on the reed', text: 'The player blows into the mouthpiece; the breath pushes the reed toward it, narrowing the gap the air comes through.' },
-      { title: 'The reed opens and closes', text: 'The reed swings shut and springs open, letting air in in puffs — in step with the long air column behind it.' },
+      { title: 'The reed opens and closes', text: 'The reed swings shut and springs open, letting air in, in puffs — in step with the long air column behind it.' },
       { title: 'The long air column rings', text: 'A pressure wave runs down the neck and the body, reflects at the first open hole and comes back: a standing wave, strongest at the reed end.' },
       { title: 'Sound leaves — bell and holes', text: 'Sound leaves from the first open holes and from the upturned bell together — a blend whose balance changes with the note and the player’s angle.' },
     ],
@@ -657,7 +657,7 @@ export const A08B_LESSON: WindLesson = {
     soundSubject: 'A bass clarinet on its side, keys toward you, its air column drawn open',
     breath: 'Breath and the reed are heard close to the mouthpiece, high on the instrument; a body-facing mic hears little wind.',
     keys: 'Long keys, thumb keys and pads closing: loud within a few centimeters of the keywork — back off, or change the angle.',
-    directivity: 'Unlike the other woodwinds in this lab, the bass clarinet’s pattern round the player is not drawn here from a measurement — it is expected to differ from the soprano clarinet’s, with its larger size and upturned bell. Test positions by ear.',
+    directivity: 'Unlike the other woodwinds in this lab, the bass clarinet’s pattern around the player is not drawn here from a measurement — it is expected to differ from the soprano clarinet’s, with its larger size and upturned bell. Test positions by ear.',
     noteDefault: 9,
   }),
 };

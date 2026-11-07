@@ -380,12 +380,12 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
   return (
     <SoundSystemsRackLayout rack={r.rack} caption="Tap PART, pick a part, then tap a highlighted position on the plot. Tap a device, then another, to run a cable; tap a cable to remove it. The loudspeakers light when a source reaches them." wellTop={r.wellTop}>
       <ChapterTag n={0}>BUILD · THE EMPTY VENUE</ChapterTag>
-      <Body>An empty venue in plan — the deck and its riser at the top, wings either side, the audience below — and every part in the catalog. Build anything; the loudspeakers light when a source reaches them.</Body>
+      <Body>An empty venue in plan — the deck and its riser at the top, wings on either side, the audience below — and every part in the catalog. Build anything; the loudspeakers light when a source reaches them.</Body>
       <Prompt>{r.prompt}</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all. Tap the same two devices again for a second cable where the far one has a free input — a stereo in-ear feed is two cables from the stagebox to the transmitter, Aux 9 and Aux 10, each with its own OUTPUT key — never the same output twice.</KeyFact>
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The lab refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all. Tap the same two devices again for a second cable where the far one has a free input — a stereo in-ear feed is two cables from the stagebox to the transmitter, Aux 9 and Aux 10, each with its own OUTPUT key — never the same output twice.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }

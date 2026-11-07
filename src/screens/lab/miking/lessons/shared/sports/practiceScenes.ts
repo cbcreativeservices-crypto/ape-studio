@@ -289,7 +289,7 @@ const PS_CLEAR_NOTE = 'Nothing from the equipment areas reaches into the walking
 export const PRACTICE_SMALL: VenueScene = {
   id: 'practiceSmall',
   label: 'Practice room',
-  blurb: 'A quiet, cleared room: three source points A, B and C 2 m apart on one walking line, and two separate equipment areas M1 and M2, 2 m either side of B.',
+  blurb: 'A quiet, cleared room: three source points A, B and C 2 m apart on one walking line, and two separate equipment areas M1 and M2, 2 m on either side of B.',
   play: [p2(PS_AREA.x0, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y1), p2(PS_AREA.x0, PS_AREA.y1)],
   surface: 'mock',
   // Fix pass 2026-10-16: the room is a sports hall — its hardwood floor (a drawing default).

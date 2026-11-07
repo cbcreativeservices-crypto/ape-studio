@@ -59,11 +59,11 @@ export const FINAL_QUESTIONS: FinalCheckItem[] = [
       'A speakON-style loudspeaker cable from a power amplifier',
       'A balanced line-level cable — typically XLR',
       'An instrument cable, since the plugs fit',
-      'No signal cable — the mains cord carries the audio too',
+      'No signal cable — the power cord carries the audio too',
     ],
     correctIdx: 1,
     reveal:
-      'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it a line-level feed — typically XLR. Its power arrives separately, on a mains cable: two connections, two different things traveling. An amplifier output into a PASSIVE loudspeaker is a different connection, and the two are not interchangeable.',
+      'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it a line-level feed — typically XLR. Its power arrives separately, on a power cable: two connections, two different things traveling. An amplifier output into a PASSIVE loudspeaker is a different connection, and the two are not interchangeable.',
     wrongHint: 'The amplifier is INSIDE a powered loudspeaker — what level must reach it?',
   },
   // 3 · internal construction — from ts_quarter / ts_speaker_legacy
@@ -112,7 +112,7 @@ export const FINAL_QUESTIONS: FinalCheckItem[] = [
     correctIdx: 2,
     reveal:
       'Never patch amplifier outputs into inputs. The plugs CAN fit — a speaker cable with a TS plug seats in a combo input’s 1/4-inch path — and speaker-level signals are far above what an input expects. This is one of the few wrong patches in this lab that goes beyond “no signal.”',
-    wrongHint: 'Rank what travels: signal level, loudspeaker level, mains. What just arrived where it does not belong?',
+    wrongHint: 'Rank what travels: signal level, loudspeaker level, AC power. What just arrived where it does not belong?',
   },
   // 6 · connector vs protocol — from ethernet_8p8c (limitations,
   //     notInterchangeableWith: different protocol on the same connector).
@@ -206,12 +206,12 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
       'Use it — that is what those adapters are for',
       'Use it on one piece of equipment only',
       'Use it during the show, then remove it',
-      'Never — hum is solved on the signal side; the protective earth is never defeated',
+      'Never — hum is solved on the signal side; the safety ground is never defeated',
     ],
     correctIdx: 3,
     reveal:
-      'The earth pin is what keeps a fault from energizing the equipment chassis — it is never removed, bent back, or adapted away. Hum is solved on the signal side (isolation transformers, proper grounding practice), never by defeating the safety earth.',
-    wrongHint: 'What does the protective earth protect — the sound, or the people touching the equipment?',
+      'The ground pin is what keeps a fault from energizing the equipment chassis — it is never removed, bent back, or adapted away. Hum is solved on the signal side (isolation transformers, proper grounding practice), never by defeating the safety ground.',
+    wrongHint: 'What does the safety ground protect — the sound, or the people touching the equipment?',
   },
   // q_safety_damaged_cord — from mains_wall (commonMistakes: damaged cord) +
   // iec_c13_c14 (advantages: replaced whole, never repaired inline).
@@ -220,7 +220,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     id: 'q_safety_damaged_cord',
     question: 'A power cord has a cracked jacket with inner conductors showing, but the equipment still powers up. What happens to that cord?',
     options: [
-      'It leaves service immediately — damaged mains cords are never taped and returned to use',
+      'It leaves service immediately — damaged power cords are never taped and returned to use',
       'Tape the damaged section and keep using it',
       'Downgrade it to low-power equipment only',
       'Keep it as an emergency spare',
@@ -235,7 +235,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
   {
     unit: 'q_safety_m2m_mains',
     id: 'q_safety_m2m_mains',
-    question: 'When is a male-to-male mains cable acceptable to build or use?',
+    question: 'When is a male-to-male power cable acceptable to build or use?',
     options: [
       'When both ends will be plugged in quickly',
       'When it is clearly labeled as male-to-male',
@@ -244,7 +244,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     ],
     correctIdx: 2,
     reveal:
-      'Energized contacts belong on the recessed (female) side — that is the design rule a male-to-male cable violates. It puts live mains voltage on fully exposed pins, and there is no acceptable use, no labeling fix, and no careful way to do it.',
+      'Energized contacts belong on the recessed (female) side — that is the design rule a male-to-male cable violates. It puts live AC voltage on fully exposed pins, and there is no acceptable use, no labeling fix, and no careful way to do it.',
     wrongHint: 'Picture the free end of the cable the instant the other end goes live.',
   },
   // q_safety_wet — from mains_wall (commonMistakes: wet handling; cautions:
@@ -255,13 +255,13 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     question: 'Rain starts reaching a powered outdoor connection point. Handling plugs and receptacles there while anything is energized is:',
     options: [
       'Acceptable if you work quickly and carefully',
-      'Not acceptable — de-energize first; wet hands, rain and standing water never mix with energized mains handling',
+      'Not acceptable — de-energize first; wet hands, rain and standing water never mix with handling energized AC power',
       'Acceptable if the connectors feel dry to the touch',
       'Acceptable if you touch only the cable jacket',
     ],
     correctIdx: 1,
     reveal:
-      'Never handle mains plugs, receptacles or connections with wet hands, in rain, or in standing water while anything is energized. Outdoors and in damp locations, the circuit itself should be GFCI (RCD) protected — confirmed before powering anything where water is possible.',
+      'Never handle power plugs, receptacles or connections with wet hands, in rain, or in standing water while anything is energized. Outdoors and in damp locations, the circuit itself should be GFCI (RCD) protected — confirmed before powering anything where water is possible.',
     wrongHint: 'The rule has no “if you are careful” clause.',
   },
   // q_safety_mains_mating — from mains_wall (NEMA 5-20 keying: never modify
@@ -270,12 +270,12 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
   {
     unit: 'q_safety_mains_mating',
     id: 'q_safety_mains_mating',
-    question: 'A mains connector does not quite fit its receptacle — a hard push or a filed-down blade would “make it work.” What is true?',
+    question: 'An AC power connector does not quite fit its receptacle — a hard push or a filed-down blade would “make it work.” What is true?',
     options: [
-      'Never force or modify a mains connector — the keying is protecting the wiring, and the answer is the correct part',
+      'Never force or modify an AC power connector — the keying is protecting the wiring, and the answer is the correct part',
       'Forcing is fine if the voltage matches',
       'Filing a blade down is acceptable on low-power equipment',
-      'In an emergency, any mains connector may be made to mate',
+      'In an emergency, any AC power connector may be made to mate',
     ],
     correctIdx: 0,
     reveal:
@@ -288,7 +288,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
   {
     unit: 'q_safety_unqualified_wiring',
     id: 'q_safety_unqualified_wiring',
-    question: 'The internal wiring, termination or repair of a mains plug, cord or receptacle is:',
+    question: 'The internal wiring, termination or repair of a power plug, cord or receptacle is:',
     options: [
       'Beginner work, if a tutorial is followed closely',
       'Beginner work, as long as the cord is unplugged',
@@ -297,7 +297,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     ],
     correctIdx: 3,
     reveal:
-      'Every power connector in this lab draws the same line: identification, inspection and safe use are beginner skills; internal mains wiring, termination and repair belong to qualified people. The boundary does not move with confidence, cord size, or convenience.',
+      'Every power connector in this lab draws the same line: identification, inspection and safe use are beginner skills; internal AC wiring, termination and repair belong to qualified people. The boundary does not move with confidence, cord size, or convenience.',
     wrongHint: 'The boundary is about the work itself, not about how careful the worker plans to be.',
   },
   // q_safety_speakon_mains — from speakon_nl2 / speakon_nl4 (safety cautions +
@@ -307,16 +307,16 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     unit: 'q_safety_speakon_mains',
     id: 'q_safety_speakon_mains',
     question:
-      'A loudspeaker twist-lock connector (speakON-style) and a locking mains connector look and lock similarly. Which statement is true?',
+      'A loudspeaker twist-lock connector (speakON-style) and a locking AC power connector look and lock similarly. Which statement is true?',
     options: [
       'They are interchangeable when the current ratings match',
-      'A loudspeaker connector is never a mains connector, a mains connector is never a loudspeaker connector, and no adapter between them is ever acceptable',
+      'A loudspeaker connector is never an AC power connector, an AC power connector is never a loudspeaker connector, and no adapter between them is ever acceptable',
       'An adapter between them is acceptable for short runs',
       'The twist-lock action means they belong to the same family',
     ],
     correctIdx: 1,
     reveal:
-      'The twist-lock resemblance is a look-alike, not an equivalence. A mismade adapter would put mains voltage on loudspeaker wiring — equipment damage and electrical danger. Read the connector markings and the cable label before connecting; never let fit be the test.',
+      'The twist-lock resemblance is a look-alike, not an equivalence. A mismade adapter would put AC voltage on loudspeaker wiring — equipment damage and electrical danger. Read the connector markings and the cable label before connecting; never let fit be the test.',
     wrongHint: 'One carries loudspeaker output, the other carries wall power. Can an adapter change what either one is?',
   },
 ];

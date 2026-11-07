@@ -263,7 +263,7 @@ describe('2. every hand-written name is on the screen it describes', () => {
     'PAIR|Pair and polarity': [[P('PTwoMic')], ['EDIT MIC ${slot}', 'MIC B POLARITY', 'SOURCE', 'PATH Δd B−A', 'DELAY Δt B−A', '1ST NOTCH', 'NO COMB', 'POLARITY', 'OVER 20 kHz', 'rear lobe: −', 'heads: −', "'switch'"]],
     'READ|Symptoms': [[P('PReadPages'), `${MIKING}/engine/kit.tsx`], ['OBSERVATION', 'a retry is explained, never penalized', 'What do you check first?', '<SymptomCard']],
     'PRACTICE|Set up in order': [[P('PReadPages')], ['A step tapped too early is answered with why it cannot come yet', 'OrderTaskCard']],
-    'PRACTICE|Your setup': [[P('PReadPages')], ['Each brief accepts more than one setup', 'tick every reason']],
+    'PRACTICE|Your setup': [[P('PReadPages')], ['Each brief accepts more than one setup', 'check every reason']],
     'PRACTICE|Mixed review': [[P('PReadPages')], ['OBSERVATION SHEET · OPTIONAL', '<ScenarioList']],
   };
   it('a name list for every note, and every note’s step is defined (kind + title) in its page', () => {

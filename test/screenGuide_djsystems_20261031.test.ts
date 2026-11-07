@@ -358,10 +358,10 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     const gs = code(`${DJ}/booth/goalStore.ts`);
     assert.match(gs, /return Array\.from\(\{ length: Math\.max\(0, count\) \}, \(\) => false\);/);
     assert.match(gs, /return allMet && !isDone;/);
-    assert.ok(et.includes('every goal chip on it ticks in one visit'));
+    assert.ok(et.includes('every goal chip on it is ✓ in one visit'));
     assert.ok(et.includes('It marks itself; NEXT never counts it.'));
     // the first TRY THIS asks for EVERY chip in one visit, not just the Left: ones
-    assert.ok(et.includes('tick every goal chip on it in that one visit'));
+    assert.ok(et.includes('check every goal chip on it in that one visit'));
     // Effects has two fault cards (and two fault goals); every other screen one
     const fx = code(`${DJ}/pages/p13Effects.tsx`);
     assert.equal((fx.match(/<FaultCard/g) ?? []).length, 2);
@@ -395,7 +395,7 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     assert.ok(Math.min(...counts) > LEFT_SHOWN, `fewest goals ${Math.min(...counts)}`);
     assert.ok(et.includes('usually with Left: and up to three goals your last visit missed, then + n more'));
     assert.ok(et.includes('Left: is what your last visit this session missed (every goal, if not opened yet).'));
-    assert.ok(et.includes('Chips start empty each visit, so a screen counts only when all tick in one visit.'));
+    assert.ok(et.includes('Chips start empty each visit, so a screen counts only when all are ✓ in one visit.'));
     assert.ok(!/still needs\.|lists all its goals|goals it still needs/.test(et));
     assert.match(code(`${DJ}/bits.tsx`), /const seen = useRef<boolean\[\]>\(visitStart\(goals\.length\)\);/);
     const { DJ_OPTIONAL_NUMBERS } = await import('../src/screens/lab/dj/pages/registry.ts');

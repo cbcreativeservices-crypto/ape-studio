@@ -340,7 +340,7 @@ const WS_IMPEDANCE: Workspace = {
   mistakes: [
     'Paralleling boxes until the amplifier current-limits — every added parallel speaker LOWERS the load; check the amp’s minimum-impedance rating first.',
     'Mixing 4 Ω and 8 Ω boxes expecting equal power share — parallel branches share the same voltage, so the 4 Ω box draws double the power of the 8 Ω box.',
-    'Wiring speakers in series "for safety" — the raised impedance also puts the speakers’ own impedance between the amp and each driver, degrading damping and letting one failed voice coil silence the whole string.',
+    'Wiring speakers in series "for safety" — the raised impedance also puts the other speakers’ impedance between the amp and each driver, degrading damping and letting one failed voice coil silence the whole string.',
   ],
   warnings:
     'Nominal impedance is a label, not a measurement — a real "8 Ω" box swings with frequency ' +
@@ -692,7 +692,7 @@ const WS_CABLE: Workspace = {
       plainFormula:
         'The suggested gauge is the thinnest listed wire whose level loss — twenty times the log of the load over the load plus the loop resistance — stays within the budget.',
       explain:
-        'Scans the standard cable gauges and suggests the thinnest (highest AWG number) that keeps the run within your loss budget. Thicker always works; it just costs more copper. If even the heaviest listed gauge fails, the run is too long — shorten it, relax the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, a 70 V line.',
+        'Scans the standard cable gauges and suggests the thinnest (highest AWG number) that keeps the run within your loss budget. Thicker always works; it just costs more copper. If even the heaviest listed gauge fails, the run is too long — shorten it, relax the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, use a 70 V line.',
       keySymbols: ['·', 'log₁₀', 'Z', '/', 'R'],
       compute: (v) => {
         const L = n(v.len);
@@ -708,7 +708,7 @@ const WS_CABLE: Workspace = {
           return [
             {
               label: 'NO LISTED GAUGE PASSES',
-              text: `Even 10 AWG exceeds the ${fmt(dB)} dB budget over ${fmt(L)} m into ${fmt(z)} Ω — shorten the run, raise the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, a 70 V line.`,
+              text: `Even 10 AWG exceeds the ${fmt(dB)} dB budget over ${fmt(L)} m into ${fmt(z)} Ω — shorten the run, raise the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, use a 70 V line.`,
             },
           ];
         }

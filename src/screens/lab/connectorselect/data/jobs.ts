@@ -49,7 +49,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'line', label: 'Balanced line-level signal', can: true, backs: ['line_level'], explain: 'Console outputs, processor I/O, powered-speaker inputs — same pins, hotter signal.' },
       { id: 'aes3', label: 'AES3 digital audio', can: true, backs: ['digital_audio'], explain: 'Same shell, digital data — specified for 110-ohm digital cable, not mic cable.' },
       { id: 'intercom', label: 'Intercom and specialized systems', can: true, basis: 'xlr3 record, limitations: "The same 3-pin shell serves several different jobs (analog audio, AES3 digital, some control uses)"', explain: 'Wired intercom and other specialized systems also ride XLR shells — one more reason to read the label, not the plug.' },
-      { id: 'speaker', label: 'Amplifier speaker output', can: false, explain: 'No. Speaker level belongs on speaker connectors and speaker cable. XLR loudspeaker use is not a job this lab’s systems ever ask of it.' },
+      { id: 'speaker', label: 'Amplifier speaker output', can: false, explain: 'No. Speaker level belongs on speaker connectors and speaker cable. Loudspeaker use is not a job this lab’s systems ever ask of an XLR.' },
     ],
   },
   {
@@ -109,13 +109,13 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'ethernet', label: 'Ethernet networking', can: true, backs: ['network_audio', 'control_data'], explain: 'The native job: standard network traffic over category cable.' },
       { id: 'netaudio', label: 'Networked audio (Dante-style systems)', can: true, backs: ['network_audio'], explain: 'Audio-over-IP rides real Ethernet — many channels down one category cable.' },
       { id: 'proprietary', label: 'Proprietary digital snakes', can: true, backs: ['network_audio'], explain: 'Some digital snakes use the same connector but are NOT Ethernet — plugging them into a network switch does nothing useful. The connector fitting proves nothing.' },
-      { id: 'mains', label: 'Mains (wall-outlet) power', can: false, explain: 'No. The thin category wires and small contacts are built for data and low-voltage DC (Power over Ethernet). Mains power never goes on an RJ45 or etherCON.' },
+      { id: 'mains', label: 'Wall-outlet (AC) power', can: false, explain: 'No. The thin category wires and small contacts are built for data and low-voltage DC (Power over Ethernet). AC power never goes on an RJ45 or etherCON.' },
     ],
   },
   {
     connector: 'usb_c',
     title: 'USB-C',
-    headline: 'One connector; data, audio, power and sometimes video — capabilities vary by device AND cable.',
+    headline: 'One connector: data, audio, power and sometimes video — capabilities vary by device AND cable.',
     jobs: [
       { id: 'audio', label: 'Audio data (interfaces, USB audio)', can: true, backs: ['digital_audio'], explain: 'Audio streams as USB data — the computer and interface negotiate the protocol.' },
       { id: 'data', label: 'General data', can: true, backs: ['control_data'], explain: 'Files, control, MIDI-over-USB — all data jobs share the connector.' },

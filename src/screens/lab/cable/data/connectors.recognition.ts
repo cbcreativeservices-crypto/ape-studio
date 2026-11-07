@@ -394,9 +394,9 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       {
         otherId: 'socapex_style',
         otherName: 'Multicircuit POWER multipin (Socapex-style)',
-        why: 'Stages carry circular multipin connectors for both audio signals and mains power; at a glance the families resemble each other.',
+        why: 'Stages carry circular multipin connectors for both audio signals and AC power; at a glance the families resemble each other.',
         consequence:
-          'Different connector families are keyed and will not couple — never force or defeat keying. But keying is not the safeguard: identical 19-pin multipin connectors are used in the field for both mains-power distribution and loudspeaker feeds, so a shell that mates proves nothing about what is behind it. Identify the system from labels and documentation before touching anything; putting mains power into signal wiring means equipment damage and electrical danger.',
+          'Different connector families are keyed and will not couple — never force or defeat keying. But keying is not the safeguard: identical 19-pin multipin connectors are used in the field for both AC power distribution and loudspeaker feeds, so a shell that mates proves nothing about what is behind it. Identify the system from labels and documentation before touching anything; putting AC power into signal wiring means equipment damage and electrical danger.',
       },
     ],
     inspectionPoints: [
@@ -431,7 +431,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     typicalSources: ['Installed-sound processor and mixer outputs', 'Paging and control system terminals'],
     typicalDestinations: ['Amplifier and processor inputs in equipment racks', 'Wall-panel and ceiling-device terminations'],
     constructionNote:
-      'There is no molded cable: install cable is stripped and terminated into the block by a technician, screw or spring clamp onto bare conductors. The block then plugs onto the device\'s header.',
+      'There is no molded cable: install cable is stripped and terminated into the block by a technician, with screw or spring clamps on the bare conductors. The block then plugs onto the device\'s header.',
     pinouts: [
       {
         id: 'balanced_terminals',
@@ -617,7 +617,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       {
         otherName: '4-pin XLR DC power circuit',
         why: 'The identical shell is used for DC power on some equipment; a headset and a power port can physically match.',
-        consequence: 'Connecting a headset to a DC power port (or a power lead to audio equipment) can damage the equipment — verify what the port carries before plugging.',
+        consequence: 'Connecting a headset to a DC power port (or a power cable to audio equipment) can damage the equipment — verify what the port carries before plugging.',
       },
     ],
     inspectionPoints: [
@@ -781,7 +781,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       level: 'speaker',
       cautions: [
         'Amplifier outputs on high-power systems reach and can exceed 100 V — a genuine electric-shock hazard, which is why amplifier manufacturers mark output terminals with the lightning-flash symbol, and many supply covers for them. Never touch exposed speaker wiring or connector contacts while amplifiers are on; make and break speaker-level multiway connections with the amps muted or off.',
-        'Loudspeaker connectors and cabling are never substituted with mains connectors or mains thinking — different system, different rules.',
+        'Loudspeaker connectors and cabling are never substituted with AC power connectors or AC power thinking — different system, different rules.',
       ],
     },
     glossary: ['Speakon'],
@@ -894,7 +894,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       howToConfirm: 'Blades insert and the plug rotates to lock. Verifying engagement on power circuits is part of the qualified person\'s job, not a beginner check.',
     },
     directionality:
-      'By design — and by electrical code for correctly built cables — the energized source side ends in a female connector so exposed pins should never be live. Treat that as a design rule, not a guarantee: damaged, miswired, or improvised cables (illegal male-to-male backfeed cords exist in the field) can put mains voltage on exposed pins. Never touch the contacts of any power connector.',
+      'By design — and by electrical code for correctly built cables — the energized source side ends in a female connector so exposed pins should never be live. Treat that as a design rule, not a guarantee: damaged, miswired, or improvised cables (illegal male-to-male backfeed cords exist in the field) can put AC voltage on exposed pins. Never touch the contacts of any power connector.',
     hotPlug: {
       policy: 'qualified_person_only',
       rationale:
@@ -910,7 +910,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     ],
     commonMistakes: [
       'Assuming any twist-lock fits any twist-lock outlet — configurations are rating-specific by design',
-      'Treating a locking plug as beginner-serviceable because it resembles a household plug: never wire, repair, or connect mains as a beginner',
+      'Treating a locking plug as beginner-serviceable because it resembles a household plug: never wire, repair, or connect AC power as a beginner',
       'Continuing to use a cord with a damaged plug or jacket instead of reporting it and taking it out of service',
     ],
     notInterchangeableWith: [
@@ -932,8 +932,8 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       qualifiedPersonOnly: true,
       cautions: [
         'Beginners never connect, disconnect, or handle these energized; they belong to qualified/authorized personnel under site procedures.',
-        'A damaged mains cord or connector leaves service immediately — report it; never tape it up or keep using it.',
-        'Never bypass, remove, or adapt away a ground/earth connection for any reason.',
+        'A damaged power cord or connector leaves service immediately — report it; never tape it up or keep using it.',
+        'Never bypass, remove, or adapt away a ground connection for any reason.',
       ],
     },
     glossary: ['Edison Plug'],
@@ -956,7 +956,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     typicalDestinations: ['Conventional stage lighting fixtures', 'Two-fers and theatrical cable runs'],
     construction: 'ac_3c_grounded',
     constructionNote:
-      'Behind it is heavy theatrical power cable. The flat body with three in-line pins is the North American entertainment-lighting power connector — mains power, despite looking nothing like a wall plug.',
+      'Behind it is heavy theatrical power cable. The flat body with three in-line pins is the North American entertainment-lighting power connector — AC power, despite looking nothing like a wall plug.',
     pinouts: [],
     balanced: 'n/a',
     channels: 'n/a',
@@ -979,10 +979,10 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     limitations: [
       'No positive lock — connections can pull apart under cable tension',
       'Loose pin tension causes heat and intermittent power; correcting it is qualified maintenance',
-      'Looks nothing like household power, which misleads beginners into underestimating it — it is full mains power',
+      'Looks nothing like household power, which misleads beginners into underestimating it — it is full AC power',
     ],
     commonMistakes: [
-      'Treating a stage pin connector as "just lighting stuff" rather than a mains power connector',
+      'Treating a stage pin connector as "just lighting stuff" rather than an AC power connector',
       'Attempting to re-tension pins or open a connector — qualified-tech work only',
       'Leaving a damaged or scorched connector in service instead of reporting it',
     ],
@@ -990,7 +990,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       {
         otherId: 'mains_wall',
         otherName: 'Household wall plug (Edison)',
-        why: 'Both carry mains power in the same buildings; adapters between them exist in theatrical stock.',
+        why: 'Both carry AC power in the same buildings; adapters between them exist in theatrical stock.',
         consequence:
           'They do not mate directly, and whether an adapter is appropriate for a given circuit is a qualified person\'s call — improvised adaptation is electrical danger.',
       },
@@ -1097,7 +1097,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     typicalSources: ['Dimmer, relay, and power distribution rack outputs'],
     typicalDestinations: ['Breakout assemblies feeding lighting fixtures', 'Multicircuit drops to electrics and set positions'],
     constructionNote:
-      'One round connector, MANY mains circuits: the multicore cable behind it carries several complete power circuits to one position. It closely resembles circular signal multipin connectors — which is exactly why identification matters.',
+      'One round connector, MANY AC circuits: the multicore cable behind it carries several complete power circuits to one position. It closely resembles circular signal multipin connectors — which is exactly why identification matters.',
     pinouts: [],
     balanced: 'n/a',
     channels: 'n/a',
@@ -1108,14 +1108,14 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     hotPlug: {
       policy: 'qualified_person_only',
       rationale:
-        'Every pin group can be a live mains circuit, and circuits may be energized remotely from a console at any time. Connection work belongs to qualified/authorized personnel under site procedures.',
+        'Every pin group can be a live AC circuit, and circuits may be energized remotely from a console at any time. Connection work belongs to qualified/authorized personnel under site procedures.',
     },
     advantages: [
       'Several power circuits run to a lighting position in one cable and one connection',
       'Keyed circular shell with threaded coupling — solid retention on rigged positions',
     ],
     limitations: [
-      'Multiple mains circuits in one connector means one damaged cable or wrong connection affects many circuits at once',
+      'Multiple AC circuits in one connector means one damaged cable or wrong connection affects many circuits at once',
       'Its resemblance to circular signal multipins invites dangerous misidentification — the label and system, not the shape, tell you what it is',
     ],
     commonMistakes: [
@@ -1129,7 +1129,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
         otherName: 'Circular multipin AUDIO snake connector',
         why: 'Both are keyed circular multipin shells seen on the same stages; visually similar at a glance.',
         consequence:
-          'Different connector families are keyed and will not couple — never force or defeat keying. But keying is not the safeguard: identical 19-pin multipin connectors are used in the field for both mains-power distribution and loudspeaker feeds, so a shell that mates proves nothing about what is behind it. Identify the system from labels and documentation before touching anything; putting mains power into signal wiring means equipment damage and electrical danger.',
+          'Different connector families are keyed and will not couple — never force or defeat keying. But keying is not the safeguard: identical 19-pin multipin connectors are used in the field for both AC power distribution and loudspeaker feeds, so a shell that mates proves nothing about what is behind it. Identify the system from labels and documentation before touching anything; putting AC power into signal wiring means equipment damage and electrical danger.',
       },
     ],
     inspectionPoints: [
@@ -1143,7 +1143,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       qualifiedPersonOnly: true,
       cautions: [
         'STRICT BOUNDARY: beginners never connect, disconnect, or handle multicircuit power connectors — energized or not. This is qualified/authorized-personnel work under site procedures.',
-        'One connector can carry several live mains circuits simultaneously, and any of them can energize remotely at any time.',
+        'One connector can carry several live AC circuits simultaneously, and any of them can energize remotely at any time.',
         'Never assume a circular multipin is signal wiring — confirm the system before touching anything, and when in doubt, ask and keep clear.',
       ],
     },

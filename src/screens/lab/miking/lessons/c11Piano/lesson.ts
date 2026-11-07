@@ -71,7 +71,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one piano mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['pn.prac.order', 'pn.prac.gain', 'pn.prac.setup1', 'pn.prac.setup2', 'pn.prac.3', 'pn.mix.1', 'pn.mix.2', 'pn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real piano.' },
-    takeaway: 'A safely set lid, clearance from everything that moves, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “widest” stereo picture do not — and more than one setup can pass.',
+    takeaway: 'A safely set lid, clearance from everything that moves, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “widest” stereo picture does not — and more than one setup can pass.',
   },
 };
 
@@ -189,7 +189,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis. Aim the source you want less of into that region.',
     why: {
       'Straight behind it, right on its rear axis': 'That is a cardioid. A supercardioid picks up a little straight behind.',
-      'At its sides, square to its front': 'At 90° a supercardioid still picks up a fair amount; its deepest rejection is farther round, near 125°.',
+      'At its sides, square to its front': 'At 90° a supercardioid still picks up a fair amount; its deepest rejection is farther around, near 125°.',
     },
   },
   {
@@ -557,7 +557,7 @@ const setupTasks: SetupTask[] = [
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: on most keys, what stops a piano note when the key comes up?', options: ['The hammer presses the string', 'A damper falls onto the strings', 'The soundboard stops by itself'], after: 'Now STEP through the key (or PLAY ONCE) and watch the hammer and the damper.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic back along the strings, away from the hammers. What changes?', options: ['More attack', 'A softer attack', 'It depends on this piano'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this mic, looking down into the piano, reject a side-fill speaker best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

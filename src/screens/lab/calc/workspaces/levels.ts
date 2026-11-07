@@ -365,7 +365,7 @@ const WS_OHMS: Workspace = {
   warnings:
     'These are sine-wave, resistive-load teaching calculations. A loudspeaker is a reactive load ' +
     'whose impedance varies with frequency, and music is not a sine wave — real power ratings ' +
-    'follow formal methods (IEC 60268-3 for amplifiers, IEC 60268-5 for loudspeakers). This tool teaches the basic sums; it does not replace those methods.',
+    'follow formal methods (IEC 60268-3 for amplifiers, IEC 60268-5 for loudspeakers). This tool teaches the basic math; it does not replace those methods.',
   glossary: ['Power', 'Voltage', 'Current', 'Impedance', 'RMS', 'Amplifier', 'Loudspeaker'],
   fields: [
     { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', meaning: 'voltage:rms', nonNegative: true, placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
@@ -804,7 +804,7 @@ const WS_ELECTRONICS: Workspace = {
         const tau = R * uf * 1e-6;
         return [
           `τ = R × C = ${fmt(R)} Ω × ${fmt(uf * 1e-6)} F = ${fmt(tau)} s = ${fmt(tau * 1000)} ms.`,
-          `One time constant is the 63.2% charge mark — the same τ that sets attack/release feels in analog dynamics circuits.`,
+          `One time constant is the 63.2% charge mark — the same τ that sets attack/release feel in analog dynamics circuits.`,
         ];
       },
     },

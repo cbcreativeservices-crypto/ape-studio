@@ -43,7 +43,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint grey outline is the signal before the limiter.',
+      'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before the limiter.',
       'The GR ladder on the right grows down as the limiter holds the level down.',
       'Readouts: CEIL, RLS and GR — gain reduction, measured live (— dB while stopped).',
       'The drawing is a TEACHING MODEL; CLICK is drawn as a longer DRUM-HIT MODEL.',

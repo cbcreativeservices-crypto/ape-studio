@@ -133,7 +133,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
     setPass((p) => ({ ...p, moved: p.moved.map((m, i) => (i === k ? m + t : m)), moves: p.moves + 1 }));
     setGuided((g) => g + 1);
     const fmtC = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(0)} ¢`;
-    const spreadNote = after < before - 1 ? `SPREAD goes ${before.toFixed(0)} → ${after.toFixed(0)} ¢` : `SPREAD stays near ${after.toFixed(0)} ¢ because another rod is now the furthest out — tap round and find it`;
+    const spreadNote = after < before - 1 ? `SPREAD goes ${before.toFixed(0)} → ${after.toFixed(0)} ¢` : `SPREAD stays near ${after.toFixed(0)} ¢ because another rod is now the furthest out — tap around and find it`;
     setShown(`Watch: rod ${k + 1} was the furthest out (${fmtC(c[k])}), so the lab ${t < 0 ? 'loosened' : 'tightened'} it ${turnWords(t)} — its wedge goes ${fmtC(c[k])} → ${fmtC(cAfter)} and ${spreadNote}. Now ▶ TAP it to hear the change.`);
   };
   const newHeads = () => {
@@ -204,7 +204,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
         {
           key: 'hear', title: 'Tap near each lug', kind: 'HEAR', layout: 'rack',
           rack: {
-            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={hearHead} tap={hearLug} selected={null} showMap={mapShown ? true : 'hidden'} title="tap round the head" tapSync={syncOf(hearTap)} legend={mapShown ? undefined : `map hidden · tapped ${tapped.size} of ${SPEC.lugs}`} />,
+            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={hearHead} tap={hearLug} selected={null} showMap={mapShown ? true : 'hidden'} title="tap around the head" tapSync={syncOf(hearTap)} legend={mapShown ? undefined : `map hidden · tapped ${tapped.size} of ${SPEC.lugs}`} />,
             aspect: TOP_ASPECT,
             size: 'L',
             badge: MODEL_BADGE,
@@ -227,7 +227,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           well: (
             <>
               <Landing looking="an uneven head with its color map hidden; ● is where the stick taps." prompt="▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP." />
-              <DrumStatus playing={hearTap.playing} pending={hearTap.pending} failed={hearTap.failed} rendering={hearTap.status === 'rendering'} idle="stopped · pick a LUG and press ▶ TAP; go round the head" label={`the tap at lug ${hearLug + 1}`} />
+              <DrumStatus playing={hearTap.playing} pending={hearTap.pending} failed={hearTap.failed} rendering={hearTap.status === 'rendering'} idle="stopped · pick a LUG and press ▶ TAP; go around the head" label={`the tap at lug ${hearLug + 1}`} />
               {revealNote ? <Feedback tone={mapShown ? (guess == null || guess === hearHighest ? 'ok' : 'warn') : 'info'}>{revealNote}</Feedback> : null}
               {tapped.size >= SPEC.lugs && !mapShown ? (
                 <Card tone="accent">
@@ -281,7 +281,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
                 <Point title={which === 'batter' ? 'The batter: guided, then on your own' : 'The resonant head: on your own'}>
                   {which === 'batter'
                     ? 'The lab shows you the first two moves, then names the rod, the direction and the amount. Bring a high lug down and its opposite up by the same small amount: the mean — and the pitch — stays put. Then flip to RESO.'
-                    : 'No rods are named on this head: tap round it, find the highest and lowest, and move them toward each other a sixteenth at a time. ▶ STRIKE follows this head too — an uneven bottom head warbles the whole drum.'}
+                    : 'No rods are named on this head: tap around it, find the highest and lowest, and move them toward each other a sixteenth at a time. ▶ STRIKE follows this head too — an uneven bottom head warbles the whole drum.'}
                 </Point>
               </Card>
               <WhyCard title="CREDIT · and a fresh pair">
@@ -298,7 +298,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               <YourRun lines={[
                 `Batter: ${batterPass.startSpread.toFixed(0)} → ${spreadCents(batter).toFixed(0)} ¢ in ${batterPass.moves} move${batterPass.moves === 1 ? '' : 's'}${batterEven ? ' — even.' : ' — not yet even.'}`,
                 `Resonant: ${resoPass.startSpread.toFixed(0)} → ${spreadCents(reso).toFixed(0)} ¢ in ${resoPass.moves} move${resoPass.moves === 1 ? '' : 's'}${resoEven ? ' — even.' : ' — not yet.'}`,
-                mapShown ? `Tap round the head: you ${guess == null ? 'did not name a lug' : guess === hearHighest ? 'named the highest lug by ear' : `named lug ${guess + 1}; the map said ${hearHighest + 1}`}.` : 'Tap round the head: the map is still hidden — go back and tap every lug.',
+                mapShown ? `Tap around the head: you ${guess == null ? 'did not name a lug' : guess === hearHighest ? 'named the highest lug by ear' : `named lug ${guess + 1}; the map said ${hearHighest + 1}`}.` : 'Tap around the head: the map is still hidden — go back and tap every lug.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="What do you tap, and where?" a="Near each tension rod, about an inch in from the rim, the same spot and the same light stroke every time." />

@@ -51,7 +51,7 @@ function B16Meet(p: PageProps) {
     factsStep(
       lesson,
       <ExpandableFigure
-        badge="The practice room from above · the walk A–B–C, M1 and M2 either side"
+        badge="The practice room from above · the walk A–B–C, M1 and M2 on either side"
         title="THE PRACTICE ROOM"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (

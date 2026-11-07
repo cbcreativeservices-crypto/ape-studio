@@ -125,7 +125,7 @@ describe('Module 8: the QC page says what credit still needs', () => {
   it('ticking every QC line does not claim the module is complete while track decisions are open', () => {
     const s = strip(read(`${DIR}/modules/mod8Project.tsx`));
     assert.doesNotMatch(s, /every line ticked completes the module\./);
-    assert.match(s, /every line ticked, with the four track decisions on step 2 answered, completes the module/);
+    assert.match(s, /every line checked, with the four track decisions on step 2 answered, completes the module/);
   });
 });
 

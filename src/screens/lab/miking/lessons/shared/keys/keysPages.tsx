@@ -204,7 +204,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             ) : (
               <Note>{vMeta.blurb}</Note>
             )}
-            {view === 'inside' ? <Note tone="warn">An inside view for understanding only. Mic work never opens the instrument, lifts its lid or adjusts a pickup — inside there can be mains-powered parts{rhodes ? '' : ' and a high-voltage pickup'}.</Note> : null}
+            {view === 'inside' ? <Note tone="warn">An inside view for understanding only. Mic work never opens the instrument, lifts its lid or adjusts a pickup — inside there can be AC-powered parts{rhodes ? '' : ' and a high-voltage pickup'}.</Note> : null}
           </>
         ),
       },
@@ -571,7 +571,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               <Point title="THE HELD TONE">{lesson.sound.body}</Point>
             </Card>
             <Note>{spec.notes.air}</Note>
-            {!done ? <Note tone="warn">{`Still to do for this page’s credit: ${[mechShown && !mechDone.current ? 'step the mechanism to the end' : '', mechShown && !swungFar.current ? 'swing the bar at least half-way by hand' : '', !coneDone.current ? 'step the cone through to the end' : ''].filter(Boolean).join(', ')}.`}</Note> : null}
+            {!done ? <Note tone="warn">{`Still to do for this page’s credit: ${[mechShown && !mechDone.current ? 'step the mechanism to the end' : '', mechShown && !swungFar.current ? 'swing the bar at least halfway by hand' : '', !coneDone.current ? 'step the cone through to the end' : ''].filter(Boolean).join(', ')}.`}</Note> : null}
             <Note>{spec.notes.mechCheck}</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
           </>
@@ -733,7 +733,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         },
         well: (
           <>
-            <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits round the instrument — or step through ITEM." />
+            <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits around the instrument — or step through ITEM." />
             <Body>{scene === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
             {ps ? (
               <Card>
@@ -753,7 +753,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             <Card>
               <Point title="ASK THE PLAYER FIRST">{rhodes ? 'Which instrument and amp, the controls and effects, the stereo panning if they use two speakers, and the level they will really play at. Then listen from a safe spot while they play soft chords, hard accents, low and high notes, with the sustain pedal.' : 'Which model, the volume, the vibrato setting and depth, and the level they will really play at. Then listen near the player and from the room while they play soft notes, hard chords, low and high notes, held chords with the vibrato, and the sustain pedal.'}</Point>
               <Point title="WORK WITH THE SOUND AS IT IS">{rhodes ? 'The instrument’s and the amp’s settings are the player’s sound. Keep them as set while you compare positions. An uneven or clanking note is not a mic problem: do not move a pickup yourself — ask the owner or a technician.' : 'The player’s settings are their sound. A buzz or rattle from a speaker is not a mic problem: do not loosen or tighten the old hardware yourself — ask the owner or a technician.'}</Point>
-              <Point title="ELECTRICAL SAFETY">{rhodes ? 'Use the approved power, cables and ventilation. Do not open an amp, defeat a safety ground, touch speaker terminals or change speaker wiring for a miking exercise. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.' : 'Keep the case closed: inside there is mains power and a high-voltage pickup, and unplugging alone does not make it safe to open. Do not use a ground-lift adapter to chase hum. Stop for a shock, a hot smell, arcing or a damaged cord, and involve a qualified technician.'}</Point>
+              <Point title="ELECTRICAL SAFETY">{rhodes ? 'Use the approved power, cables and ventilation. Do not open an amp, defeat a safety ground, touch speaker terminals or change speaker wiring for a miking exercise. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.' : 'Keep the case closed: inside there is AC power and a high-voltage pickup, and unplugging alone does not make it safe to open. Do not use a ground-lift adapter to chase hum. Stop for a shock, a hot smell, arcing or a damaged cord, and involve a qualified technician.'}</Point>
             </Card>
             <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />

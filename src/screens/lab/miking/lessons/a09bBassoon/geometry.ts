@@ -64,7 +64,7 @@ const surfaces: ReferenceSurface[] = [
   { id: 'bell', partId: 'ww.bell', label: 'the bell', point: A.bell, normal: BELL_AXIS, target: true },
   { id: 'clip', partId: 'ww.bell', label: 'the bell joint', point: A.clip, normal: frameAt(L, S_CLIP).n, target: true },
 ];
-const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap round the bell joint', c: A.strap, axis: norm(frameAt(L, 2330).t), r: radiusAt(SPEC, 2330) + 1.5 }];
+const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap around the bell joint', c: A.strap, axis: norm(frameAt(L, 2330).t), r: radiusAt(SPEC, 2330) + 1.5 }];
 
 export const WORDS: WindPartWords = {
   roles: {
@@ -72,10 +72,10 @@ export const WORDS: WindPartWords = {
     bocal: 'The thin, curved metal tube from the reed to the wing joint — delicate. Nothing is ever clamped to it.',
     wing: 'The wing joint, running down from the bocal: the left hand’s finger holes, drilled at a slant through its thick wall.',
     boot: 'The boot joint at the bottom: two bores side by side, joined by a U-tube under it — the air goes down and comes back up. The right hand’s holes are here.',
-    long: 'The long joint, rising beside the wing joint: the left thumb’s keys for the low notes. One third of the way down from the bell sits here.',
+    long: 'The long joint, rising beside the wing joint: the left thumb’s keys for the low notes. The point one third of the way down from the bell is on this joint.',
     bell: 'The bell joint at the top, above the player’s head. Only the very lowest note — every hole closed — comes mainly from here.',
   },
-  keys: 'Finger holes and keys spread along the folded tube — the left hand on the wing joint, the right on the boot, both thumbs working long rods. As the pitch rises, the first open hole moves closer to the reed: down the long joint, round the boot and up the wing — and the sound leaves there.',
+  keys: 'Finger holes and keys spread along the folded tube — the left hand on the wing joint, the right on the boot, both thumbs working long rods. As the pitch rises, the first open hole moves closer to the reed: down the long joint, around the boot and up the wing — and the sound leaves there.',
   exciter: { label: 'double reed and bocal', short: 'reed', role: 'The double reed at the lips on its curved bocal. Close to it, a mic hears the reed’s edge, the breath and the tonguing — and it is the most delicate part.' },
   hands: 'Both hands on the keys — the left high on the wing joint, the right low on the boot — and both thumbs working keys behind. Nothing may sit in their way.',
   player: 'The bassoonist, on a seat strap (or a harness, standing). The bassoon pivots a little as they breathe and phrase.',
@@ -91,7 +91,7 @@ function model(Lt: Layout): InstrumentModel {
     surfaces,
     rims,
     regions: windRegions(Lt, {
-      holes: 'Most notes leave from the first open hole — closer to the reed the higher the note: down the long joint, round the boot, up the wing joint.',
+      holes: 'Most notes leave from the first open hole — closer to the reed the higher the note: down the long joint, around the boot, up the wing joint.',
       end: 'The very lowest note — every hole closed — leaves from the bell at the top; above about 400–500 Hz, the bell carries some of every note.',
       exciter: 'The double reed and the breath: a mic close to the reed hears its edge and the tonguing.',
     }),

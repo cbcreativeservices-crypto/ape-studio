@@ -101,7 +101,7 @@ describe('tidy hunt 5 (2026-10-03)', () => {
     const save = src.slice(src.indexOf('const saveOnce = async'));
     assert.ok(save.indexOf("load !== 'loaded'") < save.indexOf('saveWorkflow('));
     assert.match(src, /couldn’t be read just now\. It isn’t lost/);
-    assert.match(src, /isn’t on this device any more/);
+    assert.match(src, /isn’t on this device anymore/);
     assert.match(src, /load !== 'loaded' \? \(/);
   });
 });

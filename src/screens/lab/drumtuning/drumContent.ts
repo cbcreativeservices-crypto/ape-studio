@@ -194,7 +194,7 @@ export const DRUM_KEY_TERMS: Record<DrumChapterId, readonly { term: string; def:
     { term: 'Cent (¢)', def: 'A hundredth of a semitone. SPREAD is the gap in cents between the highest and lowest lug.' },
   ],
   prepare: [
-    { term: 'Seating', def: 'Settling a new head so it sits flat on the bearing edge all the way round.' },
+    { term: 'Seating', def: 'Settling a new head so it sits flat on the bearing edge all the way around.' },
     { term: 'Cross-pattern (star)', def: 'Tightening opposite rods in turn so tension rises evenly.' },
     { term: 'Known condition', def: 'A starting point you can return to: every rod finger-tight, the head flat.' },
   ],

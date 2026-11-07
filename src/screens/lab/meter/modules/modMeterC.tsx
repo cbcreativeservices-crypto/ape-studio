@@ -882,12 +882,12 @@ const CASES: DetectiveCase[] = [
       options: [
         'Broadband pink noise',
         'One tall spike at 1.75 kHz',
-        'Spikes at the mains frequency and its exact multiples',
+        'Spikes at the power-line frequency and its exact multiples',
         'A speech formant pattern',
       ],
       correctIdx: 2,
       reveal:
-        'Narrow, evenly spaced spikes marching up from the mains frequency in exact multiples — a harmonic series of the power line, sitting there whether or not anything is playing. The mains frequency is 60 Hz in North America (drawn here) and 50 Hz in most other countries.',
+        'Narrow, evenly spaced spikes marching up from the power-line frequency in exact multiples — a harmonic series of the power line, sitting there whether or not anything is playing. The power-line frequency is 60 Hz in North America (drawn here) and 50 Hz in most other countries.',
       wrongHint: 'Look at the SPACING of the spikes — they are exact multiples of one low frequency.',
     },
     problem: {
@@ -900,8 +900,8 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 1,
       reveal:
-        'The mains comb (60 Hz here; 50 Hz in most other countries) is the electrical fingerprint of the power line riding on your audio — classically a ground loop between two powered devices, or an unbalanced cable running beside power.',
-      wrongHint: 'What in every studio oscillates at the mains frequency, forever?',
+        'The power-line comb (60 Hz here; 50 Hz in most other countries) is the electrical fingerprint of the power line riding on your audio — classically a ground loop between two powered devices, or an unbalanced cable running beside power.',
+      wrongHint: 'What in every studio oscillates at the power-line frequency, forever?',
     },
     fix: {
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
@@ -913,7 +913,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 3,
       reveal:
-        'Cure the electrical cause first: break the ground loop (one ground path, proper balanced connections, reroute cables away from power — never by lifting the mains safety earth). Notch filters at the mains frequency and its multiples (60/120/180 Hz here; 50/100/150 Hz in most other countries) are the mop-up for whatever tiny residue remains — not the primary fix.',
+        'Cure the electrical cause first: break the ground loop (one ground path, proper balanced connections, reroute cables away from power — never by lifting the safety ground). Notch filters at the power-line frequency and its multiples (60/120/180 Hz here; 50/100/150 Hz in most other countries) are the mop-up for whatever tiny residue remains — not the primary fix.',
       wrongHint: 'The hum enters through the WIRING. Where does the real fix live?',
     },
   },

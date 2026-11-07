@@ -137,7 +137,7 @@ export const PRODUCT_CHAIN: ChainSpec = {
   rules: [
     { id: 'hand', all: [['vib', 'hand']], reason: 'Never attach, reposition or retrieve a sensor by hand on a running device. A qualified person fixes it on while the device is off and isolated.', safety: true },
     { id: 'spl', all: [['claim', 'spl']], reason: 'A recorder’s dBFS is not a sound-pressure level: without a calibrated chain the honest label is relative.' },
-    { id: 'power', all: [['claim', 'power']], reason: 'Sound power comes from a named method, with the test space and mic positions it asks for — not from a few positions round a fan.' },
+    { id: 'power', all: [['claim', 'power']], reason: 'Sound power comes from a named method, with the test space and mic positions it asks for — not from a few positions around a fan.' },
   ],
   briefs: [
     {

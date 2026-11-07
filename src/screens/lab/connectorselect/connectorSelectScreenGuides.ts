@@ -58,7 +58,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     control: [
       'Tap a zone on the drawing, or a part button below it: the part’s name and job appear.',
       'Tap each of the four questions to open why it matters.',
-      'The page is done when both goals tick: all 8 parts tapped, all 4 questions opened. NEXT at the bottom moves on; the strip under the title jumps between pages.',
+      'The page is done when both goals are checked: all 8 parts tapped, all 4 questions opened. NEXT at the bottom moves on; the strip under the title jumps between pages.',
     ],
     changes: [
       'Each tap names one part and its job. Only the plug is usually looked at; the parts inside decide whether the cable suits the job.',
@@ -525,7 +525,7 @@ export const CONNECTOR_SELECT_END_GUIDE: ScreenGuide = {
     'Finished pages are credited to your account. Signed out, the line under the title says if signing in can still keep them; a preview earns nothing. START OVER (PRACTICE) in the contents resets goal chips, never credit.',
   ],
   teaches: [
-    'Which pages of the lab, from Connector, cable, signal to the Final, you have not finished yet.',
+    'Which pages of the lab, from “Connector, cable, signal” to the Final, you have not finished yet.',
     'Every page can be redone for practice at any time; practicing never removes credit you have earned.',
   ],
   tryThis: [

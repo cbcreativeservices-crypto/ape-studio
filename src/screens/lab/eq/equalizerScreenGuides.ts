@@ -53,7 +53,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'FREQ moves the filter; the dots show which tones it lifts or lowers in OUT.',
       'GAIN sets how far a bell or shelf rises or falls. HIGH-PASS and LOW-PASS ignore it — they cut on a fixed slope.',
       'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff; this HIGH-PASS ignores Q.',
-      'The pictures come from the same maths the audio runs — a designed response, not a measurement.',
+      'The pictures come from the same math the audio runs — a designed response, not a measurement.',
     ],
     teaches: [
       'What one EQ band does — shape, frequency, gain and Q — seen and heard together.',
@@ -87,7 +87,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     teaches: [
       'The words for EQ: filter type, frequency, gain, Q, bandwidth, slope.',
       'Why a narrow-boost sweep finds a problem but the fix is usually a cut, and why a flat analyzer is not the goal.',
-      'Q ≈ centre frequency ÷ bandwidth; slopes of 6, 12, 18 or 24 dB per octave are 1 to 4 poles.',
+      'Q ≈ center frequency ÷ bandwidth; slopes of 6, 12, 18 or 24 dB per octave are 1 to 4 poles.',
     ],
     tryThis: [
       'Read the Q (bandwidth) entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: tone against ring.',

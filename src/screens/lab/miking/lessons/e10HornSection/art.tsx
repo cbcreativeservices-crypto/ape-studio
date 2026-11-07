@@ -49,7 +49,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'LIVE SOUND', text: 'Enough level and clarity without changing the section’s own balance. Close cardioids or supercardioids, each wedge in its mic’s real rejection, only the monitor level the players need — and recheck when the bells move.' },
       { title: 'A RECORDING', text: 'The section in the arrangement it will perform. A minimal section view first; close mics for independent editing, treated as one system. A distant pair in a good room may be the most natural choice.' },
-      { title: 'BOTH AT ONCE', text: 'Take the recording feed before the PA’s EQ and dynamics when an unprocessed feed is wanted. Keep audience and room mics out of the monitor sends; agree who controls gain and phantom power on a shared split.' },
+      { title: 'BOTH AT ONCE', text: 'Take the recording feed before the PA’s EQ and dynamics when an unprocessed feed is wanted. Keep audience and room mics out of the monitor sends; agree on who controls gain and phantom power on a shared split.' },
     ],
   },
   two: {

@@ -166,7 +166,7 @@ describe('the quick check asks each idea once', () => {
     const hm = { prompt: 'What does a harmonica reed do to the air?', correct: 'Chops it into puffs as it swings through its slot' };
     const hm2 = { prompt: 'What actually makes the harmonica’s sound?', correct: 'Reeds swinging through their slots, chopping the air' };
     assert.ok(sameQuestion(hm, hm2));
-    const other = { prompt: 'What must a stand mic stay out of, round a mandolin player?', correct: 'The picking arc, the fretting hand and the player’s turn' };
+    const other = { prompt: 'What must a stand mic stay out of, around a mandolin player?', correct: 'The picking arc, the fretting hand and the player’s turn' };
     assert.ok(!sameQuestion(md, other));
   });
 });

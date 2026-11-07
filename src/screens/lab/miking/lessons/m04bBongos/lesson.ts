@@ -535,7 +535,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the fingers push the head down, where does the air inside the short shell go?', options: ['Down and out of the open end', 'Up, back out through the head', 'Nowhere — the air stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you shift the shared mic a little toward the hembra. What changes?', options: ['More hembra against the macho', 'More macho attack', 'Nothing until it is over the hembra'], after: 'Moving toward a drum tends to raise it against the other — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the hembra, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -656,7 +656,7 @@ export const M04B_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the bongos (the same drawing as every other page)', short: 'BONGOS', note: 'The macho on the player’s left, the hembra on the right, joined by the center block — between the knees here, or on a stand.', prov: { kind: 'sourced', src: 'LP-GEN2', quote: '7-1/4″ and 8-5/8″ drums' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'drums', label: 'the bongos', short: 'BONGOS', note: 'The macho on the player’s left, the hembra on the right, joined by the center block — between the knees here, or on a stand.', prov: { kind: 'sourced', src: 'LP-GEN2', quote: '7-1/4″ and 8-5/8″ drums' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'player', label: 'the player, seated', short: 'PLAYER', note: 'Hands from the front, the rear or either side; legs beside the drums that change position. Nothing of yours goes there.', prov: { kind: 'illustrative', reason: 'a seated player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor that can dominate a distant bongo mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into a bongo mic, especially a distant one.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
@@ -668,7 +668,7 @@ export const M04B_LESSON: HandLesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet room, a shared mic a little farther away can represent both drums more evenly — with more of the room.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a floor wedge in front of the player, the kit, vocal mics and other percussion nearby, and the PA facing the audience. A directional mic close enough for a useful direct-to-spill ratio — a second spot only for a real balance problem.',
-    studio: 'STUDIO: one performer, no wedges; one mic between and above the heads, and a little nearer or farther to compare. A figure-8 or a coincident pair are other images to explore.',
+    studio: 'STUDIO: one performer, no wedges; one mic between and above the heads, and a little nearer or farther to compare. A figure-8 or a coincident pair is another image to explore.',
   },
   diagnostic,
   practice: {
@@ -772,7 +772,7 @@ export const M04B_LESSON: HandLesson = {
       hdDynCard: 'Ideas to try with this kind of mic: one mic between and above the heads first; compare it centered, a little toward the macho, a little toward the hembra, and a little farther up — one change at a time.',
       hdDynHyper: 'Ideas to try with this kind of mic: a spot for each drum at a safe, comparable distance — its narrow pattern helps against kit spill. Check each alone, then the pair in mono.',
       hdSdc: 'Ideas to try with this kind of mic: in a quiet room, between and above the pair, or two of them as a coincident pair — then check the image in mono.',
-      hdClip: 'Ideas to try with this kind of mic: one clip-on at each rim, outside the hands — little stage space. Check the clamp fits, for vibration, cable strain and every finger motion.',
+      hdClip: 'Ideas to try with this kind of mic: one clip-on at each rim, outside the hands — little stage space. Check the clamp’s fit, vibration, cable strain and every finger motion.',
     },
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
@@ -785,7 +785,7 @@ export const M04B_LESSON: HandLesson = {
       looking: 'Side view · a spot just beyond the hembra’s rim, aimed back at its head',
       prompt: 'The wedge stays where the player needs it. Tilt the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still faces the head.',
       learn: [
-        { title: 'HOW MUCH ROOM', text: 'Studio: one mic between and above the heads, compared a little nearer and farther; a figure-8 or a coincident pair are other images. Live: a directional mic close enough for a useful direct-to-spill ratio.' },
+        { title: 'HOW MUCH ROOM', text: 'Studio: one mic between and above the heads, compared a little nearer and farther; a figure-8 or a coincident pair is another image. Live: a directional mic close enough for a useful direct-to-spill ratio.' },
         { title: 'HOW MANY MICS', text: 'Studio: a second spot only for a real balance problem. Live: compact, stable pickup — separate spots only when independent control is needed.' },
         { title: 'WHAT THE PART NEEDS', text: 'A pattern label cannot guarantee gain before feedback: open channels, distance, speaker positions and monitor level all matter. Sound-check at the intended level with the operator.' },
         { title: 'MOUNTING', text: 'A fixed stand may not keep covering a moving pair; a clip may transfer vibration. Coordinate stands and cables with the player and test the full range of motion.' },

@@ -30,7 +30,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a breath becomes a clarinet note — the reed, the air column, the first open hole — and where the sound leaves the instrument.',
     credit: { scenarios: ['cl.snd.1', 'cl.snd.2', 'cl.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The reed lets air in in puffs; the air column rings; most of each note leaves from the first open hole, and only the lowest notes from the bell. Up a twelfth for the upper register. A mic sees one part of a moving picture — tendencies, and clarinets vary.',
+    takeaway: 'The reed lets air in, in puffs; the air column rings; most of each note leaves from the first open hole, and only the lowest notes from the bell. Up a twelfth for the upper register. A mic sees one part of a moving picture — tendencies, and clarinets vary.',
   },
   setting: {
     title: 'Where it sits',
@@ -72,7 +72,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one clarinet mic in the right order, choose and justify a setup for a studio solo and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['cl.prac.order', 'cl.prac.gain', 'cl.prac.setup1', 'cl.prac.setup2', 'cl.prac.3', 'cl.mix.1', 'cl.mix.2', 'cl.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real clarinet.' },
-    takeaway: 'Clearance from the hands, the keys and the bell, the right power and level, a view of the holes AND the bell, and an accurate account of polarity versus delay pass. A brand or a bell-only aim do not — and more than one setup can pass.',
+    takeaway: 'Clearance from the hands, the keys and the bell, the right power and level, a view of the holes AND the bell, and an accurate account of polarity versus delay pass. A brand or a bell-only aim does not — and more than one setup can pass.',
   },
 };
 
@@ -98,7 +98,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cl.set.2',
     page: 'setting',
-    prompt: 'Which parts must a stand mic and its boom stay clear of around a clarinettist?',
+    prompt: 'Which parts must a stand mic and its boom stay clear of around a clarinetist?',
     options: ['The music stand, so the player can still read', 'The hands, the keys and the bell as it moves', 'The audience’s view of the clarinet’s bell'],
     correct: 'The hands, the keys and the bell as it moves',
     explain: 'Clearance comes first: the fingers, the keys and the thumbs, the bell as the player breathes and phrases — and the face. Stop the player before anything moves near them.',
@@ -137,9 +137,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'In a quiet, good-sounding room, is an omni a fair first try on a solo clarinet?',
     options: ['No — an omni hears too much of the bell on its own', 'No — an omni works only more than a meter away', 'Yes — a broad pickup that lets holes and bell blend'],
     correct: 'Yes — a broad pickup that lets holes and bell blend',
-    explain: 'An omni hears all round with no directional proximity effect — welcome when the room adds to the sound and nothing loud is near. As separation matters more, a wide cardioid or cardioid helps.',
+    explain: 'An omni hears all around with no directional proximity effect — welcome when the room adds to the sound and nothing loud is near. As separation matters more, a wide cardioid or cardioid helps.',
     why: {
-      'No — an omni hears too much of the bell on its own': 'An omni hears all round — the holes, the bell and the room together; it does not single out the bell.',
+      'No — an omni hears too much of the bell on its own': 'An omni hears all around — the holes, the bell and the room together; it does not single out the bell.',
       'No — an omni works only more than a meter away': 'An omni works at any distance; up close it also has no directional proximity bass.',
     },
   },
@@ -346,7 +346,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'cl.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A loud stage: a clarinettist in a band with drums and amps, a wedge in front, moving a little in solos. Phantom power available.',
+    brief: 'BRIEF 2 · A loud stage: a clarinetist in a band with drums and amps, a wedge in front, moving a little in solos. Phantom power available.',
     setups: [
       { id: 'a', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the clarinet — check the clip’s fit and the cable.' },
       { id: 'b', label: 'A cardioid on a stand close in front of the holes, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
@@ -361,7 +361,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the clarinet?', options: ['The bell', 'An open hole on the body', 'The mouthpiece'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 15–20 cm out to about a meter. What changes?', options: ['More room and blend', 'More key clicks', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the clarinet reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -420,7 +420,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     critical: true,
-    prompt: 'What must a stand mic and its cable stay clear of around a clarinettist?',
+    prompt: 'What must a stand mic and its cable stay clear of around a clarinetist?',
     options: ['The music stand, so the music can be read', 'The hands, the keys, the bell and the face', 'The audience’s view of the instrument'],
     correct: 'The hands, the keys, the bell and the face',
     explain: 'Clearance comes first: whatever moves — the fingers, the keys, the bell as the player breathes — and the face.',
@@ -446,7 +446,7 @@ const wedges: Wedge[] = [
   },
   {
     id: 'side',
-    label: 'another player’s wedge, off to the clarinettist’s right',
+    label: 'another player’s wedge, off to the clarinetist’s right',
     short: 'SIDE WEDGE',
     p: { x: -1350, y: floorY, z: 900 },
     lift: 150,
@@ -469,7 +469,7 @@ const copy: Partial<LessonCopy> = {
   instrument: {
     figureBadge: 'A B♭ clarinet, its keys toward you · every part named',
     figureLabel: 'A B♭ clarinet seen from the side, keys toward you.',
-    partsBadge: 'A clarinettist from the audience · tap a part to name it',
+    partsBadge: 'A clarinetist from the audience · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience', top: 'Top view · from above' },
     partsIdle: 'The reed starts the sound; the air column inside the long tube, of wood or plastic, rings; the open holes and the bell let it out — the next page shows how. The player holds it out in front, the hands on the keys.',
     variantNotes: { standing: 'STANDING: the same hold — the floor and the legs farther from the mic stand’s base. Switch POSTURE to sit the player down.' },
@@ -490,7 +490,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the middle of the clarinet, or the top of the bell. They are starting points, not rules. Move from there and listen: there is no single right answer, and every clarinet and room is different.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the fingers and thumbs, the keys, the bell as it moves, and the face. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the fingers and thumbs, the keys, the bell as it moves, and the face. The lab stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a balance of holes and bell; into the bell, the lowest notes stand out; very close to the keys, the clicks; farther, more room and blend. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and clarinets vary.',
     },
   },
@@ -527,7 +527,7 @@ const copy: Partial<LessonCopy> = {
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a solo may want the room and a blend of holes and bell. Live: a clarinet among drums and amps needs a closer, separated sound.' },
         { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbors. Live: monitors, the PA and the band. A closer mic, the right pattern and aim help — and nothing alone prevents feedback.' },
-        { title: 'MOVEMENT', text: 'Clarinettists move as they breathe and phrase. A stand mic has a working zone — mark it; a miniature on a clip keeps one distance as the player moves.' },
+        { title: 'MOVEMENT', text: 'Clarinetists move as they breathe and phrase. A stand mic has a working zone — mark it; a miniature on a clip keeps one distance as the player moves.' },
         { title: 'IN A SECTION', text: 'With a main pair up, a clarinet mic is a spot: bring it up only for a stated balance, and check it in mono. A section spot can sit between two players, pointing down.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a clarinet mic is normal; the question is how much the music can take.',
@@ -590,7 +590,7 @@ export const A08A_LESSON: WindLesson = {
   sound: {
     stages: [
       { title: 'Breath on the reed', text: 'The player blows into the mouthpiece. The pressure in the mouth pushes the thin end of the reed toward the mouthpiece, narrowing the gap the air comes through.' },
-      { title: 'The reed opens and closes', text: 'The reed swings shut and springs open again, letting the air in in puffs — and the air column inside sets the timing, so the reed keeps in step with it.' },
+      { title: 'The reed opens and closes', text: 'The reed swings shut and springs open again, letting the air in, in puffs — and the air column inside sets the timing, so the reed keeps in step with it.' },
       { title: 'The air column rings', text: 'A pressure wave runs down the bore, reflects where the tube meets the open air — at the first open hole — and comes back: a standing wave, strongest at the reed end, quiet at the open end.' },
       { title: 'Sound leaves the clarinet', text: 'Sound leaves from the first open holes, and from the bell for the lowest notes and for high partials of every note. Which place leads changes with every note — so a mic sees a moving picture.' },
     ],
@@ -642,7 +642,7 @@ export const A08A_LESSON: WindLesson = {
     soundSubject: 'A B♭ clarinet held by a seated player, seen from the audience, its bore drawn open',
     breath: 'The player’s breath and the tonguing are heard close to the mouthpiece; a clarinet sends little air out of its holes, so wind noise is rarely the problem a flute’s jet is.',
     keys: 'Key clicks, pads closing and the thumbs on the register key and the rings: strongest within a few centimeters of the keywork.',
-    directivity: 'Measured round a player in an anechoic (echoless) room: up to about 1 kHz the sound spreads fairly evenly, strongest toward the front; by 2 kHz more of it beams out of the bell, and behind the player it is about 13 dB quieter than in front.',
+    directivity: 'Measured around a player in an anechoic (echoless) room: up to about 1 kHz the sound spreads fairly evenly, strongest toward the front; by 2 kHz more of it beams out of the bell, and behind the player it is about 13 dB quieter than in front.',
     noteDefault: 9,
   }),
 };

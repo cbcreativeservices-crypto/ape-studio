@@ -74,7 +74,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second channel.',
     credit: { scenarios: ['k.prac.order', 'k.prac.gain', 'k.prac.setup1', 'k.prac.setup2', 'k.prac.3', 'k.mix.1', 'k.mix.2', 'k.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real drum.' },
-    takeaway: 'Safe placement, correct power and level checks, musical reasoning and an accurate account of polarity versus delay pass. A brand, a bass setting or a genre preset do not — and more than one setup can pass.',
+    takeaway: 'Safe placement, correct power and level checks, musical reasoning and an accurate account of polarity versus delay pass. A brand, a bass setting or a genre preset does not — and more than one setup can pass.',
   },
 };
 
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The body leaving the front head and the port',
     explain: 'Much of the body leaves through the front head and the port, so an outside mic tends to hear more resonance — and, outside the drum, more of the kit and the room as well.',
     why: {
-      'The beater’s attack, straight from the struck head': 'The attack starts at the batter head, on the far side of the drum from an outside mic: inside, close to the batter head, hears more of it.',
+      'The beater’s attack, straight from the struck head': 'The attack starts at the batter head, on the far side of the drum from an outside mic: a mic inside, close to the batter head, hears more of it.',
       'Only the room, because the shell blocks the drum': 'The front head itself radiates toward the mic, so it hears the drum — plus more of the room and the kit than an inside mic.',
     },
   },
@@ -266,7 +266,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A directional mic close to a radiating head boosts its own lows (proximity effect). Which surface it faces, the mic and the drum all matter — check it.',
     why: {
       'Right — the inside of the drum is simply where all the bass is': 'A starting point close to the batter head can give the most low end: proximity effect, not a rule about depth.',
-      'Wrong — the outside of the front head is where the bass really is': 'That is the same oversimplification the other way round. The surface faced, the mic and the drum all matter.',
+      'Wrong — the outside of the front head is where the bass really is': 'That is the same oversimplification the other way around. The surface faced, the mic and the drum all matter.',
     },
   },
   {
@@ -551,7 +551,7 @@ const setupTasks: SetupTask[] = [
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the beater pushes the batter head into the drum, what does the FRONT head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the beater', 'It stays still — only the struck head moves'], after: 'Now STEP through the strike (or PLAY ONCE) and watch both heads.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the downstage wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

@@ -51,7 +51,7 @@ const HAND: VoiceZoneSpec = {
   mount: 'clip',
   variants: ['sideline', 'twoMics'],
   start: { d: [100, 110, 90, 120, 80, 130], deg: 20, spread: 10, at: 'mouth' },
-  tendency: 'The speaker clearly ahead of the crowd and the other voice. Closer adds breath and handling; farther, or left between two people, and the crowd rises with the gain.',
+  tendency: 'The speaker clearly ahead of the crowd and the other voice. Closer adds breath and handling; farther, or left between two people, the crowd rises with the gain.',
   checks: ['The first syllable after every handoff', 'The flag and the mic clear of faces and the lens', 'Wind, handling noise and a shout’s headroom'],
 };
 

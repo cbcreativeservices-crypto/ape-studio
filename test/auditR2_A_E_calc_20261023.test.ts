@@ -111,7 +111,7 @@ describe('E1 — a 0 that has no answer is refused by name', () => {
     ['pads', 'tpad', { atten: 0, z: 600 }, /ATTENUATION must be above 0/],
     ['pads', 'pipad', { atten: 20, z: 0 }, /must be above 0/],
     ['vdrop', 'gaugeFor', { len: 30, current: 0, vsrc: 48, pct: 3, condTemp: 75 }, /CURRENT must be above 0/],
-    ['rackheat', 'safeLoad', { mains: 0, breaker: 15 }, /MAINS VOLTAGE must be above 0/],
+    ['rackheat', 'safeLoad', { mains: 0, breaker: 15 }, /AC VOLTAGE must be above 0/],
     ['complexz', 'resonance', { indmH: 0, capuF: 10 }, /With no inductance there is no resonance/],
     ['crossover', 'firstOrder', { fx: 2500, z: 0 }, /DRIVER IMPEDANCE must be above 0/],
     ['driver', 'sealed', { fs: 25, qts: 0, vas: 0.05, vb: 0.03 }, /TOTAL Q \(Qts\) must be above 0/],

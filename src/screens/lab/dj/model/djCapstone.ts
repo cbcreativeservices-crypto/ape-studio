@@ -54,7 +54,7 @@ export type FaultDef = {
 };
 
 /** The unsafe "fix", offered as a wrong repair and prevention every time. */
-export const EARTH_LIFT_OPTION: Wrong = { t: 'Lift the mains earth on the noisy unit so the hum stops.', why: 'Never: the mains earth is the safety, not the hum’s cure.' };
+export const EARTH_LIFT_OPTION: Wrong = { t: 'Lift the safety ground on the noisy unit so the hum stops.', why: 'Never: the safety ground is for safety, not the hum’s cure.' };
 
 export const FAULTS: Record<FaultId, FaultDef> = {
   CH2_SELECTOR: {
@@ -189,7 +189,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     symptom: 'A steady hum comes from the left of the room, even between tracks.',
     cause: 'PA L was on another circuit: the MASTER L shield (pin 1) closed a ground loop, and PA L’s input let it in (a pin-1 problem).',
     evidence: 'The hum was in the crowd but not in the booth monitors or the headphones, and only on the left — so it entered after the mixer.',
-    repair: 'Power PA L from the booth’s own strip (or put an isolation transformer in the MASTER L line). Never remove the mains earth.',
+    repair: 'Power PA L from the booth’s own strip (or put an isolation transformer in the MASTER L line). Never remove the safety ground.',
     prevention: 'Power the whole rig from one distribution point; carry an isolation transformer for the line that hums.',
     probe: 'Is the hum in the booth and the headphones too — or only in one speaker?',
     where: 'Look at the power row: where is each speaker plugged in?',
@@ -207,7 +207,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
         { t: 'Swap the MASTER L and MASTER R cables.', why: 'The hum stays with the speaker on the other circuit, whichever side feeds it.' },
       ],
       prevention: [
-        { t: 'Use shorter MASTER cables.', why: 'Length is not the cause: two earths on different circuits are.' },
+        { t: 'Use shorter MASTER cables.', why: 'Length is not the cause: two grounds on different circuits are.' },
         { t: 'Keep the PA’s level knobs low.', why: 'That lowers the hum and the music together.' },
       ],
     },
@@ -389,7 +389,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
         { t: 'Both sides of the room distorted.', why: 'Only the right side did.' },
       ],
       repair: [
-        { t: 'Turn the MASTER down until PA R sounds clean.', why: 'That quietens the whole room and leaves PA R on the wrong input.' },
+        { t: 'Turn the MASTER down until PA R sounds clean.', why: 'That quiets the whole room and leaves PA R on the wrong input.' },
         { t: 'Swap the PA L and PA R cables.', why: 'The fault is in the speaker’s setting: it would stay with PA R.' },
       ],
       prevention: [

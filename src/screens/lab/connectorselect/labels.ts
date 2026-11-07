@@ -15,6 +15,6 @@ export const CARRIED_LABELS: Record<CarriedType, string> = {
   clock_sync: 'Clock / sync',
   control_data: 'Control data',
   dc_power: 'DC power',
-  ac_mains: 'AC mains',
+  ac_mains: 'AC power',
   hybrid_power_data: 'Power + data',
 };

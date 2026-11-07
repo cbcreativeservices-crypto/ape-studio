@@ -87,7 +87,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
       body: (
         <>
           <Body>{lesson.practice.task}</Body>
-          <Body>Each brief accepts more than one setup — there is no single right answer. Choose one, then tick every reason that justifies it: the check reads your reasoning, not a single “right” position.</Body>
+          <Body>Each brief accepts more than one setup — there is no single right answer. Choose one, then check every reason that justifies it: the check reads your reasoning, not a single “right” position.</Body>
           {setups.map((t) => (
             <SetupTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}

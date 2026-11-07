@@ -99,9 +99,9 @@ describe('Lab 4 review fixes', () => {
       assert.ok(s, id);
       assert.match(s.correct, /ground lift/);
       assert.match(s.explain, /only the audio ground/);
-      assert.match(s.explain, /mains earth stays connected/);
-      const earth = s.options.find((o: string) => /earth pin/.test(o));
-      assert.ok(earth && /^Never\./.test(s.why[earth]), `${id}: the earth-pin option is answered "Never."`);
+      assert.match(s.explain, /safety ground stays connected/);
+      const earth = s.options.find((o: string) => /ground pin/.test(o));
+      assert.ok(earth && /^Never\./.test(s.why[earth]), `${id}: the ground-pin option is answered "Never."`);
     }
     assert.match(read('src/screens/lab/miking/lessons/shared/electric/ampPages.tsx'), /ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control/);
   });

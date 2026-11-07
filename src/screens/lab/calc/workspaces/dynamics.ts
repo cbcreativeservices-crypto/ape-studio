@@ -149,7 +149,7 @@ const WS_COMPRESSOR: Workspace = {
       plainFormula:
         'The ratio equals the input’s amount above the threshold divided by the wanted output’s amount above the threshold.',
       explain:
-        'Works backwards from a target. It compares how far the input sits above the threshold with how far you want the output to sit above it — the bigger that gap, the higher the ratio needed. If the target output is below the threshold, no downward ratio can reach it; only makeup gain or a lower threshold would.',
+        'Works backwards from a target. It compares how far the input sits above the threshold with how far you want the output to sit above it — the bigger that gap, the higher the ratio needed. If the target output is below the threshold, no downward ratio can reach it; only a gain cut after the compressor or a lower threshold would.',
       keySymbols: ['−', '/'],
       note: 'Requires the input to be above threshold and the target output to sit between threshold and input.',
       compute: (v) => {
@@ -183,7 +183,7 @@ const WS_COMPRESSOR: Workspace = {
           `Input above threshold: ${fmt(inp)} − (${fmt(thr)}) = ${fmt(above)} dB.`,
           `Wanted output above threshold: ${fmt(out)} − (${fmt(thr)}) = ${fmt(outAbove)} dB.`,
           `ratio = in-above ÷ out-above = ${fmt(above)} ÷ ${fmt(outAbove)} = ${fmt(above / outAbove)} → ${fmt(above / outAbove)}:1.`,
-          `(If the target output is below the threshold, no downward-compression ratio can reach it — only makeup gain or a lower threshold would.)`,
+          `(If the target output is below the threshold, no downward-compression ratio can reach it — only a gain cut after the compressor or a lower threshold would.)`,
         ];
       },
     },

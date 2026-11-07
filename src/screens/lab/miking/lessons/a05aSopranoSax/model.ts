@@ -49,7 +49,7 @@ export const SOPRANO_ZONES: DocumentedZone[] = [
   }),
   saxZone(F, 'sopFront', 'ss.bite', {
     label: 'Clip in front of the bell, for bite',
-    band: 'With the same clip, bring the capsule round in front of the bell, a few centimeters off the rim and aimed into it — a harder sound with more bite.',
+    band: 'With the same clip, bring the capsule around in front of the bell, a few centimeters off the rim and aimed into it — a harder sound with more bite.',
     tendency: 'Harder and brighter, with more edge and isolation — useful against a loud band; it can turn shrill on high notes.',
     checks: ['High notes for shrillness', 'The capsule clear of the rim and of the player’s knees', 'Wind from the bell'],
   }),

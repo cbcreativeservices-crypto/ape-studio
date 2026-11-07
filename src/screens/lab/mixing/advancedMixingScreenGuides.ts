@@ -317,7 +317,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Both versions send snare −10, guitar −14 and lead −12 dB; only the space changes.',
-      'BIG HALL has the longer tail on the plot, and the same parts sound further back and apart.',
+      'BIG HALL has the longer tail on the plot, and the same parts sound farther back and apart.',
     ],
     teaches: [
       'Depth is set design: several spaces at different distances, shaped returns, tempo-locked delays.',
@@ -491,7 +491,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Open Identical starts & lengths and look at how the stems line up on the timeline.',
-      'Open Standard stem sets: a common ask is drums, bass, music, vocals and FX — agreed before bouncing.',
+      'Open Standard stem sets: a common ask is drums, bass, music, vocals and FX — agreed on before bouncing.',
     ],
   },
 
@@ -527,25 +527,25 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p18: {
     seeing: [
       'THE PRACTICES: Version control, Metadata & documentation, Archive & recall.',
-      'THE DELIVERY CHECKLIST — TICKED, NOT REMEMBERED: six lines, each ☐ until ticked.',
+      'THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED: six lines, each ☐ until checked.',
       'A check about recalling a mix a year later, and goal chips.',
     ],
     control: [
       'Tap each practice to open it.',
-      'Tap each checklist line to tick it (☑), as if this were your delivery.',
+      'Tap each checklist line to check it (☑), as if this were your delivery.',
       'Answer the check below.',
     ],
     changes: [
-      'Each line you tick turns ☑ and stays ticked.',
-      'All six ticked completes the second goal chip.',
+      'Each line you check turns ☑ and stays checked.',
+      'All six checked completes the second goal chip.',
     ],
     teaches: [
       'Delivery is a craft: version names, aligned files, documentation and an archive.',
-      'A checklist is ticked, not remembered.',
+      'A checklist is checked, not remembered.',
       'The engineer whose files are named, aligned and documented right gets called again.',
     ],
     tryThis: [
-      'Tick the six lines in order and say, for each, what would go wrong if it were skipped.',
+      'Check the six lines in order and say, for each, what would go wrong if it were skipped.',
       'Open Archive & recall, then answer the check.',
     ],
   },
@@ -593,9 +593,9 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       '▶ THE HANDOFF, ▶ YOUR REPAIR and ▶ REPAIR, MONO compare, level-matched. 7 · Deliver is a button you tap on your honor.',
     ],
     changes: [
-      '1 · Diagnose ticks with the check. 2 · Rebuild the balance ticks with LEAD at −2 dB or higher, GTR at +1 dB or lower, and four channels changed.',
-      '3 · Clear the mud ticks when the keys are high-passed. Steps 4 and 5 tick when YOUR REPAIR plays: tamer sends and gentle 2:1 glue.',
-      '6 · Translation check ticks when REPAIR, MONO plays. All seven ✓ shows DELIVERED, with your page 2 priorities read back.',
+      '1 · Diagnose is ✓ by the check. 2 · Rebuild the balance is ✓ with LEAD at −2 dB or higher, GTR at +1 dB or lower, and four channels changed.',
+      '3 · Clear the mud is ✓ when the keys are high-passed. Steps 4 and 5 are ✓ when YOUR REPAIR plays: tamer sends and gentle 2:1 glue.',
+      '6 · Translation check is ✓ when REPAIR, MONO plays. All seven ✓ shows DELIVERED, with your page 2 priorities read back.',
     ],
     teaches: [
       'The whole job on a mix you did not start: diagnose, repair, glue, check in mono, deliver.',
@@ -603,7 +603,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The habit: at the end of every mix, ask whether it honored the priorities you set.',
     ],
     tryThis: [
-      'Once 1 · Diagnose is ✓: raise LEAD to −2 dB, pull GTR to +1 dB, lower BGV a little and tap HIGH-PASS THE KEYS. Steps 2 and 3 tick (four channels changed).',
+      'Once 1 · Diagnose is ✓: raise LEAD to −2 dB, pull GTR to +1 dB, lower BGV a little and tap HIGH-PASS THE KEYS. Steps 2 and 3 are ✓ (four channels changed).',
       'Play YOUR REPAIR, then REPAIR, MONO, and check that the lead still leads in the fold.',
     ],
   },

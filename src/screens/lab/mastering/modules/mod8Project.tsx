@@ -106,7 +106,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
           key: 'checks', title: 'Listening checks and tools', kind: 'PRACTICE', layout: 'read',
           body: (
             <>
-              <Body>Tick the checks and tools this EP needs. Then reveal the key: the point is the reasoning, not the score.</Body>
+              <Body>Select the checks and tools this EP needs. Then reveal the key: the point is the reasoning, not the score.</Body>
               <Checklist items={PROJECT_CHECKS} chosen={checks} onToggle={toggleCheck} reveal={revealed} />
               <Card tone="accent">
                 <Point title={revealed ? `${checkScore} of ${PROJECT_CHECKS.length} match the key` : 'Ready?'}>
@@ -161,7 +161,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
           key: 'qc', title: 'Final QC checklist', kind: 'PRACTICE', layout: 'read',
           body: (
             <>
-              <Body>The exports are rendered. Work the checklist on the files themselves — every line ticked, with the four track decisions on step 2 answered, completes the module. Your ticks are kept.</Body>
+              <Body>The exports are rendered. Work the checklist on the files themselves — every line checked, with the four track decisions on step 2 answered, completes the module. Your check marks are kept.</Body>
               <Checklist items={PROJECT_QC} chosen={qc} onToggle={toggleQc} />
               {/* "Delivered — a mastering job finished" only when it IS: with
                   every QC line ticked but a track decision still open, the

@@ -38,7 +38,7 @@ const Keys = (p: { x: number; z: number; heading: number }) => (
 
 const PAIR_MICS: PathMicOption[] = [
   { id: 'close', label: 'The close mic', short: 'CLOSE', typeId: 'shotgunShort', pattern: 'supercardioid', pose: zone('f05.mono').start, blurb: 'About 1.4 m from the middle of the path: the detail of the keys, a little room.' },
-  { id: 'room', label: 'The room mic', short: 'ROOM', typeId: 'ldcRoom', pattern: 'cardioid', pose: zone('f05.room').start, blurb: 'About 3 m out and 2 m up: the keys with the room round them.' },
+  { id: 'room', label: 'The room mic', short: 'ROOM', typeId: 'ldcRoom', pattern: 'cardioid', pose: zone('f05.room').start, blurb: 'About 3 m out and 2 m up: the keys with the room around them.' },
 ];
 
 export function F05TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone }: PageProps) {

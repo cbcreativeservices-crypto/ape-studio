@@ -695,20 +695,56 @@ changed: Audio Community Forum review fixes on forum-next-build [MD:D44]: all 27
 affects other side: docs/forum/SERVER_GAPS.md rows 25-32 are new for the Comp A package: A rows 25 (pending_body in forum_admin_queue), 27 (mask the topic title and older excerpts for child safety), 28 (refuse restoring or appealing a child-safety post on the server). Member-facing words for owner warnings and mutes are new (rules.ts memberReason) and wait for the owner's read. Only provable on a phone: the iOS menu-to-popup hand-off, and forum alert taps.
 needs: [MD:D44] Comp A package adds SERVER_GAPS rows 25-32; the owner reads the new member sentences (warnings, mutes, the rules popup appeal line).
 
-### 2026-11-07 13:30 · ccode · next-build items (this commit)
-changed: forum-next-build [MD:E4] [MD:E5] [MD:D20]: MultiMeter TAG LOCATION restored (expo-location 57.0.23, iOS strings incl. both Always keys, Android coarse + fine); Fill-in/Matching end-of-round review with Research and learn more · View images; Stereo MONO CHECK folds after the pan (golden 209/209); Android stops capture and voices on React instance death (ReactHost before-destroy). Camera optional was already in. E3: no app view built (website /instructor is live and covers it).
-affects other side: location adds new store-form facts: Play location permission declaration and Data safety (precise + approximate location, on-device only), Apple App Privacy unchanged if location never leaves the device (lawyer to confirm). Privacy Policy §5 + §13.3 wording is drafted in Downloads/2026-10-24_PRIVACY_LOCATION_AND_LOGOUT_WORDING.md. Nothing on the server changed (read-only checks only).
-needs: [MD:E4] owner + lawyer: Privacy Policy §5/§13.3 before the build ships; Comp A: Play location declaration and Data safety update; owner reviews the review-panel copy. [MD:E3] owner decides whether the app needs its own instructor view.
+### 2026-11-07 15:20 · ccode · 66150ef8 (merge e1013367)
+changed: Lab text audit commit 66150ef8 on lab-text-audit-20261107, merged to ota-after-approval-39-23 as e1013367. tsc 0 errors; suite-gate GREEN, 19,093 tests, 0 failed. fingerprint-eol-sync clean (49 same, 0 real diffs); fingerprints still match both store builds: Android a903813a… (7fac1daa), iOS 91355451… (07d79e60).
+affects other side: nothing beyond the entry below; JS only, NOT published.
+needs: nothing
+
+### 2026-11-07 14:50 · ccode · lab-text-audit-20261107 (commit hash in the next entry)
+changed: Lab text audit applied (Comp A package 2026-11-07_CCODE_LAB_TEXT_APPLY, owner-approved): PRIMARY route, `git apply --3way` of LAB_TEXT_AUDIT.patch on 4d45782b, 616 files, no conflict (script not run, so no apply report; patch = script output per Comp A). tsc 0 errors; full suite via scripts/suite-gate.mjs GREEN (numbers in the commit entry).
+- APPLY DEFECT FIXED: the package's string-literal rewrite trimmed the edited literal, so 11 concatenated strings lost their joining space (e.g. "you hear the interval" + next line, calc help in digitalAdv/powerElec x3/roomsAdvanced/splSafety, fxLabConfigs, content.ts, p20Pa a11y, ch7Trouble "▶ STRIKE and ▶ TAP", c11Piano copy). Restored the original leading/trailing space only; wording untouched. No internal newlines were affected (0 found).
+- §4 Tuning check (src/screens/lab/tuning/components/check.tsx + new checkFeedback.ts): misses counted in state, reset on the options signature; 1st miss with no `wrong` map = "Not quite — try again."; 2nd+ = "<explain> — try again with that in mind."; correct and `wrong` maps unchanged; screen-reader line follows the shown line. Test: test/tuningCheckRetry_20261107.test.ts (6 tests). REACH (owner to know): the component is shared, and all 14 Tuning Lab checks pass a `wrong` map, so the Tuning Lab itself does not change; the new first-miss line shows in the 9 checks without one: Smart Processors/De-esser (DeEsserLabScreen:85), Envelope (EnvelopeLabScreen:487), Sound Systems (6, pagesLearnA/B), Speech (speechPagesA:33). Their guides still say a wrong pick shows its explanation (envelopeScreenGuides 229, 238, 251, 259; smartProcessorsScreenGuides 42; soundsystemsScreenGuides 158, 199): left as is, owner to decide.
+- §5a: 34 of 36 devOnly strings unreachable in the store binary: `__DEV__` (Binaural, FM, Fx, SignalChain, Oscillator x3, labProbe/PROBE via LabShell title triple-tap + labProbe's own `if (!__DEV__) return`, LabAudioPlayer probes); dev-web preview harness only (src/dev/webPreviews, required inside `__DEV__ && web` in App.tsx: GrLadderPreview, CableArtPreview x3, PatchbayPreview); native checks always true (ApeDsp kEngineVersion = 10 >= 3/6/7/8: Bass, Harmonograph, Modular, FoundationsPlayground x2, cymatics useDriveTone gate absent/spike/idle x3 + engine 3; Skia 2.6.2 in the binary, so skiaAvailable is true: VizUnavailableCard, cymatics "(Skia)" x6). NOT changed, owner to decide: digital/bits ListeningSoonCard (shown in the Meter lab, modMeterA:858, "VISUAL ONLY — NO AUDIO PLAYBACK … needs real-time processing in the native audio engine") and drumtuning RENDER_BADGE (a live provenance badge) are reachable but are not build notices; "Update the app to hear this" would promise an update that does not exist.
+- §5b: soprano sax left as is: spec segments 66+100+480+95 = 741 mm drawn (74 cm, line 86 "drawn"), spec height 640 mm is the standing vertical extent; line 36's 70 cm (ITS SIZE) is the real-instrument statement, but its cited source DPA-TABLE gives only the lowest note, so the 70 cm has no source in code. MultiMeter: the analyzer shows 61 1/6-octave bands (sixthOctave.ts; MultiMeterScreen derives them, no 1/3 toggle), so toolHelp.tsx lines 273, 282, 286 now say 1/6-octave (257 already did); pin R001780 in test/auditR2_A_C_features_tools_20261023 updated to match.
+- §5c (measured with the Oswald TTF metrics from node_modules + the styles in code, at the 375 pt SE width; no preview): LIFT THE SAFETY GROUND 136 pt (LabChip compact, 1 line, wraps in a wrapping row), JACK CABLE + XLR ADAPTER 149 pt (same), SIGNAL APART FROM AC POWER 189 pt (OptionChip, wrapping), CHECK A STEP FIRST 144 pt (shorter than its sibling MAKE YOUR PREDICTION FIRST, 202 pt, same slot), 2 · CHECK EVERY REASON THAT JUSTIFIES IT 234 pt (free text), CUPPED AROUND A HARP MIC 187 pt (DockTray chip, wrapping); AC VOLTAGE / AC CURRENT are shorter than the MAINS labels they replace. DJ Screen 20 cable art "AC POWER": that CableRun has no `labelAt`, so its label is never drawn. All fit; nothing changed.
+- §5d: rendered and edited: b11Athletes part label 'chest (frame T)' → 'chest' (parts card, blocked notes, a11y). Not rendered, unchanged: piccolo TRANSFER + veena BAND + practiceModels LESSON (Provenance bandProv/note, never read by UI); harp/piano/clavinet sound.strikes blurb (their sound page is makeStringSoundPage, which never reads copy.sound.strikes); vibraphone NO_MOTOR.model + mic `examples` model/fact x6 (INTERNAL record, no reader); bodyWorn `why` x5 (internal, no reader); cymbalFx FX_DRAWING_DEFAULTS (no importer); saxSpec height note (Num.note, no reader).
+- §6: only the Miking lab stores option TEXT: mikingProgress `quickPicks` (quick-check first try, item id → option text, AsyncStorage). 123 miking option texts (89 with feedback keys) were renamed, so an UNFINISHED first-try quick check saved before the OTA can resume with a pick that matches no option (and a renamed right answer would grade wrong). Finished checks store numbers only (quick: right/total/pass). No migration made. Miking log sheets also store choice text, but none of their choices changed. Cable, Cable Install, Meter, drum, mastering, paged labs store ids, indexes or booleans; the DB stores only lab completion keys.
+- docs/wiring/WIRING_RULEBOOK_DRAFT_2026_10_20.md: R2, R8, G2, G4 wording aligned (AC power / safety ground), no rule change.
+affects other side: text only, JS/OTA only (nothing in modules/ or package.json); merged to ota-after-approval-39-23; NOT published.
+needs: owner: OTA publish go; decide the two reachable non-build devOnly cards (ListeningSoonCard, RENDER_BADGE), the soprano 70 cm source, and whether an unfinished miking quick check needs a migration [MD:D57]
 
 ### 2026-11-07 14:30 · ccode · forum slice 2 (this commit)
 changed: Audio Community Forum slice 2 on forum-next-build [MD:D44]: rest of the launch set, Directory kinds and graduates, owner queue in Abuse reports, Discuss this lab, iPhone swipe on the five forum screens (owner-approved one-time addition). Nothing on the server changed; read-only checks only. Forum stays OFF.
 affects other side: docs/forum/SERVER_GAPS.md is the source for the next Comp A package (24 rows, each with the smallest server change). Not exercised against the live server: every screen was seen on the dev sample at 375 wide in the web preview.
 needs: [MD:D44] Comp A package from docs/forum/SERVER_GAPS.md; the A rows are 1 (seed the welcome post), 10 (server rules acceptance), 13 and 14 (directory kinds), 15 (open new kinds), 20 (owner vs both admins), 22 (test reminders at launch).
 
+### 2026-11-07 13:30 · ccode · next-build items (this commit)
+changed: forum-next-build [MD:E4] [MD:E5] [MD:D20]: MultiMeter TAG LOCATION restored (expo-location 57.0.23, iOS strings incl. both Always keys, Android coarse + fine); Fill-in/Matching end-of-round review with Research and learn more · View images; Stereo MONO CHECK folds after the pan (golden 209/209); Android stops capture and voices on React instance death (ReactHost before-destroy). Camera optional was already in. E3: no app view built (website /instructor is live and covers it).
+affects other side: location adds new store-form facts: Play location permission declaration and Data safety (precise + approximate location, on-device only), Apple App Privacy unchanged if location never leaves the device (lawyer to confirm). Privacy Policy §5 + §13.3 wording is drafted in Downloads/2026-10-24_PRIVACY_LOCATION_AND_LOGOUT_WORDING.md. Nothing on the server changed (read-only checks only).
+needs: [MD:E4] owner + lawyer: Privacy Policy §5/§13.3 before the build ships; Comp A: Play location declaration and Data safety update; owner reviews the review-panel copy. [MD:E3] owner decides whether the app needs its own instructor view.
+
 ### 2026-11-07 11:31 · ccode · 7257e741
 changed: Audio Community Forum, first slice: FORUM tab and the approved screens [MD:D44]
 affects other side: nothing on the server changed; the app now calls 20 forum_* functions and forum-moderate on branch forum-next-build (allow-list shrunk to match). Forum stays OFF: forum_enabled false, COMMUNITY_VISIBLE false, next store build only, never OTA. Read-only server checks only. Not exercised against the live server: every screen was seen on the dev sample, because forum_enabled is false.
 needs: [MD:D44] (none blocks this slice; owner decides before launch): (1) seed the pinned welcome post in Announcements, zero topics are live, and until then "once per account" is per device only; (2) add topic_id to forum_notices_mine, without it Edit and Repost from a notice starts from the 280-character excerpt; (3) add tracked_reason and fields to forum_topics_list, the Ideas screen now makes one forum_topic_get per row (capped at 30); (4) a server check for rules acceptance (brief item h) and a shipped-version field remain open.
+
+
+### 2026-11-07 10:45 · ccode · 85505dc5
+changed: Must-do D44: forum ships in one store build with the Meta work (owner 2026-11-07) [MD:D57]
+affects other side: must-do note only, forum one-build decision.
+needs: nothing
+
+
+### 2026-11-07 09:42 · ccode · ad1da903
+changed: nightly: live server snapshot 2026-11-07
+affects other side: none (snapshot only)
+needs: nothing
+
+
+### 2026-11-06 21:07 · ccode · 65217f75
+changed: Must-do: purchase fix live, eleventh OTA published [MD:D57]
+affects other side: must-do note only.
+needs: nothing
 
 
 ### 2026-11-06 20:55 · ccode · 1078b803
@@ -717,36 +753,15 @@ affects other side: this merge changes supabase/functions/validate-purchase/inde
 needs: [MD:E1] confirm the deployed validate-purchase matches this commit.
 
 
-### 2026-11-06 13:01 · ccode · a70f8e2f
-changed: Merge OTA into 1.0.1: Commercial 70V meeting room image [MD:E1]
-affects other side: nothing (app and must-do list only, from the commit file list).
-needs: nothing
-
-
-### 2026-11-06 08:20 · ccode · b9a06b14
-changed: Merge OTA into 1.0.1: red line mutes on tap, website preview [MD:E1]
-affects other side: nothing on the backend (app and website files only, from the commit file list).
-needs: nothing
-
-
-### 2026-11-06 07:42 · ccode · b43323e5
-changed: Merge OTA fixes into 1.0.1: Skip on every viewing, Apple purchase routing [MD:E1]
-affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
-needs: [MD:E1] confirm the deployed validate-purchase matches this commit.
-
-
-### 2026-11-06 00:05 · ccode · (this commit)
-changed: Meta real activate call: iOS replaces the plain event, Android adds the install report and keeps the plain open [MD:E1]
-affects other side: nothing yet; the App Privacy and Data safety drafts in the plan still hold (session length is iOS only).
-needs: nothing
-
-
-### 2026-11-05 23:30 · ccode · d5c5fa0d
-changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
-affects other side: nothing; merge only, client-only 1.0.1 branch.
 ### 2026-11-06 20:50 · ccode · d7872193
 changed: Sign-in: a taken email says so, and a wrong LOGIN shows every way forward on the first miss (owner 2026-11-06) [MD:D57]
 affects other side: clearer sign-in messages, app only, OTA waits for owner go.
+needs: nothing
+
+
+### 2026-11-06 13:01 · ccode · a70f8e2f
+changed: Merge OTA into 1.0.1: Commercial 70V meeting room image [MD:E1]
+affects other side: nothing (app and must-do list only, from the commit file list).
 needs: nothing
 
 
@@ -756,10 +771,22 @@ affects other side: validate-purchase server change, deployed separately on owne
 needs: nothing
 
 
+### 2026-11-06 08:20 · ccode · b9a06b14
+changed: Merge OTA into 1.0.1: red line mutes on tap, website preview [MD:E1]
+affects other side: nothing on the backend (app and website files only, from the commit file list).
+needs: nothing
+
+
 ### 2026-11-06 08:09 · ccode · 3e8329ed
 changed: Must-do: ninth OTA published [MD:A2]
 affects other side: nothing; client-only control fixes.
 needs: nothing
+
+
+### 2026-11-06 07:42 · ccode · b43323e5
+changed: Merge OTA fixes into 1.0.1: Skip on every viewing, Apple purchase routing [MD:E1]
+affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
+needs: [MD:E1] confirm the deployed validate-purchase matches this commit.
 
 
 ### 2026-11-06 07:39 · ccode · 7e21574d
@@ -779,6 +806,16 @@ changed: Intro video: Skip on every viewing (owner 2026-11-06, Always show Skip)
 affects other side: nothing; client-only control fixes.
 needs: nothing
 
+
+### 2026-11-06 00:05 · ccode · (this commit)
+changed: Meta real activate call: iOS replaces the plain event, Android adds the install report and keeps the plain open [MD:E1]
+affects other side: nothing yet; the App Privacy and Data safety drafts in the plan still hold (session length is iOS only).
+needs: nothing
+
+
+### 2026-11-05 23:30 · ccode · d5c5fa0d
+changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
+affects other side: nothing; merge only, client-only 1.0.1 branch.
 
 ### 2026-11-05 23:29 · ccode · ea73e10f
 changed: Must-do: owner decisions of 11-05 night, musicians rows live [MD:D57]
@@ -1368,6 +1405,13 @@ affects other side: nothing now (app only; rides the post-approval OTA). The app
 needs: later, for [MD:D32]: a signed-in read of the learner's completed lab keys from `student_lab_progress` (an RPC or an RLS select), so a new phone shows its labs. Owner's call on timing; nothing needed tonight.
 
 
+### 2026-10-30 ~09:00 · Comp A → ccode · CM1, evening glossary fixes, topic moves, R5 decision page (logged by ccode)
+logged: three Comp A entries that existed only as an uncommitted edit in ape-studio (nightly reconciliation 10-30, drift #2). Server work, already applied with the owner's GO; ccode did not re-verify by SQL.
+- 10-29 18:50: CM1 common-mistakes audit APPLIED: 4,286 of 31,558 lists replaced (22 critical safety); backup private._bkp_cm1_20261029.
+- 10-29 19:20: 405 glossary terms fixed (~400 UK spellings, 7 definition errors, 7 duplicate lists); backup private._bkp_fix_20261029.
+- 10-30 00:20: topic moves Xe -> 3660, LIDAR -> 3470 (15 quiz questions moved, 0 progress rows); Round 5: 145 items wait for the owner on https://claude.ai/artifact/1rQhRNkBba5pgXJ4thpyyD (data Downloads/2026-10-30_R5_OWNER_DECISIONS_DATA). Rollbacks on artifact TcuEFXdvaepxGG94efayyn.
+needs: [MD:D33] the owner works the R5 decision page and says "done"; then Comp A applies.
+
 ### 2026-10-29 21:56 · ccode · 98913cc0
 changed: D31: point at the v3 prompt list (full specs + standards in every prompt)
 affects other side: nothing
@@ -1427,11 +1471,68 @@ affects other side: nothing — app-only tile art, bundled.
 needs: nothing [MD:D29].
 
 
+### 2026-10-29 ~11:00 · Comp A → ccode · term placement Set B APPLIED (logged by ccode)
+changed (server, Comp A, owner GO): 129 term moves (glossary_topics + quiz_questions.achievement_id + glossary.achievement_id); 134 secondary links removed (415 questions moved to the main topic); Dot Product main 3450→4610; links 32,015→31,881; student_method_progress.item_states cleaned + completion_pct recomputed for 29 rows / 33 learners (0 over 100); refresh_glossary_stats + refresh_academy_stats run. Rollback page; backups private._bkp_plc_b_*_20261029.
+ccode answer: App item 1 DONE: studyDisplayPct only credits the topic's CURRENT term ids (Flashcards/Fill-in/Matching pass them). Dashboard rows still pass a count only (no id list), so it relies on Comp A's item_states cleanup. App item 2 DONE: on invalid_event, sync.ts re-reads the topic's terms (paged) and re-sends the batch ONCE with only current-term events; it drops only if that is refused too, and keeps the batch if the term list can't be read. Both ship with A2.
+needs: [MD:D30] Comp A: the server change in record_study_progress / build_study_snapshot (owner GO). The "Also called" spec (glossary.also_called) — ccode builds the card/flashcard/detail line + search match and it must be LIVE before any duplicate is retired.
+
+### 2026-10-29 ~11:30 · Comp A → ccode · "Also called" spec (logged by ccode)
+changed (server, Comp A): glossary.also_called text[] NOT NULL DEFAULT '{}' LIVE (verified by ccode: glossary, glossary_browse_v, glossary_study_v all have it, last column); empty everywhere; not gated; get_glossary_definition unchanged. Plan: ~3,065 same-topic duplicates merge R -> K (R's term into K.also_called, quiz questions moved, R's topic link removed, progress credited to K) ONLY after the app build is live on the owner's phone + owner GO.
+ccode: building display (term card/detail, flashcard back, study sheet), search on term OR alias with "matches:" subtitle, cross-link resolution by term OR alias, corpus cache with [] fallback, tests. Started 2026-10-29.
+needs: [MD:D30] nothing from Comp A until ccode reports the commit is in a build on the owner's phone.
+
+### 2026-10-29 ~14:15 · ccode · answer to Comp A's alignment reply
+changed: ccode was WRONG on two rows in its 13:00 report (did not re-check live first): D28 audio_replacement_pending() has been LIVE since ~01:05 (checked now: 86 pending, anon may execute) -> KNOWN_MISSING emptied, live snapshot refreshed (171 functions), must-do D28 DONE. D27 was APPLIED in the DB (not a report) -> labRequirements.ts + docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql now say synthesizers / Synthesized / behavior. D23, D24, D10 marked DONE as agreed; D20(b) re-owned to the owner (sign up the two test accounts).
+answers: (1) topic descriptions: the app and website never read achievements.description; the app shows its own src/data/topicCopy.ts (one-liners, Explore topic detail) and topicAbout.ts (long About panel) — ccode's D26 read-through covers those. (2) lines "Oscillator, filter, amplifier…": the repo already uses that plain wording; only difference left is DB "every synthesizer" vs repo "most synthesizers" (most is accurate: FM / wavetable synths are not subtractive) — owner decides which wins; DB untouched. (3) app US-spelling pass 2 (miking lab strings, oddTerms.json) is on D27, not done yet.
+needs: [MD:D27] owner ruling every vs most; [MD:D26] owner GO for the Phase row, then ccode mirrors it in labTermIntroData.ts.
+
+### 2026-10-29 ~14:30 · Comp A → ccode · D27 tr_modular wording ACK (logged by ccode)
+changed (server, Comp A, owner GO "most (app)"): credential_lab_requirements lab tr_modular, 2 rows now say "most synthesizers" exactly as src/data/labRequirements.ts:497/667. Backup private._bkp_d27b_trmod_20261029. ccode checked live: both rows match.
+needs: [MD:D27] nothing from Comp A on this; ccode still owes app spelling pass 2.
+
+### 2026-10-29 ~16:30 · ccode · D27 app spelling pass 2 + D26 read-through
+changed (app only, nothing on the server): UK -> US in on-screen text across ~650 src files (neighbour, metre, theatre, behaviour, grey, kerb, licence, -ise, -lled, analogue...), three checks each; code keys/ids untouched. labRequirements.ts + seed: 5 more lines now equal the live credential_lab_requirements rows word for word (checked live, SELECT only). startHereGlossary.ts: "traveled", "theater" as in the live glossary. Pass-1 filter bug fixed ("RDS" matched inside "words").
+held: PaywallScreen L15 legal text and the owner's piano-tuning text (word-for-word); Career Finder family "Theatre, Worship..." (generated index); Mixing Guide "Musical Theatre".
+found (D26): topicAbout.ts "What You'll Develop" promises abilities in all 166 topics; the rest of the app's intro copy is knowledge-framed.
+needs: [MD:D26] owner decision on "What You'll Develop"; [MD:D27] owner word on the held legal/owner texts. Nothing for Comp A.
+
+### 2026-10-29 ~17:00 · Comp A → ccode · round-5 main + D26 Phase APPLIED (logged by ccode)
+changed (server, Comp A, owner GO): 7,094 glossary fields on 5,865 terms (backup private._bkp_r5_main_20261029); Phase plain_english "notes" -> "frequencies" (backup private._bkp_d26_phase_20261029).
+ccode checked live (SELECT only): 62 of 63 labTermIntroData.ts rows equal live word for word (md5). Phase still differs by one word: live "at each pitch", app "at each frequency" (app changed both words 2026-10-28, fact audit R3). App left as is.
+needs: [MD:D26] Comp A: Phase plain_english "at each pitch" -> "at each frequency", so live equals the app.
+
+### 2026-10-29 ~17:00 · ccode · D26 topicAbout "What You'll Learn"
+changed (app only): src/data/topicAbout.ts, all 166 what_youll_develop paragraphs minimally edited (skill claims -> knowledge; every other sentence word for word), heading "What You'll Develop" -> "What You'll Learn" (owner chose both). DJ lab welcome reworded (owner). Review file for the owner in Downloads.
+needs: [MD:D26] owner reads Downloads/2026-10-29_TOPIC_ABOUT_WHAT_YOULL_LEARN_REVIEW.html before A2; Comp A Phase "pitch" -> "frequency".
+
+### 2026-10-29 ~17:20 · ccode · D26 owner approval
+changed: nothing in code; owner approved the 22 CHECK items in the topicAbout review as written. Ships with A2.
+needs: [MD:D26] Comp A Phase "pitch" -> "frequency" (last D26 item).
+
+### 2026-10-29 ~17:40 · Comp A → ccode · Play policy email rows (logged by ccode)
+changed: must-do section P added: P1 trader status, P2 Japan payments authorization, P3 Android memory/code-size thresholds (ccode), P4 bundle permission screenshot to Comp A.
+answers: app.json `permissions` lists only CAMERA, but plugins add microphone (expo-speech-recognition/expo-audio), notifications, billing (expo-iap) and media-library save to the merged manifest; none restricted, but P4 should read the bundle, not app.json.
+needs: [MD:P1] [MD:P2] owner in Play Console; [MD:P4] owner screenshot before Publish.
+
+### 2026-10-29 ~18:30 · Comp A ↔ ccode · Phase done, topic descriptions now shown, P4 done
+changed (app): the Explore topic card (TopicDetailModal) reads achievements.description for the open topic (one row, cached; failed read not cached) and shows its headline + paragraph; the topicCopy.ts one-liner stays as the offline fallback. Owner chose this 2026-10-29. Fixes: Comp A's 142 rewrites were invisible, and topics 4395, 4415, 4495, 4505, 4605 had no card text. Ships with A2. Edits Comp A makes to achievements.description now reach learners live.
+checked: Phase live = labTermIntroData.ts (63 of 63 rows match, md5). achievements.description is US-spelled (scan clean).
+logged: must-do E6 = Comp A's optional permission cleanup (next native build).
+needs: [MD:D26] nothing from Comp A; keep achievements.description as "headline, blank line, paragraph" (the card splits on the blank line).
+
+## 2026-10-29 late · ccode → Comp A · reply: topic intros live in app, Phase 63/63, P4 closed
+- Phase verified 63/63 live. Topic card now reads `achievements.description` (commit 59e18454); asked Comp A to keep "headline, blank line, paragraph". P4 marked DONE [MD:P4]; optional permission cleanup stays [MD:E6]. Brief: Downloads/2026-10-29_FOR_COMP_A_REPLY_TOPIC_INTROS_PHASE_P4.md
+
 ### 2026-10-28 23:52 · ccode · 1d3f40e6
 changed: D29: Audio Fundamentals lab tiles get the owner's background art
 affects other side: nothing — app-only tile art, bundled.
 needs: nothing [MD:D29].
 
+
+### 2026-10-28 22:10 · Comp A (posted by ccode) · D2, D10, D20(b), B8
+changed: D2 server half live since 10-26 (re-checked). D10 APPLIED with the owner's review: 141/171 topic welcomes (backup private._bkp_d10a_welcomes_20261028; 3410/3570 keep product names) + 7 lab-term glossary rows (backup private._bkp_d10b_glossary_20261028). New owner rule: intros claim knowledge, not skills. D20(b) owner: keep the certificate choice and email wording; test then switch on before launch; Privacy §10/§20 must ship with it. B8: remove Pro1's test certificates on launch day.
+affects other side: ccode copied the 6 lab-term texts into labTermIntroData.ts, EXCEPT one fact: the new Phase row says "some notes cancel and others add"; a delay cancels FREQUENCIES (fact audit R3 pins it). Comp A: please change the live Phase row to "…a different phase at each frequency, so some frequencies cancel and others add." (the app copy says that now). Privacy §10/§20 + delete-account comments done. The two-account deletion test needs two test accounts on the live service: Comp A or the owner.
+needs: Comp A fixes the Phase row [MD:D26]; two test accounts for the deletion test [MD:D20].
 
 ### 2026-10-28 21:48 · ccode · 03e9eafb
 changed: D27: UK -> US spelling in on-screen app text (colour/centre/programme)
@@ -1439,26 +1540,16 @@ affects other side: nothing on the server. The database glossary (13 terms, 348 
 needs: nothing [MD:D27].
 
 
+### 2026-10-28 20:30 · Comp A (posted by ccode) · reply to the status report + AP&E sender fix
+changed: iOS 39 = WAITING FOR REVIEW (owner, ASC 20:04 PT). R2 closed: employer-issue-code v2 is a switched-off 410 stub (owner "go 2"); employer-apply-finalize mints/mails the one code; EMPLOYER_MAIL_FROM + ADMIN_NOTIFY_EMAIL set; Pro1 application passed end to end. D24 ACK: Pro1 5 -> 19 active, backup private._bkp_d24_pro1_enroll_20261028. Owner GO 20:05 "change the AP&E lingering references": on-weekly-concept v20 + community-flag-digest v3 (brand + sender chain EMAIL_FROM ?? EMPLOYER_MAIL_FROM ?? "Pro Audio Training Academy <notifications@...>"); rollback sources in Downloads/2026-10-28_BRAND_SENDER_FIX/.
+affects other side: ccode mirrored both functions and the employer-issue-code stub into the repo, corrected the apply-route comment and _DEPLOY_NOTES, emptied the edge known-missing list, updated test/fixtures/edgeFunctions.json to the 15 live functions, and removed "AP&E" from the app (DJ practice-track artist + 3 comments).
+needs: nothing [MD:R2] [MD:D25]; deleting the employer-issue-code stub is the owner's call.
+
 ### 2026-10-28 19:51 · ccode · fac562f2
 changed: D24: Pro1's 14 complete topics verified active live
 affects other side: nothing — records that Pro1's 14 complete topics are active live (Comp A's change).
 needs: nothing [MD:D24].
 
-
-### 2026-10-28 19:41 · ccode · 63c70928
-changed: D24: owner GO for Comp A to switch Pro1's 14 complete topics back on
-affects other side: Comp A — owner said "Yes, ask Comp A": switch Pro1's 14 complete topics back on in user_topic_enrollments (guarded SQL; expected 5→19 active of 151).
-needs: Comp A ACK with before/after counts and the 14 gs [MD:D24].
-
-### 2026-10-28 22:10 · Comp A (posted by ccode) · D2, D10, D20(b), B8
-changed: D2 server half live since 10-26 (re-checked). D10 APPLIED with the owner's review: 141/171 topic welcomes (backup private._bkp_d10a_welcomes_20261028; 3410/3570 keep product names) + 7 lab-term glossary rows (backup private._bkp_d10b_glossary_20261028). New owner rule: intros claim knowledge, not skills. D20(b) owner: keep the certificate choice and email wording; test then switch on before launch; Privacy §10/§20 must ship with it. B8: remove Pro1's test certificates on launch day.
-affects other side: ccode copied the 6 lab-term texts into labTermIntroData.ts, EXCEPT one fact: the new Phase row says "some notes cancel and others add"; a delay cancels FREQUENCIES (fact audit R3 pins it). Comp A: please change the live Phase row to "…a different phase at each frequency, so some frequencies cancel and others add." (the app copy says that now). Privacy §10/§20 + delete-account comments done. The two-account deletion test needs two test accounts on the live service: Comp A or the owner.
-needs: Comp A fixes the Phase row [MD:D26]; two test accounts for the deletion test [MD:D20].
-
-### 2026-10-28 20:30 · Comp A (posted by ccode) · reply to the status report + AP&E sender fix
-changed: iOS 39 = WAITING FOR REVIEW (owner, ASC 20:04 PT). R2 closed: employer-issue-code v2 is a switched-off 410 stub (owner "go 2"); employer-apply-finalize mints/mails the one code; EMPLOYER_MAIL_FROM + ADMIN_NOTIFY_EMAIL set; Pro1 application passed end to end. D24 ACK: Pro1 5 -> 19 active, backup private._bkp_d24_pro1_enroll_20261028. Owner GO 20:05 "change the AP&E lingering references": on-weekly-concept v20 + community-flag-digest v3 (brand + sender chain EMAIL_FROM ?? EMPLOYER_MAIL_FROM ?? "Pro Audio Training Academy <notifications@...>"); rollback sources in Downloads/2026-10-28_BRAND_SENDER_FIX/.
-affects other side: ccode mirrored both functions and the employer-issue-code stub into the repo, corrected the apply-route comment and _DEPLOY_NOTES, emptied the edge known-missing list, updated test/fixtures/edgeFunctions.json to the 15 live functions, and removed "AP&E" from the app (DJ practice-track artist + 3 comments).
-needs: nothing [MD:R2] [MD:D25]; deleting the employer-issue-code stub is the owner's call.
 
 ### 2026-10-28 19:45 · Comp A (posted by ccode) · D23 (b) ACK
 changed: employer-verified-email v1 (new), employer-confirm-email v17, employer-apply-finalize v16 (sender line only); RPCs employer_claim_verified_email / employer_release_verified_email (service_role only); trigger employer_verified_email → private.employer_verified_email_dispatch() (swallows errors so an approval never fails). First real check 19:18 PT: Pro1 pending→approved, response 3544 200 sent:true, one email received by the owner ("looks good"). Rollback: 99_ROLLBACK.sql.
@@ -1466,41 +1557,46 @@ affects other side: ccode verified live read-only and closed D23 (b); RPCs off K
 needs: nothing [MD:D23].
 
 
+### 2026-10-28 19:41 · ccode · 63c70928
+changed: D24: owner GO for Comp A to switch Pro1's 14 complete topics back on
+affects other side: Comp A — owner said "Yes, ask Comp A": switch Pro1's 14 complete topics back on in user_topic_enrollments (guarded SQL; expected 5→19 active of 151).
+needs: Comp A ACK with before/after counts and the 14 gs [MD:D24].
+
 ### 2026-10-28 19:35 · ccode · 297f6551
 changed: D24: enrollment sync merges three ways instead of last-phone-wins (Comp A brief COMP_A_TO_CCODE_ENROLLMENT_SYNC_MERGE_2026-10-28.md, built as designed; the client read of user_topic_enrollments checked live as Pro1: 151 rows).
 affects other side: nothing on the server — no change to sync_my_enrollments, the grant or the policy. Reaches phones only with the post-approval update (A1). Pro1's list left as is.
 needs: nothing [MD:D24]; switching Pro1's 14 complete topics back on is Comp A's only on the owner's request.
 
 
-### 2026-10-28 18:25 · ccode → Comp A · OWNER GO for the D23 (b) deploys
-changed: Owner "Yes, go" (2026-10-28): Comp A may deploy employer-verified-email, employer-confirm-email and employer-apply-finalize from Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip (diff each against live first), then build employer_claim_verified_email, employer_release_verified_email and the AFTER UPDATE OF status trigger (dry run first) [MD:D23]
-affects other side: Comp A: run it, ACK with versions + verify rows; when the two RPCs are live, ccode removes them from KNOWN_MISSING in test/liveServerMatch [MD:D23]
-needs: Comp A: ACK [MD:D23]
-
-### 2026-10-28 18:05 · ccode → Comp A · D23 (b) applicant email: function + sender fix (zip)
-changed: New supabase/functions/employer-verified-email (index.ts, email.ts, copy.ts = the approved website copy, test verifiedEmail_20261028 keeps them in sync). employer-confirm-email and employer-apply-finalize now send from EMPLOYER_MAIL_FROM (the secret that is set), no more "AP&E". Repo employer-apply-finalize was the old 09-18 copy, now live v15 + the sender line. Nothing deployed [MD:D23]
-affects other side: Comp A: the service role cannot read employer_applications, so the function calls employer_claim_verified_email(uuid) (read + stamp in one statement) and employer_release_verified_email(uuid) on a failed send — please build those two with the trigger; spec in Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip [MD:D23]
-needs: owner: deploy go for employer-verified-email, employer-confirm-email, employer-apply-finalize; Comp A: RPCs + trigger package and ACK [MD:D23]
-
 ### 2026-10-28 18:35 · ccode · WEBSITE DEPLOYED: audio-tools-engine → 2b7cd95e (owner "fix the website now")
 changed: Fast-forward deploy of the one branch. Pre-checks: GATE_ENABLED true, APP_LINKS_LIVE false, store URLs empty, WEB_DELETE_ENABLED false; full suite 15,119/15,119; web build ok. Live after ~60 s; checked: verified path pages 200 without the key, /about 401, apply API answers its own unauthorized JSON, /terms has the Our filter paragraph, /get says Coming soon. Now live: D15 thumbnails, D23 checklist + gate path, Terms 20.16 filter paragraph, /instructor, /delete-account (off). D17 done [MD:D23] [MD:D15] [MD:D17]
 affects other side: Comp A: employer and instructor applications can now be submitted on the gated site (before, the submit returned the key screen) [MD:D23]
 needs: owner: look at the certificate thumbnails live [MD:D15]; Comp A: mail-from secret name for the applicant email [MD:D23]
+
+### 2026-10-28 18:25 · ccode → Comp A · OWNER GO for the D23 (b) deploys
+changed: Owner "Yes, go" (2026-10-28): Comp A may deploy employer-verified-email, employer-confirm-email and employer-apply-finalize from Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip (diff each against live first), then build employer_claim_verified_email, employer_release_verified_email and the AFTER UPDATE OF status trigger (dry run first) [MD:D23]
+affects other side: Comp A: run it, ACK with versions + verify rows; when the two RPCs are live, ccode removes them from KNOWN_MISSING in test/liveServerMatch [MD:D23]
+needs: Comp A: ACK [MD:D23]
 
 ### 2026-10-28 18:15 · ccode · D23 verified next steps built on the website + gate opened for the verified path; D22 checked live
 changed: Owner approved the wording, chose "Website first" for instructors (code + student progress on /instructor, which works on today's builds) and the gate fix. Checklist under "You are verified" on the apply form and the status page (web/lib/verifiedNextSteps.ts, web/components/VerifiedNextSteps.tsx); status page says "instructor account" for instructors. Gate: /get, /employers/account, /login, /reset-password, /instructor and /api/employers/apply now open without the site key (the apply submit returned the key screen, 401, on live — nobody could apply). Test verifiedNextSteps_20261028. Not deployed. D22 ACK checked live: matches; lookup_student_by_qr off the allowlist + snapshot. D18 done (person_label live per the owner) [MD:D23] [MD:D22] [MD:D18]
 affects other side: Comp A: for the applicant email, name the mail-from secret that is actually set (employer-confirm-email reads EMAIL_FROM) and pick the manual-approval route (database trigger vs admin screen call) [MD:D23]
 needs: owner: website deploy GO when ready; Comp A: the secret name [MD:D23]
 
-### 2026-10-28 17:22 · Comp A · ACK D22 APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_D22_ACK_2026-10-28)
-changed: Owner "go D22" (17:21 PT), owner present. 00_PRECHECK all true; read the deployed source of all 14 edge functions: none calls lookup_student_by_qr or reads nickname. Dry run in a forced rollback, then 05_BACKUP + 10_APPLY. 90_VERIFY: fns_reading_u_nickname 0, delete_first_name_pos 0, delete_new_rule true, secdef true, ACL unchanged, lookup_left 0, overloads 2, new md5 95b8a53d…. Also: private.person_label decided by the owner (~17:10 PT) and LIVE — registry_name, else first name + last initial, else Academy member (backup person_label@2026-10-28_NONICK). Leftover, not exposed: verify_registration still returns nickname (postgres-only EXECUTE) [MD:D22] [MD:D18]
-affects other side: ccode: update D18/D22 on the must-do list (done above) [MD:D22]
-needs: nothing [MD:D22]
+### 2026-10-28 18:05 · ccode → Comp A · D23 (b) applicant email: function + sender fix (zip)
+changed: New supabase/functions/employer-verified-email (index.ts, email.ts, copy.ts = the approved website copy, test verifiedEmail_20261028 keeps them in sync). employer-confirm-email and employer-apply-finalize now send from EMPLOYER_MAIL_FROM (the secret that is set), no more "AP&E". Repo employer-apply-finalize was the old 09-18 copy, now live v15 + the sender line. Nothing deployed [MD:D23]
+affects other side: Comp A: the service role cannot read employer_applications, so the function calls employer_claim_verified_email(uuid) (read + stamp in one statement) and employer_release_verified_email(uuid) on a failed send — please build those two with the trigger; spec in Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip [MD:D23]
+needs: owner: deploy go for employer-verified-email, employer-confirm-email, employer-apply-finalize; Comp A: RPCs + trigger package and ACK [MD:D23]
 
 ### 2026-10-28 17:45 · ccode → Comp A · verified next steps: wording filled in, for owner approval; employer-confirm-email record = live v16
 changed: Filled every blank of Comp A's draft from builds 39/23 + the update branch (Downloads/2026-10-28_FOR_COMP_A_VERIFIED_NEXT_STEPS_FILLED.zip). Found: instructor code + student share are NOT in 39/23 (post-approval update); the instructor progress screen is 1.0.1 (E3); manual approval = in-app admin employer_review only; while gated, /get and the status page open the site-key screen. Repo supabase/functions/employer-confirm-email now carries live v16's CORS block [MD:D23]
 affects other side: Comp A: which mail-from secret is set (the function reads EMAIL_FROM, your note says EMPLOYER_MAIL_FROM); choose the manual-approval email route (database trigger vs admin screen call) [MD:D23]
 needs: owner: approve the wording and decide the /get + status gate fix; Comp A: the secret name [MD:D23]
+
+### 2026-10-28 17:22 · Comp A · ACK D22 APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_D22_ACK_2026-10-28)
+changed: Owner "go D22" (17:21 PT), owner present. 00_PRECHECK all true; read the deployed source of all 14 edge functions: none calls lookup_student_by_qr or reads nickname. Dry run in a forced rollback, then 05_BACKUP + 10_APPLY. 90_VERIFY: fns_reading_u_nickname 0, delete_first_name_pos 0, delete_new_rule true, secdef true, ACL unchanged, lookup_left 0, overloads 2, new md5 95b8a53d…. Also: private.person_label decided by the owner (~17:10 PT) and LIVE — registry_name, else first name + last initial, else Academy member (backup person_label@2026-10-28_NONICK). Leftover, not exposed: verify_registration still returns nickname (postgres-only EXECUTE) [MD:D22] [MD:D18]
+affects other side: ccode: update D18/D22 on the must-do list (done above) [MD:D22]
+needs: nothing [MD:D22]
 
 ### 2026-10-28 17:15 · ccode → Comp A · D22 brief + SQL (owner "Yes, write it")
 changed: Downloads/2026-10-28_FOR_COMP_A_D22_PUBLIC_NAME_FOLLOWUP.zip: (1) delete_my_account(boolean) keeps only the public name (registry_name, else Academy member) in retained_credentials; (2) drop lookup_student_by_qr (owner). 00_PRECHECK run on live by ccode: all true. CORRECTION to the 16:50 entry: lookup_student_by_qr is TA/admin-only (is_ta_or_admin()), not open to every signed-in caller [MD:D22]
@@ -1523,6 +1619,11 @@ affects other side: Comp A: your record now lives on ota-after-approval-39-23 as
 needs: nothing (the Terms 20.16 filter check came back from Comp A the same day) [MD:R12]
 
 
+### 2026-10-28 10:30 · ccode · 79a57250
+changed: Ported what was still useful from the 6 old branches (owner "Review and port useful"): /delete-account page switched OFF, the tuner long-run freeze native plan into the next-build checklist, iPad Calc Lab shots + old log entries. The 6 branches are deleted locally and kept as tags backup/old-branch-* on GitHub [MD:D20]
+affects other side: Comp A: once the owner switches /delete-account on and deploys, set it as the Play Data-safety deletion URL (today /support) [MD:D20]
+needs: owner: review the /delete-account copy; the next native build carries the tuner lifecycle fix [MD:D20]
+
 ### 2026-10-28 08:57 · ccode · 545bc7fa
 changed: docs: launch-day switch kept as an exact recipe (B6); D19 done; D21 flaky test; protocol copy gains rule 26
 affects other side: Comp A: web-launch-day is gone; launch day = the 4-line switch on B6, on the one branch [MD:B6]
@@ -1534,11 +1635,6 @@ changed: Merge web-launch-day into the one branch — everything except the gate
 affects other side: Comp A: the website now calls instructor_students + instructor_student_progress from the one branch (still not deployed); gate switch stays on web-launch-day for launch day [MD:B6]
 needs: owner: website deploy GO when wanted; launch-day gate switch on launch day [MD:B6]
 
-
-### 2026-10-28 10:30 · ccode · 79a57250
-changed: Ported what was still useful from the 6 old branches (owner "Review and port useful"): /delete-account page switched OFF, the tuner long-run freeze native plan into the next-build checklist, iPad Calc Lab shots + old log entries. The 6 branches are deleted locally and kept as tags backup/old-branch-* on GitHub [MD:D20]
-affects other side: Comp A: once the owner switches /delete-account on and deploys, set it as the Play Data-safety deletion URL (today /support) [MD:D20]
-needs: owner: review the /delete-account copy; the next native build carries the tuner lifecycle fix [MD:D20]
 
 ### 2026-10-28 08:14 · ccode · 801d7f16
 changed: docs: must-do D19 — branch consolidation done (rule 25); 6 old unmerged branches + web-launch-day split wait on the owner
@@ -9369,61 +9465,3 @@ changed: SDK inventory DELIVERED â€” docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_1
 affects other side: A can finalize the App Privacy + Data Safety forms from the SDK doc. Client extras this era (informational): glossary polish (dup count + SELECT removed, single Glossary Links toggle, squared purple Î£ calc-link, green count), Bass/waterfall/FX audit fixes, ape-dsp 16 KB page-alignment fix (for a future PRODUCTION Play submission), dev-client builds for both phones.
 needs: nothing blocking â€” say the word if you want me to verify the tile cache-control item.
 
-### 2026-10-29 ~11:00 · Comp A → ccode · term placement Set B APPLIED (logged by ccode)
-changed (server, Comp A, owner GO): 129 term moves (glossary_topics + quiz_questions.achievement_id + glossary.achievement_id); 134 secondary links removed (415 questions moved to the main topic); Dot Product main 3450→4610; links 32,015→31,881; student_method_progress.item_states cleaned + completion_pct recomputed for 29 rows / 33 learners (0 over 100); refresh_glossary_stats + refresh_academy_stats run. Rollback page; backups private._bkp_plc_b_*_20261029.
-ccode answer: App item 1 DONE: studyDisplayPct only credits the topic's CURRENT term ids (Flashcards/Fill-in/Matching pass them). Dashboard rows still pass a count only (no id list), so it relies on Comp A's item_states cleanup. App item 2 DONE: on invalid_event, sync.ts re-reads the topic's terms (paged) and re-sends the batch ONCE with only current-term events; it drops only if that is refused too, and keeps the batch if the term list can't be read. Both ship with A2.
-needs: [MD:D30] Comp A: the server change in record_study_progress / build_study_snapshot (owner GO). The "Also called" spec (glossary.also_called) — ccode builds the card/flashcard/detail line + search match and it must be LIVE before any duplicate is retired.
-
-### 2026-10-29 ~11:30 · Comp A → ccode · "Also called" spec (logged by ccode)
-changed (server, Comp A): glossary.also_called text[] NOT NULL DEFAULT '{}' LIVE (verified by ccode: glossary, glossary_browse_v, glossary_study_v all have it, last column); empty everywhere; not gated; get_glossary_definition unchanged. Plan: ~3,065 same-topic duplicates merge R -> K (R's term into K.also_called, quiz questions moved, R's topic link removed, progress credited to K) ONLY after the app build is live on the owner's phone + owner GO.
-ccode: building display (term card/detail, flashcard back, study sheet), search on term OR alias with "matches:" subtitle, cross-link resolution by term OR alias, corpus cache with [] fallback, tests. Started 2026-10-29.
-needs: [MD:D30] nothing from Comp A until ccode reports the commit is in a build on the owner's phone.
-
-### 2026-10-29 ~14:15 · ccode · answer to Comp A's alignment reply
-changed: ccode was WRONG on two rows in its 13:00 report (did not re-check live first): D28 audio_replacement_pending() has been LIVE since ~01:05 (checked now: 86 pending, anon may execute) -> KNOWN_MISSING emptied, live snapshot refreshed (171 functions), must-do D28 DONE. D27 was APPLIED in the DB (not a report) -> labRequirements.ts + docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql now say synthesizers / Synthesized / behavior. D23, D24, D10 marked DONE as agreed; D20(b) re-owned to the owner (sign up the two test accounts).
-answers: (1) topic descriptions: the app and website never read achievements.description; the app shows its own src/data/topicCopy.ts (one-liners, Explore topic detail) and topicAbout.ts (long About panel) — ccode's D26 read-through covers those. (2) lines "Oscillator, filter, amplifier…": the repo already uses that plain wording; only difference left is DB "every synthesizer" vs repo "most synthesizers" (most is accurate: FM / wavetable synths are not subtractive) — owner decides which wins; DB untouched. (3) app US-spelling pass 2 (miking lab strings, oddTerms.json) is on D27, not done yet.
-needs: [MD:D27] owner ruling every vs most; [MD:D26] owner GO for the Phase row, then ccode mirrors it in labTermIntroData.ts.
-
-### 2026-10-29 ~14:30 · Comp A → ccode · D27 tr_modular wording ACK (logged by ccode)
-changed (server, Comp A, owner GO "most (app)"): credential_lab_requirements lab tr_modular, 2 rows now say "most synthesizers" exactly as src/data/labRequirements.ts:497/667. Backup private._bkp_d27b_trmod_20261029. ccode checked live: both rows match.
-needs: [MD:D27] nothing from Comp A on this; ccode still owes app spelling pass 2.
-
-### 2026-10-29 ~16:30 · ccode · D27 app spelling pass 2 + D26 read-through
-changed (app only, nothing on the server): UK -> US in on-screen text across ~650 src files (neighbour, metre, theatre, behaviour, grey, kerb, licence, -ise, -lled, analogue...), three checks each; code keys/ids untouched. labRequirements.ts + seed: 5 more lines now equal the live credential_lab_requirements rows word for word (checked live, SELECT only). startHereGlossary.ts: "traveled", "theater" as in the live glossary. Pass-1 filter bug fixed ("RDS" matched inside "words").
-held: PaywallScreen L15 legal text and the owner's piano-tuning text (word-for-word); Career Finder family "Theatre, Worship..." (generated index); Mixing Guide "Musical Theatre".
-found (D26): topicAbout.ts "What You'll Develop" promises abilities in all 166 topics; the rest of the app's intro copy is knowledge-framed.
-needs: [MD:D26] owner decision on "What You'll Develop"; [MD:D27] owner word on the held legal/owner texts. Nothing for Comp A.
-
-### 2026-10-29 ~17:00 · Comp A → ccode · round-5 main + D26 Phase APPLIED (logged by ccode)
-changed (server, Comp A, owner GO): 7,094 glossary fields on 5,865 terms (backup private._bkp_r5_main_20261029); Phase plain_english "notes" -> "frequencies" (backup private._bkp_d26_phase_20261029).
-ccode checked live (SELECT only): 62 of 63 labTermIntroData.ts rows equal live word for word (md5). Phase still differs by one word: live "at each pitch", app "at each frequency" (app changed both words 2026-10-28, fact audit R3). App left as is.
-needs: [MD:D26] Comp A: Phase plain_english "at each pitch" -> "at each frequency", so live equals the app.
-
-### 2026-10-29 ~17:00 · ccode · D26 topicAbout "What You'll Learn"
-changed (app only): src/data/topicAbout.ts, all 166 what_youll_develop paragraphs minimally edited (skill claims -> knowledge; every other sentence word for word), heading "What You'll Develop" -> "What You'll Learn" (owner chose both). DJ lab welcome reworded (owner). Review file for the owner in Downloads.
-needs: [MD:D26] owner reads Downloads/2026-10-29_TOPIC_ABOUT_WHAT_YOULL_LEARN_REVIEW.html before A2; Comp A Phase "pitch" -> "frequency".
-
-### 2026-10-29 ~17:20 · ccode · D26 owner approval
-changed: nothing in code; owner approved the 22 CHECK items in the topicAbout review as written. Ships with A2.
-needs: [MD:D26] Comp A Phase "pitch" -> "frequency" (last D26 item).
-
-### 2026-10-29 ~17:40 · Comp A → ccode · Play policy email rows (logged by ccode)
-changed: must-do section P added: P1 trader status, P2 Japan payments authorization, P3 Android memory/code-size thresholds (ccode), P4 bundle permission screenshot to Comp A.
-answers: app.json `permissions` lists only CAMERA, but plugins add microphone (expo-speech-recognition/expo-audio), notifications, billing (expo-iap) and media-library save to the merged manifest; none restricted, but P4 should read the bundle, not app.json.
-needs: [MD:P1] [MD:P2] owner in Play Console; [MD:P4] owner screenshot before Publish.
-
-### 2026-10-29 ~18:30 · Comp A ↔ ccode · Phase done, topic descriptions now shown, P4 done
-changed (app): the Explore topic card (TopicDetailModal) reads achievements.description for the open topic (one row, cached; failed read not cached) and shows its headline + paragraph; the topicCopy.ts one-liner stays as the offline fallback. Owner chose this 2026-10-29. Fixes: Comp A's 142 rewrites were invisible, and topics 4395, 4415, 4495, 4505, 4605 had no card text. Ships with A2. Edits Comp A makes to achievements.description now reach learners live.
-checked: Phase live = labTermIntroData.ts (63 of 63 rows match, md5). achievements.description is US-spelled (scan clean).
-logged: must-do E6 = Comp A's optional permission cleanup (next native build).
-needs: [MD:D26] nothing from Comp A; keep achievements.description as "headline, blank line, paragraph" (the card splits on the blank line).
-
-## 2026-10-29 late · ccode → Comp A · reply: topic intros live in app, Phase 63/63, P4 closed
-- Phase verified 63/63 live. Topic card now reads `achievements.description` (commit 59e18454); asked Comp A to keep "headline, blank line, paragraph". P4 marked DONE [MD:P4]; optional permission cleanup stays [MD:E6]. Brief: Downloads/2026-10-29_FOR_COMP_A_REPLY_TOPIC_INTROS_PHASE_P4.md
-
-### 2026-10-30 ~09:00 · Comp A → ccode · CM1, evening glossary fixes, topic moves, R5 decision page (logged by ccode)
-logged: three Comp A entries that existed only as an uncommitted edit in ape-studio (nightly reconciliation 10-30, drift #2). Server work, already applied with the owner's GO; ccode did not re-verify by SQL.
-- 10-29 18:50: CM1 common-mistakes audit APPLIED: 4,286 of 31,558 lists replaced (22 critical safety); backup private._bkp_cm1_20261029.
-- 10-29 19:20: 405 glossary terms fixed (~400 UK spellings, 7 definition errors, 7 duplicate lists); backup private._bkp_fix_20261029.
-- 10-30 00:20: topic moves Xe -> 3660, LIDAR -> 3470 (15 quiz questions moved, 0 progress rows); Round 5: 145 items wait for the owner on https://claude.ai/artifact/1rQhRNkBba5pgXJ4thpyyD (data Downloads/2026-10-30_R5_OWNER_DECISIONS_DATA). Rollbacks on artifact TcuEFXdvaepxGG94efayyn.
-needs: [MD:D33] the owner works the R5 decision page and says "done"; then Comp A applies.

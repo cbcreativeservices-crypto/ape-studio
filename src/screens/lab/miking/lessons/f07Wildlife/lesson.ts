@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Open grassland, a breeze, a shotgun in foam. Low thumps. First move?',
     options: ['Fur, then a basket and suspension', 'A steep low-cut filter, then record on', 'Hold the mic lower to the ground'],
     correct: 'Fur, then a basket and suspension',
-    explain: 'Foam may do in a sheltered forest but not on windy open ground: add fur, a basket and its suspension, and quiet the cable.',
+    explain: 'Foam may be enough in a sheltered forest but not on windy open ground: add fur, a basket and its suspension, and quiet the cable.',
     why: {
       'A steep low-cut filter, then record on': 'It may take a real low call with the rumble — protect first, and note any filter.',
       'Hold the mic lower to the ground': 'Lower is not the cure: the capsule needs protection.',

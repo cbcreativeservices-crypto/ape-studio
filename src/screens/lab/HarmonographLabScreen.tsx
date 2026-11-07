@@ -659,7 +659,7 @@ export function HarmonographLabScreen() {
             : detuneActs
               ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession is the picture of beating.`
               : ratioExact && !platSimple
-                ? `A clean ${ratio.label} ratio between the arms, but PLAT is only a complex ratio of OSC 2 — the figure takes many swings to repeat, so it does not close within one drawing.`
+                ? `A clean ${ratio.label} ratio between the arms, but PLAT is only in a complex ratio with OSC 2 — the figure takes many swings to repeat, so it does not close within one drawing.`
                 : matched
                   ? `Near ${ratio.label} (${ratio.interval.toLowerCase()}) but not exact — the figure slowly precesses and never quite closes. Tap the ${ratio.label} chip in TUNE to set it exactly.`
                   : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}

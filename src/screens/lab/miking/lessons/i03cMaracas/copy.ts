@@ -35,7 +35,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     after: 'Both the up and the down stroke can carry a meaningful sound in traditional playing — and each arm can play its own accents.',
     shapesNotes: ['The pictures show the order of events and where the sound starts — never its level. A few beads stand for the seeds.'],
     coupledSubject: 'One maraca head drawn large',
-    coupledNote: 'Wrist technique changes attack and wash. A circular wrist keeps the seeds rolling round the wall for a longer, smoother sound; up-and-down strokes throw them against it.',
+    coupledNote: 'Wrist technique changes attack and wash. A circular wrist keeps the seeds rolling around the wall for a longer, smoother sound; up-and-down strokes throw them against it.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how real maracas sound depends on the heads, the seeds, the player and the room. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Stroke or circle',
@@ -57,10 +57,10 @@ export const MAR_COPY: LessonCopy = spCopy({
       },
       opposed: {
         option: 'A CIRCULAR WRIST',
-        blurb: 'Small circles of the wrist keep the seeds rolling round the inside of the wall.',
+        blurb: 'Small circles of the wrist keep the seeds rolling around the inside of the wall.',
         short: 'CIRCLE',
         title: 'A CIRCULAR WRIST',
-        card: 'Repeated circles of the wrist keep the seeds rubbing round the wall instead of striking it: a sound with greater sustain — one of the maraca’s own techniques.',
+        card: 'Repeated circles of the wrist keep the seeds rubbing around the wall instead of striking it: a sound with greater sustain — one of the maraca’s own techniques.',
         v0: 'CIRCLES',
         v1: 'ROLLING',
         air: { plus: 'SUSTAIN', minus: 'SUSTAIN', rest: 'SUSTAIN' },

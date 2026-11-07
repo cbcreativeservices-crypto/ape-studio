@@ -14,7 +14,7 @@ const L = 'src/screens/lab/miking/lessons/';
 const read = (f: string) => readFileSync(L + f, 'utf8').replace(/\r\n/g, '\n');
 
 const PINS: { id: string; file: string; now: string; gone: string }[] = [
-  { id: 'F015640', file: 'a02Trombone/art.tsx', now: 'nearly all round, as a trumpet does', gone: 'far more evenly than a trumpet' },
+  { id: 'F015640', file: 'a02Trombone/art.tsx', now: 'nearly all around, as a trumpet does', gone: 'far more evenly than a trumpet' },
   { id: 'F015735', file: 'a02Trombone/lesson.ts', now: "prompt: 'How does a trombone spread its low notes?'", gone: 'Compared with a trumpet, how does a trombone' },
   { id: 'F016462', file: 'a04aTuba/copy.ts', now: 'Bell front: first made for early recording studios', gone: 'the tuba made for recording studios' },
   { id: 'F016716', file: 'a04aTuba/lesson.ts', now: 'in the lowest octaves, many patterns reject little', gone: 'get past every pattern' },

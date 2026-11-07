@@ -408,7 +408,7 @@ export const HUM_HZ = MAINS_HZ;
 
 /** Why lifting the mains earth is refused (it is never applied). */
 export const EARTH_LIFT_REFUSAL =
-  'Refused. The earth pin is what keeps a fault on the mains from making the metal of the gear live — it is the safety, not the hum. Break the loop in the audio path instead (an isolator or a DI with a ground lift), power both from the same strip, or run the laptop on its battery.';
+  'Refused. The ground pin is what keeps a fault on the AC power from making the metal of the gear live — it is the safety, not the hum. Break the loop in the audio path instead (an isolator or a DI with a ground lift), power both from the same strip, or run the laptop on its battery.';
 
 /* ── the whole rig ────────────────────────────────────────────────────── */
 

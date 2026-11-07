@@ -164,7 +164,7 @@ type SecDef = { id: string; label: string; short: string; family: Family; radiat
 const SEC: Record<string, SecDef> = {
   drums: { id: 'drums', label: 'drum kit', short: 'DRUMS', family: 'percussion', radiates: 'From every head and cymbal at once — loud, and spread across about two meters: the kit reaches every open mic on the stage.' },
   gtr: { id: 'gtr', label: 'electric guitar', short: 'GUITAR', family: 'amplified', radiates: 'From its amp’s speaker, not the guitar: strongest straight out of the grille, the highs in the narrowest beam. Which way the amp faces decides who hears it.' },
-  bass: { id: 'bass', label: 'electric bass', short: 'BASS', family: 'amplified', radiates: 'From the bass amp’s speakers — the low notes spread all round the stage — and, as a clean electrical copy, from its DI box.' },
+  bass: { id: 'bass', label: 'electric bass', short: 'BASS', family: 'amplified', radiates: 'From the bass amp’s speakers — the low notes spread all around the stage — and, as a clean electrical copy, from its DI box.' },
   keys: { id: 'keys', label: 'keyboard', short: 'KEYS', family: 'keys', radiates: 'Nothing acoustic worth a mic: it leaves by its line output, through a DI box. On the stage it is heard from the wedges and the PA.' },
   vox: { id: 'vox', label: 'lead vocal', short: 'VOCAL', family: 'voices', radiates: 'From the singer’s mouth, forward — often one of the quietest sources on a band stage, which is why its mic goes right at the lips.' },
   pno: { id: 'pno', label: 'grand piano', short: 'PIANO', family: 'keys', radiates: 'From the soundboard and strings under the lid; the open lid throws much of it toward the audience — and the drums reach in under the lid too.' },

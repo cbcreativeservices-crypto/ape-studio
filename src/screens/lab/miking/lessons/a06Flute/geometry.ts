@@ -71,7 +71,7 @@ const surfaces: ReferenceSurface[] = [
   { id: 'emb', partId: 'ww.exciter', label: 'the embouchure hole', point: A.emb, normal: HEADSET_DIR, target: true },
 ];
 const rims = (): Rim[] => [
-  { id: 'clip.foot', label: 'a strap round the flute’s foot end', c: A.strap, axis: norm(frameAt(L, 628).t), r: radiusAt(SPEC, 628) + 1.5, variants: ['metal', 'wooden'] },
+  { id: 'clip.foot', label: 'a strap around the flute’s foot end', c: A.strap, axis: norm(frameAt(L, 628).t), r: radiusAt(SPEC, 628) + 1.5, variants: ['metal', 'wooden'] },
   { id: 'clip.ear', label: 'a headset over the left ear', c: A.ear, axis: { x: 1, y: 0, z: 0 }, r: 0 },
 ];
 

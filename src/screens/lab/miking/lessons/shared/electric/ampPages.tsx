@@ -288,7 +288,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             ) : (
               <Note>{`The instrument makes a small electrical signal; the amplifier turns it into the power that moves a speaker cone; the cone pushes the air; the mic hears the air. The grille cloth hides the speaker — find it before you place a mic.`}</Note>
             )}
-            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker the player likes best, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-center, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
+            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in, a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker the player likes best, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-center, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
             <Note tone="warn">Never open an amp’s chassis or change its speaker wiring to place a mic: the inside is hot and carries dangerous voltages.</Note>
           </>
         ),
@@ -762,7 +762,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         },
         well: (
           <>
-            <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits round the amp — or step through ITEM." />
+            <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits around the amp — or step through ITEM." />
             <Body>{scene === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
             {ps ? (
               <Card>
@@ -782,7 +782,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <Card>
               <Point title="ASK THE PLAYER FIRST">{spec.who === 'steel' ? 'Which neck and pickup, the volume-pedal range, the effects and the amp settings that make their sound. Then listen from a safe spot while they play the real passage — quiet swells and the strongest attacks — at its real level.' : 'The instrument, the pickups, the pedals, the amp channel and the level they will really play at. Then listen from a safe spot while they play the real part — the quietest and the strongest passages.'}</Point>
               <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and its speaker are the player’s sound. Keep them as set while you compare positions; mic the amp they bring.</Point>
-              <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the mains earth — a DI’s ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control: use it as its manual says), change speaker wiring or block an amp’s vents for a miking exercise. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
+              <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the power plug’s ground pin — a DI’s ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control: use it as its manual says), change speaker wiring or block an amp’s vents for a miking exercise. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
             </Card>
             <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />

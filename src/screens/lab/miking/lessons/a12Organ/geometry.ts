@@ -110,7 +110,7 @@ export const A12_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: MICS },
     start: pose(v3(13600, -2600, 1500), RANKS),
     drawn: { side: { u0: ORGAN.firstPew.mm, u1: 18000, v0: -3500, v1: -1500 }, top: { u0: ORGAN.firstPew.mm, u1: 18000, v0: -ORGAN.sideZ.mm + 200, v1: ORGAN.sideZ.mm - 200 } },
-    tendency: 'The listener’s perspective: the divisions blended with the room. Closer tends to clearer attacks; farther, more room and decay. The pair is the organ’s main sound — spots only add to it.',
+    tendency: 'The listener’s perspective: the divisions blended with the room. Closer tends toward clearer attacks; farther, more room and decay. The pair is the organ’s main sound — spots only add to it.',
     checks: ['All divisions, the pedal and the room decay', 'A coherent stereo image, and the mono sum', 'Noise: ventilation, traffic, the congregation'],
   },
   {

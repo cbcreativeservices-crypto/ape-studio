@@ -269,7 +269,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>You are looking at the FX SCOPE — the dry sound going INTO the effect (a white line) and the effect’s own sound coming OUT of it (the blue band) over the last seconds — above a map of where the effect sits in the mixer’s signal path. FULL SCREEN adds the mixer’s effects panel.</Look>
         <P>An effect’s sound depends on WHERE it sits: on one channel (an insert), on everything the crowd hears (MASTER), or on a send whose return you add back.</P>
-        <P>Its TIME follows the tempo — on this mixer, the deck on its channel (deck A on MASTER or SEND); many units read the mixer’s BPM counter or let you TAP the tempo, so check its BPM before you trust an echo. LEVEL sets the effect against the dry sound.</P>
+        <P>Its TIME follows the tempo — on this mixer, that of the deck on its channel (deck A on MASTER or SEND). Many units read the mixer’s BPM counter or let you TAP the tempo, so check its BPM before you trust an echo. LEVEL sets the effect against the dry sound.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>

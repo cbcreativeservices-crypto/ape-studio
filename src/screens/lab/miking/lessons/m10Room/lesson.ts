@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want a room mic to hear the room from every side. Which pattern fits that question?',
     options: ['Omni', 'Cardioid', 'Hypercardioid'],
     correct: 'Omni',
-    explain: 'An omni hears all round — room included. A directional pattern favors what it faces and colors the room sound arriving off-axis.',
+    explain: 'An omni hears all around — room included. A directional pattern favors what it faces and colors the room sound arriving off-axis.',
     why: {
       Cardioid: 'A cardioid favors its front and turns down its back: it hears less of the room behind it.',
       Hypercardioid: 'A hypercardioid is more directional still: it hears even less of the room around it.',
@@ -263,7 +263,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The PA’s sound reflects off the room’s surfaces like the kit’s does — so it arrives from many directions, which no single null rejects.',
     why: {
       'The PA aims a beam straight at the mic': 'The PA faces the audience; its sound still reaches the mic, partly directly and partly via the room.',
-      'Distant mics turn omni, whatever type they were made as': 'A mic keeps its own pattern at any distance; the reflections come from all round.',
+      'Distant mics turn omni, whatever type they were made as': 'A mic keeps its own pattern at any distance; the reflections come from all around.',
     },
   },
   {
@@ -282,8 +282,8 @@ const scenarios: MikingScenario[] = [
     id: 'rm.ctx.2',
     page: 'context',
     prompt: 'The room mic is in a null of the PA on paper. Can it now be turned up safely in the house mix?',
-    options: ['No — real nulls are not that deep, and reflections arrive all round', 'Yes — a null removes the PA from the mic', 'Yes, as long as it stays a supercardioid aimed at the kit the whole time'],
-    correct: 'No — real nulls are not that deep, and reflections arrive all round',
+    options: ['No — real nulls are not that deep, and reflections arrive all around', 'Yes — a null removes the PA from the mic', 'Yes, as long as it stays a supercardioid aimed at the kit the whole time'],
+    correct: 'No — real nulls are not that deep, and reflections arrive all around',
     explain: 'A null is infinitely deep only on paper; real mics reject far less, often least in the lows, and the room returns the PA from every side. Do not assume it is safe in the house system.',
     why: {
       'Yes — a null removes the PA from the mic': 'A null turns down one direct path, but not to silence; the room still brings the PA back.',
@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a room mic 5 m from the kit and an overhead 1 m away. Which hears the snare first, and by about how much?', options: ['The overhead, by about 12 ms', 'The room mic, since it hears the room', 'Both at once: sound arrives everywhere together'], after: 'Step through: the direct sound comes first, then the reflections. Every 34 cm of extra path is about 1 ms.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a room mic a long stride farther from the kit. What changes?', options: ['More room, less direct kit', 'More direct kit, less room', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is behind and to one side of a room mic that faces the kit. How can its pattern help?', options: ['Turn it, or choose a pattern, so a null faces the PA', 'It cannot help — the PA is behind it', 'Only turning the PA down helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip the room mic’s polarity, what happens to its delay behind the overhead?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

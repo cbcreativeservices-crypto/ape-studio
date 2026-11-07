@@ -187,8 +187,8 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Chapter 3; the next page asks you to choose one for six rooms.',
     ],
     tryThis: [
-      'Compare Stereo with LCR — left, center, right and look at where the center box lands.',
-      'Compare Stereo mains with mono subwoofers with Stereo subwoofers: SUBS changes from MONO to STEREO.',
+      'Compare Stereo with LCR — left, center, right — and look at where the center box lands.',
+      'Compare Stereo mains with mono subwoofers and Stereo subwoofers: SUBS changes from MONO to STEREO.',
     ],
   },
   'Choose the configuration': {
@@ -395,7 +395,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Why a professional setup is a sequence and not a preference — and why step 9 is the one that saves loudspeakers.',
-      'Chapter 9; OPERATE mode practises power-up, line check and gain.',
+      'Chapter 9; OPERATE mode practices power-up, line check and gain.',
     ],
     tryThis: [
       'Open step 9, then step 10: verify with the amplifiers off, then power up.',
@@ -437,7 +437,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'FLOWN: lift the mains. FILLS: add front fills on the stage lip.',
     ],
     changes: [
-      'Narrow coverage puts more level on its axis, so it reaches further and overlaps less; wide coverage fills a wide room and paints the side walls.',
+      'Narrow coverage puts more level on its axis, so it reaches farther and overlaps less; wide coverage fills a wide room and paints the side walls.',
       'Toeing in tightens the overlap into the middle. Flown mains fire over the front rows, so they go dark; front fills bring them back.',
     ],
     teaches: [
@@ -451,7 +451,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   },
   'Delay and alignment': {
     seeing: [
-      'Mains at the stage and delay towers on poles further back. The ring is the mains’ wavefront at the instant the towers fire.',
+      'Mains at the stage and delay towers on poles farther back. The ring is the mains’ wavefront at the instant the towers fire.',
       'Readouts: NEEDED (ms), SET, ERROR and SOUND (the speed of sound).',
     ],
     control: [
@@ -489,7 +489,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Open Input EQ vs system EQ, then Parametric EQ and Graphic EQ, and compare where each lives.',
-      'Open Limiters and read why they are set from ratings, never by ear on the night.',
+      'Open Limiters and read why they are set from ratings, never by ear during the show.',
     ],
   },
   'Feedback control': {
@@ -614,8 +614,8 @@ function capstone(
     changes: [
       BUILD_CHANGES[0],
       routing
-        ? 'Each requirement ticks the moment the plot or the console meets it; REQS reads PASS when every one is met.'
-        : 'Each requirement ticks the moment the plot meets it; REQS reads PASS when every one is met.',
+        ? 'Each requirement is checked the moment the plot or the console meets it; REQS reads PASS when every one is met.'
+        : 'Each requirement is checked the moment the plot meets it; REQS reads PASS when every one is met.',
     ],
     teaches: [teaches, 'BUILD comes after LEARN’s chapters; a capstone passed stays credited even if you change the build later.'],
     tryThis,
@@ -625,7 +625,7 @@ function capstone(
 export const SS_BUILD_GUIDES: Record<string, ScreenGuide> = {
   'The empty venue': {
     seeing: [
-      'An empty venue in plan — the deck and its riser at the top, wings either side, the audience below — and every part in the catalog.',
+      'An empty venue in plan — the deck and its riser at the top, wings on either side, the audience below — and every part in the catalog.',
       'The cable legend colors each link by its level: mic, line, speaker, digital, wireless.',
       'Readouts: PLACED, CABLES, LIVE and SILENT (loudspeakers with no path from a source).',
     ],
@@ -687,7 +687,7 @@ export const SS_BUILD_GUIDES: Record<string, ScreenGuide> = {
     'How a digital stagebox carries every channel both ways on one link.',
     [
       'Cable every source into the stagebox — none straight to the console.',
-      'Feed the processor from the stagebox, not from the console, and watch the returns requirement tick.',
+      'Feed the processor from the stagebox, not from the console, and watch the returns requirement get checked.',
     ],
   ),
   'Capstone 6 · Band with four monitor mixes': capstone(
@@ -772,7 +772,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
   'Pre-fader and post-fader': {
     seeing: [
       'The vocal channel and three buses: AUX 1 · SINGER’S WEDGE, AUX 5 · REVERB and MAIN MIX, each showing what it hears.',
-      'Both sends start tapped the WRONG way round. Readouts: FADER, WEDGE HEARS, REVERB HEARS and MAIN.',
+      'Both sends start tapped the WRONG way around. Readouts: FADER, WEDGE HEARS, REVERB HEARS and MAIN.',
     ],
     control: [
       'VOX FADER: the lead vocal’s fader, −60 to +10 dB.',
@@ -1026,7 +1026,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'STEP: tap the power-down steps in order.',
-      'DOCUMENT: tick off the five things to write down — the console scene, the processor preset, the input and output patch lists, loudspeaker positions and delay times.',
+      'DOCUMENT: check off the five things to write down — the console scene, the processor preset, the input and output patch lists, loudspeaker positions and delay times.',
       'RESET clears your order.',
     ],
     changes: [
@@ -1038,7 +1038,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Start with Console — save first: ORDER reads WRONG. Read why, RESET and begin with Mute the outputs.',
-      'Open DOCUMENT and tick all five before you leave.',
+      'Open DOCUMENT and check all five before you leave.',
     ],
   },
 };

@@ -54,12 +54,12 @@ export const A02_ART: LessonArt = {
       fallback: 'tenor',
       bands: {
         tenor: {
-          low: 'Low down a trombone spreads its sound nearly all round, as a trumpet does: up to about 400 Hz it stays within about 3 dB of its loudest level in every direction, even behind the player.',
+          low: 'Low down a trombone spreads its sound nearly all around, as a trumpet does: up to about 400 Hz it stays within about 3 dB of its loudest level in every direction, even behind the player.',
           mid: 'From about 500 Hz the front starts to win.',
           high: 'From about 1 kHz up, the sound gathers strongly along the bell’s axis — the bell works like a megaphone for the higher notes.',
         },
         bass: {
-          low: 'Low down a bass trombone spreads its sound nearly all round, like the tenor.',
+          low: 'Low down a bass trombone spreads its sound nearly all around, like the tenor.',
           mid: 'In the middle the front starts to win — its larger bell starts to beam a little lower in pitch than a tenor’s.',
           high: 'Up high the sound gathers strongly along the bell’s axis. The bass is expected to behave like the tenor, shifted a little lower in pitch by its larger bell.',
         },
@@ -95,7 +95,7 @@ export const A02_ART: LessonArt = {
       before: [
         { title: 'ASK THE PLAYER FIRST', text: 'With the player, map the slide’s full reach in the passage — out to 7th position, the angle they hold it, standing or seated — and any valve and mute use. Hear the real part: quiet phrases, the strongest accents, the lowest notes. Hear it from where the audience would.' },
         { title: 'THE SLIDE IS PRECISION TUBING', text: 'A small bend can spoil its smooth travel. Never touch, push or hold the slide; nothing — stand, boom, cable or clip — goes in its path, and leave a comfortable buffer. If in doubt, stop and move the hardware with the player.' },
-        { title: 'ONE HORN HERE', text: 'This lesson is one trombone. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, with ensembles and voice. Here, when other horns play, hear the section first and treat this mic as a spot.' },
+        { title: 'ONE HORN HERE', text: 'This lesson is one trombone. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, in the Horn Sections lesson. Here, when other horns play, hear the section first and treat this mic as a spot.' },
       ],
       hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. Don’t ask the player to play louder than the music to “test the mic”, and use hearing protection where it is loud.',
     }),

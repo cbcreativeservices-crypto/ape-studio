@@ -154,7 +154,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
             </Card>
           )}
           {pressed && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. It is the bayan: pressing its head while it rings bends the pitch. Its hand moves across the head all the time — leave it room.`}</Note> : null}
-          <Note>Do not copy one drum’s layout onto the other: the patch is centered on the dayan and off-center on the bayan. Name each drum by what it is — some players set the pair the other way round.</Note>
+          <Note>Do not copy one drum’s layout onto the other: the patch is centered on the dayan and off-center on the bayan. Name each drum by what it is — some players set the pair the other way around.</Note>
         </>
       ),
     },
@@ -204,7 +204,7 @@ const SPEC: HandSpec = {
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the tabla player seated on the floor with the dayan to the right and the bayan to the left; the player's wedge downstage on the audience side, a side fill to the right, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the tabla player seated on the floor, no monitors, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
     looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
-    first: 'The player sits on the floor with the two drums in front; both hands move over the heads, the left one across the bayan all the time. Everything else fits round that.',
+    first: 'The player sits on the floor with the two drums in front; both hands move over the heads, the left one across the bayan all the time. Everything else fits around that.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'How do they sit, and how are the drums set? Ask for a short repeated passage: ringing and damped dayan strokes, open bayan tones and glides, strokes on both, quiet finger work — named in their own terms. What is the tabla’s role, and how prominent should the bayan be?' },
       { title: 'LISTEN WITHOUT A MIC', text: 'Hear the passage unamplified from a comfortable listening position. Note both hands’ full paths, the knees, the supports and the way out.' },

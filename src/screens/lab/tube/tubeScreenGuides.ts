@@ -64,7 +64,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   // ── 2 · Electron flow ───────────────────────────────────────────────────
   flow: {
     seeing: [
-      'One tube warming up, slowed and drawn: the heater glows, an electron cloud gathers round the cathode, then streams to the plate.',
+      'One tube warming up, slowed and drawn: the heater glows, an electron cloud gathers around the cathode, then streams to the plate.',
       'Readouts: HEAT (how warm the heater is), STAGE (the warm-up step, 1 to 5) and PLATE I — the plate current, as a share of full.',
       'Below the display, a numbered line describes the step, from 1 · Cold to 5 · Steady current.',
     ],
@@ -350,7 +350,7 @@ export const TUBE_CARD_GUIDE: ScreenGuide = {
   control: [
     'PAGE 1 and PAGE 2 switch between the card’s two pages. ‹ and › at the top right step to the previous or next tube.',
     'Swipe the card sideways to flip pages in reading order: page 1, page 2, then the next tube.',
-    'Pinch to zoom (up to 4×), double-tap to zoom in or back out, and drag to move round a zoomed card. Swiping works when the card is not zoomed.',
+    'Pinch to zoom (up to 4×), double-tap to zoom in or back out, and drag to move around a zoomed card. Swiping works when the card is not zoomed.',
     '‹ at the top left goes back to the tube list. RETRY reloads a card that did not load.',
   ],
   changes: [

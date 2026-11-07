@@ -172,7 +172,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     'realworld.practice': ["label: 'Parallel'", "label: 'Series'", 'CLEAR', 'Bridge mode', 'Power ratio P2 ÷ P1', 'CHECK', 'POWER AND CURRENT'],
     'apply.diagnose': ['OUTPUT — what is this amplifier doing?', "k: 'PICTURE'", "k: 'SCORE'", "k: 'READING'", "'RIGHT'", "'WRONG'", 'NEXT WAVEFORM ›', 'REPEAT THE ROUND ›'],
     'apply.choose': ['2 · CHOOSE AN AMPLIFIER', '3 · MYTH REVIEW', 'NEXT SCENARIO ›', 'NEXT STATEMENT ›', "label: 'True'", "label: 'False'", "label: 'It depends'"],
-    'apply.challenge': ["k: 'OUTPUT'", "k: 'FAULT'", "'NONE'", "k: 'SCORE'", "label: 'SETUP'", 'SCORE THIS CONFIGURATION', '"Operating mode"', '"Supply condition"', '"Speaker load (nominal)"', '"Ventilation"', "label: 'Sagging (weak mains)'"],
+    'apply.challenge': ["k: 'OUTPUT'", "k: 'FAULT'", "'NONE'", "k: 'SCORE'", "label: 'SETUP'", 'SCORE THIS CONFIGURATION', '"Operating mode"', '"Supply condition"', '"Speaker load (nominal)"', '"Ventilation"', "label: 'Sagging (weak AC power)'"],
     'apply.final': ['5 · FINAL ASSESSMENT', '6 · COMPLETION SUMMARY', 'NEEDS REVIEW', 'SUBMIT FINAL', 'REPEAT WITH A NEW SET ›', 'FINAL'],
   };
   /** A name pinned as a code token ('X', label: 'X', k: 'X', "X") is shown in the guide without its quotes/prefix. */

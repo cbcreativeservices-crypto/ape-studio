@@ -241,7 +241,7 @@ describe('colour, honesty and words', () => {
     assert.equal((bits.match(/hitSlop=\{8\}/g) ?? []).length, 2, 'chips and tray buttons carry hitSlop 8');
     const model = read(`${LAB}roomModel.ts`);
     assert.match(model, /FFP2\/N95 mask/);
-    assert.match(model, /smoke detector, sprinkler head or light fitting/);
+    assert.match(model, /smoke detector, sprinkler head or light fixture/);
     assert.match(model, /check for pipes and wiring before drilling/);
     assert.match(model, /Class A under ASTM E84/);
     const review = strip(read(`${LAB}modules/modReview.tsx`));

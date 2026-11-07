@@ -72,7 +72,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     changes: [
       'RT60 is the time the wash takes to fall 60 dB, two guide gaps. More RT60, a gentler slope, so tails overlap.',
       'PRE-DELAY holds the wash back after the dry click, on top of about 31 ms the reverb needs for its first echo.',
-      'HF DAMPING dulls the wash on every trip round the reverb, so highs fade sooner than RT60 says: DARK is a soft room, BRIGHT a hard one.',
+      'HF DAMPING dulls the wash on every trip around the reverb, so highs fade sooner than RT60 says: DARK is a soft room, BRIGHT a hard one.',
       'MIX: at 100% WET only the wash is left.',
     ],
     teaches: [
@@ -111,7 +111,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       'The reference behind EXPLORE and the CHECK tab.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT. Then on EXPLORE slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labelled RT60 3.0 s on the time axis below.',
+      'Read FORMULA / CONCEPT. Then on EXPLORE slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
       'Read the COMMON MISTAKES line on pre-delay. Then on EXPLORE pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
     ],
   },

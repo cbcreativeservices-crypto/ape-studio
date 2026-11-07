@@ -125,7 +125,7 @@ describe('R7-CS-01 RJ45 decoy is impossible', () => {
     const no = e.jobs.filter((j) => !j.can);
     assert.ok(no.length >= 1);
     for (const j of no) assert.doesNotMatch(j.label, /analog|microphone/i);
-    assert.ok(no.some((j) => /mains/i.test(j.label)));
+    assert.ok(no.some((j) => /mains|AC\) power|AC power/i.test(j.label)));
   });
 });
 
@@ -274,7 +274,7 @@ describe('R7-CB-04..06 cable lab wording', () => {
     const nema = getConnector('mains_wall' as never)!;
     const m = nema.commonMistakes.find((x) => /cheater/.test(x))!;
     for (const fix of [/ground-lift switch/, /isolation transformer/, /balanced connections/, /same circuit/]) assert.match(m, fix);
-    assert.match(m, /never defeat the safety earth/);
+    assert.match(m, /never defeat the safety ground/);
   });
 });
 

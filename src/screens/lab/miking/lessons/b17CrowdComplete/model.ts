@@ -138,7 +138,7 @@ const zoneOf = (id: string, label: string, short: string, c: P2, r: number, ok: 
 export const B17_COVERAGE: CoverageTask[] = [
   zoneOf('cA', 'The action at A', 'ACTION', PC.A, 0.45, ['detail'], 'the audience pair, if D is lost', 'Two meters in front of D, on its axis: the selected action in detail.', 'ambience'),
   zoneOf('cAud', 'The audience, U1 to U3', 'AUDIENCE', PC.U2, 1.2, ['ambience'], 'a second spot only for a named gap', 'The pair at S carries the audience as a bed; no action mic is meant to pick out one spectator.', 'detail'),
-  zoneOf('cFar', 'Past A, the far end of the action area', 'FAR END', crowdP(-1.2, 0), 0.4, ['detail', 'ambience'], 'the audience pair', 'Farther from D but still near its axis: detail if listening says so, else the pair.'),
+  zoneOf('cFar', 'Past A, the far end of the action area', 'FAR END', crowdP(-1.2, 0), 0.4, ['detail', 'ambience'], 'the audience pair', 'Farther from D but still near its axis: detail if listening says so, otherwise the pair.'),
 ];
 
 /** The two-mic page: the action mic D and the audience pair (its mono sum)

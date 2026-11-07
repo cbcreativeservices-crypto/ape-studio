@@ -82,7 +82,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a boom in the right order, choose and justify a setup for a studio interview and a live event, and say what would justify a second mic.',
     credit: { scenarios: ['b4.prac.order', 'b4.prac.gain', 'b4.prac.setup1', 'b4.prac.setup2', 'b4.prac.3', 'b4.mix.1', 'b4.mix.2', 'b4.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real shoot.' },
-    takeaway: 'Outside every frame, as close as it allows, aimed and re-aimed, safe for people, one mic on air per voice and a tested fallback pass. A longer tube or a “hotter” camera gain do not — and more than one setup can pass.',
+    takeaway: 'Outside every frame, as close as it allows, aimed and re-aimed, safe for people, one mic on air per voice and a tested fallback pass. A longer tube or a “hotter” camera gain does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The camera reframes from a close shot to a wide one. What happens to the boom?',
     options: ['It moves farther away, out of the bigger frame', 'It stays put: the boom is above the shot anyway', 'It can come closer, since the talker looks smaller'],
     correct: 'It moves farther away, out of the bigger frame',
-    explain: 'A wider picture shows more room above and round the talker. The boom stays just outside it — farther from the mouth, so more room against the voice.',
+    explain: 'A wider picture shows more room above and around the talker. The boom stays just outside it — farther from the mouth, so more room against the voice.',
     why: {
       'It stays put: the boom is above the shot anyway': 'The wider frame’s top is higher: where the boom was is now in the picture.',
       'It can come closer, since the talker looks smaller': 'The talker only looks smaller; the frame’s edge moved farther out.',
@@ -110,12 +110,12 @@ const scenarios: MikingScenario[] = [
     id: 'b4.snd.2',
     page: 'sound',
     prompt: 'The talker turns while the boom is held still. What happens?',
-    options: ['The mouth turns off the mic’s axis', 'The mic turns to follow the mouth', 'Nothing: a shotgun hears all round it'],
+    options: ['The mouth turns off the mic’s axis', 'The mic turns to follow the mouth', 'Nothing: a shotgun hears all around it'],
     correct: 'The mouth turns off the mic’s axis',
     explain: 'Held still, the boom keeps pointing where the mouth was. The operator re-aims it through the whole line, rehearsed.',
     why: {
       'The mic turns to follow the mouth': 'Only the operator turns it. Held still, it stays aimed at the old place.',
-      'Nothing: a shotgun hears all round it': 'A shotgun is directional: off its axis the voice dulls.',
+      'Nothing: a shotgun hears all around it': 'A shotgun is directional: off its axis the voice dulls.',
     },
   },
   {
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom has to pass over the audience to reach the talker. What do you do?',
     options: ['Find another path — never swing gear over people', 'Move it quickly so it is over them only briefly', 'Hold the cable tight so nothing can fall'],
     correct: 'Find another path — never swing gear over people',
-    explain: 'Never let a mic, a clamp or a cable swing over the audience. Find a path round them; anything hung overhead is set and secured by a qualified rigger before anyone sits beneath it.',
+    explain: 'Never let a mic, a clamp or a cable swing over the audience. Find a path around them; anything hung overhead is set and secured by a qualified rigger before anyone sits beneath it.',
     why: {
       'Move it quickly so it is over them only briefly': 'Speed adds risk; a dropped part falls just the same.',
       'Hold the cable tight so nothing can fall': 'A tight cable does not secure a clamp, a joint or the mic.',
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A public event with a PA, and a boom on the talker. A fair first step?',
     options: ['Check its place and pattern with the operator', 'Turn the boom up so its voice beats the PA’s sound', 'Aim it at the PA so it hears the room'],
     correct: 'Check its place and pattern with the operator',
-    explain: 'A boom near a public PA hears it too. Agree its working place, pattern and level with the system’s operator; keep the fewest mics open.',
+    explain: 'A boom near a public PA hears it too. Agree on its working place, pattern and level with the system’s operator; keep the fewest mics open.',
     why: {
       'Turn the boom up so its voice beats the PA’s sound': 'More gain lifts the PA’s sound in the boom as much as the voice.',
       'Aim it at the PA so it hears the room': 'The boom is for the talker; aim the rejection at the PA instead.',
@@ -290,13 +290,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b4.ctx.2',
     page: 'context',
-    prompt: 'Where should the PA sit for a hypercardioid boom mic’s most rejection?',
+    prompt: 'Where should the PA sit so a hypercardioid boom mic’s rejection is greatest?',
     options: ['Off to the rear, near 110° from the front', 'Directly in front of the boom mic', 'Square to its side, at 90° to the front exactly'],
     correct: 'Off to the rear, near 110° from the front',
     explain: 'A hypercardioid rejects most about 110° off its front, with a rear lobe behind. Aim by the actual pattern — and a real null is shallower than the drawing.',
     why: {
       'Directly in front of the boom mic': 'In front is its pickup, not its rejection.',
-      'Square to its side, at 90° to the front exactly': 'At 90° it is already about 12 dB down on the ideal pattern; the deepest dip lies farther round.',
+      'Square to its side, at 90° to the front exactly': 'At 90° it is already about 12 dB down on the ideal pattern; the deepest dip lies farther around.',
     },
   },
   {
@@ -420,7 +420,7 @@ const symptoms: Symptom[] = [
     correct: 'Recheck the widest frame; mark a safe height',
     explain: 'Check the widest active frame before every take and mark a clearance. A tired arm drifts: plan relief and shorten the reach.',
     why: {
-      'Ask the camera to zoom in a little more': 'The picture is the camera’s decision; the boom works round it.',
+      'Ask the camera to zoom in a little more': 'The picture is the camera’s decision; the boom works around it.',
       'Pull the boom back toward the operator a lot': 'Farther back hears more room — just stay out of the frame.',
     },
   },

@@ -98,7 +98,7 @@ export const B11_ZONES: DocumentedZone[] = [
     'b11.lav',
     'coach',
     'An approved chest mic on the coach, at the breastbone',
-    'After our research, here is where we suggest you begin — once it is approved: a miniature at the breastbone, its capsule pointed toward the mouth, clear of fabric edges, zips, badges and straps — here about 21 cm from the lips. Both hands stay with the work.',
+    'After our research, here is where we suggest you begin — once it is approved: a miniature at the breastbone, its capsule pointed toward the mouth, clear of fabric edges, zippers, badges and straps — here about 21 cm from the lips. Both hands stay with the work.',
     'Voice ahead of much of the crowd, both hands left for the work — but it does not turn with the head, and breath, sweat and cloth show in it.',
     ['Approval first, and who may remove it', 'Rub, breath and the turn of the head', 'The pack retained, the cable’s loop, the antenna straight'],
   ),

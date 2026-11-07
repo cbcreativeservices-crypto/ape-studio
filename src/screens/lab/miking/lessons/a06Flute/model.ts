@@ -90,8 +90,8 @@ const FRONT_Z: Omit<DocumentedZone, 'start'> = {
 
 const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   id: 'fl.clip',
-  label: 'Miniature on a clip round the foot end',
-  band: 'On a keyed flute only: a strap round the foot end, the capsule about 3–11 cm out, pointed back along the flute toward the keys.',
+  label: 'Miniature on a clip around the foot end',
+  band: 'On a keyed flute only: a strap around the foot end, the capsule about 3–11 cm out, pointed back along the flute toward the keys.',
   kind: 'sourced',
   src: 'DPA-FLUTE',
   quote: 'The U-CLIP’s … strap can easily be fixed around the flute end. Point it towards the keys',

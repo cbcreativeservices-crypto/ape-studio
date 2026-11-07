@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what else reaches a rap vocal mic — the headphones, the room, the wedge and the beat — the working zone the performer moves in, and what to settle before any mic goes up.',
     credit: { scenarios: ['rp.set.1', 'rp.set.2', 'rp.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Hear the real verse, ad-libs and hook first. Agree a working zone; do not chase the performer with the mic. Closed-back headphones in the studio, the wedge in the pattern’s null on stage — and the performer’s hearing first.',
+    takeaway: 'Hear the real verse, ad-libs and hook first. Agree on a working zone; do not chase the performer with the mic. Closed-back headphones in the studio, the wedge in the pattern’s null on stage — and the performer’s hearing first.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a rap vocal mic in the right order, choose and justify a setup for a studio verse and a live show, and say what would justify a second mic.',
     credit: { scenarios: ['rp.prac.order', 'rp.prac.gain', 'rp.prac.setup1', 'rp.prac.setup2', 'rp.prac.3', 'rp.mix.1', 'rp.mix.2', 'rp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real performer.' },
-    takeaway: 'Distance from the lips, a rehearsed working zone, clearance from the face, headroom for the loudest ad-lib, pattern reasoning and polarity versus delay pass. A genre rule or a brand do not — and more than one setup can pass.',
+    takeaway: 'Distance from the lips, a rehearsed working zone, clearance from the face, headroom for the loudest ad-lib, pattern reasoning and polarity versus delay pass. A genre rule or a brand does not — and more than one setup can pass.',
   },
 };
 
@@ -130,9 +130,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The rapper leans in and out on every line. What do you settle before recording?',
     options: ['A working zone, rehearsed with the loudest lines', 'A mic that follows the head wherever it moves around', 'Nothing: compression will even out the level'],
     correct: 'A working zone, rehearsed with the loudest lines',
-    explain: 'Do not chase every syllable with a moving mic: agree a working zone, rehearse the loudest and quietest material inside it, and mark it if that helps.',
+    explain: 'Do not chase every syllable with a moving mic: agree on a working zone, rehearse the loudest and quietest material inside it, and mark it if that helps.',
     why: {
-      'A mic that follows the head wherever it moves around': 'A mic that moves changes the tone and the room on every line. Keep the mic still; agree the zone.',
+      'A mic that follows the head wherever it moves around': 'A mic that moves changes the tone and the room on every line. Keep the mic still; agree on the zone.',
       'Nothing: compression will even out the level': 'Compression evens the level but not the changing tone and low end of a moving voice.',
     },
   },
@@ -157,7 +157,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The puffs go straight ahead out of the lips — which is why a screen or a ball grille sits in their path, and why a small angle or a little distance helps.',
     why: {
       'Up and out toward the performer’s nose': 'The nose carries m, n and ng; the puff of a P goes straight out.',
-      'Out to all sides of the mouth evenly': 'Sound spreads round the front; the air of a P goes straight ahead.',
+      'Out to all sides of the mouth evenly': 'Sound spreads around the front; the air of a P goes straight ahead.',
     },
   },
   {
@@ -443,7 +443,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Hear the real verse, ad-libs and hook; watch how the performer moves', early: 'Start with the performer and the delivery.' },
       { text: 'Closed-back headphones on, loudspeakers off; a quiet, controlled room', early: 'Settle the room and the monitoring before the mic.' },
       { text: 'Choose a mic for this voice and production, on a stable stand', early: 'Choose once you have heard the delivery.' },
-      { text: 'Agree a working zone; place the mic about 10 cm out, clear of the face', early: 'You need a chosen mic and an agreed zone before you place it.' },
+      { text: 'Agree on a working zone; place the mic about 10 cm out, clear of the face', early: 'You need a chosen mic and an agreed zone before you place it.' },
       { text: 'Mute the outputs; then switch phantom on if the mic needs it', early: 'Power comes after the mic is placed and connected — outputs muted first.' },
       { text: 'Set input gain on the loudest ad-lib, with headroom', early: 'Gain is set once the mic is connected and powered.' },
       { text: 'Rehearse the quietest and loudest lines inside the zone', early: 'Rehearse once the level is set safely.' },
@@ -461,7 +461,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A dynamic about 10 cm from the lips, in a rehearsed working zone', ok: true, power: 'none', feedback: 'A suggested starting point: dry and focused — check the boom as the performer leans in, and the ad-lib peaks.' },
       { id: 'b', label: 'A condenser about 15 cm out, a screen in front', ok: true, power: 'phantom', feedback: 'A suggested starting point for more detail — check harsh S sounds and the shouted peaks.' },
-      { id: 'c', label: 'A handheld the performer moves toward each word', ok: false, power: 'none', feedback: 'Chasing every syllable changes the level and the low end on every line. Agree a zone instead.' },
+      { id: 'c', label: 'A handheld the performer moves toward each word', ok: false, power: 'none', feedback: 'Chasing every syllable changes the level and the low end on every line. Agree on a zone instead.' },
       { id: 'd', label: 'A condenser 2 cm from the lips with no screen', ok: false, power: 'phantom', feedback: 'Right in the air path of a fast verse: pop after pop, and moisture on the capsule.' },
       { id: 'e', label: 'An omni 1 m away, to catch every move', ok: false, power: 'phantom', feedback: 'A meter away the room joins every word — the opposite of a dry verse, and hard to remove later.' },
     ],
@@ -486,7 +486,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the rapper leans from 15 cm to 8 cm on one line. What changes most?', options: ['The level and the low end', 'Only the room sound', 'Nothing you could hear'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the performer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

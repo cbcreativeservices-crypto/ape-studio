@@ -29,9 +29,9 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a guitarist — the strumming arm, the fretting hand, their voice and their view of the neck — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a guitarist — the strumming arm, the fretting hand, their voice and their view of the neck — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['ag.set.1', 'ag.set.2', 'ag.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The space round the guitar is the player’s: the arm, the hand, the neck and their sight line. A singing player is a second source right above the guitar. Ask the player first, and protect your hearing.',
+    takeaway: 'The space around the guitar is the player’s: the arm, the hand, the neck and their sight line. A singing player is a second source right above the guitar. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -49,7 +49,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the floor wedge — and know what a pattern cannot do, from a singing player to the top’s reflections.',
     credit: { scenarios: ['ag.ctx.1', 'ag.ctx.2', 'ag.ctx.studio', 'ag.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. Real nulls are shallower than the picture, the top reflects stage sound, and a voice above the guitar is in front of most guitar mics; a Figure-8’s side null can turn it down. No mic position alone prevents feedback.',
+    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. Real nulls are shallower than the picture, the top reflects stage sound, and a voice above the guitar is in front of most guitar mics; a figure-8’s side null can turn it down. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -67,7 +67,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one guitar mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['ag.prac.order', 'ag.prac.gain', 'ag.prac.setup1', 'ag.prac.setup2', 'ag.prac.3', 'ag.mix.1', 'ag.mix.2', 'ag.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real guitar.' },
-    takeaway: 'Safe clearance from the player, correct power and level checks, pattern reasoning and an honest account of polarity versus delay pass. A brand or a “loudest” position do not — and more than one setup can pass.',
+    takeaway: 'Safe clearance from the player, correct power and level checks, pattern reasoning and an honest account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When does an omni on the guitar make the most sense?',
     options: ['On a loud stage, to keep all the monitors out of it', 'In a quiet, good room where its sound is welcome', 'Very close, to get the most bass from proximity'],
     correct: 'In a quiet, good room where its sound is welcome',
-    explain: 'An omni hears all round: a fuller, less position-sensitive view — and the room and any spill with it. Choose it when the room is worth hearing.',
+    explain: 'An omni hears all around: a fuller, less position-sensitive view — and the room and any spill with it. Choose it when the room is worth hearing.',
     why: {
       'On a loud stage, to keep all the monitors out of it': 'An omni rejects nothing: on a loud stage it hears the monitors as well as the guitar.',
       'Very close, to get the most bass from proximity': 'Proximity effect belongs to directional mics. An omni shows little of it.',
@@ -192,12 +192,12 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mic.4',
     page: 'microphone',
     prompt: 'What tends to happen with a directional mic brought very close to the guitar?',
-    options: ['It loses its bass, because it is so close', 'It turns into an omni and hears all round', 'It adds bass — the proximity effect'],
+    options: ['It loses its bass, because it is so close', 'It turns into an omni and hears all around', 'It adds bass — the proximity effect'],
     correct: 'It adds bass — the proximity effect',
     explain: 'Very close, a directional mic’s low end rises — the proximity effect. Close to the hole that adds to the boom; check a low passage before reaching for a filter.',
     why: {
       'It loses its bass, because it is so close': 'The reverse: close in, a directional mic tends to gain bass.',
-      'It turns into an omni and hears all round': 'Its pattern stays directional; what changes close in is its low end.',
+      'It turns into an omni and hears all around': 'Its pattern stays directional; what changes close in is its low end.',
     },
   },
   {
@@ -239,7 +239,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ag.rec.2',
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated guitarist?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a seated guitarist?',
     options: ['The front of the guitar, so that the audience can see it clearly', 'The strumming arm, the fretting hand and their view of the neck', 'The floor by the chair, which belongs to the DI box'],
     correct: 'The strumming arm, the fretting hand and their view of the neck',
     explain: 'Clearance comes first: the arm sweeps over the body, the hand travels the neck, and the player watches the neck. Stop the player before anything moves.',
@@ -541,7 +541,7 @@ const setupTasks: SetupTask[] = [
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what moves most of the air when a guitar string is plucked?', options: ['The string itself', 'The top, driven by the bridge', 'The headstock and tuners'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you slide the mic from near the 12th fret toward the sound hole. What changes?', options: ['More string detail', 'More body and low end', 'It depends on this guitar'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the floor wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -601,7 +601,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a seated guitarist?',
+    prompt: 'What must a stand mic stay out of, around a seated guitarist?',
     options: ['The strumming arm, the fretting hand and their view of the neck', 'The front of the guitar, so the audience can see it clearly at all times', 'The space behind the chair, where all the cables run'],
     correct: 'The strumming arm, the fretting hand and their view of the neck',
     explain: 'The arm sweeps over the body, the hand travels the neck, and the player watches it. The space in front of the guitar is usually where a mic comes in.',
@@ -651,10 +651,10 @@ export const C01_LESSON: Lesson = {
       { title: 'The pick pulls a string', text: 'A pick, a finger or a nail pulls one string aside and lets it go. That brief release is where the ATTACK — the sharp start of the note — begins.', byVariant: { twelve: 'A pick or a finger pulls a PAIR of strings aside and lets them go — on the lower pairs, one string an octave above the other. That brief release is where the ATTACK begins.', nylon: 'A finger, a thumb or a nail pulls one string aside and lets it go — softer and rounder than a steel string. That brief release is where the ATTACK begins.' } },
       { title: 'The string swings', text: 'Released, the string swings between its two still ends — the saddle on the bridge and the nut (or the fret the finger presses). Its lowest shape is drawn here many times larger than it really moves. On its own, a thin string moves very little air.' },
       { title: 'The bridge drives the top', text: 'Each swing tugs at the saddle, so the bridge rocks and drives the thin top. The top is what really moves the air — and it moves the air inside the body, too.' },
-      { title: 'Sound leaves', text: 'Sound leaves from the top, most strongly round the bridge, and through the sound hole, where the air in the body breathes in and out — a big part of the low end. The strings and the body ringing together are the BODY of the sound.' },
+      { title: 'Sound leaves', text: 'Sound leaves from the top, most strongly around the bridge, and through the sound hole, where the air in the body breathes in and out — a big part of the low end. The strings and the body ringing together are the BODY of the sound.' },
     ],
     attack: 'The start of the note: the pick, finger or nail releasing the string, with its click and scrape. It is heard most directly near the strings and the hands — so a mic near the bridge or the neck tends to hear more of it.',
-    body: 'The ring: the strings, the top and the air in the body sounding together after the attack. Much of it leaves from the top round the bridge and through the sound hole — a mic toward the hole tends to hear more body and low end. Both are tendencies, and guitars vary.',
+    body: 'The ring: the strings, the top and the air in the body sounding together after the attack. Much of it leaves from the top around the bridge and through the sound hole — a mic toward the hole tends to hear more body and low end. Both are tendencies, and guitars vary.',
     head: { diameterMm: 100, rods: 0, label: 'the sound hole', strikeSrc: 'LESSON' },
   },
   setting: {

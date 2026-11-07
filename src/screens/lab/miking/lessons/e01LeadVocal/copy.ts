@@ -23,7 +23,7 @@ export const E01_COPY: Partial<LessonCopy> = standingVoiceCopy({
   pairB: E01_PAIR_B,
   practice: { gain: 'lv.prac.gain', second: 'lv.prac.3', mixed: ['lv.mix.1', 'lv.mix.2', 'lv.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: where the air goes, a pattern’s null, and polarity versus delay.' },
   before: [
-    { title: 'START WITH THE SINGER, NOT A LABEL', text: 'Hear the actual delivery before choosing a mic: the quietest close phrase, the strongest sustained note, a line full of P, B, S and T, a breathy line and the loudest chorus. A low voice, a high voice, a belt, a whisper or a rap each ask something different — but none of it is a rule for which mic to use, and a singer’s gender is never one.' },
+    { title: 'START WITH THE SINGER, NOT A LABEL', text: 'Hear the actual delivery before choosing a mic: the quietest close phrase, the strongest sustained note, a line full of P, B, S and T, a breathy line and the loudest chorus. A low voice, a high voice, a belt, a whisper or a rap each asks something different — but none of it is a rule for which mic to use, and a singer’s gender is never one.' },
     { title: 'A QUIET ROOM AND A GOOD HEADPHONE MIX', text: 'In the studio: a quiet room with the strongest reflections tamed, a sturdy stand, closed-back headphones and the loudspeakers off. A singer who cannot hear a useful balance changes distance, pitch or effort in ways no mic can repair.' },
     { title: 'NOTHING IN THE SINGER’S WAY', text: 'The stand, its base and the cable stay clear of the singer’s feet and hands, and the mic and screen clear of the face as the singer moves. Never set headphones on or beside a live mic, and never blow into a mic to test it — use speech or singing.' },
   ],

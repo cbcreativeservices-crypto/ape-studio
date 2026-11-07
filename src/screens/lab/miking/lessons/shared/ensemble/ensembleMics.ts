@@ -32,7 +32,7 @@ export const ENSEMBLE_MIC_TYPES: Record<string, MicType> = {
     mount: 'stand',
     examples: [{ model: 'small omni pressure condensers (the orchestral A/B example; the tree’s three omnis)', fact: 'omni capsules for a spaced pair and a tree; body drawn as the kit lessons’ pencil (104 mm, Ø 21 drawing default).', src: 'DPA-AB-ORCH' }],
     art: 'sdc',
-    blurb: 'A small condenser that hears all round: the usual choice for a spaced pair, a tree and outriggers — the ensemble with its room. Needs phantom power.',
+    blurb: 'A small condenser that hears all around: the usual choice for a spaced pair, a tree and outriggers — the ensemble with its room. Needs phantom power.',
   },
   arrCard: {
     id: 'arrCard',

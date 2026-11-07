@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a veena player on the floor — the plucking hand, the long neck and its gamakas, the gourd on the thigh — the neighbors (mridangam, tanpura), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a veena player on the floor — the plucking hand, the long neck and its gamakas, the gourd on the thigh — the neighbors (mridangam, tanpura), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The posture is the player’s — the mic adapts to it, never the reverse. Know which veena it is. Ask the player first, and protect your hearing.',
   },
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one veena mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real veena.' },
-    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a “vocal mic” label do not.',
+    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a “vocal mic” label does not.',
   },
 };
 
@@ -127,12 +127,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'The mic would be easier to place if the player turned the veena a little. What do you do?',
-    options: ['Leave the posture as theirs, and fit the mic round it', 'Ask them to turn it, since the mic position matters most', 'Turn the veena yourself while the player is resting'],
-    correct: 'Leave the posture as theirs, and fit the mic round it',
+    options: ['Leave the posture as theirs, and fit the mic around it', 'Ask them to turn it, since the mic position matters most', 'Turn the veena yourself while the player is resting'],
+    correct: 'Leave the posture as theirs, and fit the mic around it',
     explain: 'Inspect how the face actually points in the player’s normal posture — never ask them to rotate the instrument or give up normal bends to hold an angle for a mic.',
     why: {
       'Ask them to turn it, since the mic position matters most': 'The player’s posture and playing come first. The mic adapts to them.',
-      'Turn the veena yourself while the player is resting': 'Do not handle the player’s instrument unless they ask you to. Fit the mic round their posture.',
+      'Turn the veena yourself while the player is resting': 'Do not handle the player’s instrument unless they ask you to. Fit the mic around their posture.',
     },
   },
   {
@@ -175,10 +175,10 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.1`,
     page: 'placement',
-    prompt: 'A starting point says 30–50 cm from the top plate, round the middle of the plate, on the far side of the bridge from the neck. Your readout says 40 cm, square to the plate. Are you in it?',
+    prompt: 'A starting point says 30–50 cm from the top plate, around the middle of the plate, on the far side of the bridge from the neck. Your readout says 40 cm, square to the plate. Are you in it?',
     options: ['Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it', 'No: the distance is read from the yali, not the plate', 'Only if the mic is also aimed at that broad area of the plate'],
     correct: 'Only if the mic is also aimed at that broad area of the plate',
-    explain: 'The distance is read square to the plate, from the point the zone names — and this zone also asks for the aim: a broad area round the middle of the plate, on the far side of the bridge from the neck, out of the hand’s reach.',
+    explain: 'The distance is read square to the plate, from the point the zone names — and this zone also asks for the aim: a broad area around the middle of the plate, on the far side of the bridge from the neck, out of the hand’s reach.',
     why: {
       'Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it': 'The distance is right, but this zone also names an aim. Check where the mic points.',
       'No: the distance is read from the yali, not the plate': 'The zone names the top plate. The yali is at the far end of the neck.',
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a veena player on the floor?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a veena player on the floor?',
     options: ['The space above the plate, which belongs to the audience’s view', 'The plucking hand, the left hand, the gourd and their view', 'The rug at the front, which belongs to the floor wedge'],
     correct: 'The plucking hand, the left hand, the gourd and their view',
     explain: 'Clearance comes first: the plucking hand and arm over the plate, the left hand along the neck and its gamakas, the gourd on the thigh, the yali, and the player’s view. Stop the player before anything moves.',
@@ -260,9 +260,9 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · The plate’s measured radiation changed with pitch, direction and distance. What does that suggest for a live mic?',
-    options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions round the face; one spot may favor some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
-    correct: 'Compare a few positions round the face; one spot may favor some notes',
-    explain: 'Because the pattern changes with pitch and direction, a single close spot can favor some notes or a local resonance. Compare positions round the main face at matched levels.',
+    options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions around the face; one spot may favor some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
+    correct: 'Compare a few positions around the face; one spot may favor some notes',
+    explain: 'Because the pattern changes with pitch and direction, a single close spot can favor some notes or a local resonance. Compare positions around the main face at matched levels.',
     why: {
       'Each spot on the plate gives a similar sound, so just pick one of them': 'The measurements show the opposite: the radiation varies with direction.',
       'The mic must sit exactly where the study measured, 25 cm out': 'That was a measurement radius, not a placement rule.',
@@ -270,11 +270,11 @@ const scenarios: MikingScenario[] = [
   },
   ...twoMicChecks(P, VEENA_N),
   ...practiceChecks(P, VEENA_N, {
-    quote: '30–50 cm from the top plate, round the middle of the plate, on the far side of the bridge from the neck',
-    right: 'The top plate, round its middle, on the far side of the bridge from the neck',
+    quote: '30–50 cm from the top plate, around the middle of the plate, on the far side of the bridge from the neck',
+    right: 'The top plate, around its middle, on the far side of the bridge from the neck',
     wrong1: 'The gourd under the neck, since it works as a second main resonator',
     wrong2: 'The yali at the far end of the neck, measured back from its carved head',
-    explain: 'A distance belongs to the point it names: the top plate, round its middle, on the far side of the bridge from the neck. The gourd and the yali are elsewhere — and the gourd is a support.',
+    explain: 'A distance belongs to the point it names: the top plate, around its middle, on the far side of the bridge from the neck. The gourd and the yali are elsewhere — and the gourd is a support.',
   }),
 ];
 
@@ -350,7 +350,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, solo veena. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed round the middle of the plate, on the far side of the bridge from the neck', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed around the middle of the plate, on the far side of the bridge from the neck', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic at the same distance, turned toward the bridge', ok: true, power: 'none', feedback: 'A suggested start for articulation; it needs no phantom.' },
       { id: 'c', label: 'Small condenser over the plate, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Instrument dynamic with its grille removed, 25 cm from the plate', ok: false, power: 'none', feedback: 'Keep a mic’s protective parts on unless its maker allows otherwise — and 25 cm was a study’s radius, not a rule.' },
@@ -397,11 +397,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'The veena’s measured radiation changed with pitch, direction and distance. What does that suggest?',
-    options: ['The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound', 'Compare a few positions round the face before settling'],
-    correct: 'Compare a few positions round the face before settling',
-    explain: 'A pattern that changes with pitch and direction means one spot can favor some notes. Compare positions round the main face at matched levels.',
+    options: ['The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound', 'Compare a few positions around the face before settling'],
+    correct: 'Compare a few positions around the face before settling',
+    explain: 'A pattern that changes with pitch and direction means one spot can favor some notes. Compare positions around the main face at matched levels.',
     why: {
-      'The positions all sound alike, so the first one will do fine': 'The measurements show the opposite: the sound varies round the face.',
+      'The positions all sound alike, so the first one will do fine': 'The measurements show the opposite: the sound varies around the face.',
       'Only the 25 cm study radius gives a true sound': 'That was where the study measured, not a placement rule.',
     },
   },
@@ -420,7 +420,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a veena player on the floor?',
+    prompt: 'What must a stand mic stay out of, around a veena player on the floor?',
     options: ['The hands, the gourd on the thigh, the yali and their view', 'The space above the plate, where the audience looks', 'The space behind the player, where the tanpura sits'],
     correct: 'The hands, the gourd on the thigh, the yali and their view',
     explain: 'The plucking hand works over the plate, the left hand travels the neck with its gamakas, the gourd rests on the thigh, and the player watches. Above the plate, out of reach, is where a mic comes in.',
@@ -458,7 +458,7 @@ export const C15_LESSON: Lesson = {
       { title: 'A finger plucks', text: 'A finger pulls a melody string aside near where the plate meets the neck, and lets it go — the ATTACK. The little finger can strike the tala strings beside it.' },
       { title: 'The string swings — against the bridge', text: 'Released, the string swings between its still ends — the broad flat bridge and the nut, or the fret it is pressed to — and vibrates against the bridge’s flat top: the buzz the player intends. Motion drawn many times larger.' },
       { title: 'The bridge drives the top plate', text: 'Each swing works the bridge, and the bridge drives the top plate over the big resonator. The plate moves the air — the air inside the resonator too.' },
-      { title: 'Sound leaves', text: 'Sound leaves mostly from the top plate. In measured radiation the plate mattered most, and the pattern changed with pitch, direction and distance — so it pays to compare positions round the face. The gourd under the neck is a support.' },
+      { title: 'Sound leaves', text: 'Sound leaves mostly from the top plate. In measured radiation the plate mattered most, and the pattern changed with pitch, direction and distance — so it pays to compare positions around the face. The gourd under the neck is a support.' },
     ],
     attack: 'The start of the note: the finger releasing the string against the broad, flat bridge — a buzzing, bright onset. It is heard most directly toward the bridge; aimed there, a mic hears more click and buzz.',
     body: 'The note’s ring: the strings, the plate and the resonator’s air together, with the drone of the tala strings. A broad view of the plate carries it; farther back adds the room. Tendencies; veenas vary.',

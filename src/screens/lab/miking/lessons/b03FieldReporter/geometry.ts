@@ -109,7 +109,7 @@ const parts: Part[] = [
   { id: 'b3R.neck', label: 'the reporter: neck', short: 'neck', role: 'The reporter’s neck.', solid: RS.neck, listIn: [], prov: FIG },
   { id: 'b3R.legs', label: 'the reporter: legs', short: 'legs', role: 'The reporter’s legs.', solid: RS.legs, listIn: [], prov: FIG },
   { id: 'b3.camera', label: 'the camera', short: 'camera', role: 'Beside the reporter, on the guest’s right: the mic and its flag stay out of the lens’s way. A mic on the camera would be far from both voices.', solid: { kind: 'box', ...CAMERA_BOX }, prov: DD },
-  { id: 'b3.road', label: 'the road behind the guest', short: 'road', role: 'Traffic: the loudest noise here, and a vehicle path nobody stands in — the reporter, the guest and the camera operator stay on the pavement.', variants: ['street', 'twoMics'], prov: DD },
+  { id: 'b3.road', label: 'the road behind the guest', short: 'road', role: 'Traffic: the loudest noise here, and a vehicle path nobody stands in — the reporter, the guest and the camera operator stay on the sidewalk.', variants: ['street', 'twoMics'], prov: DD },
   { id: 'b3.pa', label: 'the local loudspeaker', short: 'loudspeaker', role: 'At a live event: every open mic hears it. What goes to it, and where a directional handheld’s rejection points, decide how close to feedback it gets.', variants: ['event'], prov: DD },
   { id: 'clamp', label: 'how far the hand or the clip reaches', short: 'reach', role: 'A hand holds a mic only an arm’s length from the shoulder — never stretched until the stance is unstable; a clip grips where it is.', listIn: [], prov: ill('an arm’s reach (63 cm) and a clip’s (4 cm): drawing defaults') },
 ];

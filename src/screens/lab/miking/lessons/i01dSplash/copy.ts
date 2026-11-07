@@ -96,7 +96,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     B: { typeId: 'standClip', pattern: 'supercardioid', zone: 'sp.under' },
     opposite: {
       surface: 'spTop',
-      note: 'One mic over the splash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture: check both polarity states, no setting is required.',
+      note: 'One mic over the splash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture: check both polarity states; no setting is required.',
     },
     learn: [
       'A splash is small, so two mics on it are close together — and both hear the crash above and the tom below. Each pair on the kit is a two-mic problem: compare in mono, at matched levels.',

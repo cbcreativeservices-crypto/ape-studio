@@ -110,7 +110,7 @@ const WALL_GOOD_SHORT: Record<string, string> = {
 };
 
 const S3_TEMP: { id: string; label: string; good: boolean; short: string }[] = [
-  { id: 'protect', label: 'Protect the crossing with a proper threshold solution', good: true, short: 'Temporary changes the solutions, not the standard of care — a suitable threshold protector keeps the door and the cable working.' },
+  { id: 'protect', label: 'Protect the crossing with a proper threshold solution', good: true, short: 'Temporary work changes the solutions, not the standard of care — a suitable threshold protector keeps the door and the cable working.' },
   { id: 'wedge', label: 'Wedge the door open for the event', good: false, short: 'Now the DOOR is defeated — possibly a fire door. The cable problem became a life-safety problem.' },
   { id: 'ride', label: 'Let the door close on it — it is only two days', good: false, short: 'A door cycles thousands of times. Two days of pinching is real damage, and workplace rules apply to temporary work too.' },
 ];

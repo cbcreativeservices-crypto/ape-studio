@@ -30,7 +30,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know how the player sits, where the hands move, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['ta.set.1', 'ta.set.2', 'ta.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The player’s seating, supports and hands come first: the mic fits round them. Ask for their strokes in their own terms, agree the role and the balance between the drums, and protect your hearing.',
+    takeaway: 'The player’s seating, supports and hands come first: the mic fits around them. Ask for their strokes in their own terms, agree on the role and the balance between the drums, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A microphone channel is labeled “right”. Which drum is it?',
     options: ['Check by the drum itself: the dayan or the bayan', 'The dayan, since it sits on the player’s right side', 'The bayan, since right is the audience’s view'],
     correct: 'Check by the drum itself: the dayan or the bayan',
-    explain: 'Name each drum by what it is. “Right” can mean the player’s right or the audience’s, and some players set the drums the other way round.',
+    explain: 'Name each drum by what it is. “Right” can mean the player’s right or the audience’s, and some players set the drums the other way around.',
     why: {
       'The dayan, since it sits on the player’s right side': 'Often — but not always: some players set them the other way, and “right” depends on the viewpoint.',
       'The bayan, since right is the audience’s view': '“Right” depends on who is looking. Label channels by the drum.',
@@ -354,8 +354,8 @@ const scenarios: MikingScenario[] = [
     id: 'ta.prac.gain',
     page: 'practice',
     prompt: 'Normal strokes sit well below the overload light, but the strongest passage lights it. What do you do?',
-    options: ['Lower the input gain, or a pad its manual allows, then re-check', 'Pull the channel fader down until the loud strokes sound clean', 'Ask the player to keep the loudest passage a little softer'],
-    correct: 'Lower the input gain, or a pad its manual allows, then re-check',
+    options: ['Lower the input gain, or use a pad its manual allows, then re-check', 'Pull the channel fader down until the loud strokes sound clean', 'Ask the player to keep the loudest passage a little softer'],
+    correct: 'Lower the input gain, or use a pad its manual allows, then re-check',
     explain: 'Find where it overloads and follow the mic or interface manual. A lower fader does not undo clipping at the input.',
     why: {
       'Pull the channel fader down until the loud strokes sound clean': 'The overload is at the input, before the fader; a lower fader only makes it quieter.',
@@ -493,7 +493,7 @@ const orderTasks: OrderTask[] = [
     page: 'practice',
     prompt: 'Tap the steps of a tabla setup in the order you would do them.',
     steps: [
-      { text: 'Identify each drum, the player’s role and the balance they want; agree a passage', early: 'Start with the player and the two drums.' },
+      { text: 'Identify each drum, the player’s role and the balance they want; agree on a passage', early: 'Start with the player and the two drums.' },
       { text: 'Set one shared mic from the audience side; check both hands’ full paths', early: 'Know the drums and the balance before placing a mic.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom if needed', early: 'Power comes after the mic is placed and connected — outputs muted first.' },
       { text: 'Set gain on the strongest passage and check it is clean', early: 'Gain is set once the mic is connected and powered.' },
@@ -544,7 +544,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: which drum’s pitch can the player bend while it rings?', options: ['The bayan', 'The dayan', 'Neither'], after: 'Now STEP through the stroke (or PLAY ONCE) on each DRUM, then try PRESS on the bayan.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one mic in front of the pair, the dayan dominates. What helps most?', options: ['Moving the mic toward the bayan', 'Only turning the mic toward the bayan', 'Moving it farther back'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -572,7 +572,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The dayan’s patch is in the middle; the bayan’s sits off-center.',
     why: {
       'Centered on both drums, as on the dayan': 'Only the dayan’s is centered; the bayan’s sits off-center.',
-      'Off-center on the dayan; centered on the bayan': 'The other way round: centered on the dayan, off-center on the bayan.',
+      'Off-center on the dayan; centered on the bayan': 'The other way around: centered on the dayan, off-center on the bayan.',
     },
   },
   {
@@ -646,12 +646,12 @@ export const M13_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The tabla is a pair of hand drums played as one instrument: the smaller, wooden dayan (also called dahina, or simply tabla) and the larger, kettle-shaped bayan, of metal or clay.', src: 'MET-TABLA' },
     { title: 'WHERE YOU MEET IT', text: 'In Hindustani classical music — solo and accompanying voice and instruments — and in many other styles, on stage and in the studio. Look at the pair in front of you: sizes and materials vary.', src: 'MET-ESSAY' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Ringing and damped strokes on the dayan, open tones and pitch glides on the bayan, strokes on both together, and quiet finger work. Let the player name the strokes (bols), and agree how prominent the bayan should be.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Ringing and damped strokes on the dayan, open tones and pitch glides on the bayan, strokes on both together, and quiet finger work. Let the player name the strokes (bols), and agree on how prominent the bayan should be.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'The pair drawn here: a dayan about 31 cm tall and 20 cm across, a bayan about 34 cm and 26 cm across (the largest extents of one museum pair). The player sits on the floor, the drums in cloth rings — a drawing choice; players differ.', src: 'MET-TABLA' },
   ],
   sound: {
     stages: [
-      { title: 'A stroke lands', text: 'Fingers strike the dayan, or the bayan — or both at once. Some strokes ring; others are damped by the hand straight away.' },
+      { title: 'A stroke lands', text: 'Fingers strike the dayan, or the bayan — or both at once. Some strokes ring; others are damped by the hand right away.' },
       { title: 'The head moves', text: 'The head moves in the shapes the stroke can reach — drawn here much larger than it really moves. The black patch’s weight lets the dayan’s shapes ring together as a clear pitch.' },
       { title: 'The bayan glides', text: 'The heel of the hand presses the bayan’s head while it rings: the tension rises and the pitch bends. The hand moves across the head all the time.' },
       { title: 'Sound leaves', text: 'Sound leaves both heads, up and toward the audience; each drum is heard by any mic on the other. The bodies and the air inside shape how they ring.' },
@@ -662,7 +662,7 @@ export const M13_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'dayan', label: 'the dayan, on the player’s right here', short: 'DAYAN', note: 'The smaller drum, in its ring, tilted toward the audience a little. Some players set the drums the other way round: name each by what it is.', prov: { kind: 'illustrative', reason: 'a right-handed layout: a drawing default' }, tag: 'THE DRUM', scene: 'all' },
+      { id: 'dayan', label: 'the dayan, on the player’s right here', short: 'DAYAN', note: 'The smaller drum, in its ring, tilted toward the audience a little. Some players set the drums the other way around: name each by what it is.', prov: { kind: 'illustrative', reason: 'a right-handed layout: a drawing default' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'bayan', label: 'the bayan, on the player’s left here', short: 'BAYAN', note: 'The larger drum. The heel of the hand presses and slides across its head: its whole path is the player’s space.', prov: { kind: 'illustrative', reason: 'a right-handed layout: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'player', label: 'the player, seated on the floor', short: 'PLAYER', note: 'Knees, supports and the way out stay clear. Low stands or booms from the audience side.', prov: { kind: 'illustrative', reason: 'a player seated on the floor: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'the player’s wedge', short: 'WEDGE', note: 'Live, a floor monitor downstage, facing back toward the player. Check the mic’s real pattern before placing it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

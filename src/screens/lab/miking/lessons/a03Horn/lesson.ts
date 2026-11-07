@@ -90,30 +90,30 @@ const scenarios: MikingScenario[] = [
     explain: 'The bell faces the rear, and the high overtones go mostly where it points. A listener in front hears the horn largely after the wall or shell behind the player has reflected it — softer and blended. Behind the bell, the sound is direct and more forceful.',
     why: {
       'The valves send a softer copy of the sound forward to the audience': 'The valves only switch lengths of tube in or out. Nearly all of the sound leaves from the bell.',
-      'The player’s body muffles the sound as it passes through to the front': 'Sound does not pass through the player. It goes round, and — for the overtones — mostly by way of the room.',
+      'The player’s body muffles the sound as it passes through to the front': 'Sound does not pass through the player. It goes around, and — for the overtones — mostly by way of the room.',
     },
   },
   {
     id: 'hn.snd.2',
     page: 'sound',
     prompt: 'In the horn’s air column, where does the pressure swing most, whatever the note?',
-    options: ['At the lips, where the mouthpiece closes the tube', 'At the bell, where the tube opens out widest', 'Halfway round the coil, at the middle of the tube'],
+    options: ['At the lips, where the mouthpiece closes the tube', 'At the bell, where the tube opens out widest', 'Halfway around the coil, at the middle of the tube'],
     correct: 'At the lips, where the mouthpiece closes the tube',
     explain: 'The mouthpiece end is closed by the lips, so every standing wave has its biggest pressure swing there; the open bell end is a pressure still point. That is why the lips can lock onto the tube’s resonances.',
     why: {
       'At the bell, where the tube opens out widest': 'The open bell is where the pressure stands still. The pressure swings most at the closed, lip end.',
-      'Halfway round the coil, at the middle of the tube': 'The middle can be a still point or a peak, depending on the note. Only the lip end is a peak for every note.',
+      'Halfway around the coil, at the middle of the tube': 'The middle can be a still point or a peak, depending on the note. Only the lip end is a peak for every note.',
     },
   },
   {
     id: 'hn.snd.3',
     page: 'sound',
     prompt: 'The horn plays a loud, high note. Where do its high overtones mostly go?',
-    options: ['Out along the bell’s axis, behind the player', 'Evenly all round the player, like the lowest notes', 'Forward to the audience, past the player’s chest'],
+    options: ['Out along the bell’s axis, behind the player', 'Evenly all around the player, like the lowest notes', 'Forward to the audience, past the player’s chest'],
     correct: 'Out along the bell’s axis, behind the player',
-    explain: 'High overtones leave mostly in the direction the bell points — for the horn, behind and out to the right. The lowest notes spread nearly all round. A mic on the bell’s axis hears the most edge.',
+    explain: 'High overtones leave mostly in the direction the bell points — for the horn, behind and out to the right. The lowest notes spread nearly all around. A mic on the bell’s axis hears the most edge.',
     why: {
-      'Evenly all round the player, like the lowest notes': 'Only the low notes spread nearly all round. The higher the overtone, the more it follows the bell.',
+      'Evenly all around the player, like the lowest notes': 'Only the low notes spread nearly all around. The higher the overtone, the more it follows the bell.',
       'Forward to the audience, past the player’s chest': 'The bell points back, so the high overtones go back first, and reach the front mostly by the wall.',
     },
   },
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You plan a stand behind the horn player. What must its mic, boom and base stay clear of?',
     options: ['The bell rising in “bells up”, the right hand and the player’s turn', 'Only the bell itself — the player’s movements are their own business', 'The music stand in front, so the player can read the part clearly'],
     correct: 'The bell rising in “bells up”, the right hand and the player’s turn',
-    explain: 'A rear mic must not collide when the player turns or raises the horn: leave a buffer round the whole expected movement, the right hand’s way into the bell, and a mute going in and out.',
+    explain: 'A rear mic must not collide when the player turns or raises the horn: leave a buffer around the whole expected movement, the right hand’s way into the bell, and a mute going in and out.',
     why: {
       'Only the bell itself — the player’s movements are their own business': 'The player’s movement is exactly what a rear stand can hit. Clearance covers all of it.',
       'The music stand in front, so the player can read the part clearly': 'Sight lines matter, but a rear stand’s risk is the bell, the hand and the player turning.',
@@ -138,7 +138,7 @@ const scenarios: MikingScenario[] = [
     correct: 'To show open, stopped, muted and “bells up” passages',
     explain: 'Each of these changes the sound or the space the horn needs. Let the player demonstrate them; never reposition their hand or their horn to fit a mic.',
     why: {
-      'To move the right hand out of the bell for the mic': 'The hand in the bell is part of how the horn is played. The mic fits round it, never the other way.',
+      'To move the right hand out of the bell for the mic': 'The hand in the bell is part of how the horn is played. The mic fits around it, never the other way.',
       'Nothing: the bell’s direction says where the mic goes': 'The bell says where the sound goes. The passages say how much room the horn and the hand need.',
     },
   },
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A bell clip works well on a trumpet. What makes a clip acceptable on a horn?',
     options: ['Its maker confirms it fits this horn — with the player’s agreement', 'It fits a trumpet’s bell, so it will fit the larger horn bell as well', 'It clamps the detachable bell joint, the strongest part'],
     correct: 'Its maker confirms it fits this horn — with the player’s agreement',
-    explain: 'A general brass clip is not proof of a fit on a horn. Only a clip its maker confirms for this horn and finish, never on the detachable bell joint or where the hand goes — else use a stand.',
+    explain: 'A general brass clip is not proof of a fit on a horn. Only a clip its maker confirms for this horn and finish, never on the detachable bell joint or where the hand goes — otherwise, use a stand.',
     why: {
       'It fits a trumpet’s bell, so it will fit the larger horn bell as well': 'A different bell size and finish — and the hand inside it. A fit must be confirmed for this horn.',
       'It clamps the detachable bell joint, the strongest part': 'Never load the detachable joint. Nothing clamps there.',
@@ -273,7 +273,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The bell faces the rear, so the wall or shell behind sends the horn’s overtones on toward the audience — brightly if it is hard, softly if it is a curtain.',
     why: {
       'It stops the valve noise from reaching the audience': 'The wall reflects the horn’s sound; it is not a shield for the valves.',
-      'The low notes leave the tube there, not at the bell': 'All the notes leave from the bell. The low ones simply spread all round.',
+      'The low notes leave the tube there, not at the bell': 'All the notes leave from the bell. The low ones simply spread all around.',
     },
   },
   {
@@ -436,7 +436,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a horn’s sound leave the instrument?', options: ['From the bell, pointing back', 'From the whole coil at once', 'From the valves, forward'], after: 'Now STEP through (or PLAY ONCE) and follow the sound from the lips to the room.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from behind the bell to in front of the player. What changes?', options: ['More edge and level swings', 'More of the room, softer and blended', 'It depends on this horn and room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'A side-fill sits on the floor behind the horn section. Where will a cardioid behind the horn, aimed toward the bell, reject it best?', options: ['Straight behind the mic', 'Off to the mic’s side', 'In front of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -461,7 +461,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is the player’s right hand doing in the bell?',
     options: ['Supporting the horn and shading its tone and pitch', 'Covering the bell so the sound goes forward instead', 'Working the valves, which are inside the bell'],
     correct: 'Supporting the horn and shading its tone and pitch',
-    explain: 'The right hand holds the horn and shapes its tone and pitch; pushed further in, it stops the note. Never move it to fit a mic.',
+    explain: 'The right hand holds the horn and shapes its tone and pitch; pushed farther in, it stops the note. Never move it to fit a mic.',
     why: {
       'Covering the bell so the sound goes forward instead': 'The hand shades the sound; it does not send it forward. The bell still points back.',
       'Working the valves, which are inside the bell': 'The valves are under the LEFT hand, on the coil.',
@@ -560,7 +560,7 @@ export const A03_LESSON: Lesson = {
       { title: 'The room sends it on', text: 'Behind the player a wall or a shell reflects the sound back toward the audience — brightly if it is hard, softly if it is a curtain. Much of what a listener in front hears has come this way; behind the bell it sounds more forceful.' },
     ],
     attack: 'The start of each note: the tongue releasing the air and the lips starting to buzz — a short edge, carried out of the bell. A mic near the bell’s axis tends to hear more of it; a mic in front, less.',
-    body: 'The sustained note: the standing wave in the tube, leaving the bell — the high overtones mostly along the bell’s axis, toward the back, the low notes all round — and then the room. A mic in front hears more of the room’s version; behind the bell, the direct one. Tendencies: horns, hands and rooms vary.',
+    body: 'The sustained note: the standing wave in the tube, leaving the bell — the high overtones mostly along the bell’s axis, toward the back, the low notes all around — and then the room. A mic in front hears more of the room’s version; behind the bell, the direct one. Tendencies: horns, hands and rooms vary.',
     head: { diameterMm: 0, rods: 0, label: 'the air column', strikeSrc: 'UNSW-BRASS' },
   },
   setting: {

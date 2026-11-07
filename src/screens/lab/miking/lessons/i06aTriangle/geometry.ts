@@ -69,7 +69,7 @@ const parts: Part[] = [
     ],
     'mounted',
   ),
-  { id: 'tri.open', label: 'open corner', short: 'open corner', role: 'Where the two ends of the bent rod nearly meet — the gap is what lets the bar ring freely round its corners. Held, it is on the player’s left (a right-handed player).', prov: { kind: 'sourced', src: 'PAS-1906', quote: 'If the player is right-handed, the triangle should be suspended so that the open vertex is on the player’s left' } },
+  { id: 'tri.open', label: 'open corner', short: 'open corner', role: 'Where the two ends of the bent rod nearly meet — the gap is what lets the bar ring freely around its corners. Held, it is on the player’s left (a right-handed player).', prov: { kind: 'sourced', src: 'PAS-1906', quote: 'If the player is right-handed, the triangle should be suspended so that the open vertex is on the player’s left' } },
   { id: 'tri.corner', label: 'closed corner by the base', short: 'closed corner', role: 'Where the base meets the side. Rolls are played just inside it: the beater bounces between the side and the base.', variants: ['held'], prov: { kind: 'sourced', src: 'PAS-1906', quote: 'They should be executed near the vertex connecting the base and the side of the triangle' } },
   {
     id: 'tri.clip',
@@ -99,7 +99,7 @@ const parts: Part[] = [
     listIn: [],
     prov: DRAW,
   },
-  { id: 'tri.beater', label: 'beater', short: 'beater', role: 'A steel rod about 20–23 cm long; players keep several thicknesses. A heavier beater tends to a fuller sound, a thin one suits quiet playing. Its whole path — and the damping hand — is the player’s space.', prov: TRI.beater.prov },
+  { id: 'tri.beater', label: 'beater', short: 'beater', role: 'A steel rod about 20–23 cm long; players keep several thicknesses. A heavier beater tends to give a fuller sound, a thin one suits quiet playing. Its whole path — and the damping hand — is the player’s space.', prov: TRI.beater.prov },
 ];
 
 const B = HELD.closed[1]; // the base's height (y)

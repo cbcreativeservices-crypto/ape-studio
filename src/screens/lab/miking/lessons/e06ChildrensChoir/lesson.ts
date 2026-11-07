@@ -407,7 +407,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 0.9 m to 1.7 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The front row dominates more'], after: 'Farther back, the distances to the front and back rows even out: the NEAR / FAR readout shrinks.' },
   context: { prompt: 'A low monitor sits in front of the children, below the area mic. Can the mic’s rejection reach it?', options: ['Yes — turn the mic or tighten its pattern', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The pair and the soloist’s mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE.' },
@@ -483,7 +483,7 @@ export const E06_LESSON: EnsembleLesson = {
       page: 'practice',
       prompt: 'A children’s choir, in order:',
       steps: [
-        { text: 'Agree supervision, the layout and the exits with the responsible adults', early: 'Safeguarding and the plan come first.' },
+        { text: 'Agree on supervision, the layout and the exits with the responsible adults', early: 'Safeguarding and the plan come first.' },
         { text: 'Set stable stands, sandbags and cable ramps; keep the way out clear', early: 'The stage is made safe before the mics go up.' },
         { text: 'Begin with one pair, aimed at the mouths, a few feet out', early: 'One pair first, once the stage is safe.' },
         { text: 'Set gain on the loudest full-group passage', early: 'Gain comes once the pair is up.' },

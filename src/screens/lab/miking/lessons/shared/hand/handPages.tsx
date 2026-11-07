@@ -320,7 +320,7 @@ function HandSetting(spec: HandSpec) {
         },
         well: (
           <>
-            <Landing looking={spec.plan.looking(scene)} prompt="Tap what sits round the player — or step through ITEM — to see what it means for a mic." />
+            <Landing looking={spec.plan.looking(scene)} prompt="Tap what sits around the player — or step through ITEM — to see what it means for a mic." />
             {it ? (
               <Card>
                 <Point title={it.label.toUpperCase()}>{it.note}</Point>

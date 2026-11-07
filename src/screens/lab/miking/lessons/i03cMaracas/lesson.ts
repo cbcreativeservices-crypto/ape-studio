@@ -91,9 +91,9 @@ const scenarios: MikingScenario[] = [
     id: 'mar.snd.2',
     page: 'sound',
     prompt: 'The player circles the wrist instead of striking up and down. What tends to change?',
-    options: ['The seeds roll round the wall: a longer, smoother sustain', 'Nothing: the seeds still make exactly the same sound', 'The maraca becomes louder because the circles are faster'],
-    correct: 'The seeds roll round the wall: a longer, smoother sustain',
-    explain: 'Repeated circular wrist movements keep the seeds rubbing round the vessel’s wall — a sound with greater sustain.',
+    options: ['The seeds roll around the wall: a longer, smoother sustain', 'Nothing: the seeds still make exactly the same sound', 'The maraca becomes louder because the circles are faster'],
+    correct: 'The seeds roll around the wall: a longer, smoother sustain',
+    explain: 'Repeated circular wrist movements keep the seeds rubbing around the vessel’s wall — a sound with greater sustain.',
     why: {
       'Nothing: the seeds still make exactly the same sound': 'The motion changes how the seeds meet the wall — strikes or rolling.',
       'The maraca becomes louder because the circles are faster': 'The change is in the character — rolling rather than striking — not simply level.',
@@ -190,11 +190,11 @@ const scenarios: MikingScenario[] = [
     id: 'mar.place.2',
     page: 'placement',
     prompt: 'One hand overwhelms the other in a single centered mic. What do you try first?',
-    options: ['Recenter or step back, then check the pair itself', 'A second mic on the quieter hand, straight away', 'Ask the player to play the louder hand more softly'],
+    options: ['Recenter or step back, then check the pair itself', 'A second mic on the quieter hand, right away', 'Ask the player to play the louder hand more softly'],
     correct: 'Recenter or step back, then check the pair itself',
     explain: 'Is that head closer, louder, or moving through the mic’s axis? Recenter or step back, check the instruments — then consider two spots.',
     why: {
-      'A second mic on the quieter hand, straight away': 'A second channel adds spill and delay; try the one mic’s position first.',
+      'A second mic on the quieter hand, right away': 'A second channel adds spill and delay; try the one mic’s position first.',
       'Ask the player to play the louder hand more softly': 'The player’s accents are the music; move the mic.',
     },
   },
@@ -261,7 +261,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mar.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · A singer’s head swings near the vocal mic on each accent. What happens?',
+    prompt: 'FROM EARLIER · A singer’s maraca head swings near the vocal mic on each accent. What happens?',
     options: ['The vocal channel rattles more on those accents', 'Nothing: a vocal mic rejects all percussion', 'The maraca spot gets quieter on those accents'],
     correct: 'The vocal channel rattles more on those accents',
     explain: 'The nearer a head passes the vocal capsule, the more maraca it hears. Rehearse the real gestures and check both mics.',
@@ -414,7 +414,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the wrist swings a maraca down. Where are the seeds at first?', options: ['Left behind at the top', 'Already at the bottom', 'Spread evenly'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the seeds.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one centered mic, the right hand much closer to it. What happens?', options: ['The right hand dominates', 'Both stay balanced', 'It depends on the pair'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -451,7 +451,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A circular wrist instead of up-and-down strokes: what tends to change?',
     options: ['A longer, smoother sustain as the seeds roll', 'More accent, as the seeds strike the wall harder', 'Nothing — the seeds behave the same way'],
     correct: 'A longer, smoother sustain as the seeds roll',
-    explain: 'Circles keep the seeds rubbing round the wall: greater sustain.',
+    explain: 'Circles keep the seeds rubbing around the wall: greater sustain.',
     why: {
       'More accent, as the seeds strike the wall harder': 'Rolling replaces striking: less accent, more sustain.',
       'Nothing — the seeds behave the same way': 'The motion changes how the seeds meet the wall.',
@@ -512,10 +512,10 @@ export const I03C_LESSON: SpLesson = {
       { title: 'The stroke starts', text: 'The wrist swings the head down. The seeds inside lag behind, at the top of the vessel.' },
       { title: 'The stroke turns', text: 'The head stops and turns back up; the seeds keep going across the inside.' },
       { title: 'The seeds strike the wall', text: 'They strike the vessel’s wall — the ATTACK — and rub along it — the WASH.' },
-      { title: 'Sound leaves the head', text: 'The head passes the impacts to the air all round. The handle adds little: the head is the source.' },
+      { title: 'Sound leaves the head', text: 'The head passes the impacts to the air all around. The handle adds little: the head is the source.' },
     ],
     attack: 'The seeds striking the vessel at each turn of the stroke — on the way up and on the way down.',
-    body: 'The seeds rubbing round the wall between strikes — a longer sustain when the wrist circles. Tendencies — pairs and players vary.',
+    body: 'The seeds rubbing around the wall between strikes — a longer sustain when the wrist circles. Tendencies — pairs and players vary.',
     head: { diameterMm: 75, rods: 0, label: 'the maraca head', strikeSrc: 'LESSON-MARACAS' },
   },
   setting: {

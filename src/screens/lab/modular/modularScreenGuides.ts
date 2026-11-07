@@ -48,7 +48,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
     ],
     control: [
       '▶ in the header plays the drone (SEQ off) or runs the sequence (SEQ on); ■ stops it.',
-      'CUTOFF fader: the filter’s cutoff, 250 Hz to 8.0 kHz, on the lane from the start.',
+      'CUTOFF fader: the filter’s cutoff, 250 Hz to 8.0 kHz, on the control lane by default.',
       'PATCH key: RAW DRONE, ACID BASS, WOBBLE, VIBRATO LEAD, TREMOLO, each with why. VCO key: SAW, SQUARE, TRI or SINE. The readouts echo the keys: PATCH (or CUSTOM), VCO, RES, LFO (route or OFF), SEQ (rate or OFF).',
       'MOD key: RES 0 / ½ / MAX; envelope PLUCK, PAD or ORGAN, with ENV→VCF OFF, +50% or +100%; LFO 0.5, 2 or 6 Hz, DEPTH 0 / ½ / MAX, OFF, →PITCH, →CUTOFF or →AMP.',
       'SEQ key: SEQ ON/OFF, 2/s, 4/s or 8/s, and eight steps (tap to cycle, ✕ = rest). Tap a module, or long-press a key, for its lesson entry.',

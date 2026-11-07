@@ -26,7 +26,7 @@ test("PREV on WHAT'S LEFT returns to the last module in every module host", () =
   // host's unEnd, never to go(idx - 1).
   const end = navView(4, 5, true);
   assert.equal(end.prevOn, true);
-  assert.equal(end.a11y.prev, 'Back to the last module');
+  assert.equal(end.a11y.prev, 'Back to the previous module');
   for (const p of [
     'src/screens/lab/digital/DigitalModuleScreen.tsx',
     'src/screens/lab/wave/WaveModuleScreen.tsx',

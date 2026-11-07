@@ -446,5 +446,5 @@ export function stringYs(s: BowedSpec, x: number): number[] {
 /** The family's illustrative clearances (no source gives one). */
 export const CLEAR = {
   /** Around a moving string, the bridge and the instrument's top. */
-  body: D(4, 'a small margin round the instrument (the lab’s)'),
+  body: D(4, 'a small margin around the instrument (the lab’s)'),
 };

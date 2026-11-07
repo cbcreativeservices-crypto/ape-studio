@@ -65,12 +65,12 @@ export function micChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.mic.4`,
       page: 'microphone',
       prompt: `What tends to happen with a directional mic brought very close to the ${n.one}?`,
-      options: ['It adds bass — the proximity effect', 'It loses its bass, because it is so close up', 'It turns into an omni and hears all the way round'],
+      options: ['It adds bass — the proximity effect', 'It loses its bass, because it is so close up', 'It turns into an omni and hears all the way around'],
       correct: 'It adds bass — the proximity effect',
       explain: 'Very close, a directional mic’s low end rises — the proximity effect. Check a low passage before reaching for a filter.',
       why: {
         'It loses its bass, because it is so close up': 'The reverse: close in, a directional mic tends to gain bass.',
-        'It turns into an omni and hears all the way round': 'Its pattern stays directional; what changes close in is its low end.',
+        'It turns into an omni and hears all the way around': 'Its pattern stays directional; what changes close in is its low end.',
       },
     },
   ];
@@ -294,7 +294,7 @@ export const brandReason = (n: Noun): SetupReason => ({ id: 'r.brand', label: `I
 export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest sound of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and the loudest spot is often the least balanced.' };
 
 export const STRINGS_PREDICT = {
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   context: { prompt: 'Where will this supercardioid reject the floor wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 } as const;
