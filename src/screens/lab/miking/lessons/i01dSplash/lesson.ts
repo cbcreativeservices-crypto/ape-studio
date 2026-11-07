@@ -237,7 +237,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sp.ctx.studio',
     page: 'context',
-    prompt: 'Studio; the overheads carry the splash’s cue clearly. What could justify no splash mic?',
+    prompt: 'Studio: the overheads carry the splash’s cue clearly. What could justify no splash mic?',
     options: ['The overheads already carry it — fewer open mics', 'A splash mic would stop the overheads from working properly', 'Studio cymbals are recorded with a single mic only'],
     correct: 'The overheads already carry it — fewer open mics',
     explain: 'If the cue is clear in the overheads, a splash mic adds a channel and little else.',
@@ -301,24 +301,24 @@ const scenarios: MikingScenario[] = [
     id: 'sp.mix.2',
     page: 'practice',
     prompt: 'MIXED · A splash on top of a crash sounds trashy. The player likes it. What do you do?',
-    options: ['Mic it as it is: the stacked sound is the choice', 'Take the splash off so that the crash sounds cleaner', 'Tighten the wing nut down hard to quieten it'],
+    options: ['Mic it as it is: the stacked sound is the choice', 'Take the splash off so that the crash sounds cleaner', 'Tighten the wing nut down hard to quiet it'],
     correct: 'Mic it as it is: the stacked sound is the choice',
     explain: 'The stack is the instrument the player chose. Mic what is there, from a clear place.',
     why: {
       'Take the splash off so that the crash sounds cleaner': 'The cymbals are the player’s. Mic them as set.',
-      'Tighten the wing nut down hard to quieten it': 'A cymbal must move freely; over-tightening chokes it and can crack it.',
+      'Tighten the wing nut down hard to quiet it': 'A cymbal must move freely; over-tightening chokes it and can crack it.',
     },
   },
   {
     id: 'sp.mix.3',
     page: 'practice',
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
-    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns round to face the floor'],
+    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face the floor'],
     correct: 'The sign of its signal; the delay stays the same',
     explain: 'Polarity flips the sign; only distance changes when a sound arrives.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
-      'The mic’s pattern turns round to face the floor': 'The pattern stays where the mic points.',
+      'The mic’s pattern turns around to face the floor': 'The pattern stays where the mic points.',
     },
   },
 ];
@@ -350,13 +350,13 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'Take the splash off the crash so a mic can go between them', ok: false, power: 'none', feedback: 'The stack is the player’s choice. Mic it as it is.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the splash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
-    explain: 'Two plans pass: no splash mic, or a dynamic above the stack. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
+    explain: 'Two plans pass: no splash mic, or a dynamic above the stack. What passes is the reasoning: start from the overheads, keep clear, and use a mic this input can power.',
   },
 ];
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a splash is struck near its edge. Compared with a crash, how long does it ring?', options: ['Shorter', 'About the same', 'Longer'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to the splash on the crash.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic closer to the splash. What changes?', options: ['More of the kit around it', 'More of its quick attack', 'It depends on this splash'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the splash points up. Where will a supercardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

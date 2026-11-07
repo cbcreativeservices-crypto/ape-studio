@@ -30,9 +30,9 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round an oud player — the risha arc, the left hand, the swinging pegbox, their voice — the other paths (a pickup), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around an oud player — the risha arc, the left hand, the swinging pegbox, their voice — the other paths (a pickup), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
-    takeaway: 'The space round the oud is the player’s. A clip-on vibration pickup is a separate path, not a mic. Ask the player first, and protect your hearing.',
+    takeaway: 'The space around the oud is the player’s. A clip-on vibration pickup is a separate path, not a mic. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one oud mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real oud.' },
-    takeaway: 'Safe clearance from the player, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a capsule size do not.',
+    takeaway: 'Safe clearance from the player, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a capsule size does not.',
   },
 };
 
@@ -210,7 +210,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated oud player?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a seated oud player?',
     options: ['The front of the oud, so that the audience can see it clearly', 'The floor by the chair, which belongs to the vocal mic stand', 'The risha’s arc, the left hand, the pegbox and their view'],
     correct: 'The risha’s arc, the left hand, the pegbox and their view',
     explain: 'Clearance comes first: the risha hand over the face, the left hand along the neck, the pegbox that swings as the player moves, and the player’s view. Stop the player before anything moves.',
@@ -249,7 +249,7 @@ const scenarios: MikingScenario[] = [
     quote: '30–45 cm from the upper face',
     right: 'The upper face, between the main rose and the neck',
     wrong1: 'The main rose, since that is the loudest place on the oud',
-    wrong2: 'The bowl, measured round the back of the oud',
+    wrong2: 'The bowl, measured around the back of the oud',
     explain: 'A distance belongs to the point it names: from the upper face, from the main rose and from the bridge are different places for the same number.',
   }),
 ];
@@ -389,13 +389,13 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The bowl’s air moves through the rose; close to it — with a directional mic’s proximity effect on top — some notes pile up more than others.',
     why: {
       'The strings are thickest and loudest right over the rose': 'The strings are the same all along. The rose is where the bowl’s air moves.',
-      'The rose is where the face moves the most of all': 'The rose is an opening; the face moves most round the bridge.',
+      'The rose is where the face moves the most of all': 'The rose is an opening; the face moves most around the bridge.',
     },
   },
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a seated oud player?',
+    prompt: 'What must a stand mic stay out of, around a seated oud player?',
     options: ['The front of the oud, so the audience can see it clearly', 'The risha’s arc, the left hand, the pegbox and their view', 'The space behind the chair, where all of the cables are run'],
     correct: 'The risha’s arc, the left hand, the pegbox and their view',
     explain: 'The risha works over the face, the left hand along the neck, the pegbox swings as the player moves, and the player watches. In front of the oud is usually where a mic comes in.',
@@ -433,7 +433,7 @@ export const C13_LESSON: Lesson = {
       { title: 'The risha plucks', text: 'The risha pulls a course aside and lets it go — near the bridge, level with the small roses. That release is where the ATTACK, the click at the start of the note, begins.' },
       { title: 'The string swings', text: 'Released, the string swings between its two still ends — the bridge and the nut, or the finger on the fretless neck. Its lowest shape is drawn here many times larger than it really moves.' },
       { title: 'The bridge drives the face', text: 'Each swing tugs at the bridge, so it rocks and drives the thin face. The face moves the air — the air inside the bowl too.' },
-      { title: 'Sound leaves', text: 'Sound leaves from the face round the bridge and through the three rosettes, where the bowl’s air breathes in and out. The ringing that follows is the BODY of the note — the bloom.' },
+      { title: 'Sound leaves', text: 'Sound leaves from the face around the bridge and through the three rosettes, where the bowl’s air breathes in and out. The ringing that follows is the BODY of the note — the bloom.' },
     ],
     attack: 'The start of the note: the risha releasing a string — a click that can be quick and percussive. It is heard most directly near the plucking area; a very close mic there can make the attacks too percussive.',
     body: 'The note’s ring: the strings, the face and the bowl’s air together, leaving the face and the rosettes. A mic toward the main rose hears more bloom — and boom close in; toward the neck, more strings and slides. Tendencies; ouds vary.',

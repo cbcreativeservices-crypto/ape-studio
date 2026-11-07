@@ -263,7 +263,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'shk.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · The player switches from side-to-side to toward-and-away. What does a fixed mic in front hear change?',
+    prompt: 'FROM EARLIER · The player switches from side-to-side to toward-and-away. What change does a fixed mic in front hear?',
     options: ['The forward strokes jump in level as they come closer', 'Nothing: the same shaker makes the same sound at the mic', 'The wash disappears and only the accents are left over'],
     correct: 'The forward strokes jump in level as they come closer',
     explain: 'Toward and away, each forward stroke comes closer to the mic: the accents read louder. Side to side keeps the distance steadier.',
@@ -414,7 +414,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand moves the shaker one way. What does the fill inside do at first?', options: ['It lags behind, then catches up', 'It moves exactly with the shell', 'It stays stuck to one end'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the fill.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the player switches from side to side to toward and away from the mic. What changes at the mic?', options: ['The forward strokes jump in level', 'Nothing much', 'It depends on this shaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -512,7 +512,7 @@ export const I03A_LESSON: SpLesson = {
       { title: 'The stroke starts', text: 'The hand moves the shell. The loose fill inside does not move with it at first: it lags behind, at the trailing end.' },
       { title: 'The stroke turns', text: 'The shell stops and turns back. The fill keeps going, across the inside of the tube.' },
       { title: 'The fill lands', text: 'The fill hits the end cap and the walls: a burst of tiny impacts — the ATTACK, or accent. Grains rubbing along the wall add the WASH.' },
-      { title: 'Sound leaves all round', text: 'The shell passes the impacts to the air from all round. The hand on the shell damps and shields part of it — so the grip changes the sound too.' },
+      { title: 'Sound leaves all around', text: 'The shell passes the impacts to the air from all around. The hand on the shell damps and shields part of it — so the grip changes the sound too.' },
     ],
     attack: 'The fill landing on the end cap when a stroke turns back: a burst of tiny impacts. A short, sharp turn tends to give a stronger accent.',
     body: 'Between the accents, the fill sliding and rubbing along the wall: a continuous wash. A rounded stroke tends to give more wash and less accent. Tendencies — shakers, fills and players vary.',
@@ -528,7 +528,7 @@ export const I03A_LESSON: SpLesson = {
       { id: 'downstage', label: 'a floor wedge downstage of the station', short: 'WEDGE', note: 'On the audience side, behind a mic facing the player and off to one side — a case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'fill', label: 'the player’s own monitor', short: 'OWN MON.', note: 'In front of the player, angled up at them — the usual wedge spot, behind a mic facing the shaker and near a cardioid’s rear null. Behind the player it would face the mic’s front, where no pattern rejects it.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'The PA faces the audience; every extra open mic hears it — one reason to keep the mic count down.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
-      { id: 'area', label: 'a percussion area mic', short: 'AREA MIC', note: 'An overhead or area mic over the percussion may already carry the shaker. Recording, a spot is added only if its pulse needs its own control.', prov: { kind: 'illustrative', reason: 'a typical recording layout' }, tag: 'MAIN PICKUP', scene: 'studio' },
+      { id: 'area', label: 'a percussion area mic', short: 'AREA MIC', note: 'An overhead or area mic over the percussion may already carry the shaker. When recording, a spot is added only if its pulse needs its own control.', prov: { kind: 'illustrative', reason: 'a typical recording layout' }, tag: 'MAIN PICKUP', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet, pleasant room a mic a little farther back adds air and smooths the motion; fans and reflections come in with it.', prov: { kind: 'illustrative', reason: 'a generic studio room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a dedicated directional mic within reach of the player, monitors and PA in its low-sensitivity directions, soundchecked with the full band. Never add gain to beat feedback.',

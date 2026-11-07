@@ -105,7 +105,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'org.snd.3',
     page: 'sound',
-    prompt: 'Moving the pair two steps, the pedal notes nearly vanish. Most likely?',
+    prompt: 'You move the pair two steps; the pedal notes nearly vanish. Most likely?',
     options: ['A low-frequency peak or dip of the room', 'The mic itself is faulty in the lowest notes', 'The organist changed the registration'],
     correct: 'A low-frequency peak or dip of the room',
     explain: 'The room’s low resonances make the pedal swing strongly in some places and stay still in others; a short move can change it a lot. Compare nearby safe positions.',
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The organist knows the stops, divisions and routing; the venue controls the lofts, galleries, chambers and historic fixtures — and when the room is in use.',
     why: {
       'Only the sound team for the stream': 'The organist and the venue hold the knowledge and the access.',
-      'Nobody: floor stands need no approval': 'Stand positions, aisles and exits are the venue’s to agree.',
+      'Nobody: floor stands need no approval': 'Stand positions, aisles and exits are the venue’s to agree on.',
     },
   },
   hearingCheck(W),
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It includes the room with the organ',
     explain: 'Omni includes the room’s sound with the organ — useful when the room is part of the music. It also hears the congregation and the ventilation.',
     why: {
-      'It rejects the congregation’s noise': 'An omni rejects nothing; it hears all round.',
+      'It rejects the congregation’s noise': 'An omni rejects nothing; it hears all around.',
       'It needs no phantom power at all': 'Power depends on the transducer, not the pattern.',
     },
   },
@@ -215,11 +215,11 @@ const scenarios: MikingScenario[] = [
     id: 'org.place.2',
     page: 'placement',
     prompt: 'Your best pair position is in the middle of an aisle. What now?',
-    options: ['Move to a clear pew row, and compare', 'Use it, with a sign asking people to step round', 'Tape the stand’s legs down and keep it there'],
+    options: ['Move to a clear pew row, and compare', 'Use it, with a sign asking people to step around', 'Tape the stand’s legs down and keep it there'],
     correct: 'Move to a clear pew row, and compare',
     explain: 'Aisles, exits and the wheelchair route stay clear. Find the nearest clear position and compare it — or arrange a qualified elevated installation with the venue.',
     why: {
-      'Use it, with a sign asking people to step round': 'A stand in an aisle blocks an exit route; a sign does not make it clear.',
+      'Use it, with a sign asking people to step around': 'A stand in an aisle blocks an exit route; a sign does not make it clear.',
       'Tape the stand’s legs down and keep it there': 'Taped down, it still blocks the aisle.',
     },
   },
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     correct: 'More gain before feedback, from closer pickup',
     explain: 'Local spots hear the organ strongly relative to the PA, giving more gain before feedback — at the cost of a narrower view.',
     why: {
-      'They capture a much wider view of the whole organ': 'It is the other way round: a spot’s view is narrower.',
+      'They capture a much wider view of the whole organ': 'It is the other way around: a spot’s view is narrower.',
       'They need no feedback checks at all': 'Every PA feed needs a careful, low start and a check through the audience area.',
     },
   },
@@ -395,7 +395,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Does the noise come from the room or a local outlet? Identify the source with the organist; adjust the position, and schedule where possible.',
     options: ['Find the source; adjust position or timing', 'Gate the room pair between the phrases', 'High-pass everything well above the pedal'],
     correct: 'Find the source; adjust position or timing',
-    explain: 'Find where the noise comes from — the blower, the action, the street — with the organist; move away from it or schedule round it.',
+    explain: 'Find where the noise comes from — the blower, the action, the street — with the organist; move away from it or schedule around it.',
     why: {
       'Gate the room pair between the phrases': 'A gate cuts the room’s decay — the organ’s own sound.',
       'High-pass everything well above the pedal': 'That removes the pedal, and blower noise is not only low.',
@@ -453,7 +453,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you look: close to the Great, how do the other divisions arrive?', options: ['Later', 'At the same moment', 'Earlier'], after: 'Now try the pipes, then LISTEN AT all three positions and watch the arrival times.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from the fourth pew to the back. What changes most?', options: ['More room, a blended organ', 'More attack', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA sits high on the arch, behind the spot mic. Can a pattern’s null reach it?', options: ['Yes — aim the rejection toward it', 'No — only an omni can', 'It is directly in front'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a Great spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another division.' },
@@ -493,7 +493,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'An open pipe sounds about c ÷ 2L, a stopped one about c ÷ 4L — an octave lower for the same length.',
     why: {
       'The same pitch from both of them': 'The cap changes the air column: the stopped pipe sounds lower.',
-      'The stopped one an octave higher': 'It is the other way round: lower.',
+      'The stopped one an octave higher': 'It is the other way around: lower.',
     },
   },
   {

@@ -25,7 +25,7 @@ const W: Words = { noun: 'speech', player: 'talker', moving: 'the head, the hand
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the scene',
-    goal: 'Get to know the talker and the scene round them — where the voice leaves, what the camera sees, who holds the boom and where the practical action happens — before any microphone.',
+    goal: 'Get to know the talker and the scene around them — where the voice leaves, what the camera sees, who holds the boom and where the practical action happens — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
     takeaway: 'The voice leaves through the mouth; the camera’s frame, the head’s movement and the action on the counter decide where a mic can go.',
   },
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up location speech in the right order, choose and justify a setup for a wide shot and for a live presenter, and say what would justify a second mic.',
     credit: { scenarios: ['loc.prac.order', 'loc.prac.gain', 'loc.prac.setup1', 'loc.prac.setup2', 'loc.prac.3', 'loc.mix.1', 'loc.mix.2', 'loc.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real scene and permission.' },
-    takeaway: 'Placement before processing, separate channels, the frame respected, consent asked, power lines and weather respected, and an honest account of polarity versus delay pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'Placement before processing, separate channels, the frame respected, consent asked, power lines and weather respected, and an honest account of polarity versus delay pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Indoors, among hard walls, which boom mic is worth comparing with the shotgun?',
     options: ['A short hypercardioid, at the same distance', 'A longer shotgun, so the room drops away more', 'An omni, for a more focused voice'],
     correct: 'A short hypercardioid, at the same distance',
-    explain: 'Indoors, reflections reach a shotgun from all round; a short directional mic with a smoother off-axis sound often does as well or better. Compare the two at the same distance.',
+    explain: 'Indoors, reflections reach a shotgun from all around; a short directional mic with a smoother off-axis sound often does as well or better. Compare the two at the same distance.',
     why: {
       'A longer shotgun, so the room drops away more': 'A longer tube stays narrow down to somewhat lower frequencies, but not in the lows; it does not make reflections drop away indoors.',
       'An omni, for a more focused voice': 'An omni hears the room from every side — the opposite of focus.',
@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A body mic on the chest, plus a boom in fur above the medium shot', ok: true, power: 'phantom', feedback: 'A suggested start: the body mic holds the wide shot, the boom the medium — each on its own channel, the pole well away from the line.' },
       { id: 'b', label: 'A boom in fur just above the frame, the pole kept clear of the line', ok: true, power: 'phantom', feedback: 'A suggested start if the frame lets it come close enough — check the wide shot and the clearance from the line.' },
       { id: 'c', label: 'The camera mic alone, turned up for the wide shot', ok: false, power: 'none', feedback: 'At the camera the voice is weak against the wind and the street. Get a mic closer.' },
-      { id: 'd', label: 'A boom raised high over the talker toward the line', ok: false, power: 'phantom', feedback: 'Never near a power line: at least 3 m (10 ft) from the pole and the mic, and if unsure, keep it down.' },
+      { id: 'd', label: 'A boom raised high over the talker toward the line', ok: false, power: 'phantom', feedback: 'Never near a power line: keep the pole and the mic at least 3 m (10 ft) away, and if unsure, keep it down.' },
       { id: 'e', label: 'A body mic hidden without the guest knowing', ok: false, power: 'pack', feedback: 'Never hide a mic to record anyone secretly. Ask, and fit it with their agreement.' },
     ],
     reasons: [docReason('the lips'), clearReason('the shot, the talker and the power line (at least 3 m)'), { id: 'r.consent', label: 'The guest agreed before the body mic was fitted', role: 'required', feedback: 'Say how consent was handled: ask first.' }, { id: 'r.wind', label: 'The fur slows the wind; it does not keep rain out', role: 'optional', feedback: 'A fair outdoor reason.' }, BRAND_REASON('location shoot'), LOUD_REASON],

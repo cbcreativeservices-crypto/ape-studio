@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one flute mic in the right order, choose and justify a setup for a studio solo and a moving player on a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['fl.prac.order', 'fl.prac.gain', 'fl.prac.setup1', 'fl.prac.setup2', 'fl.prac.3', 'fl.mix.1', 'fl.mix.2', 'fl.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real flute.' },
-    takeaway: 'The design identified, the capsule off the air jet, clearance from the head, hands and flute, the right power and level, and an accurate account of polarity versus delay pass. A material stereotype or a brand do not — and more than one setup can pass.',
+    takeaway: 'The design identified, the capsule off the air jet, clearance from the head, hands and flute, the right power and level, and an accurate account of polarity versus delay pass. A material stereotype or a brand does not — and more than one setup can pass.',
   },
 };
 
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A flutist walks the stage. Which mounts keep one distance as they move?',
     options: ['A stand mic in front, carefully aimed at the flute', 'A headset, or a clip on the foot of a keyed flute', 'A mic on the music stand, pointing at the player'],
     correct: 'A headset, or a clip on the foot of a keyed flute',
-    explain: 'A headset follows the head (it favors the embouchure); a clip round the foot follows the flute (it favors the holes and keys). Neither sounds exactly like a stand mic — test the whole register.',
+    explain: 'A headset follows the head (it favors the embouchure); a clip around the foot follows the flute (it favors the holes and keys). Neither sounds exactly like a stand mic — test the whole register.',
     why: {
       'A stand mic in front, carefully aimed at the flute': 'A stand mic has a working zone; a walking player leaves it.',
       'A mic on the music stand, pointing at the player': 'The music stand stays put while the player moves — and its desk reflects sound.',
@@ -328,7 +328,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the capsule in the player’s air jet? Re-aim or move it out of the jet; then, if needed, a suitable windscreen.',
     options: ['Cut the low frequencies until the gusts are gone', 'Move it out of the jet, then a windscreen', 'Ask the player to blow more gently'],
     correct: 'Move it out of the jet, then a windscreen',
-    explain: 'The jet blows out past the lips; a capsule in it hears wind. Aim and distance are the first controls; a windscreen helps after that — and listen that the breathy character you want is still there.',
+    explain: 'The jet blows out past the lips; a capsule in it hears wind. Aim and distance are the first controls; a windscreen helps after that — and listen to check that the breathy character you want is still there.',
     why: {
       'Cut the low frequencies until the gusts are gone': 'A cut deep enough to clear the gusts thins the flute. Move the capsule first.',
       'Ask the player to blow more gently': 'The breath is the player’s art. The mic’s place is yours to change.',
@@ -337,7 +337,7 @@ const symptoms: Symptom[] = [
   {
     id: 'fl.sym.noair',
     observation: 'The breath sounds unnaturally absent',
-    firstChecks: 'Was the air the player wants removed by placement or processing? Compare untreated positions through the full phrase.',
+    firstChecks: 'Did placement or processing remove the air the player wants? Compare untreated positions through the full phrase.',
     options: ['Compare untreated positions over the phrase', 'Add a heavy de-esser to clean the flute more', 'Close the mic on the lips to bring the air back'],
     correct: 'Compare untreated positions over the phrase',
     explain: 'Some breath is part of a flute’s expression. If it has vanished, compare positions without processing — a closer or angled view can bring the intended air back without the jet’s gusts.',
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage: a flutist (metal concert flute) who walks and turns in a band with drums. Phantom power available.',
     setups: [
       { id: 'a', label: 'A headset the player agrees to wear, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the head — check the air and the register.' },
-      { id: 'b', label: 'A miniature on an approved strap round the foot, aimed back at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the flute — check the fit and the cable.' },
+      { id: 'b', label: 'A miniature on an approved strap around the foot, aimed back at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the flute — check the fit and the cable.' },
       { id: 'c', label: 'A stand mic a meter in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, and with a walking player, a meter away hears the band more than the flute.' },
       { id: 'd', label: 'A clip squeezed over the keys of the body', ok: false, power: 'phantom', feedback: 'Nothing over the keys, rods or pads: it stops the notes and risks the flute.' },
       { id: 'e', label: 'An omni close in front of the lips, turned up', ok: false, power: 'phantom', feedback: 'In the jet it hears wind; an omni rejects almost nothing, so turned up it brings the stage and feedback.' },
@@ -404,7 +404,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a flute’s sound leave?', options: ['Only the foot', 'The embouchure and the open holes', 'Only the lip plate'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from close to behind the player’s head. What changes?', options: ['Less breath', 'More breath', 'It depends on the player'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the flute reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -417,7 +417,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A wooden flute with six open finger holes and no keywork is…',
     options: ['A wooden concert flute with its keys taken off', 'A piccolo, the flute’s smaller relative', 'A simple-system flute — a different design'],
     correct: 'A simple-system flute — a different design',
-    explain: 'A simple-system flute has open finger holes and few or no keys — not a keyed concert flute in wood. Identify the design first: its holes and hands are where the mic and any clip must work round.',
+    explain: 'A simple-system flute has open finger holes and few or no keys — not a keyed concert flute in wood. Identify the design first: its holes and hands are where the mic and any clip must work around.',
     why: {
       'A wooden concert flute with its keys taken off': 'A wooden concert flute keeps the full modern keywork; this is a different design.',
       'A piccolo, the flute’s smaller relative': 'A piccolo is about half a flute’s length, usually keyed.',
@@ -511,7 +511,7 @@ const copy: Partial<LessonCopy> = {
     reveal: 'Behind the head tends to bring less breath — the jet blows the other way; close in front, more detail and more air. Players vary, so “it depends on the player” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin close, between the lip plate and the left hand, angled off the jet; then behind and above the head, or a meter in front in a good room — one change at a time, low and high passages each time.',
-      wwMini: 'Ideas to try with a miniature: on a keyed flute only, keep its strap round the foot end; change only the capsule’s angle along the keys.',
+      wwMini: 'Ideas to try with a miniature: on a keyed flute only, keep its strap around the foot end; change only the capsule’s angle along the keys.',
       wwHeadset: 'Ideas to try with a headset: keep the capsule beside the lips, out of the jet; change only its angle toward the embouchure.',
     },
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, boom or cable anywhere the flute, the hands or a turning head can reach — or in the air jet — is in the wrong place, whatever the number says.',
@@ -519,7 +519,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the flute between the lip plate and the left hand, the player’s head, the middle of the flute, the foot’s keys, the embouchure hole. They are starting points, not rules — move from there and listen.',
       separate: 'Distance, height and angle are separate variables: change one at a time, and play low, high, soft, strong, tongued and legato phrases each time — one held note is not a test. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the flute’s reach, the hands, the head’s turn and the air jet. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the flute’s reach, the hands, the head’s turn and the air jet. The lab stops the mic and names what it would touch.',
       tendencies: 'Close tends to bring detail, air and keys; behind the head, less breath; a meter in front, more room and fewer clicks; a headset favors the embouchure, a foot clip the holes and keys. These are tendencies, and flutes and players vary.',
     },
   },
@@ -587,7 +587,7 @@ const copy: Partial<LessonCopy> = {
     refTitle: 'MEASURED FROM',
     otherRef: 'The same number measured from another part — the lips, the foot, the player’s head — would put the mic somewhere else.',
     noAim: 'This starting point gives no aim, so the mic simply faces the flute. Distance, height and angle are still separate things to try.',
-    clipMount: 'Mount: on a keyed flute, a strap made for it round the foot end; or a headset the player wears — with their agreement',
+    clipMount: 'Mount: on a keyed flute, a strap made for it around the foot end; or a headset the player wears — with their agreement',
     standMount: 'Mount: a stand placed clear of the flute’s reach, the hands, a turning head and the air jet',
     inPath: 'flute in path',
     facing: 'facing the flute',
@@ -671,7 +671,7 @@ export const A06_LESSON: WindLesson = {
     soundSubject: 'A flute stood on end, keys toward you, its air column drawn open',
     breath: 'The air jet blows out across the embouchure hole and on past the lips: a capsule in its path hears wind and pops. Some breath is part of a flute’s voice — choose how much with angle and distance.',
     keys: 'Key clicks and pads: loud within a few centimeters of the body; a mic a meter away, or behind the head, hears them less.',
-    directivity: 'Measured round a player in an anechoic (echoless) room: the strongest sound goes to the front and downward, and to the player’s right — and different notes radiate in noticeably different directions.',
+    directivity: 'Measured around a player in an anechoic (echoless) room: the strongest sound goes to the front and downward, and to the player’s right — and different notes radiate in noticeably different directions.',
     noteDefault: 9,
   }),
 };

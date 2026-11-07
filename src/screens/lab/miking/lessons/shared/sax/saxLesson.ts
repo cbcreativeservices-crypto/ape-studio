@@ -110,7 +110,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       title: 'Placement Studio',
       goal: 'Start where we suggest you begin — a few centimeters above the bell, aimed at the sound holes, clear of the player — then move the mic and see what changes.',
       credit: { scenarios: [id('place.1'), id('place.2'), id('place.3'), id('rec.2')], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-      takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, the tone holes — not a rule. Toward the bell tends brighter, toward the holes warmer with more key noise, farther blends the horn and the room. Clearance comes first.',
+      takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, the tone holes — not a rule. Toward the bell tends to sound brighter, toward the holes warmer with more key noise, farther blends the horn and the room. Clearance comes first.',
     },
     context: {
       title: 'Studio or live',
@@ -134,7 +134,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       title: 'Practice',
       goal: `Set up one ${s} mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.`,
       credit: { scenarios: [id('prac.order'), id('prac.gain'), id('prac.setup1'), id('prac.setup2'), id('prac.3'), id('mix.1'), id('mix.2'), id('mix.3')], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn and its player.' },
-      takeaway: 'Safe clearance from the bell’s swing and the hands, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position do not — and more than one setup can pass.',
+      takeaway: 'Safe clearance from the bell’s swing and the hands, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
     },
   };
 
@@ -167,7 +167,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       correct: 'Much of each note leaves through open holes up the body',
       explain: 'The bell carries every note’s high harmonics, but most of a note with open holes leaves through the first open hole and the holes just past it. A mic deep at the bell hears a bright, partial picture; a little distance, or an aim between the bell and the keys, hears more of the whole.',
       why: {
-        'The bell only carries the lowest harmonics of each note': 'It is the other way round for most notes: the bell carries their HIGH harmonics, and the open holes carry most of the rest.',
+        'The bell only carries the lowest harmonics of each note': 'It is the other way around for most notes: the bell carries their HIGH harmonics, and the open holes carry most of the rest.',
         'The keys block the sound before it can reach the bell': 'The keys only seal holes. A note leaves where the holes are open — up the body — not through the keys.',
       },
     }),
@@ -208,7 +208,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       correct: 'On the bell rim, with a clip made for that bell',
       explain: 'A saxophone clip is made to grip the bell rim. Keys, rods, pads, guards and the neck cork move or are fragile; nothing clamps there. Fit it with the player’s agreement, and test the strap, the hands and the cable as they move.',
       why: {
-        'On a key rod, which is where the clip holds firmest': 'Rods turn as the keys move, and a clip there can bend them or stop a key closing. Clips go on the bell rim only.',
+        'On a key rod, which is where the clip holds firmest': 'Rods turn as the keys move, and a clip there can bend them or stop a key from closing. Clips go on the bell rim only.',
         'On the neck, near the cork and the mouthpiece': 'The neck cork and the octave key are there, and the player’s face is close. Clips go on the bell rim, made for it.',
       },
     }),
@@ -467,7 +467,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       explain: 'A high-pass filter set above the horn’s lowest notes removes their weight. Check it bypassed against the actual low line, and set it only for rumble or handling noise.',
       why: {
         'Turn the low-frequency EQ up to bring the weight back': 'EQ after the filter cannot cleanly restore what the filter took away. Bypass and compare first.',
-        'Ask the player to leave out the lowest notes of the part': 'The part is the music. Set the filter for it, not the other way round.',
+        'Ask the player to leave out the lowest notes of the part': 'The part is the music. Set the filter for it, not the other way around.',
       },
     },
   ];
@@ -502,7 +502,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
 
   const predictions: Lesson['predictions'] = {
     sound: { prompt: 'Before you step through: the player opens more holes from the bell end. Where will most of the note leave the horn?', options: ['At the bell', 'At the first open hole', 'Evenly along the body'], after: 'Now STEP through it (or PLAY ONCE), then walk the scale on the next step.' },
-    microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+    microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
     placement: { prompt: 'Predict: you move the mic from above the bell toward the middle of the key stack. What changes?', options: ['Brighter', 'Warmer, with more key noise', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
     context: { prompt: 'Where will this supercardioid reject the player’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
     twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -575,13 +575,13 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
   ];
 
   const settingItems: SettingItem[] = [
-    { id: 'sax', label: `the ${s} and its player`, short: S.toUpperCase(), note: c.F.row.id === 'soprano' ? 'Held in front, the straight horn pointing down and forward, the bell about level with the player’s hips. Ringed in amber: the instrument this lesson mics.' : `On a strap round the player’s neck, the body angled across to the player’s right, the bell beside the right ${c.F.row.id === 'baritone' ? 'hip' : 'thigh'}. Ringed in amber: the instrument this lesson mics.`, prov: { kind: 'illustrative', reason: 'alto_sax/GEOMETRY_PROPOSAL.md §2 player pose (drawing defaults)' }, tag: 'THE INSTRUMENT', scene: 'all' },
+    { id: 'sax', label: `the ${s} and its player`, short: S.toUpperCase(), note: c.F.row.id === 'soprano' ? 'Held in front, the straight horn pointing down and forward, the bell about level with the player’s hips. Ringed in amber: the instrument this lesson mics.' : `On a strap around the player’s neck, the body angled across to the player’s right, the bell beside the right ${c.F.row.id === 'baritone' ? 'hip' : 'thigh'}. Ringed in amber: the instrument this lesson mics.`, prov: { kind: 'illustrative', reason: 'alto_sax/GEOMETRY_PROPOSAL.md §2 player pose (drawing defaults)' }, tag: 'THE INSTRUMENT', scene: 'all' },
     { id: 'swing', label: 'the bell’s swing', short: 'BELL SWING', note: `As the player sways and turns, the horn moves with them — the bell by a hand’s width or more${c.F.row.id === 'baritone' ? ', and a baritone is big and heavy' : ''}. A stand’s base or tube in that space will be struck. The gray hatch shows roughly where it goes.`, prov: { kind: 'illustrative', reason: `the swing ±${c.F.row.swing}° (proposal §5 drawing default)` }, tag: 'KEEP CLEAR', scene: 'kit' },
     { id: 'hands', label: 'the hands on the keys', short: 'HANDS · KEYS', note: 'Both hands work the keys all the time — the left on the upper stack, the right on the lower, the right thumb under its rest. A clip, a gooseneck or a cable must stay out of their way, and nothing clamps to a key or a rod.', prov: { kind: 'illustrative', reason: 'proposal §5 hand boxes' }, tag: 'KEEP CLEAR', scene: 'kit' },
     { id: 'stand', label: 'the music stand', short: 'MUSIC STAND', note: 'In front of the player. They must see the music and the band leader: a mic stand should not block that line.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGHT LINE', scene: 'kit' },
     ...c.neighbours,
     { id: 'kit', label: 'the rhythm section’s drums', short: 'DRUMS', note: 'Behind the horns: loud, and heard by every horn mic. A close, aimed mic hears less of the drums than one farther off.', prov: { kind: 'illustrative', reason: 'Lab 1’s shared kit, a typical band layout' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'wedge', label: 'the player’s wedge (monitor)', short: 'WEDGE', note: 'On a stage, a floor monitor in front, facing back at the player — loud, and close to the horn’s mic. Studio or live shows how a pattern’s rejection can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+    { id: 'wedge', label: 'the player’s wedge (monitor)', short: 'WEDGE', note: 'On a stage, a floor monitor in front, facing back at the player — loud, and close to the horn’s mic. STUDIO or LIVE shows how a pattern’s rejection can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
     { id: 'side', label: 'another player’s wedge', short: 'SIDE WEDGE', note: 'Off to one side, facing another player. Loud enough to reach the horn’s mic from the side.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
     { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience already hears the acoustic horn; the PA adds what the room needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
     { id: 'main', label: 'a main pair over the section', short: 'MAIN PAIR', note: `In a recording of a band, a main pair hears the whole section; a ${s} mic is a spot that supports it — raise it only for definition or balance.`, prov: { kind: 'illustrative', reason: 'a generic main pair' }, tag: 'MAIN PAIR', scene: 'studio' },
@@ -787,7 +787,7 @@ export function saxSetupTasks(pfx: string, s: string, R: Reasons): SetupTask[] {
         { id: 'a', label: 'A bell clip made for this horn, the capsule angled between the bell and the keys', ok: true, power: 'phantom', feedback: 'It moves with the horn, so the level holds as the player moves; it needs the phantom power this channel has.' },
         { id: 'b', label: 'A supercardioid dynamic a few centimeters above the bell, aimed at the holes, the wedge in its rejection', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage — the player will need to stay near it.' },
         { id: 'c', label: 'A cardioid dynamic a few centimeters from the bell, aimed into it, for a bright, separate lead', ok: true, power: 'none', feedback: 'A suggested starting point with a brighter, more isolated tendency — fine if the stand is clear of the bell’s swing.' },
-        { id: 'd', label: 'A clip squeezed onto a key rod, the capsule tucked in over the pads', ok: false, power: 'phantom', feedback: 'Nothing clamps to a rod or a key: it can bend the mechanism or stop a key closing. Clips go on the bell rim only.' },
+        { id: 'd', label: 'A clip squeezed onto a key rod, the capsule tucked in over the pads', ok: false, power: 'phantom', feedback: 'Nothing clamps to a rod or a key: it can bend the mechanism or stop a key from closing. Clips go on the bell rim only.' },
         { id: 'e', label: 'A stand right under the bell, so the mic can sit inside it', ok: false, power: 'none', feedback: 'The stand would stand in the bell’s swing, and a mic inside the bell can be struck. Keep both clear.' },
       ],
       reasons: [R.DOC, R.CLEAR, R.POWER, { id: 'r.move', label: 'It keeps a steady sound as the player moves on a loud stage', role: 'optional', feedback: 'A fair live reason.' }, R.BRAND, R.LOUD],

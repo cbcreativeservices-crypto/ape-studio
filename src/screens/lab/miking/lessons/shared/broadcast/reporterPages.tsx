@@ -86,7 +86,7 @@ type Bearing = 'guest' | 'side' | 'reporter';
 const BEARINGS: Readonly<Record<Bearing, { deg: number; label: string; blurb: string }>> = {
   guest: { deg: 0, label: 'Behind the guest', blurb: 'The loud source behind the guest — facing the reporter and the camera.' },
   side: { deg: 90, label: 'Off to the side', blurb: 'The loud source off to one side of the pair.' },
-  reporter: { deg: 180, label: 'Behind the reporter', blurb: 'The pair turned round: the loud source now behind the reporter.' },
+  reporter: { deg: 180, label: 'Behind the reporter', blurb: 'The pair turned around: the loud source now behind the reporter.' },
 };
 
 export function useInterviewStep(spec: InterviewSpec): MikingStep {
@@ -144,7 +144,7 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
       valueLabel: pattern === 'omni' ? '—' : aimMode === 'speaker' ? 'SPEAKER' : 'BETWEEN',
       selectedId: aimMode,
       sticky: true,
-      locked: pattern === 'omni' ? 'An omni hears all round: switch to the cardioid to aim it.' : undefined,
+      locked: pattern === 'omni' ? 'An omni hears all around: switch to the cardioid to aim it.' : undefined,
       onSelect: (id) => {
         setAimMode(id as typeof aimMode);
         if (id === 'between' && pattern === 'cardioid') mark('between');
@@ -196,7 +196,7 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
     pattern === 'omni'
       ? Math.abs(s - 0.5) < 0.08
         ? 'Shared, the omni favors neither voice — fine in a quiet place, and it needs no rushed aiming. It hears the loud source from every side just as well: being a dynamic does not make it pick out a voice.'
-        : `Moved ${where}: the speaker is ${Math.round(R.distDb)} dB above the other voice by distance alone — and above the street by the same closeness. The pattern adds nothing: an omni hears all round.`
+        : `Moved ${where}: the speaker is ${Math.round(R.distDb)} dB above the other voice by distance alone — and above the street by the same closeness. The pattern adds nothing: an omni hears all around.`
       : aimMode === 'between'
         ? `Pointed between the mouths, the cardioid serves neither: each voice arrives about ${Math.round(R.offSpeaker / 5) * 5}° off its front. Turn it to whoever is speaking.`
         : `Its front on ${whoWord}: the other voice arrives ${Math.round(R.offOther / 5) * 5}° off its front, ${Math.abs(Math.round(R.patternDb))} dB less by the pattern. A missed aim or a turned head costs the speaker the same way.`;

@@ -115,7 +115,7 @@ const BIT_BLURBS: Record<number, string> = {
   2: 'Four levels — the staircase is unmissable and the error is louder than the music.',
   3: 'Eight levels — still toy-grade; listen to the gritty error riding the tone.',
   4: 'Sixteen levels — early-videogame territory. The crunch IS quantization error.',
-  6: 'Sixty-four levels — recognisable audio with an obvious hiss-crunch floor.',
+  6: 'Sixty-four levels — recognizable audio with an obvious hiss-crunch floor.',
   8: 'Two hundred fifty-six levels — old samplers and telephone-grade audio. ~48 dB between signal and error (6 dB/bit rule of thumb).',
   12: 'Four thousand levels — clean until things get quiet; early digital drum machines lived here.',
   16: 'Sixty-five thousand levels — the CD standard: ~96 dB of range (6 dB/bit rule of thumb), error below audibility in normal listening.',

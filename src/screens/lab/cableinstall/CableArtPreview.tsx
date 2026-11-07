@@ -94,7 +94,7 @@ export function CableArtPreview() {
         </View>
       </Case>
 
-      <Case title="C2 · ZIP TIE — side view, the teaching image" note="Head proud of the bundle, band bowed round it, tail cut flush.">
+      <Case title="C2 · ZIP TIE — side view, the teaching image" note="Head proud of the bundle, band bowed around it, tail cut flush.">
         <CiArtCanvas w={340} vw={340} vh={190} accessibilityLabel="Cable tie on a bundle, side view">
           {/* the bundle it is holding */}
           {[0, 1, 2].map((i) => (

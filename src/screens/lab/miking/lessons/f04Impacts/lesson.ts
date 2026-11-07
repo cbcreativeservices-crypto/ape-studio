@@ -186,7 +186,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f04.mic.3',
     page: 'microphone',
-    prompt: 'A strong impact still distorts with the preamp gain turned right down. The mic has a pad switch. A fair next check?',
+    prompt: 'A strong impact still distorts with the preamp gain turned all the way down. The mic has a pad switch. A fair next check?',
     options: ['The mic’s pad: the mic itself may overload', 'Pull the channel fader down until it is clean', 'Leave it, and repair the clipping after the take'],
     correct: 'The mic’s pad: the mic itself may overload',
     explain: 'With the gain already down, the overload may be in the mic’s own electronics. On most mics the pad (if there is one) lowers the level before them — and before the preamp. Check the mic, the preamp and the recorder in turn; a fader after the overload cannot undo clipping.',
@@ -223,11 +223,11 @@ const scenarios: MikingScenario[] = [
     id: 'f04.place.3',
     page: 'placement',
     prompt: 'Moving the mic, you notice the artist is hitting harder. What do you do?',
-    options: ['Repeat with the original position, same force', 'Keep the harder hit, it suits the new place', 'Lower the gain and carry on comparing'],
+    options: ['Repeat with the original position, same force', 'Keep the harder hit; it suits the new place', 'Lower the gain and carry on comparing'],
     correct: 'Repeat with the original position, same force',
     explain: 'If moving the mic also changed the performer’s force, repeat with the original position before drawing a conclusion: change one variable at a time.',
     why: {
-      'Keep the harder hit, it suits the new place': 'Then two things changed at once — you cannot tell which mattered.',
+      'Keep the harder hit; it suits the new place': 'Then two things changed at once — you cannot tell which mattered.',
       'Lower the gain and carry on comparing': 'The force changed the sound itself; gain cannot undo that.',
     },
   },
@@ -429,7 +429,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: which part of a pour lasts longest?', options: ['The entry', 'The drip tail', 'The splash'], after: 'Now STEP through (or PLAY ONCE) and watch the attack, the body and the tail.' },
-  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the close impact start to about 1.5 m. What changes?', options: ['More body and room', 'A sharper click', 'It depends on this table'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the impact reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

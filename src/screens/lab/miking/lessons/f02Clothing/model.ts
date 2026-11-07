@@ -46,7 +46,7 @@ export const F02_ZONES: DocumentedZone[] = [
     micTypeIds: ['shotgunShort', 'scSupercard'],
     bandProv: ill('"in front and a little above": 10–50° above the line straight out is the lab’s drawing; the height a drawing default'),
     tendency: 'The whole garment and the body’s movement, with some room — quiet texture can sit close to the room noise. Listen to a pause as well as the movement.',
-    checks: ['The garment’s body against the room noise', 'Breath, steps and jewellery against the cloth', 'The stand and cable clear of the whole gesture'],
+    checks: ['The garment’s body against the room noise', 'Breath, steps and jewelry against the cloth', 'The stand and cable clear of the whole gesture'],
   }),
   foleyZone({
     id: 'f02.close',
@@ -81,7 +81,7 @@ export const F02_ZONES: DocumentedZone[] = [
     variants: STUDIO,
     micTypeIds: ['shotgunShort', 'scSupercard'],
     bandProv: ill('"up to 3 meters": the lab draws 2.5–3 m; the height a drawing default'),
-    tendency: 'The texture as one wide, blended sound with the space round it — and much more of the room. A poor room shows here first.',
+    tendency: 'The texture as one wide, blended sound with the space around it — and much more of the room. A poor room shows here first.',
     checks: ['Room noise under the quiet moments', 'Whether the texture still reads', 'The cable run out of the exit path'],
   }),
   foleyZone({
@@ -99,7 +99,7 @@ export const F02_ZONES: DocumentedZone[] = [
     variants: STUDIO,
     micTypeIds: ['ldcRoom'],
     bandProv: ill('the room mic’s place is a drawing default; the close + room method for interiors is sourced'),
-    tendency: 'The room round the cloth, on its own channel, for an interior scene’s space. An exterior scene often wants one mic and no studio room.',
+    tendency: 'The room around the cloth, on its own channel, for an interior scene’s space. An exterior scene often wants one mic and no studio room.',
     checks: ['The pair in mono while the garment moves', 'Whether the room layer suits this scene', 'Its stand and cable out of the exit path'],
   }),
   foleyZone({

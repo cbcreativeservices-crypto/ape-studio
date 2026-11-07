@@ -22,7 +22,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     partsLooking: { side: 'Side view · the bell’s side face', top: 'From above · the top face' },
     partsIdle: 'A tapered steel box, open at the mouth, struck with a stick: the whole metal body rings. The next page shows how — and what a mute changes.',
     variantNotes: {
-      mounted: 'MOUNTED: the bell stays put while the stick moves round it — the stick’s path sets the clearance; the clamp can buzz or pass vibration to the stand.',
+      mounted: 'MOUNTED: the bell stays put while the stick moves around it — the stick’s path sets the clearance; the clamp can buzz or pass vibration to the stand.',
       handheld: 'HANDHELD: the grip changes the ring and the bell moves — treat it like a moving source, and place for the whole travel.',
     },
   },
@@ -73,7 +73,7 @@ export const BELL_COPY: LessonCopy = spCopy({
   setting: {
     kitA11y: 'A stage from above: a drum kit with the cowbell clamped near it, a timbales and percussion station beside it, an amp upstage, a vocal mic downstage.',
     kitLanding: 'Tap anything around the cowbell — or step through ITEM — to see what it means for a cowbell mic. There is nothing to answer yet.',
-    kitIdle: 'A cowbell lives on a kit or a timbales rig: cymbals and snare a hand’s width away, overheads above — and a stick moving round it.',
+    kitIdle: 'A cowbell lives on a kit or a timbales rig: cymbals and snare a hand’s width away, overheads above — and a stick moving around it.',
     leftHanded: 'Players set the bell where their hand falls — check this rig, every strike point and every fill.',
     stageA11y: 'The band on a stage, from above: the kit and percussion, a floor monitor downstage facing back toward them, the player’s own wedge in front, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the kit and percussion, overheads above them, the room’s walls, no monitors.',

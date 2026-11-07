@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a reader’s or a guest’s mic by its properties and its distance — a broadcast dynamic, a studio condenser, a headset — not by its name or by “dynamic means no room”.',
     credit: { scenarios: ['b7.mic.1', 'b7.mic.2', 'b7.mic.3', 'b7.mic.4', 'b7.rec.1'], note: 'Answer the five checks (one reaches back to the reader and the script).' },
-    takeaway: 'Compare mics at usable positions and levels. Distance and pattern decide the voice against the room; a headset keeps a turning guest steady; an omni has no proximity bass but hears all round.',
+    takeaway: 'Compare mics at usable positions and levels. Distance and pattern decide the voice against the room; a headset keeps a turning guest steady; an omni has no proximity bass but hears all around.',
   },
   placement: {
     title: 'Placement Studio',
@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a reader’s mic in the right order, choose and justify a setup for a dry announcer read and for a guest joining from home, and say what would justify a second mic.',
     credit: { scenarios: ['b7.prac.order', 'b7.prac.gain', 'b7.prac.setup1', 'b7.prac.setup2', 'b7.prac.3', 'b7.mix.1', 'b7.mix.2', 'b7.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real reader.' },
-    takeaway: 'A repeatable place measured from the lips, plosive and proximity control, close or moderate justified by the room, the guest’s real mic checked and a clean return pass. A brand or a louder take do not — and more than one setup can pass.',
+    takeaway: 'A repeatable place measured from the lips, plosive and proximity control, close or moderate justified by the room, the guest’s real mic checked and a clean return pass. A brand or a louder take does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -189,8 +189,8 @@ const scenarios: MikingScenario[] = [
     id: 'b7.mic.2',
     page: 'microphone',
     prompt: 'An omni mic close to the mouth. What is true of its low end?',
-    options: ['No proximity bass, but it hears all round', 'More bass close up than a cardioid ever gives', 'No low end at all, so it sounds thin'],
-    correct: 'No proximity bass, but it hears all round',
+    options: ['No proximity bass, but it hears all around', 'More bass close up than a cardioid ever gives', 'No low end at all, so it sounds thin'],
+    correct: 'No proximity bass, but it hears all around',
     explain: 'A pressure omni has no pressure-gradient proximity effect, and it is less fussy about small movements — but it hears from every direction.',
     why: {
       'More bass close up than a cardioid ever gives': 'Proximity bass belongs to directional (pressure-gradient) mics, not an omni.',
@@ -422,10 +422,10 @@ const symptoms: Symptom[] = [
   {
     id: 'b7.sym.room',
     observation: 'The booth rings and the fan is audible',
-    firstChecks: 'Is the mic moderate distance in a poor room? Can the fan be switched off? Soft panels?',
+    firstChecks: 'Is the mic at a moderate distance in a poor room? Can the fan be switched off? Soft panels?',
     options: ['Get closer; quiet the fan; soften reflections', 'Back the mic off for a more natural sound', 'Raise the gain so that the voice covers the fan'],
     correct: 'Get closer; quiet the fan; soften reflections',
-    explain: 'Closer improves the voice against the room. Turn off the noise source and soften the strongest reflections — a blanket round the mic does not stop outside noise.',
+    explain: 'Closer improves the voice against the room. Turn off the noise source and soften the strongest reflections — a blanket around the mic does not stop outside noise.',
     why: {
       'Back the mic off for a more natural sound': 'Farther away makes the room and the fan louder against the voice.',
       'Raise the gain so that the voice covers the fan': 'Gain raises the fan with the voice.',

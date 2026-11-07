@@ -116,7 +116,7 @@ const FLOW: FlowQ[] = [
     id: 'f-verify',
     q: 'Submittals in hand, one detail still unclear. Is professional / AHJ verification required?',
     options: [
-      'When anything is unsure — yes: documents, the project team, or the AHJ, before the work',
+      'When anything is unclear — yes: documents, the project team, or the AHJ, before the work',
       'Never — installers self-certify firestop',
       'Only on government projects',
     ],

@@ -31,7 +31,7 @@ const pages: LessonPages = {
     title: 'Where they sit',
     goal: 'Know where the timbales sit in a band, the player’s stick space, the accessories, and what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.2', 'tb.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The sticks reach above both heads, round the shells and to the accessories: no stand, boom or cable goes there. Bells and cymbals are loud neighbors in every timbale mic. Ask the player first, and protect your hearing.',
+    takeaway: 'The sticks reach above both heads, around the shells and to the accessories: no stand, boom or cable goes there. Bells and cymbals are loud neighbors in every timbale mic. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -535,7 +535,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: the stick pushes the head down. Where does the air in the shallow shell go?', options: ['Down and out of the open end', 'Up, back out through the head', 'Into the cowbell'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from above the heads to between the shells. What changes?', options: ['More cáscara, less head', 'More head, less cáscara', 'Nothing — it is the same pair'], after: 'Near the shells the cáscara tends to rise against the heads — a tendency to check by ear, with the whole phrase.' },
   context: { prompt: 'Where can this mic, aimed at the 15 in head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -593,7 +593,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'Where must a timbale mic, its boom and cable stay out of?',
+    prompt: 'What must a timbale mic, its boom and cable stay out of?',
     options: ['Every stick path: heads, rims, shells and bell', 'The front of the pair, out of the audience’s view', 'The space under the stand, to keep it level'],
     correct: 'Every stick path: heads, rims, shells and bell',
     explain: 'The striking envelope reaches above both heads and around the shells and accessories.',
@@ -656,8 +656,8 @@ export const M04C_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the timbales (the same drawing as every other page)', short: 'TIMBALES', note: 'The 14 in on the player’s left, the 15 in on the right, on their stand — with a cowbell on the bracket here.', prov: { kind: 'sourced', src: 'LP-257', quote: '14″ & 15″ diameter, 6-1/2″ deep' }, tag: 'THE DRUMS', scene: 'all' },
-      { id: 'player', label: 'the player, standing with sticks', short: 'PLAYER', note: 'The sticks reach above both heads, round the shells and to the bell; the player moves between instruments. Nothing of yours goes there, or where it could drop onto them.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'drums', label: 'the timbales', short: 'TIMBALES', note: 'The 14 in on the player’s left, the 15 in on the right, on their stand — with a cowbell on the bracket here.', prov: { kind: 'sourced', src: 'LP-257', quote: '14″ & 15″ diameter, 6-1/2″ deep' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'player', label: 'the player, standing with sticks', short: 'PLAYER', note: 'The sticks reach above both heads, around the shells and to the bell; the player moves between instruments. Nothing of yours goes there, or where it could drop onto them.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor; its cymbals in particular reach a timbale mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into the timbale mics.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'perc', label: 'other percussion (congas, more bells)', short: 'PERCUSSION', note: 'Bells, blocks and cymbals may be louder than the heads and enter several mics; the player moves between them.', prov: { kind: 'illustrative', reason: 'a typical percussion setup; no source gives positions' }, tag: 'SPILL', scene: 'all' },
@@ -768,7 +768,7 @@ export const M04C_LESSON: HandLesson = {
       asIs: 'The setup is the player’s: avoid changing it simply to fit a mic. Mount nothing to the instrument or the venue without the right hardware and permission, and nothing where it could drop onto the player.',
     },
     worked: { default: 'tb.shared' },
-    clearWords: 'Clear of every stick stroke — over the heads, at the rims, round the shells and at the bell — and nothing where it could drop onto the player. Clearance comes first, before any number.',
+    clearWords: 'Clear of every stick stroke — over the heads, at the rims, around the shells and at the bell — and nothing where it could drop onto the player. Clearance comes first, before any number.',
     ideas: {
       hdDynCard: 'Ideas to try with this kind of mic: one mic above and between the heads first; compare higher and lower within the safe range, then a safe sideward aim toward the shell the cáscara is played on.',
       hdDynHyper: 'Ideas to try with this kind of mic: right between the shells on the audience side for more cáscara — then check the heads and rimshots stay usable. Its narrow pattern helps against a loud bell only so far.',

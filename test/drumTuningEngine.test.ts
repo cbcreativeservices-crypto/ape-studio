@@ -155,7 +155,7 @@ describe('the lug map', () => {
     // The BRIEF form (the independent pass) names no rod — the ear has to.
     const brief = evenness(two, undefined, 'brief').message;
     assert.doesNotMatch(brief, /[Rr]od \d/);
-    assert.match(brief, /Tap round the head/);
+    assert.match(brief, /Tap around the head/);
     assert.equal(evenness(two).high.lug, 2);
     assert.equal(evenness(two).low.lug, 6);
   });

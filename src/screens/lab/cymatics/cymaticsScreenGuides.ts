@@ -49,20 +49,20 @@ import type { CymaticsModuleId } from './modules/registry';
 // ── THE LAB HOME ─────────────────────────────────────────────────────────────
 export const CYMATICS_HOME_GUIDE: ScreenGuide = {
   seeing: [
-    'A live plate on top: sand settling onto one of its figures (SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN).',
+    'A live plate on top: sand settling onto one of its figures (SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN).',
     'NEW HERE? START HERE › opens module 1. Then four studios: Chladni Plate, Liquid Cymatics, Membrane & Loudspeaker, and the Pattern Gallery & Art Studio.',
     'LEARN & EXPERIMENT: the eight modules. Below them CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT › and the GUIDED LESSON row.',
   ],
   control: [
     'Tap NEW HERE? START HERE › for What Is Cymatics?, or an OPEN THE … STUDIO › button for a free-play instrument.',
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
-    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab. A wrong answer can be tried again straight away.',
+    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab. A wrong answer can be tried again right away.',
     'SEE WHAT’S LEFT › lists the modules you have not opened yet. ‹ leaves the lab; ⓘ on any module or studio explains that screen.',
   ],
   changes: [
     'Modules 1–3 build the central idea: a plate answers only at its own resonances, and the plate — not the tone — decides which.',
     'Modules 4–6 set it beside harmonic series, musical ratios and other vibrating things. Module 7 sorts evidence from myth; module 8 runs seventeen experiments in the studios.',
-    'Every pattern is a simulation from a physics model, labelled with how exact it is.',
+    'Every pattern is a simulation from a physics model, labeled with how exact it is.',
   ],
   teaches: [
     'Why sand gathers on the still lines (nodes), and why figures appear only near a resonance.',
@@ -117,7 +117,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     changes: [
       'At 104 Hz the drive sits on the plate’s first mode it can wake: the plate moves a lot for a little push, and the sand snaps onto the still lines.',
       'At 80.9 Hz the same push barely moves the plate, so no figure forms.',
-      'PHASE VIEW: amber rises while violet falls — neighbours across a still line move in opposite directions.',
+      'PHASE VIEW: amber rises while violet falls — neighbors across a still line move in opposite directions.',
     ],
     teaches: [
       'Sound is a pressure wave; each air molecule only moves back and forth around its place.',
@@ -150,7 +150,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Each stable Chladni figure is one normal mode; nodal lines are where the plate does not move.',
-      'Neighbours across a nodal line move in opposite directions (the Phase view).',
+      'Neighbors across a nodal line move in opposite directions (the Phase view).',
       'A pattern belongs to a resonance, not to a frequency. Module 2; Change One Thing is next.',
     ],
     tryThis: [
@@ -316,11 +316,11 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     control: [
       'START THE SERIES › opens experiment 1 in the Plate Studio, already set up.',
       'SET UP … › opens one experiment in its studio. ▸ PREVIEW shows its steps here first.',
-      'In the studio the experiment card sits above the notes: I’VE MADE MY PREDICTION, steps to tick, REVEAL LOOK FOR ›, and EXPERIMENT › to move on.',
+      'In the studio the experiment card sits above the notes: I’VE MADE MY PREDICTION, steps to check, REVEAL LOOK FOR ›, and EXPERIMENT › to move on.',
     ],
     changes: [
       'Each experiment opens its studio with the object and the frequency already set, so you start at the moment it describes.',
-      'Ticks are kept on this device. LOOK FOR unlocks after you predict and tick at least one step.',
+      'Check marks are kept on this device. LOOK FOR unlocks after you predict and check at least one step.',
     ],
     teaches: [
       'How a fair experiment runs: predict, change one thing, observe.',
@@ -414,7 +414,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     changes: [
       'A tighter head rings higher, a bigger or heavier one lower.',
       'A bare head’s modes sit near 1 : 1.59 : 2.14 — not whole numbers, so no clear pitch. The kettle pulls the main modes near 1 : 1.5 : 2, so a pitch is heard.',
-      'The strike point decides which modes wake: a centre strike wakes only the modes with no diameters. A cone moves as one piston above its resonance, then flexes, then breaks up.',
+      'The strike point decides which modes wake: a center strike wakes only the modes with no diameters. A cone moves as one piston above its resonance, then flexes, then breaks up.',
     ],
     teaches: [
       'Why a bare drum has a vague pitch and a timpani a clear one.',
@@ -511,16 +511,16 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
   browse: {
     seeing: [
       'PATTERN GALLERY & ART STUDIO: every pattern you saved from the three studios, as a card of line art.',
-      'Filter chips: All, Plate, Dish, Drum, ★ Favourites. Nothing saved yet? NOTHING SAVED YET says how, with links to each studio.',
+      'Filter chips: All, Plate, Dish, Drum, ★ Favorites. Nothing saved yet? NOTHING SAVED YET says how, with links to each studio.',
     ],
     control: [
-      'Tap a card to open it. Long-press a card to make it a favourite.',
+      'Tap a card to open it. Long-press a card to make it a favorite.',
       'Compare… starts picking: tap two to four cards, then COMPARE ›.',
       '‹ goes back. ⓘ GUIDED LESSON at the bottom covers the gallery and the art studio.',
     ],
     changes: [
       'Each card is redrawn from the saved numbers through the studio’s own physics — nothing is stored as a picture.',
-      'Your colouring is kept apart from the numbers, so colouring never changes the science.',
+      'Your coloring is kept apart from the numbers, so coloring never changes the science.',
     ],
     teaches: [
       'A saved pattern is a repeatable experiment: its exact settings come back.',
@@ -528,7 +528,7 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
     ],
     tryThis: [
       'In the Plate Studio, SAVE a figure, change only the material, SAVE again — then compare the two here.',
-      'Tap ★ Favourites to keep your best figures in one place.',
+      'Tap ★ Favorites to keep your best figures in one place.',
     ],
   },
   open: {
@@ -537,8 +537,8 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
       'Below: EXPORT — Art print or Lab print, as a PNG card, Transparent PNG, PDF or SVG, with a PAGE size.',
     ],
     control: [
-      'Open in studio › brings back this exact setup. Colour › opens the art board.',
-      'Duplicate, ★ Favourite and Delete (it asks first). Type to rename it or add notes.',
+      'Open in studio › brings back this exact setup. Color › opens the art board.',
+      'Duplicate, ★ Favorite and Delete (it asks first). Type to rename it or add notes.',
       'EXPORT: pick the sheet and the format, then SHARE, SAVE or PRINT.',
     ],
     changes: [
@@ -560,21 +560,21 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
     ],
     control: [
       'Tap a region on the figure to fill it.',
-      'FILL: colours, Custom colour…, Erase, Undo, Redo, Clear all fills. STYLE: Solid or Gradient, and the colour of the nodal lines.',
+      'FILL: colors, Custom color…, Erase, Undo, Redo, Clear all fills. STYLE: Solid or Gradient, and the color of the nodal lines.',
       'WEIGHT fader: line thickness, down to hidden. PAPER: the background. SYM (Off, or 2- to 8-fold): fill a region and its rotated partners together.',
     ],
     changes: [
       'A fill never crosses a nodal line: each region is a part of the plate that moves together.',
-      'Gradient shades each region from its centre (the antinode) to its edge (the still line).',
-      'Colouring is saved apart from the pattern’s numbers.',
+      'Gradient shades each region from its center (the antinode) to its edge (the still line).',
+      'Coloring is saved apart from the pattern’s numbers.',
     ],
     teaches: [
-      'Regions between nodal lines move together; neighbours move in opposite directions.',
+      'Regions between nodal lines move together; neighbors move in opposite directions.',
       'A figure’s symmetry comes from the object’s shape and the mode.',
     ],
     tryThis: [
-      'On a square-plate figure such as (2,2), set SYM to 4-fold and fill a region off the centre: its three rotated partners fill with it.',
-      'Choose Gradient in STYLE: each region reads like height — the colour in the middle, darker at the still line.',
+      'On a square-plate figure such as (2,2), set SYM to 4-fold and fill a region off the center: its three rotated partners fill with it.',
+      'Choose Gradient in STYLE: each region reads like height — the color in the middle, darker at the still line.',
     ],
   },
   compare: {

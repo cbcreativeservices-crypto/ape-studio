@@ -46,7 +46,7 @@ describe('Lab 6 review (2026-10-08)', () => {
   it('F04: the pad item does not claim a mic pad helps only at the mic', () => {
     const q = item('F04', 'f04.mic.3');
     assert.doesNotMatch(JSON.stringify(q), /Only if the overload is at the mic itself/);
-    assert.match(q.prompt, /gain turned right down/);
+    assert.match(q.prompt, /gain turned all the way down/);
     assert.match(q.explain, /before the preamp/);
   });
 

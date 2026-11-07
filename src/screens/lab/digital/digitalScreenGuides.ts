@@ -87,7 +87,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   analog: {
     seeing: [
       'One sound seen three ways, slowed down: a SPEAKER pushes the air (PRESSURE →), a MIC diaphragm rides it, and its CONTINUOUS VOLTAGE → is drawn at right.',
-      'The trace runs from +1.0 to −1.0; its colour shows loudness, blue quiet to red full scale.',
+      'The trace runs from +1.0 to −1.0; its color shows loudness, blue quiet to red full scale.',
       'Readouts: FREQ, PERIOD (one cycle’s time), PEAK and RMS (average strength), in FS — fractions of the biggest level the converter will later accept (1.0).',
     ],
     control: [
@@ -152,7 +152,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   quant: {
     seeing: [
       'Two cycles of a sine and the level grid it must round to: AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR.',
-      'Up to 4 bits each level line is drawn; above that they merge into a fine band.',
+      'Up to 4 bits, each level line is drawn; above that, the lines merge into a fine band.',
       'Readouts: BITS, LEVELS, TH. SNR (theoretical signal-to-noise) and PEAK (the sine’s level).',
     ],
     control: [
@@ -162,7 +162,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
       'DITHER key: NO DITHER, RPDF (flat random noise), TPDF (the standard dither) or NOISE-SHAPED (its noise moved up where hearing is least sensitive) — it drives the dither panel below the display.',
     ],
     changes: [
-      'Each extra bit doubles LEVELS (2 to the power of the bits) and adds about 6 dB of TH. SNR: 6.02 × bits + 1.76 dB.',
+      'Each extra bit doubles LEVELS (2 to the power of the bits) and adds about 6 dB of TH. SNR (6.02 × bits + 1.76 dB).',
       'The rounding error is at most half a step at any level: a big share of a quiet sine.',
       'At low levels the error locks to the signal — distortion, not hiss. Dither adds a little noise first and turns it into a steady, gentle floor.',
       'Bits change level resolution only, never frequency response.',

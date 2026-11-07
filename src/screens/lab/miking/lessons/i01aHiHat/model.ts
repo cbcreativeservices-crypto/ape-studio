@@ -116,7 +116,7 @@ export const HAT_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdcCard', 'smallDynCard'] },
     drawn: bandDrawn(HAT, BAND.edgeLow),
     start: { p: bandMid(HAT, BAND.edgeLow, { r: 0.55, h: 0.5 }), az: 0, el: -90 },
-    tendency: 'Close and bright, with the most of the hats against the rest of the kit. So close to the edge, the air burst as the pair closes is the thing to listen for — a low thump or wind noise means move it.',
+    tendency: 'Close and bright, with the most hat sound against the rest of the kit. So close to the edge, the air burst as the pair closes is the thing to listen for — a low thump or wind noise means move it.',
     checks: ['Clear of the air burst at the edge (listen as the pair closes)', 'A high-pass filter only if the low end is unwanted', 'The pair opened all the way, and the mic still clear'],
   },
   {

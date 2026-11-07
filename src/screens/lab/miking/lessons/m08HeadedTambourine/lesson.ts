@@ -20,7 +20,7 @@ const pages: LessonPages = {
     title: 'Meet the headed tambourine',
     goal: 'Get to know the headed tambourine — what it is, where you meet it, what it does in the music, its parts and how it is played — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A drum and a set of jingles in one instrument: a head of skin or plastic on a wood or plastic frame, with pairs of metal jingles round it. Held and struck, shaken, or mounted — and it moves while it plays.',
+    takeaway: 'A drum and a set of jingles in one instrument: a head of skin or plastic on a wood or plastic frame, with pairs of metal jingles around it. Held and struck, shaken, or mounted — and it moves while it plays.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -104,11 +104,11 @@ const scenarios: MikingScenario[] = [
     id: 'tb.snd.3',
     page: 'sound',
     prompt: 'Why does a tambourine’s head radiate from its back face as well as its front?',
-    options: ['The frame is open at the back, so both faces meet the air', 'The jingles carry the head’s sound round to the back', 'A second, thinner head is fixed inside the frame'],
+    options: ['The frame is open at the back, so both faces meet the air', 'The jingles carry the head’s sound around to the back', 'A second, thinner head is fixed inside the frame'],
     correct: 'The frame is open at the back, so both faces meet the air',
     explain: 'There is only one head and no shell closing the back: as the head moves, both its faces push on the air.',
     why: {
-      'The jingles carry the head’s sound round to the back': 'The jingles are their own source; the head radiates from both faces because the back is open.',
+      'The jingles carry the head’s sound around to the back': 'The jingles are their own source; the head radiates from both faces because the back is open.',
       'A second, thinner head is fixed inside the frame': 'A tambourine has one head; the back is open.',
     },
   },
@@ -176,7 +176,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.mic.4',
     page: 'microphone',
-    prompt: 'A player moves round a station while playing. Why might a wider pattern help — and cost?',
+    prompt: 'A player moves around a station while playing. Why might a wider pattern help — and cost?',
     options: ['It covers the moving instrument but hears more of the stage', 'It rejects the stage better because it hears more of the player', 'It costs nothing: a wider pattern simply hears the player better'],
     correct: 'It covers the moving instrument but hears more of the stage',
     explain: 'A cardioid helps against some spill; a wider pattern covers more movement but hears more of everything around it — a trade-off to choose for the room and the show.',
@@ -191,7 +191,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic aimed at the rim and jingles, edge-on, hears more of what?',
     options: ['The jingles’ bright, metallic attack', 'The head’s low and mid body', 'The room around the player and the stage'],
     correct: 'The jingles’ bright, metallic attack',
-    explain: 'The jingles sit round the frame; edge-on and close, the mic hears more of them. The head’s body leaves from its faces — a tendency to check by ear.',
+    explain: 'The jingles sit around the frame; edge-on and close, the mic hears more of them. The head’s body leaves from its faces — a tendency to check by ear.',
     why: {
       'The head’s low and mid body': 'The head radiates from its faces; aimed at it, a mic hears more body.',
       'The room around the player and the stage': 'Close to the instrument, the tambourine is far louder than the room.',
@@ -284,7 +284,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · The player switches from striking to shaking. What does a fixed mic hear change?',
+    prompt: 'FROM EARLIER · The player switches from striking to shaking. What changes in what a fixed mic hears?',
     options: ['Less head body, more jingle — and a moving distance', 'Nothing: the same instrument makes the same sound', 'More head body, because the frame now moves more'],
     correct: 'Less head body, more jingle — and a moving distance',
     explain: 'Shaking barely moves the head and drives the jingles — and the frame now moves, so its distance to a fixed mic changes.',
@@ -426,7 +426,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand strikes the head. What else starts to sound?', options: ['The jingles, jolted against each other', 'Nothing else — only the head sounds', 'The player’s other hand on the frame'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the head and the jingles.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you aim the mic from straight at the instrument to edge-on at the rim. What changes?', options: ['More head body', 'More bright jingle', 'It depends on this tambourine'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -441,7 +441,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'A drum (the head) and jingles (metal)',
     explain: 'The head is a membrane, like a drum; the jingles are metal idiophones. The headless tambourine and the jingles have their own lesson in Lab 2.',
     why: {
-      'A drum and a small cymbal on a stand': 'The metal parts are pairs of small jingles in slots round the frame, not a cymbal.',
+      'A drum and a small cymbal on a stand': 'The metal parts are pairs of small jingles in slots around the frame, not a cymbal.',
       'A shaker and a woodblock in one frame': 'It is a head and metal jingles on a frame, most often wood.',
     },
   },
@@ -514,7 +514,7 @@ export const M08_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A frame drum and a set of jingles in one: a head (skin or plastic) on one face of a frame, most often wood, with pairs of thin metal jingles loose on pins in slots round it — here, a staggered double row. (The headless tambourine and the jingles on their own come in Lab 2.)', src: 'YMH-CPCAT' },
+    { title: 'WHAT IT IS', text: 'A frame drum and a set of jingles in one: a head (skin or plastic) on one face of a frame, most often wood, with pairs of thin metal jingles loose on pins in slots around it — here, a staggered double row. (The headless tambourine and the jingles on their own come in Lab 2.)', src: 'YMH-CPCAT' },
     { title: 'WHERE YOU MEET IT', text: 'In orchestras and concert bands, in percussion sections and on band stages — recorded close or in a room, and amplified live. It is often one of several instruments a percussionist moves between.', src: 'LESSON-TAMB' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fingertip strikes, loud accents, shakes, thumb or finger rolls, knee-and-fist rhythms. Striking favors the head; shaking favors the jingles — and the player’s hold, often about 45°, blends the two.', src: 'PAS-ROD' },
     { title: 'ITS SIZE', text: 'Concert tambourines are often about 10 in across. This lab draws a 10 in tambourine with a skin head and a staggered double row of jingles.', src: 'YMH-CPCAT' },
@@ -524,7 +524,7 @@ export const M08_LESSON: Lesson = {
       { title: 'The hand strikes', text: 'Fingertips, a hand or a fist strike the head. That brief contact is where the ATTACK begins.', byVariant: { shaken: 'The hand shakes the whole frame, or rolls a thumb or finger along the head’s edge. The ATTACK comes from the jingles.', mounted: 'A stick (or a hand) strikes the head of the mounted tambourine. That brief contact is where the ATTACK begins.' } },
       { title: 'The head is pushed in', text: 'The head bows in — its lowest shape, drawn here much larger than it really moves — then rings briefly: the low and mid BODY.', byVariant: { shaken: 'Shaken, the head barely bends: the frame moves as a whole, and the head goes with it.' } },
       { title: 'The jingles are thrown together', text: 'The frame jolts, and the loose jingle pairs are thrown against each other and their pins: a bright, metallic clash.' },
-      { title: 'Sound leaves all round', text: 'The head radiates from BOTH faces — the back is open — and the jingles from all round the frame. A mic hears more of whichever it is closer to and faces.' },
+      { title: 'Sound leaves all around', text: 'The head radiates from BOTH faces — the back is open — and the jingles from all around the frame. A mic hears more of whichever it is closer to and faces.' },
     ],
     attack: 'The start of each stroke or shake: the hand on the head, and the jingles’ clash. Close to the rim and jingles, a mic tends to hear more of the bright, metallic attack.',
     body: 'The head’s brief low and mid ring, from both its faces, and the jingles’ shimmer. Aimed at the head, a mic tends to hear more body; a little farther away, the two blend with the room. Tendencies — and heads, jingles and players vary.',
@@ -536,7 +536,7 @@ export const M08_LESSON: Lesson = {
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Where the tambourine and the other small instruments wait. The player turns and moves between them: a mic placed for one spot may miss the next.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud, close by. Its bleed into a tambourine mic adds to the jingles’ brightness.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Crisp and loud along the row; its player’s space and the tambourine player’s meet here.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'Low and loud further along; its low end reaches every percussion mic.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'Low and loud farther along; its low end reaches every percussion mic.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Loud, just downstage of the percussion. A wider pattern that covers a moving player also hears more of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'downstage', label: 'a floor wedge downstage of the percussion', short: 'WEDGE', note: 'On the audience side, behind a mic facing the tambourine and off to one side — a case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'fill', label: 'the percussion section’s own monitor', short: 'SECTION MON.', note: 'Behind the players, facing them: in FRONT of a mic facing the tambourine, where no pattern rejects it.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },

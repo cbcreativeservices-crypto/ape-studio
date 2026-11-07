@@ -115,7 +115,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'In SETUP pick MIDFIELD: the line under the head reads MIDFIELD · 1.60 m ? in amber. 1.60 m sits in the screen’s nearfield band (0.8–1.8 m), not midfield (1.8–4.2 m).',
-      'Ride FRONT from 0.90 m to 1.20 m: L’s front wall cancellation moves from ~101.9 Hz to ~77.0 Hz. Further from the wall, the dip goes lower. Ride it back to 0.90 m.',
+      'Ride FRONT from 0.90 m to 1.20 m: L’s front wall cancellation moves from ~101.9 Hz to ~77.0 Hz. Farther from the wall, the dip goes lower. Ride it back to 0.90 m.',
       'Ride SEAT down to about 1 m: ANGLE turns red and reads NONE. The seat is only 10 cm ahead of the speakers, and the model needs 30 cm for a triangle.',
     ],
   },
@@ -137,7 +137,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     changes: [
       'An axial mode bounces between one pair of surfaces: f = n × c ÷ (2 × distance), c = speed of sound. Tangential and oblique modes use two or three pairs and are weaker.',
       'Move the seat through the map: AT EARS rises on red, falls on blue — that note sounds heavy or thin there.',
-      'A reflection travels further than the direct sound: about 1 ms later per 34 cm. Inside 15 ms it blurs the image and colors the tone.',
+      'A reflection travels farther than the direct sound: about 1 ms later per 34 cm. Inside 15 ms it blurs the image and colors the tone.',
     ],
     teaches: [
       'Why bass changes from seat to seat: room modes, mapped one at a time.',
@@ -228,7 +228,7 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     'PRACTICE AGAIN FROM THE START reopens module 1. DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'Opening a module ticks it. A practice run never removes a tick.',
+    'Opening a module checks it off. A practice run never removes a check mark.',
     'The design stays on screen while the lab is open. Leaving the lab clears it; a saved design comes back with LOAD in REVIEW.',
   ],
   teaches: [

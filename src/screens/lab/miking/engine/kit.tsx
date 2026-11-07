@@ -275,7 +275,7 @@ export function SetupTaskCard({ t, answered, onAnswered }: { t: SetupTask; answe
           );
         })}
       </View>
-      <Text style={styles.stepHead}>2 · TICK EVERY REASON THAT JUSTIFIES IT</Text>
+      <Text style={styles.stepHead}>2 · CHECK EVERY REASON THAT JUSTIFIES IT</Text>
       <View style={{ gap: 6 }}>
         {t.reasons.map((r) => {
           const on = reasons.has(r.id);

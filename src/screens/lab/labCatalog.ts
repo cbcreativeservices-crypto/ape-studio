@@ -450,7 +450,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // chapters, each with a named interactive. Member-only like its
       // neighbours (the training section); `member: true` stated anyway so
       // the gate never depends on the section alone.
-      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true },
+      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even out a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true },
     ],
   },
   {

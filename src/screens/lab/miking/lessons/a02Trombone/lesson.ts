@@ -33,9 +33,9 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how buzzing lips become a note — the air column, the slide, the bell — and where the sound goes: nearly all round low down, beamed ahead up high.',
+    goal: 'See how buzzing lips become a note — the air column, the slide, the bell — and where the sound goes: nearly all around low down, beamed ahead up high.',
     credit: { scenarios: ['tb.snd.1', 'tb.snd.2', 'tb.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The lips buzz, the tube’s standing wave sets the note, the slide lengthens the tube, and the bell lets the sound out: the lows spread round, the highs beam along the axis. The slide’s path is the trombone’s big keep-out.',
+    takeaway: 'The lips buzz, the tube’s standing wave sets the note, the slide lengthens the tube, and the bell lets the sound out: the lows spread around, the highs beam along the axis. The slide’s path is the trombone’s big keep-out.',
   },
   setting: {
     title: 'Where it sits',
@@ -77,7 +77,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one trombone mic in the right order, choose and justify a setup for a studio overdub and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['tb.prac.order', 'tb.prac.gain', 'tb.prac.setup1', 'tb.prac.setup2', 'tb.prac.3', 'tb.mix.1', 'tb.mix.2', 'tb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn.' },
-    takeaway: 'The slide’s whole path kept clear, headroom for the loudest accent, the lowest notes kept, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position do not — and more than one setup can pass.',
+    takeaway: 'The slide’s whole path kept clear, headroom for the loudest accent, the lowest notes kept, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -105,12 +105,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.snd.2',
     page: 'sound',
     prompt: 'How does a trombone spread its low notes?',
-    options: ['Nearly all round, even behind the player', 'Only forward, in a narrow beam from the bell', 'Mostly down along the slide toward the floor'],
-    correct: 'Nearly all round, even behind the player',
+    options: ['Nearly all around, even behind the player', 'Only forward, in a narrow beam from the bell', 'Mostly down along the slide toward the floor'],
+    correct: 'Nearly all around, even behind the player',
     explain: 'A trombone’s lows spread out nearly evenly in every direction, as a trumpet’s do. So every open mic on a stage hears them; from about 1 kHz up, the bell beams the sound forward.',
     why: {
-      'Only forward, in a narrow beam from the bell': 'That is the highs. The lows spread round.',
-      'Mostly down along the slide toward the floor': 'The sound leaves the bell, not the slide; the lows spread all round it.',
+      'Only forward, in a narrow beam from the bell': 'That is the highs. The lows spread around.',
+      'Mostly down along the slide toward the floor': 'The sound leaves the bell, not the slide; the lows spread all around it.',
     },
   },
   {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Its valves — often an F and a G♭ — bring in extra tubing for the lowest notes, worked by the left hand. Its bore is wider and its bell larger, too. Configurations vary: ask the player.',
     why: {
       'A slide that is twice as long': 'The slide is the same reach; the extra length comes from the valves’ loops.',
-      'A smaller bell and a narrower bore': 'It is the other way round: a wider bore and a larger bell.',
+      'A smaller bell and a narrower bore': 'It is the other way around: a wider bore and a larger bell.',
     },
   },
   hearingCheck('tb.set.1', W),
@@ -154,11 +154,11 @@ const scenarios: MikingScenario[] = [
     id: 'tb.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Where does most of a trombone’s high-frequency sound go?',
-    options: ['Forward, along the bell’s axis', 'Evenly all round the bell', 'Back over the player’s shoulder'],
+    options: ['Forward, along the bell’s axis', 'Evenly all around the bell', 'Back over the player’s shoulder'],
     correct: 'Forward, along the bell’s axis',
     explain: 'From about 1 kHz up the bell beams the sound forward. A mic toward the axis hears more bite; off it, a softer top.',
     why: {
-      'Evenly all round the bell': 'That is the lows. The highs beam forward.',
+      'Evenly all around the bell': 'That is the lows. The highs beam forward.',
       'Back over the player’s shoulder': 'The bell section goes over the shoulder, but the bell points forward.',
     },
   },
@@ -264,12 +264,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.ctx.studio',
     page: 'context',
     prompt: 'A trombone overdub in a large, good studio room. What is a fair plan?',
-    options: ['A safe main mic, then try a view about 3 m away', 'A mic right at the bell, for the most detail', 'Two mics either side of the slide, for stereo'],
+    options: ['A safe main mic, then try a view about 3 m away', 'A mic right at the bell, for the most detail', 'Two mics on either side of the slide, for stereo'],
     correct: 'A safe main mic, then try a view about 3 m away',
     explain: 'Get a reliable main mic outside the slide’s path first. In a large, good room, a mic about 3 m away can add scale — hear each alone and the pair in mono.',
     why: {
       'A mic right at the bell, for the most detail': 'Very close takes the full blast and can overload; start with a balanced view.',
-      'Two mics either side of the slide, for stereo': 'Stereo is not a requirement for one horn — and the slide side is a keep-out.',
+      'Two mics on either side of the slide, for stereo': 'Stereo is not a requirement for one horn — and the slide side is a keep-out.',
     },
   },
   {
@@ -433,7 +433,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature on a bell clip, aimed between center and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
       { id: 'b', label: 'Dynamic beside the bell, out of the slide’s path, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone.' },
-      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a meter away hears the band more than the horn — and its stand meets the slide.' },
+      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, a mic a meter away hears the band more than the horn — and its stand meets the slide.' },
       { id: 'd', label: 'A clip on the valve linkage, close to the triggers', ok: false, power: 'phantom', feedback: 'The linkage must move freely, and the thumb works there. Only the bell rim.' },
       { id: 'e', label: 'A boom reaching in over the slide’s crook', ok: false, power: 'none', feedback: 'The crook travels out to 7th: a boom over it is in the slide’s path.' },
     ],
@@ -444,7 +444,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what decides the note a trombone plays?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now STEP through (or PLAY ONCE) and watch the lips, the tube and the bell.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: can a stand mic go straight in front of the bell, 40 cm out?', options: ['Yes, that is the usual place', 'No — the slide is in the way', 'Only with a short stand'], after: 'Try it, then rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -491,12 +491,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A trombone’s lowest frequencies leave the bell…',
-    options: ['Nearly evenly all round', 'Beamed forward only', 'Mostly down to the floor'],
-    correct: 'Nearly evenly all round',
+    options: ['Nearly evenly all around', 'Beamed forward only', 'Mostly down to the floor'],
+    correct: 'Nearly evenly all around',
     explain: 'Low down the trombone spreads its sound almost evenly in every direction; from about 1 kHz up, the bell beams it forward.',
     why: {
-      'Beamed forward only': 'That is the highs; the lows spread round.',
-      'Mostly down to the floor': 'The bell points ahead; the lows spread all round it.',
+      'Beamed forward only': 'That is the highs; the lows spread around.',
+      'Mostly down to the floor': 'The bell points ahead; the lows spread all around it.',
     },
   },
   {
@@ -565,10 +565,10 @@ export const A02_LESSON: Lesson = {
       { title: 'The lips buzz', text: 'The player’s breath pushes the lips apart; they spring shut; the breath opens them again — a buzz, puffing air into the mouthpiece’s cup each time.' },
       { title: 'A wave runs down the tube', text: 'Each puff starts a pressure wave traveling down the slide and the bell section toward the bell — drawn here as if the tube were unwound.' },
       { title: 'The tube answers', text: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave, and its pressure locks the lips to the tube’s own rhythm: that sets the note. Moving the slide changes the tube’s length, and so the notes.', byVariant: { bass: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The slide and the valves’ extra loops change the tube’s length, and so the notes.' } },
-      { title: 'Sound leaves the bell', text: 'Part of the wave escapes at every cycle — almost all of it at the bell. Low down a trombone spreads its sound nearly evenly all round; from about 1 kHz up, the bell beams it straight ahead.' },
+      { title: 'Sound leaves the bell', text: 'Part of the wave escapes at every cycle — almost all of it at the bell. Low down a trombone spreads its sound nearly evenly all around; from about 1 kHz up, the bell beams it straight ahead.' },
     ],
     attack: 'The start of a note: the lips catching, the tongue releasing the air — the bite and the edge, strongest along the bell’s axis. A mic toward the axis tends to hear more of it; off the axis, a softer start.',
-    body: 'The sustained tone: the standing wave in the tube, leaving through the bell — the lows nearly all round, the highs ahead. A mic off to the side tends to hear a softer top; a farther one, more of the room and the section. Both are tendencies, and horns vary.',
+    body: 'The sustained tone: the standing wave in the tube, leaving through the bell — the lows nearly all around, the highs ahead. A mic off to the side tends to hear a softer top; a farther one, more of the room and the section. Both are tendencies, and horns vary.',
     head: { diameterMm: 0, rods: 0, label: 'the bell', strikeSrc: 'PL-2010' },
   },
   setting: {

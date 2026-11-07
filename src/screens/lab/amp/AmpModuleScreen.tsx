@@ -255,7 +255,7 @@ export function AmpModuleScreen() {
         <Text style={styles.requirement}>
           {needsFinal
             ? 'Submit the final assessment above to complete the lab.'
-            : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine, the explanation is the point. NEXT below still moves on; you can come back.`}
+            : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine; the explanation is the point. NEXT below still moves on; you can come back.`}
         </Text>
       ) : null}
       {/* Labs never block navigation (owner 2026-09-20/29; bug hunt 2026-09-30):

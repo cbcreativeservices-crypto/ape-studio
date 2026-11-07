@@ -122,7 +122,7 @@ const B05Setting = makeBroadcastSetting({
         done: 'The headset to the PA, the stream and the recorder; the lectern muted while the headset is live; the backup lav on its own track; the producer on talkback and in the earpiece only: one voice, one open mic in each feed.',
       },
       points: [
-        { title: 'ONE VOICE, ONE OPEN MIC', text: 'A headset and a lectern mic open on the same voice hear it at two different times: the sum sounds hollow, and the PA has one more open mic to feed back through. Agree who mutes which, and when.' },
+        { title: 'ONE VOICE, ONE OPEN MIC', text: 'A headset and a lectern mic open on the same voice hear it at two different times: the sum sounds hollow, and the PA has one more open mic to feed back through. Agree on who mutes which, and when.' },
         { title: 'THE PRIMARY AND THE FALLBACK', text: 'Know which mic is on air, which is the tested fallback, and what goes to the PA, the stream, the recorder and the earpiece. Two unchecked mics are not a backup.' },
         { title: 'THE RADIO PATH', text: 'With the responsible operator: frequencies coordinated, fresh batteries, the transmitter’s input gain, and coverage checked along the whole path the presenter walks — not at one spot.' },
       ],

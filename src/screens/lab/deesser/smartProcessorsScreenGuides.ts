@@ -43,7 +43,7 @@ export const SMART_PROCESSORS_HOME_GUIDE: ScreenGuide = {
     'Inside the de-esser lab, ⓘ beside each page title explains that page.',
   ],
   changes: [
-    'Nothing on this page moves. The de-esser lab draws a modelled phrase — nothing plays — so every number there is relative, not a calibrated level.',
+    'Nothing on this page moves. The de-esser lab draws a modeled phrase — nothing plays — so every number there is relative, not a calibrated level.',
     'Each right answer shows a ✓ and its explanation. All five right and the lab is complete: this check is what counts it toward certificates.',
   ],
   teaches: [
@@ -150,7 +150,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap BAND-PASS, then GAIN: the filter sits in the side chain; the voice itself never passes through it.',
-      'In split-band, tap WALK THE SIGNAL: the lit block runs INPUT, BAND SPLIT, round the side chain, then GAIN, SUM, OUTPUT.',
+      'In split-band, tap WALK THE SIGNAL: the lit block runs INPUT, BAND SPLIT, around the side chain, then GAIN, SUM, OUTPUT.',
     ],
   },
 
@@ -194,8 +194,8 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The UNDERSTANDING CHECK at the end: tap an answer; its explanation follows.',
     ],
     changes: [
-      'The band hears most at its centre and less either side: aimed too low it hears the voice, too high it misses the S.',
-      'A narrower band (higher Q) is pickier, so it can miss an S that sits off its centre.',
+      'The band hears most at its center and less on either side: aimed too low it hears the voice, too high it misses the S.',
+      'A narrower band (higher Q) is pickier, so it can miss an S that sits off its center.',
       'Every voice hisses in its own place — SH lower than S.',
     ],
     teaches: [
@@ -203,7 +203,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Starting points are where you begin, not where you finish.',
     ],
     tryThis: [
-      'With the detector at 6.5 kHz and Q 1.4, “s” · 7.0k is heard 98%. Slide Band width to Q 4.0 · narrow: 86% — a narrow band misses an off-centre S.',
+      'With the detector at 6.5 kHz and Q 1.4, “s” · 7.0k is heard 98%. Slide Band width to Q 4.0 · narrow: 86% — a narrow band misses an off-center S.',
       'Still at 6.5 kHz and Q 4.0, pick “sh” · 4.0k: 24%, Missing it. Under STARTING POINTS, tap the button that reads "SH" rather than "S" · 4.0k: the detector moves to 4.0 kHz and hears 100%.',
       'Before the next page, set the detector back to 6.5 kHz and Q 1.4, where the lab starts: the next pages’ numbers assume it.',
     ],
@@ -295,7 +295,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Tap an answer to the closing question; its explanation follows. FINISH · SEE WHAT’S LEFT lists any page not yet done.',
     ],
     changes: [
-      'Each link is the same idea from another side: Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way round.',
+      'Each link is the same idea from another side: Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way around.',
     ],
     teaches: [
       'The one-sentence definition: a compressor whose detector listens through a hiss filter.',

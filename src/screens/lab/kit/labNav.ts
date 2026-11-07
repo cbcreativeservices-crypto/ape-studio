@@ -72,7 +72,7 @@ export function navView(i: number, count: number, ending: boolean, sub?: NavSub,
       pos: NAV.whatsLeft,
       a11y: {
         start: 'Back to the first module',
-        prev: 'Back to the last module',
+        prev: 'Back to the previous module',
         next: '',
         pos: "What's left. Opens the contents",
       },

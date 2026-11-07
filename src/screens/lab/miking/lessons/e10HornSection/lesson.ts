@@ -17,7 +17,7 @@ import { E10_MODEL, E10_PLACE, E10_SEATS, E10_SETUPS, E10_WEDGES, E10_ZONES, LN_
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a horn section — trumpet, saxophone, trombones, a tuba — on a stage and round one mic in a studio, and see where each instrument’s sound leaves it.',
+    goal: 'Meet a horn section — trumpet, saxophone, trombones, a tuba — on a stage and around one mic in a studio, and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['hs.meet.1', 'hs.meet.2', 'hs.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Brass speaks from the bell, and its highs are strongly directional: on its axis brighter, off it softer. A saxophone speaks from its open tone holes as well as its bell, so a bell-only mic hears part of it. A section is several of these at once — and the players make the balance.',
   },
@@ -156,8 +156,8 @@ const scenarios: MikingScenario[] = [
     id: 'hs.mic.3',
     page: 'microphone',
     prompt: 'A clip-on mic on the sax: what does it trade for movement?',
-    options: ['A close, smaller view, and cable to secure', 'Its pickup pattern changes when it is clipped', 'It gives the PA the least feedback margin'],
-    correct: 'A close, smaller view, and cable to secure',
+    options: ['A close, smaller view, and a cable to secure', 'Its pickup pattern changes when it is clipped', 'It gives the PA the least feedback margin'],
+    correct: 'A close, smaller view, and a cable to secure',
     explain: 'A clip keeps the distance steady as the player moves and improves separation, but hears a close perspective and handling noise. Audition its position and secure the cable from hands, keys and feet.',
     why: {
       'Its pickup pattern changes when it is clipped': 'The pattern is the mic’s own; the closeness changes the view.',
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A digital stagebox feeds the PA and the recording. Who sets the gain?',
     options: ['Agreed in advance: one person controls it', 'Each engineer, whenever they need to', 'Nobody: a digital stagebox needs none'],
     correct: 'Agreed in advance: one person controls it',
-    explain: 'A digital stagebox may share headamp gain and pads across every feed. Agree who controls gain and phantom power, follow the makers’ splitter and grounding instructions — and never lift a protective mains earth to cure hum.',
+    explain: 'A digital stagebox may share headamp gain and pads across every feed. Agree who controls gain and phantom power, follow the makers’ splitter and grounding instructions — and never lift a safety ground to cure hum.',
     why: {
       'Each engineer, whenever they need to': 'A shared gain change reaches every feed at once.',
       'Nobody: a digital stagebox needs none': 'Its preamps still need setting — once, by an agreed person.',
@@ -241,12 +241,12 @@ const scenarios: MikingScenario[] = [
     id: 'hs.ctx.studio',
     page: 'context',
     prompt: 'STUDIO · A good room, a section that balances itself. Where do you start?',
-    options: ['A distant pair, then listen', 'A close mic on each player first', 'Gobos round each player first'],
+    options: ['A distant pair, then listen', 'A close mic on each player first', 'Gobos around each player first'],
     correct: 'A distant pair, then listen',
     explain: 'If the room is good and the section already balances, a distant pair may be the most natural choice. Isolation is a musical decision, not an automatic improvement.',
     why: {
       'A close mic on each player first': 'That gives control, but loses the blend you already have.',
-      'Gobos round each player first': 'Screens help when each player needs a separate track, for fixes or heavy editing; they can spoil sightlines.',
+      'Gobos around each player first': 'Screens help when each player needs a separate track, for fixes or heavy editing; they can spoil sightlines.',
     },
   },
   {
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The pair is 1.4 m from the trumpet; its close mic 0.4 m. What follows?',
     options: ['The close mic hears it about 3 ms earlier', 'Both mics hear the trumpet at the same time', 'The pair hears the trumpet a little earlier'],
     correct: 'The close mic hears it about 3 ms earlier',
-    explain: 'A 1 m path difference is about 2.9 ms. Summed, the early close mic can change the attack and color — compare pair alone, close mic alone and both.',
+    explain: 'A 1 m path difference is about 2.9 ms. Summed, the early close mic can change the attack and color — compare the pair alone, the close mic alone and both.',
     why: {
       'Both mics hear the trumpet at the same time': 'Different distances mean different arrival times.',
       'The pair hears the trumpet a little earlier': 'The close mic is nearer, so it hears the trumpet first.',
@@ -409,7 +409,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio recording of a four-piece section (trumpet, tenor sax, trombone, tuba) in a good room, with independent balance wanted later. Phantom power on every input.',
     setups: [
-      { id: 'a', label: 'The players on an arc round an X/Y pair, plus a close mic on each', ok: true, power: 'phantom', feedback: 'The blend from the pair and separate tracks for later balance.' },
+      { id: 'a', label: 'The players on an arc around an X/Y pair, plus a close mic on each', ok: true, power: 'phantom', feedback: 'The blend from the pair and separate tracks for later balance.' },
       { id: 'b', label: 'One section mic at the arc’s center, the players balancing themselves', ok: true, power: 'phantom', feedback: 'Fair for blend — independent balance will be limited.' },
       { id: 'c', label: 'A clip in each bell and no section view', ok: false, power: 'phantom', feedback: 'A bell-only, close view of every player and no room.' },
       { id: 'd', label: 'A stand mic in the trombone’s slide path, on its axis', ok: false, power: 'phantom', feedback: 'A collision hazard and noise source in the slide’s travel.' },
@@ -447,7 +447,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the trumpet mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the trumpet mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the pair from 1.8 m to 2.2 m. What changes most?', options: ['The four players even out', 'Only the level', 'The nearest player dominates more'], after: 'Higher, the distances to the nearest and farthest players even out: the NEAR / FAR readout shrinks. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the trumpet, on the floor. Can the close mic’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The pair and the trumpet’s close mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
@@ -547,7 +547,7 @@ export const E10_LESSON: EnsembleLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'Trumpet, flugelhorn, trombone, French horn, tuba or euphonium and the saxophones — and the mixed horn sections they make together.', src: 'LESSON-HORNS' },
     { title: 'WHAT IT ASKS OF YOU', text: 'A coherent section image, with individual control where the job needs it: tone, bleed, headroom, phase, feedback margin and the players’ movement all checked.', src: 'LESSON-HORNS' },
-    { title: 'HOW IT IS SET OUT', text: 'On stage, a line of standing players; in a studio, the players can sit round one mic at about the same distance. The players arrange themselves for the balance.', src: 'S-SM4-UG' },
+    { title: 'HOW IT IS SET OUT', text: 'On stage, a line of standing players; in a studio, the players can sit around one mic at about the same distance. The players arrange themselves for the balance.', src: 'S-SM4-UG' },
     { title: 'ITS SIZE', text: 'This line is about 3 m wide; the studio arc about 2.5 m across. Typical layouts drawn here, not particular sections.', src: 'LESSON-HORNS' },
   ],
   sound: {
@@ -566,7 +566,7 @@ export const E10_LESSON: EnsembleLesson = {
       { id: 'neigh', label: 'the next player’s bell', short: 'NEIGHBOR', note: 'Every close mic hears the players beside it too: a trumpet next to a sax mic arrives off its axis, and in the sum.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'It also increases leakage differences (L31)' }, tag: 'SPILL', scene: 'all' },
       { id: 'mutes', label: 'mutes and doubles', short: 'MUTES', note: 'A mute changes the tone and the direction; a double (flugelhorn, flute) may need its own position. Mark them in the plan.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'Flugelhorn generally has a darker, broader character than trumpet (L18)' }, tag: 'CHANGES', scene: 'all' },
       { id: 'mon', label: 'the wedges', short: 'MONITORS', note: 'Each wedge in its mic’s real rejection — a supercardioid’s is off its rear, not straight behind. Only the level the players need.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'Put wedges in the appropriate rejection region of the chosen microphone (L39)' }, tag: 'FEEDBACK', scene: 'stage' },
-      { id: 'split', label: 'the split', short: 'SPLIT', note: 'A digital stagebox may share gain and pads across every feed: agree who sets them, and take an unprocessed feed for the recording.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'a digital stagebox may share headamp gain and pads (L41)' }, tag: 'ROLES', scene: 'stage' },
+      { id: 'split', label: 'the split', short: 'SPLIT', note: 'A digital stagebox may share gain and pads across every feed: agree on who sets them, and take an unprocessed feed for the recording.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'a digital stagebox may share headamp gain and pads (L41)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'room', label: 'the room and isolation', short: 'ROOM', note: 'In a good room a distant pair may be the most natural choice; gobos only when the production needs separate tracks, with sightlines kept.', prov: { kind: 'sourced', src: 'LESSON-HORNS', quote: 'If the room is good and the section already balances, a distant pair may be the most natural choice (L36)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: enough level and clarity without changing the players’ own balance or creating feedback. Close cardioids or supercardioids, wedges in the real rejection, cables secured from slides and feet; a wireless clip needs coordinated frequencies, fresh batteries and a wired fallback.',
@@ -604,7 +604,7 @@ export const E10_LESSON: EnsembleLesson = {
       { title: 'LET THE PLAYERS BALANCE', text: 'Stronger instruments a little farther from a section mic, weaker or darker ones closer, bells aimed consistently — before moving any mic.' },
       { title: 'CHOOSE MINIMAL OR EXPANDED', text: 'One section mic or pair favors blend; a close mic on each player gives control but acts as one multi-mic system.' },
     ],
-    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a protective mains earth to cure hum; avoid uncontrolled feedback.',
+    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a safety ground to cure hum; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a horn section: one section pair in front of the players, a little above, before any close mic — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the line, clear of the slides at full extension and of the players’ way in and out; its cable dressed flat and out of the walkways.',

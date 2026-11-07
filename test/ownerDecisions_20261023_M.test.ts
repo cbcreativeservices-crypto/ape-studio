@@ -128,7 +128,7 @@ describe('3 · drawing checks', () => {
 });
 
 describe('4 · the veena’s plate', () => {
-  const P = 'round the middle of the plate, on the far side of the bridge from the neck';
+  const P = 'around the middle of the plate, on the far side of the bridge from the neck';
   it('no "between the bridge and the body" is left in the veena or the shared lute model', () => {
     for (const rel of ['lessons/c15Veena/copy.ts', 'lessons/c15Veena/lesson.ts', 'lessons/c15Veena/model.ts', 'lessons/shared/lutes/luteModel.ts']) assert.doesNotMatch(read(rel), /between the bridge and the body/, rel);
   });
@@ -138,7 +138,7 @@ describe('4 · the veena’s plate', () => {
     assert.ok(m.includes(`aimed at a broad area ${P}.'`));
     const l = read('lessons/c15Veena/lesson.ts');
     assert.ok(l.includes(`quote: '30–50 cm from the top plate, ${P}'`));
-    assert.match(l, /right: 'The top plate, round its middle, on the far side of the bridge from the neck'/);
+    assert.match(l, /right: 'The top plate, around its middle, on the far side of the bridge from the neck'/);
     assert.ok(read('lessons/c15Veena/copy.ts').includes(`workedAim: 'Aim at a broad area ${P} —`));
   });
 });

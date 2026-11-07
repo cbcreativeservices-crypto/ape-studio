@@ -42,7 +42,7 @@ export const WAVE_HOME_GUIDE: ScreenGuide = {
   changes: [
     'Modules 1–3: sound hitting surfaces — reflection, absorption, diffusion.',
     'Modules 4–5: sound bending — through warm and cool air, and around obstacles.',
-    'Modules 6–8: waves adding and cancelling — interference, comb filtering, standing waves.',
+    'Modules 6–8: waves adding and canceling — interference, comb filtering, standing waves.',
     'Modules 9–13: loudspeakers. Modules 14–15: echoes and reverberation. All run on one room engine.',
   ],
   teaches: [
@@ -196,8 +196,8 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'BARRIER fader (2–8 m): the wall’s height, drawn to scale.',
     ],
     changes: [
-      'Low frequencies are metres long — as big as the wall — so they wrap over the edge: a modest LOSS.',
-      'High frequencies are centimetres long; the detour is many wavelengths: a deep shadow.',
+      'Low frequencies are meters long — as big as the wall — so they wrap over the edge: a modest LOSS.',
+      'High frequencies are centimeters long; the detour is many wavelengths: a deep shadow.',
       'A taller wall lengthens the detour: FRESNEL N and LOSS rise, most of all for highs.',
       'The glow at the listener shows it: warm = little loss, blue = a lot. The loss is never total.',
     ],
@@ -347,7 +347,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     control: [
       'FREQ fader (60 Hz–8 kHz).',
-      'ARRAY key: BOXES (2–8), SPLAY (PER BOX) (0°–8° between neighbours) and HEIGHT (HANG DEPTH) — how far down from the top the array hangs (0.40–3.00 m).',
+      'ARRAY key: BOXES (2–8), SPLAY (PER BOX) (0°–8° between neighbors) and HEIGHT (HANG DEPTH) — how far down from the top the array hangs (0.40–3.00 m).',
       'LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],
     changes: [
@@ -379,7 +379,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     control: [
       'DELAY fader (0–20 ms): holds back the main speaker.',
       'XOVER fader (80–120 Hz): the frequency both speakers play.',
-      'ALIGN key: MAIN POLARITY Ø (labelled THE WRONG TOOL) and AUTO-ALIGN, which sets DELAY to REQ for this seat.',
+      'ALIGN key: MAIN POLARITY Ø (labeled THE WRONG TOOL) and AUTO-ALIGN, which sets DELAY to REQ for this seat.',
       'Drag the listener. LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],
     changes: [
@@ -420,7 +420,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'SOLO FRONT SUB: one sub, an even circle — nothing to cancel against.',
     ],
     teaches: [
-      'Two subs, one delay and one polarity flip: bass forward, cancelled behind.',
+      'Two subs, one delay and one polarity flip: bass forward, canceled behind.',
       'Directional bass needs at least two sources — one sub alone cannot be cardioid.',
       'Spacing, delay and polarity must match, or the null lands in the wrong place.',
       'Rear rejection is limited by frequency band and geometry.',
@@ -445,7 +445,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Drag the listener. LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],
     changes: [
-      'Δt = spacing × sin(angle) ÷ speed of sound. Each box starts a little after its neighbour, so the wavefront tilts toward the later boxes.',
+      'Δt = spacing × sin(angle) ÷ speed of sound. Each box starts a little after its neighbor, so the wavefront tilts toward the later boxes.',
       'The boxes never move — only their timing changes.',
       'More boxes: a longer array and a narrower beam.',
       'High frequency + big angle: grating lobes — extra beams once the wavelength is short next to the 2 m spacing.',
@@ -457,7 +457,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Set STEER to 20°: Δt/BOX reads about 1.99 ms, the bars form a staircase and the beam swings toward the delayed end.',
-      'Watch vs STRAIGHT at the centre seat fall as the beam leaves it.',
+      'Watch vs STRAIGHT at the center seat fall as the beam leaves it.',
       'Raise FREQ to 120 Hz and STEER past 30°: GRATING reads IN FIELD.',
     ],
   },
@@ -465,8 +465,8 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
   // ── 14 ────────────────────────────────────────────────────────────────────
   echo: {
     seeing: [
-      'Top: a big space from above — source at left, listener, surfaces labelled (ROCK in the canyon). The highlighted line is the far-wall echo path.',
-      'Bottom: the timeline — each stem an arrival (taller = louder): grey direct, amber within 50 ms, red later. FAR WALL marks the echo.',
+      'Top: a big space from above — source at left, listener, surfaces labeled (ROCK in the canyon). The highlighted line is the far-wall echo path.',
+      'Bottom: the timeline — each stem an arrival (taller = louder): gray direct, amber within 50 ms, red later. FAR WALL marks the echo.',
       'Readouts: DIRECT, GAP (to the first reflection), 1ST REFL (FUSES or ECHO), FAR WALL (its delay after the direct sound).',
     ],
     control: [

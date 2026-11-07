@@ -209,7 +209,7 @@ export const TESTER_CABLES: TesterCable[] = [
   {
     id: 'ts_intermittent',
     chip: 'CABLE D',
-    label: 'Cable D — instrument lead',
+    label: 'Cable D — instrument cable',
     connectorEnds: '1/4-inch TS → 1/4-inch TS',
     expectedMap: [
       { path: 'Tip → Tip', value: 'CLOSED' },
@@ -322,7 +322,7 @@ export const TESTER_CABLES: TesterCable[] = [
   {
     id: 'eth_split',
     chip: 'CABLE G',
-    label: 'Cable G — network patch lead',
+    label: 'Cable G — network patch cable',
     connectorEnds: '8P8C modular → 8P8C modular (T568B intended, both ends)',
     expectedMap: [
       { path: 'Pin 1 → Pin 1', value: 'CLOSED' },
@@ -383,7 +383,7 @@ export const TESTER_CABLES: TesterCable[] = [
     expectedMap: [
       { path: 'Narrow → LINE', value: 'CLOSED' },
       { path: 'Wide → NEUTRAL', value: 'CLOSED' },
-      { path: 'Round → EARTH', value: 'CLOSED' },
+      { path: 'Round → GROUND', value: 'CLOSED' },
       { path: 'L ↔ N', value: 'OPEN' },
       { path: 'L ↔ E', value: 'OPEN' },
       { path: 'N ↔ E', value: 'OPEN' },
@@ -391,7 +391,7 @@ export const TESTER_CABLES: TesterCable[] = [
     actualMap: [
       { path: 'Narrow → LINE', value: 'CLOSED' },
       { path: 'Wide → NEUTRAL', value: 'CLOSED' },
-      { path: 'Round → EARTH', value: 'OPEN' },
+      { path: 'Round → GROUND', value: 'OPEN' },
       { path: 'L ↔ N', value: 'OPEN' },
       { path: 'L ↔ E', value: 'OPEN' },
       { path: 'N ↔ E', value: 'OPEN' },
@@ -399,16 +399,16 @@ export const TESTER_CABLES: TesterCable[] = [
     faultId: 'earth_open',
     faultOptions: [
       { id: 'ln_swapped', label: 'Line and neutral reversed' },
-      { id: 'earth_open', label: 'Protective earth conductor open' },
+      { id: 'earth_open', label: 'Safety ground conductor open' },
       { id: 'bridge', label: 'Two conductors bridged together' },
       { id: 'no_fault', label: 'No fault — the equipment powers up' },
     ],
     faultExplain:
-      'Line and neutral read perfectly — this cord will power the equipment and everything will appear to work. But the protective earth path is open, and the earth conductor is part of the equipment’s fault protection: a cord with a broken earth conductor is not a working cord, even though the equipment powers up.',
+      'Line and neutral read perfectly — this cord will power the equipment and everything will appear to work. But the safety ground path is open, and the ground conductor is part of the equipment’s fault protection: a cord with a broken ground conductor is not a working cord, even though the equipment powers up.',
     disposition: 'remove',
     dispositionHint:
-      'It powers the equipment — and it is still not a working cord. A mains cord with a failed safety conductor is never taped, adapted, or “watched.”',
+      'It powers the equipment — and it is still not a working cord. A power cord with a failed safety conductor is never taped, adapted, or “watched.”',
     explain:
-      'Remove from service. Damaged mains cords leave service immediately: a detachable cordset is replaced whole, never repaired inline, and never taped over. Mains cord wiring is qualified-person work in every case — and for this cordset the answer is replacement, not rescue.',
+      'Remove from service. Damaged power cords leave service immediately: a detachable cordset is replaced whole, never repaired inline, and never taped over. Power cord wiring is qualified-person work in every case — and for this cordset the answer is replacement, not rescue.',
   },
 ];

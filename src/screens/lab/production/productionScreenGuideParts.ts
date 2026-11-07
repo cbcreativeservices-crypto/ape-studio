@@ -39,7 +39,7 @@ export function stageSeeing(kicker: string, sections: string): string[] {
   return [
     `${kicker}: the stage name, its % or BLOCKED, the intro and WHY THIS MATTERS.`,
     `Sections: ${sections}.`,
-    'Dots: green done, amber flagged (or optional, blank), red conflict, grey required and open, dark grey not applicable.',
+    'Dots: green done, amber flagged (or optional, blank), red conflict, gray required and open, dark gray not applicable.',
   ];
 }
 
@@ -77,5 +77,5 @@ export const ACTIVITY_CONTROL: string[] = [
 export const ACTIVITY_CHANGES: string[] = [
   'The broken plan is a real practice project, kept apart from your own projects. It never counts toward the lab.',
   'You repair it on the ordinary stage screen, so every check and finding works there exactly as on your own plan.',
-  'Each return here re-checks the plan: a ○ turns ✓ only when your repair passes that check. Leave mid-way and it waits for you.',
+  'Each return here re-checks the plan: a ○ turns ✓ only when your repair passes that check. Leave midway and it waits for you.',
 ];

@@ -35,7 +35,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the path from the tines to the desk — which feeds hear the air and which are wires — what sits round the keyboard and its amp, and what to do before any mic.',
+    goal: 'Know the path from the tines to the desk — which feeds hear the air and which are wires — what sits around the keyboard and its amp, and what to do before any mic.',
     credit: { scenarios: ['rh.set.1', 'rh.set.2', 'rh.set.3'], note: 'Answer the three checks.' },
     takeaway: 'A mic on the amp hears air; a DI is a separate electrical source. A speaker output goes only to a speaker, or to a load box made for it. Keep the pedal foot and the amp’s vents clear, and protect your hearing.',
   },
@@ -473,7 +473,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.spill',
     observation: 'Feedback or heavy spill',
-    firstChecks: 'Are the amp or a wedge inside the mic’s pickup? Reposition the amp or the mic, aim the rejection, and close unused channels.',
+    firstChecks: 'Is the amp or a wedge inside the mic’s pickup? Reposition the amp or the mic, aim the rejection, and close unused channels.',
     options: ['Lower the level, then revise amp, wedge and mic aim', 'Turn the keyboard channel up so it covers the spill and feedback', 'Hang a cloth over the amp’s back'],
     correct: 'Lower the level, then revise amp, wedge and mic aim',
     explain: 'Make it safe first by lowering the level. Then close unused mics and aim the mic’s rejection at the loudest monitor — never cover an amp’s vents.',
@@ -486,11 +486,11 @@ const symptoms: Symptom[] = [
     id: 's.clip',
     observation: 'Clipping on hard notes',
     firstChecks: 'Which stage distorts — the instrument, the amp, the mic or the desk input? Restore headroom without changing the drive the player wants.',
-    options: ['Find which stage distorts, then restore its headroom', 'Ask the player to turn the amp right down', 'Lower the channel fader until the hard notes sound clean again'],
+    options: ['Find which stage distorts, then restore its headroom', 'Ask the player to turn the amp all the way down', 'Lower the channel fader until the hard notes sound clean again'],
     correct: 'Find which stage distorts, then restore its headroom',
     explain: 'Drive the player chose in the amp is part of the sound; overload at the mic or the desk input is not. Check each stage, and fix the one that is overloading.',
     why: {
-      'Ask the player to turn the amp right down': 'The amp’s drive may be the player’s sound. Find where the unwanted clipping is.',
+      'Ask the player to turn the amp all the way down': 'The amp’s drive may be the player’s sound. Find where the unwanted clipping is.',
       'Lower the channel fader until the hard notes sound clean again': 'Input clipping happens before the fader; a lower fader only makes it quieter.',
     },
   },
@@ -503,7 +503,7 @@ const orderTasks: OrderTask[] = [
     prompt: 'Tap the steps of a one-mic setup on the keyboard’s amp in the order you would do them.',
     steps: [
       { text: 'Trace the signal: which instrument, which outputs, which amp and speaker', early: 'Start by knowing the real rig.' },
-      { text: 'Ask the player to set the instrument, effects and amp as they will really play', early: 'Know the rig first, then fix the player’s sound.' },
+      { text: 'Ask the player to set the instrument, effects and amp as they will really play', early: 'Know the rig first, then learn the player’s sound.' },
       { text: 'With the amp muted, find the speaker behind the grille', early: 'Find the speaker once the player’s setup is fixed.' },
       { text: 'Place the mic on a stable stand near the dust cap’s edge, clear of the grille; route the cable away from the pedal foot', early: 'You need to know where the speaker is first.' },
       { text: 'Mute the outputs; switch phantom if the mic needs it', early: 'Power comes after the mic is mounted and connected — outputs muted first.' },
@@ -544,7 +544,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dynamic close at the cap’s edge, plus a dynamic 60–90 cm back for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one, and check in mono.' },
       { id: 'b', label: 'A dynamic at the cap’s edge, plus a dynamic 15–30 cm behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair from outside, checked in mono — dynamics need no phantom.' },
       { id: 'c', label: 'A small condenser 60–90 cm back, and a dynamic close in', ok: false, power: 'phantom', feedback: 'These inputs have no phantom power for the condenser.' },
-      { id: 'd', label: 'A dynamic inside the open back, by the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the chassis and valves are hot and live.' },
+      { id: 'd', label: 'A dynamic inside the open back, by the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the chassis and tubes are hot and live.' },
       { id: 'e', label: 'The direct signal alone, labeled as the amp mic', ok: false, power: 'none', feedback: 'The direct signal has no amp, speaker or room — it cannot stand in for the mic the brief asks for.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-source pickup.' }, BRAND_REASON, DI_REASON],
@@ -554,7 +554,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you begin: a hammer strikes a steel tine. Where does most of the sound you will mic come from?', options: ['The amp’s speaker', 'The tine itself', 'The hammer'], after: 'Now step through the five events.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the dust cap’s edge toward the cone’s edge. What changes?', options: ['Brighter', 'Warmer and rounder', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the player’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one source’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -595,7 +595,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'brighter than one aimed toward the edge',
     explain: 'At higher pitches more of the sound comes from the middle of the cone, so close in the center tends to sound brighter and the edge warmer — a tendency to check on each speaker.',
     why: {
-      'darker and warmer than one aimed toward the edge': 'It is the other way round, most often: the center brighter, the edge warmer.',
+      'darker and warmer than one aimed toward the edge': 'It is the other way around, most often: the center brighter, the edge warmer.',
       'the same, at the same distance': 'Close in, the spot on the cone matters as well as the distance.',
     },
   },

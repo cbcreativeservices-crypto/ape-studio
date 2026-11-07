@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the wrist moves the egg one way. What do the grains inside do at first?', options: ['They lag behind', 'They move exactly with the shell', 'They stay stuck to the shell’s wall'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the grains.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: two eggs, hands wide apart. Can one mic still serve?', options: ['Yes, from farther back', 'No — two mics are needed', 'It depends on the part'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -416,7 +416,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How is an egg shaker different from a maraca?',
     options: ['No handle: the egg sits in the hand, so the grip matters', 'It has a short handle that sits inside the egg-shaped shell', 'It is played with a stick instead of being shaken'],
     correct: 'No handle: the egg sits in the hand, so the grip matters',
-    explain: 'A small handleless shell held in the palm or fingers — the hand round it is part of the instrument.',
+    explain: 'A small handleless shell held in the palm or fingers — the hand around it is part of the instrument.',
     why: {
       'It has a short handle that sits inside the egg-shaped shell': 'Egg shakers have no handle; maracas do.',
       'It is played with a stick instead of being shaken': 'It is shaken; its grains strike the shell.',

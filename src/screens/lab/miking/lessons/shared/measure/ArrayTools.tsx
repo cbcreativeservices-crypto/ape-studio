@@ -431,7 +431,7 @@ export function useKitStep({ words, onDone }: { words: KitWords; onDone: () => v
   const keeps = nyquistOk(rate, fTop);
   const params: DockParam[] = [
     { kind: 'options', id: 'kit', label: 'KIT', valueLabel: kit === 'camera' ? 'CAMERA' : kit === 'ultra' ? 'ULTRASONIC' : 'HYDROPHONE', selectedId: kit, onSelect: (id) => setKit(id as Kit), sticky: true, options: [
-      { id: 'camera', label: 'An acoustic camera', blurb: 'A planar array round a lens: a map of where sound seems to come from.' },
+      { id: 'camera', label: 'An acoustic camera', blurb: 'A planar array around a lens: a map of where sound seems to come from.' },
       { id: 'ultra', label: 'An ultrasonic detector', blurb: 'A detector and mic for sound above the audible band.' },
       { id: 'hydro', label: 'A hydrophone on its mooring', blurb: 'An underwater pressure sensor, rated and calibrated for its deployment.' },
     ] },
@@ -461,7 +461,7 @@ export function useKitStep({ words, onDone }: { words: KitWords; onDone: () => v
           ];
   const a11y =
     kit === 'camera'
-      ? 'An acoustic camera: a ring of capsules round a lens on a mount, facing a small device; a colored patch on the device marks where the map puts the sound — an estimate, not a photograph of sound.'
+      ? 'An acoustic camera: a ring of capsules around a lens on a mount, facing a small device; a colored patch on the device marks where the map puts the sound — an estimate, not a photograph of sound.'
       : kit === 'ultra'
         ? `A handheld ultrasonic detector. At a ${rate / 1000} kilohertz sample rate a band is kept only below ${rate / 2000} kilohertz; the band you need reaches ${topK} kilohertz, so it is ${keeps ? 'kept' : 'not kept'}.`
         : 'Under water, from the side: the surface, a buoy, a mooring line to an anchor on the bottom, and a hydrophone hanging on its cable partway down. Underwater levels use a reference of 1 micropascal.';

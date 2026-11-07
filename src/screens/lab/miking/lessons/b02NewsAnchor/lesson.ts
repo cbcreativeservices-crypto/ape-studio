@@ -57,7 +57,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a lav on the anchor’s sternum — then try a hidden lav, a boom outside the frame, a desk mic, and see what changes.',
-    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Where the mic is, its distance and its angle off the mouth are separate controls; consent, the picture and the clothes come first.',
   },
   context: {
@@ -82,7 +82,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up an anchor’s mic in the right order, choose and justify a setup for a recorded interview and a public one, and say what would justify a second mic.',
     credit: { scenarios: ['b2.prac.order', 'b2.prac.gain', 'b2.prac.setup1', 'b2.prac.setup2', 'b2.prac.3', 'b2.mix.1', 'b2.mix.2', 'b2.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real set.' },
-    takeaway: 'Consent, a centered place measured from the lips, a channel for each speaker, one mic on air per voice and a tested fallback pass. A brand, a hidden mic for its own sake or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'Consent, a centered place measured from the lips, a channel for each speaker, one mic on air per voice and a tested fallback pass. A brand, a hidden mic for its own sake or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The anchor’s and the guest’s lavs are both open. What does the anchor’s lav hear?',
     options: ['The guest too, later and lower', 'Only the anchor, since it is omni', 'The guest louder than the anchor'],
     correct: 'The guest too, later and lower',
-    explain: 'An omni lav hears all round. The guest is farther away: their voice arrives lower and later. Summed with the guest’s own lav, it combs.',
+    explain: 'An omni lav hears all around. The guest is farther away: their voice arrives lower and later. Summed with the guest’s own lav, it combs.',
     why: {
       'Only the anchor, since it is omni': 'An omni hears from every side — the guest included.',
       'The guest louder than the anchor': 'The anchor is much closer to their own lav.',
@@ -296,7 +296,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A supercardioid rejects most about 125° off its front, with a small lobe straight behind. Aim by the actual pattern — and a real null is shallower than the drawing.',
     why: {
       'Directly in front of the gooseneck’s capsule': 'In front is its pickup, not its rejection.',
-      'At its side, square to its front at 90°': 'At 90° it still hears well; the deepest dip lies farther round.',
+      'At its side, square to its front at 90°': 'At 90° it still hears well; the deepest dip lies farther around.',
     },
   },
   {
@@ -404,7 +404,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Raise it just outside the wider frame',
     explain: 'The two-shot’s frame is higher: the boom goes just outside it — farther from the mouth. Check the widest frame before every take.',
     why: {
-      'Ask the camera to keep the close shot': 'The shot is the program’s decision; the boom works round it.',
+      'Ask the camera to keep the close shot': 'The shot is the program’s decision; the boom works around it.',
       'Swap it for a longer shotgun higher up': 'A longer tube does not bring the voice closer.',
     },
   },
@@ -415,13 +415,13 @@ const symptoms: Symptom[] = [
   {
     id: 'b2.sym.rub',
     observation: 'Brushing and scratching on the anchor’s lav',
-    firstChecks: 'Is the jacket, a tie, hair, jewellery or the earpiece cable touching the capsule? Is the cable on a moving seam?',
+    firstChecks: 'Is the jacket, a tie, hair, jewelry or the earpiece cable touching the capsule? Is the cable on a moving seam?',
     options: ['Clear the capsule; move it or reroute the cable', 'Add noise reduction to the anchor’s channel later on', 'Clip the lav lower down, under the tie'],
     correct: 'Clear the capsule; move it or reroute the cable',
     explain: 'Brushing is contact. Clear the capsule from the cloth, keep the cable off moving seams and secure it in more than one place — before any EQ or denoising.',
     why: {
       'Add noise reduction to the anchor’s channel later on': 'Processing cannot cleanly remove a rub mixed with the voice.',
-      'Clip the lav lower down, under the tie': 'Lower and under the tie adds cloth, not less.',
+      'Clip the lav lower down, under the tie': 'Lower and under the tie means more cloth, not less.',
     },
   },
   {
@@ -430,7 +430,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the lav off to the far side? Is a fixed boom or a desk mic aimed where the anchor faced the camera?',
     options: ['Center the lav; re-aim or cue the fixed mic', 'Turn the anchor’s channel up a little for the turns', 'Ask the anchor to face the camera to talk'],
     correct: 'Center the lav; re-aim or cue the fixed mic',
-    explain: 'Each mic here stays put while the mouth turns. A centered lav reads both turns alike; a boom or a desk mic is aimed for the real turns, or the guest gets the line.',
+    explain: 'Each mic here stays put while the mouth turns. A centered lav reads both turns alike; a boom or a desk mic is aimed for the real turns, or it ends up aimed at the guest.',
     why: {
       'Turn the anchor’s channel up a little for the turns': 'Gain raises the room with the voice and does not follow the turn.',
       'Ask the anchor to face the camera to talk': 'The interview needs them to turn; place the mics for it.',
@@ -456,8 +456,8 @@ const symptoms: Symptom[] = [
     correct: 'Recheck the widest frame; raise it outside',
     explain: 'Check the widest active frame before each take, including reframes and the second camera. Keep the arm and its shadow out of every one.',
     why: {
-      'Ask the camera to stay in the close shot': 'The picture is the program’s decision; the boom works round it.',
-      'Lower the boom so it hears the anchor better': 'Lower puts it further into the shot.',
+      'Ask the camera to stay in the close shot': 'The picture is the program’s decision; the boom works around it.',
+      'Lower the boom so it hears the anchor better': 'Lower puts it farther into the shot.',
     },
   },
   {
@@ -649,7 +649,7 @@ export const B02_LESSON: Lesson = {
       { id: 'anchor', label: 'the anchor', short: 'ANCHOR', note: 'Seated at the desk, the mouth at the point every distance is read from. The head turns to the camera, the guest and the script.', prov: { kind: 'illustrative', reason: 'the shared figure seated (drawing default)' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'guest', label: 'the guest', short: 'GUEST', note: 'Beside the anchor, 80 cm along the desk: their voice reaches every open mic near them — later and lower. A guest angled 30–45° toward the anchor also works.', prov: { kind: 'illustrative', reason: 'the lesson L32; the spacing a drawing default' }, tag: 'BLEED', scene: 'all' },
       { id: 'desk', label: 'the desk and its papers', short: 'DESK', note: 'A hard top 45 cm below the lips: it reflects the voice into a raised mic, and papers, a keyboard and taps travel through it.', prov: { kind: 'illustrative', reason: 'the lesson L6, L29' }, tag: 'REFLECTION', scene: 'all' },
-      { id: 'clothes', label: 'the clothes and the earpiece', short: 'CLOTHES', note: 'A jacket, a tie, hair, jewellery and the earpiece’s cable can brush a lav. Wardrobe approves any change.', prov: { kind: 'illustrative', reason: 'the lesson L8, L10' }, tag: 'NOISE', scene: 'all' },
+      { id: 'clothes', label: 'the clothes and the earpiece', short: 'CLOTHES', note: 'A jacket, a tie, hair, jewelry and the earpiece’s cable can brush a lav. Wardrobe approves any change.', prov: { kind: 'illustrative', reason: 'the lesson L8, L10' }, tag: 'NOISE', scene: 'all' },
       { id: 'frame', label: 'the camera’s frame', short: 'FRAME', note: 'A boom stays just outside the widest frame; a reframe or a second camera can bring it into the picture.', prov: { kind: 'illustrative', reason: 'the lesson L6, L15' }, tag: 'PICTURE', scene: 'studio' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'A public interview: it faces the audience, but every open mic on the set hears it.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
@@ -676,6 +676,6 @@ export const B02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead boom stands set up and secured by trained crew; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are measured from the lips to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m. Ask first; skin-safe adhesive only on skin; overhead boom stands set up and secured by trained crew; avoid uncontrolled feedback.',
   copy: B02_COPY,
 };

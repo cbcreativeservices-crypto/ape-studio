@@ -94,7 +94,7 @@ export const LAV = BODY_MOUNTS.sternum;
 
 export const B04_VARIANTS: Variant[] = [
   { id: 'close', label: 'CLOSE SHOT', blurb: 'A close shot: the camera 2.2 m in front, head and shoulders; a boom operator outside the frame on the talker’s left.', phrase: 'in a close shot' },
-  { id: 'wide', label: 'WIDER SHOT', blurb: 'A wider shot: the camera moved back to 3.6 m, the talker from the waist up with room round them — the boom and the camera’s mic both farther away.', phrase: 'in a wider shot' },
+  { id: 'wide', label: 'WIDER SHOT', blurb: 'A wider shot: the camera moved back to 3.6 m, the talker from the waist up with room around them — the boom and the camera’s mic both farther away.', phrase: 'in a wider shot' },
   { id: 'live', label: 'LIVE', blurb: 'Live on a stage: the same close shot for the broadcast, and a PA at the stage’s front corner on the talker’s left.', phrase: 'live, on a stage with a PA' },
 ];
 

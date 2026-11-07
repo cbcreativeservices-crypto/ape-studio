@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a commentary position in the right order, choose and justify a setup for a two-person booth and an open position, and say what would justify a second mic.',
     credit: { scenarios: ['b9.prac.order', 'b9.prac.gain', 'b9.prac.setup1', 'b9.prac.setup2', 'b9.prac.3', 'b9.mix.1', 'b9.mix.2', 'b9.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The position sheet is optional — it needs a real commentator.' },
-    takeaway: 'A close mic at a repeatable place, out of the breath; a channel per voice; every route traced — cough, talkback, the return, the crowd bed; a fallback ready. A brand, a promise of silence or a hotter signal do not pass — and more than one setup can.',
+    takeaway: 'A close mic at a repeatable place, out of the breath; a channel per voice; every route traced — cough, talkback, the return, the crowd bed; a fallback ready. A brand, a promise of silence or a hotter signal does not pass — and more than one setup can.',
   },
 };
 
@@ -430,7 +430,7 @@ const symptoms: Symptom[] = [
   {
     id: 'b9.sym.partner',
     observation: 'The analyst is loud in the commentator’s channel',
-    firstChecks: 'Are both booms close? Which side does each boom sit? Is the silent mic pulled down?',
+    firstChecks: 'Are both booms close? Which side does each boom sit on? Is the silent mic pulled down?',
     options: ['Close booms, the right side, the silent mic down', 'A hard gate on both channels, set as tight as it goes', 'Turn up the commentator’s mic over the analyst'],
     correct: 'Close booms, the right side, the silent mic down',
     explain: 'Closeness and the boom’s side keep the partner low; a silent mic pulled down keeps the sum clean. Adjust before reaching for a gate.',
@@ -631,7 +631,7 @@ export const B09_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A commentator calling live sport — in a booth, at an open position in the stadium, or from a screen in a quiet booth — often with a partner beside them. The voice must stay clear through the crowd’s peaks while they follow the play, read notes and turn to the partner.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Commentary booths and open announce positions: closed-ear headsets with a boom mic, a lip mic held to the mouth, a screen and notes on the desk, the crowd and the PA outside.', src: 'LESSON' },
-    { title: 'WHAT IT DOES', text: 'It keeps each commentator intelligible and steady through quiet passages and the loudest peaks, apart from the partner, the crowd and the PA — the crowd’s energy comes from its own mics.', src: 'LESSON' },
+    { title: 'WHAT IT DOES', text: 'It keeps each commentator intelligible and steady through quiet passages and the loudest peaks, separate from the partner, the crowd and the PA — the crowd’s energy comes from its own mics.', src: 'LESSON' },
     { title: 'NO SINGLE RIGHT DISTANCE', text: 'Different mics, positions and voices call for different places. Begin within the mic’s own guidance, let the commentator work naturally, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
   ],
   sound: {

@@ -180,7 +180,7 @@ export const METER_CHAIN: ChainSpec = {
       label: 'Frequency weighting',
       short: 'WEIGHTING',
       parts: [
-        { id: 'A', label: 'A-weighting', short: 'A', blurb: 'Weighs the lows down roughly as hearing does at quiet levels; the usual weighting for environmental levels.' },
+        { id: 'A', label: 'A-weighting', short: 'A', blurb: 'Turns the lows down roughly as hearing does at quiet levels; the usual weighting for environmental levels.' },
         { id: 'C', label: 'C-weighting', short: 'C', blurb: 'Nearly flat across most of the range; often named for peaks.' },
         { id: 'Z', label: 'Z (no weighting)', short: 'Z', blurb: 'Flat: no weighting at all.' },
       ],

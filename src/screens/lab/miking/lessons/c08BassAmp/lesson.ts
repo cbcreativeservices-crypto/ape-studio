@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the path from the strings to the desk — the DI, the head, the speaker cable and the mic — what sits round the rig, and what to do before any mic.',
+    goal: 'Know the path from the strings to the desk — the DI, the head, the speaker cable and the mic — what sits around the rig, and what to do before any mic.',
     credit: { scenarios: ['ba.set.1', 'ba.set.2', 'ba.set.3'], note: 'Answer the three checks.' },
     takeaway: 'A DI box before the head and the head’s own DI output are electrical sources, each on its own channel. A speaker output goes to a speaker by a speaker cable, never into a desk input. Protect your hearing: the lows carry a lot of energy.',
   },
@@ -93,12 +93,12 @@ const scenarios: MikingScenario[] = [
     id: 'ba.snd.2',
     page: 'sound',
     prompt: 'Why might a bass cabinet have a small horn as well as its woofers?',
-    options: ['To spread the bass evenly round the whole room', 'For the lowest notes, which the woofers cannot reach', 'For the top end — string noise, pick and slap detail'],
+    options: ['To spread the bass evenly around the whole room', 'For the lowest notes, which the woofers cannot reach', 'For the top end — string noise, pick and slap detail'],
     correct: 'For the top end — string noise, pick and slap detail',
     explain: 'A horn handles the highest frequencies the woofers do not. A mic on one woofer may not hear it — aim at the horn only as a deliberate choice, and listen for hiss.',
     why: {
       'For the lowest notes, which the woofers cannot reach': 'The woofers carry the lows; a small horn carries the HIGHS.',
-      'To spread the bass evenly round the whole room': 'Low frequencies already spread widely; the horn is for the top end.',
+      'To spread the bass evenly around the whole room': 'Low frequencies already spread widely; the horn is for the top end.',
     },
   },
   {
@@ -129,12 +129,12 @@ const scenarios: MikingScenario[] = [
     id: 'ba.set.2',
     page: 'setting',
     prompt: 'The desk is short of inputs. Can the head’s speaker output go into a desk input or an ordinary DI?',
-    options: ['Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned right down first', 'No — a speaker output never feeds either'],
+    options: ['Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned all the way down first', 'No — a speaker output never feeds either'],
     correct: 'No — a speaker output never feeds either',
     explain: 'A speaker output carries high power. It goes to the cabinet by a speaker cable — never to a mic, line or ordinary DI input. Some heads must never run without their speaker load: read the manual; when unsure, stop and ask a technician.',
     why: {
       'Yes, through the DI box’s pad switch': 'An instrument DI’s pad is for loud instruments, not speaker-level power.',
-      'Yes, as long as the head is turned right down first': 'A lower level does not make the connection safe, and some heads need their load whenever they are on.',
+      'Yes, as long as the head is turned all the way down first': 'A lower level does not make the connection safe, and some heads need their load whenever they are on.',
     },
   },
   {
@@ -205,7 +205,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Close: focus and isolation; farther: cabinet and room',
     explain: 'Close in, the mic hears mostly the woofer; farther back, more of the cabinet and the room — useful only when the room helps, and checked in mono because it arrives later.',
     why: {
-      'Close: the room; farther: the woofer’s focused sound': 'It is the other way round: the close mic hears the woofer, the far one more room.',
+      'Close: the room; farther: the woofer’s focused sound': 'It is the other way around: the close mic hears the woofer, the far one more room.',
       'They bring the same sound, only at two quite different levels': 'Distance changes the balance of woofer, cabinet and room — not only the level.',
     },
   },
@@ -420,11 +420,11 @@ const symptoms: Symptom[] = [
     id: 's.hum',
     observation: 'Hum or buzz on the DI channel',
     firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
-    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the bass playing covers the hum'],
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the ground pin off the amp’s power plug to break the loop', 'Turn the DI channel up so the bass playing covers the hum'],
     correct: 'Swap one cable at a time, then try the DI’s ground lift',
-    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s safety ground stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
     why: {
-      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Pull the ground pin off the amp’s power plug to break the loop': 'Never. The ground pin is the safety path that stops a fault becoming a shock. Only a qualified technician deals with AC wiring.',
       'Turn the DI channel up so the bass playing covers the hum': 'More gain raises the hum with the instrument.',
     },
   },
@@ -571,7 +571,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you begin: which pickup will sense the bass’s lowest note — the fundamental — more strongly?', options: ['The neck pickup', 'The bridge pickup', 'They sense it equally'], after: 'Now step HARMONIC and switch PICKUP, and watch the first bar.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 5 cm to 30 cm, on the same woofer. What changes most?', options: ['More cabinet and room', 'More upper-mid bite', 'Nothing much'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the bassist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the DI’s polarity, what happens to the mic’s delay behind the DI?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip DI POLARITY both ways, then move the mic. Watch which readout each action changes.' },
@@ -706,7 +706,7 @@ export const C08_LESSON: Lesson = {
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Low frequencies spread widely: the stage rig is heard in the room. The PA adds what the audience needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a good studio room a farther mic can add size to the bass — once the close mic and the DI are stable.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a loud backline, the kick drum close by, wedges and a PA. The DI is often the dependable low-end feed; a stable close mic adds the cabinet with less spill. Agree with the player what they need from the stage rig.',
+    stage: 'LIVE: a loud backline, the kick drum close by, wedges and a PA. The DI is often the dependable low-end feed; a stable close mic adds the cabinet with less spill. Agree with the player on what they need from the stage rig.',
     studio: 'STUDIO: a close mic and a DI give a reliable comparison; a farther mic can add the room once those are stable. Record the paths separately.',
   },
   diagnostic,
@@ -718,7 +718,7 @@ export const C08_LESSON: Lesson = {
       { id: 'site', label: 'Which woofer, spot on the cone, distance from the grille', kind: 'text' },
       { id: 'di', label: 'DI: which one, where in the chain, PRE or POST, pad', kind: 'text' },
       { id: 'mono', label: 'Mic and DI alone, together, in mono; polarity', kind: 'text' },
-      { id: 'notes', label: 'Speaker connection untouched; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Speaker connection untouched; hum checked (the DI’s ground lift as its manual says — the safety ground never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   unknowns: [

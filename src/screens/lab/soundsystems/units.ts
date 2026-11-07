@@ -26,7 +26,7 @@ export const SS_PAGE_COUNTS = {
 export const SS_MODES = [
   { id: 'learn', title: 'LEARN', name: 'Learn', route: 'SoundSystemsLearn', labId: SS_LEARN_ID, blurb: 'Fourteen chapters: the complete system, its types, output configurations, routing, subwoofers, monitors, wiring, amplification, deployment, gain, coverage, tuning, feedback and fault-finding.' },
   { id: 'build', title: 'BUILD', name: 'Build', route: 'SoundSystemsBuild', labId: SS_BUILD_ID, blurb: 'An empty venue and a parts bin. Place the gear, connect it — every link checked for level and safety — then ten capstone systems graded live.' },
-  { id: 'route', title: 'ROUTE', name: 'Route', route: 'SoundSystemsRoute', labId: SS_ROUTE_ID, blurb: 'The console: pre and post-fader sends, subgroups, DCAs, mute groups, matrices and the output patch — and which one to reach for.' },
+  { id: 'route', title: 'ROUTE', name: 'Route', route: 'SoundSystemsRoute', labId: SS_ROUTE_ID, blurb: 'The console: pre- and post-fader sends, subgroups, DCAs, mute groups, matrices and the output patch — and which one to reach for.' },
   { id: 'operate', title: 'OPERATE', name: 'Operate', route: 'SoundSystemsOperate', labId: SS_OPERATE_ID, blurb: 'Power sequence, line check, gain structure from microphone to loudspeaker, ring-out and shutdown.' },
   { id: 'troubleshoot', title: 'TROUBLESHOOT', name: 'Troubleshoot', route: 'SoundSystemsTroubleshoot', labId: SS_TROUBLESHOOT_ID, blurb: 'Twenty-two faults on the bench. Probe from the source forward, read every station, name the fault.' },
 ] as const;

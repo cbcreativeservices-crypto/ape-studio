@@ -209,7 +209,7 @@ function F15TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
       answers,
       onAnswered,
       <Card>
-        <Point title="A FORMAL SURVEY IS ANOTHER JOB">A sound-power figure needs a defined surface, the positions, a qualifying room, the operating conditions and the corrections of the current method and any product test code — and a qualified team. An informal walk round the fan is not that method; design the survey on paper and leave the test to them.</Point>
+        <Point title="A FORMAL SURVEY IS ANOTHER JOB">A sound-power figure needs a defined surface, the positions, a qualifying room, the operating conditions and the corrections of the current method and any product test code — and a qualified team. An informal walk around the fan is not that method; design the survey on paper and leave the test to them.</Point>
       </Card>,
     ),
   ];

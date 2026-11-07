@@ -48,7 +48,7 @@ export const E02_MODEL = ensembleModel({
   name: 'backing singers',
   variants: [
     { id: 'live', label: 'On a stage, a mic each', short: 'Live', blurb: LI.blurb, seating: LI },
-    { id: 'shared', label: 'Round one shared mic', short: 'Shared', blurb: SH.blurb, seating: SH },
+    { id: 'shared', label: 'Around one shared mic', short: 'Shared', blurb: SH.blurb, seating: SH },
     { id: 'studio', label: 'A studio circle', short: 'Studio', blurb: ST.blurb, seating: ST },
   ],
   views: stageViews([LI, SH, ST], { hMax: 2600 }),
@@ -97,7 +97,7 @@ export const E02_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'bv.shared',
     label: 'One shared mic, at the singers’ mouth height',
-    band: 'One large condenser on a stand at the singers’ mouth height, the singers round its front, each mouth about the same distance from it — set the distance and mark the floor in rehearsal. The loudest singer steps back.',
+    band: 'One large condenser on a stand at the singers’ mouth height, the singers around its front, each mouth about the same distance from it — set the distance and mark the floor in rehearsal. The loudest singer steps back.',
     kind: 'trial',
     src: 'S-BLUEGRASS',
     quote: 'band members "gracefully move in and out of the mic pattern"; "They mix themselves using few or (more likely) no monitors" (S-BLUEGRASS); the semicircle in front of a cardioid or omni (AKG-C414 §4.6.2)',
@@ -114,7 +114,7 @@ export const E02_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'bv.circle',
     label: 'One omni in the middle of the circle',
-    band: 'In a quiet, good-sounding studio: one omni at mouth height in the middle, the singers round it, each balancing by stepping in or out.',
+    band: 'In a quiet, good-sounding studio: one omni at mouth height in the middle, the singers around it, each balancing by stepping in or out.',
     kind: 'sourced',
     src: 'S-REC',
     quote: 'Having the vocalists circle around an omnidirectional mic, and changing their individual levels and timbres to create a blend (Ensemble Vocals p.6)',
@@ -161,9 +161,9 @@ export const E02_SETUPS: EnsembleSetup[] = [
   { id: 'hand', role: 'A MIC EACH · CLOSE', title: 'A handheld on a stand, close to the lips', short: 'HANDHELD', variants: ['live'], singles: [hand('m', HAND_MID, 'mid.1', 'HANDHELD')], mics: 'A handheld vocal dynamic, cardioid (or supercardioid), in a clip on a boom stand.', start: 'About 4–8 cm (1.5–3 in) from the lips, on the mouth’s axis — the lips off the grille, the grille never cupped.', line: 'Each part under its own fader; closer for quiet lines, back a little for loud ones.', core: true, view: 'section', focus: ['mid.1'] },
   { id: 'hand3', role: 'A MIC EACH · THE ROW', title: 'Three handhelds, 1.1 m apart', short: 'HANDHELDS', variants: ['live'], singles: [hand('h', HAND_HI, 'hi.1', 'HIGH'), hand('m', HAND_MID, 'mid.1', 'MIDDLE'), hand('l', HAND_LO, 'lo.1', 'LOW')], mics: 'Three handheld vocal dynamics, one per singer, each on its own boom stand.', start: `Each about 6 cm from its singer’s lips; the mics ${(E02_31.d / 1000).toFixed(1)} m apart — 3:1 needs only ${Math.round(E02_31.need / 10)} cm at this distance.`, line: 'Individual control and isolation; more stands, channels and phase paths — check the sum in mono.', core: true, view: 'plan' },
   { id: 'group', role: 'ONE GROUP MIC', title: 'One directional condenser in front, a little above', short: 'GROUP MIC', variants: ['live'], rig: ldc('one', toward(GROUP_AT, MID_LIPS), 0, MID_LIPS), mics: 'One large-diaphragm condenser, cardioid, on a tall stand.', start: 'About 0.75 m (2.5 ft) in front and a little above the heads, aimed at the middle singer; adjusted while they sing.', line: 'The group as one texture: more room and spill, less control of each part.', core: false, view: 'section' },
-  { id: 'shared', role: 'ONE SHARED MIC', title: 'Three singers round one large condenser', variants: ['shared'], rig: ldc('one', SHARED_POSE, 0, SH_MID), mics: 'One large-diaphragm condenser, cardioid, on a stand at mouth height.', start: `Each mouth about ${SHARED_R.arc / 10} cm from the mic, round its front; the loudest singer a step back. Mark the floor and the stand height in rehearsal.`, line: 'A natural blend the singers make by distance; it needs choreography, and gives less control afterwards.', core: true, view: 'plan' },
+  { id: 'shared', role: 'ONE SHARED MIC', title: 'Three singers around one large condenser', variants: ['shared'], rig: ldc('one', SHARED_POSE, 0, SH_MID), mics: 'One large-diaphragm condenser, cardioid, on a stand at mouth height.', start: `Each mouth about ${SHARED_R.arc / 10} cm from the mic, around its front; the loudest singer a step back. Mark the floor and the stand height in rehearsal.`, line: 'A natural blend the singers make by distance; it needs choreography, and gives less control afterwards.', core: true, view: 'plan' },
   { id: 'sharedXY', role: 'ONE PAIR, SHARED', title: 'An X/Y pair in the middle instead', variants: ['shared'], rig: { id: 'xy', params: { angle: 110 }, place: { c: SHARED_POSE.p, face: 0, tilt: 0 }, mount: { kind: 'stand' }, dimTo: SH_MID }, mics: 'Two matched cardioid small condensers, capsules together, on one stand.', start: 'In the same place, at mouth height; the singers spread across its front.', line: 'The same self-balanced group, with a stereo picture; check the sides and the mono sum.', core: true, view: 'plan' },
-  { id: 'omni', role: 'A CIRCLE · ONE OMNI', title: 'Four singers round one omni', variants: ['studio'], rig: ldc('oneOmni', CIRCLE_POSE, 0, ST_SOP), mics: 'One large-diaphragm condenser set to omni, at mouth height in the middle.', start: `The singers in a circle, each mouth about ${SHARED_R.circle / 10} cm from it; each one balances by stepping in or out.`, line: 'Shared room and interaction; a weak or dominant voice is hard to repair afterwards.', core: true, view: 'plan' },
+  { id: 'omni', role: 'A CIRCLE · ONE OMNI', title: 'Four singers around one omni', variants: ['studio'], rig: ldc('oneOmni', CIRCLE_POSE, 0, ST_SOP), mics: 'One large-diaphragm condenser set to omni, at mouth height in the middle.', start: `The singers in a circle, each mouth about ${SHARED_R.circle / 10} cm from it; each one balances by stepping in or out.`, line: 'Shared room and interaction; a weak or dominant voice is hard to repair afterwards.', core: true, view: 'plan' },
   { id: 'b2b', role: 'A CIRCLE · BACK TO BACK', title: 'Two cardioids back to back', variants: ['studio'], rig: ldc('b2b', { p: CIRCLE, az: 0, el: 0 }, 0, ST_SOP), mics: 'Two large-diaphragm cardioids, back to back, at mouth height in the middle.', start: 'Two singers in front of each, nobody at the sides — a voice there lands equally in both mics, on neither channel alone.', line: 'More separation between the two sides than an omni circle, the group still singing together; check mono.', core: true, view: 'plan' },
 ];
 

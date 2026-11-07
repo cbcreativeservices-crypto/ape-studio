@@ -775,11 +775,7 @@ function SaturationSection(p: SectionProps) {
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
-          WHY it rounds: the valve can only open so far. Near full swing the plate voltage cannot fall
-          much lower and the grid starts to draw current (and at the other extreme the stream pinches
-          off), so each extra dB of input buys
-          less and less output — the straight line bends over. Watch the left plot: at low DRIVE the
-          wave rides the straight middle of the curve; push harder and the peaks reach into the bend.
+          WHY it rounds: the tube can only open so far. Near full swing the plate voltage cannot fall much lower and the grid starts to draw current (and at the other extreme the stream pinches off), so each extra dB of input buys less and less output — the straight line bends over. Watch the left plot: at low DRIVE the wave rides the straight middle of the curve; push harder and the peaks reach into the bend.
         </Text>
         <Text style={styles.caption}>
           WHY it sounds good: rounding COMPRESSES the loudest moments (the “give” engineers love)

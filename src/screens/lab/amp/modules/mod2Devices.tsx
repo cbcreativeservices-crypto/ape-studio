@@ -272,7 +272,7 @@ export function Mod2Devices() {
               <SectionTitle>WHERE TRANSFORMERS EARN THEIR KEEP</SectionTitle>
               <Card>
                 {[
-                  ['Traditional power supply', 'mains down to the rail voltage the amplifier needs, with isolation'],
+                  ['Traditional power supply', 'AC power down to the rail voltage the amplifier needs, with isolation'],
                   ['Switch-mode supply', 'a small high-frequency transformer — same physics, far less iron'],
                   ['Tube-amplifier output', 'matches the tube stage’s high impedance to the loudspeaker'],
                   ['70 V / 100 V distributed audio', 'high-voltage line for long runs; each speaker taps down its share'],

@@ -25,14 +25,14 @@ export const WIND_LAYERS: readonly WindLayer[] = [
   { id: 'none', label: 'Bare mic', short: 'BARE', what: 'Nothing over the capsule: air moving across the grille makes its own low rumble — a different sound from wind in the trees.', rank: 0 },
   { id: 'foam', label: 'Foam windscreen', short: 'FOAM', what: 'A close-fitting foam sleeve: enough in light, sheltered air.', rank: 1 },
   { id: 'softie', label: 'Fur over foam', short: 'FUR · FOAM', what: 'A long-hair fur slipped over the foam: slows the air at the surface before it reaches the capsule.', rank: 2 },
-  { id: 'basket', label: 'Basket with suspension', short: 'BASKET', what: 'A rigid open cage round the mic, held on a suspension inside: a still pocket of air round the capsule, and handling kept out.', rank: 3 },
+  { id: 'basket', label: 'Basket with suspension', short: 'BASKET', what: 'A rigid open cage around the mic, held on a suspension inside: a still pocket of air around the capsule, and handling kept out.', rank: 3 },
   { id: 'basketFur', label: 'Fur over the basket', short: 'BASKET · FUR', what: 'The basket under a long-hair cover: the most protection here — listen for a little of the top end lost.', rank: 4 },
 ];
 
 export const EXPOSURES: readonly Exposure[] = [
   { id: 'forest', label: 'Inside a forest', short: 'FOREST', what: 'Sheltered: the trees break the wind before it reaches the mic.' },
   { id: 'open', label: 'Open grassland', short: 'OPEN', what: 'Exposed: wind crosses the open ground at full strength.' },
-  { id: 'plaza', label: 'A city plaza', short: 'PLAZA', what: 'Gusty: air swirls round buildings and corners, changing from moment to moment.' },
+  { id: 'plaza', label: 'A city plaza', short: 'PLAZA', what: 'Gusty: air swirls around buildings and corners, changing from moment to moment.' },
 ];
 
 export type WindVerdict = { marks: 0 | 1 | 2 | 3; enough: boolean; words: string };

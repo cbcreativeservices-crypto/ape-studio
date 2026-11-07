@@ -462,7 +462,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(S, /\{end \?\? \(\n\s*<View style=\{styles\.body\}>/);
     assert.match(S, /<RecordedAnswersContext\.Provider value=\{answers\}>/);
     assert.match(S, /savedChecks=\{project\.checks\} savedQc=\{project\.qc\}/);
-    assert.match(T, /‹ PREV returns to the step you came from — your answers and ticks are kept, its other settings start fresh — and ⏮ opens Module 1/);
+    assert.match(T, /‹ PREV returns to the step you came from — your answers and check marks are kept, its other settings start fresh — and ⏮ opens Module 1/);
     assert.doesNotMatch(T, /as you left it/);
   });
   it('what makes a module done: every decision answered (right or wrong); Module 8 also every QC line — and START OVER (PRACTICE) keeps done', () => {
@@ -470,10 +470,10 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(S, /if \(loaded && complete && !done\) bank\(\);/);
     assert.match(S, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
     assert.match(code(`${MA}/masteringProgress.ts`), /s\.modules\[id\] = \{ \.\.\.emptyMasteringModule\(\), done: !!s\.modules\[id\]\?\.done \};/);
-    assert.match(T, /the moment every one of its decisions has an answer, right or wrong\. Module 8 also needs every QC line ticked\./);
+    assert.match(T, /the moment every one of its decisions has an answer, right or wrong\. Module 8 also needs every QC line checked\./);
     assert.match(S, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\);/);
     assert.match(S.slice(S.indexOf('const doReset'), S.indexOf('const confirmReset')), /openModule\('what', 0\);/);
-    assert.match(T, /START OVER \(PRACTICE\)[^.]*asks first, then clears your answers and Module 8 ticks and opens Module 1; finished modules stay done\./);
+    assert.match(T, /START OVER \(PRACTICE\)[^.]*asks first, then clears your answers and Module 8 check marks and opens Module 1; finished modules stay done\./);
   });
   it('"kept on this device" is true: the store is AsyncStorage and the end screen is in progress mode', () => {
     assert.match(code(`${MA}/masteringProgress.ts`), /await AsyncStorage\.setItem\(KEY, JSON\.stringify\(s\)\);/);

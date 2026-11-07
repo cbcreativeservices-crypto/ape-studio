@@ -55,13 +55,13 @@ export const TUBA_ART: LessonArt = {
       wall: false,
       subject: 'A tuba player seen from the right side, the tuba on the lap',
       shapesNote: 'This is a simplified pipe. The real tuba is a long, widening (conical) tube with a large bell, folded up — the folding changes nothing about the air inside. The valves add lengths of tube, which lowers every shape’s pitch together.',
-      spreadNote: 'Only the overall trend is drawn: the low notes spread nearly all round — a little weaker on the side away from the bell — and the higher overtones go mostly where the bell points. An upward bell sends them to the ceiling; a front bell, toward the audience and the mics.',
+      spreadNote: 'Only the overall trend is drawn: the low notes spread nearly all around — a little weaker on the side away from the bell — and the higher overtones go mostly where the bell points. An upward bell sends them to the ceiling; a front bell, toward the audience and the mics.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the tuba: how a real tuba sounds depends on the tuba, the player and the room. The pictures show where the sound comes from and where it goes.',
       reveal: 'Nearly all of the sound leaves from the bell — and where the bell points decides where the overtones go. That is why a tuba’s bell direction comes first when you plan a mic.',
       registers: {
-        low: 'The lowest notes — the tuba’s home — spread nearly all round the player, only a little weaker on the side away from the bell.',
+        low: 'The lowest notes — the tuba’s home — spread nearly all around the player, only a little weaker on the side away from the bell.',
         mid: 'Higher up, more of the sound follows the bell: the space the bell faces gets more than the space behind it.',
-        high: 'The upper overtones — the attacks and the edge that make a low note easy to follow — go mostly where the bell points, in a cone round its axis.',
+        high: 'The upper overtones — the attacks and the edge that make a low note easy to follow — go mostly where the bell points, in a cone around its axis.',
       },
     }),
     setting: makeLowBrassSettingPage({

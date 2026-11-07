@@ -120,7 +120,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The 12 in rack tom',
     explain: 'On the right, over the 12 in tom and beside the ride: a China mic aimed down hears the tom, and the tom mic hears the China.',
     why: {
-      'The floor tom’s legs': 'The floor tom is under the ride, farther round.',
+      'The floor tom’s legs': 'The floor tom is under the ride, farther around.',
       'The hi-hat pedal': 'The hats are on the other side of the kit.',
     },
   },
@@ -203,11 +203,11 @@ const scenarios: MikingScenario[] = [
     id: 'ch.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · From which side does the stick come to the China?',
-    options: ['The player’s side, reaching out from the throne', 'The audience side, round the front of the kit', 'From below, up through the tom under it'],
+    options: ['The player’s side, reaching out from the throne', 'The audience side, around the front of the kit', 'From below, up through the tom under it'],
     correct: 'The player’s side, reaching out from the throne',
     explain: 'The player plays the near side: mics start on the far side, out of the stick’s way.',
     why: {
-      'The audience side, round the front of the kit': 'That is where a mic can go.',
+      'The audience side, around the front of the kit': 'That is where a mic can go.',
       'From below, up through the tom under it': 'The stick plays the top face from the player’s side.',
     },
   },
@@ -238,7 +238,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ch.ctx.studio',
     page: 'context',
-    prompt: 'Studio; the China cuts through the overheads clearly. What could justify no China mic?',
+    prompt: 'Studio: the China cuts through the overheads clearly. What could justify no China mic?',
     options: ['The overheads already carry it — fewer open mics', 'A China mic would stop the overheads from working properly', 'Studio cymbals are recorded with a single mic only'],
     correct: 'The overheads already carry it — fewer open mics',
     explain: 'If the China cuts through the overheads, a mic of its own adds a channel and little else.',
@@ -314,12 +314,12 @@ const scenarios: MikingScenario[] = [
     id: 'ch.mix.3',
     page: 'practice',
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
-    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns round to face the floor'],
+    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face the floor'],
     correct: 'The sign of its signal; the delay stays the same',
     explain: 'Polarity flips the sign; only distance changes when a sound arrives.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
-      'The mic’s pattern turns round to face the floor': 'The pattern stays where the mic points.',
+      'The mic’s pattern turns around to face the floor': 'The pattern stays where the mic points.',
     },
   },
 ];
@@ -357,7 +357,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: compared with a crash, how does a China ring?', options: ['Harsher and shorter', 'Smoother and longer', 'Exactly the same'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to turn it over.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the aim from the lip toward the cup. What changes?', options: ['More of the trashy edge', 'A harder, focused tone', 'It depends on this China'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the China points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

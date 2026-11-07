@@ -169,12 +169,12 @@ const scenarios: MikingScenario[] = [
     id: 'bd.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Where does a bass amp’s low end go on a stage?',
-    options: ['All round the stage, not just ahead', 'Only along the straight-ahead axis of each woofer', 'Straight down into the stage floor'],
-    correct: 'All round the stage, not just ahead',
+    options: ['All around the stage, not just ahead', 'Only along the straight-ahead axis of each woofer', 'Straight down into the stage floor'],
+    correct: 'All around the stage, not just ahead',
     explain: 'Low frequencies spread in every direction from a cabinet — one reason a DI, with the amp turned down, helps the vocal and drum mics.',
     why: {
-      'Only along the straight-ahead axis of each woofer': 'Only the highs beam; the lows spread round.',
-      'Straight down into the stage floor': 'Some goes into the floor, but most spreads round the stage.',
+      'Only along the straight-ahead axis of each woofer': 'Only the highs beam; the lows spread around.',
+      'Straight down into the stage floor': 'Some goes into the floor, but most spreads around the stage.',
     },
   },
   {
@@ -464,7 +464,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the overhead pair 20 cm. What changes most?', options: ['More cymbals and more room', 'Only the level', 'More kick and toms'], after: 'Higher, the cymbals and the room come up and the drums go down a little. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the singer, below the mic. Can the mic’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The vocal mic and the kick mic both hear the kick. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the singer.' },
@@ -569,7 +569,7 @@ export const E09_LESSON: EnsembleLesson = {
   sound: {
     stages: [
       { title: 'The loud sources', text: 'The kit radiates from every head and cymbal at once; the guitar and bass from their amps, along each speaker’s axis.' },
-      { title: 'Where they point', text: 'An amp’s highs beam along its axis, its lows spread round; turning an amp changes which mics hear it — before any mic goes up.' },
+      { title: 'Where they point', text: 'An amp’s highs beam along its axis, its lows spread around; turning an amp changes which mics hear it — before any mic goes up.' },
       { title: 'The quietest source', text: 'The voice is the quietest thing on the stage: its mic goes right at the lips, aimed so the stage reaches its back.' },
     ],
     attack: 'Stick and pick attacks reach a close mic first and clearest; the same attacks reach every other open mic a little later, as bleed.',
@@ -633,7 +633,7 @@ export const E09_LESSON: EnsembleLesson = {
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a band: the drum pair over the kit, then close mics only where a part needs control — a place to start and compare, not a rule.',
       clearance: 'The boom stand stands in front of the kit, its base clear of the kick pedal and the walkway; the bar above the cymbals’ swing and the sticks’ highest point; the cable dressed flat.',
-      height: 'Each mic about 1.2 m (4 ft) from the snare’s center — the same distance — pointing straight down. Higher tends to more cymbals and room; lower, more drums.',
+      height: 'Each mic about 1.2 m (4 ft) from the snare’s center — the same distance — pointing straight down. Higher tends to bring more cymbals and room; lower, more drums.',
       forward: 'Centered over the snare, so the snare stays in the middle of the picture; the two mics over the hi-hat side and the other side of the kit.',
     },
     learnZones: [

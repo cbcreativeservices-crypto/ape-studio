@@ -22,7 +22,7 @@ import { F12_COPY } from './copy.ts';
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the survey',
-    goal: 'Meet a sound-level survey — the meter on its tripod and the site round it: the source, the receivers, the walls, the ground — before any number.',
+    goal: 'Meet a sound-level survey — the meter on its tripod and the site around it: the source, the receivers, the walls, the ground — before any number.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
     takeaway: 'A meter reads what arrives at its spot, from everything, at that time. The question names the receiver, the descriptor and the window.',
   },
@@ -54,7 +54,7 @@ const pages: LessonPages = {
     title: 'Background and weather',
     goal: 'Take the background off a total the honest way — by energy, refused when they are too close — and log the wind and the weather instead of “fixing” them.',
     credit: { scenarios: ['sl.ctx.1', 'sl.ctx.2', 'sl.rec.3'], interactive: 'bgSubtract', note: 'Separate a source once and see a refusal once in BACKGROUND, and answer the three checks.' },
-    takeaway: 'Background comes off as energy, never as dB minus dB, and only as far apart as the method allows. A windscreen reduces buffeting; it does not make a windy interval valid.',
+    takeaway: 'Background comes off as energy, never as dB minus dB, and only when the two are far enough apart for the method. A windscreen reduces buffeting; it does not make a windy interval valid.',
   },
   twoMic: {
     title: 'Two receivers, one clock',
@@ -311,8 +311,8 @@ const scenarios: MikingScenario[] = [
     id: 'sl.two.3',
     page: 'twoMic',
     prompt: 'A truck’s pass-by makes the hour’s LAeq look high. What may you do?',
-    options: ['Keep it, unless your rule set before excludes it', 'Delete it, since it is not typical of the hour', 'Average it down with a quieter hour from another day'],
-    correct: 'Keep it, unless your rule set before excludes it',
+    options: ['Keep it, unless a rule you set beforehand excludes it', 'Delete it, since it is not typical of the hour', 'Average it down with a quieter hour from another day'],
+    correct: 'Keep it, unless a rule you set beforehand excludes it',
     explain: 'Decide before collecting which events are part of the question; keep the original history and a written reason for any exclusion. A truck may be the very thing a traffic study measures.',
     why: {
       'Delete it, since it is not typical of the hour': 'Deleting a loud event after seeing the result is exactly what not to do.',
@@ -446,12 +446,12 @@ const symptoms: Symptom[] = [
     id: 'sl.sym.6',
     observation: 'A passer-by trips over the tripod’s cable',
     firstChecks: 'Re-route and secure the cable; move the position if needed',
-    options: ['Secure and re-route the cable, out of paths', 'Tape it more tightly across the footpath', 'Ask people walking past to step round it'],
+    options: ['Secure and re-route the cable, out of paths', 'Tape it more tightly across the sidewalk', 'Ask people walking past to step around it'],
     correct: 'Secure and re-route the cable, out of paths',
     explain: 'Secure the cable and the stand without creating a public hazard; choose a position that keeps both out of the public’s way.',
     why: {
-      'Tape it more tightly across the footpath': 'A cable across a footpath is still a hazard.',
-      'Ask people walking past to step round it': 'The hazard is yours to remove, not theirs to avoid.',
+      'Tape it more tightly across the sidewalk': 'A cable across a sidewalk is still a hazard.',
+      'Ask people walking past to step around it': 'The hazard is yours to remove, not theirs to avoid.',
     },
   },
 ];
@@ -482,13 +482,13 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'facade', label: 'A meter 2 m from the facade, at the method’s height, for the whole hour', ok: true, power: 'none', feedback: 'A facade position named as such, over the whole hour: it answers the question about this house’s front.' },
       { id: 'pair', label: 'Two synchronized meters: one in the open, one at the facade', ok: true, power: 'none', feedback: 'Two positions, one clock: the open and the facade, each named — more than the brief needs, and honest.' },
-      { id: 'spot', label: 'One meter in the road’s verge for five minutes', ok: false, power: 'none', feedback: 'Too close to traffic to be safe, and five minutes cannot stand for the peak hour.' },
+      { id: 'spot', label: 'One meter at the roadside for five minutes', ok: false, power: 'none', feedback: 'Too close to traffic to be safe, and five minutes cannot stand for the peak hour.' },
     ],
     reasons: [
       R('hour', 'The window covers the whole peak hour', 'required', 'The question names the hour.'),
       R('named', 'The position is named — facade or open', 'required', 'A facade reading is never called free field.'),
       R('height', 'The method’s height, written down', 'optional', 'It lets anyone repeat it.'),
-      R('verge', 'Closer to the traffic gives the truest number', 'wrong', 'Closer changes the question — and the verge is not a safe position.'),
+      R('verge', 'Closer to the traffic gives the truest number', 'wrong', 'Closer changes the question — and the roadside is not a safe position.'),
     ],
     explain: 'More than one setup passes: the window and the named position are what the brief needs.',
   },
@@ -504,7 +504,7 @@ const setupTasks: SetupTask[] = [
     reasons: [
       R('bg', 'A background window with the unit stopped', 'required', 'Without it the unit cannot be separated.'),
       R('energy', 'Subtraction in energy, refused if too close', 'required', 'Never dB minus dB.'),
-      R('night', 'Windows at night, when the question is', 'optional', 'The question names the night.'),
+      R('night', 'Windows at night, when the question is about night', 'optional', 'The question names the night.'),
       R('dbminus', 'Subtract the two dB readings to get the unit', 'wrong', 'dB are logarithms: plain subtraction is not a level.'),
     ],
     explain: 'Either setup passes when the unit is measured running and stopped at the same position and the subtraction is honest.',

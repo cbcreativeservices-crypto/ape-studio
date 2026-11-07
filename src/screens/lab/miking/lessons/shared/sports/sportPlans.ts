@@ -110,7 +110,7 @@ function soccer(): VenueScene {
       { pts: goal(0, 1), closed: true },
       { pts: goal(L, -1), closed: true },
     ],
-    keepClear: band('runoff', f, 4, 'the run-off round the pitch', 'drawing', 'Players, assistant referees, ball attendants and warm-ups use it. A mic, a stand or an operator stays out of it.'),
+    keepClear: band('runoff', f, 4, 'the run-off around the pitch', 'drawing', 'Players, assistant referees, ball attendants and warm-ups use it. A mic, a stand or an operator stays out of it.'),
     routes: [
       { id: 'ar', label: 'the assistant referee’s run along the touchline', short: 'OFFICIAL', pts: [p2(2, -1.2), p2(L - 2, -1.2)], kind: 'officials' },
       { id: 'bench', label: 'the team benches and technical areas', short: 'BENCHES', pts: [p2(L / 2 - 14, -2.6), p2(L / 2 + 14, -2.6)], kind: 'bench' },
@@ -251,7 +251,7 @@ function rugby(): VenueScene {
       spot(p2(L, W / 2 - 2.8), 0.3),
       spot(p2(L, W / 2 + 2.8), 0.3),
     ],
-    keepClear: band('perim', f, 5, 'the perimeter round the ground', 'rule', `A ${CLEAR_ZONE_WORDS}: about 5 m where it can be, at least 3.5 m for the men’s game and 3 m for the women’s. A ground dimension — not a safe mic distance, and not space a crew may occupy.`),
+    keepClear: band('perim', f, 5, 'the perimeter around the ground', 'rule', `A ${CLEAR_ZONE_WORDS}: about 5 m where it can be, at least 3.5 m for the men’s game and 3 m for the women’s. A ground dimension — not a safe mic distance, and not space a crew may occupy.`),
     routes: [
       { id: 'sub', label: 'the substitution and medical route', short: 'MEDICAL', pts: [p2(L / 2 - 6, -9), p2(L / 2 - 6, -0.5)], kind: 'medical' },
       { id: 'ball', label: 'the ball-retrieval route', short: 'BALL', pts: [p2(-ig + 1, -2.5), p2(L + ig - 1, -2.5)], kind: 'officials' },
@@ -347,7 +347,7 @@ function basketball(): VenueScene {
     play: rect(f),
     surface: 'court',
     markings: basketballMarkings(L, W),
-    keepClear: band('lane', f, 2, 'the clear band round the court', 'rule', `A ${CLEAR_ZONE_WORDS}: no obstruction within about 2 m of the court. A clearance, not a crew strip.`),
+    keepClear: band('lane', f, 2, 'the clear band around the court', 'rule', `A ${CLEAR_ZONE_WORDS}: no obstruction within about 2 m of the court. A clearance, not a crew strip.`),
     routes: [
       { id: 'bench', label: 'the team benches and the substitutes’ route', short: 'BENCH', pts: [p2(L / 2 - 8, -2.8), p2(L / 2 + 8, -2.8)], kind: 'bench' },
       { id: 'table', label: 'the officials’ table', short: 'TABLE', pts: [p2(L / 2 - 2.5, -2.4), p2(L / 2 + 2.5, -2.4)], kind: 'officials' },
@@ -381,7 +381,7 @@ function volleyball(): VenueScene {
     play: rect(f),
     surface: 'court',
     markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, -0.5), p2(L / 2, W + 0.5)), line(p2(L / 2 - 3, 0), p2(L / 2 - 3, W)), line(p2(L / 2 + 3, 0), p2(L / 2 + 3, W))],
-    keepClear: band('fz', f, 3, 'the clear zone round the court', 'rule', `A ${CLEAR_ZONE_WORDS}: at least about 3 m round the court, more at top events (about 5 m at the sides, 6.5 m at the ends), with clear space overhead. Part of the playing area — and players may chase a ball beyond it.`),
+    keepClear: band('fz', f, 3, 'the clear zone around the court', 'rule', `A ${CLEAR_ZONE_WORDS}: at least about 3 m around the court, more at top events (about 5 m at the sides, 6.5 m at the ends), with clear space overhead. Part of the playing area — and players may chase a ball beyond it.`),
     routes: [
       { id: 'sub', label: 'the substitution zone and the libero’s route', short: 'SUBS', pts: [p2(L / 2 - 3, -3.6), p2(L / 2 + 3, -3.6)], kind: 'bench' },
       { id: 'lj', label: 'a line judge’s place', short: 'LINE JUDGE', pts: [p2(-3.4, -3.4), p2(-2.4, -2.4)], kind: 'officials' },
@@ -470,7 +470,7 @@ function badminton(): VenueScene {
       line(p2(0, W / 2), p2(L / 2 - 1.98, W / 2)),
       line(p2(L / 2 + 1.98, W / 2), p2(L, W / 2)),
     ],
-    keepClear: band('ro', f, 2, 'the space round the court', 'drawing', 'Racket reach, lunge recovery and the shuttle overhead: keep mics out of all three.'),
+    keepClear: band('ro', f, 2, 'the space around the court', 'drawing', 'Racket reach, lunge recovery and the shuttle overhead: keep mics out of all three.'),
     routes: [{ id: 'umpire', label: 'the umpire’s and service judge’s places', short: 'OFFICIALS', pts: [p2(L / 2 - 1.2, -1.4), p2(L / 2 + 1.2, -1.4)], kind: 'officials' }],
     footprints: [{ id: 'end', label: 'an approved perimeter position', short: 'APPROVED', rect: { x0: L + 2.6, y0: W / 2 - 0.8, x1: L + 4.2, y1: W / 2 + 0.8 } }],
     cameras: [{ id: 'cam', label: 'the main camera', p: p2(L / 2, -6), dirDeg: 0, halfDeg: 40, reach: 12 }],
@@ -480,7 +480,7 @@ function badminton(): VenueScene {
     badges: [{ id: 'post', label: 'a net post', short: 'APPROVAL ONLY', p: p2(L / 2, -0.4), kind: 'approvalOnly' }],
     barriers: [],
     frame: { x0: -4, y0: -7, x1: L + 5, y1: W + 6 },
-    defaults: ['13.4 × 6.1 m court', 'markings', 'space round the court', 'footprints', 'camera', 'crowd'],
+    defaults: ['13.4 × 6.1 m court', 'markings', 'space around the court', 'footprints', 'camera', 'crowd'],
   };
 }
 

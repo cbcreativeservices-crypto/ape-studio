@@ -40,7 +40,7 @@ function parts(s: TmbState): Part[] {
   }
   const out: Part[] = [
     { id: `tmb.frame.${v}`, label: 'frame (ring, no head)', short: 'frame', role: 'A wooden ring with slots for the jingles — and no head: nothing in the middle vibrates. The player holds it at the grip edge.', moving: v !== 'mounted', prov: TMB_DIMS.d.prov, solid: { kind: 'tube', c: p.c, axis: into, rIn: R - FT, rOut: R, x0: -DEPTH / 2, x1: DEPTH / 2 } },
-    { id: `tmb.jingles.${v}`, label: 'jingle pairs (one row)', short: 'jingles', role: 'Pairs of thin metal discs loose on pins in slots round the frame. Every shake and strike throws them against each other — the whole sound of a headless tambourine.', moving: v !== 'mounted', prov: { kind: 'sourced', src: 'MEINL-MTA1', quote: '1 row and 2 row versions' }, solid: { kind: 'tube', c: p.c, axis: into, rIn: R, rOut: R + JOUT, x0: -DEPTH / 2 + 6, x1: DEPTH / 2 - 6 } },
+    { id: `tmb.jingles.${v}`, label: 'jingle pairs (one row)', short: 'jingles', role: 'Pairs of thin metal discs loose on pins in slots around the frame. Every shake and strike throws them against each other — the whole sound of a headless tambourine.', moving: v !== 'mounted', prov: { kind: 'sourced', src: 'MEINL-MTA1', quote: '1 row and 2 row versions' }, solid: { kind: 'tube', c: p.c, axis: into, rIn: R, rOut: R + JOUT, x0: -DEPTH / 2 + 6, x1: DEPTH / 2 - 6 } },
   ];
   if (v === 'mounted') {
     out.push({ id: 'tmb.mount', label: 'stand clamp and stand', short: 'mount', role: 'A stand clamp holding the ring flat for stick playing. Check it is secure and listen for its own rattles.', prov: ill('a stand clamp at h 1000 (proposal)'), solid: { kind: 'capsule', a: v3(-R - 30, p.c.y + 20, 0), b: v3(-R - 30, -40, 0), r: 12 } });
@@ -64,7 +64,7 @@ function state(s: TmbState, label: string, blurb: string, phrase: string): State
       ...(s.id === 'struck' ? [{ id: 'side.struck', partId: 'tmb.frame.struck', label: 'the side of the tambourine', point: v3(s.pose.c.x, s.pose.c.y, R + JOUT), normal: v3(0, 0, 1), target: true }] : []),
     ],
     envelopes: env,
-    regions: [{ id: `r.jingles.${s.id}`, partId: `tmb.jingles.${s.id}`, label: 'jingles', anchor: add(s.pose.c, mul(s.pose.e1, R)), prov: TMB_DIMS.d.prov, note: 'The jingle pairs round the frame: the whole sound — bright, metallic, with brief high peaks.' }],
+    regions: [{ id: `r.jingles.${s.id}`, partId: `tmb.jingles.${s.id}`, label: 'jingles', anchor: add(s.pose.c, mul(s.pose.e1, R)), prov: TMB_DIMS.d.prov, note: 'The jingle pairs around the frame: the whole sound — bright, metallic, with brief high peaks.' }],
   };
 }
 

@@ -53,7 +53,7 @@ export const F13_ZONES: DocumentedZone[] = [
   {
     id: 'ra.B',
     label: 'Receiver B: a seat near the back',
-    band: 'Then move only the receiver: a seat near the back, the same height and set-up, the source left where it was.',
+    band: 'Then move only the receiver: a seat near the back, the same height and setup, the source left where it was.',
     kind: 'sourced',
     src: 'MEYER-MAPP',
     quote: 'F13 L48 "Move only the receiver to position B, document the difference and repeat"; seated 1.2 m',
@@ -86,7 +86,7 @@ export const F13_ZONES: DocumentedZone[] = [
     drawn: { side: { u0: 3000, u1: 7600, v0: earY - 100, v1: earY + 100 }, top: { u0: 3000, u1: 7600, v0: 2300, v1: 2800 } },
     start: toward(F13_START.side, SRC0),
     tendency: 'A real seat with a wall close by: a strong early reflection, and a decay that can differ from mid-audience. Keep it in the set; do not average it away.',
-    checks: ['Its distance from the wall written down', 'Not pushed into a corner', 'The same set-up as A and B'],
+    checks: ['Its distance from the wall written down', 'Not pushed into a corner', 'The same setup as A and B'],
   },
   {
     id: 'ra.paA',
@@ -110,7 +110,7 @@ export const F13_ZONES: DocumentedZone[] = [
   {
     id: 'ra.paB',
     label: 'A seat near the back, the PA as the source',
-    band: 'Then a seat near the back, the same height and set-up, the PA and its preset unchanged.',
+    band: 'Then a seat near the back, the same height and setup, the PA and its preset unchanged.',
     kind: 'sourced',
     src: 'MEYER-MAPP',
     quote: 'Meyer: place mics "in logical order, e.g., front to back"; seated 1.2 m',

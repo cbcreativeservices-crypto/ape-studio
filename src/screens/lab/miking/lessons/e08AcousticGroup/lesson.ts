@@ -422,7 +422,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from the arc’s center toward the guitarist. What changes most?', options: ['The guitar gets louder than the rest', 'Only the overall level', 'Every player gets louder equally'], after: 'Off the center, the players are no longer equally far: SPREAD grows, and the nearest one leads. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the guitarist, below the guitar spot. Can the spot’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a guitar spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other player.' },
@@ -445,7 +445,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['A mandolin or fiddle', 'An upright bass', 'A nylon-string guitar'],
     correct: 'A mandolin or fiddle',
     explain: 'High-frequency sources project bright highs along their axis; keep them off a neighbor mic’s axis.',
-    why: { 'An upright bass': 'The bass sends lows round and into the floor.', 'A nylon-string guitar': 'It is warmer and quieter than a mandolin or fiddle.' },
+    why: { 'An upright bass': 'The bass sends lows around and into the floor.', 'A nylon-string guitar': 'It is warmer and quieter than a mandolin or fiddle.' },
   },
   {
     id: 'ac.q.3',
@@ -454,7 +454,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['At least about 90 cm', 'About 30 cm', 'It does not matter for spots'],
     correct: 'At least about 90 cm',
     explain: 'The 3:1 starting point: mic-to-mic at least 3 times each mic’s distance to its own source.',
-    why: { 'About 30 cm': 'That is the distance to the source; 3:1 asks three times it between the mics.', 'It does not matter for spots': 'Closer spots hear each other’s player and comb.' },
+    why: { 'About 30 cm': 'That is the distance to the source; 3:1 asks for three times that between the mics.', 'It does not matter for spots': 'Closer spots hear each other’s player and comb.' },
   },
   {
     id: 'ac.q.4',
@@ -471,7 +471,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A mono PA in a small room: which pair approach?',
     options: ['Close or narrow, for safety', 'A wide spaced pair, for size', 'A wide pair of omnis'],
     correct: 'Close or narrow, for safety',
-    explain: 'Do not build a wide stereo array just because two mics are available; a mono or narrowly compatible approach is safer and clearer.',
+    explain: 'Do not build a wide stereo array just because two mics are available; a mono or narrow, mono-compatible approach is safer and clearer.',
     why: { 'A wide spaced pair, for size': 'Summed to mono it can thin out and feed back sooner.', 'A wide pair of omnis': 'Omnis hear even more of the PA.' },
   },
   {
@@ -519,7 +519,7 @@ export const E08_LESSON: EnsembleLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'Acoustic duos and small groups — guitar and mandolin, voice and strings, folk trios, jazz duos, small string groups — quiet ensembles whose sound is made in the room.', src: 'LESSON-ACOUSTIC' },
     { title: 'WHAT IT ASKS OF YOU', text: 'A coherent musical picture with enough control to solve real balance problems: ensemble-first stereo, spots, DI support — in a studio or on a small stage.', src: 'LESSON-ACOUSTIC' },
-    { title: 'HOW IT IS SEATED', text: 'This lab seats the players on an arc round a point in front of them — where a main pair hears each of them at about the same distance.', src: 'LESSON-ACOUSTIC' },
+    { title: 'HOW IT IS SEATED', text: 'This lab seats the players on an arc around a point in front of them — where a main pair hears each of them at about the same distance.', src: 'LESSON-ACOUSTIC' },
     { title: 'ITS SIZE', text: 'About 2–3 m across, the players 1.5 m from the arc’s center. A typical seating, not a particular group.', src: 'LESSON-ACOUSTIC' },
   ],
   sound: {
@@ -574,7 +574,7 @@ export const E08_LESSON: EnsembleLesson = {
     meet: {
       figureTitle: 'A SMALL ACOUSTIC GROUP',
       figureBadge: 'From above, as the audience sees it · a typical seating, not a particular group',
-      sectionsNote: 'A seated guitar and mandolin on an arc round a point in front of them. Switch SEATING for the guitar, fiddle and bass trio. Tap a player.',
+      sectionsNote: 'A seated guitar and mandolin on an arc around a point in front of them. Switch SEATING for the guitar, fiddle and bass trio. Tap a player.',
       soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar from its top, the mandolin bright from its opening: a main pair at the arc’s center hears them at about the same distance.',
       mainAt: PAIR_C,
     },
@@ -589,7 +589,7 @@ export const E08_LESSON: EnsembleLesson = {
       begin: 'After our research, this is where we suggest you begin with a small group: one pair where the players are about equally far from it — a place to start and compare, not a rule.',
       clearance: 'The boom stand reaches in from the audience side, its base clear of the players’ feet, the bows and the walkway; its cable dressed flat.',
       height: 'About 1.3 m up — a little above the instruments, so it hears each one over the others’ hands and bows.',
-      forward: 'At the point the players sit round, about 1.5 m from each: every player about equally far. Move it closer and the nearest player leads; farther, more blend and more room.',
+      forward: 'At the point the players sit around, about 1.5 m from each: every player about equally far. Move it closer and the nearest player leads; farther, more blend and more room.',
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin with the pair — about 1–2 m from the players, a little above the instruments, where they are about equally far. Places to start and compare, not measurements of a best place.',

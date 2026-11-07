@@ -49,7 +49,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'The glass: the source comes in on IN ▸ in grey, passes the green DELAY stage and leaves on ▸ OUT with its repeats in colour. The ruler under OUT counts seconds since the stage.',
+      'The glass: the source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. The ruler under OUT counts seconds since the stage.',
       'Readouts: TIME, FDBK, MIX. The strip under them says this is a TEACHING MODEL, drawn from the same math as the audio.',
       'A steady SINE or PINK source draws a band and says TRY CLICK: repeats of a steady sound blur into it.',
     ],
@@ -62,7 +62,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     changes: [
       'TIME is the gap from a sound to its first repeat, and between repeats: more TIME, wider spacing.',
       'FDBK feeds each repeat back in. At 50% each repeat is half as tall (6 dB down), so FDBK sets how long the trail lasts, never the spacing.',
-      'MIX blends dry and repeats: at 100% WET the grey dry click leaves OUT.',
+      'MIX blends dry and repeats: at 100% WET the gray dry click leaves OUT.',
       'REPEAT DAMPING dulls every pass after the first; PING-PONG sends repeats left, right, left.',
     ],
     teaches: [
@@ -72,7 +72,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: the readout says 500 ms; the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
-      'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the grey dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
+      'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the gray dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
       'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE letters one click’s repeats L, R, L.',
     ],
   },

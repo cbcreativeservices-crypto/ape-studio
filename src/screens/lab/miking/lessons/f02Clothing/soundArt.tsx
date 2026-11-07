@@ -27,7 +27,7 @@ export function ClothStrike({ w, h, shown, accessibilityLabel }: { w: number; h:
   if (shown >= 1) labels.push({ id: 's1', text: '① THE HANDS MOVE IT', short: '① HANDS', u: -290, v: -145, align: 'left', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: '② THE FOLD FLEXES · RUBS', short: '② THE FOLD', u: 330, v: -145, align: 'right', tone: 'amber' });
   if (shown >= 3) labels.push({ id: 's3', text: '③ THE GARMENT SWINGS', short: '③ SWINGS', u: 330, v: 330, align: 'right', tone: 'amber' });
-  if (shown >= 4) labels.push({ id: 's4', text: '④ ALL ROUND · THE ROOM CLOSE UNDER IT', short: '④ ALL ROUND', u: -290, v: 440, align: 'left', tone: 'blue' });
+  if (shown >= 4) labels.push({ id: 's4', text: '④ ALL AROUND · THE ROOM CLOSE UNDER IT', short: '④ ALL ROUND', u: -290, v: 440, align: 'left', tone: 'blue' });
   labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: 330, v: 440, align: 'right', tone: 'illustrative' });
   const sway = shown >= 3 ? 1 : 0;
   return (

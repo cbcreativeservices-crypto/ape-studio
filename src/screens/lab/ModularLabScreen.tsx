@@ -678,7 +678,7 @@ export function ModularLabScreen() {
           correctIdx: 0,
           reveal:
             'A slow modulator into the AMPLIFIER wobbles volume — tremolo. Into PITCH it wobbles frequency — vibrato. Same LFO, different destination: the destination IS the effect.',
-          wrongHint: 'Patch LFO →AMP and watch which cable lights.',
+          wrongHint: 'Patch LFO → AMP and watch which cable lights.',
         }}
       />
       <CheckQuestion

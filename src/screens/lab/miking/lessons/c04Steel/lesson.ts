@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ps.snd.1',
     page: 'sound',
-    prompt: 'The player slides the bar to half-way along the sounding length. What happens to the pitch?',
+    prompt: 'The player slides the bar to halfway along the sounding length. What happens to the pitch?',
     options: ['It falls an octave, since less string is left to vibrate', 'It rises an octave — half the length, twice the pitch', 'It stays the same: the bar only changes the tone'],
     correct: 'It rises an octave — half the length, twice the pitch',
     explain: 'The bar is a movable fret: only the string between the bar and the bridge vibrates. Half the length sounds twice the frequency — an octave up.',
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Use the mic’s real pattern: face the speaker, and turn its rejection toward the loudest neighbor or monitor.',
     why: {
       'Point its front straight at the vocal mic to cancel it out': 'The front is where a mic picks up most.',
-      'Choose an omni so that all the sources are balanced': 'An omni hears the stage all round — more spill, not less.',
+      'Choose an omni so that all the sources are balanced': 'An omni hears the stage all around — more spill, not less.',
     },
   },
   {
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Does a condenser cause feedback just because it is more sensitive?',
     options: ['Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic', 'Not by itself — compare at the same useful level'],
     correct: 'Not by itself — compare at the same useful level',
-    explain: 'At the same reproduced level, pattern, placement, the mic’s tone and monitors decide feedback; the gain is simply set lower for a more sensitive mic.',
+    explain: 'At the same reproduced level, the pattern, placement, the mic’s tone and the monitors decide feedback; the gain is simply set lower for a more sensitive mic.',
     why: {
       'Yes, since its higher output reaches the PA first': 'The gain is set for the same useful level.',
       'Only when it sits closer to the grille than a dynamic': 'Closer usually HELPS gain before feedback.',
@@ -276,12 +276,12 @@ const scenarios: MikingScenario[] = [
     id: 'ps.ctx.2',
     page: 'context',
     prompt: 'Your mic is a supercardioid. Is its deepest rejection off to each side of the rear, rather than straight behind?',
-    options: ['No — a directional mic rejects most of all straight behind itself', 'No, it rejects the same all the way round the back', 'Yes — near 125° each side; a small lobe sits straight behind'],
+    options: ['No — a directional mic rejects most of all straight behind itself', 'No, it rejects the same all the way around the back', 'Yes — near 125° each side; a small lobe sits straight behind'],
     correct: 'Yes — near 125° each side; a small lobe sits straight behind',
     explain: 'A supercardioid rejects most near 125° each side, with a small lobe straight behind. Aim by the mic’s real pattern.',
     why: {
       'No — a directional mic rejects most of all straight behind itself': 'A cardioid rejects most at 180°; this supercardioid has a small lobe there. So “put the monitor directly behind it” suits a cardioid, not this mic.',
-      'No, it rejects the same all the way round the back': 'The rejection changes with angle: deepest near 125° each side, with a small lobe straight behind.',
+      'No, it rejects the same all the way around the back': 'The rejection changes with angle: deepest near 125° each side, with a small lobe straight behind.',
     },
   },
   {
@@ -360,12 +360,12 @@ const scenarios: MikingScenario[] = [
     id: 'ps.prac.gain',
     page: 'practice',
     prompt: 'The sustain sits well under the overload light, but the swell’s peak and a hard bar attack light it. What do you do?',
-    options: ['Pull the channel fader down until the swell peaks sound clean again', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the player to keep the volume pedal half-way for the gig'],
+    options: ['Pull the channel fader down until the swell peaks sound clean again', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the player to keep the volume pedal halfway for the gig'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set the gain for the loudest realistic moment — the full volume-pedal travel and the hardest attack. A lower fader does not undo input clipping.',
     why: {
       'Pull the channel fader down until the swell peaks sound clean again': 'The overload is at the input, before the fader.',
-      'Ask the player to keep the volume pedal half-way for the gig': 'The volume pedal is part of how they play; set the gain for it.',
+      'Ask the player to keep the volume pedal halfway for the gig': 'The volume pedal is part of how they play; set the gain for it.',
     },
   },
   {
@@ -423,11 +423,11 @@ const symptoms: Symptom[] = [
     id: 's.hum',
     observation: 'Hum or buzz on the DI channel',
     firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
-    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the steel playing covers the hum'],
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the ground pin off the amp’s power plug to break the loop', 'Turn the DI channel up so the steel playing covers the hum'],
     correct: 'Swap one cable at a time, then try the DI’s ground lift',
-    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s safety ground stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
     why: {
-      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Pull the ground pin off the amp’s power plug to break the loop': 'Never. The ground pin is the safety path that stops a fault becoming a shock. Only a qualified technician deals with AC wiring.',
       'Turn the DI channel up so the steel playing covers the hum': 'More gain raises the hum with the instrument.',
     },
   },
@@ -550,7 +550,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic close to the grille at the dust cap’s edge, on a low stand', ok: true, power: 'none', feedback: 'Close, directional, low and stable — a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser 5–15 cm from the grille on the speaker, its level rating checked', ok: true, power: 'phantom', feedback: 'Close and directional, with the phantom it needs.' },
       { id: 'c', label: 'A mic on a stand among the pedals, aimed up at the strings', ok: false, power: 'none', feedback: 'That blocks the player’s zone — and the sound to mic is the amp.' },
-      { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a stage beside the drums that hears more stage than steel.' },
+      { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a stage beside the drums, that hears more stage than steel.' },
       { id: 'e', label: 'The amp’s speaker output into the desk', ok: false, power: 'none', feedback: 'Never: a speaker output goes to a speaker, not a desk input.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against drum spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BRIGHT_REASON],
@@ -565,7 +565,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A dynamic at the cap’s edge, plus a dynamic behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair on a real open back — judged in mono.' },
       { id: 'c', label: 'A small condenser farther back, alone', ok: false, power: 'phantom', feedback: 'No phantom here for the condenser.' },
       { id: 'd', label: 'The simulated-mic output alone, labeled as the amp mic', ok: false, power: 'none', feedback: 'It is electrical, not a mic — and the brief asks for the amp’s sound.' },
-      { id: 'e', label: 'A dynamic inside the open back, near the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp.' },
+      { id: 'e', label: 'A dynamic inside the open back, near the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each source heard alone, then together in mono', role: 'optional', feedback: 'A good habit with any blend.' }, BRAND_REASON, BRIGHT_REASON],
     explain: 'Two setups pass. What passes is the reasoning: a deliberate position, sources that work without phantom, labeled electrical paths, a mono check.',
@@ -573,8 +573,8 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you begin: the player slides the bar from the open string to half-way along. What happens to the pitch?', options: ['It rises an octave', 'It falls an octave', 'It stays the same'], after: 'Now move the BAR, step HARMONIC, and press the PEDAL.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  sound: { prompt: 'Before you begin: the player slides the bar from the open string to halfway along. What happens to the pitch?', options: ['It rises an octave', 'It falls an octave', 'It stays the same'], after: 'Now move the BAR, step HARMONIC, and press the PEDAL.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the dust cap’s edge toward the cone’s edge. What changes?', options: ['Brighter', 'Smoother and less bright', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the steel player’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'Wherever its rejection actually points'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one source’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -602,7 +602,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The bar rests on the strings: only the length between it and the bridge vibrates. Sliding it bends the pitch smoothly.',
     why: {
       'Plucks the strings close to the changer end': 'The other hand picks; the bar sets the pitch.',
-      'Mutes the amp between notes': 'It sets the vibrating length, it does not touch the amp.',
+      'Mutes the amp between notes': 'It sets the vibrating length; it does not touch the amp.',
     },
   },
   {
@@ -633,7 +633,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     critical: true,
-    prompt: 'Where may the mic stand and cable go round a pedal steel?',
+    prompt: 'Where may the mic stand and cable go around a pedal steel?',
     options: ['Clear of the pedals, knee levers and volume pedal', 'Between the pedal rods, under the instrument', 'Against the player’s knees, out of sight'],
     correct: 'Clear of the pedals, knee levers and volume pedal',
     explain: 'The player’s feet and knees work there while they play. Nothing may block them or trip anyone.',
@@ -649,7 +649,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting by a loud steel amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer to the amp than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and below it is not a promise. Measure where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and staying below it is not a promise. Measure where the person listens.',
     why: {
       'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
       'It is safe as long as the mic is closer to the amp than you are': 'Where the mic sits says nothing about your ears.',
@@ -718,7 +718,7 @@ export const C04_LESSON: Lesson = {
       { id: 'site', label: 'Spot on the cone, distance from the grille, angle', kind: 'text' },
       { id: 'zone', label: 'Stand and cable route; the pedal and knee-lever zone kept clear', kind: 'text' },
       { id: 'tone', label: 'Swells, attacks, sustain: what you heard (tendencies)', kind: 'text' },
-      { id: 'notes', label: 'Second source, mono check; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Second source, mono check; hum checked (the DI’s ground lift as its manual says — the safety ground never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   unknowns: [

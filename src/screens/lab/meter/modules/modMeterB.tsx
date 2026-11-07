@@ -200,21 +200,21 @@ const SPECTRUM_BLURBS: Record<SpectrumKey, string> = {
   cymbal: 'Nearly all the energy ABOVE 2 kHz: a jagged wash of high partials with an empty low end.',
   kick: 'A tall low bump near 60 Hz plus a small beater click around 3 kHz — weight below, definition above.',
   guitar: 'A comb of evenly spaced spikes: the harmonics of one played note, each a multiple of the fundamental.',
-  hum: 'Thin spikes at the mains frequency (60 Hz in North America, 50 Hz in most other countries) and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
+  hum: 'Thin spikes at the power-line frequency (60 Hz in North America, 50 Hz in most other countries) and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
   feedback: 'One violently tall, narrow spike: a single frequency running away. Find it here, then pull that frequency down.',
   pinknoise: 'Equal energy per octave. This lab’s analyzer is FFT-style (equal-width bands), so pink noise reads as a straight downward slope; a 1/3-octave RTA shows it flat. The calibration reference.',
 };
 
 const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
   speech:
-    'Speech: two-three FORMANT HUMPS between ~200 Hz and 3 kHz — the vowel resonances of the vocal tract — with a fast rolloff above. Energy centered low-mid; almost nothing up top.',
+    'Speech: two or three FORMANT HUMPS between ~200 Hz and 3 kHz — the vowel resonances of the vocal tract — with a fast rolloff above. Energy centered low-mid; almost nothing up top.',
   cymbal:
     'Cymbal: a dense HIGH-FREQUENCY WASH — energy piled from ~3 kHz upward, ragged on top, very little below 800 Hz. When the right side of the display lights up, think metal.',
   kick:
     'Kick drum: an LF MOUND around 50–80 Hz plus a small CLICK bump near 3 kHz (the beater). Two energy centers with a valley between — thump and attack are different frequencies.',
   guitar:
     'Guitar: a HARMONIC COMB — evenly spaced spikes at multiples of the ~196 Hz fundamental, mostly getting lower as they go up. Spiky but ORDERLY = a pitched instrument.',
-  hum: 'Mains hum: NEEDLE spikes at exact multiples of the mains frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — rarely just one.',
+  hum: 'Mains hum: NEEDLE spikes at exact multiples of the power-line frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — rarely just one.',
   feedback:
     'Feedback: ONE towering narrow spike (here near 1.7–1.8 kHz) and nothing else notable. A single spike that GROWS over time is the PA about to scream — act before it does.',
   pinknoise:
@@ -224,7 +224,7 @@ const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
 const LOOK_FOR = [
   'WHERE is the energy centered? Left = lows (kick, rumble, hum), middle = voices and instruments, right = air and metal.',
   'Is the shape SMOOTH or SPIKY? Smooth = noise-like (pink noise, cymbal wash); orderly spikes = pitched harmonics; lone needles = tones.',
-  'What STICKS UP that shouldn’t? A spike family at mains multiples = hum. ONE towering spike — especially one that grows — = feedback.',
+  'What STICKS UP that shouldn’t? A spike family at power-line multiples = hum. ONE towering spike — especially one that grows — = feedback.',
 ];
 
 const CHECK_SPECTRUM_ID: CheckSpec = {
@@ -238,26 +238,26 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
-    'ONE towering narrow spike that grows over time is the feedback signature. Hum would be a FAMILY of spikes locked to the mains frequency and its multiples (60/120/180 Hz here); a kick click is broad and rhythm-locked; pink noise is a smooth ramp. Notch 1.7 kHz or change the mic/speaker geometry NOW.',
+    'ONE towering narrow spike that grows over time is the feedback signature. Hum would be a FAMILY of spikes locked to the power-line frequency and its multiples (60/120/180 Hz here); a kick click is broad and rhythm-locked; pink noise is a smooth ramp. Notch 1.7 kHz or change the mic/speaker geometry NOW.',
   wrongHint: 'Count the spikes and watch the clock: how many are there, and is it growing?',
 };
 
 const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
   question: 'Mains hum and feedback both draw thin spikes. Which pair of tells separates them?',
   options: [
-    'Hum = SEVERAL spikes at exact mains multiples (e.g. 60, 120, 180 Hz), steady; feedback = ONE spike anywhere in the band, growing',
+    'Hum = SEVERAL spikes at exact power-line multiples (e.g. 60, 120, 180 Hz), steady; feedback = ONE spike anywhere in the band, growing',
     'Hum = one spike high in the band; feedback = many spikes down low',
     'Hum grows over time; feedback holds perfectly steady',
     'They look identical — only listening can separate them',
   ],
   correctIdx: 0,
   reveal:
-    'Hum is locked to the power grid: a steady family at exact multiples of the mains frequency, always in the same place. Feedback is a single spike that can appear ANYWHERE the loop gain passes unity — and it grows. Count the spikes, check the frequencies, watch the trend.',
+    'Hum is locked to the power grid: a steady family at exact multiples of the power-line frequency, always in the same place. Feedback is a single spike that can appear ANYWHERE the loop gain passes unity — and it grows. Count the spikes, check the frequencies, watch the trend.',
   wrongHint: 'One of them is locked to the power grid; the other appears anywhere — and grows.',
 };
 
 const SPECTRUM_MISTAKES = [
-  'Calling a single towering spike "hum" — hum is a FAMILY of spikes at exact mains multiples; feedback is ONE spike, usually growing.',
+  'Calling a single towering spike "hum" — hum is a FAMILY of spikes at exact power-line multiples; feedback is ONE spike, usually growing.',
   'Expecting a good mix to read FLAT — program material naturally tilts down toward pink (≈ −3 dB/oct on this FFT display); flat-to-the-right energy sounds harsh.',
   'Chasing every wiggle — an analyzer dances constantly; read the SHAPE (where the energy centers, smooth vs spiky), not individual bins.',
   'Forgetting the frequency axis is LOGARITHMIC — each equal step is an octave, not a fixed number of Hz.',
@@ -340,7 +340,7 @@ export function SpectrumModule(p: MeterModuleProps) {
 
 const SPECTROGRAM_KEYS = Object.keys(SPECTROGRAM_LABELS) as SpectrogramKey[];
 const SPECTROGRAM_BLURBS: Record<SpectrogramKey, string> = {
-  speech: 'Syllable bursts painted as striped bands — the formants — with thin pitch lines (the harmonics) running through them. The fingerprint reading of talking.',
+  speech: 'Syllable bursts painted as striped bands — the formants — with thin pitch lines (the harmonics) running through them. The visual fingerprint of talking.',
   birdsong: 'Short rising chirps: thin lines that sweep upward, high in the band, with silence between them.',
   cymbal: 'A bright splash lighting the whole top of the band, then fading — decay drawn over time.',
   feedback: 'A single horizontal line that grows hotter and hotter: one frequency building second by second. Kill it before it howls.',
@@ -392,7 +392,7 @@ const CHECK_WHISTLE_VS_FEEDBACK: CheckSpec = {
 
 const SPECTROGRAM_MISTAKES = [
   'Reading it like a waveform — on a spectrogram UP means HIGH-PITCHED, not loud; loudness is the COLOR. This is the #1 error.',
-  'Calling every bright thin line "feedback" — check whether it GROWS. A steady line is usually just a tone (whistle, synth, mains whine).',
+  'Calling every bright thin line "feedback" — check whether it GROWS. A steady line is usually just a tone (whistle, synth, power-line whine).',
   'Expecting a drum hit to be tall — a transient is a thin VERTICAL stripe (all frequencies at one instant), not a peak.',
   'Comparing colors across different apps — the level→color mapping is relative to each display’s own scale.',
 ];
@@ -501,7 +501,7 @@ const ROOM_BLURBS: Record<RoomKey, string> = {
   cathedral: 'A 12,000 m³ stone shell: RT60 near 7 s bare, lows near 9 s. Even full treatment leaves it over a second — you cannot kill a cathedral with panels.',
   classroom: 'A hard-walled medium room, ~2 s bare — with a 250 Hz mode that rings ~4 s until DAMPING tames it. Watch the marked ridge come and go.',
   studio: 'A small concrete box. BARE it rings ~1.5 s; ride DAMPING to PANELS and it becomes the dead control room (~0.15 s) — with the bass still hanging on. That gap is why bass traps exist.',
-  theater: 'A large hall shell: bare concrete it booms 5–6 s like an empty gymnasium. Around 50% DAMPING (seats + curtains) it becomes the ~1 s seated theater; 100% is cinema-dead.',
+  theater: 'A large hall shell: as bare concrete it booms 5–6 s like an empty gymnasium. Around 50% DAMPING (seats + curtains) it becomes the ~1 s seated theater; 100% is cinema-dead.',
   living: 'A domestic room, EMPTY (~1 s). DAMPING furnishes it — sofa, rugs, curtains — down to ~0.3 s, but the 110 Hz mode keeps ringing: thin soft goods cannot reach it.',
 };
 const REVERB_KEYS: ReverbKey[] = ['none', 'room', 'plate', 'hall', 'spring'];

@@ -35,7 +35,7 @@ export const CI_ID_SCENARIOS: CiIdScenario[] = [
     pathway: 'Building pathway (conduit / tray) rated for the spaces it crosses',
     pathwayOptions: [
       'Building pathway (conduit / tray) rated for the spaces it crosses',
-      'Lie it above the ceiling tiles — it\'s low voltage',
+      'Lay it above the ceiling tiles — it\'s low voltage',
       'Across the corridor floor under a mat',
     ],
     keyRisk: 'Low-level signal: interference exposure and shield integrity over a long run',
@@ -281,7 +281,7 @@ export const CI_RACK_ISSUES: CiRackIssue[] = [
   { id: 'ri-5', mistakeId: 'blocked-access', label: 'Amp rear blocked by a taut bundle', zone: 0.62 },
   { id: 'ri-6', mistakeId: 'blocked-vent', label: 'Speaker lines strapped straight across the amp\'s fan exhaust', zone: 0.7 },
   { id: 'ri-7', mistakeId: 'crushed-by-tie', label: 'Zip ties cinched until the loom pinches to an hourglass', zone: 0.48 },
-  { id: 'ri-8', mistakeId: 'sharp-bend', label: 'Cat6 hairpinned 180° round the rail edge', zone: 0.22 },
+  { id: 'ri-8', mistakeId: 'sharp-bend', label: 'Cat6 hairpinned 180° around the rail edge', zone: 0.22 },
   { id: 'ri-9', mistakeId: 'bad-rack-entry', label: 'Trunk forced through a raw cut-out — no grommet, creased at the edge', zone: 0.04 },
   { id: 'ri-10', mistakeId: 'connector-strain', label: 'Power connectors levered sideways by the bundle', zone: 0.82 },
   { id: 'ri-11', mistakeId: 'hidden-loop', label: 'Service loops zip-tied to the rail beside the amp — no hand fits', zone: 0.55 },
@@ -440,7 +440,7 @@ export const CI_FLOOR_SCENARIOS: CiRouteScenario[] = [
 
 export const CI_OVERUNDER_STEPS = [
   'First loop: natural lay — let the cable curl the way it wants.',
-  'Second loop: reverse — roll your wrist so the loop lays under.',
+  'Second loop: reverse — roll your wrist so the loop lies under.',
   'Alternate over… under… over… under to the end.',
   'Secure the coil; it now pays out straight, without twist.',
 ] as const;

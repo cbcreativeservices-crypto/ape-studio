@@ -170,7 +170,7 @@ export function VoiceAir({ w, h, kind, accessibilityLabel }: { w: number; h: num
         { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: 380, v: -24, align: 'right', tone: 'muted' },
         ...(kind === 'plosive' ? [{ id: 'jet', text: 'A PUFF OF AIR', short: 'AIR', u: 250, v: -150, align: 'center' as const, at: { u: 200, v: -40 }, tone: 'blue' as const }] : []),
         ...(kind === 'sibilant' ? [{ id: 'hiss', text: 'A NARROW HISS', short: 'HISS', u: 250, v: -110, align: 'center' as const, at: { u: 180, v: -10 }, tone: 'amber' as const }] : []),
-        ...(kind === 'vowel' ? [{ id: 'snd', text: 'SOUND, ALL ROUND THE FRONT', short: 'SOUND', u: 240, v: 190, align: 'center' as const, tone: 'blue' as const }] : []),
+        ...(kind === 'vowel' ? [{ id: 'snd', text: 'SOUND, ALL AROUND THE FRONT', short: 'SOUND', u: 240, v: 190, align: 'center' as const, tone: 'blue' as const }] : []),
       ]}
     >
       <PlayerBehind pose={SINGER_SIDE} dim={0.9} />

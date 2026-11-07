@@ -162,7 +162,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p5: {
     seeing: [
       'Six family keys: PLOSIVES, FRICATIVES, AFFRICATES, NASALS, LIQUIDS, GLIDES. A card gives the letters, how each is made, and Energy.',
-      'A spectrogram of one syllable, such as “PA”: 400 ms left to right, 0 to 8k Hz bottom to top. Black = silence, blue → red = quiet → loud. Spans on top name its parts.',
+      'A spectrogram of one syllable, such as “PA”: 400 ms left to right, 0 to 8 kHz bottom to top. Black = silence, blue → red = quiet → loud. Spans on top name its parts.',
       'Then an “At the microphone” card and an UNDERSTANDING CHECK.',
     ],
     control: [

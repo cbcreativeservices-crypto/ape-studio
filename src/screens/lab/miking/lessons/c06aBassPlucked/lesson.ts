@@ -221,7 +221,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the mic a little higher, toward the fingerboard. What tends to change?',
     options: ['More low end, because the strings are longer there', 'Nothing: the height along the strings makes no difference', 'More finger attack and pitch definition; less body'],
     correct: 'More finger attack and pitch definition; less body',
-    explain: 'Toward the fingerboard tends to bring the fingers and the pitch; too localized and the body thins. Compare it with a lower, topward view.',
+    explain: 'Toward the fingerboard tends to bring the fingers and the pitch; too localized and the body thins. Compare it with a lower view, aimed toward the top.',
     why: {
       'More low end, because the strings are longer there': 'Higher tends toward attack, not more low end.',
       'Nothing: the height along the strings makes no difference': 'Height changes the balance of attack and body — try it.',
@@ -470,7 +470,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: once the finger lets go, what does the string do?', options: ['It stops at once', 'It swings back and rings on', 'It holds its pulled shape'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic a little higher, toward the fingerboard. What changes?', options: ['More finger and pitch', 'More body', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — often least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

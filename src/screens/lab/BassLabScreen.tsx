@@ -394,7 +394,7 @@ export function BassLabScreen() {
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
-      exploreCaption="Tap the fretboard — between two frets, or at a node (or use the FRET fader / NODE choices) — to choose a note — then read the fraction, watch the standing wave, and play it."
+      exploreCaption="Tap the fretboard — between two frets or at a node — to choose a note (or use the FRET fader / NODE choices) — then read the fraction, watch the standing wave, and play it."
       // Screen Guide (2026-10-31): "this screen, explained" — LEARN, CHECK and
       // EXPLORE in the MODE showing (bassScreenGuides.ts). A CONCEPT lab (the
       // board is drawn from the equations, PLAY is a recording, no mic and no
@@ -530,7 +530,7 @@ export function BassLabScreen() {
         <Text style={styles.caption}>
           {mode === 'fretted'
             ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
-            : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
+            : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survives. Nodes are marked; the string rings over its FULL length.`}
         </Text>
       </View>
 

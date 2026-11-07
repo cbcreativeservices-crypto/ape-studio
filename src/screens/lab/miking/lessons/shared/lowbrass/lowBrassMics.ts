@@ -46,7 +46,7 @@ export const LOW_BRASS_MIC_TYPES = {
       { id: 'omni', label: 'omni (textbook shape)', prov: generic },
     ],
     body: { length: placeholder(190, 'a large side-address condenser’s depth on its mount'), radius: placeholder(30, 'its body radius'), width: placeholder(190, 'its long, upright extent') },
-    power: 'phantom power (48 V) — or its own supply for a valve model',
+    power: 'phantom power (48 V) — or its own supply for a tube model',
     mount: 'stand',
     examples: [{ model: 'a large-diaphragm cardioid spot beneath the horn (session account)', fact: 'cardioid, side-address; the size is the kit lessons’ side-address drawing default', src: 'IHS-ROSTRUP' }],
     art: 'sideLdc',

@@ -102,11 +102,11 @@ describe('answer keys', () => {
     assert.match(by('k6').prompt, /un-glued/);
     assert.doesNotMatch(by('k6').prompt, /never quite lifts/);
     assert.match(by('e1').prompt, /we like the drive of the references/);
-    assert.match(by('e1').explain, /the first question is information/);
+    assert.match(by('e1').explain, /information comes first/);
     assert.match(by('e2').prompt, /Where is that handled\?/);
     assert.match(by('e2').explain, /^A mastering decision — here the decision is to keep the step/);
     assert.match(by('l3').explain, /services differ on whether they turn quiet masters up/);
-    assert.match(by('t7').explain, /the first one is information/);
+    assert.match(by('t7').explain, /this is a request for information/);
   });
   it('dither is the LAST process after sample-rate conversion; the streaming list says float → 24-bit is still a reduction (dither, hedged; R6); CD asks for ISRC + UPC/EAN', () => {
     const cd = DESTINATIONS.find((d) => d.id === 'cd')!;

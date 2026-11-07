@@ -301,7 +301,7 @@ function F10Meet(p: PageProps) {
       },
       well: (
         <>
-          <Landing looking={`${view === 'top' ? 'From above' : 'From the side'} · ${lesson.model.variants.find((v) => v.id === variant)?.label.toLowerCase() ?? ''}`} prompt="Step through PART: the listener’s point, the scene front, the sources and what is round them." />
+          <Landing looking={`${view === 'top' ? 'From above' : 'From the side'} · ${lesson.model.variants.find((v) => v.id === variant)?.label.toLowerCase() ?? ''}`} prompt="Step through PART: the listener’s point, the scene front, the sources and what is around them." />
           {item ? (
             <Card>
               <Point title={item.label.toUpperCase()}>{item.text}</Point>
@@ -323,7 +323,7 @@ function F10Meet(p: PageProps) {
             h={h}
             view="top"
             box={siteBox(variant, 'whole', 'top')}
-            a11y={isEvent(variant) ? `From above: the performer’s voice arrives at the listener’s point from straight ahead, the two PA loudspeakers from about ${Math.abs(Math.round(paDeg))} degrees either side.` : `From above: the walker ${Math.abs(Math.round(wDir))} degrees to the listener’s ${wSide.toLowerCase()}, heard first by the ${first.toLowerCase()}, and again off the wall behind about ${late.toFixed(0)} milliseconds later; the singer straight ahead.`}
+            a11y={isEvent(variant) ? `From above: the performer’s voice arrives at the listener’s point from straight ahead, the two PA loudspeakers from about ${Math.abs(Math.round(paDeg))} degrees on either side.` : `From above: the walker ${Math.abs(Math.round(wDir))} degrees to the listener’s ${wSide.toLowerCase()}, heard first by the ${first.toLowerCase()}, and again off the wall behind about ${late.toFixed(0)} milliseconds later; the singer straight ahead.`}
             labels={
               isEvent(variant)
                 ? [{ id: 'pa', text: 'THE PA, LEFT AND RIGHT', short: 'PA', u: 3600, v: -2400, align: 'center', tone: 'blue' }]
@@ -352,7 +352,7 @@ function F10Meet(p: PageProps) {
             )}
           </FieldStage>
         ),
-        badge: 'From above · blue = straight paths to the listener’s point · a simplified picture: no head shadow drawn, sound speed from the calculator',
+        badge: 'From above · blue = straight paths to the listener’s point · a simplified picture: no head shadow drawn, sound speed from the Calculator lab',
         bezel: isEvent(variant)
           ? [
               { k: 'PERFORMER', v: `${fmtM(dDirect)} · AHEAD`, flex: 1.4 },
@@ -390,10 +390,10 @@ function F10Meet(p: PageProps) {
       well: (
         <>
           {lesson.predictions.meet ? <PredictCard p={lesson.predictions.meet} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking="From above · sound arriving at the listener’s point" prompt={isEvent(variant) ? 'The performer is ahead; the PA loudspeakers stand either side. Every one of them reaches the listener’s point — a spatial mic hears them all.' : 'Move WALK: the walker crosses in front from left to right. Watch the direction and which ear the sound reaches first.'} />
+          <Landing looking="From above · sound arriving at the listener’s point" prompt={isEvent(variant) ? 'The performer is ahead; the PA loudspeakers stand on either side. Every one of them reaches the listener’s point — a spatial mic hears them all.' : 'Move WALK: the walker crosses in front from left to right. Watch the direction and which ear the sound reaches first.'} />
           <Card>
             {isEvent(variant) ? (
-              <Point title="AT AN EVENT">{`The audience mostly hears the PA: two loudspeakers about ${Math.abs(Math.round(paDeg))}° either side of straight ahead, ${fmtM(dist(EVENT.pa[0], LISTENER))} away. A spatial mic in the audience hears the event as the audience does — PA, crowd and all.`}</Point>
+              <Point title="AT AN EVENT">{`The audience mostly hears the PA: two loudspeakers about ${Math.abs(Math.round(paDeg))}° on either side of straight ahead, ${fmtM(dist(EVENT.pa[0], LISTENER))} away. A spatial mic in the audience hears the event as the audience does — PA, crowd and all.`}</Point>
             ) : (
               <>
                 <Point title="DIRECTION">{`The walker is ${Math.abs(Math.round(wDir))}° to the listener’s ${wSide === 'FRONT' ? 'front' : wSide.toLowerCase()}: the ${first === 'BOTH' ? 'two ears hear it together' : `${first.toLowerCase()} hears it first, and louder, the head shading the other`}. Those time and level differences, and the outer ears’ shaping, are the cues a binaural head keeps.`}</Point>
@@ -625,7 +625,7 @@ const SYSTEMS: readonly { id: SystemId; label: string; short: string; rigs: Spat
   { id: 'foa', label: 'First-order Ambisonic mic', short: 'AMBISONIC', rigs: [{ id: 'foa', c: LISTENER }], channels: '4 raw A-format tracks', where: 'Upright at the listener’s point, its front mark to the scene front, in a suspension.', playback: 'Converted with the mic’s own converter, then turned and rendered: headphones, a speaker layout, stereo.', limit: 'Limited directional sharpness: an enveloping view, not separable point sources. Raw A-format is not stereo or 5.1.' },
   { id: 'dms', label: 'Double M/S', short: 'DOUBLE M/S', rigs: [{ id: 'dms', c: LISTENER }], channels: '3 (front Mid, rear Mid, Side)', where: 'At the listener’s point, the front Mid forward, the figure-8’s positive side marked.', playback: 'Decoded on purpose to front and rear, or plain M/S stereo.', limit: 'The raw tracks are not speaker channels; the matrix cannot repair a clipped or wind-ruined capsule.' },
   { id: 'compact', label: 'A compact surround mic', short: 'COMPACT 5.0', rigs: [{ id: 'dms', c: LISTENER }], channels: '5 (plus a low-frequency effects output on some)', where: 'On a stand or a camera, its front to the scene front — quick to set up and to move.', playback: 'A five-speaker layout, through its maker’s processing: read its channel map.', limit: 'Its topology and its low-frequency output are its maker’s — never assume every “5.1” cable carries the same thing.' },
-  { id: 's50', label: 'A spaced five-channel array', short: '5.0 ARRAY', rigs: [{ id: 'surround50', c: LISTENER }], channels: '5 (L, C, R, Ls, Rs)', where: 'Round the listener’s point, the spacing chosen for the place — an example layout.', playback: 'A five-speaker layout; check the stereo and mono downmix.', limit: 'Needs room, stable stands and time; spaced mics summed can color the sound.' },
+  { id: 's50', label: 'A spaced five-channel array', short: '5.0 ARRAY', rigs: [{ id: 'surround50', c: LISTENER }], channels: '5 (L, C, R, Ls, Rs)', where: 'Around the listener’s point, the spacing chosen for the place — an example layout.', playback: 'A five-speaker layout; check the stereo and mono downmix.', limit: 'Needs room, stable stands and time; spaced mics summed can color the sound.' },
   { id: 'addon', label: 'A rear add-on to a front array', short: 'ADD-ON', rigs: [{ id: 'ortf', c: LISTENER }, { id: 'hamasaki', c: v3(-1500, -EAR_STANDING, 0) }], channels: '2 front + 4 ambience', where: 'A front array at the listener’s point; a small square of cardioids or a wide square of figure-8s behind it — an example layout.', playback: 'A surround layout, the ambience layer under the front.', limit: 'Not a whole five-channel array on its own; check timing, direct-sound leakage and the downmix.' },
 ];
 
@@ -1207,7 +1207,7 @@ function useDrillStep(onInteractive: (id: string) => void, done: boolean): Mikin
     lfe: 'A full-range field channel is going to the LFE bus. “.1” is a separate low-frequency effects channel in delivery, not a place for a spatial track: take it off.',
   };
   const params: DockParam[] = [
-    { kind: 'options', id: 'capsule', label: `TRACK ${sel + 1}`, valueLabel: s.tracks[sel], selectedId: s.tracks[sel], onSelect: (id) => setCapsule(id as ATrack), sticky: true, options: A_ORDER.map((cap) => ({ id: cap, label: `${cap} — ${A_WORDS[cap]}`, blurb: 'Put this capsule’s signal on the chosen track (the one it was on takes the old one).' })) },
+    { kind: 'options', id: 'capsule', label: `TRACK ${sel + 1}`, valueLabel: s.tracks[sel], selectedId: s.tracks[sel], onSelect: (id) => setCapsule(id as ATrack), sticky: true, options: A_ORDER.map((cap) => ({ id: cap, label: `${cap} — ${A_WORDS[cap]}`, blurb: 'Put this capsule’s signal on the chosen track (the two tracks swap signals).' })) },
     {
       kind: 'fader',
       id: 'gain',

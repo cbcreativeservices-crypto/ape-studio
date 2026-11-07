@@ -101,7 +101,7 @@ function missLine(trial: EarTrial, picked: number): string | null {
 function roundVerdict(pct: number): string {
   if (pct >= 0.8) return 'sharp — this pace moves the ladder.';
   if (pct >= 0.5) return 'solid. Replay the ones you missed with the answer in mind.';
-  return 'a tough round. Play each clip again after the reveal — the category builds on repetition, not on guessing.';
+  return 'a tough round. Play each clip again after the reveal — this skill builds on repetition, not on guessing.';
 }
 
 export function EarModuleScreen() {

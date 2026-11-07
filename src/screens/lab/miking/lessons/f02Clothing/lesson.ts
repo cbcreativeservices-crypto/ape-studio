@@ -31,13 +31,13 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where a cloth sound comes from',
-    goal: 'See how a move becomes sound — the fold flexing and rubbing, the whole garment swinging and settling — and where it goes: all round the garment, quietly, the room close under it.',
+    goal: 'See how a move becomes sound — the fold flexing and rubbing, the whole garment swinging and settling — and where it goes: all around the garment, quietly, the room close under it.',
     credit: { scenarios: ['f02.snd.1', 'f02.snd.2', 'f02.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'The detail comes from the fold; the body from the whole garment. A precise move gives a shaped sound; a crumpled ball gives noise — and because cloth is quiet, the distance decides how much room comes with it.',
   },
   setting: {
     title: 'Before any mic',
-    goal: 'Know what else reaches a cloth mic — breath, jewellery, steps, the room’s hum and air — what the garment must never touch, and the difference between a cloth pass and lav rustle under dialogue.',
+    goal: 'Know what else reaches a cloth mic — breath, jewelry, steps, the room’s hum and air — what the garment must never touch, and the difference between a cloth pass and lav rustle under dialogue.',
     credit: { scenarios: ['f02.set.1', 'f02.set.2', 'f02.set.hear'], note: 'Answer the three checks.' },
     takeaway: 'Define the action, listen to the room, rehearse the largest gesture, keep the garment off the mic, mount, cable and stand — and keep cloth away from hot lights and connectors. Hearing comes first.',
   },
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a cloth mic in the right order, choose and justify a setup for a quiet stage and a live station, and say what would justify a second mic.',
     credit: { scenarios: ['f02.prac.order', 'f02.prac.gain', 'f02.prac.setup1', 'f02.prac.setup2', 'f02.prac.3', 'f02.mix.1', 'f02.mix.2', 'f02.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'A defined action, the whole gesture clear, a starting point read to the capsule, a quiet room and gain chain, and a mono check for a second mic pass. A brand or a louder signal do not — and more than one setup can pass.',
+    takeaway: 'A defined action, the whole gesture clear, a starting point read to the capsule, a quiet room and gain chain, and a mono check for a second mic pass. A brand or a louder signal does not — and more than one setup can pass.',
   },
 };
 
@@ -249,12 +249,12 @@ const scenarios: MikingScenario[] = [
     id: 'f02.ctx.studio',
     page: 'context',
     prompt: 'A quiet Foley stage, a cloth pass for a medium shot. A fair first plan?',
-    options: ['One mic about 1–1.5 m from the fabric, a quiet room', 'A lav sewn into the jacket’s collar for the detail', 'Two mics either side of the artist, summed for a wider sound'],
+    options: ['One mic about 1–1.5 m from the fabric, a quiet room', 'A lav sewn into the jacket’s collar for the detail', 'Two mics on either side of the artist, summed for a wider sound'],
     correct: 'One mic about 1–1.5 m from the fabric, a quiet room',
     explain: 'On a quiet stage one mic about 1–1.5 m from the active fabric, in front and a little above, with a quiet room and gain chain, is a place to begin.',
     why: {
       'A lav sewn into the jacket’s collar for the detail': 'A lav under fabric hears rustle at the capsule, not the garment’s performance.',
-      'Two mics either side of the artist, summed for a wider sound': 'Two summed mics add a delay and a comb. Start with one.',
+      'Two mics on either side of the artist, summed for a wider sound': 'Two summed mics add a delay and a comb. Start with one.',
     },
   },
   {
@@ -417,7 +417,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a cloth pass get its sharp detail?', options: ['From the hands', 'From the fold flexing and rubbing', 'From the room'], after: 'Now STEP through (or PLAY ONCE) and watch the hands, the fold, the swing and the room.' },
-  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from about 1.25 m to about 60 cm from the fabric. What changes?', options: ['More detail and finger rub', 'More room', 'It depends on this garment'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the fabric reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -444,7 +444,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'Cloth is quiet: farther, the room comes up',
     explain: 'A quiet source needs gain; the farther the mic, the more of the room’s noise comes up with it — and the closer, the narrower the detail.',
     why: {
-      'Cloth only makes its sound very near the mic': 'Cloth sound spreads all round; it is simply quiet.',
+      'Cloth only makes its sound very near the mic': 'Cloth sound spreads all around; it is simply quiet.',
       'Fabric blocks sound going to farther mics': 'The garment does not block the mic; the room’s noise is the issue.',
     },
   },
@@ -514,7 +514,7 @@ export const F02_LESSON: Lesson & { sp: SpExtra } = {
   orient: [
     { title: 'WHAT IT IS', text: 'A cloth pass reproduces a character’s clothes and body movement in sync with the picture: the Foley artist holds a garment — most of the time — or wears it, and performs.', src: 'FF-CLOTH' },
     { title: 'THE WHOLE GARMENT', text: 'Leather and full jackets often need the whole item, not a swatch — moved precisely, never just crumpled into a ball.', src: 'HECKER' },
-    { title: 'A QUIET SOUND', text: 'Cloth is quiet. Ventilation, hum, traffic, breath, jewellery and other clothes sit close under it, so the room is part of every decision.', src: 'LESSON-F02' },
+    { title: 'A QUIET SOUND', text: 'Cloth is quiet. Ventilation, hum, traffic, breath, jewelry and other clothes sit close under it, so the room is part of every decision.', src: 'LESSON-F02' },
     { title: 'THE WHOLE GESTURE', text: 'The hands’ and the garment’s whole movement is a keep-out: the garment never brushes the mic, its mount, cable or stand.', src: 'LESSON-F02' },
   ],
   sound: {
@@ -522,7 +522,7 @@ export const F02_LESSON: Lesson & { sp: SpExtra } = {
       { title: 'The hands move it', text: 'The artist’s hands start the move, in time with the character on screen.' },
       { title: 'The fold flexes and rubs', text: 'Where the fabric bends and rubs over itself — leather creasing, a sleeve on the body — the sharp detail starts.', byVariant: { worn: 'The sleeve brushes the jacket’s body with each swing of the arm: the detail of a walking character’s clothes.' } },
       { title: 'The garment swings', text: 'The whole garment swings and settles: its weight and body join the detail.' },
-      { title: 'All round, quietly', text: 'The sound spreads round the garment into the room — quietly, so the room’s own noise is close under it.' },
+      { title: 'All around, quietly', text: 'The sound spreads around the garment into the room — quietly, so the room’s own noise is close under it.' },
     ],
     attack: 'The start of a move is soft compared with an impact: the fold’s creak and the first rub. A close mic tends to hear more of this, and more of the hands.',
     body: 'Then the garment’s swing and settle, and the pause after it. A farther mic tends to hear more of the whole garment — and of the room.',
@@ -531,7 +531,7 @@ export const F02_LESSON: Lesson & { sp: SpExtra } = {
   setting: {
     items: [
       { id: 'gesture', label: 'the hands’ and the garment’s whole gesture', short: 'THE GESTURE', note: 'Rehearse the largest move: the garment never brushes the mic, mount, cable or stand.', prov: { kind: 'illustrative', reason: 'F02 L8' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'breath', label: 'breath, jewellery, steps and other clothes', short: 'THE PERFORMER', note: 'All close to a quiet sound: aim at the active cloth, keep the face and feet off the axis.', prov: { kind: 'illustrative', reason: 'F02 L6, L45' }, tag: 'SPILL', scene: 'all' },
+      { id: 'breath', label: 'breath, jewelry, steps and other clothes', short: 'THE PERFORMER', note: 'All close to a quiet sound: aim at the active cloth, keep the face and feet off the axis.', prov: { kind: 'illustrative', reason: 'F02 L6, L45' }, tag: 'SPILL', scene: 'all' },
       { id: 'room', label: 'the room: ventilation, hum, traffic', short: 'THE ROOM', note: 'Cloth is quiet: the room’s noise comes up with the gain. Inspect it before setting the mic, and record a quiet baseline.', prov: { kind: 'illustrative', reason: 'F02 L6' }, tag: 'NOISE', scene: 'studio' },
       { id: 'lav', label: 'a dialogue lav under the costume', short: 'A DIALOGUE LAV', note: 'A different problem: rustle on a lav is unwanted noise under speech, not a cloth pass. Coordinate the boom and body mics with the production sound team and the costume department.', prov: { kind: 'illustrative', reason: 'F02 L27, HAYES' }, tag: 'NOT THIS', scene: 'all' },
       { id: 'pa', label: 'the PA and the wedge', short: 'PA · WEDGE', note: 'Live, a quiet sound has little margin before feedback: a close mic, the wedge in its rejection, one open channel if needed.', prov: { kind: 'illustrative', reason: 'S-3REASONS, S-LIVE' }, tag: 'FEEDBACK PATH', scene: 'stage' },

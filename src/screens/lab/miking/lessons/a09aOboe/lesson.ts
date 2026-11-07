@@ -71,7 +71,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one oboe mic in the right order, choose and justify a setup for a studio solo and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['ob.prac.order', 'ob.prac.gain', 'ob.prac.setup1', 'ob.prac.setup2', 'ob.prac.3', 'ob.mix.1', 'ob.mix.2', 'ob.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real oboe.' },
-    takeaway: 'Clearance from the reed, the hands and the keys, the right power and level, a view of the holes and the bell, and an accurate account of polarity versus delay pass. A brand or a bell-only habit do not — and more than one setup can pass.',
+    takeaway: 'Clearance from the reed, the hands and the keys, the right power and level, a view of the holes and the bell, and an accurate account of polarity versus delay pass. A brand or a bell-only habit does not — and more than one setup can pass.',
   },
 };
 
@@ -127,7 +127,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The air column behaves as if the tube ended just past the first open hole; only the lowest notes — every hole closed — leave mainly from the bell.',
     why: {
       'The bell, where the notes come out': 'Only the lowest notes come mainly from the bell.',
-      'The reed, back toward the player’s mouth': 'The lips seal round the reed: it starts the sound, but little of it leaves there.',
+      'The reed, back toward the player’s mouth': 'The lips seal around the reed: it starts the sound, but little of it leaves there.',
     },
   },
   {
@@ -136,7 +136,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In a quiet, good room, is an omni a fair first try on a solo oboe?',
     options: ['No — an omni hears only the bell, not the open holes', 'No — an omni works only more than a meter away', 'Yes — a broad, even pickup that lets the oboe blend'],
     correct: 'Yes — a broad, even pickup that lets the oboe blend',
-    explain: 'An omni hears all round with no directional proximity effect — welcome when the room adds to the sound. As separation matters more, a wide cardioid or a cardioid; a very narrow pickup can make a woodwind less natural.',
+    explain: 'An omni hears all around with no directional proximity effect — welcome when the room adds to the sound. As separation matters more, a wide cardioid or a cardioid; a very narrow pickup can make a woodwind less natural.',
     why: {
       'No — an omni hears only the bell, not the open holes': 'An omni hears the holes, the bell and the room together.',
       'No — an omni works only more than a meter away': 'An omni works at any distance; up close it also has no directional proximity bass.',
@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A foot from the holes tends to give a balanced oboe; a few inches from the bell, a brighter, more isolated sound that helps live. Different goals, not a contradiction — try both on the actual part.',
     why: {
       'Two engineers disagree, so one of them must be wrong': 'Each serves its own goal; neither is a universal rule.',
-      'The bell is for studio work, and the holes for live work': 'It is closer to the other way round: near the bell tends to suit a live stage’s isolation.',
+      'The bell is for studio work, and the holes for live work': 'It is closer to the other way around: near the bell tends to suit a live stage’s isolation.',
     },
   },
   {
@@ -360,7 +360,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the oboe?', options: ['The bell', 'An open hole on the body', 'The reed'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 15–20 cm to a few centimeters from the bell. What changes?', options: ['Brighter, more isolated', 'Darker, more room', 'It depends on the notes'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the oboe reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -400,7 +400,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The air column behaves as if the tube ended just past the first open hole; only the lowest notes come mainly from the bell.',
     why: {
       'From the bell, like the lowest note': 'Only notes with every hole closed come mainly from the bell.',
-      'Back through the reed': 'The lips seal round the reed, so the reed end acts as a closed end: little sound leaves there.',
+      'Back through the reed': 'The lips seal around the reed, so the reed end acts as a closed end: little sound leaves there.',
     },
   },
   {
@@ -471,7 +471,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the hole field, the bell, or the middle of the oboe. They are starting points for different goals, not rules. Move from there and listen: there is no single right answer.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note of the part, the top and a fast passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the reed and face, the fingers, the keys and the bell as it pivots. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the reed and face, the fingers, the keys and the bell as it pivots. The lab stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a natural balance; near the bell, brighter and more isolated with the lowest notes forward; very close to the keys, clicks; farther, more room. A directional mic up close also lifts the lows. These are tendencies, and oboes vary.',
     },
   },
@@ -623,7 +623,7 @@ export const A09A_LESSON: WindLesson = {
     soundSubject: 'An oboe on its side, keys toward you, its air column drawn open',
     breath: 'Breath and reed edge are heard close to the reed; the oboe sends little air out of its holes, so wind noise at a body-facing mic is rarely a problem.',
     keys: 'The oboe’s dense keywork — rings, plates, pads closing — is easy to hear within a few centimeters of the body: back off, or change the angle.',
-    directivity: 'Measured round a player in an anechoic (echoless) room: below about 400 Hz the oboe spreads its sound fairly evenly through the lower half of the space round it; above about 1 kHz the sound narrows into a beam toward the bell, and it is more than 12 dB quieter behind the player than in front.',
+    directivity: 'Measured around a player in an anechoic (echoless) room: below about 400 Hz the oboe spreads its sound fairly evenly through the lower half of the space around it; above about 1 kHz the sound narrows into a beam toward the bell, and it is more than 12 dB quieter behind the player than in front.',
     noteDefault: 9,
   }),
 };

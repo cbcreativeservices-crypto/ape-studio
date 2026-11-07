@@ -120,7 +120,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       level: 'signal',
       cautions: [
         '+48 V phantom power may be present between pins 2/3 and pin 1. It is not a shock hazard, but switch it off before patching equipment that should not receive it.',
-        'A shock, tingle, or buzz felt from a microphone, connector shell, or equipment chassis is never phantom power — it indicates a mains grounding fault somewhere in the system. Stop, do not keep touching the equipment, power the system down, and have the equipment and outlets checked by a qualified person before use. Never defeat a ground pin to make a hum go away.',
+        'A shock, tingle, or buzz felt from a microphone, connector shell, or equipment chassis is never phantom power — it indicates an AC grounding fault somewhere in the system. Stop, do not keep touching the equipment, power the system down, and have the equipment and outlets checked by a qualified person before use. Never defeat a ground pin to make a hum go away.',
       ],
     },
     glossary: ['XLR Cable', 'XLRF', 'XLRM', 'Balanced signaling'],

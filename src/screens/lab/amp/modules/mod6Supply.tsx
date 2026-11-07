@@ -115,7 +115,7 @@ export function Mod6Supply() {
     heat: sim.heat,
     speaker: true,
     faulted: sim.primary != null,
-    a11ySummary: `Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`,
+    a11ySummary: `Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} volts under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`,
   };
 
   return (
@@ -183,8 +183,8 @@ export function Mod6Supply() {
                 />
                 <Body>
                   {supply === 'linear'
-                    ? 'Mains → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see on the display.'
-                    : 'Mains is rectified first, chopped at high frequency, passed through a small high-frequency transformer that steps it down and isolates the rails from the mains, then rectified and often regulated. Lighter, and when regulated it holds the rails up better under load. Neither type is automatically superior — each has a place.'}
+                    ? 'AC power → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see on the display.'
+                    : 'AC power is rectified first, chopped at high frequency, passed through a small high-frequency transformer that steps it down and isolates the rails from the AC power, then rectified and often regulated. Lighter, and when regulated it holds the rails up better under load. Neither type is automatically superior — each has a place.'}
                 </Body>
               </Card>
 
@@ -223,10 +223,7 @@ export function Mod6Supply() {
 
               <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">
                 <Body>
-                  Voltage clipping flattens peaks at the rail line and gets worse as the rails sag. Current limiting flattens
-                  peaks BELOW the rails — the supply had voltage to give, the output stage would not pass the current.
-                  Overcurrent protection does not reshape the wave at all: it opens the output. Thermal limiting (Module 7)
-                  reduces level over time. Reading which one you are seeing tells you what to fix.
+                  Voltage clipping flattens peaks at the rail line and gets worse as the rails sag. Current limiting flattens peaks BELOW the rails — the supply had voltage to give, but the output stage would not pass the current. Overcurrent protection does not reshape the wave at all: it opens the output. Thermal limiting (Module 7) reduces level over time. Reading which one you are seeing tells you what to fix.
                 </Body>
               </LearnMore>
 

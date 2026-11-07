@@ -81,7 +81,7 @@ const DRILL_COPY: Record<string, { use: string; pathway: string; risk: string }>
     risk: 'Mic level is the most vulnerable signal in the building — interference exposure and shield integrity drive the whole installation method.',
   },
   'foh-temp': {
-    use: 'One night: deployed, protected from the show’s traffic, then struck. Temporary changes the solutions, not the standard of care.',
+    use: 'One night: deployed, protected from the show’s traffic, then struck. Temporary work changes the solutions, not the standard of care.',
     pathway: 'Perimeter first, and a protected crossing only where one is truly unavoidable — walking routes stay walking routes.',
     risk: 'Feet, carts and doors are tonight’s hazard — mechanical protection outranks every other concern for this run.',
   },

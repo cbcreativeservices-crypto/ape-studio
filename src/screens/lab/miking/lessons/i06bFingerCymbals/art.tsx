@@ -487,7 +487,7 @@ export function FingerCymbalsStrike({ w, h, variant, shown, accessibilityLabel }
     { id: 'n1', text: dance ? '① THUMB AND FINGER CLOSE' : '① DROPPED EDGE-FIRST', short: '① CLOSE', u: -120, v: -140, align: 'left', tone: shown === 1 ? 'amber' : 'muted' },
     { id: 'n2', text: '② EDGES MEET', u: contact[0] + 16, v: contact[1] + 30, align: 'left', tone: shown === 2 ? 'amber' : 'muted' },
     { id: 'n3', text: '③ APART, BOTH RING', short: '③ BOTH RING', u: -120, v: 60, align: 'left', tone: shown === 3 ? 'amber' : 'muted' },
-    { id: 'n4', text: '④ SOUND ALL ROUND', short: '④ ALL ROUND', u: 120, v: 60, align: 'right', tone: shown === 4 ? 'amber' : 'muted' },
+    { id: 'n4', text: '④ SOUND ALL AROUND', short: '④ ALL ROUND', u: 120, v: 60, align: 'right', tone: shown === 4 ? 'amber' : 'muted' },
   ];
   return (
     <View style={{ width: w, height: h }}>

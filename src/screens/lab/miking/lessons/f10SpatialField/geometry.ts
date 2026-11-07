@@ -95,7 +95,7 @@ export const PA_BOXES = EVENT.pa.map(paBox);
 
 export const F10_VARIANTS: Variant[] = [
   { id: 'plaza', label: 'CITY SQUARE', blurb: 'A city square: a street singer 6 m in front, a public footpath between with a walker on it, a building’s wall behind.', phrase: 'in a city square' },
-  { id: 'event', label: 'OUTDOOR EVENT', blurb: 'An outdoor event: a performer on a small stage 7 m in front, a PA loudspeaker either side facing the audience — the listener’s point among the audience.', phrase: 'at an outdoor event' },
+  { id: 'event', label: 'OUTDOOR EVENT', blurb: 'An outdoor event: a performer on a small stage 7 m in front, a PA loudspeaker on either side facing the audience — the listener’s point among the audience.', phrase: 'at an outdoor event' },
 ];
 
 /** The engine's views (side: from the listener's right; top: from above). */

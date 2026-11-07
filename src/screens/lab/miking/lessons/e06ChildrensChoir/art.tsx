@@ -37,7 +37,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'LIVE', text: 'Begin with the fewest open choir mics, in front, a little above the mouths, aimed at the group. Keep monitors low, in the mics’ rejection, carrying little or none of the choir mics, and never pointed into an open choir mic. Mute and unmute to compare the natural choir with the reinforced one.' },
       { title: 'A RECORDING', text: 'One pair or a carefully placed area mic first — not a close mic on every child; several short takes; spots only for a section the pair cannot carry.' },
-      { title: 'THEIR HEARING', text: 'Measure at the children’s positions and lower the level at the source first; quiet, short soundchecks. A child who cannot hear instructions often means it is too loud.' },
+      { title: 'THEIR HEARING', text: 'Measure at the children’s positions and lower the level at the source first; quiet, short soundchecks. A child who cannot hear instructions is often a sign it is too loud.' },
     ],
   },
   two: {

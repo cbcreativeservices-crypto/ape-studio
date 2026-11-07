@@ -108,7 +108,7 @@ export function smallModel(id: string, src: string): InstrumentModel {
     id,
     name: 'a practice room with three source points and two equipment areas',
     prefix: 'ps',
-    variant: { id: 'room', label: 'PRACTICE ROOM', blurb: 'A quiet, cleared room: A, B and C 2 m apart on one walking line; the equipment areas M1 and M2 2 m either side of B.', phrase: 'in the practice room' },
+    variant: { id: 'room', label: 'PRACTICE ROOM', blurb: 'A quiet, cleared room: A, B and C 2 m apart on one walking line; the equipment areas M1 and M2 2 m on either side of B.', phrase: 'in the practice room' },
     src,
     parts: [
       { id: 'area', label: 'the source area (the walking line)', short: 'source area', role: 'Where the source participant walks, claps and speaks — only there. No stand, cable or windshield reaches into it.', lesson: true },

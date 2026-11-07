@@ -313,7 +313,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     options: ['Nothing — the tap silenced it', 'The source — and the meter reads a copy', 'The meter’s output'],
     correct: 1,
     explain: 'The non-breaking top is the whole point: original route intact, meter fed in parallel.',
-    wrong: ['That is full-normal behavior — the common half bay keeps the top gentle.', undefined, 'Meters read; they don’t feed.'],
+    wrong: ['That is full-normal behavior — the common half-normal bay keeps the top gentle.', undefined, 'Meters read; they don’t feed.'],
     render: {
       state: { config: 'half', breakSide: 'bottom', topPlugged: true, bottomPlugged: false },
       sourceLabel: 'CONSOLE OUT 2',
@@ -412,7 +412,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     ],
     correct: 0,
     explain:
-      'A normal is a connection that exists by default — output into own input is a loop armed the moment gain allows. Processor pairs stay thru.',
+      'A normal is a connection that exists by default — output into its own input is a loop armed the moment gain allows. Processor pairs stay thru.',
     wrong: [
       undefined,
       'Thru is the SAFE choice for a processor pair — no default connection at all.',

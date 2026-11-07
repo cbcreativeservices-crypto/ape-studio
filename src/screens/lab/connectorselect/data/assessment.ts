@@ -171,7 +171,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     q: 'A cable passes every continuity check at rest, yet drops out on stage. Best next test?',
     options: ['Flex the cable at each connector while watching the lamps', 'Declare it healthy — the tester passed it', 'Measure its impedance with the same tester', 'Replace the connectors immediately'],
     correct: 0,
-    explain: 'Intermittents hide at rest and reveal under flex — wiggle at the strain reliefs while testing.',
+    explain: 'Intermittents hide at rest and show up under flex — wiggle at the strain reliefs while testing.',
     wrong: [undefined, 'A resting pass means nothing to a strain-relief break that only opens when bent.', 'A continuity tester cannot measure characteristic impedance at all.', 'Diagnose before surgery: find WHERE it fails first — it may be one ten-second fix.'],
   },
   {
@@ -188,7 +188,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     id: 'safe_ground',
     kind: 'safety',
     critical: true,
-    q: 'A system hums. Someone offers a ground-lift adapter to “fix” the amp’s mains plug. You…',
+    q: 'A system hums. Someone offers a ground-lift adapter to “fix” the amp’s power plug. You…',
     options: ['Refuse it and find the actual cause of the hum', 'Use it — a hum gone is a hum gone', 'Use it, but only for the show tonight', 'Use it on the mixer instead of the amp'],
     correct: 0,
     explain: 'The safety ground is shock protection for every hand that touches the system. Hum has proper fixes; removing protection is never one.',

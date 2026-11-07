@@ -31,18 +31,18 @@ const base = stringsCopy({
   soundReveal: 'The strings move very little air on their own: the bridge rocking the FACE makes most of the sound, and the air in the deep bowl breathes out through the rosettes.',
   soundAfter: 'Then the strings, the face and the bowl’s air keep ringing together — the BODY of the note. The risha’s click is the start; the bloom is what follows.',
   shapesNote2: 'This is an ideal string between rigid ends. On a fretless neck the left hand can stop the string anywhere — even between the semitones — but every stopped length still has these whole-number shapes.',
-  coupledNote: 'The face bows in and out round the bridge, and the bowl’s air moves through the rosettes — a simplified picture of the lowest motion. A close mic hears the part of the face, the rose or the strings it faces most.',
+  coupledNote: 'The face bows in and out around the bridge, and the bowl’s air moves through the rosettes — a simplified picture of the lowest motion. A close mic hears the part of the face, the rose or the strings it faces most.',
   setting: {
     kitA11y: 'The oud player from above, seated on a chair: the oud across the right thigh, its face to the audience, the neck to the player’s left; a vocal mic in front of the mouth, a frame-drum player beside.',
-    kitIdle: 'The space round a seated oud player is theirs: the risha hand over the face, the left hand along a short neck, the pegbox swinging behind it, and the player’s view.',
+    kitIdle: 'The space around a seated oud player is theirs: the risha hand over the face, the left hand along a short neck, the pegbox swinging behind it, and the player’s view.',
     leftHanded: 'A left-handed player holds the oud mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the oud player with a floor wedge in front, a frame-drum player beside, the PA at the front corners and the audience edge.',
-    studioA11y: 'A studio room from above: the oud player on a chair, no monitors on the floor, the walls round them.',
+    studioA11y: 'A studio room from above: the oud player on a chair, no monitors on the floor, the walls around them.',
     stageIdle: 'A wedge in front, percussion beside, the PA facing out. A frame drum close by is loud against an oud.',
     studioIdle: 'No monitors on the floor. The room is part of the picture now — and a good room is worth hearing.',
     before: [
-      { title: 'ASK THE PLAYER FIRST', text: 'Which oud, which strings and risha, which phrase? Ask for low and high notes, quick risha strokes, tremolo, the slides and the loudest passage. Hear it unamplified from a normal listening place, and agree how much risha click and finger movement belong in the sound. Tuning and any change to the instrument are the player’s.' },
-      { title: 'NAME EVERY PATH', text: 'A microphone in the room hears the air round the oud. A pickup — even a small clip-on one that looks like a mic — senses the instrument’s vibration: a separate electrical path. Label each one for what it is, and follow its own manual for power.' },
+      { title: 'ASK THE PLAYER FIRST', text: 'Which oud, which strings and risha, which phrase? Ask for low and high notes, quick risha strokes, tremolo, the slides and the loudest passage. Hear it unamplified from a normal listening place, and agree on how much risha click and finger movement belong in the sound. Tuning and any change to the instrument are the player’s.' },
+      { title: 'NAME EVERY PATH', text: 'A microphone in the room hears the air around the oud. A pickup — even a small clip-on one that looks like a mic — senses the instrument’s vibration: a separate electrical path. Label each one for what it is, and follow its own manual for power.' },
     ],
   },
   workedZone: { oud: 'upper' },
@@ -90,5 +90,5 @@ const base = stringsCopy({
 export const C13_COPY: LessonCopy = {
   ...base,
   axes: { ...base.axes, x: { plus: 'toward the pegbox', minus: 'toward the tail', label: 'ALONG', blurb: 'Along the strings, toward the pegbox or the tail of the bowl (x).' } },
-  setting: { ...base.setting, kitLanding: 'Tap anything round the player — or step through ITEM — to see what it means for an oud mic. There is nothing to answer yet.' },
+  setting: { ...base.setting, kitLanding: 'Tap anything around the player — or step through ITEM — to see what it means for an oud mic. There is nothing to answer yet.' },
 };

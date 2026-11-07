@@ -50,7 +50,7 @@ describe("navView — the end screen (WHAT'S LEFT)", () => {
     assert.equal(v.nextLabel, null);
     assert.equal(v.prevOn, true);
     assert.equal(v.startOn, true);
-    assert.equal(v.a11y.prev, 'Back to the last module');
+    assert.equal(v.a11y.prev, 'Back to the previous module');
   });
 });
 

@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A clip made for a concert flute: can it go on a piccolo?',
     options: ['Yes — the piccolo is the same family, so the clip fits', 'Only if it fits this piccolo; if unsure, use a stand', 'Yes, if you squeeze it tighter to make it hold'],
     correct: 'Only if it fits this piccolo; if unsure, use a stand',
-    explain: 'A piccolo is much smaller: a flute clip of the wrong size or pressure can slip, cover a hole or press the body. Only a mount that truly fits, with the player’s approval — else a stand.',
+    explain: 'A piccolo is much smaller: a flute clip of the wrong size or pressure can slip, cover a hole or press the body. Only a mount that truly fits, with the player’s approval — otherwise a stand.',
     why: {
       'Yes — the piccolo is the same family, so the clip fits': 'Same family, different size: the fit has to be checked, not assumed.',
       'Yes, if you squeeze it tighter to make it hold': 'More pressure risks the body and the keys. Use a stand instead.',
@@ -401,7 +401,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: half a flute’s length — how high does a piccolo sound?', options: ['An octave higher', 'A fifth higher', 'The same'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from close to a meter in front. What changes?', options: ['Fewer clicks, more room', 'More breath', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the piccolo reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -512,7 +512,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin — the flute’s starting points, transferred: the piccolo between the lip plate and the left hand, the player’s head, the middle of the piccolo, the embouchure hole. Places to begin and compare, not piccolo-specific optimums.',
       separate: 'Distance, height and angle are separate variables: change one at a time, and play low, high, soft, strong and fast passages each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the air jet, a turning head and the hands. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the air jet, a turning head and the hands. The lab stops the mic and names what it would touch.',
       tendencies: 'Close tends to bring detail, breath and keys; behind the head, less breath; a meter in front, more room. A presence peak can turn a piccolo shrill. These are tendencies, and piccolos vary.',
     },
   },
@@ -664,7 +664,7 @@ export const A07_LESSON: WindLesson = {
     soundSubject: 'A piccolo stood on end, keys toward you, its air column drawn open',
     breath: 'The jet blows out across the embouchure hole and past the lips: a capsule in it hears wind and pops. Keep the capsule off the jet; a windscreen helps after that.',
     keys: 'Small keys close together: clicks are loud within a few centimeters; a farther view or behind the head hears them less.',
-    directivity: 'Measured round a player in an anechoic (echoless) room: the lowest notes spread in much the same directions as the flute’s, and around 2 kHz the piccolo sends a fairly strong share to the front.',
+    directivity: 'Measured around a player in an anechoic (echoless) room: the lowest notes spread in much the same directions as the flute’s, and around 2 kHz the piccolo sends a fairly strong share to the front.',
     noteDefault: 9,
   }),
 };

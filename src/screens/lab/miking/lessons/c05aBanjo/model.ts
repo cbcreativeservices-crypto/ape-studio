@@ -49,7 +49,7 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       // the 4.5 cm "centre" allowance): the bridge sits a third of the way in
       // from the tail rim, so the centre is under the picking fingers (round 2).
       start: { d: 76, dx: 42 },
-      tendency: 'Note attack and the head’s projection, close and clear. Too close can overstate the head or the pick’s transients; a small move changes it a lot.',
+      tendency: 'The note’s attack and the head’s projection, close and clear. Too close can overstate the head or the pick’s transients; a small move changes it a lot.',
       checks: ['Clear of the picking hand and the forearm on the rim', 'A hard, papery head sound', 'How it changes as the player moves'],
     },
     {

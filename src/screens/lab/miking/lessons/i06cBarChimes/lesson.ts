@@ -117,12 +117,12 @@ const scenarios: MikingScenario[] = [
     id: 'bc.set.1',
     page: 'setting',
     prompt: 'Before you place a bar-chime mic, what do you ask the player to show you?',
-    options: ['The sweep: direction, start and end bars, speed and damping', 'Only the loudest strike, so the gain can be set from it first', 'Nothing yet: set the mic first, then fit the sweep round it'],
+    options: ['The sweep: direction, start and end bars, speed and damping', 'Only the loudest strike, so the gain can be set from it first', 'Nothing yet: set the mic first, then fit the sweep around it'],
     correct: 'The sweep: direction, start and end bars, speed and damping',
     explain: 'A mic aimed only at one end of a long row gives an uneven sweep. The direction, the reach, the swinging bars and the damping all decide where a mic can go.',
     why: {
       'Only the loudest strike, so the gain can be set from it first': 'Gain needs the strongest strike AND the quiet tail — and placement needs the whole sweep.',
-      'Nothing yet: set the mic first, then fit the sweep round it': 'Never fit the player round a mic; place the mic for the gesture.',
+      'Nothing yet: set the mic first, then fit the sweep around it': 'Never fit the player around a mic; place the mic for the gesture.',
     },
   },
   hearingCheck(W),
@@ -427,7 +427,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand sweeps from the long bars to the short. Which bars are still ringing at the end?', options: ['All the struck bars', 'Only the last bar', 'None of them'], after: 'Now STEP through the sweep (or PLAY ONCE), then try one bar’s shapes and lengths.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 40 cm to 80 cm. What changes most?', options: ['A more even row, more room', 'More attack, less room', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Two mics at the two ends: which bar reaches both mics at the same time?', options: ['A bar in the middle', 'The longest bar', 'Every bar'], after: 'Flip MIC B POLARITY both ways, then move a mic — and try each SOURCE along the row.' },

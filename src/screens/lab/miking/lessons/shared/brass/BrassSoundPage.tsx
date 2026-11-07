@@ -313,7 +313,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
               <Point title={slide ? `POSITION ${pos}` : vRow.label}>
                 {slide
                   ? `A longer tube plays lower. Each position out lowers the note about a semitone; the slide adds tube on both of its legs, so it travels half the tube it adds. ${pos === 1 ? 'At 1st the slide is closed.' : `At ${pos}th it is about ${Math.round(SLIDE_POSITIONS[pos - 1] / 10)} cm out — and the crook, the hand and the arm go with it.`} ${spec.id === 'bass' && attach !== 'open' ? aRow.words : ''}`
-                  : `A longer tube plays lower. Each valve sends the air round an extra loop: ${semis ? `here ${semis} semitone${semis > 1 ? 's' : ''} lower, about ${Math.round((Math.pow(2, semis / 12) - 1) * 100)} % more tube.` : 'with none pressed, the air takes the open tube.'} The valves move only the player’s fingers — the horn stays where it is.`}
+                  : `A longer tube plays lower. Each valve sends the air around an extra loop: ${semis ? `here ${semis} semitone${semis > 1 ? 's' : ''} lower, about ${Math.round((Math.pow(2, semis / 12) - 1) * 100)} % more tube.` : 'with none pressed, the air takes the open tube.'} The valves move only the player’s fingers — the horn stays where it is.`}
               </Point>
             </Card>
             <Note>{cfg.tubeNote[variant] ?? cfg.tubeNote[cfg.fallback]}</Note>
@@ -326,7 +326,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         kind: 'COMPARE',
         layout: 'rack',
         rack: {
-          render: (w, h) => <BellRadiation w={w} h={h} P={P} band={band} deg={deg} accessibilityLabel={`The ${hornWord} from above, the bell pointing right. The ${BAND_LABEL[band].toLowerCase()} band’s spread drawn round the bell; a mic ${deg} degrees off the bell’s axis hears it ${lobeWords(rel).toLowerCase()} than on the axis, in this simplified picture.`} />,
+          render: (w, h) => <BellRadiation w={w} h={h} P={P} band={band} deg={deg} accessibilityLabel={`The ${hornWord} from above, the bell pointing right. The ${BAND_LABEL[band].toLowerCase()} band’s spread drawn around the bell; a mic ${deg} degrees off the bell’s axis hears it ${lobeWords(rel).toLowerCase()} than on the axis, in this simplified picture.`} />,
           badge: 'From above · a simplified picture of the measured trend · no level scale · silent',
           bezel: radBezel,
           params: radParams,
@@ -334,7 +334,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         },
         well: (
           <>
-            <Landing looking="The bell from above, and a mic round it" prompt="Choose a BAND, then swing the MIC ANGLE from on axis round to behind the bell." />
+            <Landing looking="The bell from above, and a mic around it" prompt="Choose a BAND, then swing the MIC ANGLE from on axis around to behind the bell." />
             <Card>
               <Point title={`${BAND_LABEL[band]} · ${BAND_RANGE[band].toUpperCase()}`}>{(cfg.bands[variant] ?? cfg.bands[cfg.fallback])[band]}</Point>
             </Card>

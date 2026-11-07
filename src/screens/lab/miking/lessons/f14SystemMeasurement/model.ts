@@ -140,7 +140,7 @@ export const F14_ZONES: DocumentedZone[] = [
   {
     id: 'vn.front',
     label: 'Start of coverage: a front seat',
-    band: 'Then a seat near the front of the same main’s coverage, the same height and set-up, the main and its settings unchanged.',
+    band: 'Then a seat near the front of the same main’s coverage, the same height and setup, the main and its settings unchanged.',
     kind: 'sourced',
     src: 'MEYER-MAPP',
     quote: 'place mics "in logical order, e.g., front to back"; seated 1.2 m',
@@ -159,7 +159,7 @@ export const F14_ZONES: DocumentedZone[] = [
   {
     id: 'vn.rear',
     label: 'End of coverage: a rear seat',
-    band: 'And a seat near the back of its coverage, the same height and set-up — a deep room may need more than one.',
+    band: 'And a seat near the back of its coverage, the same height and setup — a deep room may need more than one.',
     kind: 'sourced',
     src: 'MEYER-MAPP',
     quote: 'F14 L24 practice: sample every listener region whose performance matters (the "beginning, middle and end" wording not found at the cited page — correction G5-01)',
@@ -173,7 +173,7 @@ export const F14_ZONES: DocumentedZone[] = [
     requires: { variant: 'venue', micTypeIds: FF },
     start: toward(S.rear, MAIN_L),
     tendency: 'Farther from the main: quieter, and more of the room in the trace. How the coverage holds up at the back.',
-    checks: ['The same set-up as the front and mid seats', 'Level compared with the others', 'Unsampled regions named'],
+    checks: ['The same setup as the front and mid seats', 'Level compared with the others', 'Unsampled regions named'],
   },
   {
     id: 'vn.overlap',

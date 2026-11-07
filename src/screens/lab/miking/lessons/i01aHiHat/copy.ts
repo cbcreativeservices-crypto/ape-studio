@@ -57,7 +57,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     reveal: 'Toward the edge tends to bring more of the lower tones, toward the cup more of the high overtones — and every pair is different, so “it depends on these hats” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: keep the height and slide the aim from the edge toward the cup; then, separately, change the height. Keep the snare on the far side of the pair. Within about 10 cm (4 in) of the cymbals is a common place to begin — outside the air burst.',
-      smallDynCard: 'Ideas to try: a dynamic over the outer edge on the far side, aimed down. Listen as the pair closes: a thump or wind noise means the air is reaching it — move it up or round, then use a high-pass filter only if the low end is unwanted.',
+      smallDynCard: 'Ideas to try: a dynamic over the outer edge on the far side, aimed down. Listen as the pair closes: a thump or wind noise means the air is reaching it — move it up or around, then use a high-pass filter only if the low end is unwanted.',
       standClip: 'Ideas to try: clamp the clip low on the stand, out of the pedal’s way, then turn the capsule a little toward the bow. From below there tends to be less stick, and the top cymbal’s warmer tones are softer.',
     },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Watch the pair open fully, the stick crossing over, and the air at the edges — check the whole motion, not one stroke.',
@@ -97,7 +97,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     B: { typeId: 'standClip', pattern: 'supercardioid', zone: 'hh.under' },
     opposite: {
       surface: 'hatTop',
-      note: 'One mic above the pair and one below it face opposite sides of the plates: as the cymbals move up, toward the top mic, they move away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plates’ lowest motion: check both polarity states, no setting is required.',
+      note: 'One mic above the pair and one below it face opposite sides of the plates: as the cymbals move up, toward the top mic, they move away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plates’ lowest motion: check both polarity states; no setting is required.',
     },
     learn: [
       'A mic under the hats tends to hear less stick and less of the top cymbal’s warmer tones: a different perspective, kept only if it helps the hats in the whole kit.',

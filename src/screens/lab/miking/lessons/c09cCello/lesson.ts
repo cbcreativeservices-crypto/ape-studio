@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one cello mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['vc.prac.order', 'vc.prac.gain', 'vc.prac.setup1', 'vc.prac.setup2', 'vc.prac.3', 'vc.mix.1', 'vc.mix.2', 'vc.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real cello.' },
-    takeaway: 'Safe clearance from the bow, the bow arm and the endpin, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position do not — and more than one setup can pass.',
+    takeaway: 'Safe clearance from the bow, the bow arm and the endpin, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The endpin’s point, the chair legs and the feet share the floor, and the bow sweeps out to both sides. Route the cable away from them — and never across the front of the cello.',
     why: {
       'Close in beside the endpin, where the floor space between the feet is clear': 'The endpin and the feet move and slip; a stand or cable there can be kicked or caught.',
-      'Across the front of the cello, the shortest route to the mic': 'A cable across the front can catch the bow or the instrument. Route it round, away from the player.',
+      'Across the front of the cello, the shortest route to the mic': 'A cable across the front can catch the bow or the instrument. Route it around, away from the player.',
     },
   },
   {
@@ -457,7 +457,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from about a foot to a meter away, in a good room. What changes?', options: ['More bow detail', 'More of the whole cello and the room', 'It depends on this cello'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the cellist. Where will a supercardioid aimed at the cello reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -574,7 +574,7 @@ export const C09C_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The bow grips the string', text: 'Rosin on the bow hair grips the string and drags it sideways with the bow — a little way, many times larger here than it really moves.' },
+      { title: 'The bow grips the string', text: 'Rosin on the bow hair grips the string and drags it sideways with the bow — a little way, drawn many times larger here than it really moves.' },
       { title: 'The string slips back', text: 'When the string’s pull gets stronger than the grip, it slips back past its resting place, and the hair catches it again. Grip and slip repeat once every vibration: that is how a bow keeps a note going.' },
       { title: 'The string rocks the bridge', text: 'The vibrating strings pull the top of the bridge from side to side, and the bridge rocks on its two feet.' },
       { title: 'The bridge drives the top', text: 'Under one foot the top moves in and out; under the other, a small wooden post inside — the soundpost — holds the top nearly still and passes the motion to the back. The top, the back and the air inside all vibrate.' },

@@ -91,8 +91,8 @@ test('no wedge-to-wedge power link: nothing leaves a wedge but its own lead in',
     for (const [px, py] of pts) assert.ok(!G.VOX_XS.some((x) => Math.abs(px - (x - G.WEDGE_HALF)) < 0.01 && Math.abs(py - G.WEDGE_AC_Y) < 2), `lead ${d} touches a wedge's SR side`);
   }
   // the a11y text and the caption say each wedge has its own lead
-  assert.match(stagePlan, /each on its own mains lead from its own quad-box outlet/);
-  assert.match(FLOOR, /red = AC power \(quad boxes, and each wedge's own mains lead from its own quad-box outlet/);
+  assert.match(stagePlan, /each on its own power cable from its own quad-box outlet/);
+  assert.match(FLOOR, /red = AC power \(quad boxes, and each wedge's own power cable from its own quad-box outlet/);
 });
 
 test("each powered wedge has its own mains run: own outlet, plug seated, ends on that wedge's inlet", () => {

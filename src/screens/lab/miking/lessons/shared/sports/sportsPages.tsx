@@ -298,7 +298,7 @@ const LAYERS: readonly { id: LayerId; label: string; short: string; text: (s: Ve
     id: 'keepClear',
     label: 'Keep clear',
     short: 'KEEP CLEAR',
-    text: (s) => (s.keepClear.length ? s.keepClear[0].note : 'This plan marks no extra band — the barrier itself is the edge. Check your event’s rules for the space round it.'),
+    text: (s) => (s.keepClear.length ? s.keepClear[0].note : 'This plan marks no extra band — the barrier itself is the edge. Check your event’s rules for the space around it.'),
   },
   { id: 'routes', label: 'Routes people need', short: 'ROUTES', text: (s) => (s.routes.length ? `${s.routes.map((r) => r.label).join('; ')}. A route is never a place to stand; a cable crosses it only where the event approves, under a cover.` : 'No route is marked here.') },
   { id: 'footprints', label: 'Approved places', short: 'APPROVED', text: (s) => `${s.footprints.map((f) => f.label).join('; ')}. A mic goes only where the event has approved it — a credential is not an approval.` },

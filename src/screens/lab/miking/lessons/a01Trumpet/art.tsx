@@ -56,12 +56,12 @@ export const A01_ART: LessonArt = {
       fallback: 'trumpet',
       bands: {
         trumpet: {
-          low: 'Low down the trumpet spreads its sound nearly all round — even toward the player’s back.',
+          low: 'Low down the trumpet spreads its sound nearly all around — even toward the player’s back.',
           mid: 'In the middle the front starts to win: the sound spreads less to the sides and behind.',
-          high: 'From about 1 kHz up, the sound gathers forward along the bell’s axis, more so as the pitch rises — evenly round the axis, and much the same whether the player is loud or soft.',
+          high: 'From about 1 kHz up, the sound gathers forward along the bell’s axis, more so as the pitch rises — evenly around the axis, and much the same whether the player is loud or soft.',
         },
         flugelhorn: {
-          low: 'Low down a flugelhorn spreads its sound nearly all round, like every brass bell.',
+          low: 'Low down a flugelhorn spreads its sound nearly all around, like every brass bell.',
           mid: 'In the middle the front starts to win.',
           high: 'Up high the sound beams forward along the bell’s axis. Its larger bell starts to narrow the beam at a slightly lower pitch than a trumpet’s. That is the general trend for brass bells; no flugelhorn was measured on its own.',
         },
@@ -97,7 +97,7 @@ export const A01_ART: LessonArt = {
       before: [
         { title: 'ASK THE PLAYER FIRST', text: 'Hear the actual part: quiet lyrical notes, the strongest high attacks, falls and shakes, and every mute change. Watch how far the bell moves, and whether the player turns toward the band or a conductor. Hear the horn from where the audience would — the player hears it from behind the bell, which is different.' },
         { title: 'WORK WITH THE HORN AS IT IS', text: 'The horn is the player’s. Nothing clamps to the bell or its finish without their agreement and a clip made for it; nothing touches the valves, the slides or the mute’s path. The player puts mutes in and takes them out.' },
-        { title: 'ONE HORN HERE', text: 'This lesson is one trumpet. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, with ensembles and voice. Here, when other horns play, hear the section first and treat this mic as a spot.' },
+        { title: 'ONE HORN HERE', text: 'This lesson is one trumpet. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, in the Horn Sections lesson. Here, when other horns play, hear the section first and treat this mic as a spot.' },
       ],
       hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. A trumpet can be very loud close to its bell: keep the bell from firing at anyone’s ear, and use hearing protection where it is loud.',
     }),

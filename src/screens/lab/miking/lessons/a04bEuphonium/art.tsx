@@ -29,13 +29,13 @@ export const EUPH_ART: LessonArt = {
       wall: false,
       subject: 'A euphonium player seen from the right side, the euphonium on the lap',
       shapesNote: 'This is a simplified pipe. The real euphonium is a widening (conical) tube with a large bell, folded up — which gives it its round, full tone. The valves add lengths of tube, which lowers every shape’s pitch together.',
-      spreadNote: 'Only the overall brass trend is drawn: the low notes spread nearly all round, the higher overtones go mostly where the bell points — up from an upright bell, forward from a bell-front one. No euphonium-only measurement is drawn.',
+      spreadNote: 'Only the overall brass trend is drawn: the low notes spread nearly all around, the higher overtones go mostly where the bell points — up from an upright bell, forward from a bell-front one. No euphonium-only measurement is drawn.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the euphonium: how a real euphonium sounds depends on the instrument, the player and the room. The pictures show where the sound comes from and where it goes.',
       reveal: 'Nearly all of the sound leaves from the bell — and a mic “in front of the player” sits in a very different place relative to an upward bell than to a front one. Find the bell first.',
       registers: {
-        low: 'The lowest notes spread nearly all round the player.',
+        low: 'The lowest notes spread nearly all around the player.',
         mid: 'In the middle of the range more of the sound follows the bell — up, or to the front.',
-        high: 'The upper overtones — the edge of the attacks and the high notes — go mostly where the bell points, in a cone round its axis.',
+        high: 'The upper overtones — the edge of the attacks and the high notes — go mostly where the bell points, in a cone around its axis.',
       },
     }),
     setting: makeLowBrassSettingPage({
@@ -47,7 +47,7 @@ export const EUPH_ART: LessonArt = {
       stageIdle: 'Two floor monitors: the player’s own in front, another to the side. Monitors, the PA and the band all reach a euphonium mic.',
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the euphonium plays in a group — are part of the picture now.',
       before: [
-        { title: 'IDENTIFY THIS HORN', text: 'Ask for the actual model and see where its bell points: euphoniums and baritones share a pitch, names vary by country, and some bell-front models are informally called baritones. Three valves or four, compensating or not — the mic does not fix the instrument.' },
+        { title: 'IDENTIFY THIS HORN', text: 'Ask for the actual model and see where its bell points: euphoniums and baritones share a pitch, names vary by country, and some bell-front models are informally called baritones. Three valves or four, compensating or not — the mic cannot tell you which it is, so ask.' },
         { title: 'HEAR THE LINE', text: 'Is it a lyrical melody, an inner part or a low foundation? Ask for quiet and loud phrases, the lowest note the part needs, tongued attacks, legato, the high notes, any mute — and whether the player stands.' },
         { title: 'WORK WITH THE EUPHONIUM AS IT IS', text: 'The euphonium and its finish are the player’s. A clip only if its maker confirms it fits this bell — a trumpet or trombone clip may not — and never tape on the finish.' },
       ],

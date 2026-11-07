@@ -265,7 +265,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What sets an intensity probe’s usable frequency range?',
     options: ['Its spacer and its calibration', 'The loudness of the device alone', 'How fast you scan the surface'],
     correct: 'Its spacer and its calibration',
-    explain: 'The spacer and the calibration set the band — a wider spacer toward the lows, a narrower one toward the highs; its data gives each range.',
+    explain: 'The spacer and the calibration set the band — a wider spacer toward the lows, a narrower one toward the highs; the maker’s data gives each range.',
     why: {
       'The loudness of the device alone': 'Loudness does not set the band.',
       'How fast you scan the surface': 'Scan speed matters to the method, not to the probe’s band.',
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The references differ, and water and air carry sound differently: the numbers are not directly comparable, and the 26 dB between the references is only part of it.',
     why: {
       'Subtract 26 dB from the water': 'The references account for only part of the difference; water and air also carry sound differently.',
-      'Add 26 dB to the airborne one': 'The same mistake the other way round: report each with its own medium and reference.',
+      'Add 26 dB to the airborne one': 'The same mistake the other way around: report each with its own medium and reference.',
     },
   },
   {
@@ -391,7 +391,7 @@ const symptoms: Symptom[] = [
     explain: 'Independent recorders drift apart: use one synchronized clock for every element.',
     why: {
       'The source, which is moving away': 'The source is on a fixed stand: check the clock before the geometry.',
-      'The room, which is warming up': 'Warming speeds up sound, so the time difference shrinks a tiny bit — it does not grow; drift between clocks is the commoner cause.',
+      'The room, which is warming up': 'Warming speeds up sound, so the time difference shrinks a tiny bit — it does not grow; drift between clocks is the more common cause.',
     },
   },
   {
@@ -415,7 +415,7 @@ const symptoms: Symptom[] = [
     explain: 'A mapped peak can be a reflection, a sidelobe or an artifact — or spatial aliasing above the array’s band. Repeat from another viewpoint.',
     why: {
       'A second fault in the device': 'A second peak is not proof of a second source: check it independently.',
-      'A failed element, surely': 'Possible, but the geometry and the band are the commoner causes.',
+      'A failed element, surely': 'Possible, but the geometry and the band are the more common causes.',
     },
   },
   {

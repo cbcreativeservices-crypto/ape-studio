@@ -208,7 +208,7 @@ const PART_DEFAULT: Required<PartWords> = {
   tailpiece: { label: 'tailpiece', short: 'tailpiece', role: 'Anchors the strings at the tail end. A clip may grip it only if the clip is made for that.' },
   fifth: { label: 'fifth-string peg', short: '5th peg', role: 'The short fifth string starts at a peg partway up the neck.' },
   hooks: { label: 'hooks and tension hoop', short: 'hooks', role: 'The hooks pull a hoop down over the head to tension it. The player sets this — never a mic step.' },
-  rosette: { label: 'rosette', short: 'rosette', role: 'The inlaid ring round the sound hole.' },
+  rosette: { label: 'rosette', short: 'rosette', role: 'The inlaid ring around the sound hole.' },
 };
 
 /** A resonator's bridge stands on the cone (R030386): its own role unless a lesson words it. */
@@ -350,7 +350,7 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
     if (sp.opening.kind === 'head') {
       reg('head', 'top', 'the head', v(sp.body.pot!.cx.mm, 0, 2), 'The head, driven by the bridge, radiates most of the sound — toward the listener and a mic in front.');
     } else {
-      reg('top', 'top', 'the lower top', v(sp.body.xLower.mm, 0, 2), 'The top round the bridge moves the most: much of the sound leaves from here, toward the listener and a mic in front.');
+      reg('top', 'top', 'the lower top', v(sp.body.xLower.mm, 0, 2), 'The top around the bridge moves the most: much of the sound leaves from here, toward the listener and a mic in front.');
       reg('hole', sp.opening.kind === 'coverplate' ? 'coverplate' : 'opening', holeLabel.replace(/^the /, ''), v(at.hole.x, 0, 2), sp.opening.kind === 'coverplate' ? 'The cone radiates through the coverplate’s holes: a strong, focused part of the sound.' : 'The air inside the body breathes through the opening: a big part of the low end leaves here.');
     }
     reg('strings', 'strings', 'the strings near the neck', v(at.fret12.x, 0, at.fret12.z + 2), 'The strings themselves, and the picking and fretting sounds, are heard most directly near the neck.');

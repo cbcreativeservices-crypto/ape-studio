@@ -100,7 +100,7 @@ export const TIMP_COPY: LessonCopy = {
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Which drums, which pedal changes, which mallets, how far the arms travel, and what is nearby — for the whole passage, not one stroke. Ask for the softest roll and the loudest stroke.' },
       { title: 'LISTEN TO THE MAIN PICKUP', text: 'In an orchestra the main pair often already carries the timpani’s low notes and the hall. A spot is a way to add definition that is missing — not a default, and not there to overwhelm the main sound.' },
-      { title: 'THE PLAYER’S SPACE AND SIGHTLINE', text: 'Mark the full mallet sweep, the path round the set, the pedals and the line of sight to the conductor. Nothing touches a head, a hoop, a pedal or the mechanism; if a stand cannot go in safely, leave that spot out.' },
+      { title: 'THE PLAYER’S SPACE AND SIGHTLINE', text: 'Mark the full mallet sweep, the path around the set, the pedals and the line of sight to the conductor. Nothing touches a head, a hoop, a pedal or the mechanism; if a stand cannot go in safely, leave that spot out.' },
     ],
     plan: {
       title: 'In the orchestra',

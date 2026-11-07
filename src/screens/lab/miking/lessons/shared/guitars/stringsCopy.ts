@@ -91,7 +91,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
     },
     setting: {
       kitA11y: o.setting.kitA11y,
-      kitLanding: `Tap anything round the player — or step through ITEM — to see what it means for a ${n.one} mic. There is nothing to answer yet.`,
+      kitLanding: `Tap anything around the player — or step through ITEM — to see what it means for a ${n.one} mic. There is nothing to answer yet.`,
       kitIdle: o.setting.kitIdle,
       leftHanded: o.setting.leftHanded,
       stageA11y: o.setting.stageA11y,

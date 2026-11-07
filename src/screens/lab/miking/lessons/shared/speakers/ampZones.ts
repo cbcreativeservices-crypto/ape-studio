@@ -59,8 +59,8 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
   },
   {
     id: 'eg.midway',
-    label: 'Close, half-way out across the cone',
-    band: 'Start about 1.5–5 cm (½–2 in) from the grille, half-way between the dust cap and the cone’s edge; you can turn it a little toward the edge.',
+    label: 'Close, halfway out across the cone',
+    band: 'Start about 1.5–5 cm (½–2 in) from the grille, halfway between the dust cap and the cone’s edge; you can turn it a little toward the edge.',
     kind: 'sourced',
     src: 'SN-906',
     quote: 'B "directed towards the middle between dome and edge … good starting position … If necessary, turn the microphone by approx. 30° towards the edge" (e 906 manual 07/2020 p.4, archived; online manual v1.3 04/2026)',
@@ -103,7 +103,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', min: CONE_SPOTS.edge - TOL, max: CONE_SPOTS.edge + TOL, prov: ill('"toward the edge": 10 mm inside the surround (a drawing default) ± 15 mm') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 30, y: -CONE_SPOTS.edge, z: 0 }, az: 0, el: 0 },
-    tendency: 'Most often smoother and darker, with more low-mid weight — a tendency to check. Listen that the guitar keeps its definition in the band.',
+    tendency: 'Most often smoother and darker, with more low-mid weight — a tendency to check. Listen to check that the guitar keeps its definition in the band.',
     checks: ['The grille is not touched', 'Definition still clear in the mix', 'That it is still the active speaker'],
   },
   {
@@ -176,7 +176,7 @@ export function guitarRearZone(): DocumentedZone {
     aim: { maxOffAxis: 30, prov: ill('facing the back of the speaker: ±30° is the lab’s tolerance') },
     start: { p: { x: backX('combo') - 220, y: 0, z: 0 }, az: 180, el: 0 },
     tendency: 'The back of the cone: thicker and duller, with less bite. It is opposite in polarity to the front, so flip this mic’s polarity before you blend it — then check the pair in mono. It is also farther from the cone than the front mic, so a delay remains after the flip: listen in mono and move it if the low mids thin out.',
-    checks: ['This mic’s polarity switched', 'The pair checked in mono, at matched levels', 'The stand clear of the vents, valves and walkway'],
+    checks: ['This mic’s polarity switched', 'The pair checked in mono, at matched levels', 'The stand clear of the vents, tubes and walkway'],
   };
 }
 

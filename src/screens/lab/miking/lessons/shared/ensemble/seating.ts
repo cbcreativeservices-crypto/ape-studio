@@ -580,7 +580,7 @@ function hornsArc(): Seating {
   const seats = [S('tpt.1', 'trumpet', 'tpt', a), S('ts.1', 'sax', 'ts', b), S('tbn.1', 'trombone', 'tbn', c), S('tu.1', 'tuba', 'tu', d)];
   return seatingG5(
     'horns.arc',
-    'A section round one mic',
+    'A section around one mic',
     'Four players seated on an arc in a studio, each about the same distance from a section mic at its center: trumpet, tenor sax, trombone and tuba.',
     seats,
     [

@@ -33,7 +33,7 @@ export const WIND_MIC_TYPES = {
     clip: { reach: placeholder(170, 'the gooseneck’s reach from the clip’s strap to the capsule') },
     examples: [{ model: 'DPA 4099 on the U-CLIP (UC4099); 4099S for saxophones and bass clarinet', fact: 'U-CLIP "fixed around the flute end … Point it towards the keys"; on clarinet / oboe / bassoon "close to the bell, but not necessarily pointed into the bell! Point it toward the keys instead"', src: 'DPA-CLIPS' }],
     art: 'gooseneck',
-    blurb: 'A tiny condenser on a short gooseneck, held by a clip made for this instrument — a strap round a flute’s foot, or round a reed instrument near its bell. It moves with the player. Needs phantom power through its adapter.',
+    blurb: 'A tiny condenser on a short gooseneck, held by a clip made for this instrument — a strap around a flute’s foot, or around a reed instrument near its bell. It moves with the player. Needs phantom power through its adapter.',
   },
   wwHeadset: {
     id: 'wwHeadset',

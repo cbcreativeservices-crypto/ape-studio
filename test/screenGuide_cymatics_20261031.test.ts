@@ -149,7 +149,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   const PIN: Record<string, { files: string[]; names: Name[] }> = {
     home: {
       files: [`${D}CymaticsHomeScreen.tsx`, `${D}modules/registry.ts`, 'src/components/LabUnderstandingCheck.tsx', 'src/screens/lab/ModuleAccordionRow.tsx'],
-      names: ['SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN', 'NEW HERE? START HERE ›', ['LEARN & EXPERIMENT', 'LEARN &amp; EXPERIMENT'], 'CHECK YOUR UNDERSTANDING', 'SEE WHAT’S LEFT ›', 'GUIDED LESSON', 'OPEN', 'What Is Cymatics?', ['OPEN THE … STUDIO ›', 'OPEN THE CHLADNI PLATE STUDIO ›']],
+      names: ['SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN', 'NEW HERE? START HERE ›', ['LEARN & EXPERIMENT', 'LEARN &amp; EXPERIMENT'], 'CHECK YOUR UNDERSTANDING', 'SEE WHAT’S LEFT ›', 'GUIDED LESSON', 'OPEN', 'What Is Cymatics?', ['OPEN THE … STUDIO ›', 'OPEN THE CHLADNI PLATE STUDIO ›']],
     },
     end: {
       files: ['src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts', `${D}modules/registry.ts`, `${D}CymaticsHomeScreen.tsx`, `${D}CymaticsModuleScreen.tsx`],
@@ -217,15 +217,15 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     'gallery.browse': {
       files: [`${D}GalleryScreen.tsx`],
-      names: ['PATTERN GALLERY & ART STUDIO', 'All', 'Plate', 'Dish', 'Drum', '★ Favourites', 'NOTHING SAVED YET', 'Compare…', ['COMPARE ›', 'COMPARE ${compareIds.length} ›'], 'GUIDED LESSON'],
+      names: ['PATTERN GALLERY & ART STUDIO', 'All', 'Plate', 'Dish', 'Drum', '★ Favorites', 'NOTHING SAVED YET', 'Compare…', ['COMPARE ›', 'COMPARE ${compareIds.length} ›'], 'GUIDED LESSON'],
     },
     'gallery.open': {
       files: [`${D}GalleryScreen.tsx`, `${D}ExportPanel.tsx`],
-      names: ['SIMULATION', 'NAME', 'NOTES', 'Open in studio ›', 'Colour ›', 'Duplicate', '★ Favourite', 'Delete', 'EXPORT', 'Art print', 'Lab print', 'PNG card', 'Transparent PNG', 'PDF', 'SVG', 'PAGE', 'SHARE', 'SAVE', 'PRINT'],
+      names: ['SIMULATION', 'NAME', 'NOTES', 'Open in studio ›', 'Color ›', 'Duplicate', '★ Favorite', 'Delete', 'EXPORT', 'Art print', 'Lab print', 'PNG card', 'Transparent PNG', 'PDF', 'SVG', 'PAGE', 'SHARE', 'SAVE', 'PRINT'],
     },
     'gallery.art': {
       files: [`${D}GalleryScreen.tsx`, `${D}GalleryArt.tsx`],
-      names: ['ART STUDIO', 'REGIONS', 'FILLED', 'UNDO', 'REDO', 'FILL', 'Custom colour…', 'Erase', 'Clear all fills', 'STYLE', 'Solid', 'Gradient', 'WEIGHT', 'PAPER', 'SYM', 'Off'],
+      names: ['ART STUDIO', 'REGIONS', 'FILLED', 'UNDO', 'REDO', 'FILL', 'Custom color…', 'Erase', 'Clear all fills', 'STYLE', 'Solid', 'Gradient', 'WEIGHT', 'PAPER', 'SYM', 'Off'],
     },
     'gallery.compare': {
       files: [`${D}GalleryScreen.tsx`, `${D}GalleryCompare.tsx`, `${D}ExportPanel.tsx`],

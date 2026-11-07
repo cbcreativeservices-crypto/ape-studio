@@ -107,12 +107,12 @@ const scenarios: MikingScenario[] = [
     id: 'mm.snd.3',
     page: 'sound',
     prompt: 'A small loudspeaker on a bench, the mic on its axis. Which field is this, near enough?',
-    options: ['A free field: sound arriving mostly from one direction', 'A pressure field, like the inside of a coupler', 'A diffuse field, with sound arriving from all round the room'],
+    options: ['A free field: sound arriving mostly from one direction', 'A pressure field, like the inside of a coupler', 'A diffuse field, with sound arriving from all around the room'],
     correct: 'A free field: sound arriving mostly from one direction',
     explain: 'One source, one direction: near enough a free field — though the room’s reflections make any real field less than ideal.',
     why: {
       'A pressure field, like the inside of a coupler': 'A pressure field is the sealed cavity of a coupler or a flush boundary — not a mic out in front of a loudspeaker.',
-      'A diffuse field, with sound arriving from all round the room': 'Close on the axis the direct sound dominates; a diffuse field is a reverberant room, far from the source.',
+      'A diffuse field, with sound arriving from all around the room': 'Close on the axis the direct sound dominates; a diffuse field is a reverberant room, far from the source.',
     },
   },
   {
@@ -255,8 +255,8 @@ const scenarios: MikingScenario[] = [
     correct: 'Your body reflects a late copy of the sound into it',
     explain: 'A person near the capsule is a reflecting surface: a copy of the sound arrives a little later and mixes with the direct sound, raising some frequencies and cutting others. The closer you stand, the stronger it is.',
     why: {
-      'Nothing: the capsule faces the loudspeaker, not you': 'A measurement mic hears round itself: a reflection from behind still reaches it.',
-      'Only the lows, which your body absorbs entirely': 'A body reflects and scatters the mids and highs most; the lows pass round it.',
+      'Nothing: the capsule faces the loudspeaker, not you': 'A measurement mic hears around itself: a reflection from behind still reaches it.',
+      'Only the lows, which your body absorbs entirely': 'A body reflects and scatters the mids and highs most; the lows pass around it.',
     },
   },
   {
@@ -426,7 +426,7 @@ const symptoms: Symptom[] = [
     correct: 'Who and what moved near the capsule',
     explain: 'A person standing closer, a moved chair, a door, the air handling — each changes the field. Log the room state and keep the operator back.',
     why: {
-      'The calibrator’s stated level at 1 kHz': 'The calibrator states the same level each time; the field round the mic is what changed.',
+      'The calibrator’s stated level at 1 kHz': 'The calibrator states the same level each time; the field around the mic is what changed.',
       'The mic’s serial number on the record': 'The record does not drift between repeats; the field does.',
     },
   },
@@ -535,12 +535,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'mm.q.2',
     covers: 'sound',
     prompt: 'Why does the field response matter most in the highs?',
-    options: ['The capsule is a big part of a wavelength', 'The calibrator only checks the highs', 'The lows bend round the person measuring'],
+    options: ['The capsule is a big part of a wavelength', 'The calibrator only checks the highs', 'The lows bend around the person measuring'],
     correct: 'The capsule is a big part of a wavelength',
     explain: 'At 10 kHz a wavelength is about 3.4 cm: the capsule disturbs the field it measures.',
     why: {
       'The calibrator only checks the highs': 'The usual calibrator tone is 1 kHz — a mid frequency.',
-      'The lows bend round the person measuring': 'The lows pass a small capsule easily; the highs are where it matters.',
+      'The lows bend around the person measuring': 'The lows pass a small capsule easily; the highs are where it matters.',
     },
   },
   {

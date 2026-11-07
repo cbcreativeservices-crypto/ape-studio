@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14 to avoid codec clipping). Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters gain nothing on playback and lose punch. Rock benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB (about −11 to −14 LUFS-I at −2 dBTP, quieter than the range above); a loudness range of 5–8 LU keeps the verse/chorus contrast alive."
+      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14, to avoid codec clipping). Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters gain nothing on playback and lose punch. Rock benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB (about −11 to −14 LUFS-I at −2 dBTP, quieter than the range above); a loudness range of 5–8 LU keeps the verse/chorus contrast alive."
     }
   ],
   "liveStudio": {

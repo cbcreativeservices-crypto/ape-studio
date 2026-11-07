@@ -135,7 +135,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     { workspaceId: 'rflink', fnKey: 'budget', note: 'Received power and how much link margin you have.' },
   ]),
   tpl('rack-power', 'Rack Power & Circuit', 'Current, heat and airflow, then the safe wattage for the breaker.', [
-    { workspaceId: 'rackheat', fnKey: 'heatLoad', note: 'Mains current, BTU/hr and the cooling airflow.' },
+    { workspaceId: 'rackheat', fnKey: 'heatLoad', note: 'AC current, BTU/hr and the cooling airflow.' },
     { workspaceId: 'rackheat', fnKey: 'safeLoad', note: 'Safe continuous wattage for the circuit.' },
   ]),
   tpl('power-run', 'Long Power Run', 'Voltage drop over the run, the gauge that keeps it in spec, then the ampacity check.', [

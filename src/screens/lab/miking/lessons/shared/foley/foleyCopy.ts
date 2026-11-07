@@ -59,7 +59,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
     setting: {
       kitA11y: 'A Foley stage.',
       kitLanding: 'Tap anything on the stage. There is nothing to answer yet.',
-      kitIdle: 'Everything round the performer is either their movement or something the mic can hear.',
+      kitIdle: 'Everything around the performer is either their movement or something the mic can hear.',
       leftHanded: '',
       stageA11y: 'A live Foley booth.',
       studioA11y: 'A Foley stage room.',
@@ -77,7 +77,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
       typeNotes: {
         shotgunShort: 'Ideas to try with the short shotgun: aim its front at the action and listen as you turn it a little — off its axis the tone changes. In a live, reflective room it still hears the room; compare it with the small supercardioid at the same place.',
         scSupercard: 'Ideas to try with the small supercardioid: smoother off its axis, so it can often sit a little closer or cover a wider moving area. Compare it with the shotgun at the same distance, at matched level.',
-        ldcRoom: 'Ideas to try with the large condenser: as the second, farther mic — the room round the action, on its own channel.',
+        ldcRoom: 'Ideas to try with the large condenser: as the second, farther mic — the room around the action, on its own channel.',
         ...(o.typeNotes ?? {}),
       },
       note: 'Clearance comes first: walk the cue without recording, mark the movement on the floor, and stop the performer before moving any hardware. Experimentation is encouraged — one change at a time.',

@@ -99,7 +99,7 @@ export function saxModel(P: SaxPosture, o: SaxModelOpts): InstrumentModel {
   const A = anchorsOf(P);
   const pl = P.player;
   const parts: Part[] = [
-    ...partChain('sx.mouthpiece', 'mouthpiece, reed and ligature', 'mouthpiece', 'The player’s lips seal round the mouthpiece; the cane reed, held on by the metal ligature, vibrates against it and sets the air inside going. Breath and reed noise start here.', [cap(centre(P, 0), centre(P, S.mouthEnd), row.mpR + 2)]),
+    ...partChain('sx.mouthpiece', 'mouthpiece, reed and ligature', 'mouthpiece', 'The player’s lips seal around the mouthpiece; the cane reed, held on by the metal ligature, vibrates against it and sets the air inside going. Breath and reed noise start here.', [cap(centre(P, 0), centre(P, S.mouthEnd), row.mpR + 2)]),
     ...partChain('sx.neck', row.id === 'soprano' ? 'neck' : 'neck (crook)', 'neck', row.id === 'baritone' ? 'The curved neck joins the mouthpiece to the body; on the baritone it plugs into the loop at the top of the body. One of the octave key’s two small vents is on it.' : 'The curved tube that joins the mouthpiece to the body. One of the octave key’s two small vents is on it.', tubeRun(P, S.mouthEnd, S.tenon, 40, KEY_STANDOFF.neck)),
     ...partChain('sx.body', 'body and keywork', 'body', 'The conical brass body carries the tone holes and the keys that open and close them — pads, rods, pearl touches and guards. Nothing clamps here: a clip goes on the bell rim only.', tubeRun(P, S.tenon, S.bodyEnd, 50, KEY_STANDOFF.body)),
   ];
@@ -117,7 +117,7 @@ export function saxModel(P: SaxPosture, o: SaxModelOpts): InstrumentModel {
     { id: 'sx.shoulders', label: 'the player', short: 'player', role: 'Shoulders.', prov: PLAYER, listIn: [], solid: cap(pl.shoulderL, pl.shoulderR, 62) },
     { id: 'sx.handR', label: 'the hands on the keys', short: 'hands', role: 'Both hands work the keys all the time — the left on the upper stack, the right on the lower. A capsule or a gooseneck anywhere the fingers reach is in the wrong place.', moving: true, prov: PLAYER, solid: cap(pl.wristR, pl.handR, 52) },
     { id: 'sx.handL', label: 'the hands on the keys', short: 'hands', role: 'The left hand on the upper stack.', moving: true, prov: PLAYER, listIn: [], solid: cap(pl.wristL, pl.handL, 52) },
-    { id: 'sx.armR1', label: 'the player’s arms', short: 'arms', role: 'The right arm reaches round the near side of the horn to the lower stack.', prov: PLAYER, solid: cap(pl.shoulderR, pl.elbowR, 52) },
+    { id: 'sx.armR1', label: 'the player’s arms', short: 'arms', role: 'The right arm reaches around the near side of the horn to the lower stack.', prov: PLAYER, solid: cap(pl.shoulderR, pl.elbowR, 52) },
     { id: 'sx.armR2', label: 'the player’s arms', short: 'arms', role: 'The right forearm.', prov: PLAYER, listIn: [], solid: cap(pl.elbowR, pl.wristR, 44) },
     { id: 'sx.armL1', label: 'the player’s arms', short: 'arms', role: 'The left arm.', prov: PLAYER, listIn: [], solid: cap(pl.shoulderL, pl.elbowL, 52) },
     { id: 'sx.armL2', label: 'the player’s arms', short: 'arms', role: 'The left forearm.', prov: PLAYER, listIn: [], solid: cap(pl.elbowL, pl.wristL, 44) },

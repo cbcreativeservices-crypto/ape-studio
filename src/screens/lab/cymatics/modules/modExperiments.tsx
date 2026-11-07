@@ -33,9 +33,7 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
-        Seventeen structured activities — ten on the Chladni plate, four in the liquid dish, three on the drumhead and loudspeaker. Each one opens the studio already set up,
-        with its prediction and its steps at the top of the studio’s well where you tick them off as you work. ‹ EXPERIMENT and EXPERIMENT › there carry you through the series, so you run
-        all seventeen without coming back to this list.
+        Seventeen structured activities — ten on the Chladni plate, four in the liquid dish, three on the drumhead and loudspeaker. Each one opens the studio already set up, with its prediction and its steps at the top of the studio’s screen, where you check them off as you work. ‹ EXPERIMENT and EXPERIMENT › there carry you through the series, so you run all seventeen without coming back to this list.
       </Text>
       <Pressable style={styles.startBtn} onPress={() => open(EXPERIMENTS[0])} accessibilityRole="button" accessibilityLabel={`Start the series with experiment 1, ${EXPERIMENTS[0].title}`}>
         <Text style={styles.startText}>START THE SERIES ›</Text>

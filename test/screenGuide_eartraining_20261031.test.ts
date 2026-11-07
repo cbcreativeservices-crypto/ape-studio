@@ -311,7 +311,7 @@ describe('3. every number the guides state is what the screen prints', () => {
     const top = (mains: number) => Math.min(Math.floor(D.SR / 2 / mains), 60) * mains;
     assert.equal(top(50), 3000);
     assert.equal(top(60), 3600);
-    assert.ok(tryOf('defect').includes('up to 3 kHz (50 Hz mains) or 3.6 kHz (60 Hz)'));
+    assert.ok(tryOf('defect').includes('up to 3 kHz (50 Hz power) or 3.6 kHz (60 Hz)'));
   });
 
   it('Stereo: the correlation SEE IT prints for Left, Centered, Narrow and Out of phase', () => {

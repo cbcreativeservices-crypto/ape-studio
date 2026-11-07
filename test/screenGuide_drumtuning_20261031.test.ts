@@ -374,7 +374,7 @@ describe('6. chip decision: modelled-drum concept lab — no header AccuracyNote
 describe('review fixes 2026-10-31 (each vetted against the code)', () => {
   it('Tension and pitch: N/m is explained; the lane runs left–right', () => {
     assert.match(code(`${DIR}/modules/ch1Sound.tsx`), /\$\{v\.toFixed\(0\)\} N\/m`/);
-    assert.ok(g('sound', 1).control.join(' ').includes('N/m (newtons per metre — how hard the head is pulled)'));
+    assert.ok(g('sound', 1).control.join(' ').includes('N/m (newtons per meter — how hard the head is pulled)'));
     assert.ok(tt('sound', 1).includes('Slide TENSION all the way left: PITCH 147 Hz'));
     for (const [id, gd] of allGuides) assert.doesNotMatch(gd.tryThis.join(' '), /TENSION to the bottom/, id);
   });

@@ -186,7 +186,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE round the back. Where does the pickup fall furthest?" />
+          <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE around the back. Where does the pickup fall furthest?" />
           {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'supercardioid' ? (

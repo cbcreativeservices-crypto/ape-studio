@@ -251,7 +251,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.equal(platOk(true, 0, 1.0), true, 'PLAT OFF: the platform is still');
     assert.equal(platOk(true, 1.0, 0.75), true, '2:1 chip from 1.5 Hz: PLAT 1.0 : 0.75 = 4:3');
     assert.equal(platOk(false, 1.07, 1.0), true, 'LATERAL ignores PLAT');
-    assert.match(SRC, /: ratioExact && !platSimple\s*\? `A clean \$\{ratio\.label\} ratio between the arms, but PLAT is only a complex ratio of OSC 2 — the figure takes many swings to repeat/);
+    assert.match(SRC, /: ratioExact && !platSimple\s*\? `A clean \$\{ratio\.label\} ratio between the arms, but PLAT is only in a complex ratio with OSC 2 — the figure takes many swings to repeat/);
     assert.match(SRC, /: matched\s*\? `Near \$\{ratio\.label\} \(\$\{ratio\.interval\.toLowerCase\(\)\}\) but not exact — the figure slowly precesses/);
     assert.match(textOf(GUIDES.explore), /The figure closes on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio\.[\s\S]*Detuned, or off an exact ratio, it slowly turns \(precesses\), never closing/);
   });

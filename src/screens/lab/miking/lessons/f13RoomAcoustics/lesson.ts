@@ -69,7 +69,7 @@ const pages: LessonPages = {
   },
   practice: {
     title: 'Practice',
-    goal: 'Put a room test in order, choose and justify a set-up for two briefs, and say what a result can be called.',
+    goal: 'Put a room test in order, choose and justify a setup for two briefs, and say what a result can be called.',
     credit: { scenarios: ['ra.prac.order', 'ra.prac.gain', 'ra.prac.setup1', 'ra.prac.setup2', 'ra.prac.3', 'ra.mix.1', 'ra.mix.2', 'ra.mix.3'], note: 'Put the test in order, answer the headroom check, complete both briefs, and answer the four reasoning cards. The measurement sheet is optional.' },
     takeaway: 'The target named, the geometry repeatable, an unclipped tail long enough, unsupported fits refused, T20 / T30 / EDT kept apart, and the limits of space and state said plainly.',
   },
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A booth’s decay got shorter after treatment. Is it now better for recording?',
     options: ['Too soon to say: reflections and color matter too', 'It is: a shorter decay makes a better recording', 'It is, as long as the booth is also a little larger'],
     correct: 'Too soon to say: reflections and color matter too',
-    explain: 'A shorter reported decay does not alone mean better recording: early reflections, colouration and the position matter as well.',
+    explain: 'A shorter reported decay does not alone mean better recording: early reflections, coloration and the position matter as well.',
     why: {
       'It is: a shorter decay makes a better recording': 'Shorter suits some uses, not all: the early reflections and the color matter too.',
       'It is, as long as the booth is also a little larger': 'Size changes many things; the decay alone still does not decide quality.',
@@ -489,7 +489,7 @@ const setupTasks: SetupTask[] = [
       R('repeat', 'Each run repeated to catch disturbances', 'optional', 'It shows a cough or a door.'),
       R('louder', 'The source driven louder after, for a cleaner tail', 'wrong', 'Keep the source level the same both times: only the panels may change.'),
     ],
-    explain: 'More than one set-up passes: the same seats and the same state make the comparison fair.',
+    explain: 'More than one setup passes: the same seats and the same state make the comparison fair.',
   },
   {
     id: 'ra.prac.setup2',
@@ -624,7 +624,7 @@ export const F13_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a set-up and positions for two briefs, and say what each result may be called. With the venue’s agreement and the room’s state logged, you can record what you did below.',
+    task: 'Choose a setup and positions for two briefs, and say what each result may be called. With the venue’s agreement and the room’s state logged, you can record what you did below.',
     fields: ROOM_SHEET,
   },
   unknowns: [

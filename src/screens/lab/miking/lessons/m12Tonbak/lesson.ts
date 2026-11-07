@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know how the player holds the tonbak, where the hands move, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.2', 'tb.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The player’s posture, hands and movement come first: the mic fits round them, never the other way. Ask for their strokes and terms, listen from the audience side, and protect your hearing.',
+    takeaway: 'The player’s posture, hands and movement come first: the mic fits around them, never the other way. Ask for their strokes and terms, listen from the audience side, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['tb.prac.order', 'tb.prac.gain', 'tb.prac.setup1', 'tb.prac.setup2', 'tb.prac.3', 'tb.mix.1', 'tb.mix.2', 'tb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real tonbak and player.' },
-    takeaway: 'Safe clearance, clean loudest strokes, recognisable quiet gestures, a reasoned comparison and a sensible number of mics pass — and more than one setup can pass.',
+    takeaway: 'Safe clearance, clean loudest strokes, recognizable quiet gestures, a reasoned comparison and a sensible number of mics pass — and more than one setup can pass.',
   },
 };
 
@@ -116,11 +116,11 @@ const scenarios: MikingScenario[] = [
     id: 'tb.set.1',
     page: 'setting',
     prompt: 'The player settles in with the drum across the lap, head to the right. The mic would be easier with the drum turned. What do you do?',
-    options: ['Leave the drum where the player holds it; fit the mic round them', 'Ask the player to turn the drum so its head faces the mic stand squarely', 'Clamp the drum to a stand so that it cannot move while playing'],
-    correct: 'Leave the drum where the player holds it; fit the mic round them',
+    options: ['Leave the drum where the player holds it; fit the mic around them', 'Ask the player to turn the drum so its head faces the mic stand squarely', 'Clamp the drum to a stand so that it cannot move while playing'],
+    correct: 'Leave the drum where the player holds it; fit the mic around them',
     explain: 'Note the head’s orientation, the hands’ paths and the normal movement — and do not move the drum just to suit a microphone.',
     why: {
-      'Ask the player to turn the drum so its head faces the mic stand squarely': 'The posture is part of the playing. The mic fits round the player, not the other way.',
+      'Ask the player to turn the drum so its head faces the mic stand squarely': 'The posture is part of the playing. The mic fits around the player, not the other way.',
       'Clamp the drum to a stand so that it cannot move while playing': 'Do not clamp a delicate rim, skin or decorated shell; the drum moves with the player.',
     },
   },
@@ -289,7 +289,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The head, with some from the open lower end',
     explain: 'The head radiates most of the sound; the opening adds some resonance — which is why the main mic looks at the head.',
     why: {
-      'The open lower end, with a little from the head': 'The other way round: the head is the main source; the opening is a support.',
+      'The open lower end, with a little from the head': 'The other way around: the head is the main source; the opening is a support.',
       'The wooden bowl, which rings out around the head': 'The body shapes the resonance; the head is what moves the most air.',
     },
   },
@@ -345,8 +345,8 @@ const scenarios: MikingScenario[] = [
     id: 'tb.prac.gain',
     page: 'practice',
     prompt: 'Normal strokes sit well below the overload light, but the strongest passage lights it. What do you do?',
-    options: ['Lower the input gain, or a pad its manual allows, then re-check', 'Pull the channel fader down until the loud strokes sound clean', 'Ask the player to keep the loudest passage a little softer'],
-    correct: 'Lower the input gain, or a pad its manual allows, then re-check',
+    options: ['Lower the input gain, or use a pad its manual allows, then re-check', 'Pull the channel fader down until the loud strokes sound clean', 'Ask the player to keep the loudest passage a little softer'],
+    correct: 'Lower the input gain, or use a pad its manual allows, then re-check',
     explain: 'Set gain while the player shows the strongest intended passage, with room for variation. A lower fader does not undo clipping at the input.',
     why: {
       'Pull the channel fader down until the loud strokes sound clean': 'The overload is at the input, before the fader; a lower fader only makes it quieter.',
@@ -484,7 +484,7 @@ const orderTasks: OrderTask[] = [
     page: 'practice',
     prompt: 'Tap the steps of a one-mic tonbak setup in the order you would do them.',
     steps: [
-      { text: 'Note the drum, the player’s posture and role, and agree a repeatable passage', early: 'Start with the player and the drum.' },
+      { text: 'Note the drum, the player’s posture and role, and agree on a repeatable passage', early: 'Start with the player and the drum.' },
       { text: 'Choose a mic and a stand that suit the drum and the room', early: 'Choose once you know the drum, the posture and the role.' },
       { text: 'Place it about 25–40 cm from the audience side; check the hands’ full paths', early: 'You need a chosen mic before you place it.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom if needed', early: 'Power comes after the mic is placed and connected — outputs muted first.' },
@@ -526,7 +526,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Dynamic, supercardioid, about 25–40 cm from the audience side, wedge at its rear sides', ok: true, power: 'none', feedback: 'Directional, its rejection aimed at the wedge; no phantom needed.' },
       { id: 'c', label: 'Small condenser, cardioid, about 25–40 cm from the audience side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power.' },
       { id: 'd', label: 'Omni about 1 m away, to hear the whole drum', ok: false, power: 'phantom', feedback: 'Far and omni on a loud stage hears the band and the monitors. And an omni condenser needs phantom, which this input lacks.' },
-      { id: 'e', label: 'Dynamic right against the head so the hands work round it', ok: false, power: 'none', feedback: 'The hands’ path comes first: never in the way of the playing.' },
+      { id: 'e', label: 'Dynamic right against the head so the hands work around it', ok: false, power: 'none', feedback: 'The hands’ path comes first: never in the way of the playing.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
     explain: 'Two dynamic setups pass. What passes is the reasoning: a sensible starting point, clear of the hands, powered by what this input supplies.',
@@ -535,7 +535,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: which stroke sets more of the head’s higher shapes moving?', options: ['A stroke at the edge', 'A stroke in the middle', 'Both the same'], after: 'Now STEP through the stroke (or PLAY ONCE), then try STROKE at the middle and at the edge.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 30 cm to 15 cm from the head. What changes most?', options: ['More isolation and detail', 'More of the room', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -582,12 +582,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Where does most of the tonbak’s sound leave the drum?',
-    options: ['From the head, with some from the open lower end', 'From the open lower end, with a little from the head', 'From the wooden body, evenly all round the drum'],
+    options: ['From the head, with some from the open lower end', 'From the open lower end, with a little from the head', 'From the wooden body, evenly all around the drum'],
     correct: 'From the head, with some from the open lower end',
     explain: 'The head radiates most; some resonance leaves the opening — a possible extra pickup, not a second head.',
     why: {
-      'From the open lower end, with a little from the head': 'The other way round: the head is the main source.',
-      'From the wooden body, evenly all round the drum': 'The body shapes the sound, but the head moves the most air.',
+      'From the open lower end, with a little from the head': 'The other way around: the head is the main source.',
+      'From the wooden body, evenly all around the drum': 'The body shapes the sound, but the head moves the most air.',
     },
   },
   {

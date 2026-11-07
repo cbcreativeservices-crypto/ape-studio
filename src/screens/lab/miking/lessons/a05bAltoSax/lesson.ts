@@ -67,7 +67,7 @@ export const A05B_LESSON: Lesson = buildSaxLesson({
   setup: (R) => saxSetupTasks('as', 'alto', R),
   neighbours: [
     { id: 'n1', label: 'a tenor beside (the next horn in the section)', short: 'TENOR', note: 'In a section the next horn sits close: a close mic on this alto hears it too — more so from the side. Aim so the neighbor sits off the front of the pattern.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'n2', label: 'a second alto on the other side', short: 'ALTO 2', note: 'The other neighbor in the row. Every sax mic in a section hears the horns either side of it.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
+    { id: 'n2', label: 'a second alto on the other side', short: 'ALTO 2', note: 'The other neighbor in the row. Every sax mic in a section hears the horns on either side of it.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A player steps forward for solos: a closer, aimed mic — or a clip on the bell that moves with the horn — helps against the stage and feedback.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can carry the whole horn and the room; in a section, a main pair may carry it already.',

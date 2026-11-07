@@ -30,9 +30,9 @@ import { soundCell, useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'Signal path', def: 'The route the music takes, stage by stage: player → cable → mixer input → channel → mix → output → speaker. When something is silent, you follow it until it stops.' },
-  { term: 'Powered speaker', def: 'A speaker with its own amplifier inside: it takes a line-level signal and needs its own mains power. Many have an input switch (MIC/LINE): set LINE. Its level knob is set at its marked unity point.' },
+  { term: 'Powered speaker', def: 'A speaker with its own amplifier inside: it takes a line-level signal and needs its own AC power. Many have an input switch (MIC/LINE): set LINE. Its level knob is set at its marked unity point.' },
   { term: 'Power sequencing', def: 'The order you switch things on and off: sources and mixer first, amplified speakers LAST (and off FIRST), so switching bangs never reach them.' },
-  { term: 'Protective earth', def: 'The mains safety connection (the earth pin). Never remove or tape it to cure hum — it is what protects people if a fault happens.' },
+  { term: 'Safety ground', def: 'The power plug’s safety connection (the ground pin). Never remove or tape it to cure hum — it is what protects people if a fault happens.' },
 ] as const;
 
 export const GOALS_BUILD = ['Both players to the mixer', 'PA and booth monitors', 'Headphones in', 'Power ON, speakers last', 'Hear the crowd feed', 'Power OFF, speakers first', 'Fix the missing side', 'Pass the check'] as const;
@@ -132,7 +132,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   );
 }
 
-const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
+const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach around to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -307,13 +307,13 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
         <P>Look at the mixer’s rear: seen from behind, channel 2’s inputs are on the LEFT. That catches people out on real gear too.</P>
       </Step>
       <Step n={3}>
-        <P>Open POWER and DECKS, play a deck and LISTEN as the CROWD. You only hear it once the whole path is complete: player → cable → mixer input → channel → mix → MASTER → PA. While audio flows, its cables glow blue, and each speaker that is getting its own feed glows blue in the room; a mains cord that is live shows a thin amber line.</P>
+        <P>Open POWER and DECKS, play a deck and LISTEN as the CROWD. You only hear it once the whole path is complete: player → cable → mixer input → channel → mix → MASTER → PA. While audio flows, its cables glow blue, and each speaker that is getting its own feed glows blue in the room; a power cord that is live shows a thin amber line.</P>
       </Step>
       <Step n={4}>
         <Do>Wire everything, then power ON in a safe order — players and mixer first, speakers LAST. Hear the crowd, then power OFF with the speakers FIRST.</Do>
         {miss === 'on' ? <Note tone="safety">That order thumped a live speaker. Switch everything OFF and try again: players and mixer first, speakers last.</Note> : null}
         {miss === 'off' ? <Note tone="safety">That order thumped a live speaker on the way down. Switch everything back ON (speakers last), then turn the speakers off FIRST.</Note> : null}
-        <Note tone="safety">Before switching speakers on, turn the mixer’s MASTER and BOOTH down, and check each powered speaker’s input is set to LINE with its level at the marked unity point. Bring levels up slowly once everything is on. Never remove a plug’s earth pin to stop a hum — that pin protects people.</Note>
+        <Note tone="safety">Before switching speakers on, turn the mixer’s MASTER and BOOTH down, and check each powered speaker’s input is set to LINE with its level at the marked unity point. Bring levels up slowly once everything is on. Never remove a plug’s ground pin to stop a hum — that pin protects people.</Note>
         <GoalChips goals={goals.slice(0, 6)} latched={latched.slice(0, 6)} />
       </Step>
       <Step n={5}>

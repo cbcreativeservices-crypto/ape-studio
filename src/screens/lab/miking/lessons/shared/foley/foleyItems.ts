@@ -131,12 +131,12 @@ export function feedbackFoley(w: FoleyWords): Symptom {
     id: `${w.p}.sym.feedback`,
     observation: 'In the live booth, the mic starts to ring before the effect is loud enough',
     firstChecks: 'Lower that send at once; then the wedge and PA against the mic’s pattern, the distance to the action, and how many mics are open — with the operator.',
-    options: ['Lower it, then the wedge, the distance and the open mics', 'Add more gain so the effect covers the ringing', 'Swap to an omni so the effect is heard from all round the booth'],
+    options: ['Lower it, then the wedge, the distance and the open mics', 'Add more gain so the effect covers the ringing', 'Swap to an omni so the effect is heard from all around the booth'],
     correct: 'Lower it, then the wedge, the distance and the open mics',
     explain: 'Feedback is a sound-system condition: lower the level first, then aim the rejection at the wedge, work a little closer within clearance and close the mics you do not need. Do not make it ring to find where it starts: only the system operator rings out a system, with care.',
     why: {
       'Add more gain so the effect covers the ringing': 'More gain feeds the loop. Lower the level first.',
-      'Swap to an omni so the effect is heard from all round the booth': 'An omni hears the PA and the wedge from every side: it usually rings sooner.',
+      'Swap to an omni so the effect is heard from all around the booth': 'An omni hears the PA and the wedge from every side: it usually rings sooner.',
     },
   };
 }

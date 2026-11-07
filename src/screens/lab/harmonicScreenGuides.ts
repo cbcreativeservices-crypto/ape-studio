@@ -80,8 +80,8 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (the strongest level on the heatmap). Badge: REAL SIGNAL — dBFS · UNCALIBRATED.',
     ],
     control: [
-      '▶ in the header, or a tap on the display, starts the mic (and the tone, once the override is ticked); ■ stops both.',
-      'The tone is the fundamental alone — a sine at F0, −20 dBFS. It stays muted until you tick ⚠ ALLOW SPEAKER WHILE MIC IS ON in LAB NOTES. Keep the volume low.',
+      '▶ in the header, or a tap on the display, starts the mic (and the tone, once the override is checked); ■ stops both.',
+      'The tone is the fundamental alone — a sine at F0, −20 dBFS. It stays muted until you check ⚠ ALLOW SPEAKER WHILE MIC IS ON in LAB NOTES. Keep the volume low.',
       'The F0 fader (60–300 Hz) retunes the tone; the axis follows it, so the markers keep their places and their labels change. AXIS: LOG ♪ or LIN. MODE: back to ANALYTIC MODEL; a mode switch stops all sound.',
       'PRESET, THD CALC and the stems belong to the model, so they are not on this screen.',
     ],
@@ -96,9 +96,9 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'How to read a spectrogram: frequency up, time across, level as color.',
     ],
     tryThis: [
-      'Push the F0 fader to the top (phone speakers play higher notes better), tick ⚠ ALLOW SPEAKER WHILE MIC IS ON, set the volume low, tap ▶: TONE reads ON; a band usually lights at marker 1.',
+      'Push the F0 fader to the top (phone speakers play higher notes better), check ⚠ ALLOW SPEAKER WHILE MIC IS ON, set the volume low, tap ▶: TONE reads ON; a band usually lights at marker 1.',
       'Raise the volume a step at a time and watch markers 2 and 3: a band that appears there is distortion the speaker or mic added.',
-      'Untick the override: TONE reads MUTED and new columns lose the marker bands — what is left is the room.',
+      'Uncheck the override: TONE reads MUTED and new columns lose the marker bands — what is left is the room.',
     ],
   },
 
@@ -134,7 +134,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
   check: {
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on this lab. Answer every one correctly to complete it.',
-      'They ask where the 3rd harmonic of 100 Hz sits, what raising the level does, what changing only phases does, and which wave odd harmonics at 1/n build.',
+      'They ask where the 3rd harmonic of 100 Hz sits, what raising the level does, what changing only phases does, and which wave is built from odd harmonics at 1/n.',
     ],
     control: [
       'Tap an answer. Right: CORRECT and the reason, and its number turns to ✓. Wrong: NOT QUITE — TRY ANOTHER, with the reason — pick again.',
@@ -142,7 +142,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs taking twice.',
+      'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs to be taken twice.',
     ],
     teaches: [
       'It checks the core ideas: harmonics as multiples, level against timbre, phase, and building a wave from harmonics.',

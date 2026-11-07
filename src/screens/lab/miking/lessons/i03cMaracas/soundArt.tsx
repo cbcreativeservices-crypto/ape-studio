@@ -113,7 +113,7 @@ export function MaracaMotion({ w, h, mode, swing, accessibilityLabel }: { w: num
     return p;
   }, []);
   const labels: StaticLabel[] = [
-    { id: 'm', text: circ ? 'SEEDS ROLL ROUND THE WALL' : Math.abs(swing) > 0.6 ? 'SEEDS THROWN AGAINST THE WALL' : 'SEEDS IN FLIGHT', short: 'SEEDS', u: 0, v: -84, align: 'center', tone: 'amber' },
+    { id: 'm', text: circ ? 'SEEDS ROLL AROUND THE WALL' : Math.abs(swing) > 0.6 ? 'SEEDS THROWN AGAINST THE WALL' : 'SEEDS IN FLIGHT', short: 'SEEDS', u: 0, v: -84, align: 'center', tone: 'amber' },
     { id: 'o', text: circ ? 'A LONGER, SMOOTHER SUSTAIN' : 'AN ACCENT AT EACH TURN', short: 'SOUND', u: 0, v: 110, align: 'center', tone: 'blue' },
   ];
   return (

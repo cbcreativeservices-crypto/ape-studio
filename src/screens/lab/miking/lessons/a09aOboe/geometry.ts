@@ -54,13 +54,13 @@ const surfaces: ReferenceSurface[] = [
   { id: 'bell', partId: 'ww.bell', label: 'the bell', point: A.bell, normal: BELL_AXIS, target: true },
   { id: 'joint', partId: 'ww.bell', label: 'the top of the bell', point: A.joint, normal: N, target: true },
 ];
-const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap round the oboe just above the bell', c: A.strap, axis: norm(frameAt(L, 463).t), r: radiusAt(SPEC, 463) + 1.5 }];
+const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap around the oboe just above the bell', c: A.strap, axis: norm(frameAt(L, 463).t), r: radiusAt(SPEC, 463) + 1.5 }];
 
 export const WORDS: WindPartWords = {
   roles: {
     reed: 'Two thin blades of cane tied on a small tube: the double reed. The player’s lips press it; the breath sets the two blades closing and opening against each other.',
     upper: 'The upper joint, under the left hand: small tone holes, ring keys and the octave keys that lift the oboe an octave. It narrows toward the reed — the bore is a cone.',
-    lower: 'The lower joint, under the right hand. One third of the way up from the bell sits here, among the lower holes.',
+    lower: 'The lower joint, under the right hand. The point one third of the way up from the bell is here, among the lower holes.',
     bell: 'The flared end, with a small vent hole. Only the lowest notes — every hole closed — leave mainly from here.',
   },
   keys: 'A dense keywork over small tone holes (the smallest about 2 mm across): rings, plates and padded keys on long rods. As the player fingers each note, the first open hole moves — and the sound leaves there.',

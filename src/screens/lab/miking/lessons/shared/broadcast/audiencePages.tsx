@@ -78,7 +78,7 @@ const LAYERS: Readonly<Record<Layer, { label: string; short: string; words: Reco
     short: 'SEATS',
     words: {
       studio: 'One raked section, an aisle down each side, an exit at each back corner. A stand or a mic stays out of every aisle and exit. A cable crosses an aisle only where the venue approves, under a ramp or taped flat, and never blocks an exit.',
-      event: 'Three sections round the stage, aisles between them, a cross-aisle and exits at the back. One mic cannot stand for every section.',
+      event: 'Three sections around the stage, aisles between them, a cross-aisle and exits at the back. One mic cannot stand for every section.',
     },
   },
   pa: {

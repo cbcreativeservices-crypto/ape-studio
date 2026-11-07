@@ -149,7 +149,7 @@ describe('Connector Selection', () => {
   it('R3-CS-05 the ground pin bonds the chassis to earth so a fault trips the breaker', () => {
     const s = lab('connectorselect/data/practice.ts');
     assert.doesNotMatch(s, /keeps a fault from energizing chassis/);
-    assert.match(s, /The ground pin bonds the chassis to earth, so a fault trips the breaker/);
+    assert.match(s, /The ground pin bonds the chassis to ground, so a fault trips the breaker/);
   });
 
   it('R3-CS-S3 the DI answer is drawn as two cables through a DI box, not one TS–XLR cable', () => {

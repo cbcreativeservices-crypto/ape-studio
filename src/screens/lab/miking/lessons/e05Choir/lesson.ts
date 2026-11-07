@@ -303,7 +303,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Does the choir fill the array’s angle? Move the pair back or bring the group in — before adding level.',
     options: ['Move the pair back or bring the group in', 'Raise the outer sections with EQ on the bus', 'Add a spot on each outer singer'],
     correct: 'Move the pair back or bring the group in',
-    explain: 'Close in, the outer sections sit outside the pair’s angle. Move the pair back, or bring the group in, so the choir fills the angle. Widening the angle between the mics makes that angle smaller, not larger.',
+    explain: 'Close in, the outer sections sit outside the pair’s angle. Move the pair back, or bring the group in, so the choir fills the angle. Widening the angle between the mics makes the recording angle smaller, not larger.',
     why: { 'Raise the outer sections with EQ on the bus': 'EQ cannot separate one section from another in a pair.', 'Add a spot on each outer singer': 'Spots first add overlap; fix the coverage.' },
   },
   {
@@ -382,7 +382,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1 m to 2 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The first row dominates more'], after: 'Farther back, the distances to the first and back rows even out: the NEAR / FAR readout shrinks, and more sections fall inside the pair’s angle.' },
   context: { prompt: 'The floor monitor sits in front of the choir, below the area mic. Can the mic’s rejection reach it?', options: ['Yes — tilt the mic or tighten its pattern', 'No — only an omni can', 'It is already in the null'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a soprano spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
@@ -431,7 +431,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Two area mics, each 60 cm from the nearest singers. How far apart to start?',
     options: ['At least 1.8 m apart', 'About 60 cm apart', 'As close as their stands allow'],
     correct: 'At least 1.8 m apart',
-    explain: 'The 3:1 guideline: the mics at least three times their distance to the singers apart from each other — here 1.8 m (6 ft).',
+    explain: 'The 3:1 guideline: the mics spaced from each other by at least three times their distance to the singers — here 1.8 m (6 ft).',
     why: { 'About 60 cm apart': 'That is 1:1: both mics hear the same voices almost equally, and comb.', 'As close as their stands allow': 'Close mics hear the same voices twice; spread them 3:1.' },
   },
   hangDiag('ch', 'the choir'),
@@ -456,14 +456,14 @@ export const E05_LESSON: EnsembleLesson = {
       page: 'practice',
       prompt: 'Live choir mics, in order:',
       steps: [
-        { text: 'Listen to the choir unamplified; agree the layout with the director', early: 'Start with the choir and its balance.' },
+        { text: 'Listen to the choir unamplified; agree on the layout with the director', early: 'Start with the choir and its balance.' },
         { text: 'Check stands, cables and the singers’ way on and off the risers', early: 'Safety and movement come before sound.' },
         { text: 'Place the fewest area mics: a few feet out, above the heads, 3:1 apart', early: 'Place the mics once the layout and the paths are set.' },
         { text: 'Set gain on the loudest full-choir passage', early: 'Gain comes once the mics are up and powered.' },
         { text: 'Mute-check each mic, then listen to the sum in mono', early: 'Check the mics once their gain is set.' },
         { text: 'Bring the monitors up only to the agreed level', early: 'Monitors come last, and only as loud as needed.' },
       ],
-      explain: 'Listen and agree the layout first, make the stage safe, place the fewest mics 3:1 apart, set gain on the loudest passage, mute-check in mono — and bring monitors up only to the agreed level.',
+      explain: 'Listen and agree on the layout first, make the stage safe, place the fewest mics 3:1 apart, set gain on the loudest passage, mute-check in mono — and bring monitors up only to the agreed level.',
     },
   ],
   setupTasks,
@@ -476,7 +476,7 @@ export const E05_LESSON: EnsembleLesson = {
   ],
   sound: {
     stages: [
-      { title: 'Every mouth at once', text: 'Each singer’s voice leaves through the mouth, forward and round the head — dozens of them, all facing the conductor.' },
+      { title: 'Every mouth at once', text: 'Each singer’s voice leaves through the mouth, forward and around the head — dozens of them, all facing the conductor.' },
       { title: 'Rows and risers', text: 'The risers lift each row so its voices pass over the heads in front: a mic a little above the first row hears the back rows more directly.' },
       { title: 'The room joins them', text: 'Reflections blend every voice into one sound — the blend a main pair or area mic hears from a few feet away.' },
     ],
@@ -546,7 +546,7 @@ export const E05_LESSON: EnsembleLesson = {
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s center — near, about 0.6–1.2 m (2–4 ft) in front and 0.3–0.9 m (1–3 ft) above the first row’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
       'Change one variable at a time — distance, height, then the angle — and compare at a consistent level on the same passage, on loudspeakers.',
-      'Area mics follow the same idea: a few feet out, a little above, aimed at the middle or back rows, and at least three times their distance to the singers apart from each other.',
+      'Area mics follow the same idea: a few feet out, a little above, aimed at the middle or back rows, and spaced from each other by at least three times their distance to the singers.',
     ],
   },
 };

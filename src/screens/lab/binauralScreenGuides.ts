@@ -38,7 +38,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
   // ── EXPLORE — the stage ───────────────────────────────────────────────────
   explore: {
     seeing: [
-      'Your head from above, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left; rings mark each metre out to 4 m.',
+      'Your head from above, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left; rings mark each meter out to 4 m.',
       'Up to three speaker objects: 1 amber, 2 green, 3 blue. A dim one is OFF; the selected one has the thicker ring. At first only 1 is ON: pink noise at −60°, 1.5 m.',
       'Readouts for the selected object: OBJ, AZ (angle and direction), DIST and ITD (far-ear delay, µs).',
     ],
@@ -82,7 +82,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     ],
     changes: [
       'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'The FORMULA’s ITD line is the maths behind the ITD readout: (r ÷ c)·(θ + sin θ), with r = 8.75 cm and θ in radians (45° = 0.785).',
+      'The FORMULA’s ITD line is the math behind the ITD readout: (r ÷ c)·(θ + sin θ), with r = 8.75 cm and θ in radians (45° = 0.785).',
       'Most COMMON MISTAKES are listening traps — speakers, a low sine, front/back — and why each one happens.',
     ],
     teaches: [

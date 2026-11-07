@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Upright bass",
         "cut": "HPF 35–40 Hz; −2–3 dB at 200–300 Hz",
-        "boost": "+2 dB at 70–90 Hz; +1–2 dB at 700 Hz–1 kHz (note)",
+        "boost": "+2 dB at 70–90 Hz; +1–2 dB at 700 Hz–1 kHz",
         "notes": "Blend pickup and mic; watch feedback near 100–200 Hz"
       },
       {

@@ -33,7 +33,7 @@ export const HANDLING_PRACTICES: HandlingPractice[] = [
     label: 'GRIP THE BODY',
     title: 'Connect and disconnect by the connector body',
     copy:
-      'Never pull the cable. Cord-yanking is how strain reliefs fail and conductors pull loose inside the connector — on a mains plug, grip the plug itself, every time. The cable carries signal or power; the connector body carries the pulling.',
+      'Never pull the cable. Cord-yanking is how strain reliefs fail and conductors pull loose inside the connector — on a power plug, grip the plug itself, every time. The cable carries signal or power; the connector body carries the pulling.',
   },
   {
     id: 'release_latch',
@@ -102,10 +102,10 @@ export const HANDLING_PRACTICES: HandlingPractice[] = [
     // STANDARD PRACTICE: separation/right-angle crossing is standard system
     // practice (lesson intro sanctions "keep power and signal apart").
     id: 'separation',
-    label: 'SIGNAL APART FROM MAINS',
-    title: 'Separate signal from mains; cross at right angles',
+    label: 'SIGNAL APART FROM AC POWER',
+    title: 'Separate signal from AC power; cross at right angles',
     copy:
-      'Run signal cables and mains power apart, not bundled side by side. Where they must meet, cross cleanly at right angles instead of running parallel — the least coupling for the shortest distance.',
+      'Run signal cables and AC power apart, not bundled side by side. Where they must meet, cross cleanly at right angles instead of running parallel — the least coupling for the shortest distance.',
   },
   {
     id: 'uncoil_reels',
@@ -119,7 +119,7 @@ export const HANDLING_PRACTICES: HandlingPractice[] = [
     label: 'DEFECTIVE = OUT',
     title: 'Damaged power cables leave service immediately',
     copy:
-      'Cracked jackets, exposed conductors, heat-marked plugs, a missing ground pin: the cord leaves service the moment you see it. “It still works” is not a working cord — and mains cord repair is qualified-person work, never beginner work.',
+      'Cracked jackets, exposed conductors, heat-marked plugs, a missing ground pin: the cord leaves service the moment you see it. “It still works” is not a working cord — and power cord repair is qualified-person work, never beginner work.',
   },
 ];
 
@@ -138,7 +138,7 @@ export const FAULT_VOCABULARY: FaultTerm[] = [
     id: 'bent_missing_pins',
     term: 'BENT / MISSING PINS',
     looksLike:
-      'Bent, pushed-in or missing contacts — sight down the connector face. A mains plug missing its ground pin is not a working plug.',
+      'Bent, pushed-in or missing contacts — sight down the connector face. A power plug missing its ground pin is not a working plug.',
   },
   {
     id: 'corrosion',
@@ -166,7 +166,7 @@ export const FAULT_VOCABULARY: FaultTerm[] = [
     id: 'broken_latches',
     term: 'BROKEN LATCHES',
     looksLike:
-      'A latch that no longer clicks, holds against a gentle tug, or springs back — on XLRs, locking power connectors and shell systems alike.',
+      'A latch that no longer clicks, no longer holds against a gentle tug, or springs back — on XLRs, locking power connectors and shell systems alike.',
   },
   {
     id: 'strain_relief',
@@ -258,15 +258,15 @@ export const SCENE_ITEMS: SceneItem[] = [
     answer: 'ok',
     nudge: 'Was this cord ever built with a third contact? Equipment class decides what “complete” looks like.',
     explain:
-      'Passes. This is a two-pole Class II (figure-8) cord: the equipment protects users with double or reinforced insulation instead of a protective earth. The missing third contact is a design property, not a defect — a missing ground is only a fault on a plug built with one.',
+      'Passes. This is a two-pole Class II (figure-8) cord: the equipment protects users with double or reinforced insulation instead of a safety ground. The missing third contact is a design property, not a defect — a missing ground is only a fault on a plug built with one.',
   },
   {
     id: 'mains_jacket_cut',
-    vignette: 'A mains extension cord with a cut in the jacket; the colored insulation of the inner conductors shows through.',
+    vignette: 'An extension cord with a cut in the jacket; the colored insulation of the inner conductors shows through.',
     answer: 'fault',
     nudge: 'One layer of this cable’s protection is already gone. What does the next layer down carry?',
     explain:
-      'A jacket cut exposing inner conductors on a power cable. Disposition: remove from service immediately — “it still works” is not a working cord, and mains cord repair is qualified-person work, never a taped-over field fix.',
+      'A jacket cut exposing inner conductors on a power cable. Disposition: remove from service immediately — “it still works” is not a working cord, and power cord repair is qualified-person work, never a taped-over field fix.',
   },
   {
     id: 'ts_crackle',
@@ -298,7 +298,7 @@ export const SCENE_ITEMS: SceneItem[] = [
     answer: 'fault',
     nudge: 'Powering up proves the line and neutral paths. What path did this plug lose?',
     explain:
-      'A plug missing its ground pin is not a working plug — the earth pin carries fault current away so the fuse blows or the breaker trips; without it, a fault can leave the metal chassis live. Disposition: remove from service immediately; the missing pin is never adapted around or ignored.',
+      'A plug missing its ground pin is not a working plug — the ground pin carries fault current away so the fuse blows or the breaker trips; without it, a fault can leave the metal chassis live. Disposition: remove from service immediately; the missing pin is never adapted around or ignored.',
   },
   {
     id: 'combo_no_latch',

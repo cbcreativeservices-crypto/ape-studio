@@ -20,7 +20,7 @@ const pages: LessonPages = {
     title: 'Meet the cowbell',
     goal: 'Get to know the cowbell — what it is, where you meet it, what it does in the music and how it is played — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A struck steel box, open at the mouth: the whole body rings. Mounted it stays put while the stick moves round it; handheld it moves, and the grip damps it.',
+    takeaway: 'A struck steel box, open at the mouth: the whole body rings. Mounted it stays put while the stick moves around it; handheld it moves, and the grip damps it.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -119,7 +119,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Every stick path, rebound and fill near the bell',
     explain: 'The stick, not the bell, sets the minimum clearance: strike points, fills, rebound and crossovers. A mic is never a target in the player’s groove.',
     why: {
-      'The bell at rest, since a mounted bell stays put': 'The bell stays put; the stick moves round it — that sets the clearance.',
+      'The bell at rest, since a mounted bell stays put': 'The bell stays put; the stick moves around it — that sets the clearance.',
       'Only the main strike point the player uses most': 'Fills and rebounds reach farther than the main strike.',
     },
   },
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the stick strikes the bell’s top. Where will the sound leave?', options: ['From the whole body', 'Only from the mouth', 'Only where it was struck'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch where it leaves.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: side view or top view — which hears more of the stick’s attack?', options: ['The top view', 'The side view', 'It depends on the bell'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -428,7 +428,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Mounted or handheld — what changes for a mic?',
     options: ['Held, the bell moves and the grip damps it', 'Nothing: the same bell sounds the same anywhere', 'Mounted, the bell is quieter because it is clamped'],
     correct: 'Held, the bell moves and the grip damps it',
-    explain: 'A mounted bell stays put while the stick moves round it; held, its position and damping change.',
+    explain: 'A mounted bell stays put while the stick moves around it; held, its position and damping change.',
     why: {
       'Nothing: the same bell sounds the same anywhere': 'Grip, mount and motion all change what a mic hears.',
       'Mounted, the bell is quieter because it is clamped': 'A secure clamp holds it; the stick’s path matters more.',
@@ -466,7 +466,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The stick’s full path, rebound and fills',
     explain: 'The stick, not the bell, defines the minimum safe clearance — a mic is never a target in the groove.',
     why: {
-      'The bell’s own size and its mouth width': 'The bell stays put; the stick moves round it.',
+      'The bell’s own size and its mouth width': 'The bell stays put; the stick moves around it.',
       'The mic’s length, so it fits beside the bell': 'Fitting is not clearing the stick.',
     },
   },

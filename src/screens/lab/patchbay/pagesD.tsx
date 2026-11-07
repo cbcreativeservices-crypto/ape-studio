@@ -113,14 +113,14 @@ function PageConductors({ ctx }: { ctx: PageCtx }) {
         options={[
           'One complete balanced circuit — tip, ring and sleeve together',
           'Just the tip conductor',
-          'The mains power feed for the device',
+          'The AC power feed for the device',
         ]}
         correct={0}
         explain="One line = one balanced audio circuit. The simplification kept the routing readable; the metal underneath was always T/R/S."
         wrong={[
           undefined,
           'The tip alone is half of the balanced pair — the drawn line stood for the whole circuit.',
-          'Mains never runs through an audio patchbay. The line was the audio circuit.',
+          'AC power never runs through an audio patchbay. The line was the audio circuit.',
         ]}
         onCorrect={() => {
           if (!ctx.isDone) ctx.markDone();
@@ -146,7 +146,7 @@ function PagePhantom({ ctx }: { ctx: PageCtx }) {
           contacts.{'\n'}
           • Different patchbay designs handle grounding differently — do not assume every TRS/TT bay is suitable.{'\n'}
           • Follow the patchbay manufacturer’s wiring instructions for microphone circuits.{'\n'}
-          • Turn phantom power OFF (and the channel down) before patching or unpatching mic-level points, and check the mic: some ribbon mics can be damaged.{'\n'}
+          • Turn phantom power OFF (and the channel down) before patching or unpatching mic-level points, and check whether it’s a ribbon mic: some ribbons can be damaged.{'\n'}
           • Dedicated microphone patching systems exist and follow their own practices.
         </Body>
       </Card>

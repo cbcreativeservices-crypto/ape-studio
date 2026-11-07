@@ -27,7 +27,7 @@ import { linToDb } from '../engine/djDsp';
 import { peakDb, peakShort, useBoothKit } from './shared';
 
 const TERMS = [
-  { term: 'Channel fader', def: 'Each channel’s level into the mix. On this mixer half way up is about −12 dB — only about a quarter of the signal level, not half. Some mixers have a switch for the channel-fader curve too.' },
+  { term: 'Channel fader', def: 'Each channel’s level into the mix. On this mixer halfway up is about −12 dB — only about a quarter of the signal level, not half. Some mixers have a switch for the channel-fader curve too.' },
   { term: 'Crossfader', def: 'A side-to-side fader that fades between the channels assigned to side A and side B. A channel on THRU ignores it completely — only its channel fader matters.' },
   { term: 'Curve', def: 'How the crossfader’s two gains change across its travel. BLEND keeps the total level steady; DIP lets it sag in the middle; CUT keeps both full until the very ends — a short “cut-in”, so a sound appears almost the instant you move it.' },
   { term: 'Reverse (hamster)', def: 'A switch that swaps the crossfader’s sides. Check it when a cut comes in backwards.' },

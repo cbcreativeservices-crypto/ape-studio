@@ -10,7 +10,7 @@ import { c13ZoneSpecs } from './model.ts';
 const WORDS: Record<string, PartWords> = {
   face: { label: 'face (soundboard)', short: 'face', role: 'The thin wooden face, driven by the strings through the bridge. Much of the oud’s sound leaves from here.' },
   roseMain: { label: 'main rosette', short: 'main rose', role: 'The large carved rosette under the strings. The air inside the bowl breathes through it — a big part of the warm, low bloom.' },
-  roseSmall: { label: 'small rosettes', short: 'small roses', role: 'Two small carved rosettes low on the face, either side of the strings: more openings for the bowl’s air.' },
+  roseSmall: { label: 'small rosettes', short: 'small roses', role: 'Two small carved rosettes low on the face, on either side of the strings: more openings for the bowl’s air.' },
   bridge: { label: 'bridge', short: 'bridge', role: 'Glued low on the face; the strings are tied to it. They pull on it and it rocks with them, driving the face.' },
   strings: { label: 'strings (courses)', short: 'strings', role: 'Usually paired strings in courses, plucked with the risha. On their own they move very little air.' },
   board: { label: 'fingerboard (fretless)', short: 'fingerboard', role: 'No frets: the left hand slides between notes, including the notes between the semitones. Those slides and the fingers are part of the sound.' },

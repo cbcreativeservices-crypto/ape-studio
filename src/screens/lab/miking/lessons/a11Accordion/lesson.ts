@@ -119,12 +119,12 @@ const scenarios: MikingScenario[] = [
     id: 'ac.set.1',
     page: 'setting',
     prompt: 'Before placing a mic, what do you watch the accordionist play?',
-    options: ['A full passage, with the bellows at full stretch', 'One held chord, so the level stays steady', 'Nothing yet: set the mic, then fit the playing round it'],
+    options: ['A full passage, with the bellows at full stretch', 'One held chord, so the level stays steady', 'Nothing yet: set the mic, then fit the playing around it'],
     correct: 'A full passage, with the bellows at full stretch',
     explain: 'Low bass, full chords, the treble melody, opening and closing strokes, the softest and loudest passage — and how far the bass side travels. Never make the player constrain their technique for a stand.',
     why: {
       'One held chord, so the level stays steady': 'A held note hides the bellows’ travel and the bass side’s movement.',
-      'Nothing yet: set the mic, then fit the playing round it': 'Never fit the player round a mic: place the mic for the player.',
+      'Nothing yet: set the mic, then fit the playing around it': 'Never fit the player around a mic: place the mic for the player.',
     },
   },
   hearingCheck(W),
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It takes in both sides and the room evenly',
     explain: 'An accordion radiates from both sides; an omni can integrate a multi-directional source in a quiet room. It does not give stage isolation.',
     why: {
-      'It rejects the room better than a cardioid': 'An omni hears the room all round — more of it, not less.',
+      'It rejects the room better than a cardioid': 'An omni hears the room all around — more of it, not less.',
       'It needs no power, unlike a cardioid': 'Power depends on the transducer, not the pattern.',
     },
   },
@@ -156,11 +156,11 @@ const scenarios: MikingScenario[] = [
     id: 'ac.mic.2',
     page: 'microphone',
     prompt: 'On a loud stage, why not reach for an omni on the accordion?',
-    options: ['It hears the stage and monitors all round', 'It cannot pick up the bass side at all', 'It distorts on the accordion’s bass notes'],
-    correct: 'It hears the stage and monitors all round',
+    options: ['It hears the stage and monitors all around', 'It cannot pick up the bass side at all', 'It distorts on the accordion’s bass notes'],
+    correct: 'It hears the stage and monitors all around',
     explain: 'An omni gives no rejection: on a loud stage it hears the monitors and the band. A directional mic helps when spill and feedback matter — check its real pattern.',
     why: {
-      'It cannot pick up the bass side at all': 'An omni hears all round; its problem live is spill and feedback.',
+      'It cannot pick up the bass side at all': 'An omni hears all around; its problem live is spill and feedback.',
       'It distorts on the accordion’s bass notes': 'Pattern says nothing about distortion; check the max SPL.',
     },
   },
@@ -411,7 +411,7 @@ const symptoms: Symptom[] = [
     explain: 'A clip or cable that catches during the bellows stroke is an immediate stop: lower the channel, remove the strain, and re-route with enough slack for the full cycle.',
     why: {
       'Tape the cable tighter and carry on playing': 'A taut cable in the bellows’ path is the problem, not the cure.',
-      'Hold the cable clear by hand for the rest': 'Stop and fix the routing; never work round a moving instrument.',
+      'Hold the cable clear by hand for the rest': 'Stop and fix the routing; never work around a moving instrument.',
     },
   },
 ];
@@ -452,7 +452,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what moves the air through the reeds?', options: ['The bellows', 'The player’s breath', 'A fan inside'], after: 'Now STEP through the reed (or PLAY ONCE), then try its shapes and the bellows’ cycle.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the bellows open fully. What happens to a fixed mic’s distance to the bass side?', options: ['It changes', 'It stays the same', 'Only the treble side moves'], after: 'Rest the mic in two zones, then switch BELLOWS and watch the bass side move.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A treble mic and a bass mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic — and switch BELLOWS to see the bass side’s delay move.' },

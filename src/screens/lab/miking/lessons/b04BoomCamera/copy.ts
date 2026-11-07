@@ -11,7 +11,7 @@ import type { LessonCopy } from '../../engine/model/copy.ts';
 import { standingVoiceCopy } from '../shared/voice/voiceCopy.ts';
 import { SAFETY } from '../shared/broadcast/boomPole.ts';
 
-const INTRO = 'This lesson is about a microphone held near a talker but kept out of the picture — on a boom just outside the frame — and about the mic on the camera itself. First the talker and the shot: where the voice leaves, where the frame ends and the boom can go, what a head turn and a second talker do; then real starting setups drawn round the talker, the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.';
+const INTRO = 'This lesson is about a microphone held near a talker but kept out of the picture — on a boom just outside the frame — and about the mic on the camera itself. First the talker and the shot: where the voice leaves, where the frame ends and the boom can go, what a head turn and a second talker do; then real starting setups drawn around the talker, the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.';
 
 const BASE = standingVoiceCopy({
   what: 'a talker on camera',
@@ -60,7 +60,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     partsIdle: 'The voice leaves through the mouth — every distance is read from the lips. Around the talker: the camera and its frame, the boom operator, the PA live. Tap any of them.',
     variantNotes: {
       close: 'CLOSE SHOT: the camera 2.2 m in front, head and shoulders. Switch SHOT to see the wider shot or the stage.',
-      wide: 'WIDER SHOT: the camera moved back to 3.6 m, the talker from the waist up with room round them — the frame’s top is higher.',
+      wide: 'WIDER SHOT: the camera moved back to 3.6 m, the talker from the waist up with room around them — the frame’s top is higher.',
       live: 'LIVE: the close shot for the broadcast; the PA at the stage’s front corner faces the audience, but its back and side reach the stage.',
     },
   },
@@ -117,7 +117,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     looking: 'The talker on a stage · the PA at the stage’s front corner, on their left',
     prompt: 'The PA stays where the show needs it. Turn or tilt the boom mic (AIM), or change its PATTERN, until the PA sits in its rejection — while it still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
-    cardioidReveal: 'What you just saw: aimed down at the mouth from above and to the left, a boom mic’s rear points up and out toward that front corner — the PA there falls well off its axis, near the rejection a supercardioid has about 125° round and a hypercardioid about 110°. The aim and the pattern decide how close it comes.',
+    cardioidReveal: 'What you just saw: aimed down at the mouth from above and to the left, a boom mic’s rear points up and out toward that front corner — the PA there falls well off its axis, near the rejection a supercardioid has about 125° around and a hypercardioid about 110°. The aim and the pattern decide how close it comes.',
     shieldNote: 'The talker and the stage reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,

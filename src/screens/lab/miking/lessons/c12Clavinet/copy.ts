@@ -51,7 +51,7 @@ export const CLAV_COPY: LessonCopy = {
     studioIdle: 'In the studio a clean direct track and a close mic on the amp are often kept side by side, each labeled.',
     before: [
       { title: 'DRAW THE PATH FIRST', text: 'Write down the chain before any mic: clavinet → pedals → amp → speaker → mic → console, and where a direct signal is taken (before or after the pedals). Note the clavinet’s pickup and filter switches, the pedal order and the amp settings — they are part of the sound.' },
-      { title: 'ELECTRICAL SAFETY', text: 'The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input, never phantom power. Keep mains cables, extension leads and the amp’s vents clear. Never open a powered amp. Leave any change to the instrument’s wiring to a qualified technician, and any fault inside the instrument or the amp too: hum from inside it, or an output that cuts in and out.' },
+      { title: 'ELECTRICAL SAFETY', text: 'The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input, never phantom power. Keep power cables, extension cords and the amp’s vents clear. Never open a powered amp. Leave any change to the instrument’s wiring to a qualified technician, and any fault inside the instrument or the amp too: hum from inside it, or an output that cuts in and out.' },
     ],
   },
   placement: {
@@ -110,7 +110,7 @@ export const CLAV_COPY: LessonCopy = {
         { title: 'BLENDING THE TWO', text: 'The direct signal arrives before the mic’s: in mono that can comb. Adjust the distance, the track delay or the blend first; then test polarity.' },
         { title: 'MOUNTING', text: 'A low, stable stand or an approved cabinet clip that cannot fall into the speaker or touch a hot amp; cables secured so nobody trips and nothing strikes the grille.' },
       ],
-      body: 'A pattern’s rejection is a tool to aim — lowering the offending monitor, fewer open mics and using the direct path often do more. If the amp is also the player’s monitor, manage the two sources so the mic does not keep catching the wedge.',
+      body: 'A pattern’s rejection is a tool to aim — lowering the offending monitor, using fewer open mics and taking the direct path often do more. If the amp is also the player’s monitor, manage the two sources so the mic does not keep catching the wedge.',
       warn: 'No mic position alone prevents feedback: the pattern, the monitors, the other open mics, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Turn the level down before moving a mic, and do not simply keep raising the clavinet’s output.',
     },
   },

@@ -104,7 +104,7 @@ function BenchSearch({ open, onToggle }: { open: ReadonlySet<ConnectorId>; onTog
   }, [query]);
   useEffect(() => {
     if (query.trim().length >= 2) {
-      AccessibilityInfo.announceForAccessibility?.(matches.length ? `${matches.length} connector${matches.length === 1 ? '' : 's'} match.` : 'No connector matches.');
+      AccessibilityInfo.announceForAccessibility?.(matches.length ? `${matches.length} connector${matches.length === 1 ? '' : 's'} found.` : 'No connector matches.');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matches.length]);

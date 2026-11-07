@@ -51,9 +51,9 @@ describe('wiring round 2 — DJ copy', () => {
     const p20 = read(`${DJ}pages/p20Pa.tsx`);
     assert.doesNotMatch(p20, /label="UNBALANCED LEAD"/);
     // DJ-R3-ADAPTER (owner 2026-10-21) renamed it: a jack lead with an XLR adapter (test/wiringFix_r3_dj_20261021.test.ts)
-    assert.match(p20, /label="JACK LEAD \+ XLR ADAPTER"/);
+    assert.match(p20, /label="JACK CABLE \+ XLR ADAPTER"/);
     assert.match(p20, /the TS jack ties pin 3 to pin 1/);
-    assert.match(p20, /over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum/);
+    assert.match(p20, /over 20 m its shield also carries ground current between the booth’s ground and the stage’s ground: that is the hum/);
     assert.doesNotMatch(p20, /why="Over a long run, an unbalanced lead picks up hum/);
   });
   it('DJ-R2-03 (replaced by DJ-R3-PHONES, owner 2026-10-21): the "two outputs joined" move is gone — the booth cable’s mixer end goes to PHONES', () => {

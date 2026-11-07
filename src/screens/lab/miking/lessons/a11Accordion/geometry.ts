@@ -80,7 +80,7 @@ const parts: Part[] = [
     id: 'ac.armR',
     label: 'player’s right arm',
     short: 'arm',
-    role: 'The right arm round the treble side to the keyboard.',
+    role: 'The right arm around the treble side to the keyboard.',
     solid: { kind: 'capsule', a: v3(BODY.chestX - 90, BODY.shoulderY + 30, 230), b: v3(TREBLE.x0 + 30, MID_Y + 20, TREBLE.z1 + 70), r: 50 },
     listIn: [],
     prov: BODY.prov,

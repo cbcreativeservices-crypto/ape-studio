@@ -60,7 +60,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     teaches: [
       'The one question every tuning system must answer: where do the notes inside an octave go?',
       'The chapters build an answer: ratios, folding, pure fifths, the comma, Just, meantone, equal temperament, then a fair comparison.',
-      'Every tone is synthesized exactly — calculated, nothing measured. It follows Autotune in Pitch & Tuning.',
+      'Every tone is synthesized exactly — calculated, nothing measured. This lab comes after Autotune in Pitch & Tuning.',
     ],
     tryThis: [
       'Keep the volume low and press HEAR IT: the root lights, then the octave — the same note name at twice the frequency.',
@@ -413,7 +413,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'Below: tap a system for each rule (2) and answer the questions (3, 5, 6). ■ STOP silences.',
     ],
     changes: [
-      'Each challenge ticks once you get it right — a wrong try costs nothing, just try again. All six ticked completes the chapter.',
+      'Each challenge is checked once you get it right — a wrong try costs nothing, just try again. All six checked completes the chapter.',
       'Then WHAT YOU KEEP lists the six ideas, and RETRY THE CHALLENGES runs them again.',
     ],
     teaches: [
@@ -439,8 +439,8 @@ export const TUNING_END_GUIDE: ScreenGuide = {
     'PRACTICE AGAIN FROM THE START reopens the first chapter. DONE · BACK TO LABS leaves the lab. ■ STOP in the footer silences any sound.',
   ],
   changes: [
-    'Each chapter is ticked when its main task is done. The lab is credited once every chapter is done.',
-    'START OVER (PRACTICE) at the foot of the chapter list clears the ticks for a fresh run; credit stays.',
+    'Each chapter is checked when its main task is done. The lab is credited once every chapter is done.',
+    'START OVER (PRACTICE) at the foot of the chapter list clears the check marks for a fresh run; credit stays.',
   ],
   teaches: [
     'The lab’s path at a glance: ratios, folding, fifths, the comma, Just, meantone, equal temperament, comparison, application.',

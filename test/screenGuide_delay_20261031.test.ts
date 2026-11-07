@@ -247,7 +247,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(ENGINE, /lpL_ \+= dampC \* \(dl - lpL_\);/);
     assert.match(ENGINE, /bufL_\[w_\] = static_cast<float>\(inL \+ lpL_ \* fb\);/);
     const ch = DELAY_SCREEN_GUIDES.explore.changes.join(' ');
-    assert.match(ch, /at 100% WET the grey dry click leaves OUT/);
+    assert.match(ch, /at 100% WET the gray dry click leaves OUT/);
     assert.match(ch, /REPEAT DAMPING dulls every pass after the first/);
     assert.match(ch, /At 50% each repeat is half as tall \(6 dB down\)/);
     // steady sources: the glass note

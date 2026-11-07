@@ -32,12 +32,12 @@ export const ortfFixed = (p: string, page: SourcePageId): MikingScenario => ({
   id: `${p}.ortf`,
   page,
   prompt: 'The 17 cm, 110° pair sounds a little narrow. What do you change first?',
-  options: ['Move or turn the whole pair', 'Widen the spacing to 30 cm', 'Splay just one of the mics further out'],
+  options: ['Move or turn the whole pair', 'Widen the spacing to 30 cm', 'Splay just one of the mics farther out'],
   correct: 'Move or turn the whole pair',
   explain: 'That pair is defined by its 17 cm and 110°. Change its position and height as a unit; a different spacing or angle is a different near-coincident pair, chosen on purpose.',
   why: {
     'Widen the spacing to 30 cm': 'Then it is no longer the 17 cm pair — a different method with its own behavior.',
-    'Splay just one of the mics further out': 'One mic turned out unbalances the image; the pair moves as a unit.',
+    'Splay just one of the mics farther out': 'One mic turned out unbalances the image; the pair moves as a unit.',
   },
 });
 
@@ -64,7 +64,7 @@ export const msMono = (p: string, page: SourcePageId): MikingScenario => ({
   correct: 'The Mid mic only',
   explain: 'Left = Mid + Side and Right = Mid − Side, so L + R = 2 × Mid: the Side cancels. Width is set by the Side’s level; the mono sum is the Mid.',
   why: {
-    'The Side mic only': 'It is the other way round: the Side is what cancels.',
+    'The Side mic only': 'It is the other way around: the Side is what cancels.',
     'Both, a little quieter': 'The Side appears with opposite signs in the two sides, so it sums to nothing.',
   },
 });

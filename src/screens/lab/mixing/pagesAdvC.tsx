@@ -111,7 +111,7 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>THE STABLE-CENTER RULE</Eyebrow>
-        <Body>Width is jewellery; the CENTER is the skeleton. Kick, bass, lead at a rock-solid center buy you the right to spend the sides freely. Frequency-aware widening (wide highs, mono lows) is the professional compromise — and every width decision gets the mono fold test before it ships.</Body>
+        <Body>Width is jewelry; the CENTER is the skeleton. Kick, bass, lead at a rock-solid center buy you the right to spend the sides freely. Frequency-aware widening (wide highs, mono lows) is the professional compromise — and every width decision gets the mono fold test before it ships.</Body>
       </Card>
       <UnderstandingCheck
         question="A stereo widener makes the pads huge, but the club’s mono system swallows them. What actually happened?"

@@ -192,7 +192,7 @@ export function Mod3Bias() {
           well: (
             <>
               <SectionTitle>2 · CONDUCTION ANGLE</SectionTitle>
-              <Body>One full sine cycle is 360°. How much of it does the device actually pass current?</Body>
+              <Body>One full sine cycle is 360°. For how much of it does the device actually pass current?</Body>
               <Card>
                 <Body>
                   {angle === 360
@@ -254,9 +254,7 @@ export function Mod3Bias() {
 
               <LearnMore>
                 <Body>
-                  Crossover distortion is sneakier than clipping: clipping grows with level, the notch is a fixed-size wound
-                  that matters most when the music is quiet. Thermal drift moves the bias point, which is why real output
-                  stages use bias-tracking components mounted on the heatsink.
+                  Crossover distortion is sneakier than clipping: clipping grows with level; the notch is a fixed-size wound that matters most when the music is quiet. Thermal drift moves the bias point, which is why real output stages use bias-tracking components mounted on the heatsink.
                 </Body>
               </LearnMore>
             </>

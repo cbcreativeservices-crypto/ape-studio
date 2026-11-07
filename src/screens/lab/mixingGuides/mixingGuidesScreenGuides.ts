@@ -74,7 +74,7 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
     'Of the two ⓘ keys in the header, the first explains the level figures; the far-right one opens this guide. The ‹ at the top goes back to the menu.',
   ],
   changes: [
-    'The tables — EQ starting points, Compression & dynamics processing, Effects & amounts, Live vs studio — read as one card per row: the first column heads the card, the rest are labelled lines.',
+    'The tables — EQ starting points, Compression & dynamics processing, Effects & amounts, Live vs studio — read as one card per row: the first column heads the card, the rest are labeled lines.',
     'Sections you open stay open on the next style.',
     '✓ READ shows only once the reading is recorded; a members-only preview records nothing and says so.',
   ],

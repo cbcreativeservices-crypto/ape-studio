@@ -131,7 +131,7 @@ export const B06_COPY: Partial<LessonCopy> = {
     B: { typeId: 'vocHeadset', pattern: 'omni', zone: 'b6.headset' },
     learn: [
       'The presenter at the lectern with a headset on: one voice, two mics, at two distances. The headset hears each word first, the lectern a little later — with both open, the sum combs and the open-mic count goes up.',
-      'Choose one: mute the lectern while the headset is live, or the other way round, and rehearse the handoff with whoever does the muting. A second lectern mic can be a separately routed backup; two parallel open capsules rarely improve anything.',
+      'Choose one: mute the lectern while the headset is live, or the other way around, and rehearse the handoff with whoever does the muting. A second lectern mic can be a separately routed backup; two parallel open capsules rarely improve anything.',
     ],
     warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. Real mics hear different mixes of voice and room — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative.',
   },

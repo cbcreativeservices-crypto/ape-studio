@@ -70,7 +70,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       '⤢ FULL SCREEN enlarges the field, and the drag still works there.',
     ],
     changes: [
-      'Each pattern mixes two parts: A, an omni part that hears all round, and B, a figure-8 part (cos θ: +1 in front, 0 at the sides, −1 behind). Pickup = |A + B·cos θ|.',
+      'Each pattern mixes two parts: A, an omni part that hears all around, and B, a figure-8 part (cos θ: +1 in front, 0 at the sides, −1 behind). Pickup = |A + B·cos θ|.',
       'Where A and B cancel, a null appears: at 180° for CARDIOID, about 126° for SUPER, about 110° for HYPER, 90° and 270° for FIGURE-8.',
       'θ is the SOURCE angle. PICKUP depends only on it; the color also fades with distance.',
     ],
@@ -125,7 +125,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'Readouts: DIST, BOOST and MIC.',
     ],
     control: [
-      'DISTANCE fader: from 12 in (the start) in to 1 in from the mouth.',
+      'DISTANCE fader: from 12 in (the start) down to 1 in from the mouth.',
       'MIC key: CARDIOID (the start) or OMNI. The tray stays open so you can compare the two designs while the curve reacts.',
       '⤢ FULL SCREEN enlarges the scene and the curve together.',
     ],
@@ -195,7 +195,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     teaches: [
       'Stereo pairs make width from level differences, time differences, or both.',
-      'Time-based pairs can sound hollow when summed to mono — comb filtering (some pitches boosted, others cancelled); level-based pairs fold down cleanly.',
+      'Time-based pairs can sound hollow when summed to mono — comb filtering (some pitches boosted, others canceled); level-based pairs fold down cleanly.',
       'Uses the patterns from POLAR. Next comes the practical arc — air blasts, vibration, then the hand — starting with PLOSIVES.',
     ],
     tryThis: [

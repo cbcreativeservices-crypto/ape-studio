@@ -62,7 +62,7 @@ export function TambourineStrike({ w, h, variant, shown, accessibilityLabel }: {
   if (shown >= 1) labels.push({ id: 's1', text: struck ? '① THE FRAME IS STRUCK' : '① THE HAND SHAKES THE FRAME', short: '① START', u: -190, v: -136, align: 'left', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: '② THE JINGLES LAG', short: '② LAG', u: -190, v: -116, align: 'left', tone: 'amber' });
   if (shown >= 3) labels.push({ id: 's3', text: '③ PAIRS CLASH', short: '③ CLASH', u: 0, v: DEPTH / 2 + 34, align: 'center', tone: 'amber' });
-  if (shown >= 4) labels.push({ id: 's4', text: '④ FROM ALL ROUND THE FRAME', short: '④ ALL ROUND', u: 190, v: -136, align: 'right', tone: 'blue' });
+  if (shown >= 4) labels.push({ id: 's4', text: '④ FROM ALL AROUND THE FRAME', short: '④ ALL ROUND', u: 190, v: -136, align: 'right', tone: 'blue' });
   labels.push({ id: 'ex', text: 'NO HEAD · MOTION DRAWN LARGER', short: 'NO HEAD', u: SOUND_BOX.u1 - 6, v: SOUND_BOX.v1 - 10, align: 'right', tone: 'illustrative' });
   const lag = shown === 2 ? -16 : 0;
   return (

@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "(note) Use dynamic EQ on guitar upper mids (2–5 kHz) to catch harshness only when the player digs in. Gentle expanders (6–10 dB range) reduce bleed in vocal mics without chopping the singer’s phrases. De-ess 5–8 kHz by 2–3 dB; keep master limiting to 2–3 dB."
+        "text": "Use dynamic EQ on guitar upper mids (2–5 kHz) to catch harshness only when the player digs in. Gentle expanders (6–10 dB range) reduce bleed in vocal mics without chopping the singer’s phrases. De-ess 5–8 kHz by 2–3 dB; keep master limiting to 2–3 dB."
       }
     ]
   },

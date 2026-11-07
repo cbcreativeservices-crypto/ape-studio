@@ -19,7 +19,7 @@ export const F15_LADDER: ClaimLadder = {
     { id: 'phone', label: 'A phone recording at A, auto-gain on', short: 'PHONE AT A', blurb: 'A phone’s recording from the user’s position, its gain riding up and down.', reach: 'creative' },
     { id: 'fixed', label: 'One mic at A, B and C, gain fixed, whole cycles', short: 'FIXED MIC', blurb: 'The same mic, logged positions and fixed gain through whole cycles — no calibration.', reach: 'relative' },
     { id: 'meter', label: 'A calibrated chain at A, checked before and after', short: 'CALIBRATED', blurb: 'A calibrated chain at the user’s position, checks before and after, the metric and the averaging stated.', reach: 'pressure' },
-    { id: 'survey', label: 'A qualified team under the named sound-power method', short: 'FORMAL SURVEY', blurb: 'A defined surface round the fan in a qualifying room, the method’s positions and corrections, done by a qualified team.', reach: 'power' },
+    { id: 'survey', label: 'A qualified team under the named sound-power method', short: 'FORMAL SURVEY', blurb: 'A defined surface around the fan in a qualifying room, the method’s positions and corrections, done by a qualified team.', reach: 'power' },
   ],
   claims: [
     { id: 'bright', text: 'The fan sounds airier from the side', short: 'AIRIER FROM THE SIDE', needs: 'creative', why: 'A heard character can be shown by any honest recording — said as a perspective, not a measurement.' },

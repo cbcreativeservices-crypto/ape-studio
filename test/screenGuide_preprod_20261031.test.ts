@@ -362,7 +362,7 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(S, /finding: \{[^}]*borderLeftColor: colors\.amber/);
     assert.match(S, /findingBlocker: \{ borderLeftColor: colors\.red \}/);
     const st = g.stages.define as { seeing: string[]; control: string[] };
-    assert.ok(st.seeing.join(' ').includes('amber flagged (or optional, blank)') && st.seeing.join(' ').includes('dark grey not applicable'));
+    assert.ok(st.seeing.join(' ').includes('amber flagged (or optional, blank)') && st.seeing.join(' ').includes('dark gray not applicable'));
     assert.ok(st.control.join(' ').includes('WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged)'));
   });
   it('SCORE: each attention finding costs 0.02 (2 points), capped at 0.2 and at 40% of what is earned; a blocker caps the score at 99', () => {

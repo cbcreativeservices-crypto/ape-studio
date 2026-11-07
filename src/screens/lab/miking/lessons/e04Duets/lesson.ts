@@ -104,12 +104,12 @@ const scenarios: MikingScenario[] = [
     id: 'du.meet.3',
     page: 'meet',
     prompt: 'Two singers face each other across a figure-8. Why can it work?',
-    options: ['Its front and back both hear well', 'It hears best from its two sides', 'It hears equally all round itself'],
+    options: ['Its front and back both hear well', 'It hears best from its two sides', 'It hears equally all around itself'],
     correct: 'Its front and back both hear well',
     explain: 'A figure-8 hears front and back equally (the back with opposite polarity) and rejects its sides: one singer in each lobe, the room at the dead sides.',
     why: {
       'It hears best from its two sides': 'The sides are its nulls — where it hears least.',
-      'It hears equally all round itself': 'That is an omni; a figure-8 has two lobes and two dead sides.',
+      'It hears equally all around itself': 'That is an omni; a figure-8 has two lobes and two dead sides.',
     },
   },
   {
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A single mic or pair keeps the blend and the room but gives little correction later; a mic each gives level, pan and edits, with more stands, bleed and phase.',
     why: {
       'Whether both voices need the same model': 'Matching models does not match voices; the goal comes first.',
-      'How many channels the desk has left over': 'Channels follow the plan, not the other way round.',
+      'How many channels the desk has left over': 'Channels follow the plan, not the other way around.',
     },
   },
   threeToOne('du', 'setups', 'about 30 cm (1 ft)', '90 cm (3 ft)'),
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With a singer in each lobe, the figure-8’s nulls face the room at its sides — what lets it reject the room there.',
     why: {
       'The two singers': 'The singers sit in the lobes, front and back.',
-      'The floor and the ceiling only': 'Its nulls are all round its sides, not just up and down.',
+      'The floor and the ceiling only': 'Its nulls are all around its sides, not just up and down.',
     },
   },
   {
@@ -401,7 +401,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern hears its front and back equally but rejects its sides?', options: ['Figure-8', 'Cardioid', 'Omni'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern hears its front and back equally but rejects its sides?', options: ['Figure-8', 'Cardioid', 'Omni'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: the shared mic moves 10 cm toward one singer. What changes most?', options: ['That singer gets louder', 'Nothing: the other balances it', 'Both get louder equally'], after: 'Watch NEAR / FAR and NEAREST: one singer’s distance is that singer’s level.' },
   context: { prompt: 'The wedge sits on the floor in front of the duet. Where will a supercardioid aimed at a mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A handheld each. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
@@ -429,7 +429,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'du.q.3',
     covers: 'setups',
-    prompt: 'Each singer is 1 ft from their own mic. As a start, how far apart go the mics?',
+    prompt: 'Each singer is 1 ft from their own mic. As a start, how far apart do the mics go?',
     options: ['At least 3 ft from each other', 'At least 3 ft from the other singer', 'About 1 ft from each other'],
     correct: 'At least 3 ft from each other',
     explain: 'The 3:1 guideline is mic to mic — 1 ft from the singer, 3 ft between the mics — then listen and adjust.',
@@ -452,7 +452,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Only to the agreed level, down at any ring', 'Until it starts to ring, then back a little', 'As loud as the singers ask for'],
     correct: 'Only to the agreed level, down at any ring',
     explain: EX4,
-    why: { 'Until it starts to ring, then back a little': 'Not until it rings: uncontrolled feedback risks the singers’ hearing and the speakers, and backing off a little leaves no margin.', 'As loud as the singers ask for': 'Agree a level that lets them hear — and keep it there; loud monitors bring feedback closer.' },
+    why: { 'Until it starts to ring, then back a little': 'Not until it rings: uncontrolled feedback risks the singers’ hearing and the speakers, and backing off a little leaves no margin.', 'As loud as the singers ask for': 'Agree on a level that lets them hear — and keep it there; loud monitors bring feedback closer.' },
   },
   {
     id: 'du.q.6',
@@ -508,7 +508,7 @@ export const E04_LESSON: EnsembleLesson = {
   ],
   sound: {
     stages: [
-      { title: 'Each mouth, forward', text: 'Each voice leaves its singer’s mouth, forward and round the head — every distance here is read from the lips.' },
+      { title: 'Each mouth, forward', text: 'Each voice leaves its singer’s mouth, forward and around the head — every distance here is read from the lips.' },
       { title: 'Distance is balance', text: 'At one mic the nearer singer is louder and, at a directional mic, bassier. Matched distances make a matched duet.' },
       { title: 'Every mic hears both', text: 'With a mic each, every mic hears both singers — its own first, the other later and quieter. Spacing keeps that copy quiet.' },
     ],
@@ -574,7 +574,7 @@ export const E04_LESSON: EnsembleLesson = {
       clearance: 'The stand’s base clear of both singers’ feet, its boom running away from them; the cable dressed flat, out of their moves.',
       height: 'At the singers’ mouth height, so both mouths meet its front at the same distance; a little higher, angled down, keeps it out of the breath. A pair for a group sits a little above the mouths.',
       forward: 'In the middle, each mouth about the same distance away — 40 cm in this drawing; nearer one singer, that voice gets louder and, at a directional mic, bassier. 15 cm (6 in) closer is a clear jump.',
-      aim: 'Its front between the two singers: a cardioid hears the semicircle in front, an omni all round, a figure-8 its front and back. Turn or angle it only while listening to both.',
+      aim: 'Its front between the two singers: a cardioid hears the semicircle in front, an omni all around, a figure-8 its front and back. Turn or angle it only while listening to both.',
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin — for one shared mic, in the middle at the mouths’ height or a little higher; for a figure-8, halfway between the mouths; for a quartet’s pair, 0.6–1.8 m in front. Places to start and rehearse, not a best place.',

@@ -125,7 +125,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'TWO balanced TRS cables — L to input 5, R to input 6', a: 'trs_quarter', b: 'trs_quarter', verdict: 'correct', explain: 'Stereo is two mono connections. Two cables, two inputs, panned left and right at the mixer.' },
       { id: 'b', name: 'One Y-cable joining L and R into one input', a: 'ts_quarter', b: 'ts_quarter', verdict: 'outputs_combined', explain: 'A passive Y forces two output stages to fight each other into one jack — level and tone suffer and the outputs are stressed. Outputs are never passively joined.' },
-      { id: 'c', name: 'A 2×TS-to-TRS Y lead into ONE balanced input', a: 'ts_quarter', b: 'trs_quarter', verdict: 'bal_unbal', rowsOverride: { construction: true }, explain: 'A balanced input amplifies the DIFFERENCE between tip and ring — fed L and R, it hears left-minus-right and the center of the music cancels to a thin ghost. The cable’s construction is fine; the ASSIGNMENT is the mismatch.' },
+      { id: 'c', name: 'A 2×TS-to-TRS Y-cable into ONE balanced input', a: 'ts_quarter', b: 'trs_quarter', verdict: 'bal_unbal', rowsOverride: { construction: true }, explain: 'A balanced input amplifies the DIFFERENCE between tip and ring — fed L and R, it hears left-minus-right and the center of the music cancels to a thin ghost. The cable’s construction is fine; the ASSIGNMENT is the mismatch.' },
       { id: 'd', name: 'RCA stereo pair', a: 'rca', b: 'rca', verdict: 'no_fit', explain: 'The keyboard’s 1/4-inch outputs will not accept RCA plugs without adapters — and the right answer is sitting in the tray.' },
     ],
     note: 'The Y-cable rule has a mirror: one output may feed a Y that SPLITS to two inputs on some gear, but two OUTPUTS never passively join.',
@@ -165,7 +165,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'speakON speaker cable — heavy-gauge two-conductor', a: 'speakon_nl4', b: 'speakon_nl4', verdict: 'correct', explain: 'Exactly what speakON exists for: latched, touch-safe contacts and heavy unshielded conductors sized for amplifier current.' },
       { id: 'b', name: '1/4-inch instrument cable with adapters', a: 'ts_quarter', b: 'ts_quarter', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'The classic damaging substitution in live sound: an instrument cable’s small conductor loses power and can heat and fail on amplifier duty. Never substitute instrument cable for speaker cable.' },
-      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'Mic cable is shielded small-gauge pair for tiny signals — a speaker-level signal does not belong on it, whatever adapters make fit.' },
+      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'Mic cable is shielded small-gauge pair for tiny signals — a speaker-level signal does not belong on it, whatever adapters make it fit.' },
       { id: 'd', name: 'speakON cable, amp output → mixer LINE INPUT', a: 'speakon_nl4', b: 'xlr3', verdict: 'speaker_into_input', explain: 'Never. An amplifier output into any mic or line input can overdrive and damage the input circuitry — this is the tray choice most likely to damage equipment directly, not just the show.' },
     ],
     note: 'Speaker runs follow their own power rule: amplifier off before connecting or disconnecting speaker cables.',
@@ -192,7 +192,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'RCA stereo pair into the PHONO input (+ ground lead)', a: 'rca', b: 'rca', verdict: 'correct', explain: 'Phono level is millivolts with RIAA equalization — it needs the phono stage behind the PHONO jacks, and the ground lead stops the hum.' },
       { id: 'b', name: 'Same RCA pair into the CD/LINE input', a: 'rca', b: 'rca', verdict: 'wrong_level', explain: 'Identical plugs, wrong level: phono into a line input is faint and thin because the line input has no phono gain or RIAA curve. Fit was never the question.' },
-      { id: 'c', name: 'RCA pair through a coaxial S/PDIF DIGITAL input', a: 'rca', b: 'rca', verdict: 'protocol', explain: 'The S/PDIF jack expects digital data, not analog millivolts — same shell, different world. Silence.' },
+      { id: 'c', name: 'RCA pair into a coaxial S/PDIF DIGITAL input', a: 'rca', b: 'rca', verdict: 'protocol', explain: 'The S/PDIF jack expects digital data, not analog millivolts — same shell, different world. Silence.' },
       { id: 'd', name: '3.5 mm TRS cable with RCA adapters into LINE', a: 'trs_35', b: 'rca', verdict: 'wrong_level', explain: 'However it is adapted, phono level into a line input stays faint and thin — a plain wired adapter changes the fit, never the level or equalization.' },
     ],
     note: 'If the turntable has a PHONO/LINE switch, the switch decides which input is right — check it before blaming the cable.',
@@ -218,7 +218,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Audio interface', port: 'USB-C port' },
     choices: [
       { id: 'a', name: 'The interface’s own USB-C data cable', a: 'usb_c', b: 'usb_c', verdict: 'correct', explain: 'A cable KNOWN to carry data at the needed rate — audio is data here, and the manufacturer shipped a cable that carries it.' },
-      { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power only, with no data wires. The interface may not even appear. All USB-C cables are NOT the same; verify the cable’s capability.' },
+      { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power only, with no data wires. The interface may not even appear. NOT all USB-C cables are the same; verify the cable’s capability.' },
       { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'The USB-B end does not fit this interface’s USB-C port. USB’s shapes exist to stop wrong topologies.' },
       { id: 'd', name: 'HDMI cable', a: 'hdmi', b: 'hdmi', verdict: 'no_fit', explain: 'HDMI and USB do not mate — different connectors for different protocols.' },
     ],

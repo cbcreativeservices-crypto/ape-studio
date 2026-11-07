@@ -108,7 +108,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs taking twice.',
+      'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs to be taken twice.',
     ],
     teaches: [
       'It checks the core ideas: harmonic recipes, how fast harmonics fall off, duty cycle and aliasing.',

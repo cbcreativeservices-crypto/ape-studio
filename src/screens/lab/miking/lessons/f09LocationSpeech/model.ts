@@ -81,7 +81,7 @@ function lavZone(id: string, variant: string, alternative: boolean): DocumentedZ
     start: { d: [Math.hypot(LAV_P.x, LAV_P.y)], deg: (Math.atan2(LAV_P.y, LAV_P.x) * 180) / Math.PI, spread: 2, at: 'mouth' },
     noDraw: true,
     tendency: 'One steady distance from the mouth however wide the shot — but a chest-heavy tone, the clothes and the breath can show, and it does not turn with the head.',
-    checks: ['Speech, a turn, sitting and fabric movement at performance pace', 'Rubbing, muffling, jewellery and breath', 'The bodypack, the cable loop and the radio link secure'],
+    checks: ['Speech, a turn, sitting and fabric movement at performance pace', 'Rubbing, muffling, jewelry and breath', 'The bodypack, the cable loop and the radio link secure'],
   }, MIC_TYPES);
   // The start is the drawing's own place on the chest (aimed at the mouth).
   return { ...base, start: { p: LAV_P, ...aimOf(sub(LIP, LAV_P)) } };
@@ -129,7 +129,7 @@ export const F09_ZONES: DocumentedZone[] = [
     checks: ['Intelligibility against the boom or the lav', 'Camera motors, handling and the operator’s own voice', 'The level: move a mic closer before raising gain'],
   },
   /* ── OUTDOORS ── */
-  voiceZone(F09_MODEL, FRAME_V, { ...boomSpec('loc.boom.out', 'outdoor', ['locBoomFurCap'], BOOM_FUR), checks: ['The power line: at least 3 m (10 ft) from the pole and the mic', 'Wind on the fur; rain is not kept out', 'The top of the frame and the head turns'] }, MIC_TYPES),
+  voiceZone(F09_MODEL, FRAME_V, { ...boomSpec('loc.boom.out', 'outdoor', ['locBoomFurCap'], BOOM_FUR), checks: ['The power line: the pole and the mic at least 3 m (10 ft) away', 'Wind on the fur; rain is not kept out', 'The top of the frame and the head turns'] }, MIC_TYPES),
   lavZone('loc.lav.out', 'outdoor', false),
   {
     id: 'loc.cam.out',

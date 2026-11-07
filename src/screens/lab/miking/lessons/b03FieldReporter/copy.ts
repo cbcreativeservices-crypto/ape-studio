@@ -30,7 +30,7 @@ const BASE = standingVoiceCopy({
   before: [
     { title: 'PLAN THE SHOT AND THE ROUTE', text: 'Before raising a mic: the camera’s shot and eyelines, how long the interview runs, the route to the recorder or the live program, and permission to stand there. Find a spot away from avoidable traffic, ventilation, crowds and loudspeakers — and listen there before you start.' },
     { title: 'A SAFE SPOT', text: 'The reporter, the guest and the camera operator stay out of vehicle paths, crowd surges, emergency activity and restricted areas. No stand or cable blocks an exit or a walkway. Never put people somewhere unsafe for a quieter background.' },
-    { title: 'A STOP SIGNAL', text: 'For a live report, agree a clear stop or move signal with the crew before going on air — and use it.' },
+    { title: 'A STOP SIGNAL', text: 'For a live report, agree on a clear stop or move signal with the crew before going on air — and use it.' },
     { title: 'LIGHTNING', text: B03_LIGHTNING },
     { title: 'RAIN', text: 'A windscreen is not waterproofing: keep the mic, the transmitter and the connectors out of the rain. Do not expose electronics to rain.' },
     { title: 'ASK FIRST', text: 'Get the guest’s agreement before bringing a mic close to their face or clipping one to their clothes. Keep the outstretched mic clear of passers-by and vehicles, and never stretch until your stance is unstable.' },
@@ -62,7 +62,7 @@ export const B03_COPY: Partial<LessonCopy> = {
   instrument: {
     ...BASE.instrument!,
     figureBadge: 'A reporter and a guest · every part named',
-    figureLabel: 'A reporter and a guest standing face to face on a pavement, the camera beside the reporter, the road behind the guest.',
+    figureLabel: 'A reporter and a guest standing face to face on a sidewalk, the camera beside the reporter, the road behind the guest.',
     partsBadge: 'An interview on location · tap a part to name it',
     partsLooking: { side: 'Side view · from the guest’s right', top: 'Top view · from above' },
     partsIdle: 'The guest’s voice leaves through the mouth — every distance is read from the lips. Around them: the reporter, the camera, the road, the loudspeaker. Tap any of them.',

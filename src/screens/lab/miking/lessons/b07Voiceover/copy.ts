@@ -23,8 +23,8 @@ const BASE = standingVoiceCopy({
   practice: { gain: 'b7.prac.gain', second: 'b7.prac.3', mixed: ['b7.mix.1', 'b7.mix.2', 'b7.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the script stand, a guest’s return, and polarity versus delay.' },
   before: [
     { title: 'CHOOSE THE PERSPECTIVE FIRST', text: 'Before any mic: a dry, close announcer sound, a natural narration with some room, or a guest who must match the host? Ask whether the reader sits or stands, reads from paper or a screen, turns to someone, whispers or projects, and has to stay on camera.' },
-    { title: 'LISTEN TO THE ROOM', text: 'Scout the real position: fans, vents, traffic, furniture and the booth’s own ring. Listen to speech and to the pauses. Soft panels tame some reflections; a blanket round a mic does not make outside noise disappear.' },
-    { title: 'A REMOTE GUEST’S MIC', text: 'Agree a quiet room and an external mic or a headset before the event, with headphones or earbuds so the program does not spill from loudspeakers into the mic — and check the app really chose that mic, not the laptop’s own. Test with the guest’s normal posture, level and connection.' },
+    { title: 'LISTEN TO THE ROOM', text: 'Scout the real position: fans, vents, traffic, furniture and the booth’s own ring. Listen to speech and to the pauses. Soft panels tame some reflections; a blanket around a mic does not make outside noise disappear.' },
+    { title: 'A REMOTE GUEST’S MIC', text: 'Agree on a quiet room and an external mic or a headset before the event, with headphones or earbuds so the program does not spill from loudspeakers into the mic — and check the app really chose that mic, not the laptop’s own. Test with the guest’s normal posture, level and connection.' },
     { title: 'NEVER TEST WITH FEEDBACK', text: 'Keep loudspeakers out of an open mic’s path; headphones at a comfortable level. Never test by provoking feedback or by blowing into a capsule — use the real voice. Secure heavy arms and stands; keep cables out of walking paths.' },
   ],
   studio: {

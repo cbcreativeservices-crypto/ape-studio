@@ -65,7 +65,7 @@ export const KICK_COPY: LessonCopy = {
     stageIdle: 'Two floor monitors: the drummer’s own fill beside the throne, and another player’s wedge on the audience side. The front head faces the audience and the PA.',
     studioIdle: 'No monitors on the floor. The room itself is part of the picture now.',
     before: [
-      { title: 'ASK THE PLAYER FIRST', text: 'Is the front head intact or ported, and what should the kick do — a supportive pulse, a defined attack, a resonant note, or a mix? Hear the drum without reinforcement first. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.' },
+      { title: 'ASK THE PLAYER FIRST', text: 'Is the front head intact or ported, and what should the kick do — a supportive pulse, a defined attack, a resonant note, or a mix? Hear the drum without reinforcement first. If its tuning or damping needs work, agree on it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.' },
       { title: 'WORK WITH THE DRUM AS IT IS', text: 'The drum is the player’s. Mic the drum they bring — no need to cut a port or change the drum to match a diagram.' },
     ],
   },

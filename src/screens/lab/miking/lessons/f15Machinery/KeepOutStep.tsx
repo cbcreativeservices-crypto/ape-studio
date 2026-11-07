@@ -88,7 +88,7 @@ export function useKeepOutStep({ words, onDone }: { words: KeepOutWords; onDone:
         ];
   const a11y =
     device === 'fan'
-      ? `From above: the guarded desk fan, its exclusion zone ${fmtMetres(R)} round it, its airflow ahead. A measurement mic ${fmtMetres(d)} from the fan, ${a} degrees off the airflow: ${hit === 'zone' ? 'inside the exclusion zone' : hit === 'airflow' ? 'in the airflow' : 'clear of both'}.`
+      ? `From above: the guarded desk fan, its exclusion zone ${fmtMetres(R)} around it, its airflow ahead. A measurement mic ${fmtMetres(d)} from the fan, ${a} degrees off the airflow: ${hit === 'zone' ? 'inside the exclusion zone' : hit === 'airflow' ? 'in the airflow' : 'clear of both'}.`
       : 'An industrial machine behind its guard, its interlocked door shut, its disconnect switch off with a lockout padlock and tag. No mic and no sensor are placed: a no-go example.';
   const verdict =
     device === 'machine'

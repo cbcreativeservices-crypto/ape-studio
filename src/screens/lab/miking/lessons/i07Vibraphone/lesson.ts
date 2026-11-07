@@ -132,10 +132,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'vb.set.2',
     page: 'setting',
-    prompt: 'Where must stand legs and cable loops stay out of, at a vibraphone?',
+    prompt: 'At a vibraphone, what must stand legs and cable loops stay out of?',
     options: ['The player’s pedal foot and its travel', 'The space under the high end of the keyboard', 'The front edge of the stage, near the audience'],
     correct: 'The player’s pedal foot and its travel',
-    explain: 'The damper pedal is worked all through the music. Route stands and cables away from the pedal area, the motor lead and the wheels — never through the player’s feet.',
+    explain: 'The damper pedal is worked all through the music. Route stands and cables away from the pedal area, the motor cord and the wheels — never through the player’s feet.',
     why: {
       'The space under the high end of the keyboard': 'That space may be clear; the pedal and the player’s feet are what must be kept clear.',
       'The front edge of the stage, near the audience': 'Tidiness there matters less than the player’s pedal foot.',
@@ -282,7 +282,7 @@ const scenarios: MikingScenario[] = [
     explain: 'In the studio, repeated trials are easy: keep the phrase and the monitor level the same, compare one mic, a spaced pair and a coincident pair — and check each in mono.',
     why: {
       'Add a third mic under the tubes to make the stereo picture wider': 'Under the tubes is an effect, not width — and every extra mic adds spill and timing.',
-      'Keep the one mic and pan it hard to one side': 'Panning one mic moves it, it does not make a stereo picture.',
+      'Keep the one mic and pan it hard to one side': 'Panning one mic moves it; it does not make a stereo picture.',
     },
   },
   {
@@ -419,7 +419,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from one mic over the middle to one of a spaced pair over the low half. What changes?', options: ['More of the low notes in this mic', 'More of the whole keyboard', 'It depends on the passage and the room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The side fill sits off to the side of a mic looking down at the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Grilles together, angled 135° apart: the lowest bar sounds. Which reaches the two mics differently?', options: ['Its arrival time', 'Its level', 'Neither'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
@@ -468,7 +468,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The motor is on. What makes the pulsing?',
     options: ['Fans opening and closing the tube tops', 'The bars bending further on each stroke', 'The damper touching the bars on and off'],
     correct: 'Fans opening and closing the tube tops',
-    explain: 'The sound is louder when the tubes are open; the fans turning open and close them.',
+    explain: 'The sound is louder when the tubes are open; the turning fans open and close them.',
     why: {
       'The bars bending further on each stroke': 'The bars ring the same way; the fans change the tubes.',
       'The damper touching the bars on and off': 'The damper follows the pedal; the fans make the pulsing.',
@@ -503,7 +503,7 @@ const words: MalletWords & { sound: { damped: DampedStrike } } = {
       { k: 'SOUND', at: ['—', '—', '—', 'UP AND OUT'], flex: 1.1 },
     ],
     looking: 'One bar and its tube · seen from the low end · the player at the left',
-    reveal: 'The middle goes down while the ends come up: a bar bends about two still points, like a skipping rope held in two places.',
+    reveal: 'The middle goes down while the ends come up: a bar bends about two still points, like a jump rope held in two places.',
     after: 'Then the bar keeps ringing: how long depends on the pedal, the hand damping, the mallet and the room — all the player’s choices.',
     // PEDAL UP: the same four events, with the felt already on the bar.
     damped: {
@@ -598,7 +598,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an alternative, a mic under the tubes. They are starting points, not rules: move from there and listen.',
       separate: 'Height, distance along the keyboard and angle are separate variables: change one at a time, with the real phrase — low, middle and high, single notes and chords.',
-      clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel. Leave more room on a real stage.',
       tendencies: 'Closer tends to bring more attack and one region of the keyboard; higher blends the keyboard and adds the room. Under the tubes: a colored, local sound. All tendencies to check by ear.',
     },
   },

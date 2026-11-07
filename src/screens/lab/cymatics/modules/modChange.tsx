@@ -38,10 +38,10 @@ const VARIABLES: Variable[] = [
     { label: 'Square', short: 'Sq', patch: { shape: 'square' } }, { label: 'Disc', short: 'Disc', patch: { shape: 'circle', exciter: { x: 0.85, y: 0.5 } } }, { label: 'Triangle', short: 'Tri', patch: { shape: 'triangle' as PlateShape } }, { label: 'Hexagon', short: 'Hex', patch: { shape: 'hexagon' as PlateShape } }, { label: 'Violin', short: 'Viol', patch: { shape: 'violin' as PlateShape } },
   ] },
   { id: 'driver', label: 'Driver position', short: 'Drvr', question: 'Same tone, same plate — the driver moves. Which modes can it wake?', options: [
-    { label: 'Centre', short: 'Ctr', patch: { exciter: { x: 0.5, y: 0.5 } } }, { label: 'Edge', short: 'Edge', patch: { exciter: { x: 0.9, y: 0.5 } } }, { label: 'Corner', short: 'Cnr', patch: { exciter: { x: 0.85, y: 0.85 } } }, { label: 'Off-centre', short: 'Off', patch: { exciter: { x: 0.62, y: 0.5 } } },
+    { label: 'Center', short: 'Ctr', patch: { exciter: { x: 0.5, y: 0.5 } } }, { label: 'Edge', short: 'Edge', patch: { exciter: { x: 0.9, y: 0.5 } } }, { label: 'Corner', short: 'Cnr', patch: { exciter: { x: 0.85, y: 0.85 } } }, { label: 'Off-center', short: 'Off', patch: { exciter: { x: 0.62, y: 0.5 } } },
   ] },
   { id: 'support', label: 'Support', short: 'Supp', question: 'Same tone — the plate is held differently. What does a clamp do?', options: [
-    { label: 'Free on the post', short: 'Free', patch: { support: null, edge: 'free' } }, { label: 'Clamped centre', short: 'ClpC', patch: { support: { x: 0.5, y: 0.5 }, edge: 'free' } }, { label: 'Supported edge', short: 'Supp', patch: { support: null, edge: 'supported' } }, { label: 'Clamped edge', short: 'ClpE', patch: { support: null, edge: 'clamped' } },
+    { label: 'Free on the post', short: 'Free', patch: { support: null, edge: 'free' } }, { label: 'Clamped center', short: 'ClpC', patch: { support: { x: 0.5, y: 0.5 }, edge: 'free' } }, { label: 'Supported edge', short: 'Supp', patch: { support: null, edge: 'supported' } }, { label: 'Clamped edge', short: 'ClpE', patch: { support: null, edge: 'clamped' } },
   ] },
   { id: 'damping', label: 'Damping', short: 'Damp', question: 'Same tone, same plate — more damping. Does the resonance MOVE, or blur?', options: [
     { label: 'Low', short: 'Low', patch: { damping: 0.1 } }, { label: 'Medium', short: 'Med', patch: { damping: 0.4 } }, { label: 'High', short: 'High', patch: { damping: 0.85 } },

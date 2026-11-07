@@ -131,8 +131,8 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Set “Do the source cards or drives still hold the material” to No, the sources have been cleared: BLOCKED — “Sources were cleared before the copy was proven”.',
-      'Now tick Checksums match under “Verification method” and pick Every file under “How much was verified”: the block clears.',
-      'Untick Checksums match and tick only File count matches: BLOCKED returns, and “Counting files is not verifying them” appears.',
+      'Now check Checksums match under “Verification method” and pick Every file under “How much was verified”: the block clears.',
+      'Uncheck Checksums match and check only File count matches: BLOCKED returns, and “Counting files is not verifying them” appears.',
     ],
   },
 
@@ -193,7 +193,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
       'Stage 5: opens Chapter 2, working on Stage 4’s edit.',
     ],
     tryThis: [
-      'Set “Has correction been agreed” to Not discussed with anyone and tick Pitch under “What is being corrected”: a finding appears. Pick Yes — agreed with the performer or producer: it clears.',
+      'Set “Has correction been agreed” to Not discussed with anyone and check Pitch under “What is being corrected”: a finding appears. Pick Yes — agreed with the performer or producer: it clears.',
       'Set “Does the atmosphere run continuously through the edits” to No, attached to individual clips: “Atmosphere attached to clips rather than laid under them”.',
       'Set “Do the music edits respect the phrasing” to Cut to length wherever it landed: “Music cut to a duration rather than to a phrase”.',
     ],
@@ -216,7 +216,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Set “Do the stems recombine into the mix” to No, they do not match: BLOCKED — “The stems do not add up to the mix”. Pick Yes — tested and it cancels: it clears.',
       'Set “Was a new session version made for the mix” to No — mixing in the edit session: “Mixing in the edit session” appears.',
-      'Tick Headphones and A phone under “Checked on other systems”: “The mix has only been heard on one system” leaves the list.',
+      'Check Headphones and A phone under “Checked on other systems”: “The mix has only been heard on one system” leaves the list.',
     ],
   },
 
@@ -258,7 +258,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Set “Is the previously approved version preserved” to No: BLOCKED — “Revisions are being made over the approved version”. Pick Yes — saved as a separate version and print: it clears.',
       'Enter 2 in “How many archive copies exist”, leaving “Where they are” empty: “One copy is not an archive” appears — a count with no place proves nothing. Fill in “Where they are”: it clears.',
-      'Tick items under “The archive contains” and set “Has a restore been tested” to Only the file list was checked: “The archive has never been restored”.',
+      'Check items under “The archive contains” and set “Has a restore been tested” to Only the file list was checked: “The archive has never been restored”.',
     ],
   },
 };
@@ -303,7 +303,7 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Set “Was sync checked at the END of the longest file” to Yes: “Sync is checked at the end of the longest file” turns ✓.',
-      'Tick Slate or clap under “What you are synchronizing from”: “A synchronization source beyond doing it by hand is recorded” turns ✓.',
+      'Check Slate or clap under “What you are synchronizing from”: “A synchronization source beyond doing it by hand is recorded” turns ✓.',
     ],
   },
   'repair-without-overprocessing': {
@@ -331,7 +331,7 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Pick Yes, laid as continuous beds for the atmosphere and Yes — length, level or layering varies under “Is repeated material varied”: the atmosphere check turns ✓.',
-      'Tick Sidechain ducking under “How music and speech share the space”: “Something manages the relationship between music and speech” turns ✓.',
+      'Check Sidechain ducking under “How music and speech share the space”: “Something manages the relationship between music and speech” turns ✓.',
     ],
   },
   'route-the-mix': {

@@ -434,7 +434,7 @@ const symptoms: Symptom[] = [
     explain: 'Consistent posture is a tone control: a lean or a turned guitar changes what each mic hears. Mark it and rehearse; compression cannot fix a changing tone.',
     why: {
       'Compress hard until the tone holds still': 'Compression evens the level, not the changing tone and bleed.',
-      'Ask the singer not to move at all': 'Movement is part of playing; agree a comfortable, repeatable position.',
+      'Ask the singer not to move at all': 'Movement is part of playing; agree on a comfortable, repeatable position.',
     },
   },
   hollowSymptom('sw.sym.hollow'),
@@ -506,7 +506,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the vocal mic is 15 cm from the lips, the guitar mic 22 cm from the guitar. Do they meet 3:1?', options: ['Yes, easily', 'No — they are too close together', 'It depends on the patterns'], after: 'Rest a mic in two zones; the STARTING SETUPS card shows how far apart the pair is.' },
   context: { prompt: 'The guitar is just below the vocal mic. Where will a supercardioid aimed at the mouth reject it best?', options: ['With its front tilted up, the guitar off its rear', 'Level, the guitar at its side', 'Tilted down toward the guitar'], after: 'Now tilt or turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
