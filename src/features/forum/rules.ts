@@ -114,6 +114,18 @@ export function forumErrorText(message: string | null | undefined): { error: str
  * fell back to the anon key for a moment), is an UNKNOWN session: it reads
  * as "could not reach the forum", never as the guest face (house rule).
  */
+/**
+ * What a session read says about who is here. A stalled or failed read is
+ * UNKNOWN. An anonymous Supabase session is nobody (second review
+ * 2026-11-07): the forum is for accounts, so it gets the sign-in face.
+ */
+export function sessionKindOf(session: unknown, timedOut: boolean): 'none' | 'present' | 'unknown' {
+  if (timedOut) return 'unknown';
+  if (!session || typeof session !== 'object') return 'none';
+  const user = (session as { user?: { is_anonymous?: unknown } | null }).user;
+  return user?.is_anonymous === true ? 'none' : 'present';
+}
+
 export function signInFace(
   result: { error: string; code: string | null },
   session: 'none' | 'present' | 'unknown',
@@ -969,7 +981,23 @@ export const LAB_PARENT_ROUTES: Record<string, string> = {
   GainModule: 'GainLabHome',
   MeterModule: 'MeterLab',
   WaveModule: 'WaveLab',
+  SoundSystemsLearn: 'SoundSystemsLab',
+  SoundSystemsBuild: 'SoundSystemsLab',
+  SoundSystemsRoute: 'SoundSystemsLab',
+  SoundSystemsOperate: 'SoundSystemsLab',
+  SoundSystemsTroubleshoot: 'SoundSystemsLab',
+  DeEsserLab: 'SmartProcessorsLab',
 };
+
+/** A Miking lesson's lab is its family on the Miking hub: `MikingHub` with
+ *  `{ lab: <family id> }`. `familyOf` looks the lesson up (registry). */
+export function mikingLessonTarget(
+  lessonId: unknown,
+  familyOf: (id: string) => string | undefined,
+): { route: 'MikingHub'; params: { lab: string } } | null {
+  const family = typeof lessonId === 'string' ? familyOf(lessonId) : undefined;
+  return family ? { route: 'MikingHub', params: { lab: family } } : null;
+}
 
 /** Where a lab card opens, or null when the lab is no longer in the catalog. */
 export function labForKey(leaves: LabLeafLike[], key: string): LabLeafLike | null {
@@ -1009,37 +1037,85 @@ export function isChildItem(item: { urgentCategory: string | null; postBody?: st
 
 const HOLD_ACTIONS = ['hold', 'urgent', 'budget_hold', 'checker_unavailable'];
 
-/**
- * The EDIT a queue item is about, when it is one. A held edit leaves the post
- * published with the edit waiting beside it, and `post_body` is the OLD text:
- * the edit is only in the log row's 280-character excerpt (or in
- * `pending_body`, once the server sends it: SERVER_GAPS row 25). `complete`
- * says whether all of it is on screen; RESTORE waits until it is, because
- * restoring publishes the edit (review 2026-11-07, High 2).
- */
-export function pendingEditOf(item: {
-  postState: string | null;
-  action: string;
-  excerpt: string | null;
+/** What the server says about a post's waiting edit, once it sends it
+ *  (SERVER_GAPS rows 25 and 33). `pendingKnown` is true only when all three
+ *  fields came back, so their absence is never read as "no edit". */
+export type PendingFields = {
+  pendingKnown?: boolean;
+  pendingState?: string | null;
   pendingBody?: string | null;
-}): { text: string | null; complete: boolean } | null {
-  if (item.pendingBody) return { text: item.pendingBody, complete: true };
-  if (item.postState !== 'published' || !HOLD_ACTIONS.includes(item.action)) return null;
-  const text = item.excerpt;
-  return { text, complete: !!text && text.length < EXCERPT_MAX };
+  pendingTitle?: string | null;
+};
+
+/**
+ * The EDIT a queue item is about, when it is one. Restoring (or overturning an
+ * appeal) PUBLISHES a waiting edit, so it must be seen first.
+ *
+ * Until the server sends the pending fields, an edit is inferred and is never
+ * complete: the log excerpt is only the first 280 characters of the body and
+ * never the new title (second review 2026-11-07: a short excerpt switched
+ * RESTORE back on for a title edit nobody had seen). Inferred edits:
+ *  - a hold of any kind on a post that is still published;
+ *  - an appeal about a post that is still published (an appeal is only
+ *    allowed then because an edit was held or refused).
+ * A post hidden by reports may also carry an edit; nothing in the row says so,
+ * and the server fix is to drop it at the hide (SERVER_GAPS row 34).
+ */
+export function pendingEditOf(
+  item: { postState: string | null; action: string; mode?: string; excerpt: string | null } & PendingFields,
+): { text: string | null; title: string | null; complete: boolean } | null {
+  if (item.pendingKnown) {
+    if (!item.pendingState) return null;
+    return { text: item.pendingBody ?? null, title: item.pendingTitle ?? null, complete: !!item.pendingBody };
+  }
+  if (item.postState !== 'published') return null;
+  if (HOLD_ACTIONS.includes(item.action)) return { text: item.excerpt, title: null, complete: false };
+  if (item.mode === 'appeal') return { text: null, title: null, complete: false };
+  return null;
 }
+
+/**
+ * Whether OVERTURN may be offered on an appeal. Overturning restores the post,
+ * and a post that is still published was appealed for its EDIT, which the
+ * appeals list cannot show yet. The post's state comes from the appeal (once
+ * the server sends it: SERVER_GAPS row 33) or from its open queue row; when
+ * neither knows, it may be an edit, so OVERTURN waits (second review
+ * 2026-11-07, High 1).
+ */
+export function appealOverturn(
+  a: { postBody: string | null; postState?: string | null } & PendingFields,
+  queueState: string | null | undefined,
+): { overturn: boolean; why: string | null } {
+  if (isChildItem({ urgentCategory: null, postBody: a.postBody })) return { overturn: false, why: null };
+  if (a.pendingKnown) {
+    return a.pendingState && !a.pendingBody
+      ? { overturn: false, why: APPEAL_EDIT_UNSEEN }
+      : { overturn: true, why: null };
+  }
+  const state = a.postState ?? queueState ?? null;
+  if (state === null) return { overturn: false, why: APPEAL_STATE_UNKNOWN };
+  if (state === 'published') return { overturn: false, why: APPEAL_EDIT_UNSEEN };
+  return { overturn: true, why: null };
+}
+
+export const APPEAL_EDIT_UNSEEN =
+  'This appeal is about an edit the app cannot show yet, so OVERTURN is off. UPHOLD keeps the decision; the edit stays unpublished.';
+export const APPEAL_STATE_UNKNOWN =
+  'The app cannot tell whether this appeal is about an edit it cannot show, so OVERTURN is off. UPHOLD keeps the decision.';
 
 /** What the queue offers on an item. A child-safety post is never restored or
  *  sent back for editing from here, and an edit is never restored unseen. */
-export function queueOffers(item: {
-  postId: string | null;
-  urgentCategory: string | null;
-  postBody?: string | null;
-  postState?: string | null;
-  action?: string;
-  excerpt?: string | null;
-  pendingBody?: string | null;
-}): {
+export function queueOffers(
+  item: {
+    postId: string | null;
+    urgentCategory: string | null;
+    postBody?: string | null;
+    postState?: string | null;
+    action?: string;
+    mode?: string;
+    excerpt?: string | null;
+  } & PendingFields,
+): {
   restore: boolean;
   hide: boolean;
   pleaseEdit: boolean;
@@ -1050,8 +1126,12 @@ export function queueOffers(item: {
   const edit = pendingEditOf({
     postState: item.postState ?? null,
     action: item.action ?? '',
+    mode: item.mode,
     excerpt: item.excerpt ?? null,
+    pendingKnown: item.pendingKnown,
+    pendingState: item.pendingState,
     pendingBody: item.pendingBody,
+    pendingTitle: item.pendingTitle,
   });
   const unseenEdit = !!edit && !edit.complete;
   return { restore: has && !child && !unseenEdit, hide: has && !child, pleaseEdit: has && !child, delete: has };
@@ -1121,13 +1201,17 @@ export function memberReason(rule: string | null | undefined): string {
   return (rule && MEMBER_REASONS[rule]) || MEMBER_REASON_DEFAULT;
 }
 
+/** PLEASE EDIT from the queue: why, and what to do. */
+export function pleaseEditReason(rule: string | null | undefined): string {
+  return `${memberReason(rule)} Please edit it so it can be published.`;
+}
+
 /** The reason code account_set_standing stores, which AccountStandingNotice
  *  turns into words: one of its own codes, else `forum`. */
 export function standingReasonCode(rule: string | null | undefined): string {
   switch (rule) {
     case 'spam':
       return 'spam';
-    case 'respect':
     case 'harassment':
     case 'hate':
     case 'threat':

@@ -167,6 +167,15 @@ function routeLocalDest(dest: string): void {
 /** A tapped forum alert: its thread, at the post it was about. The forum has no
  *  deep link, so this is a plain navigate (review 2026-11-07). */
 function openForumThread(tap: { topicId: string; postId: string | null }): void {
+  let base: string | undefined;
+  try {
+    base = navigationRef.getRootState()?.routes?.[0]?.name;
+  } catch {
+    base = undefined;
+  }
+  // Never above the sign-in screen (forumTapLands), as openCommunityPath.
+  const { forumTapLands } = require('./src/features/notifications/communityRules') as typeof import('./src/features/notifications/communityRules');
+  if (!forumTapLands(base)) return;
   navigationRef.navigate('ForumThread', tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId });
 }
 

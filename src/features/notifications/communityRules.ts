@@ -68,6 +68,16 @@ export function forumTapFrom(data: unknown): ForumTap | null {
   return { topicId: d.topicId, postId: isThreadId(d.postId) ? d.postId : null };
 }
 
+/**
+ * Whether a forum tap may open its thread now. Never above the sign-in screen
+ * (the stack's root is `Auth` while signed out): a thread pushed there sits on
+ * top of the sign-in and every read in it refuses (second review 2026-11-07).
+ * The same rule openCommunityPath keeps.
+ */
+export function forumTapLands(rootRoute: string | null | undefined): boolean {
+  return rootRoute !== 'Auth';
+}
+
 /** Where a forum tap lands: the thread, opened at that post. */
 export function forumTapRoute(tap: ForumTap): { topicId: string; jumpTo?: string } {
   return tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId };

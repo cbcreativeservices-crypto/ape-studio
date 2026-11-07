@@ -37,8 +37,10 @@ import {
 } from '../../features/forum/adminApi';
 import {
   aiUsageLine,
+  appealOverturn,
   isChildItem,
   memberReason,
+  pleaseEditReason,
   pendingEditOf,
   queueOffers,
   queueTopicFace,
@@ -173,7 +175,8 @@ function QueueList() {
       const postId = item.postId;
       if (!postId) return;
       run(String(item.logId), async () => {
-        const r = await actOnPost(postId, action);
+        // forum_admin_post_action shows this reason to the member as it is.
+        const r = await actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule));
         if (!r.ok) {
           notify('Not saved', r.error);
           return;
@@ -298,12 +301,11 @@ function QueueList() {
             ) : edit ? (
               <>
                 <Text style={st.editHead}>THE EDIT BEING REVIEWED</Text>
+                {edit.title ? <Text style={st.ex}>{`New title: ${edit.title}`}</Text> : null}
                 {edit.text ? <Text style={st.ex}>{edit.text}</Text> : null}
                 {!edit.complete ? (
                   <Text style={st.meta}>
-                    {edit.text
-                      ? 'Only the start of the edit can be shown here, so RESTORE is off. Hide it, ask for an edit, or dismiss.'
-                      : 'The edit itself cannot be shown here, so RESTORE is off. Hide it, ask for an edit, or dismiss.'}
+                    {`${edit.text ? 'This is only the start of the edit, and a new title is not shown.' : 'The edit itself cannot be shown here.'} RESTORE stays off until the app can show all of it. If you DISMISS this, the edit stays waiting and is never published. HIDE removes the whole post; PLEASE EDIT asks the member to write it again.`}
                   </Text>
                 ) : null}
                 {item.postBody ? <Text style={st.editHead}>WHAT OTHERS SEE NOW</Text> : null}
@@ -324,7 +326,7 @@ function QueueList() {
               <Act label="DISMISS" onPress={() => decide(item, 'dismiss')} disabled={off} />
               <Act label="CONFIRM" onPress={() => decide(item, 'confirm')} disabled={off} />
               {offers.restore ? <Act label="RESTORE" onPress={() => decide(item, 'restore')} disabled={off} /> : null}
-              {offers.hide ? <Act label="HIDE" onPress={() => decide(item, 'hide')} disabled={off} /> : null}
+              {offers.hide ? <Act label="HIDE" onPress={() => decide(item, 'hide', memberReason(item.rule))} disabled={off} /> : null}
               {offers.pleaseEdit ? <Act label="PLEASE EDIT" onPress={() => onPost(item, 'please_edit')} disabled={off} /> : null}
               {offers.delete ? <Act label="DELETE" onPress={destroy} disabled={off} danger /> : null}
               {item.targetUser ? <Act label="MEMBER ›" onPress={() => setMemberOf(item)} disabled={off} /> : null}
@@ -341,6 +343,10 @@ function QueueList() {
 
 function AppealList() {
   const read = useForumRead<AdminAppeal[]>(fetchAppeals, []);
+  // The post's state, from its open queue row, until forum_admin_appeals sends
+  // it (SERVER_GAPS row 33). A failed read leaves it unknown: OVERTURN waits.
+  const queue = useForumRead<QueueItem[]>(fetchQueue, []);
+  const stateOf = (postId: string) => queue.value?.find((q) => q.postId === postId && q.postState)?.postState ?? null;
   const [deciding, setDeciding] = useState<{ appeal: AdminAppeal; outcome: 'upheld' | 'overturned' } | null>(null);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -369,6 +375,7 @@ function AppealList() {
     <>
       {read.value.map((a) => {
         const child = isChildItem({ urgentCategory: null, postBody: a.postBody });
+        const overturn = appealOverturn(a, stateOf(a.postId));
         return (
         <View key={a.appealId} style={st.card}>
           <View style={st.rowTop}>
@@ -379,13 +386,18 @@ function AppealList() {
           {child ? (
             <Text style={st.child}>The text is preserved and not shown here. A child-safety removal is not restored from an appeal.</Text>
           ) : a.postBody ? (
-            <Text style={st.ex}>{a.postBody}</Text>
+            <>
+              {/* An edit appeal: this is the old text, not the edit appealed for. */}
+              {overturn.why ? <Text style={st.editHead}>WHAT OTHERS SEE NOW</Text> : null}
+              <Text style={st.ex}>{a.postBody}</Text>
+            </>
           ) : null}
           {a.modReason ? <Text style={st.meta}>Removed because: {a.modReason}</Text> : null}
           <Text style={st.appeal}>Their appeal: {a.reason}</Text>
+          {overturn.why ? <Text style={st.meta}>{overturn.why}</Text> : null}
           {a.recommendation ? <Text style={st.rec}>Suggested: {a.recommendation}</Text> : null}
           <View style={st.acts}>
-            {child ? null : <Act label="OVERTURN" onPress={() => open(a, 'overturned')} />}
+            {overturn.overturn ? <Act label="OVERTURN" onPress={() => open(a, 'overturned')} /> : null}
             <Act label="UPHOLD" onPress={() => open(a, 'upheld')} />
           </View>
         </View>

@@ -19,7 +19,7 @@ import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { blockMember } from '../directory/api';
-import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics, signInFace } from './rules.ts';
+import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics, sessionKindOf, signInFace } from './rules.ts';
 import {
   appealOf,
   bookmarkOf,
@@ -76,7 +76,8 @@ async function failChecked(message: string | null | undefined): Promise<{ ok: fa
   let session: 'none' | 'present' | 'unknown' = 'unknown';
   try {
     const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'forum');
-    session = timedOut ? 'unknown' : result?.data?.session ? 'present' : 'none';
+    // An anonymous Supabase session counts as nobody (sessionKindOf).
+    session = sessionKindOf(result?.data?.session, timedOut);
   } catch {
     session = 'unknown';
   }

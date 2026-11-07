@@ -109,14 +109,20 @@ describe('High 1: a child-safety post is known from the post as well as the row'
     const q = code(QUEUE);
     assert.match(q, /const child = isChildItem\(item\)/);
     assert.match(q, /queueTopicFace\(item\)/);
-    assert.match(q, /\{child \? null : <Act label="OVERTURN"/);
+    // appealOverturn refuses child safety (second review tests below).
+    assert.match(q, /\{overturn\.overturn \? <Act label="OVERTURN"/);
   });
 });
 
 describe('High 2: a held edit is shown, and never restored unseen', () => {
-  it('a held edit with all of its text shown may be restored', () => {
+  it('an excerpt is never the whole edit (it can hide a new title): Restore stays off', () => {
+    // Second review: a short excerpt used to count as "complete".
     const o = R.queueOffers(row({ postState: 'published', action: 'hold', excerpt: 'The new words.' }));
-    assert.equal(o.restore, true);
+    assert.equal(o.restore, false);
+  });
+
+  it('a row about a post with no edit still offers Restore (the positive control)', () => {
+    assert.equal(R.queueOffers(row({ postState: 'held', action: 'hold', excerpt: 'Held text.' })).restore, true);
   });
 
   it('only the start of it, or none of it: Restore is off', () => {
@@ -126,10 +132,16 @@ describe('High 2: a held edit is shown, and never restored unseen', () => {
     assert.equal(R.queueOffers(row({ postState: 'published', action: 'checker_unavailable' })).restore, false);
   });
 
-  it('the full edit, once the server sends it, is enough', () => {
+  it('the full edit, once the server sends all its fields, is enough', () => {
     const pendingBody = 'y'.repeat(600);
-    assert.equal(R.queueOffers(row({ postState: 'published', action: 'hold', pendingBody })).restore, true);
-    assert.equal(A.queueItemOf({ log_id: 1, pending_body: 'edit' } as Record<string, unknown>).pendingBody, 'edit');
+    const sent = { pendingKnown: true, pendingState: 'held', pendingBody, pendingTitle: 'New title' };
+    assert.equal(R.queueOffers(row({ postState: 'published', action: 'hold', ...sent })).restore, true);
+    // A body alone, without the title and state, is not "all of it".
+    assert.equal(R.queueOffers(row({ postState: 'published', action: 'hold', pendingBody })).restore, false);
+    const item = A.queueItemOf({ log_id: 1, pending_state: 'held', pending_body: 'edit', pending_title: null } as Record<string, unknown>);
+    assert.equal((item as unknown as { pendingKnown: boolean }).pendingKnown, true);
+    assert.equal(item.pendingBody, 'edit');
+    assert.equal((A.queueItemOf({ log_id: 1, pending_body: 'edit' } as Record<string, unknown>) as unknown as { pendingKnown: boolean }).pendingKnown, false);
   });
 
   it('the card shows the edit under its own head, and what others see now under another', () => {
@@ -443,5 +455,103 @@ describe('the Low items', () => {
   it('L14: the correction note and the empty Unanswered list say only what is true', () => {
     assert.doesNotMatch(code(THREAD), /sees it first/);
     assert.doesNotMatch(code('src/screens/directory/forum/ForumHomeView.tsx'), /Every question has had an answer/);
+  });
+});
+
+/* ── Second review of 155b0257 (2026-11-07) ──────────────────────────── */
+
+describe('second review: an appeal about an edit is never overturned unseen', () => {
+  const overturn = (a: Record<string, unknown>, q: string | null) =>
+    (r.appealOverturn as (...x: unknown[]) => { overturn: boolean; why: string | null })(a, q);
+
+  it('a queue row about an appeal on a still-published post is an edit with no text', () => {
+    const e = R.pendingEditOf({ postState: 'published', action: 'note', mode: 'appeal', excerpt: null } as never);
+    assert.deepEqual(e, { text: null, title: null, complete: false });
+    assert.equal(R.queueOffers(row({ postState: 'published', action: 'note', mode: 'appeal' })).restore, false);
+  });
+
+  it('OVERTURN waits for a published post, and for a post whose state is unknown', () => {
+    assert.equal(typeof r.appealOverturn, 'function');
+    assert.equal(overturn({ postBody: 'old', postState: 'published' }, null).overturn, false);
+    assert.equal(overturn({ postBody: 'old' }, 'published').overturn, false);
+    assert.equal(overturn({ postBody: 'old' }, null).overturn, false);
+    assert.equal(overturn({ postBody: 'old' }, 'blocked').overturn, true);
+    assert.equal(overturn({ postBody: 'old', pendingKnown: true, pendingState: 'blocked', pendingBody: null }, 'published').overturn, false);
+    assert.equal(overturn({ postBody: 'old', pendingKnown: true, pendingState: 'blocked', pendingBody: 'new' }, 'published').overturn, true);
+    assert.equal(overturn({ postBody: '[preserved — not displayed (child-safety)]' }, 'hidden').overturn, false);
+  });
+
+  it('the appeals list uses it', () => {
+    assert.match(code(QUEUE), /appealOverturn\(a, stateOf\(a\.postId\)\)/);
+  });
+});
+
+describe('second review: a hidden post with a waiting edit', () => {
+  it('once the server says there is an edit, Restore waits for it on a hidden post too', () => {
+    const hidden = row({ postState: 'hidden', action: 'auto_hide_reports', pendingKnown: true, pendingState: 'held', pendingBody: null, pendingTitle: null });
+    assert.equal(R.queueOffers(hidden).restore, false);
+    const clean = row({ postState: 'hidden', action: 'auto_hide_reports', pendingKnown: true, pendingState: null, pendingBody: null, pendingTitle: null });
+    assert.equal(R.queueOffers(clean).restore, true);
+  });
+});
+
+describe('second review: a forum tap never opens above the sign-in screen', () => {
+  it('the rule', () => {
+    const lands = (C as unknown as Record<string, (x: unknown) => boolean>).forumTapLands;
+    assert.equal(typeof lands, 'function');
+    assert.equal(lands('Auth'), false);
+    assert.equal(lands('Main'), true);
+    assert.equal(lands('Splash'), true);
+    assert.equal(lands(undefined), true);
+  });
+
+  it('App asks it before navigating', () => {
+    const app = code('App.tsx');
+    const fn = app.slice(app.indexOf('function openForumThread'), app.indexOf('function openCommunityPath'));
+    assert.match(fn, /if \(!forumTapLands\(base\)\) return;/);
+  });
+});
+
+describe('second review: an anonymous session is nobody', () => {
+  it('sessionKindOf', () => {
+    const kind = r.sessionKindOf as (...a: unknown[]) => string;
+    assert.equal(typeof kind, 'function');
+    assert.equal(kind({ user: { is_anonymous: true } }, false), 'none');
+    assert.equal(kind({ user: { is_anonymous: false } }, false), 'present');
+    assert.equal(kind(null, false), 'none');
+    assert.equal(kind({ user: {} }, true), 'unknown');
+    assert.match(code('src/features/forum/api.ts'), /session = sessionKindOf\(result\?\.data\?\.session, timedOut\)/);
+  });
+});
+
+describe('second review: the rest', () => {
+  it('Please edit and Hide carry plain words to the member', () => {
+    const please = r.pleaseEditReason as (x: unknown) => string;
+    assert.match(please('respect'), /Please edit it so it can be published\.$/);
+    const q = code(QUEUE);
+    assert.match(q, /actOnPost\(postId, action, action === 'please_edit' \? pleaseEditReason\(item\.rule\) : memberReason\(item\.rule\)\)/);
+    assert.match(q, /decide\(item, 'hide', memberReason\(item\.rule\)\)/);
+  });
+
+  it('the long-edit card says what DISMISS does', () => {
+    assert.match(code(QUEUE), /If you DISMISS this, the edit stays waiting and is never published\./);
+  });
+
+  it('a thread is keyed by its topic', () => {
+    assert.match(code(THREAD), /<Thread key=\{topicId\}/);
+  });
+
+  it('Sound Systems modes, the De-Esser and Miking lessons have their lab', () => {
+    const parents = (r.LAB_PARENT_ROUTES ?? {}) as Record<string, string>;
+    assert.equal(parents.SoundSystemsLearn, 'SoundSystemsLab');
+    assert.equal(parents.DeEsserLab, 'SmartProcessorsLab');
+    const target = r.mikingLessonTarget as (...a: unknown[]) => unknown;
+    assert.deepEqual(target('M01', (id: string) => (id === 'M01' ? 'drums' : undefined)), { route: 'MikingHub', params: { lab: 'drums' } });
+    assert.equal(target('nope', () => undefined), null);
+  });
+
+  it('plain rudeness is not "harassment" on the standing notice', () => {
+    assert.equal(R.standingReasonCode('respect'), 'forum');
+    assert.equal(R.standingReasonCode('harassment'), 'harassment');
   });
 });

@@ -4,7 +4,7 @@
  * lab. The catalog is required when asked for, never at load: it stays out of
  * the start graph and out of any screen that does not need it.
  */
-import { labForKey, labKeyOf, labNameForRoute } from './rules.ts';
+import { labForKey, labKeyOf, labNameForRoute, mikingLessonTarget } from './rules.ts';
 
 function leaves() {
   const { LAB_CATEGORIES, categoryLeaves } = require('../../screens/lab/labCatalog') as typeof import('../../screens/lab/labCatalog');
@@ -21,6 +21,15 @@ export function labNames(): string[] {
 
 /** The lab a screen is, by its route. Null for a route that is not a lab. */
 export function labOfRoute(route: string, params?: Record<string, unknown> | null): { key: string; title: string } | null {
+  // A Miking lesson belongs to its family on the hub, not to the lesson title.
+  if (route === 'MikingLesson') {
+    const { lessonMeta } = require('../../screens/lab/miking/data/registry') as typeof import('../../screens/lab/miking/data/registry');
+    const target = mikingLessonTarget(params?.id, (id) => lessonMeta(id)?.labId);
+    if (target) {
+      const family = labNameForRoute(leaves(), target.route, target.params);
+      if (family) return { key: labKeyOf(family), title: family };
+    }
+  }
   const name = labNameForRoute(leaves(), route, params);
   return name ? { key: labKeyOf(name), title: name } : null;
 }

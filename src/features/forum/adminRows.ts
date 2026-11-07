@@ -24,8 +24,13 @@ export type QueueItem = {
   topicTitle: string | null;
   postBody: string | null;
   postState: string | null;
-  /** The held edit itself, once forum_admin_queue sends it (SERVER_GAPS row 25). */
+  /** The waiting edit, once forum_admin_queue sends it (SERVER_GAPS row 25).
+   *  `pendingKnown` only when pending_state, pending_body and pending_title all
+   *  came back: their absence is never read as "no edit". */
+  pendingKnown: boolean;
+  pendingState: string | null;
   pendingBody: string | null;
+  pendingTitle: string | null;
   author: ForumAuthor | null;
   targetUser: string | null;
   openReports: number;
@@ -44,7 +49,23 @@ export type AdminAppeal = {
   modReason: string | null;
   recommendation: string | null;
   createdAt: string;
+  /** The post's state and its waiting edit, once forum_admin_appeals sends
+   *  them (SERVER_GAPS row 33). */
+  postState: string | null;
+  pendingKnown: boolean;
+  pendingState: string | null;
+  pendingBody: string | null;
+  pendingTitle: string | null;
 };
+
+function pendingOf(r: Row): { pendingKnown: boolean; pendingState: string | null; pendingBody: string | null; pendingTitle: string | null } {
+  return {
+    pendingKnown: 'pending_state' in r && 'pending_body' in r && 'pending_title' in r,
+    pendingState: str(r.pending_state),
+    pendingBody: str(r.pending_body),
+    pendingTitle: str(r.pending_title),
+  };
+}
 
 export function queueItemOf(r: Row): QueueItem {
   return {
@@ -63,7 +84,7 @@ export function queueItemOf(r: Row): QueueItem {
     topicTitle: str(r.topic_title),
     postBody: str(r.post_body),
     postState: str(r.post_state),
-    pendingBody: str(r.pending_body),
+    ...pendingOf(r),
     author: r.author ? authorOf(r.author) : null,
     targetUser: str(r.target_user),
     openReports: Number(r.open_reports ?? 0),
@@ -84,6 +105,8 @@ export function adminAppealOf(r: Row): AdminAppeal {
     modReason: str(r.mod_reason),
     recommendation: str(r.recommendation),
     createdAt: String(r.created_at ?? ''),
+    postState: str(r.post_state),
+    ...pendingOf(r),
   };
 }
 

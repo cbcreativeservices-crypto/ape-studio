@@ -129,7 +129,9 @@ export function ForumThreadScreen() {
   if (welcome || !topicId) return <LocalWelcome />;
   return (
     <GlossaryLinkProvider>
-      <Thread topicId={topicId} jumpTo={jumpTo ?? null} unreadMark={!!unread} />
+      {/* key: a thread opened over another (a forum tap, a link in a post)
+          starts fresh, never with the last one's posts, draft or marks. */}
+      <Thread key={topicId} topicId={topicId} jumpTo={jumpTo ?? null} unreadMark={!!unread} />
     </GlossaryLinkProvider>
   );
 }
