@@ -677,8 +677,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-06 12:57 · ccode · a629e02a
 changed: Must-do: tenth OTA published [MD:A2]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: validate-purchase server change, deployed separately on owner go.
+needs: nothing
 
 
 ### 2026-11-06 08:09 · ccode · 3e8329ed
