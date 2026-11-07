@@ -59,6 +59,10 @@ import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAbo
 import { ForumLabStub, ForumPreviewScreen, withDialogs } from './ForumPreview';
 // Fill-in / Matching end-of-round review (2026-11-07, must-do E4).
 import { RoundReviewPreview } from './RoundReviewPreview';
+// Instructor progress (2026-11-07, must-do E3): `#instructorpreview`.
+import { InstructorPreviewScreen } from './InstructorPreview';
+import { InstructorStudentsScreen } from '../screens/instructor/InstructorStudentsScreen';
+import { InstructorStudentScreen } from '../screens/instructor/InstructorStudentScreen';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ForumCategoryScreen } from '../screens/directory/forum/ForumCategoryScreen';
 import { ForumThreadScreen } from '../screens/directory/forum/ForumThreadScreen';
@@ -416,6 +420,17 @@ export function renderWebPreview(hash: string): ReactElement | null {
               { name: 'Awards', component: AwardsScreen as ComponentType },
               { name: 'PublicGlossary', component: PublicGlossaryScreen as ComponentType },
               { name: 'GainLabHome', component: ForumLabStub as ComponentType },
+            ],
+          }
+      : hash === '#instructorpreview'
+        // A verified instructor's class and one student's progress, on made-up
+        // students (the live server has no verified instructor yet).
+        ? {
+            name: 'InstructorPreview',
+            component: InstructorPreviewScreen as ComponentType,
+            screens: [
+              { name: 'InstructorStudents', component: withDialogs(InstructorStudentsScreen) },
+              { name: 'InstructorStudent', component: withDialogs(InstructorStudentScreen) },
             ],
           }
       : hash === '#soundsystemspreview'

@@ -26,6 +26,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { openMembershipGate } from '../commercial/MembershipGate';
 import { setSampleDirectory, setSampleInbox } from '../directory/sampleThreads';
 import { FORUM_SAMPLE_STATES, setSampleForum } from '../forum/sampleSwitch';
+import { INSTRUCTOR_SAMPLE_STATES, setSampleClass } from '../instructor/sampleClass';
 import { refreshCommunityInbox } from '../directory/CommunityBadge';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
@@ -242,6 +243,19 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
         setSampleForum(state);
         if (state.tab === 'directory') setSampleDirectory(true);
         n.navigate('AudioCommunityDirectory', { tab: state.tab ?? 'forum' });
+      },
+    })),
+  },
+  {
+    // Must-do E3: a verified instructor's class and one student's progress, on
+    // made-up students. Nothing reaches the live database; leaving "Your
+    // Students" turns the sample off (sampleClass.ts).
+    section: 'INSTRUCTOR (SAMPLE DATA)',
+    items: INSTRUCTOR_SAMPLE_STATES.map((state) => ({
+      label: state.label,
+      go: (n) => {
+        setSampleClass(state);
+        n.navigate('InstructorStudents');
       },
     })),
   },

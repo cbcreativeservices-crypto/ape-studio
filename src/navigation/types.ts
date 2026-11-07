@@ -194,6 +194,10 @@ export type RootStackParamList = {
   ForumMine: undefined;
   /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
   EmployerAdmin: undefined;
+  /** Must-do E3: a verified instructor's class (students who shared with them). */
+  InstructorStudents: undefined;
+  /** One student's progress. `name` only titles the screen while it loads. */
+  InstructorStudent: { shareId: string; name?: string };
   /** Admin-only: the abuse-report queue. Guarded by is_admin() in the DB.
    *  Deliberately NOT in linking.ts — an admin deep link is a URL worth guessing. */
   ReportsAdmin: { tab?: 'forum' } | undefined;
