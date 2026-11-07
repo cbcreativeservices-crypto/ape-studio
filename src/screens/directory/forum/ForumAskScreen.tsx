@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
+import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { fonts } from '../../../theme/tokens';
@@ -30,13 +31,17 @@ import {
   EMPTY_ASK,
   SEARCH_MIN,
   TITLE_MAX,
+  askChoices,
   askFormOf,
   askProblem,
   composeAskBody,
   draftKey,
   glossaryWords,
+  hiddenOutcomeNote,
   labKeyOf,
   parseAskBody,
+  refusalNeedsProfile,
+  RULES_NOT_SAVED,
   topicFrom,
   type AskFormKind,
 } from '../../../features/forum/rules';
@@ -51,6 +56,7 @@ import {
   ForumHeader,
   ForumLoading,
   ForumUnreadable,
+  LockedNotice,
   PickField,
   Popup,
   QuietButton,
@@ -117,12 +123,13 @@ function AskForm({
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
 
-  /** Only categories this member may start a topic in. */
-  const open = useMemo(
-    () => categories.filter((c) => !c.staffOnlyTopics && (rights?.find((r) => r.slug === c.slug)?.canStartTopic ?? true)),
-    [categories, rights],
-  );
-  const initial = open.find((c) => c.slug === slug) ?? open.find((c) => c.slug === ASK_SLUG) ?? open[0] ?? null;
+  /** Only categories this member may start a topic in, and what to say when
+   *  there is none, or when the one they came for is refused (askChoices). */
+  const choices = useMemo(() => askChoices(categories, rights, slug), [categories, rights, slug]);
+  const open = choices.open;
+  const initial = choices.wantedRefused
+    ? null
+    : (open.find((c) => c.slug === slug) ?? open.find((c) => c.slug === ASK_SLUG) ?? open[0] ?? null);
   const [category, setCategory] = useState<ForumCategory | null>(
     edit ? (categories.find((c) => c.slug === slug) ?? null) : initial,
   );
@@ -136,15 +143,17 @@ function AskForm({
     return { ...EMPTY_ASK, title: edit.title ?? '', ...(guided ?? { body: edit.body }) };
   });
   const touched = useRef(false);
+  const clientId = useRef<string | null>(null);
   const set = useCallback((patch: Partial<AskValues>) => {
     touched.current = true;
+    // A retry keeps its id so it lands once; a CHANGED form is a new post.
+    clientId.current = null;
     setValues((v) => ({ ...v, ...patch }));
   }, []);
   const [lab, setLab] = useState<string | null>(null);
   const [job, setJob] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
-  const clientId = useRef<string | null>(null);
 
   const [picking, setPicking] = useState(false);
   const [pickingLab, setPickingLab] = useState(false);
@@ -210,7 +219,13 @@ function AskForm({
   const shownForm: AskFormKind = labThread ? 'discussion' : edit ? (guided ? 'question' : 'discussion') : form;
   const replyEdit = !!edit && !edit.isOpening;
   const problem =
-    replyEdit || labThread ? (values.body.trim() ? null : 'Write something first.') : askProblem(shownForm, values);
+    replyEdit || labThread
+      ? values.body.trim()
+        ? null
+        : 'Write something first.'
+      : !edit && !category
+        ? 'Choose a category first.'
+        : askProblem(shownForm, values);
 
   const postNow = useCallback(async () => {
     if (problem || (!edit && !labThread && !category)) return;
@@ -230,6 +245,14 @@ function AskForm({
       setPosting(false);
       if (!r.ok) {
         setError(r.error);
+        return;
+      }
+      void clearDraft(draftName);
+      const hidden = hiddenOutcomeNote(r.value);
+      if (hidden) {
+        clientId.current = null;
+        setValues(EMPTY_ASK);
+        setError(hidden);
         return;
       }
       if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
@@ -254,6 +277,15 @@ function AskForm({
       return;
     }
     void clearDraft(draftName);
+    // A post the child-safety screen stopped is in no list, so the thread would
+    // open empty: say so here instead.
+    const hidden = hiddenOutcomeNote(r.value);
+    if (hidden) {
+      clientId.current = null;
+      setValues(EMPTY_ASK);
+      setError(hidden);
+      return;
+    }
     // The author sees their own post here, whatever the check decided.
     if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
     else navigation.navigate('ForumThread', { topicId: r.value.topicId });
@@ -270,6 +302,7 @@ function AskForm({
     const ok = await flags.acceptRules();
     setRulesOpen(false);
     if (ok) await postNow();
+    else notify('Not saved', RULES_NOT_SAVED);
   });
 
   const headerTitle = labThread ? `Discuss: ${labThread.title}` : edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
@@ -281,6 +314,24 @@ function AskForm({
         ? 'Start the discussion for this lab'
         : 'Pick the category; we’ll show similar topics';
 
+  if (!edit && !labThread && choices.open.length === 0) {
+    return (
+      <View style={forumStyles.root}>
+        <ForumHeader title={headerTitle} />
+        <LockedNotice
+          solid
+          action={
+            refusalNeedsProfile(choices.refusalCode)
+              ? { label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }
+              : undefined
+          }
+        >
+          {choices.refusal ?? ''}
+        </LockedNotice>
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView style={forumStyles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ForumHeader title={headerTitle} sub={headerSub} />
@@ -290,6 +341,9 @@ function AskForm({
         keyboardShouldPersistTaps="handled"
       >
         <SampleStamp />
+        {!edit && !labThread && choices.wantedRefused && choices.refusal ? (
+          <Text style={st.error}>{`${choices.refusal} Choose another category below.`}</Text>
+        ) : null}
         {!edit && !labThread ? (
           <View>
             <FieldLabel>CATEGORY</FieldLabel>

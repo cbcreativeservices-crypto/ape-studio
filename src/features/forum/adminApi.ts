@@ -18,6 +18,7 @@ import {
   adminAppealOf,
   adminError,
   queueItemOf,
+  usageOfMonth,
   type AdminAppeal,
   type QueueItem,
 } from './adminRows.ts';
@@ -68,7 +69,8 @@ export async function fetchAppeals(): Promise<ForumResult<AdminAppeal[]>> {
 export async function fetchAiUsage(): Promise<ForumResult<AiUsage | null>> {
   if (sampleForumOn()) return sampleAdmin(() => data().sampleAiUsage());
   return adminRpc('forum_admin_ai_usage', undefined, (raw) => {
-    const r = (Array.isArray(raw) ? raw[0] : raw) as Row | undefined;
+    // Up to 24 months, newest first: only THIS month's row is this month's.
+    const r = usageOfMonth((Array.isArray(raw) ? raw : []) as Row[]);
     if (!r) return null;
     return {
       calls: Number(r.calls ?? 0),
@@ -94,7 +96,12 @@ export async function fetchTracked(): Promise<ForumResult<ForumTopic[]>> {
   return { ok: true, value: lists.flatMap((l) => (l.ok ? l.value : [])) };
 }
 
-const writeOk = (): true => true;
+/** A write that answered `false` did nothing (forum_admin_topic_flags on a
+ *  topic that is gone): that is never "saved". */
+const writeOk = (raw: unknown): true => {
+  if (raw === false) throw new Error('not saved');
+  return true;
+};
 
 export async function decideQueueItem(logId: number, decision: QueueDecision, note?: string): Promise<ForumResult<true>> {
   if (sampleForumOn()) return { ok: true, value: data().sampleDecide(logId) };

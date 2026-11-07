@@ -15,6 +15,10 @@ import { AmberButton, F, FieldLabel, Popup, PopupScroll, QuietButton } from './f
 export const AI_DISCLOSURE =
   'Posts are checked for the community rules by an AI service (Anthropic) before they appear. Most posts appear within a few seconds.';
 
+/** What can be appealed, truly: a child-safety removal is not (review 2026-11-07). */
+export const RULES_APPEAL_LINE =
+  'Anyone can report a post, and a removal can be appealed to a person, except under the child-safety rule.';
+
 /** Before a first post (Apple 5.1.2(i): explicit permission, Play: rules
  *  accepted before posting). App-side: the server has no check yet. */
 const COMMUNITY_RULES = [
@@ -48,7 +52,7 @@ export function RulesPopup({
               {r}
             </Text>
           ))}
-          <Text style={st.disclosure}>{AI_DISCLOSURE} Anyone can report a post, and every removal can be appealed to a person.</Text>
+          <Text style={st.disclosure}>{AI_DISCLOSURE} {RULES_APPEAL_LINE}</Text>
           <View style={st.buttons}>
             <QuietButton label="NOT NOW" onPress={onClose} />
             <AmberButton label="I AGREE" onPress={onAccept} style={st.grow} />

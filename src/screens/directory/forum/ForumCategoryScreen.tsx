@@ -21,6 +21,7 @@ import {
   PRO_LOUNGE_GROUP,
   PRO_LOUNGE_REFUSAL,
   SORT_LABELS,
+  postingDock,
   refusalNeedsProfile,
   refusalText,
 } from '../../../features/forum/rules';
@@ -99,11 +100,9 @@ export function ForumCategoryScreen() {
   /* ── Who may post here ───────────────────────────────────────────── */
   const rights = home.value?.rights ?? null;
   const here = rights?.find((r) => r.slug === slug) ?? null;
-  const loungeRights = rights?.filter((r) => r.proOnly) ?? [];
-  const mayPostInLounge = loungeRights.some((r) => r.canStartTopic);
-  const readOnlyLounge = lounge
-    ? rights !== null && !mayPostInLounge
-    : here?.proOnly === true && !here.canStartTopic;
+  // The Pro Lounge's "Earn a credential" only for that very refusal; a muted
+  // graduate or one with an unpublished profile is told their own reason.
+  const posting = postingDock(rights, slug, !!lounge);
 
   const [following, setFollowing] = useState<FollowLevel | null>(null);
   const [menu, setMenu] = useState(false);
@@ -134,16 +133,16 @@ export function ForumCategoryScreen() {
     notify('Before you post', refusalText(here.reason));
   };
 
-  const dock = readOnlyLounge ? (
+  const dock = posting.kind === 'pro' ? (
     <LockedNotice action={{ label: 'SEE CREDENTIALS', onPress: seeCredentials }}>
       {`${PRO_LOUNGE_REFUSAL} You can read every thread. Earn a credential to post here.`}
     </LockedNotice>
-  ) : here && !here.canStartTopic && refusalNeedsProfile(here.reason) ? (
+  ) : posting.kind === 'refusal' && refusalNeedsProfile(posting.code) ? (
     <LockedNotice action={{ label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }}>
-      {refusalText(here.reason)}
+      {refusalText(posting.code)}
     </LockedNotice>
-  ) : here && !here.canStartTopic ? (
-    <LockedNotice solid>{refusalText(here.reason)}</LockedNotice>
+  ) : posting.kind === 'refusal' ? (
+    <LockedNotice solid>{refusalText(posting.code)}</LockedNotice>
   ) : home.face === 'ready' && slug !== IDEAS_SLUG ? (
     <View style={[st.dock, { paddingBottom: 14 + insets.bottom }]}>
       <AmberButton label={lounge ? 'START A TOPIC' : startLabel} onPress={start} />
@@ -173,7 +172,7 @@ export function ForumCategoryScreen() {
           ) : topics.face === 'unreadable' ? (
             <ForumUnreadable error={topics.error} code={topics.code} onRetry={() => void topics.reload()} />
           ) : sort === 'unanswered' ? (
-            <ForumEmpty title="Nothing is waiting" text="Every question here has had an answer." />
+            <ForumEmpty title="Nothing is waiting" text="No question here is waiting for an answer." />
           ) : (
             <ForumEmpty title="Nothing posted here yet" text="Start the first topic." />
           )

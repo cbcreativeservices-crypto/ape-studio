@@ -434,6 +434,15 @@ export function ExploreView({
     () => (hiddenTokens?.length ? rows.filter((r) => !hiddenTokens.includes(r.publicToken)) : rows),
     [rows, hiddenTokens],
   );
+  /** ALSO IN THE DIRECTORY: never someone blocked this visit, never someone
+   *  the list above already shows. */
+  const alsoVisible = useMemo(
+    () =>
+      also.filter(
+        (r) => !(hiddenTokens ?? []).includes(r.publicToken) && !visibleRows.some((v) => v.publicToken === r.publicToken),
+      ),
+    [also, hiddenTokens, visibleRows],
+  );
   // At the end of the list the count IS what is listed — `total` can sit above
   // it after a shifted window (see loadMore).
   const visibleTotal = ended ? visibleRows.length : Math.max(0, total - (rows.length - visibleRows.length));
@@ -470,7 +479,11 @@ export function ExploreView({
       <DirectoryChipRow chip={chip} onChange={setChip} />
 
       {(chip === 'all' || chip === 'graduates') && !activeCount && !q ? (
-        <RecentGraduates onOpen={onOpenMember} onSeeAll={chip === 'all' ? () => setChip('graduates') : undefined} />
+        <RecentGraduates
+          onOpen={onOpenMember}
+          onSeeAll={chip === 'all' ? () => setChip('graduates') : undefined}
+          hiddenTokens={hiddenTokens}
+        />
       ) : null}
 
       {activeCount || q ? (
@@ -543,8 +556,8 @@ export function ExploreView({
             <MemberCard key={r.publicToken} r={r} badge={badges.get(r.publicToken) ?? null} onOpen={onOpenMember} />
           ))}
           {scanned ? <Text style={st.scanned}>{scanNote(scanned.read, scanned.of)}</Text> : null}
-          {also.length > 0 ? <Text style={st.alsoHead}>ALSO IN THE DIRECTORY</Text> : null}
-          {also.map((r) => (
+          {alsoVisible.length > 0 ? <Text style={st.alsoHead}>ALSO IN THE DIRECTORY</Text> : null}
+          {alsoVisible.map((r) => (
             <MemberCard key={`also-${r.publicToken}`} r={r} badge={badges.get(r.publicToken) ?? null} onOpen={onOpenMember} />
           ))}
           {/* Not while a new search is out: run() has already reset `page` for

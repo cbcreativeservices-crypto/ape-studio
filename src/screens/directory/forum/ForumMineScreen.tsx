@@ -50,11 +50,24 @@ export function ForumMineScreen() {
       <>
         <SampleStamp />
         <MeBlock read={me} />
+        {/* The way back to every notice, read or not (review 2026-11-07): a
+            mute's end, an appeal, Edit and Repost, and the only word on a post
+            the child-safety rule removed all live there. */}
+        <SecHead>Your posts</SecHead>
+        <Pressable
+          onPress={() => navigation.navigate('ForumNotices')}
+          style={({ pressed }) => [st.noticeRow, pressed && st.pressed]}
+          accessibilityRole="button"
+          accessibilityLabel="Notices about your posts"
+        >
+          <Text style={st.markTitle}>Notices about your posts ›</Text>
+          <Text style={st.markEx}>Reviews, removals, appeals and anything that limits your posting.</Text>
+        </Pressable>
         <SecHead>Bookmarks</SecHead>
         {marks.stale ? <StaleNote /> : null}
       </>
     ),
-    [marks.stale, me],
+    [marks.stale, me, navigation],
   );
 
   return (
@@ -154,6 +167,7 @@ const st = StyleSheet.create({
   badgeName: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: F.amber },
   badgeText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.sub, marginTop: 2 },
   quiet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: F.muted },
+  noticeRow: { paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: F.line },
   mark: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: F.line },
   markBody: { flex: 1, minWidth: 0 },
   markTitle: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 19, color: F.text },

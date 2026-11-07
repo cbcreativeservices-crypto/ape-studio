@@ -24,6 +24,8 @@ export type QueueItem = {
   topicTitle: string | null;
   postBody: string | null;
   postState: string | null;
+  /** The held edit itself, once forum_admin_queue sends it (SERVER_GAPS row 25). */
+  pendingBody: string | null;
   author: ForumAuthor | null;
   targetUser: string | null;
   openReports: number;
@@ -61,6 +63,7 @@ export function queueItemOf(r: Row): QueueItem {
     topicTitle: str(r.topic_title),
     postBody: str(r.post_body),
     postState: str(r.post_state),
+    pendingBody: str(r.pending_body),
     author: r.author ? authorOf(r.author) : null,
     targetUser: str(r.target_user),
     openReports: Number(r.open_reports ?? 0),
@@ -88,8 +91,22 @@ export const ADMIN_NOT_PERMITTED = 'This queue is for the owner.';
 export const ADMIN_UNREADABLE = 'Could not read the queue. Check your connection and try again.';
 
 /** The refusal is a fact about the account, not about the network. */
+export const ADMIN_NOT_SAVED = 'That was not saved: it may already be gone. Reload and try again.';
+
 export function adminError(message: string | null | undefined): { error: string; code: string | null } {
+  if (message === 'not saved') return { error: ADMIN_NOT_SAVED, code: 'not_saved' };
   return /not permitted|permission denied/i.test(message ?? '')
     ? { error: ADMIN_NOT_PERMITTED, code: 'not_permitted' }
     : { error: ADMIN_UNREADABLE, code: null };
+}
+
+/**
+ * This month's AI usage row. forum_admin_ai_usage returns up to 24 months,
+ * newest first, so the first row is LAST month's whenever nothing has been
+ * recorded yet this month (review 2026-11-07): that is "nothing this month",
+ * never last month's spend and "cap reached".
+ */
+export function usageOfMonth<T extends { month?: unknown }>(rows: T[], now: Date = new Date()): T | null {
+  const want = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+  return rows.find((r) => typeof r.month === 'string' && r.month.slice(0, 7) === want) ?? null;
 }

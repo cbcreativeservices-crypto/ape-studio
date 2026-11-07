@@ -102,7 +102,23 @@ export function refusalText(code: string | null | undefined): string {
 export function forumErrorText(message: string | null | undefined): { error: string; code: string | null } {
   const code = refusalCode(message);
   if (code) return { error: refusalText(code), code };
+  // forum-moderate's own 401 says a bare `sign_in` (no `forum:` prefix).
+  if (message === 'sign_in') return { error: FORUM_SIGN_IN, code: 'sign_in' };
   if (/permission denied for function/i.test(message ?? '')) return { error: FORUM_SIGN_IN, code: 'sign_in' };
+  return { error: FORUM_UNREADABLE, code: null };
+}
+
+/**
+ * A "sign in" answer is only believed when the phone KNOWS there is no
+ * session. A session read that stalled, or one that is present (the token
+ * fell back to the anon key for a moment), is an UNKNOWN session: it reads
+ * as "could not reach the forum", never as the guest face (house rule).
+ */
+export function signInFace(
+  result: { error: string; code: string | null },
+  session: 'none' | 'present' | 'unknown',
+): { error: string; code: string | null } {
+  if (result.code !== 'sign_in' || session === 'none') return result;
   return { error: FORUM_UNREADABLE, code: null };
 }
 
@@ -441,6 +457,28 @@ export function topicFrom(
   return { title, body: v.body.trim(), topicKind: 'discussion', fields: {} };
 }
 
+/**
+ * Ask a question: which categories this member may start a topic in, and what
+ * to say when it is none, or when the one they came for is refused. A form
+ * with nothing to post into is never shown as if it could post.
+ */
+export function askChoices(
+  categories: ForumCategory[],
+  rights: Pick<ForumRights, 'slug' | 'canStartTopic' | 'reason'>[] | null,
+  slug: string | undefined,
+): { open: ForumCategory[]; refusal: string | null; refusalCode: string | null; wantedRefused: boolean } {
+  const rightOf = (s: string) => rights?.find((r) => r.slug === s) ?? null;
+  const open = categories.filter((c) => !c.staffOnlyTopics && (rightOf(c.slug)?.canStartTopic ?? true));
+  const wanted = slug ? rightOf(slug) : null;
+  const wantedRefused = !!slug && !!wanted && !wanted.canStartTopic;
+  if (open.length === 0) {
+    const reason = wanted?.reason ?? rights?.find((r) => !r.canStartTopic && r.reason)?.reason ?? null;
+    return { open, refusal: refusalText(reason), refusalCode: reason, wantedRefused };
+  }
+  if (wantedRefused) return { open, refusal: refusalText(wanted?.reason), refusalCode: wanted?.reason ?? null, wantedRefused };
+  return { open, refusal: null, refusalCode: null, wantedRefused };
+}
+
 /** A lab's key from its name: "Feedback Lab" is `feedback-lab`. */
 export function labKeyOf(name: string): string {
   return name
@@ -481,11 +519,18 @@ export function quoteExcerpt(body: string): string {
 }
 
 /** What the reply box does in this topic. */
+export const REPLIES_WAIT_FOR_PUBLISH = 'Replies open once your topic is published.';
+
 export function replyBlock(
-  topic: { locked: boolean; categoryKind: CategoryKind },
+  topic: { locked: boolean; categoryKind: CategoryKind; modState?: string },
   rights: Pick<ForumRights, 'canReply' | 'reason'> | null,
 ): { kind: 'open' } | { kind: 'announcements' } | { kind: 'closed'; text: string; code: string | null } {
   if (topic.categoryKind === 'announcements') return { kind: 'announcements' };
+  // My own topic before it is published (being checked, held or removed): the
+  // server refuses every reply to it, so the box is not offered.
+  if (topic.modState && topic.modState !== 'published') {
+    return { kind: 'closed', text: REPLIES_WAIT_FOR_PUBLISH, code: 'unpublished' };
+  }
   if (topic.locked) return { kind: 'closed', text: REFUSALS.locked, code: 'locked' };
   if (rights && !rights.canReply) return { kind: 'closed', text: refusalText(rights.reason), code: rights.reason };
   return { kind: 'open' };
@@ -539,7 +584,26 @@ const NOT_EDITABLE_RULES = ['child_safety', 'threat', 'self_harm'];
 export type ModFace =
   | { kind: 'none' }
   | { kind: 'review'; head: string; text: string; canEdit: boolean; crisis: boolean }
-  | { kind: 'removed'; head: string; text: string; excerpt: string; canEdit: boolean; canAppeal: boolean };
+  | {
+      kind: 'removed';
+      head: string;
+      text: string;
+      excerpt: string;
+      canEdit: boolean;
+      canAppeal: boolean;
+      /** A self-harm case: the crisis words stay with the card whatever the outcome. */
+      crisis: boolean;
+      /** The line under the card. A post may have been decided by a person, so it
+       *  never claims the AI decided it; it says only what is true for every case. */
+      how: string | null;
+    };
+
+/** The neutral line every hold puts on a post (the posting check, the cap, the
+ *  owner's hold, the word filter). A please-edit note is anything else. */
+export const HOLD_SENTENCE = 'Your post is waiting for a review.';
+/** What forum_report puts on a post (and its notice) hidden by member reports. */
+export const HIDDEN_FOR_REVIEW = 'This post is hidden while it is reviewed.';
+export const APPEAL_LINE = 'An appeal goes to a person.';
 
 const noun = (p: Pick<ForumPost, 'isOpening'>) => (p.isOpening ? 'post' : 'reply');
 
@@ -573,6 +637,8 @@ export function moderationFace(p: ForumPost): ModFace {
         excerpt: excerptOf(p.pendingBody ?? ''),
         canEdit: true,
         canAppeal: true,
+        crisis,
+        how: APPEAL_LINE,
       };
     }
     return { kind: 'none' };
@@ -591,8 +657,15 @@ export function moderationFace(p: ForumPost): ModFace {
       kind: 'review',
       head: 'BEING REVIEWED',
       text: p.modReason ?? `Your ${noun(p)} is waiting for a review. Only you can see it for now.`,
-      // A rule on a held post is a "please edit" note; a plain hold waits for a person.
-      canEdit: !urgent && !!p.modRule && p.modRule !== 'none' && !NOT_EDITABLE_RULES.includes(p.modRule),
+      // A "please edit" note carries its own words; a plain hold (by the AI, the
+      // cap or the owner) says the neutral HOLD_SENTENCE and waits for a person.
+      canEdit:
+        !urgent &&
+        !!p.modRule &&
+        p.modRule !== 'none' &&
+        !NOT_EDITABLE_RULES.includes(p.modRule) &&
+        !!p.modReason &&
+        p.modReason !== HOLD_SENTENCE,
       crisis,
     };
   }
@@ -613,9 +686,19 @@ export function moderationFace(p: ForumPost): ModFace {
       excerpt: excerptOf(p.body),
       canEdit: p.modState === 'blocked' && !urgent,
       canAppeal: urgent !== 'child_safety',
+      crisis,
+      how: urgent === 'child_safety' ? null : APPEAL_LINE,
     };
   }
   return { kind: 'none' };
+}
+
+/**
+ * Whether ··· offers Edit on my post: exactly when forum_post_edit would take
+ * it (never a removed post, never one held for an urgent review).
+ */
+export function editAllowed(p: Pick<ForumPost, 'isMine' | 'modState' | 'urgentCategory'>): boolean {
+  return p.isMine && p.modState !== 'hidden' && !p.urgentCategory;
 }
 
 export type NoticeFace = {
@@ -662,6 +745,11 @@ export function noticeFace(n: ForumNotice): NoticeFace {
         canAppeal: true,
       };
     case 'hidden':
+      // Hidden by member reports, waiting for a review: not a removal yet, and
+      // no AI has looked at it.
+      if (n.message === HIDDEN_FOR_REVIEW && !n.rule) {
+        return { ...base, tone: 'hold', head: 'BEING REVIEWED', text: HIDDEN_FOR_REVIEW, how: null };
+      }
       return {
         ...base,
         tone: 'removed',
@@ -693,7 +781,9 @@ export function outcomeKind(state: string): 'published' | 'review' | 'removed' {
 
 /** Spoken for a screen reader: the row in one sentence. */
 export function topicA11y(t: ForumTopic): string {
-  const parts = [t.title, `by ${t.author.name}`, shortCategoryName(t.categoryName)];
+  const parts = [t.title, t.labKey && t.author.former ? null : `by ${t.author.name}`, topicTag(t)].filter(
+    (x): x is string => !!x,
+  );
   if (t.solved) parts.push('solved');
   if (t.isNewMember) parts.push('new member');
   parts.push(t.replyCount === 1 ? '1 reply' : `${t.replyCount} replies`);
@@ -854,8 +944,32 @@ export function labNameForRoute(
       l.params &&
       Object.entries(l.params as Record<string, unknown>).every(([k, v]) => (params ?? {})[k] === v),
   );
-  return (exact ?? live.find((l) => !l.params) ?? live[0])?.name ?? null;
+  const own = exact ?? live.find((l) => !l.params);
+  if (own) return own.name;
+  // A screen inside a lab (its modules) belongs to the lab's home. Never the
+  // first lab that happens to share the route with other params: the Visual
+  // Audio Analysis modules are not "Signal Detective".
+  const parent = LAB_PARENT_ROUTES[route];
+  if (parent) return labNameForRoute(leaves, parent, null);
+  return live.length === 1 && !live[0].params ? live[0].name : null;
 }
+
+/**
+ * The lab screens the catalog cannot name: each module route and the lab home
+ * it belongs to, so "Discuss this lab" on a module's end screen opens the SAME
+ * thread as on the lab home (review 2026-11-07: Digital, Gain Staging and the
+ * Visual Audio Analysis modules each made a thread of their own).
+ */
+export const LAB_PARENT_ROUTES: Record<string, string> = {
+  AmpModule: 'AmpLab',
+  CymaticsModule: 'CymaticsLab',
+  DigitalModule: 'DigitalLab',
+  EarModule: 'EarTrainingLab',
+  EqModule: 'EqLabHome',
+  GainModule: 'GainLabHome',
+  MeterModule: 'MeterLab',
+  WaveModule: 'WaveLab',
+};
 
 /** Where a lab card opens, or null when the lab is no longer in the catalog. */
 export function labForKey(leaves: LabLeafLike[], key: string): LabLeafLike | null {
@@ -879,17 +993,82 @@ export function queueWords(code: string | null | undefined): string {
   return (code ?? '').replace(/^recommend_/, '').replace(/_/g, ' ').trim();
 }
 
+/** forum_admin_queue / forum_admin_appeals put this in place of a body they
+ *  will not show (child safety). */
+export const CHILD_MASK_PREFIX = '[preserved';
+
+/**
+ * A child-safety item, from the log row OR the post. The server masks the body
+ * when either is child safety, but the row's own `urgent_category` can be null
+ * (an older row about the same post: an auto-hide by reports, a hold), so the
+ * row alone is not enough (review 2026-11-07, High 1).
+ */
+export function isChildItem(item: { urgentCategory: string | null; postBody?: string | null }): boolean {
+  return item.urgentCategory === 'child_safety' || (item.postBody ?? '').startsWith(CHILD_MASK_PREFIX);
+}
+
+const HOLD_ACTIONS = ['hold', 'urgent', 'budget_hold', 'checker_unavailable'];
+
+/**
+ * The EDIT a queue item is about, when it is one. A held edit leaves the post
+ * published with the edit waiting beside it, and `post_body` is the OLD text:
+ * the edit is only in the log row's 280-character excerpt (or in
+ * `pending_body`, once the server sends it: SERVER_GAPS row 25). `complete`
+ * says whether all of it is on screen; RESTORE waits until it is, because
+ * restoring publishes the edit (review 2026-11-07, High 2).
+ */
+export function pendingEditOf(item: {
+  postState: string | null;
+  action: string;
+  excerpt: string | null;
+  pendingBody?: string | null;
+}): { text: string | null; complete: boolean } | null {
+  if (item.pendingBody) return { text: item.pendingBody, complete: true };
+  if (item.postState !== 'published' || !HOLD_ACTIONS.includes(item.action)) return null;
+  const text = item.excerpt;
+  return { text, complete: !!text && text.length < EXCERPT_MAX };
+}
+
 /** What the queue offers on an item. A child-safety post is never restored or
- *  sent back for editing from here. */
-export function queueOffers(item: { postId: string | null; urgentCategory: string | null }): {
+ *  sent back for editing from here, and an edit is never restored unseen. */
+export function queueOffers(item: {
+  postId: string | null;
+  urgentCategory: string | null;
+  postBody?: string | null;
+  postState?: string | null;
+  action?: string;
+  excerpt?: string | null;
+  pendingBody?: string | null;
+}): {
   restore: boolean;
   hide: boolean;
   pleaseEdit: boolean;
   delete: boolean;
 } {
   const has = !!item.postId;
-  const child = item.urgentCategory === 'child_safety';
-  return { restore: has && !child, hide: has && !child, pleaseEdit: has && !child, delete: has };
+  const child = isChildItem(item);
+  const edit = pendingEditOf({
+    postState: item.postState ?? null,
+    action: item.action ?? '',
+    excerpt: item.excerpt ?? null,
+    pendingBody: item.pendingBody,
+  });
+  const unseenEdit = !!edit && !edit.complete;
+  return { restore: has && !child && !unseenEdit, hide: has && !child, pleaseEdit: has && !child, delete: has };
+}
+
+/** The topic line of a queue item: never for child safety (a title can be the
+ *  very text the screen matched), and a link only while the topic is one the
+ *  owner can open (forum_topic_get has no admin bypass yet: SERVER_GAPS row 26). */
+export function queueTopicFace(item: {
+  topicId: string | null;
+  topicTitle: string | null;
+  urgentCategory: string | null;
+  postBody?: string | null;
+  postState: string | null;
+}): { title: string; link: boolean } | null {
+  if (!item.topicTitle || isChildItem(item)) return null;
+  return { title: item.topicTitle, link: !!item.topicId && item.postState === 'published' };
 }
 
 /** forum_admin_set_tracked_status: "accepted" is for glossary items; a decline needs a reason. */
@@ -898,7 +1077,9 @@ export function trackedChoices(kind: TopicKind): TrackedStatus[] {
   return kind === 'glossary' ? [...base, 'accepted'] : base;
 }
 
-export function trackedProblem(status: TrackedStatus, reason: string): string | null {
+export function trackedProblem(status: TrackedStatus, reason: string, current?: TrackedStatus | null): string | null {
+  // The server changes nothing (not even the reason) when the status is the same.
+  if (current && status === current) return 'This is already the status. Choose another one to change it.';
   return status === 'declined' && !reason.trim() ? 'A declined item needs a reason.' : null;
 }
 
@@ -908,3 +1089,133 @@ export function aiUsageLine(u: { calls: number; costUsd: number; capUsd: number 
   const calls = u.calls === 1 ? '1 check' : `${u.calls} checks`;
   return `$${u.costUsd.toFixed(2)} of the $${u.capUsd.toFixed(2)} cap · ${calls}`;
 }
+
+
+/* ── Review fixes, 2026-11-07 ────────────────────────────────────────── */
+
+/**
+ * The words a member reads when the owner warns or mutes them from the queue.
+ * forum_user_action shows `p_reason` to the member as it is, so it is always a
+ * plain sentence here, never a rule code (review 2026-11-07, Medium 6).
+ */
+const MEMBER_REASONS: Record<string, string> = {
+  respect: 'A post of yours was rude to another member. Criticize the mix, not the person.',
+  harassment: 'Posts of yours singled out another member. Leave people alone when they ask.',
+  hate: 'A post of yours attacked people for who they are. That is never allowed here.',
+  sexual: 'A post of yours had sexual content. Keep the forum about audio.',
+  threat: 'A post of yours read as a threat. Threats are never allowed here, even as a joke.',
+  self_harm:
+    'A post of yours was reviewed by a person for safety. If you are struggling, please reach out to someone you trust.',
+  spam: 'Posts of yours read as spam. Post once, on topic, and without ads.',
+  self_promotion: 'A post of yours promoted a business outside Careers & Business.',
+  privacy: 'A post of yours shared someone else’s private details.',
+  piracy: 'A post of yours shared pirated software or samples.',
+  unsafe_advice: 'A post of yours gave advice that could hurt someone. Point people to a qualified professional instead.',
+  beginner_shaming: 'A post of yours put a beginner down. Beginners are welcome here.',
+  impersonation: 'A post of yours pretended to be someone else.',
+  off_topic: 'Posts of yours were off topic. Keep threads about audio.',
+};
+export const MEMBER_REASON_DEFAULT = 'A post of yours broke the community rules.';
+
+export function memberReason(rule: string | null | undefined): string {
+  return (rule && MEMBER_REASONS[rule]) || MEMBER_REASON_DEFAULT;
+}
+
+/** The reason code account_set_standing stores, which AccountStandingNotice
+ *  turns into words: one of its own codes, else `forum`. */
+export function standingReasonCode(rule: string | null | undefined): string {
+  switch (rule) {
+    case 'spam':
+      return 'spam';
+    case 'respect':
+    case 'harassment':
+    case 'hate':
+    case 'threat':
+      return 'harassment';
+    case 'self_promotion':
+      return 'solicitation';
+    case 'impersonation':
+      return 'impersonation';
+    default:
+      return 'forum';
+  }
+}
+
+/**
+ * Which post a thread's read mark names (forum_mark_read stores THAT post's
+ * time). Null when the whole thread was read, so the server uses "now". When
+ * only the first page was read, the newest post on it. Never the last post in
+ * reading order: a Q&A thread is ordered by Helpful, so its last post can be
+ * old, and the newer ones stayed unread for good (review 2026-11-07, Medium 9).
+ */
+export function readMarkPostId(
+  posts: Pick<ForumPost, 'id' | 'publishedAt'>[],
+  wholeThread: boolean,
+): string | null {
+  if (wholeThread) return null;
+  let best: Pick<ForumPost, 'id' | 'publishedAt'> | null = null;
+  for (const p of posts) {
+    if (p.publishedAt && (!best || (best.publishedAt as string) < p.publishedAt)) best = p;
+  }
+  return best?.id ?? null;
+}
+
+/**
+ * Everyone @ can name: people in the thread, people picked from the directory
+ * search (kept once picked, so the next search does not drop them before the
+ * post is sent: review 2026-11-07, Medium 8), and the current search.
+ */
+export function mentionPeople(
+  thread: MentionPerson[],
+  picked: MentionPerson[],
+  found: MentionPerson[],
+): MentionPerson[] {
+  const seen = new Set<string>();
+  return [...thread, ...picked, ...found].filter((p) => (seen.has(p.token) ? false : (seen.add(p.token), true)));
+}
+
+/** "APPEAL SENT" from the server's list as well as this visit's sends. */
+export function appealSent(
+  postId: string,
+  appeals: { postId: string; status: string }[],
+  sentHere: string[],
+): boolean {
+  return sentHere.includes(postId) || appeals.some((a) => a.postId === postId && a.status === 'open');
+}
+
+/** The stamp on my own topic before it is published. */
+export function topicReviewStamp(t: Pick<ForumTopic, 'isMine' | 'modState'>): 'IN REVIEW' | 'REMOVED' | null {
+  if (!t.isMine || t.modState === 'published') return null;
+  return t.modState === 'hidden' || t.modState === 'blocked' ? 'REMOVED' : 'IN REVIEW';
+}
+
+/**
+ * What takes the posting button's place in a category or the Pro Lounge. The
+ * Pro Lounge's own words ("Earn a credential") only for that very refusal: a
+ * muted graduate, or one whose profile is unpublished, is told their own
+ * reason (review 2026-11-07).
+ */
+export function postingDock(
+  rights: Pick<ForumRights, 'slug' | 'proOnly' | 'canStartTopic' | 'reason'>[] | null,
+  slug: string | undefined,
+  lounge: boolean,
+): { kind: 'post' } | { kind: 'pro' } | { kind: 'refusal'; code: string | null } | { kind: 'unknown' } {
+  if (!rights) return { kind: 'unknown' };
+  const mine = lounge ? rights.filter((r) => r.proOnly) : rights.filter((r) => r.slug === slug);
+  if (mine.length === 0) return { kind: 'unknown' };
+  if (mine.some((r) => r.canStartTopic)) return { kind: 'post' };
+  const reason = mine.find((r) => r.reason)?.reason ?? null;
+  return reason === 'pro_lounge_members_only' ? { kind: 'pro' } : { kind: 'refusal', code: reason };
+}
+
+/** A post the child-safety screen stopped is never in the thread (the server
+ *  keeps it from every list), so the outcome itself must say so. */
+export const CHILD_SAFETY_REMOVED = 'This post was removed under our child-safety rule.';
+export function hiddenOutcomeNote(o: { urgentCategory: string | null; reason: string | null }): string | null {
+  if (o.urgentCategory !== 'child_safety') return null;
+  return o.reason || CHILD_SAFETY_REMOVED;
+}
+
+/** The rules agreement is kept on this phone; when the phone refused to keep it
+ *  the post is not sent, and the member is told. */
+export const RULES_NOT_SAVED = 'This phone could not save that you agreed to the rules, so nothing was posted. Try again.';

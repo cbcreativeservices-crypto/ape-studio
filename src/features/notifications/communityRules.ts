@@ -50,7 +50,27 @@ export function communityTapFrom(data: unknown): CommunityTap | null {
 /** True for any payload that SAYS it is a member alert (even a malformed one),
  *  so the foreground rule below can hold it back in Low-Light. */
 export function isCommunityData(data: unknown): boolean {
-  return !!data && typeof data === 'object' && (data as Record<string, unknown>).type === 'community';
+  if (!data || typeof data !== 'object') return false;
+  const t = (data as Record<string, unknown>).type;
+  // `forum`: the Audio Community Forum's alerts (forum-moderate), which are
+  // member alerts too: quiet in Low-Light like every other (review 2026-11-07).
+  return t === 'community' || t === 'forum';
+}
+
+/** A tapped forum alert: the topic, and the post to open at (when there is one). */
+export type ForumTap = { topicId: string; postId: string | null };
+
+/** forum-moderate sends `{ type: 'forum', kind, topicId, postId }`, ids only. */
+export function forumTapFrom(data: unknown): ForumTap | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.type !== 'forum' || !isThreadId(d.topicId)) return null;
+  return { topicId: d.topicId, postId: isThreadId(d.postId) ? d.postId : null };
+}
+
+/** Where a forum tap lands: the thread, opened at that post. */
+export function forumTapRoute(tap: ForumTap): { topicId: string; jumpTo?: string } {
+  return tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId };
 }
 
 /**

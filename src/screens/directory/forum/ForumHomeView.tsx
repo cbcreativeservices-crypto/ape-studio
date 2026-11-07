@@ -252,7 +252,7 @@ function LatestList({
   }
   if (read.value.length === 0) {
     return sort === 'unanswered' ? (
-      <ForumEmpty title="Nothing is waiting" text="Every question has had an answer." />
+      <ForumEmpty title="Nothing is waiting" text="No question is waiting for an answer." />
     ) : (
       <ForumEmpty title="Nothing posted yet" text="Be the first. Ask a question, or share what you know." />
     );

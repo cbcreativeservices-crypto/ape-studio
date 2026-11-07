@@ -46,6 +46,9 @@ const REASON_LABEL: Record<string, string> = {
   solicitation: 'Unwanted soliciting or recruiting',
   impersonation: 'Impersonating another person or organization',
   other: 'Conduct reported by another member',
+  // The owner's queue in the forum (review 2026-11-07): a forum decision may
+  // come from the moderator, not a member's report.
+  forum: 'Breaking the community forum rules',
 };
 
 function reasonLabel(code: string | null | undefined): string {

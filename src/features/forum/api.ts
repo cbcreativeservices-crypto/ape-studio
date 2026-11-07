@@ -17,8 +17,9 @@
  */
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { blockMember } from '../directory/api';
-import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics } from './rules.ts';
+import { FORUM_CLOSED, FORUM_UNREADABLE, PRO_LOUNGE_GROUP, forumErrorText, mergeTopics, signInFace } from './rules.ts';
 import {
   appealOf,
   bookmarkOf,
@@ -63,6 +64,25 @@ const fail = (message: string | null | undefined): { ok: false; error: string; c
 
 const done = <T,>(value: T): ForumResult<T> => ({ ok: true, value });
 
+/**
+ * A refusal that says "sign in" is believed only when the phone KNOWS nobody
+ * is signed in (safeSessionResult): a stalled session read, or a session that
+ * is there, is UNKNOWN and reads as "could not reach the forum", never as the
+ * guest face (house rule, review 2026-11-07 L12).
+ */
+async function failChecked(message: string | null | undefined): Promise<{ ok: false; error: string; code: string | null }> {
+  const f = fail(message);
+  if (f.code !== 'sign_in') return f;
+  let session: 'none' | 'present' | 'unknown' = 'unknown';
+  try {
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'forum');
+    session = timedOut ? 'unknown' : result?.data?.session ? 'present' : 'none';
+  } catch {
+    session = 'unknown';
+  }
+  return { ok: false, ...signInFace(f, session) };
+}
+
 /** The sample's answer to a list read, for the three faces and "closed". */
 async function sampleRead<T>(value: () => T): Promise<ForumResult<T>> {
   const face = sampleState()?.face;
@@ -76,10 +96,10 @@ async function sampleRead<T>(value: () => T): Promise<ForumResult<T>> {
 async function rpc<T>(fn: string, args: Record<string, unknown> | undefined, map: (raw: unknown) => T): Promise<ForumResult<T>> {
   try {
     const { data: raw, error } = await supabase.rpc(fn as never, args as never);
-    if (error) return fail(error.message);
+    if (error) return failChecked(error.message);
     return done(map(raw));
   } catch (e) {
-    return fail(e instanceof Error ? e.message : null);
+    return failChecked(e instanceof Error ? e.message : null);
   }
 }
 
@@ -253,13 +273,13 @@ async function moderate(body: Record<string, unknown>): Promise<ForumResult<Post
       'forum-moderate',
       30000,
     );
-    if (error) return fail(await invokeMessage(error));
+    if (error) return failChecked(await invokeMessage(error));
     const reply = raw as { ok?: unknown; error?: unknown } | null;
-    if (reply?.ok === false) return fail(typeof reply.error === 'string' ? reply.error : null);
+    if (reply?.ok === false) return failChecked(typeof reply.error === 'string' ? reply.error : null);
     const outcome = outcomeOf(raw);
     return outcome ? done(outcome) : fail(null);
   } catch (e) {
-    return fail(e instanceof Error ? e.message : null);
+    return failChecked(e instanceof Error ? e.message : null);
   }
 }
 
@@ -375,6 +395,13 @@ export async function setFollow(category: string, level: FollowLevel): Promise<F
 export async function appealPost(postId: string, reason: string): Promise<ForumResult<true>> {
   if (sampleForumOn()) return done(data().sampleAppeal(postId));
   return rpc('forum_appeal_submit', { p_post_id: postId, p_reason: reason }, () => true as const);
+}
+
+/** My appeals, so "APPEAL SENT" survives leaving the thread. A failed read
+ *  only costs the mark: the server still answers "already open". */
+export async function fetchMyAppeals(): Promise<ForumResult<ForumAppeal[]>> {
+  if (sampleForumOn()) return sampleRead(() => data().sampleModeration().appeals);
+  return rpc('forum_appeals_mine', undefined, rows(appealOf));
 }
 
 export async function markNoticeRead(id: number): Promise<void> {

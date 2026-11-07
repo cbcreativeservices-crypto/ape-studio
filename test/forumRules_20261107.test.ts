@@ -506,6 +506,8 @@ describe('when Claude steps in', () => {
       excerpt: 'The text',
       canEdit: true,
       canAppeal: true,
+      crisis: false,
+      how: 'An appeal goes to a person.',
     });
   });
 
@@ -678,7 +680,8 @@ describe('three faces: a failed read is never "nothing here"', () => {
 
   it('a failed read in the API layer answers ok: false, never []', () => {
     const api = code('src/features/forum/api.ts');
-    assert.match(api, /if \(error\) return fail\(error\.message\)/);
+    // failChecked: a "sign in" refusal is first checked against the session.
+    assert.match(api, /if \(error\) return failChecked\(error\.message\)/);
     assert.match(api, /const bad = lists\.find\(\(l\) => !l\.ok\)/);
     assert.doesNotMatch(api.slice(api.indexOf('async function rpc'), api.indexOf('const rows =')), /value: \[\]/);
   });

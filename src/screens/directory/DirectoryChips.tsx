@@ -57,8 +57,11 @@ export function DirectoryChipRow({ chip, onChange }: { chip: DirectoryChip; onCh
 export const RecentGraduates = memo(function RecentGraduates({
   onOpen,
   onSeeAll,
+  hiddenTokens,
 }: {
   onOpen: (token: string, name?: string) => void;
+  /** Blocked this visit: gone from the strip at once, as from the list. */
+  hiddenTokens?: readonly string[];
   /** Absent when the list below is already the graduates. */
   onSeeAll?: () => void;
 }) {
@@ -91,7 +94,8 @@ export const RecentGraduates = memo(function RecentGraduates({
       </View>
     );
   }
-  if (state.rows.length === 0) return null;
+  const rows = hiddenTokens?.length ? state.rows.filter((g) => !hiddenTokens.includes(g.publicToken)) : state.rows;
+  if (rows.length === 0) return null;
   return (
     <View>
       <View style={st.head}>
@@ -105,7 +109,7 @@ export const RecentGraduates = memo(function RecentGraduates({
         ) : null}
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.strip}>
-        {state.rows.map((g) => (
+        {rows.map((g) => (
           <Pressable
             key={g.publicToken}
             onPress={() => onOpen(g.publicToken, g.displayName)}

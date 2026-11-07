@@ -51,6 +51,16 @@ export function authorOf(v: unknown): ForumAuthor {
   };
 }
 
+/** The author line of a lab thread: the Academy opens it (no asker), so it is
+ *  never "Former member" (review 2026-11-07). Wears no plate, like a former
+ *  member, because nobody posted it. */
+export const LAB_THREAD_AUTHOR = 'Lab discussion';
+
+function topicAuthorOf(raw: unknown, labKey: string | null): ForumAuthor {
+  const a = authorOf(raw);
+  return labKey && a.former ? { ...a, name: LAB_THREAD_AUTHOR } : a;
+}
+
 export function categoryOf(v: unknown): ForumCategory {
   const r = obj(v);
   return {
@@ -108,7 +118,7 @@ export function topicOf(v: unknown): ForumTopic {
     categoryName: str(r.category_name),
     title: str(r.title),
     topicKind: str(r.topic_kind) as TopicKind,
-    author: authorOf(r.author),
+    author: topicAuthorOf(r.author, strOr(r.lab_key)),
     isMine: yes(r.is_mine),
     modState: str(r.mod_state) || 'published',
     trackedStatus: strOr(r.tracked_status) as TrackedStatus | null,
@@ -138,7 +148,7 @@ export function topicDetailOf(v: unknown): ForumTopicDetail {
     topicKind: str(r.topic_kind) as TopicKind,
     fields: obj(r.fields),
     labKey: strOr(r.lab_key),
-    author: authorOf(r.author),
+    author: topicAuthorOf(r.author, strOr(r.lab_key)),
     isMine: yes(r.is_mine),
     modState: str(r.mod_state) || 'published',
     trackedStatus: strOr(r.tracked_status) as TrackedStatus | null,

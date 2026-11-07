@@ -11,7 +11,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Modal } from '../../../components/DimModal';
+import { Modal, useAfterModalsClose } from '../../../components/DimModal';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -26,6 +26,7 @@ import {
   dotOf,
   plateOf,
   topicA11y,
+  topicReviewStamp,
   topicStat,
   topicTag,
   trackedFace,
@@ -267,7 +268,7 @@ export const TopicRow = memo(function TopicRow({
   onPress: (t: ForumTopic) => void;
 }) {
   const tracked = trackedFace(topic.trackedStatus);
-  const inReview = topic.isMine && topic.modState !== 'published';
+  const review = topicReviewStamp(topic);
   return (
     <Pressable
       onPress={() => onPress(topic)}
@@ -283,7 +284,7 @@ export const TopicRow = memo(function TopicRow({
         </Text>
         <View style={st.meta}>
           {topic.pinned ? <PinStamp /> : null}
-          {inReview ? <StatusStamp tone="planned">IN REVIEW</StatusStamp> : null}
+          {review ? <StatusStamp tone={review === 'REMOVED' ? 'declined' : 'planned'}>{review}</StatusStamp> : null}
           {topic.solved ? <SolvedStamp /> : null}
           {tracked ? <StatusStamp tone={tracked.tone}>{tracked.stamp}</StatusStamp> : null}
           {topic.isNewMember ? <NewMark long /> : null}
@@ -556,8 +557,17 @@ export function Popup({
 
 export type MenuItem = { key: string; label: string; note?: string; danger?: boolean; onPress: () => void };
 
-/** `.menu`: Quote reply · Report post · Block member, with their small notes. */
+/**
+ * `.menu`: Quote reply · Report post · Block member, with their small notes.
+ *
+ * ⛔ An item runs only AFTER this popup has gone (useAfterModalsClose, the
+ * house hand-off of EnrollmentHelpMenu). Most items open a second popup
+ * (Report, a confirm) or leave the screen, and iOS refuses to present a Modal
+ * while another is still animating away: nothing appeared (review 2026-11-07,
+ * High 3). One pending item at a time, so a double tap is one.
+ */
 export function MenuPopup({ visible, onClose, items }: { visible: boolean; onClose: () => void; items: MenuItem[] }) {
+  const afterClose = useAfterModalsClose();
   return (
     <Popup visible={visible} onClose={onClose} label="Post options">
       <View style={st.menu}>
@@ -567,7 +577,7 @@ export function MenuPopup({ visible, onClose, items }: { visible: boolean; onClo
             key={m.key}
             onPress={() => {
               onClose();
-              m.onPress();
+              afterClose(m.onPress);
             }}
             style={({ pressed }) => [st.menuRow, i === items.length - 1 && st.menuRowLast, pressed && st.pressed]}
             accessibilityRole="button"

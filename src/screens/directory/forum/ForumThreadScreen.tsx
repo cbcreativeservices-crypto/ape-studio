@@ -23,6 +23,7 @@ import {
   POSTS_PAGE,
   blockAuthor,
   deletePost,
+  fetchMyAppeals,
   fetchThread,
   flagSafety,
   markRead,
@@ -46,15 +47,19 @@ import {
   ASK_SLUG,
   BODY_MAX,
   PRO_LOUNGE_REFUSAL,
+  appealSent,
   applyMention,
   badgeName,
   correctionFace,
   draftKey,
+  editAllowed,
   firstName,
   firstPostHint,
   jumpIndex,
+  hiddenOutcomeNote,
   levelMark,
   mentionMatches,
+  mentionPeople,
   mentionQuery,
   mentionTokensIn,
   monthYear,
@@ -63,7 +68,9 @@ import {
   outcomeKind,
   parseAskBody,
   quoteExcerpt,
+  readMarkPostId,
   refusalNeedsProfile,
+  RULES_NOT_SAVED,
   replyBlock,
   timeAgo,
   tomorrowMorning,
@@ -88,6 +95,7 @@ import {
   NewMark,
   PinStamp,
   SampleStamp,
+  StaleNote,
   ThreadHeader,
   forumStyles,
   type MenuItem,
@@ -188,8 +196,9 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   useEffect(() => {
     if (!value || marked.current) return;
     marked.current = true;
-    const last = value.posts[value.posts.length - 1];
-    void markRead(topicId, last?.publishedAt ? last.id : null);
+    // The newest post read, never the last one in reading order (a Q&A thread
+    // is ordered by Helpful): see readMarkPostId.
+    void markRead(topicId, readMarkPostId(value.posts, value.posts.length < POSTS_PAGE));
   }, [value, topicId]);
 
   // Back from Edit and Repost.
@@ -303,6 +312,8 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   }, [draft, draftName]);
   const typeDraft = useCallback((text: string) => {
     typed.current = true;
+    // A retry keeps its id so it lands once; a CHANGED draft is a new post.
+    clientId.current = null;
     setDraft(text);
   }, []);
 
@@ -325,7 +336,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       clearTimeout(t);
     };
   }, [mention]);
-  const allPeople = useMemo(() => [...people, ...found], [found, people]);
+  /** People picked from the directory search: kept until the post is sent, so
+   *  the next search (which no longer finds "Maya R. what…") cannot drop them. */
+  const [picked, setPicked] = useState<MentionPerson[]>([]);
+  const allPeople = useMemo(() => mentionPeople(people, picked, found), [found, people, picked]);
   const suggestions = mention === null ? [] : mentionMatches(mention, allPeople);
 
   const sendNow = useCallback(async () => {
@@ -355,11 +369,16 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     setDraftSaved(false);
     setQuote(null);
     setCorrecting(null);
+    setPicked([]);
     void clearDraft(draftName);
     // Shown once the new post has been laid out (onContentSizeChange).
     pinToEnd.current = true;
     await read.reload();
-    if (r.value.state === 'checking') {
+    const hidden = hiddenOutcomeNote(r.value);
+    if (hidden) {
+      // Never in the thread (the server keeps it from every list): say so here.
+      setSendError(hidden);
+    } else if (r.value.state === 'checking') {
       // The check ran past the wait: read once more when it should have landed.
       recheck.current = setTimeout(() => void read.reload(), 8000);
     } else if (outcomeKind(r.value.state) === 'removed') {
@@ -378,6 +397,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     const ok = await flags.acceptRules();
     setRulesOpen(false);
     if (ok) await sendNow();
+    else notify('Not saved', RULES_NOT_SAVED);
   });
 
   /* ── ··· on any post ─────────────────────────────────────────────── */
@@ -387,6 +407,16 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   const [reportOf, setReportOf] = useState<ForumPost | null>(null);
   const [appealId, setAppealId] = useState<string | null>(null);
   const [appealed, setAppealed] = useState<string[]>([]);
+  const [myAppeals, setMyAppeals] = useState<{ postId: string; status: string }[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void fetchMyAppeals().then((r) => {
+      if (alive && r.ok) setMyAppeals(r.value);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [topicId]);
   const input = useRef<TextInput>(null);
 
   const block = useCallback(
@@ -478,25 +508,22 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     else notify('Not sent', r.error);
   }, []);
 
-  const resolve = useCallback(
-    (post: ForumPost, accept: boolean) => {
-      void resolveCorrection(post.id, accept).then(async (r) => {
-        if (!r.ok) {
-          notify('Not saved', r.error);
-          return;
-        }
-        await read.reload();
-        const target = posts.find((p) => p.id === post.correctionOfPostId);
-        if (accept && target) {
-          navigation.navigate('ForumAsk', {
-            slug: topic?.categorySlug,
-            edit: { postId: target.id, isOpening: target.isOpening, body: target.body, suggestion: post.body },
-          });
-        }
+  // One press at a time: a fast ACCEPT then DECLINE must not race.
+  const resolve = useLatchedPress(async (post: ForumPost, accept: boolean) => {
+    const r = await resolveCorrection(post.id, accept);
+    if (!r.ok) {
+      notify('Not saved', r.error);
+      return;
+    }
+    await read.reload();
+    const target = posts.find((p) => p.id === post.correctionOfPostId);
+    if (accept && target) {
+      navigation.navigate('ForumAsk', {
+        slug: topic?.categorySlug,
+        edit: { postId: target.id, isOpening: target.isOpening, body: target.body, suggestion: post.body },
       });
-    },
-    [navigation, posts, read, topic],
-  );
+    }
+  });
 
   const followItems = useMemo<MenuItem[]>(() => {
     const level = following ?? topic?.followLevel ?? 'off';
@@ -545,7 +572,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       items.push({
         key: 'correct',
         label: 'Suggest a correction',
-        note: 'The author sees it first and can accept it',
+        note: 'The author is told and can accept it',
         onPress: () => {
           setCorrecting({ postId: p.id, name: p.author.name });
           input.current?.focus();
@@ -568,7 +595,9 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       );
     }
     if (p.isMine) {
-      items.push({ key: 'edit', label: 'Edit', note: 'Checked again before others see it', onPress: () => edit(p) });
+      if (editAllowed(p)) {
+        items.push({ key: 'edit', label: 'Edit', note: 'Checked again before others see it', onPress: () => edit(p) });
+      }
       items.push({ key: 'delete', label: 'Delete', danger: true, onPress: () => remove(p) });
     } else {
       if (published) {
@@ -610,14 +639,14 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         onMore={setMenuPost}
         onEdit={edit}
         onAppeal={(p) => setAppealId(p.id)}
-        appealed={appealed.includes(item.id)}
+        appealed={appealSent(item.id, myAppeals, appealed)}
         names={names}
         targetIsMine={!!item.correctionOfPostId && mineIds.has(item.correctionOfPostId)}
         onResolve={resolve}
         firstUnread={unreadMark && item.id === jumpTo}
       />
     ),
-    [announcements, appealed, edit, jumpTo, mineIds, names, qa, react, reacting, resolve, unreadMark, value],
+    [announcements, appealed, edit, jumpTo, mineIds, myAppeals, names, qa, react, reacting, resolve, unreadMark, value],
   );
 
   /* ── Faces ───────────────────────────────────────────────────────── */
@@ -668,6 +697,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         ListHeaderComponent={
           <>
             <SampleStamp />
+            {read.stale ? <StaleNote /> : null}
             {hint ? <Text style={st.hint}>{hint}</Text> : null}
           </>
         }
@@ -703,7 +733,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
               {suggestions.map((p) => (
                 <Pressable
                   key={p.token}
-                  onPress={() => typeDraft(applyMention(draft, p.name))}
+                  onPress={() => {
+                    setPicked((list) => (list.some((x) => x.token === p.token) ? list : [...list, p]));
+                    typeDraft(applyMention(draft, p.name));
+                  }}
                   style={st.mentionRow}
                   accessibilityRole="button"
                   accessibilityLabel={`Mention ${p.name}`}
@@ -782,6 +815,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
               else if (p.isOpening) safeGoBack(navigation as never);
               else void read.reload();
             });
+          } else {
+            // A child-safety report hides the post at once: read again, so it
+            // does not stay on the reporter's screen.
+            void read.reload();
           }
           notify('Report sent', 'Thank you. It is being reviewed now.');
         }}
@@ -858,7 +895,8 @@ const PostCard = memo(function PostCard({
           head={face.head}
           text={face.text}
           excerpt={face.excerpt}
-          how="Reviewed automatically by AI. An appeal goes to a person."
+          how={face.how}
+          crisis={face.crisis}
           actions={[
             ...(face.canEdit ? [{ label: 'EDIT AND REPOST', onPress: () => onEdit(post), primary: true }] : []),
             ...(face.canAppeal

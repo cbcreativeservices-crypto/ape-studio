@@ -37,8 +37,13 @@ import {
 } from '../../features/forum/adminApi';
 import {
   aiUsageLine,
+  isChildItem,
+  memberReason,
+  pendingEditOf,
   queueOffers,
+  queueTopicFace,
   queueWords,
+  standingReasonCode,
   ruleLabel,
   timeAgo,
   trackedChoices,
@@ -186,8 +191,18 @@ function QueueList() {
       const user = item.targetUser;
       if (!user) return;
       run(String(item.logId), async () => {
-        const r = await actOnUser(user, action, hours, item.rule ?? undefined);
-        if (r.ok) notify('Saved', action === 'warn' ? 'The member was warned.' : action === 'mute' ? `Muted for ${hours} hours.` : 'The mute was lifted.');
+        // forum_user_action shows this reason to the member as it is.
+        const r = await actOnUser(user, action, hours, memberReason(item.rule));
+        if (r.ok) {
+          notify(
+            'Saved',
+            action === 'warn'
+              ? 'The member was warned.'
+              : action === 'mute'
+                ? `Muted for ${hours} hours.`
+                : 'Any mute this member had is lifted.',
+          );
+        }
         else notify('Not saved', r.error);
       });
     },
@@ -207,7 +222,7 @@ function QueueList() {
         what,
         () => {
           run(String(item.logId), async () => {
-            const r = await setMemberStanding(user, status, days, item.rule ?? 'forum');
+            const r = await setMemberStanding(user, status, days, standingReasonCode(item.rule));
             if (!r.ok) {
               notify('Not saved', r.error);
               return;
@@ -247,7 +262,11 @@ function QueueList() {
       {read.stale ? <StaleNote /> : null}
       {read.value.map((item) => {
         const urgent = urgentLabel(item.urgentCategory);
-        const child = item.urgentCategory === 'child_safety';
+        // The row OR the post: an older row about a child-safety post has no
+        // urgent category of its own (isChildItem).
+        const child = isChildItem(item);
+        const topic = queueTopicFace(item);
+        const edit = child ? null : pendingEditOf(item);
         const rule = ruleLabel(item.rule);
         const key = String(item.logId);
         const off = busy(key);
@@ -263,17 +282,33 @@ function QueueList() {
               <Text style={st.when}>{timeAgo(item.createdAt)}</Text>
             </View>
             {item.author ? <Text style={st.who}>{item.author.name}</Text> : null}
-            {item.topicTitle ? (
+            {topic?.link ? (
               <Pressable
                 onPress={() => item.topicId && navigation.navigate('ForumThread', { topicId: item.topicId })}
                 accessibilityRole="button"
-                accessibilityLabel={`Open ${item.topicTitle}`}
+                accessibilityLabel={`Open ${topic.title}`}
               >
-                <Text style={st.topic}>{item.topicTitle} ›</Text>
+                <Text style={st.topic}>{topic.title} ›</Text>
               </Pressable>
+            ) : topic ? (
+              <Text style={st.topicPlain}>{topic.title}</Text>
             ) : null}
             {child ? (
-              <Text style={st.child}>The text is preserved and not shown here. Report as the law requires.</Text>
+              <Text style={st.child}>The text and the topic title are preserved and not shown here. Report as the law requires.</Text>
+            ) : edit ? (
+              <>
+                <Text style={st.editHead}>THE EDIT BEING REVIEWED</Text>
+                {edit.text ? <Text style={st.ex}>{edit.text}</Text> : null}
+                {!edit.complete ? (
+                  <Text style={st.meta}>
+                    {edit.text
+                      ? 'Only the start of the edit can be shown here, so RESTORE is off. Hide it, ask for an edit, or dismiss.'
+                      : 'The edit itself cannot be shown here, so RESTORE is off. Hide it, ask for an edit, or dismiss.'}
+                  </Text>
+                ) : null}
+                {item.postBody ? <Text style={st.editHead}>WHAT OTHERS SEE NOW</Text> : null}
+                {item.postBody ? <Text style={st.ex}>{item.postBody}</Text> : null}
+              </>
             ) : item.postBody || item.excerpt ? (
               <Text style={st.ex}>{item.postBody ?? item.excerpt}</Text>
             ) : null}
@@ -332,23 +367,30 @@ function AppealList() {
 
   return (
     <>
-      {read.value.map((a) => (
+      {read.value.map((a) => {
+        const child = isChildItem({ urgentCategory: null, postBody: a.postBody });
+        return (
         <View key={a.appealId} style={st.card}>
           <View style={st.rowTop}>
             <Text style={st.head}>{ruleLabel(a.modRule) ?? 'APPEAL'}</Text>
             <Text style={st.when}>{timeAgo(a.createdAt)}</Text>
           </View>
           {a.member ? <Text style={st.who}>{a.member.name}</Text> : null}
-          {a.postBody ? <Text style={st.ex}>{a.postBody}</Text> : null}
+          {child ? (
+            <Text style={st.child}>The text is preserved and not shown here. A child-safety removal is not restored from an appeal.</Text>
+          ) : a.postBody ? (
+            <Text style={st.ex}>{a.postBody}</Text>
+          ) : null}
           {a.modReason ? <Text style={st.meta}>Removed because: {a.modReason}</Text> : null}
           <Text style={st.appeal}>Their appeal: {a.reason}</Text>
           {a.recommendation ? <Text style={st.rec}>Suggested: {a.recommendation}</Text> : null}
           <View style={st.acts}>
-            <Act label="OVERTURN" onPress={() => open(a, 'overturned')} />
+            {child ? null : <Act label="OVERTURN" onPress={() => open(a, 'overturned')} />}
             <Act label="UPHOLD" onPress={() => open(a, 'upheld')} />
           </View>
         </View>
-      ))}
+        );
+      })}
       <Popup visible={!!deciding} onClose={() => setDeciding(null)} label="Decide this appeal">
         <View style={st.popup}>
           <PopupScroll>
@@ -403,7 +445,7 @@ function TrackedList() {
     setReason('');
     setError(null);
   };
-  const problem = trackedProblem(status, reason);
+  const problem = trackedProblem(status, reason, topic?.trackedStatus ?? null);
   const save = useLatchedPress(async () => {
     if (!topic || problem) return;
     const r = await setTrackedStatus(topic.id, status, reason.trim() || undefined);
@@ -525,6 +567,7 @@ const st = StyleSheet.create({
   who: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: F.text, marginTop: 6 },
   topic: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.amber, marginTop: 3 },
   topicPlain: { fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 19, color: F.text },
+  editHead: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: F.amber, marginTop: 8 },
   ex: {
     fontFamily: fonts.barlowItalic,
     fontSize: 13,

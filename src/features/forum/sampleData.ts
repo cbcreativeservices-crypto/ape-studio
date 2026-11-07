@@ -948,6 +948,7 @@ function queueRow(n: number, over: Partial<QueueItem>): QueueItem {
     topicTitle: 'Why does my sub rattle the stage on one note?',
     postBody: null,
     postState: 'held',
+    pendingBody: null,
     author: DIEGO,
     targetUser: uid(700 + n),
     openReports: 0,
@@ -992,6 +993,35 @@ export function sampleQueue(): QueueItem[] {
       rule: 'self_promotion',
       reason: 'Promotes a business outside Careers & Business.',
       postBody: 'Book our studio today, best rates in town.',
+    }),
+    // An older row about a post later reported as child safety: the row has no
+    // urgent category of its own, the server masks the body (review High 1).
+    queueRow(5, {
+      mode: 'report',
+      action: 'auto_hide_reports',
+      rule: 'reports_pending_review',
+      reason: '3 member report(s); hidden pending review.',
+      postBody: '[preserved — not displayed (child-safety)]',
+      postState: 'hidden',
+      topicTitle: 'A made-up title the screen matched',
+      openReports: 4,
+    }),
+    // A held EDIT of a published post: others still see the old text; the edit
+    // is only in the excerpt (review High 2).
+    queueRow(6, {
+      action: 'hold',
+      rule: 'respect',
+      reason: 'The edit insults another member.',
+      postState: 'published',
+      postBody: 'The approved reply everyone can still see.',
+      excerpt: 'A made-up edit that now calls another member names.',
+    }),
+    queueRow(7, {
+      action: 'budget_hold',
+      actor: 'system',
+      reason: 'Monthly AI cap reached — held unchecked.',
+      postState: 'published',
+      postBody: 'The approved reply everyone can still see.',
     }),
   ];
   return queue;
