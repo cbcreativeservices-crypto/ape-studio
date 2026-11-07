@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 15:20 · ccode · 66150ef8 (merge e1013367)
+changed: Lab text audit commit 66150ef8 on lab-text-audit-20261107, merged to ota-after-approval-39-23 as e1013367. tsc 0 errors; suite-gate GREEN, 19,093 tests, 0 failed. fingerprint-eol-sync clean (49 same, 0 real diffs); fingerprints still match both store builds: Android a903813a… (7fac1daa), iOS 91355451… (07d79e60).
+affects other side: nothing beyond the entry below; JS only, NOT published.
+needs: nothing
+
 ### 2026-11-07 14:50 · ccode · lab-text-audit-20261107 (commit hash in the next entry)
 changed: Lab text audit applied (Comp A package 2026-11-07_CCODE_LAB_TEXT_APPLY, owner-approved): PRIMARY route, `git apply --3way` of LAB_TEXT_AUDIT.patch on 4d45782b, 616 files, no conflict (script not run, so no apply report; patch = script output per Comp A). tsc 0 errors; full suite via scripts/suite-gate.mjs GREEN (numbers in the commit entry).
 - APPLY DEFECT FIXED: the package's string-literal rewrite trimmed the edited literal, so 11 concatenated strings lost their joining space (e.g. "you hear the interval" + next line, calc help in digitalAdv/powerElec x3/roomsAdvanced/splSafety, fxLabConfigs, content.ts, p20Pa a11y, ch7Trouble "▶ STRIKE and ▶ TAP", c11Piano copy). Restored the original leading/trailing space only; wording untouched. No internal newlines were affected (0 found).
