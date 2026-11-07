@@ -78,6 +78,28 @@ export function friendlyAuthError(error: { message?: string } | null | undefined
   return 'We couldn’t complete that. Your details were not changed — try again, and email info@proaudiotrainingacademy.com if it continues.';
 }
 
+/**
+ * WHAT THE FRONT DOOR SAYS WHEN THE PASSWORD IS NOT ACCEPTED (owner 2026-11-06:
+ * "that was confusing and is a pain point i want to remove"). They were locked
+ * out of their own old email by "Email or password is incorrect", on CREATE
+ * ACCOUNT, about an account they did not remember. An email account always has
+ * a password (auth.users, 2026-11-06), so these are the only two cases:
+ *   CREATE ACCOUNT: the email is known to have an account, so say that.
+ *   LOGIN: the server gives one answer for a wrong password and for no account
+ *   at all, so name both ways forward at once, from the first miss.
+ */
+export const EMAIL_HAS_ACCOUNT_WRONG_PASSWORD =
+  'This email already has an account, but that isn’t its password. Enter the right password and tap LOGIN, or tap Reset via email below to set a new one.';
+
+export const LOGIN_NOT_MATCHED =
+  'That email and password don’t match an account. Check them for typos (your phone may have filled in an old password), or tap Reset via email below to set a new one. New here? Tap CREATE ACCOUNT.';
+
+/** The sign-in fallback after CREATE ACCOUNT found the email already taken. */
+export function existingAccountSignInError(error: { message?: string } | null | undefined): string | null {
+  if (!error) return null;
+  return /invalid login credentials/i.test(error.message ?? '') ? EMAIL_HAS_ACCOUNT_WRONG_PASSWORD : friendlyAuthError(error);
+}
+
 /** Locked validation rules (seed brief §3 S1). */
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

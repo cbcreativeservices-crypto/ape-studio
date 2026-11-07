@@ -67,6 +67,7 @@ async function boundedSignIn<T extends { data: { session?: unknown } | null }>(
 import {
   checkAccountRecord,
   classifyUserLookup,
+  existingAccountSignInError,
   friendlyAuthError,
   normalizeResetCode,
   type AccountLookup,
@@ -145,9 +146,10 @@ export async function ensureSession(email: string, password: string): Promise<st
     'signIn',
   );
   if (!signIn.error) return null;
-  // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped
-  // to offline copy when it's a network error, rather than the stale signUp error.
-  return friendlyAuthError(signIn.error);
+  // Surface the SIGN-IN failure (the operative one), mapped to offline copy when
+  // it's a network error, rather than the stale signUp error. A wrong password
+  // here says the email already has an account: we know that much.
+  return existingAccountSignInError(signIn.error);
 }
 
 /**

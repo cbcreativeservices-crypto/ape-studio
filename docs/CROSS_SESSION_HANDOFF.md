@@ -702,6 +702,18 @@ needs: nothing
 ### 2026-11-05 23:30 · ccode · d5c5fa0d
 changed: Merge origin/ota-after-approval-39-23 into 1.0.1 (handoff conflict: OTA side) [MD:E1]
 affects other side: nothing; merge only, client-only 1.0.1 branch.
+### 2026-11-06 20:50 · ccode · d7872193
+changed: Sign-in: a taken email says so, and a wrong LOGIN shows every way forward on the first miss (owner 2026-11-06) [MD:D57]
+affects other side: clearer sign-in messages, app only, OTA waits for owner go.
+needs: nothing
+
+
+### 2026-11-06 12:57 · ccode · a629e02a
+changed: Must-do: tenth OTA published [MD:A2]
+affects other side: validate-purchase server change, deployed separately on owner go.
+needs: nothing
+
+
 ### 2026-11-06 08:09 · ccode · 3e8329ed
 changed: Must-do: ninth OTA published [MD:A2]
 affects other side: nothing; client-only control fixes.
