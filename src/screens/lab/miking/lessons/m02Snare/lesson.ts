@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one snare mic in the right order, choose and justify a setup for two different briefs, and say what would justify a bottom mic.',
     credit: { scenarios: ['sn.prac.order', 'sn.prac.gain', 'sn.prac.setup1', 'sn.prac.setup2', 'sn.prac.3', 'sn.mix.1', 'sn.mix.2', 'sn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real drum.' },
-    takeaway: 'Safe clearance from the sticks, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position do not — and more than one setup can pass.',
+    takeaway: 'Safe clearance from the sticks, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis. Aim the hi-hat into that region, not straight behind.',
     why: {
       'Straight behind it, right on its rear axis': 'That is a cardioid. A supercardioid picks up a little straight behind.',
-      'At its sides, square to its front': 'At 90° a supercardioid still picks up a fair amount; its deepest rejection is farther round, near 125°.',
+      'At its sides, square to its front': 'At 90° a supercardioid still picks up a fair amount; its deepest rejection is farther around, near 125°.',
     },
   },
   {
@@ -236,7 +236,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The near half of the snare is where the sticks, rimshots and cross-stick work. From the front, the mic and its stand stay out of that path and out of the hi-hat’s travel.',
     why: {
       'The front of the snare is where the head rings the loudest': 'The reason is clearance, not loudness: the player’s side belongs to the sticks.',
-      'Starting points are all measured from the front edge of the drum': 'Starting points are measured from the rim or a head, anywhere round the drum that is clear.',
+      'Starting points are all measured from the front edge of the drum': 'Starting points are measured from the rim or a head, anywhere around the drum that is clear.',
     },
   },
   {
@@ -544,7 +544,7 @@ const setupTasks: SetupTask[] = [
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the stick pushes the batter head down, what does the snare-side head do?', options: ['It moves down too, pushed by the air', 'It moves up, toward the batter head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads and the wires.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the mic from close over the rim to a little farther away. What changes?', options: ['More snap from the stick', 'More of the whole drum and the kit', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the hi-hat best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

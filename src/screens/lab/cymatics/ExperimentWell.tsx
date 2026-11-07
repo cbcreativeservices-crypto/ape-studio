@@ -157,7 +157,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   const earned = predicted && started;
   const lockedWhy = !predicted
     ? 'MAKE YOUR PREDICTION FIRST'
-    : 'TICK A STEP FIRST';
+    : 'CHECK A STEP FIRST';
 
   return (
     <View style={styles.card}>

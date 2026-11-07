@@ -35,7 +35,7 @@ const ITEMS: { id: Item; label: string; short: string; blurb: string }[] = [
   { id: 'standalone', label: 'STANDALONE SYSTEM', short: 'STANDALONE', blurb: 'Players and a mixer in one unit with its own screen and media slots: it plays with no laptop at all (and some can also act as a controller).' },
   { id: 'interface', label: 'AUDIO INTERFACE', short: 'INTERFACE', blurb: 'Turns a computer’s digital audio into analog outputs (and inputs). Some controllers and mixers have one built in.' },
   { id: 'headphones', label: 'HEADPHONES', short: 'PHONES', blurb: 'Closed-back so you can hear the next track over a loud room. One stereo plug carries both ears — often 3.5 mm, with a 6.35 mm adapter for the mixer.' },
-  { id: 'speaker', label: 'POWERED SPEAKER', short: 'SPEAKER', blurb: 'A speaker with its amplifier built in: line-level input, its own level control and its own mains power.' },
+  { id: 'speaker', label: 'POWERED SPEAKER', short: 'SPEAKER', blurb: 'A speaker with its amplifier built in: line-level input, its own level control and its own AC power.' },
 ];
 const SYSTEMS: { id: System; label: string; blurb: string }[] = [
   { id: 'vinyl', label: 'VINYL', blurb: 'Two turntables and a mixer. The question: is the mixer giving each turntable’s tiny signal its own PHONO input?' },
@@ -351,7 +351,7 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScen
             lab('m', 'MIXER', tw + 16 + (MIXER_W * s) / 2, MIXER_D * s, 0, 14),
             lab('b', 'TURNTABLE', tw * 1.5 + 32 + MIXER_W * s, 20 + TT_D * s, 0, 14),
           ],
-          a11y: 'A vinyl system: two turntables either side of a mixer, each turntable’s stereo RCA cable running from its back edge to its own PHONO input on the mixer’s back.',
+          a11y: 'A vinyl system: two turntables on either side of a mixer, each turntable’s stereo RCA cable running from its back edge to its own PHONO input on the mixer’s back.',
           obstacles: [{ x: 0, y: 20, w: tw, h: TT_D * s }, { x: tw + 16, y: 0, w: MIXER_W * s, h: MIXER_D * s }, { x: tw + 32 + MIXER_W * s, y: 20, w: tw, h: TT_D * s }, ...runObst(VINYL_RUNS)],
         };
       }
@@ -396,7 +396,7 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScen
             lab('m', 'MIXER', PLAYER_W * s + 8 + (MIXER_W * s) / 2, 5 + MIXER_D * s, 0, 14),
             lab('b', 'PLAYER', (PLAYER_W * 1.5 + MIXER_W) * s + 16, PLAYER_D * s, 0, 14),
           ],
-          a11y: 'A modular system: two media players either side of a separate mixer. Each player’s stereo RCA audio cable runs to a LINE input on the mixer’s back; a LAN cable links the two players and carries data only, no audio.',
+          a11y: 'A modular system: two media players on either side of a separate mixer. Each player’s stereo RCA audio cable runs to a LINE input on the mixer’s back; a LAN cable links the two players and carries data only, no audio.',
           obstacles: [{ x: 0, y: 0, w: PLAYER_W * s, h: PLAYER_D * s }, { x: PLAYER_W * s + 8, y: 5, w: MIXER_W * s, h: MIXER_D * s }, { x: (PLAYER_W + MIXER_W) * s + 16, y: 0, w: PLAYER_W * s, h: PLAYER_D * s }, ...runObst([...MOD_RUNS, MOD_LAN])],
         };
       }
@@ -593,7 +593,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         <P>{mode === 'item' ? itemDef.blurb : sysDef.blurb}</P>
       </Step>
       <Step n={4}>
-        <P>Pick gear for the job, not the other way round: what has to play, what has to be heard, what happens if the laptop or the internet fails?</P>
+        <P>Pick gear for the job, not the other way around: what has to play, what has to be heard, what happens if the laptop or the internet fails?</P>
         <GoalChips goals={goals.slice(0, 1)} latched={latched.slice(0, 1)} />
         <Note tone="try">There is no single right setup. Many DJs start on a controller, play out on whatever the venue provides, and keep a USB stick that works on the club’s players as a backup.</Note>
       </Step>

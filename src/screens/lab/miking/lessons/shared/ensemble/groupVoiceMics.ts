@@ -41,6 +41,6 @@ export const GROUP_VOICE_MIC_TYPES = {
       { model: 'a multi-pattern large-diaphragm studio condenser', fact: 'AKG-C414 §4.6.2: "one microphone each for two, at most three persons" (backing vocals); the semicircle in front of a cardioid or omni. S-BLUEGRASS: one large condenser shared by the band, the singers moving in and out of its pattern.', src: 'AKG-C414' },
     ],
     art: 'vocalLdc',
-    blurb: 'A side-address studio condenser with a pattern switch, on a stand at the singers’ mouth height: cardioid for a semicircle in front of it, omni for a circle round it, figure-8 for two singers facing each other. No screen — the singers keep a little distance. Needs phantom power.',
+    blurb: 'A side-address studio condenser with a pattern switch, on a stand at the singers’ mouth height: cardioid for a semicircle in front of it, omni for a circle around it, figure-8 for two singers facing each other. No screen — the singers keep a little distance. Needs phantom power.',
   },
 } satisfies Record<string, MicType>;

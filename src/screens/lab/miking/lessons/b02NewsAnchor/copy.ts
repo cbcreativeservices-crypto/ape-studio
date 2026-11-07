@@ -78,7 +78,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     ...BASE.placement!,
     workedZone: { close: 'b2.lav', twoShot: 'b2.lav', public: 'b2.lav' },
     workedAim: 'An omni lav’s aim matters little — point it up toward the mouth; the lab counts it while it points within about {tol}° of the lips. A boom or a desk mic is aimed at the mouth.',
-    workedClear: 'Clear of the anchor’s movement and the picture: the lav on a firm edge, off the jacket, the hair and the jewellery, its cable looped; a boom outside every frame; a desk mic’s base away from the papers. Clearance comes first, before any number.',
+    workedClear: 'Clear of the anchor’s movement and the picture: the lav on a firm edge, off the jacket, the hair and the jewelry, its cable looped; a boom outside every frame; a desk mic’s base away from the papers. Clearance comes first, before any number.',
     reveal: 'A chest lav keeps one distance but hears the clothes and drifts off the turning mouth; a boom from above sounds open but must stay outside the frame; a raised desk mic hears the desk’s bounce; a boundary on the desk hears more room. Desks and voices vary, so “it depends on this set” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with a lav: centered on a firm edge first, then — only if the shot needs it — hidden under one layer, compared at matched loudness.',
@@ -118,7 +118,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     looking: 'A public interview at the desk · the PA at the stage’s front corner, on the anchor’s left',
     prompt: 'The PA stays where the show needs it. Turn or tilt the gooseneck’s capsule (AIM), or change its PATTERN, until the PA sits in the rejection — while it still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
-    cardioidReveal: 'What you just saw: a gooseneck below the mouth, aimed up at it, points its rear down and forward over the desk — the PA, high at the stage’s corner, sits off to the side of that. A supercardioid’s rejection lies round toward the side of its rear; the aim decides how close the PA comes.',
+    cardioidReveal: 'What you just saw: a gooseneck below the mouth, aimed up at it, points its rear down and forward over the desk — the PA, high at the stage’s corner, sits off to the side of that. A supercardioid’s rejection lies around toward the side of its rear; the aim decides how close the PA comes.',
     shieldNote: 'The desk, the talkers and the room reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,

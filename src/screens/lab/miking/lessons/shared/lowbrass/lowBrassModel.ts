@@ -219,7 +219,7 @@ export function lowBrassModel(spec: LowBrassSpec, opts: { id: string; name: stri
     const sfx = i === 0 ? '' : `.${o}`;
     const vs = multi ? { variants: [o] } : {};
     return [
-      { id: `r.bell${sfx}`, partId: `lb.bell${sfx}`, label: 'the bell', anchor: s.bell.rim, prov: { kind: 'sourced', src: 'PL-2010', quote: 'the brass instruments radiate constantly in the direction of the bell' } as Provenance, note: 'Nearly all of the sound leaves here, from the bell’s opening — the high overtones mostly along its axis; the low notes spread all round.', ...vs },
+      { id: `r.bell${sfx}`, partId: `lb.bell${sfx}`, label: 'the bell', anchor: s.bell.rim, prov: { kind: 'sourced', src: 'PL-2010', quote: 'the brass instruments radiate constantly in the direction of the bell' } as Provenance, note: 'Nearly all of the sound leaves here, from the bell’s opening — the high overtones mostly along its axis; the low notes spread all around.', ...vs },
       { id: `r.body${sfx}`, partId: `lb.body${sfx}`, label: 'the tubing', anchor: s.centre, prov: ill('the tubing walls radiate very little (standard brass acoustics)'), note: 'The air vibrates INSIDE the tube; the metal walls themselves give off very little sound.', ...vs },
     ];
   });

@@ -25,7 +25,7 @@ const N_MIN = channelCount('minimal');
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a whole sports picture from a microphone’s point of view: the action, the audience all round, the PA and the commentary — and how a viewpoint decides what each mic hears.',
+    goal: 'Meet a whole sports picture from a microphone’s point of view: the action, the audience all around, the PA and the commentary — and how a viewpoint decides what each mic hears.',
     credit: { scenarios: ['cc.meet.1', 'cc.meet.2', 'cc.meet.3'], note: 'Answer the three checks on the viewpoint, one loud voice and a sport’s clearance.' },
     takeaway: 'Choose a stable viewpoint first, then the action that deserves detail. Crowd, PA and commentary reach every mic — the plan decides what each one is for.',
   },
@@ -153,7 +153,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cc.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · In the arena, what is the band round the court?',
+    prompt: 'FROM EARLIER · In the arena, what is the band around the court?',
     options: ['A clear band, not a crew strip', 'The place for the audience spots', 'Spare room for the commentary desk'],
     correct: 'A clear band, not a crew strip',
     explain: 'The clear band belongs to benches, officials and players chasing a ball. Audience spots and commentary have their own approved places.',
@@ -323,11 +323,11 @@ const scenarios: MikingScenario[] = [
     id: 'cc.prac.gain',
     page: 'practice',
     prompt: 'In the quiet practice, a gentle collective clap peaks at −26 dBFS. Where do you set the practice gain?',
-    options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought right up to −3 dBFS', 'Left as it is, the files normalized later'],
+    options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought all the way up to −3 dBFS', 'Left as it is, the files normalized later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: bring it near −12 dBFS as a trial. A real roar can be far louder, so set the event gain from the real crowd, with much more margin. It is an input peak, not a loudness target.',
     why: {
-      'The gentle clap brought right up to −3 dBFS': 'With a gentle clap already at −3 dBFS, the first real roar clips.',
+      'The gentle clap brought all the way up to −3 dBFS': 'With a gentle clap already at −3 dBFS, the first real roar clips.',
       'Left as it is, the files normalized later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',
     },
   },
@@ -435,12 +435,12 @@ const symptoms: Symptom[] = [
     id: 'cc.sym.lost',
     observation: 'An immersive channel goes silent',
     firstChecks: 'The cable labels, the powering, the converter inputs?',
-    options: ['Switch to the verified fallback', 'Relabel another channel to fill it', 'Send the three channels left'],
+    options: ['Switch to the verified fallback', 'Relabel another channel to fill it', 'Send the three remaining channels'],
     correct: 'Switch to the verified fallback',
     explain: 'Use the verified stereo or mono fallback and identify the failed version; do not silently relabel a channel or send an unverified subset.',
     why: {
       'Relabel another channel to fill it': 'A relabeled channel sends sound to the wrong place.',
-      'Send the three channels left': 'An unverified subset is not a known-good version.',
+      'Send the three remaining channels': 'An unverified subset is not a known-good version.',
     },
   },
 ];
@@ -507,7 +507,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  meet: { prompt: 'Before you look: from S, which is farthest — the action or the audience?', options: ['The action at A', 'The audience', 'All the same'], after: 'Now step through TARGET.' },
+  meet: { prompt: 'Before you look: from S, which is farther — the action or the audience?', options: ['The action at A', 'The audience', 'All the same'], after: 'Now step through TARGET.' },
   microphone: { prompt: 'Which pair keeps the mono sum the most solid?', options: ['A coincident XY pair', 'Spaced omnis', 'All the same'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: the pair moves 1 m closer to the audience. What comes forward?', options: ['Nearby voices', 'The venue’s scale', 'Nothing'], after: 'Rest the pair in two zones and read what each one suggests.' },
   context: { prompt: 'In the minimal layout the action mic fails. What carries the event?', options: ['The audience pair', 'The commentary', 'Nothing'], after: 'Now run the failure drill.' },
@@ -522,7 +522,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['A stable audience viewpoint', 'The closest action detail', 'The highest channel count'],
     correct: 'A stable audience viewpoint',
     explain: 'The viewpoint first; then the action that deserves detail, each role separately controllable.',
-    why: { 'The closest action detail': 'Detail sits on a picture; it is not the picture.', 'The highest channel count': 'Channels follow roles and gaps, not the other way round.' },
+    why: { 'The closest action detail': 'Detail sits on a picture; it is not the picture.', 'The highest channel count': 'Channels follow roles and gaps, not the other way around.' },
   },
   {
     id: 'q.2',
@@ -547,10 +547,10 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setups',
     critical: true,
     prompt: 'Thunder during an open-stadium setup. When do you go back out?',
-    options: ['30 minutes after the last thunder', 'Once the rain has eased right off', 'When the strikes look far away'],
+    options: ['30 minutes after the last thunder', 'Once the rain has fully eased off', 'When the strikes look far away'],
     correct: '30 minutes after the last thunder',
     explain: 'Shelter at once in a substantial building or a hard-topped vehicle; wait 30 minutes after the last thunder, under the event’s plan.',
-    why: { 'Once the rain has eased right off': 'Lightning can strike after the rain eases.', 'When the strikes look far away': 'Distant-looking lightning can still strike.' },
+    why: { 'Once the rain has fully eased off': 'Lightning can strike after the rain eases.', 'When the strikes look far away': 'Distant-looking lightning can still strike.' },
   },
   {
     id: 'q.5',

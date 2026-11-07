@@ -41,7 +41,7 @@ export function micRatingCheck(w: RatingWords): MikingScenario {
     explain: 'Max SPL says when the MIC distorts, so a rating well above the level at the mic means the mic copes. It says nothing about people: hearing risk depends on the level where a person is and for how long — NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
     why: {
       [SAFE]: 'The rating is the mic’s distortion limit, not a hearing limit. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where they listen.',
-      [HEAR]: 'It is the other way round: max SPL is the level where the mic starts to distort. Hearing needs its own level and time limit, measured where the person is.',
+      [HEAR]: 'It is the other way around: max SPL is the level where the mic starts to distort. Hearing needs its own level and time limit, measured where the person is.',
     },
   };
 }

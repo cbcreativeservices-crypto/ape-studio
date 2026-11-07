@@ -245,7 +245,7 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
       <Body>The nine stations of the house path, drawn as the bench draws them. Light them in the order the signal travels.</Body>
       <Prompt>Tap the next station the signal reaches.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>Signal falls forward: source, cable, stage input, console in, console out, processor, amplifier, loudspeaker, listener. A fault is found by walking that order from wherever the symptom leaves doubt — never by guessing at the far end.</KeyFact>
+      <KeyFact>Signal flows forward: source, cable, stage input, console in, console out, processor, amplifier, loudspeaker, listener. A fault is found by walking that order from wherever the symptom leaves doubt — never by guessing at the far end.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }

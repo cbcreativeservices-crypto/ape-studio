@@ -207,7 +207,7 @@ function F14TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
       answers,
       onAnswered,
       <Card>
-        <Point title="SUBS AND MAINS">Measure the mains and the subs separately round the crossover at defined positions, then together, tracking the actual reference delay and processing state. Summation at the chosen seat does not promise summation everywhere.</Point>
+        <Point title="SUBS AND MAINS">Measure the mains and the subs separately around the crossover at defined positions, then together, tracking the actual reference delay and processing state. Summation at the chosen seat does not promise summation everywhere.</Point>
       </Card>,
     ),
   ];

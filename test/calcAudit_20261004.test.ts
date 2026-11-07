@@ -365,7 +365,7 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   ['ampacity', 'factors', { insul: 90, ambient: 50, ccc: 25 }, { 'COMBINED FACTOR': 0.82 * 0.45 }],
   ['ampacity', 'factors', { insul: 60, ambient: 58, ccc: 3 }, 'R'],
   // ── rackheat
-  ['rackheat', 'heatLoad', { watts: 800, mains: 120, dTempF: 10 }, { 'MAINS CURRENT': 800 / 120, 'HEAT OUTPUT (BTU/hr)': 800 * BTU, 'COOLING AIRFLOW (CFM)': 800 * BTU / 10.8 }],
+  ['rackheat', 'heatLoad', { watts: 800, mains: 120, dTempF: 10 }, { 'AC CURRENT': 800 / 120, 'HEAT OUTPUT (BTU/hr)': 800 * BTU, 'COOLING AIRFLOW (CFM)': 800 * BTU / 10.8 }],
   ['rackheat', 'heatLoad', { watts: 1, mains: 230, dTempF: 1 }, { 'HEAT OUTPUT (BTU/hr)': BTU }],
   ['rackheat', 'safeLoad', { breaker: 15, mains: 120 }, { 'SAFE CONTINUOUS POWER (80%)': 1440, 'ABSOLUTE MAX POWER': 1800 }],
   ['rackheat', 'safeLoad', { breaker: 20, mains: 230 }, { 'SAFE CONTINUOUS CURRENT': 16 }],

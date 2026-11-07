@@ -67,7 +67,7 @@ export const A05C_LESSON: Lesson = buildSaxLesson({
   setup: (R) => saxSetupTasks('ts', 'tenor', R),
   neighbours: [
     { id: 'n1', label: 'an alto beside (the next horn in the section)', short: 'ALTO', note: 'In a section the next horn sits close: a close mic on this tenor hears it too — more so from the side.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'n2', label: 'the baritone at the end of the row', short: 'BARITONE', note: 'The big horn beside: loud and low. Every sax mic in a section hears the horns either side of it.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
+    { id: 'n2', label: 'the baritone at the end of the row', short: 'BARITONE', note: 'The big horn beside: loud and low. Every sax mic in a section hears the horns on either side of it.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A closer, aimed mic improves the direct sound against the spill — at the cost of a narrower zone; a clip on the bell moves with a player who sways.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. The tenor is a big horn: a little distance — a third of the way up, from 30 to 60 cm — lets its holes and bell blend.',

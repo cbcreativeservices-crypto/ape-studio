@@ -67,7 +67,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     control: [
       'Tap a consequence card to open it; a ✓ marks it reviewed. Opening all six is part of this stage’s credit.',
       'Tap a close-up’s name, drawing or caption to approve it. FULL SCREEN enlarges the drawing, with its APPROVE button underneath.',
-      'Under each verdict, ▸ WHY? opens the reason; the coloured tag opens the sources behind it.',
+      'Under each verdict, ▸ WHY? opens the reason; the colored tag opens the sources behind it.',
       'After a wrong pick only B stays tappable. With all six cards open, approving B completes the stage. Approved B first? Open the rest, then tap MARK STAGE COMPLETE ✓.',
     ],
     changes: [
@@ -83,16 +83,16 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     tryThis: [
       'Make your call, then read A’s verdict: restraints cinched so tight they deform every cable in the loom. The neatest close-up is not the one to sign off.',
       'After your first pick every close-up shows its verdict — read D’s: tidy in the wrong place, over cooling and service access, is still wrong.',
-      'Under B’s verdict tap the coloured tag: it shows which kind of authority stands behind that rule.',
+      'Under B’s verdict tap the colored tag: it shows which kind of authority stands behind that rule.',
     ],
   },
 
   // ── STAGE 2 · KNOW ────────────────────────────────────────────────────────
   know: {
     seeing: [
-      'THE CABLE WORKBENCH: 14 cable types, each with a colour swatch and PERMANENT, TEMPORARY or PERM · TEMP.',
+      'THE CABLE WORKBENCH: 14 cable types, each with a color swatch and PERMANENT, TEMPORARY or PERM · TEMP.',
       'An open card: a photo of the cable cut back, a SECTION drawing, what it carries, and its CHECK BEFORE ROUTING list.',
-      'SCENARIO DRILL — WHAT ARE YOU INSTALLING?: three real runs, four calls each. Colours are training tints; field colours vary.',
+      'SCENARIO DRILL — WHAT ARE YOU INSTALLING?: three real runs, four calls each. Colors are training tints; field colors vary.',
     ],
     control: [
       'Tap a cable’s name to open or close its card; a ✓ marks it reviewed. Browsing is free and not scored; the drill below draws on it.',
@@ -121,7 +121,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
   route: {
     seeing: [
       'Two installations, each a building section drawn to scale (FULL SCREEN adds the badge Scale: 20 units = 1 m · person 1.75 m). CABLE: names what is pulled.',
-      'Three candidate routes, A, B and C, each in its own colour; a card per route gives its path and relative length (×1.0 = shortest).',
+      'Three candidate routes, A, B and C, each in its own color; a card per route gives its path and relative length (×1.0 = shortest).',
       'After a pick: THE VERDICT — ALL THREE ROUTES, SCORED — six score bars and an overall /100 per route.',
     ],
     control: [
@@ -314,7 +314,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     ],
     changes: [
       'Each over loop adds a turn of twist and each under loop takes one away; alternating cancels it.',
-      'TWIST reads NONE — loops cancel, LOW, BUILDING or HIGH — will fight deployment.',
+      'TWIST reads NONE — loops cancel; LOW; BUILDING; or HIGH — will fight deployment.',
       'A route with a serious safety flag carries ✕ REJECTED — SAFETY, even with a passable OVERALL score. Protection must suit the real traffic.',
     ],
     teaches: [

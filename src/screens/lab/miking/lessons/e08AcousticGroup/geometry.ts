@@ -99,7 +99,7 @@ const GZ = E08_BORROWED.guitar;
 export const E08_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'ac.main',
-    label: 'At the point the players sit round',
+    label: 'At the point the players sit around',
     band: 'Try the pair where every player is about the same distance from it — about 1–2 m (3–6 ft) away, a little above the instruments, aimed at the group’s middle.',
     kind: 'sourced',
     src: 'S-SM4-UG',
@@ -147,7 +147,7 @@ export const E08_SETUPS: EnsembleSetup[] = [
     title: 'An X/Y pair where the players are equally far',
     rig: xyRig,
     mics: 'Two matched cardioid small condensers, capsules together, 90° apart, on a boom stand.',
-    start: 'At the point the players sit round — every player about the same distance, about 1–2 m (3–6 ft) — a little above the instruments, aimed at the group’s middle.',
+    start: 'At the point the players sit around — every player about the same distance, about 1–2 m (3–6 ft) — a little above the instruments, aimed at the group’s middle.',
     line: 'A stable image and a dependable mono sum; the players’ own balance. A narrower picture is not worse if it serves the music.',
     roles: 'To the recording; to a stereo PA only if the group is small and the pair close enough.',
     core: true,
@@ -197,7 +197,7 @@ export const E08_SETUPS: EnsembleSetup[] = [
     singles: [GUITAR_MIC, MANDOLIN_MIC],
     mics: 'A small condenser for the guitar and one for the mandolin.',
     start: 'The guitar mic out from the 12th fret, the mandolin mic about 30–40 cm (12–16 in) out, aimed where its neck meets the body — the two mics at least about 3 times farther apart than either is from its own instrument.',
-    line: '3:1 is a starting point that reduces correlated leakage — not a promise of phase alignment or equal tone. Where it cannot be met, use fewer mics, move the players, or a coherent pair.',
+    line: '3:1 is a starting point that reduces correlated leakage — not a promise of phase alignment or equal tone. Where it cannot be met, use fewer mics, move the players, or use a coherent pair.',
     roles: 'To the PA and the wedges; to the recording under a pair.',
     core: true,
     view: 'plan',

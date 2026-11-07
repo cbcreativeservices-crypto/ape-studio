@@ -45,7 +45,7 @@ const Car = (p: { x: number; z: number; heading: number }) => <SiteCar c={[p.x, 
 const fixed = (p = F08_START.walk) => ({ p, az: 180, el: 0 });
 const WALK_MICS: PathMicOption[] = [
   { id: 'omni', label: 'Fixed omni', short: 'OMNI', typeId: 'arrOmni', pattern: 'omni', pose: fixed(), blurb: 'A broad, steady pickup: the level follows distance alone.' },
-  { id: 'card', label: 'Fixed cardioid, aimed at the crossing', short: 'CARDIOID', typeId: 'arrCard', pattern: 'cardioid', pose: fixed(), blurb: 'It leans toward the crossing: the ends of the pass fall a little further off its axis.' },
+  { id: 'card', label: 'Fixed cardioid, aimed at the crossing', short: 'CARDIOID', typeId: 'arrCard', pattern: 'cardioid', pose: fixed(), blurb: 'It leans toward the crossing: the ends of the pass fall a little farther off its axis.' },
   { id: 'shotgun', label: 'Fixed shotgun, aimed at the crossing', short: 'SHOTGUN', typeId: 'shotgunShort', pattern: 'supercardioid', pose: fixed(), blurb: 'Narrow: the pass can seem to vanish once the walker leaves its axis (drawn here as its supercardioid base — a shotgun is narrower still in the highs).' },
   { id: 'track', label: 'Tracked shotgun, swung from a fixed station', short: 'TRACKED', typeId: 'shotgunPole', pattern: 'supercardioid', pose: { p: TRACK_P, az: 180, el: 0 }, tracked: true, blurb: 'The operator swings it to follow the walker: the walker stays on its axis, so the level arc comes from distance alone.' },
 ];

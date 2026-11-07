@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a mandolin player — the picking arc, the short neck, their voice, their movement — a bluegrass stage and a studio, and what to do before any mic.',
+    goal: 'Know the space around a mandolin player — the picking arc, the short neck, their voice, their movement — a bluegrass stage and a studio, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The picking arc and the fretting hand are the player’s; a small instrument turns as they move. The bridge and the scroll are not mounting points. Ask the player first, and protect your hearing.',
   },
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When does an omni near the neck junction make sense on a mandolin?',
     options: ['Very close, for the most bass from proximity', 'On a loud stage, to keep all of the wedges out of it', 'In a quiet, favorable room where its sound is welcome'],
     correct: 'In a quiet, favorable room where its sound is welcome',
-    explain: 'An omni hears all round: a natural view of the mandolin and the room. Choose it because the room is good, not to fight spill.',
+    explain: 'An omni hears all around: a natural view of the mandolin and the room. Choose it because the room is good, not to fight spill.',
     why: {
       'On a loud stage, to keep all of the wedges out of it': 'An omni rejects nothing: on a loud stage it hears the wedges too.',
       'Very close, for the most bass from proximity': 'Proximity effect belongs to directional mics; an omni shows little of it.',
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a mandolin player?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a mandolin player?',
     options: ['The front of the mandolin, so the audience can see it', 'The space by the player’s feet, which is kept for the DI', 'The picking arc, the fretting hand and the player’s turn'],
     correct: 'The picking arc, the fretting hand and the player’s turn',
     explain: 'The pick sweeps over the top, the fretting hand moves on the short neck, and a small instrument turns as the player moves. Never obstruct them.',
@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.ctx.studio`,
     page: 'context',
-    prompt: 'A quiet studio, a solo mandolin, a lot of room sound. When is a cardioid the better choice than an omni?',
+    prompt: 'A quiet studio, a solo mandolin, a lot of room sound. When is a cardioid a better choice than an omni?',
     options: ['Whenever the mandolin is an F-style instrument', 'When reflections or other players intrude', 'When the room is quiet and sounds good'],
     correct: 'When reflections or other players intrude',
     explain: 'A cardioid gives more isolation when the room or neighbors intrude; an omni suits a quiet, favorable room.',
@@ -367,7 +367,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a mandolin player?',
+    prompt: 'What must a stand mic stay out of, around a mandolin player?',
     options: ['The front of the mandolin, so the audience can see it clearly', 'The picking arc, the fretting hand and the player’s turn', 'The space behind the player, where the cables run'],
     correct: 'The picking arc, the fretting hand and the player’s turn',
     explain: 'The pick sweeps over the top, the fretting hand moves on the neck, and the instrument turns as the player moves.',
@@ -396,7 +396,7 @@ export const C05B_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over an arched top, most often carved. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll and points, often with f-holes.', src: 'EASTMAN' },
-    { title: 'WHERE YOU MEET IT', text: 'Bluegrass, folk, country and classical music, on stage — often round a shared mic — and in the studio.', src: 'LESSON' },
+    { title: 'WHERE YOU MEET IT', text: 'Bluegrass, folk, country and classical music, on stage — often around a shared mic — and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The percussive offbeat chop, tremolo melodies, fast single-note leads. Ask which they will play, and at what level.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a mandolin about 66 cm (26 in) long, 26 cm (10 in) across the body and about 4.5 cm (1.8 in) deep. These are drawn sizes.', src: 'MET-A4' },
   ],
@@ -422,7 +422,7 @@ export const C05B_LESSON: Lesson = {
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet, favorable studio room an omni can present the mandolin naturally; in a busy one, a cardioid isolates it.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a wedge in front, the band round the player, the PA facing out — or a shared mic. A close directional mic, a clip or a pickup gives control.',
+    stage: 'LIVE: a wedge in front, the band around the player, the PA facing out — or a shared mic. A close directional mic, a clip or a pickup gives control.',
     studio: 'STUDIO: no wedges, repeated trials when the player stops, and a room that can be part of the sound.',
   },
   diagnostic,

@@ -302,7 +302,7 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     const g = all(13);
     assert.ok(g.includes('with DONE on FOLD and THIRD; E MOVES shows the three E’s and SOUND'));
     assert.ok(g.includes('challenge 2 (match the rule) and the questions for 3, 5 and 6'));
-    assert.ok(g.includes('ticks once you get it right'));
+    assert.ok(g.includes('is checked once you get it right'));
     assert.doesNotMatch(g, /perfect answers are not needed/);
   });
 });

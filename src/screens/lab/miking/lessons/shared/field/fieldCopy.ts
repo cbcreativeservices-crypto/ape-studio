@@ -41,12 +41,12 @@ export function fieldCopy(o: FieldCopyOpts): Partial<LessonCopy> {
     placement: {
       workedZone: o.worked,
       workedLine: 'This starting point also sets the mic’s height above the ground.',
-      workedAim: 'Face the scene — an omni hears all round; a directional mic is aimed at the part you want.',
+      workedAim: 'Face the scene — an omni hears all around; a directional mic is aimed at the part you want.',
       workedClear: 'Off every path, lane and access route first; the stand stable, its cable secured where nobody walks. Clearance and permission come before any number.',
       blocked: o.blocked ? Object.fromEntries(Object.keys(o.worked).map((v) => [v, o.blocked!])) : {},
       reveal: o.reveal,
       typeNotes: {
-        arrOmni: 'Ideas to try with an omni: it hears all round — the whole place, the bed and the events — and is the steadiest in the wind of the two. Move it to change the balance.',
+        arrOmni: 'Ideas to try with an omni: it hears all around — the whole place, the bed and the events — and is the steadier of the two in the wind. Move it to change the balance.',
         arrCard: 'Ideas to try with a cardioid: aim it at the part of the scene you want; its rear hears less — never nothing. One of these makes each side of a pair.',
         ...(o.typeNotes ?? {}),
       },

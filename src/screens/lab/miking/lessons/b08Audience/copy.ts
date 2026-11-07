@@ -71,6 +71,6 @@ export const B08_COPY: Partial<LessonCopy> = {
     standMount: 'Mount: a stand on an approved place, out of every aisle and exit',
     inPath: 'in the way',
     facing: 'facing the faces',
-    observation: 'For a real event, with the venue’s permission: write each zone, its channel, what it gave against the PA — observations, not predictions.',
+    observation: 'For a real event, with the venue’s permission: write down each zone, its channel and what it picked up compared with the PA — observations, not predictions.',
   },
 };

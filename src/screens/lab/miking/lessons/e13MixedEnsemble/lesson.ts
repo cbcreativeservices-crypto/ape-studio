@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'Starting setups',
     goal: 'See real setups drawn on the stage — an X/Y, a 17 cm and a spaced pair in front of a chamber group, a featured spot, a support; at orchestra size, the pair over the podium and the three-omni tree with its outriggers. Then what to settle before any mic goes up.',
     credit: { scenarios: ['mix.set.1', 'mix.rig', 'mix.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
-    takeaway: 'Start with one main array alone if the room and the music allow it; add as few supports as you can, each for a reason. Agree the balance with the players before any spot gain; keep sightlines, breathing, bowing, slides and pedals clear.',
+    takeaway: 'Start with one main array alone if the room and the music allow it; add as few supports as you can, each for a reason. Agree on the balance with the players before any spot gain; keep sightlines, breathing, bowing, slides and pedals clear.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a main-array setup in order, choose and justify a setup for two briefs, and say when a spot is worth it.',
     credit: { scenarios: ['mix.prac.order', 'mix.prac.gain', 'mix.prac.setup1', 'mix.prac.setup2', 'mix.prac.3', 'mix.hole', 'mix.tree', 'mix.need'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'Agree the balance, check stands and cables, set gain on the peaks, build the sound with one main array, add as few supports as you can for stated reasons, and keep capture and reinforcement roles clear.',
+    takeaway: 'Agree on the balance, check stands and cables, set gain on the peaks, build the sound with one main array, add as few supports as you can for stated reasons, and keep capture and reinforcement roles clear.',
   },
 };
 
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A shared digital split: you lower one input’s gain for the PA. What else changes?',
     options: ['Every feed that depends on that preamp', 'Only the PA’s own mix, and nothing else at all', 'Nothing until the show starts'],
     correct: 'Every feed that depends on that preamp',
-    explain: 'With a shared preamp, one gain change reaches every dependent feed — the recording too — unless a gain-compensation system intervenes. Agree who controls gain and phantom power.',
+    explain: 'With a shared preamp, one gain change reaches every dependent feed — the recording too — unless a gain-compensation system intervenes. Agree on who controls gain and phantom power.',
     why: {
       'Only the PA’s own mix, and nothing else at all': 'A shared preamp feeds every path at once.',
       'Nothing until the show starts': 'The change happens at once, for every feed on it.',
@@ -390,7 +390,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The front players dominate more'], after: 'Farther back, the distances to the front and back players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The monitor sits on the floor between the cello spot and the hall, a little to the side. Can the spot’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a cello spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
@@ -497,12 +497,12 @@ export const E13_LESSON: EnsembleLesson = {
   setting: {
     items: [
       { id: 'players', label: 'the players’ sightlines, breathing, bowing, slides and pedals', short: 'PLAYERS', note: 'Every change with the players’ and the conductor’s approval; stands and cables clear of bows, slides, pedals and the players’ way in and out.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'preserving sightlines, breathing, bowing, slides, pedals and instrument access (L14)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'piano', label: 'the piano’s lid', short: 'PIANO LID', note: 'The lid’s height changes the piano’s balance for everyone, including the main array: agree it before any spot gain.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Consider instrument orientation, seating depth, reflective walls and the piano lid (L14)' }, tag: 'BALANCE', scene: 'all' },
+      { id: 'piano', label: 'the piano’s lid', short: 'PIANO LID', note: 'The lid’s height changes the piano’s balance for everyone, including the main array: agree on it before any spot gain.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Consider instrument orientation, seating depth, reflective walls and the piano lid (L14)' }, tag: 'BALANCE', scene: 'all' },
       { id: 'walls', label: 'reflective walls and seating depth', short: 'THE ROOM', note: 'A wall behind the horn, a deep stage behind the strings: the room shapes the balance the array hears.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'reflective walls (L14)' }, tag: 'PART OF THE SOUND', scene: 'all' },
-      { id: 'amps', label: 'any amplified instrument', short: 'AMP', note: 'Agree the amplifier’s level and orientation before placing nearby mics; a direct signal is a supplementary channel.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'agree on the amplifier level and orientation before placing nearby microphones (L75)' }, tag: 'SPILL', scene: 'all' },
+      { id: 'amps', label: 'any amplified instrument', short: 'AMP', note: 'Agree on the amplifier’s level and orientation before placing nearby mics; a direct signal is a supplementary channel.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'agree on the amplifier level and orientation before placing nearby microphones (L75)' }, tag: 'SPILL', scene: 'all' },
       { id: 'rig', label: 'anything over the players', short: 'RIGGING', note: 'A tree’s span and forward reach need safe support: manufacturer-rated hardware and qualified venue personnel for anything suspended.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Use manufacturer-rated mounting equipment and qualified venue personnel (L49)' }, tag: 'VENUE ONLY', scene: 'all' },
       { id: 'pa', label: 'the PA and the monitors', short: 'PA', note: 'Use the mics’ real polar diagrams to place monitors; recheck after any move. Only the monitor level and sources the performers need.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Use the actual polar diagrams to position monitors (L86)' }, tag: 'FEEDBACK', scene: 'stage' },
-      { id: 'split', label: 'the split and shared preamps', short: 'SPLIT', note: 'A shared digital preamp’s gain change reaches every feed on it, unless the other desks offset it; agree who controls gain and phantom power.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Shared digital preamp gain changes affect all dependent feeds (L88)' }, tag: 'ROLES', scene: 'stage' },
+      { id: 'split', label: 'the split and shared preamps', short: 'SPLIT', note: 'A shared digital preamp’s gain change reaches every feed on it, unless the other desks offset it; agree on who controls gain and phantom power.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Shared digital preamp gain changes affect all dependent feeds (L88)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'room', label: 'the room’s own sound', short: 'AMBIENCE', note: 'Separate ambience mics only after a usable direct image, brought in from silence.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'add separate ambience microphones only after establishing a usable direct ensemble image (L77)' }, tag: 'LATER', scene: 'studio' },
     ],
     stage: 'LIVE: find out what already reaches the audience clearly. A quiet chamber event may need little reinforcement; a big room or loud accompaniment, close directional support. Give each mic a role — capture, PA, or both — and avoid uncontrolled feedback.',
@@ -527,7 +527,7 @@ export const E13_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E13_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A mixed ensemble has no single right setup: agree the balance with the players, build the sound with one main array, then add a support only for a stated reason. Every ensemble, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Anything suspended is the venue’s, by qualified personnel; protect your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A mixed ensemble has no single right setup: agree on the balance with the players, build the sound with one main array, then add a support only for a stated reason. Every ensemble, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Anything suspended is the venue’s, by qualified personnel; protect your hearing.',
   copy: { words: ensembleWords('ensemble') },
   ensemble: {
     seatings: { chamber: 'chamber.mixed', orchestra: 'orch.american' },

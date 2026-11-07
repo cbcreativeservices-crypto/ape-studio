@@ -154,7 +154,7 @@ export function CymaticsHomeScreen() {
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 32 + insets.bottom }]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
-          <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN</Text>
+          <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN</Text>
         </View>
         {/* ── ONE RECOMMENDED PATH (2026-09-18, design review #11) ─────────────
             The home offers thirteen entry points — four studio buttons ABOVE
@@ -182,7 +182,7 @@ export function CymaticsHomeScreen() {
 
         <Pressable style={styles.studioBtn} onPress={() => go('CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
           <Text style={styles.studioBtnText}>OPEN THE CHLADNI PLATE STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronised views</Text>
+          <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronized views</Text>
         </Pressable>
         <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => go('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
           <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
@@ -194,7 +194,7 @@ export function CymaticsHomeScreen() {
         </Pressable>
         <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => go('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
           <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Save a pattern from any studio · colour it · compare 2 or 4 · art print or lab sheet</Text>
+          <Text style={styles.studioBtnSub}>Save a pattern from any studio · color it · compare 2 or 4 · art print or lab sheet</Text>
         </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>

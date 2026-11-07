@@ -87,7 +87,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'Readouts: TENSION (in words), PITCH, NOTE and 1ST OVERTONE.',
       ],
       control: [
-        'TENSION fader: from very low to very high; the lane shows the pitch and the tension in N/m (newtons per metre — how hard the head is pulled).',
+        'TENSION fader: from very low to very high; the lane shows the pitch and the tension in N/m (newtons per meter — how hard the head is pulled).',
         '▶ STRIKE, or tap the display, plays the hit; tap again to stop.',
       ],
       changes: [
@@ -256,7 +256,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'Hardware faults often sound like tuning faults — check the hardware first.',
       ],
       tryThis: [
-        'Tap HOOPS and read the table test: a flat hoop touches all the way round.',
+        'Tap HOOPS and read the table test: a flat hoop touches all the way around.',
         'Tap EDGE: grit between head and edge is a buzz or a dead spot that LOOKS like a tuning problem.',
       ],
     },

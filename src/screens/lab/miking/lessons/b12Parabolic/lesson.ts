@@ -138,7 +138,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before tracking, how loud should the headphones start?',
     options: ['Low, then raised with care', 'As loud as the dish can make it', 'Loud enough to hear the crowd well'],
     correct: 'Low, then raised with care',
-    explain: 'A dish can make a nearby shout or whistle very loud in the headphones: start low, isolated headphones at a safe level.',
+    explain: 'A dish can make a nearby shout or whistle very loud in the headphones: start low, with isolated headphones at a safe level.',
     why: {
       'As loud as the dish can make it': 'A sudden nearby peak at that level can harm hearing.',
       'Loud enough to hear the crowd well': 'The crowd is not the target; the level stays safe.',
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A shotgun would fit the dish’s mount. Why not use it?',
     options: ['The dish is made for its own capsule', 'A shotgun is far too quiet inside a dish', 'A shotgun would make the pickup too narrow'],
     correct: 'The dish is made for its own capsule',
-    explain: 'Follow the collector’s design: its capsule type, orientation and focal reference. A narrow shotgun by assumption is not that design.',
+    explain: 'Follow the collector’s design: its capsule type, orientation and focal reference. A narrow shotgun fitted by assumption is not that design.',
     why: {
       'A shotgun is far too quiet inside a dish': 'Level is not the reason; the design is.',
       'A shotgun would make the pickup too narrow': 'The point is the dish’s design, not a guess about width.',
@@ -407,7 +407,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Which stage overloads first: the element, the transmitter, the preamp?',
     options: ['Find the stage that overloaded', 'Lower the output fader a long way', 'Add a high-pass filter to the dish'],
     correct: 'Find the stage that overloaded',
-    explain: 'Leave headroom for the nearest, loudest event; lower the gain at the first overloaded stage. A filter cannot restore overload.',
+    explain: 'Leave headroom for the nearest, loudest event; lower the gain at the first overloaded stage. A filter cannot repair overload.',
     why: { 'Lower the output fader a long way': 'A low output fader does not undo upstream clipping.', 'Add a high-pass filter to the dish': 'A filter cannot repair a clip.' },
   },
   {

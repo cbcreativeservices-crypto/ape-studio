@@ -124,7 +124,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'EQ RESPONSE: one EQ band as a curve — lows left, highs right; above the center line is boost, below is cut.',
       'Top right reads the region and the gain, such as 1.00 kHz · +6.0 dB.',
       'The line under the graph names the move: BOOST, CUT / ATTENUATION or FLAT.',
-      'A designed response, worked out from the filter’s maths — no sound or microphone is used.',
+      'A designed response, worked out from the filter’s math — no sound or microphone is used.',
     ],
     control: [
       'PICK A REGION: LOW (120 Hz), MID (1.00 kHz) or HIGH (6.00 kHz).',
@@ -339,7 +339,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'Drag on the graph: the nearest node is grabbed — sideways sets frequency, up and down sets gain (bells only).',
       'FREQ, GAIN (−18 to +18 dB) and Q (0.3–12) faders edit the selected band; HPF and LPF have FREQ only. An OFF band’s faders are LOCKED.',
       'BAND key: tap a band to select it (HPF and LPF switch on when tapped), BAND ON / BAND OFF, and RESET.',
-      'BYP key: bypass the whole EQ for an instant before and after. HEAR IT, when shown, plays PINK NOISE or SWEEP through it.',
+      'BYP key: bypass the whole EQ for a quick before-and-after check. HEAR IT, when shown, plays PINK NOISE or SWEEP through it.',
     ],
     changes: [
       'Overlapping boosts add: the combined curve rises higher than either band alone.',
@@ -436,7 +436,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     changes: [
       'Your band adds to the signal: cut a boost, fill a hole, and the bold curve settles back onto the reference.',
-      'CHECK passes within a third of an octave of the problem, with your gain cancelling it to within 3 dB.',
+      'CHECK passes within a third of an octave of the problem, with your gain canceling it to within 3 dB.',
       'The result reads Target, Your selection and Difference, and says what is still wrong. Moving a fader clears it.',
     ],
     teaches: [
@@ -495,7 +495,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     changes: [
       'Cut where the signal bulges above the reference and it settles back onto it.',
-      'CHECK passes within a third of an octave of the problem, with your cut cancelling it to within 3 dB.',
+      'CHECK passes within a third of an octave of the problem, with your cut canceling it to within 3 dB.',
       'The result names where the problem was and why that region sounds that way. Moving a fader clears it.',
     ],
     teaches: [

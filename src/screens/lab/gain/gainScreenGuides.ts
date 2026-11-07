@@ -90,7 +90,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   // ── 1 ─────────────────────────────────────────────────────────────────────
   intro: {
     seeing: [
-      'The chain: SOURCE, PREAMP, OUTPUT. Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line (OVERLOAD). Grey at the foot of PREAMP and OUTPUT is hiss (the noise floor).',
+      'The chain: SOURCE, PREAMP, OUTPUT. Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line (OVERLOAD). Gray at the foot of PREAMP and OUTPUT is hiss (the noise floor).',
       'The word under a meter names its zone (a mic’s QUIET SOURCE is normal). PREAMP (+18 dB) and OUTPUT (+0 dB) are FIXED.',
       'Readouts: SOURCE, PREAMP, OUTPUT and STATUS (OK, HOT or CLIP). Each level is dB below the 0 dB ceiling.',
     ],
@@ -123,7 +123,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   input: {
     seeing: [
       'The same chain: SOURCE, PREAMP, OUTPUT. Now the SOURCE is FIXED — a quiet mic at −30 dB — and so is the OUTPUT (+0 dB).',
-      'Under PREAMP: your gain setting. Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT). Raise INPUT GAIN and grey hiss appears at the meter foot.',
+      'Under PREAMP: your gain setting. Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT). Raise INPUT GAIN and gray hiss appears at the meter foot.',
       'Readouts: PREAMP (its level), HEADROOM (dB left below the 0 dB ceiling), OUTPUT, and STATUS — the preamp’s state: LOW, OK, HOT or CLIP.',
     ],
     control: [
@@ -153,7 +153,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   follow: {
     seeing: [
       'Four stages: SOURCE (FIXED, a quiet mic at −30 dB), PREAMP (yours), PROC (a FIXED processor adding +6 dB) and OUTPUT (FIXED, +0 dB).',
-      'Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line; grey hiss shows once there is enough gain. The arrows between stages turn red once the signal is distorted.',
+      'Meters: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line; gray hiss shows once there is enough gain. The arrows between stages turn red once the signal is distorted.',
       'Readouts: PREAMP, PROC and OUTPUT levels, and STATUS — the output’s state.',
     ],
     control: [
@@ -183,7 +183,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   lowhigh: {
     seeing: [
       'SOURCE (FIXED, −30 dB), PREAMP and OUTPUT, each gain setting under its column.',
-      'Watch the grey hiss (the noise floor) rise from a meter’s foot once there is enough gain to show it. Every boost lifts it; a cut lowers it.',
+      'Watch the gray hiss (the noise floor) rise from a meter’s foot once there is enough gain to show it. Every boost lifts it; a cut lowers it.',
       'Readouts: PREAMP and OUTPUT levels, NOISE (the noise floor at the output; amber when it intrudes) and STATUS — OK, LOW, HOT, CLIP or DIST (clipped earlier, baked in).',
     ],
     control: [

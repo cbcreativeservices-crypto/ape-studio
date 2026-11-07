@@ -171,13 +171,13 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE round the back. Where does the pickup fall furthest?" />
+          <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE around the back. Where does the pickup fall furthest?" />
           {deep ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'cardioid' ? (
               <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°), and still picks up about half (−6 dB) at its sides.</Note>
             ) : pat === 'omni' ? (
-              <Note tone="ok">What you just saw: an omni picks up all round — no null to aim. It hears more of the room and the stage.</Note>
+              <Note tone="ok">What you just saw: an omni picks up all around — no null to aim. It hears more of the room and the stage.</Note>
             ) : isModelled(pat) ? (
               <Note tone="ok">{`What you just saw: this ${pat} rejects most at ≈ ${Math.round(nulls[0] ?? 0)}° — toward the rear but off the axis — with a small pickup lobe directly behind.`}</Note>
             ) : null
@@ -287,7 +287,7 @@ export function GPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
       body: (
         <>
           <Body>{lesson.practice.task}</Body>
-          <Body>Each brief accepts more than one setup — there is no single right answer. Choose one, then tick every reason that justifies it: the check reads your reasoning, not a single “right” position.</Body>
+          <Body>Each brief accepts more than one setup — there is no single right answer. Choose one, then check every reason that justifies it: the check reads your reasoning, not a single “right” position.</Body>
           {setups.map((t) => (
             <SetupTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}

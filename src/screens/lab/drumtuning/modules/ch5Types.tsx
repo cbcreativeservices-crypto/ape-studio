@@ -208,7 +208,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
                 <Point title="Beater, low end, pitch">A harder stroke is louder, with more click and a deeper bend. A felt beater gives a thump, plastic or wood a click — this model plays the click. A lower batter gives more low end but a slower, flappier response under fast playing.</Point>
               </Card>
               <WhyCard title="MORE · muffling and internal contact">
-                <Body>A pillow touching the batter, felt strips, or a towel inside each remove ring and shorten the note. A heavily damped kick behaves like a different drum from an open one: shorter, drier, more click, less pitch. Both are legitimate; the music decides.</Body>
+                <Body>A pillow touching the batter, felt strips, or a towel inside: each removes ring and shortens the note. A heavily damped kick behaves like a different drum from an open one: shorter, drier, more click, less pitch. Both are legitimate; the music decides.</Body>
               </WhyCard>
             </>
           ),

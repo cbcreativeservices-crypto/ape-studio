@@ -338,12 +338,12 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>An extra instrument needs two separate jobs done: its SOUND into a mixer channel, and its TIMING from a leader. A clock lead carries no sound, and an audio lead carries no tempo.</P>
+        <P>An extra instrument needs two separate jobs done: its SOUND into a mixer channel, and its TIMING from a leader. A clock cable carries no sound, and an audio cable carries no tempo.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Open CLOCK: set the mixer’s CLOCK switch to CH 1, lead 5-PIN MIDI, and the drum machine to EXTERNAL. Play deck A (START): MACHINE reads deck A’s tempo, and the step lights run.</Do>
-        <P>It follows — but the crowd hears nothing: the clock lead carries no sound. Open AUDIO, give CH 2’s LINE inputs to the drum machine, and bring CH 2 up.</P>
+        <P>It follows — but the crowd hears nothing: the clock cable carries no sound. Open AUDIO, give CH 2’s LINE inputs to the drum machine, and bring CH 2 up.</P>
         {startNote ? <Note tone="try">{startNote}</Note> : null}
       </Step>
       <Step n={3}>
@@ -387,8 +387,8 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
             });
           }}
           fixed={arrives && dm.sync === 'EXT' && dm.clockSrc !== 'OFF'}
-          hints={['Read the callout at the drum machine’s MIDI IN: does any clock arrive?', 'The lead is a TRS-MIDI of type B; this drum machine uses type A. The plug fits — the wiring does not.', 'Open CLOCK and use a type A lead, or a 5-pin MIDI lead into the DIN input.']}
-          why="MIDI on a 3.5 mm jack comes in more than one wiring, most often type A or B. The wrong one fits perfectly and delivers nothing — just as a USB lead between two USB devices does (they need a host). When a follower will not follow, check what actually ARRIVES before touching the tempo."
+          hints={['Read the callout at the drum machine’s MIDI IN: does any clock arrive?', 'The lead is a TRS-MIDI of type B; this drum machine uses type A. The plug fits — the wiring does not.', 'Open CLOCK and use a type A cable, or a 5-pin MIDI cable into the DIN input.']}
+          why="MIDI on a 3.5 mm jack comes in more than one wiring, most often type A or B. The wrong one fits perfectly and delivers nothing — just as a USB cable between two USB devices does (they need a host). When a follower will not follow, check what actually ARRIVES before touching the tempo."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

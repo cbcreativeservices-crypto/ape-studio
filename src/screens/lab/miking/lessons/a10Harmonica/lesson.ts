@@ -25,9 +25,9 @@ const MW = { ...W, tail: 'the end of the note' };
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the harmonica',
-    goal: 'Get to know the harmonica — what it is, where you meet it, what it does in the music, its parts and the hands round it — and the harp amp it can play through, before any microphone.',
+    goal: 'Get to know the harmonica — what it is, where you meet it, what it does in the music, its parts and the hands around it — and the harp amp it can play through, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A small reed instrument; the common diatonic is about 10 cm long: ten holes, twenty reeds (usually brass), covers open at the back. The hands round it are part of its sound. Amplified, a harp mic is cupped with it and played through an amp.',
+    takeaway: 'A small reed instrument; the common diatonic is about 10 cm long: ten holes, twenty reeds (usually brass), covers open at the back. The hands around it are part of its sound. Amplified, a harp mic is cupped with it and played through an amp.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -97,7 +97,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hm.snd.2',
     page: 'sound',
-    prompt: 'The player closes their cupped hands round the back of the harmonica. What changes?',
+    prompt: 'The player closes their cupped hands around the back of the harmonica. What changes?',
     options: ['The chamber the sound passes through, so the tone', 'Nothing at all: the reeds make the same sound', 'Only the volume, while the tone stays exactly as it was'],
     correct: 'The chamber the sound passes through, so the tone',
     explain: 'The sound leaves the back of the covers into the hands. Closing and opening that chamber changes the tone — the hand wah — which is why the hand position is part of the player’s sound.',
@@ -122,12 +122,12 @@ const scenarios: MikingScenario[] = [
     id: 'hm.set.1',
     page: 'setting',
     prompt: 'Before placing a mic, what do you ask the harmonica player?',
-    options: ['Which harmonicas, which sound, and how they hold it', 'Only the key of the first song, so you can set the EQ', 'Nothing yet: set the mic, then fit the playing round it'],
+    options: ['Which harmonicas, which sound, and how they hold it', 'Only the key of the first song, so you can set the EQ', 'Nothing yet: set the mic, then fit the playing around it'],
     correct: 'Which harmonicas, which sound, and how they hold it',
     explain: 'Clean acoustic, cupped harp mic through a PA, or the harp amp? Which harmonicas, whether they swap them, whether they sing too, and how the hands move — the sound and the clearance follow from that.',
     why: {
       'Only the key of the first song, so you can set the EQ': 'The key does not set a mic position; the target sound and the hands do. Establish the sound with the player before any EQ.',
-      'Nothing yet: set the mic, then fit the playing round it': 'Never fit the player round a mic: place the mic for the player.',
+      'Nothing yet: set the mic, then fit the playing around it': 'Never fit the player around a mic: place the mic for the player.',
     },
   },
   hearingCheck(W),
@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'This cupped harp mic is omni. Where can a floor wedge go to avoid feedback?',
     options: ['No null helps: distance, level and the wedge’s aim do the work', 'Directly behind the mic, where its rear null would sit', 'Off to its side, where a pickup pattern is weakest'],
     correct: 'No null helps: distance, level and the wedge’s aim do the work',
-    explain: 'An omni picks up all round, so there is no rear null to aim. Place the wedge on an assumption of no rejection, keep levels down and keep the cupped mic away from loudspeakers.',
+    explain: 'An omni picks up all around, so there is no rear null to aim. Place the wedge on an assumption of no rejection, keep levels down and keep the cupped mic away from loudspeakers.',
     why: {
       'Directly behind the mic, where its rear null would sit': 'That works for a cardioid. An omni harp mic has no rear null.',
       'Off to its side, where a pickup pattern is weakest': 'An omni hears its sides as well as its front.',
@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Covering the grille or rear ports of a directional mic alters its pattern and reduces its rejection. A dedicated harp mic is made to be cupped; a vocal mic is not.',
     why: {
       'It becomes a better harp mic, with no downside': 'Cupping changes the pattern and costs feedback margin.',
-      'It rejects the monitors more, being enclosed': 'It is the other way round: covering the ports reduces the rejection.',
+      'It rejects the monitors more, being enclosed': 'It is the other way around: covering the ports reduces the rejection.',
     },
   },
   {
@@ -207,8 +207,8 @@ const scenarios: MikingScenario[] = [
     id: 'hm.place.1',
     page: 'placement',
     prompt: 'A starting point says about 15–30 cm. Measured from where?',
-    options: ['The harmonica, with the hands round it', 'The player’s chin, which stays still as they play', 'The floor, up to the mic’s own height'],
-    correct: 'The harmonica, with the hands round it',
+    options: ['The harmonica, with the hands around it', 'The player’s chin, which stays still as they play', 'The floor, up to the mic’s own height'],
+    correct: 'The harmonica, with the hands around it',
     explain: 'From the harmonica to the mic’s front — and the mic stays just beyond the hands’ whole movement, at about mouth and hand height.',
     why: {
       'The player’s chin, which stays still as they play': 'Measure from the source — the harmonica in the hands.',
@@ -243,11 +243,11 @@ const scenarios: MikingScenario[] = [
     id: 'hm.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · The hands open and close as the player plays. Must the stand clear that movement too?',
-    options: ['Yes — the whole movement, over whole phrases', 'No — the hands stay round the harmonica', 'No, clearing the mouth is what really counts'],
+    options: ['Yes — the whole movement, over whole phrases', 'No — the hands stay around the harmonica', 'No, clearing the mouth is what really counts'],
     correct: 'Yes — the whole movement, over whole phrases',
     explain: 'The hands open and close and the instrument moves; the player may swap harmonicas. Watch whole phrases and keep the stand clear of the mouth, the hands and any neck holder.',
     why: {
-      'No — the hands stay round the harmonica': 'They open and close — the hand wah — and the harmonica moves with the player.',
+      'No — the hands stay around the harmonica': 'They open and close — the hand wah — and the harmonica moves with the player.',
       'No, clearing the mouth is what really counts': 'The mouth AND the hands: a stand the hands can strike is in the way.',
     },
   },
@@ -348,12 +348,12 @@ const symptoms: Symptom[] = [
     id: 'hm.s.thin',
     observation: 'The acoustic tone is thin or breathy',
     firstChecks: 'Is the mic in the breath stream, or too far off the hands’ opening? Compare angle, distance and hand position over a whole phrase.',
-    options: ['Angle, distance and the hand position, over a phrase', 'Boost the low end on the desk until the tone fills out', 'Swap to a different harmonica straight away'],
+    options: ['Angle, distance and the hand position, over a phrase', 'Boost the low end on the desk until the tone fills out', 'Swap to a different harmonica right away'],
     correct: 'Angle, distance and the hand position, over a phrase',
     explain: 'The mic may sit in the breath stream or miss the hands’ opening. Compare angle, distance and hand position over a full phrase before EQ.',
     why: {
       'Boost the low end on the desk until the tone fills out': 'Find the placement cause first; EQ cannot put the mic in the right place.',
-      'Swap to a different harmonica straight away': 'The instrument is the player’s choice; check the mic and the hands first.',
+      'Swap to a different harmonica right away': 'The instrument is the player’s choice; check the mic and the hands first.',
     },
   },
   {
@@ -407,7 +407,7 @@ const symptoms: Symptom[] = [
   {
     id: 'hm.s.hum',
     observation: 'Hum or an intermittent signal',
-    firstChecks: 'Are the cable, the connector, the input impedance and the amp’s power sound? Stop and check the maker’s wiring; a qualified technician for electrical faults.',
+    firstChecks: 'Are the cable, the connector, the input impedance and the amp’s power all OK? Stop and check the maker’s wiring; call a qualified technician for electrical faults.',
     options: ['Stop; check cable, connector, input and power', 'Wiggle the cable during the show until the hum stops', 'Add a noise gate so the hum hides between the notes'],
     correct: 'Stop; check cable, connector, input and power',
     explain: 'Check the cable, the connector, the input it is plugged into and the amp’s power; leave electrical faults to a qualified technician.',
@@ -457,7 +457,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what turns the breath into a note?', options: ['Reeds chopping the air', 'The breath whistling', 'The covers ringing'], after: 'Now STEP through the reed (or PLAY ONCE), then try its shapes and the hands’ chamber.' },
-  microphone: { prompt: 'Before you move anything: this harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all round', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE round a cardioid, then choose the harp mic’s TYPE and sweep again.' },
+  microphone: { prompt: 'Before you move anything: this harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all around', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE around a cardioid, then choose the harp mic’s TYPE and sweep again.' },
   placement: { prompt: 'Predict: you move the stand mic from 15 cm back to 30 cm. What changes most?', options: ['More room, less breath and detail', 'More breath', 'Nothing'], after: 'Rest the mic in two zones — switch PATH to try the amp — and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the stand mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION. Then pick the harp amp as the MONITOR.' },
   twoMic: { prompt: 'A close speaker mic and one 75 cm back. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -546,7 +546,7 @@ export const A10_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A small reed instrument; the common diatonic has ten holes and, behind them, twenty reeds, usually brass — in each hole one sounds when you blow and one when you draw. The lips cover the holes; the hands hold it and shape its sound.', src: 'HOH-ROCKET' },
-    { title: 'WHERE YOU MEET IT', text: 'Blues, folk, rock, country and pop — on stage and in the studio, often played by a singer or a guitarist, sometimes from a neck holder. Played acoustically, or cupped round a harp mic through an amplifier.', src: 'LESSON-HM' },
+    { title: 'WHERE YOU MEET IT', text: 'Blues, folk, rock, country and pop — on stage and in the studio, often played by a singer or a guitarist, sometimes from a neck holder. Played acoustically, or cupped around a harp mic through an amplifier.', src: 'LESSON-HM' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, answering phrases and fills, rhythmic chords; through a harp amp, a driven, gritty lead voice. The player changes harmonicas to change key.', src: 'LESSON-HM' },
     { title: 'ITS SIZE', text: 'About 10 cm (4 in) long — small enough to disappear in the hands. That is why the hands matter so much to its sound.', src: 'HOH-SP20' },
   ],
@@ -558,12 +558,12 @@ export const A10_LESSON: Lesson = {
       { title: 'Puffs are the note', text: 'It keeps swinging at its own frequency, chopping the air into puffs — that is the note. The sound leaves the back of the cover plates and the ends, into the player’s hands.' },
     ],
     attack: 'The note’s start: the reed takes a moment to swing up to full size, and the breath and the tongue shape that start — breathy or crisp. A mic in the breath stream hears more of the air and the pops.',
-    body: 'The sustained tone, shaped by the hands’ chamber — open, cupped or moving (the hand wah). A stand mic hears that shaping and the air round it; a harp mic in the hands is part of the chamber, and through an amp the tone also takes on the amp and its speaker. Tendencies — players, harmonicas and amps vary.',
+    body: 'The sustained tone, shaped by the hands’ chamber — open, cupped or moving (the hand wah). A stand mic hears that shaping and the air around it; a harp mic in the hands is part of the chamber, and through an amp the tone also takes on the amp and its speaker. Tendencies — players, harmonicas and amps vary.',
     head: { diameterMm: 102, rods: 0, label: 'a 10-hole harmonica', strikeSrc: 'HOH-SP20' },
   },
   setting: {
     items: [
-      { id: 'player', label: 'the player, the harmonica and the hands', short: 'PLAYER', note: 'Standing, the harmonica at the lips, the hands round it. Their face, hands and any neck holder come before any mic; they may swap harmonicas and need somewhere to put a hand-held mic down.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'player', label: 'the player, the harmonica and the hands', short: 'PLAYER', note: 'Standing, the harmonica at the lips, the hands around it. Their face, hands and any neck holder come before any mic; they may swap harmonicas and need somewhere to put a hand-held mic down.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'amp', label: 'the harp amp', short: 'HARP AMP', note: 'Behind and to the side of the player, so they hear it without it pointing at the cupped mic. A mic on its speaker hears the whole amplified system: the harp mic, the amp, its distortion and the speaker.', prov: { kind: 'illustrative', reason: 'the amp behind the player, off their axis: a drawing default' }, tag: 'A SOURCE · FEEDBACK', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor in front of the player, facing back at them — behind a stand mic that faces the harmonica, where a pattern’s null can help. The omni harp mic has no null.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band', short: 'BAND', note: 'Loud neighbors: a closer directional stand mic helps more than gain; the amp and its speaker mic carry the harp in a loud band.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },

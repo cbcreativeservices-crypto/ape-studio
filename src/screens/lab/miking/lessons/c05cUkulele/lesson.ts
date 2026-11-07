@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a ukulele player — the strumming arc, the short neck, their voice above — what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a ukulele player — the strumming arc, the short neck, their voice above — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
     takeaway: 'The strumming arc and the voice above the ukulele shape everything. Nothing goes on or in the instrument without the owner. Ask the player first, and protect your hearing.',
   },
@@ -115,7 +115,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Spill between the vocal and ukulele mics is expected. Decide the priority — a coherent performance or separate tracks — then set the geometry.',
     why: {
       'Nothing: the vocal mic hardly hears the ukulele from that distance': 'It does: the two are close. Spill is expected; plan for it.',
-      'To ask the player to stop singing while the ukulele is recorded': 'The performance is theirs. Plan the mics round it.',
+      'To ask the player to stop singing while the ukulele is recorded': 'The performance is theirs. Plan the mics around it.',
     },
   },
   {
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a singing ukulele player?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a singing ukulele player?',
     options: ['The front of the ukulele, so the audience can see it', 'The strumming arc, the fretting hand and the vocal mic', 'The floor by the chair, which belongs to the DI box'],
     correct: 'The strumming arc, the fretting hand and the vocal mic',
     explain: 'The strumming hand sweeps over a small body, the fretting hand moves on a short neck, and the vocal mic sits just above. Keep the boom clear of all three.',
@@ -367,7 +367,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a singing ukulele player?',
+    prompt: 'What must a stand mic stay out of, around a singing ukulele player?',
     options: ['The strumming arc, the fretting hand and the vocal mic', 'The front of the ukulele, so the audience can see it clearly', 'The space behind the chair, where the cables run'],
     correct: 'The strumming arc, the fretting hand and the vocal mic',
     explain: 'The hand strums over a small body, the other hand frets a short neck, and the vocal mic is just above.',

@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a combo setup in order, choose and justify an architecture for two briefs, and say what one support adds and costs.',
     credit: { scenarios: ['jz.prac.order', 'jz.prac.gain', 'jz.prac.setup1', 'jz.prac.setup2', 'jz.prac.3', 'jz.prac.4', 'jz.prac.5'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the three reasoning cards. The observation sheet is optional.' },
-    takeaway: 'Hear the group unamplified, agree its layout with the players, choose the architecture, add one justified support at a time, and keep the PA, the wedges and the stream as separate balances.',
+    takeaway: 'Hear the group unamplified, agree on its layout with the players, choose the architecture, add one justified support at a time, and keep the PA, the wedges and the stream as separate balances.',
   },
 };
 
@@ -131,12 +131,12 @@ const scenarios: MikingScenario[] = [
     id: 'jz.mic.1',
     page: 'microphone',
     prompt: 'Which main pair is most predictable when summed to mono?',
-    options: ['A coincident X/Y pair', 'A widely spaced pair of omnis', 'Two mics at either side of the stage'],
+    options: ['A coincident X/Y pair', 'A widely spaced pair of omnis', 'Two mics at on either side of the stage'],
     correct: 'A coincident X/Y pair',
     explain: 'With the capsules together, both mics hear each player at the same time: no time differences to comb in mono. A spaced pair can comb-filter when summed.',
     why: {
       'A widely spaced pair of omnis': 'Spacing adds time differences — the cause of combing in mono.',
-      'Two mics at either side of the stage': 'Far apart, they hear every player at different times.',
+      'Two mics at on either side of the stage': 'Far apart, they hear every player at different times.',
     },
   },
   msMono('jz', 'microphone'),
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Drums and piano can mask it',
     explain: 'The bass is low and wide; the kick and the piano’s low notes share its range — so it is often the first line to need a support.',
     why: {
-      'It radiates only upward': 'It radiates round, and into the floor through its endpin.',
+      'It radiates only upward': 'It radiates all around, and into the floor through its endpin.',
       'Its strings are quieter than they look': 'Not the strings: the louder drums and piano share its range and mask it.',
     },
   },
@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The pair is close and the sax dominates. First change?',
     options: ['Move the pair back, or the sax with the player', 'Add spots for everyone else in the band to balance', 'Turn the sax down on the mixing desk'],
     correct: 'Move the pair back, or the sax with the player',
-    explain: 'Close in, the front player is much nearer than the rest. Move the pair farther back, or agree a step back with the player — one change at a time.',
+    explain: 'Close in, the front player is much nearer than the rest. Move the pair farther back, or agree on a step back with the player — one change at a time.',
     why: {
       'Add spots for everyone else in the band to balance': 'Spots first hide a placement problem with overlap.',
       'Turn the sax down on the mixing desk': 'The sax is in the pair itself: no fader separates it.',
@@ -342,7 +342,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The horn’s relationship to the pair? Change it with the musicians’ agreement; then reduce the support mic or adjust the main view.',
     options: ['Change the horn-to-pair geometry', 'Turn the whole pair down at once', 'Add a compressor to the main pair'],
     correct: 'Change the horn-to-pair geometry',
-    explain: 'Move the pair or agree a step back with the player first; then lower the horn’s support.',
+    explain: 'Move the pair or agree on a step back with the player first; then lower the horn’s support.',
     why: { 'Turn the whole pair down at once': 'That lowers everyone equally; the horn still dominates.', 'Add a compressor to the main pair': 'Compression brings everything else up under the horn.' },
   },
   {
@@ -434,7 +434,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The soloist dominates more'], after: 'Farther back, the distances to the front and back players even out: NEAR / FAR shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the bassist, below the bass mic. Can the mic’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The main pair and a bass spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
@@ -518,12 +518,12 @@ export const E15_LESSON: EnsembleLesson = {
       prompt: 'A combo setup, in order:',
       steps: [
         { text: 'Hear the group unamplified; map who leads and where', early: 'Start by listening to what the group already sounds like.' },
-        { text: 'Agree the layout with the players: amps, lid, sightlines', early: 'The layout comes before any mic.' },
+        { text: 'Agree on the layout with the players: amps, lid, sightlines', early: 'The layout comes before any mic.' },
         { text: 'One main view: a pair, or the kit view', early: 'The main view comes once the layout is agreed.' },
         { text: 'Add one justified support at a time', early: 'Supports come after the main view, for stated needs.' },
         { text: 'Check the sum in mono and stereo; set the roles', early: 'Checks come with the mics up.' },
       ],
-      explain: 'Hear the group, agree its layout, set one main view, add one justified support at a time, then check mono and stereo and give every mic its role.',
+      explain: 'Hear the group, agree on its layout, set one main view, add one justified support at a time, then check mono and stereo and give every mic its role.',
     },
   ],
   setupTasks,
@@ -547,7 +547,7 @@ export const E15_LESSON: EnsembleLesson = {
   setting: {
     items: [
       { id: 'players', label: 'the players’ eye contact and formation', short: 'PLAYERS', note: 'Ask whether they need eye contact, an open room, their normal formation or a screen; never make the layout get in the way of the performance.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'never make the room layout impede the performance (L5)' }, tag: 'ASK FIRST', scene: 'all' },
-      { id: 'amp', label: 'the guitar amp’s direction', short: 'AMP', note: 'An amp aimed away from the drums, the piano or the bass mic puts less of it in their mics — agree it with the player.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'A guitar amp aimed away from a piano or bass microphone may reduce spill (L26)' }, tag: 'SPILL', scene: 'all' },
+      { id: 'amp', label: 'the guitar amp’s direction', short: 'AMP', note: 'An amp aimed away from the drums, the piano or the bass mic puts less of it in their mics — agree on it with the player.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'A guitar amp aimed away from a piano or bass microphone may reduce spill (L26)' }, tag: 'SPILL', scene: 'all' },
       { id: 'lid', label: 'the piano lid', short: 'LID', note: 'The lid changes where the piano projects and what nearby mics hear; keep stands clear of the pedals, the lid and the hands.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'a piano lid changes where it projects and what nearby microphones hear (L26)' }, tag: 'BALANCE', scene: 'all' },
       { id: 'endpin', label: 'the bass endpin, pedals and cables', short: 'KEEP CLEAR', note: 'Stabilize stands and keep cable paths clear of the players, the audience, chairs, the piano pedals and the bass endpin. No improvised clip or adhesive on a valuable instrument.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Stabilize stands and isolate cable paths from players, audience, chair movement, piano pedals and bass endpin (L70)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the club PA and the wedges', short: 'PA', note: 'Reinforce only what the audience lacks; aim directional mics with the loudspeakers and monitors in mind; keep the pair out of the wedges.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Reinforce only what the audience lacks (L52)' }, tag: 'FEEDBACK', scene: 'stage' },
@@ -559,7 +559,7 @@ export const E15_LESSON: EnsembleLesson = {
   },
   diagnostic,
   practice: {
-    task: 'With the players’ agreement, hear the group unamplified, agree its layout, set one main view, add one justified support at a time, check mono and stereo, and keep the PA, the wedges and the stream as separate roles — never provoking feedback. Log what you tried below.',
+    task: 'With the players’ agreement, hear the group unamplified, agree on its layout, set one main view, add one justified support at a time, check mono and stereo, and keep the PA, the wedges and the stream as separate roles — never provoking feedback. Log what you tried below.',
     fields: [
       { id: 'group', label: 'The group and its layout', kind: 'text' },
       { id: 'goal', label: 'What it is for', kind: 'choice', choices: ['studio', 'club', 'club and stream'] },
@@ -576,7 +576,7 @@ export const E15_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E15_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree on its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; avoid uncontrolled feedback.',
   copy: { words: ensembleWords('combo') },
   ensemble: {
     seatings: { quartet: 'jazz.quartet', guitar: 'jazz.guitar' },
@@ -601,7 +601,7 @@ export const E15_LESSON: EnsembleLesson = {
       begin: 'After our research, this is where we suggest you begin with a combo: one main pair in front of the group and a little above — a place to start and compare, then add supports only for a named need.',
       clearance: 'The stand in front of the group, clear of the soloist’s movement, the wedges and the audience’s way; its cable dressed flat and out of the walkways.',
       height: 'About 2.2 m up — high enough to see past the soloist to the bass, the piano and the kit. Higher hears more of the back of the group and the room; lower, more of the soloist.',
-      forward: 'About 2 m in front of the band’s front line. Closer tends to more of the soloist and more direct sound; farther back, more blend and more room — and, live, less gain before feedback.',
+      forward: 'About 2 m in front of the band’s front line. Closer tends to give more of the soloist and more direct sound; farther back, more blend and more room — and, live, less gain before feedback.',
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair — about 1.5–3 m in front of the group and 2–2.5 m up. Places to start and compare, not measurements of a best place.',

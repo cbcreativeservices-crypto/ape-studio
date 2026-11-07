@@ -411,7 +411,7 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
             ],
             correctIdx: 0,
             reveal:
-              'The amber curve is the filter’s designed shape, worked out from its maths. The bars below it are redrawn as if that filter were in place, so you can see what it would take away before you take it.',
+              'The amber curve is the filter’s designed shape, worked out from its math. The bars below it are redrawn as if that filter were in place, so you can see what it would take away before you take it.',
             wrongHint: 'Read the caption under the display — designed, not measured.',
           }}
         />

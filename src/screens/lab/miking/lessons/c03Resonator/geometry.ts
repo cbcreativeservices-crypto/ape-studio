@@ -13,7 +13,7 @@ const RAW = buildGuitarModel({
   variants: C03_VARIANTS,
   defaultVariant: 'lap',
   partWords: {
-    sides: { label: 'body', short: 'body', role: 'The body round the cone. Its sound ports and the coverplate let the cone’s sound out.' },
+    sides: { label: 'body', short: 'body', role: 'The body around the cone. Its sound ports and the coverplate let the cone’s sound out.' },
   },
 });
 export const C03_ZONES = C03_VARIANTS.flatMap((v) => c03ZoneSpecs(RAW.scenes[v.id]).map((z) => zoneFor(RAW.scenes[v.id], z)));

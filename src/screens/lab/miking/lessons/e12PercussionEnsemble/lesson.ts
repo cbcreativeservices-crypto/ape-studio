@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A loud metal part covers a quiet shaker. What do you try first?',
     options: ['Move the metal away, with the players', 'Turn the shaker’s own close mic up more', 'Cut the metal’s high end with EQ'],
     correct: 'Move the metal away, with the players',
-    explain: 'Rehearse the balance acoustically before placing mics: moving a loud metal source away from a quiet shaker can do more than raising a mic that hears both. Agree changes with the performers.',
+    explain: 'Rehearse the balance acoustically before placing mics: moving a loud metal source away from a quiet shaker can do more than raising a mic that hears both. Agree on changes with the performers.',
     why: {
       'Turn the shaker’s own close mic up more': 'That mic hears the metal too — both come up.',
       'Cut the metal’s high end with EQ': 'EQ dulls the metal everywhere without uncovering the shaker.',
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One player moves between three stations. Where do you start?',
     options: ['Watch the whole choreography first', 'One close mic on each instrument at once', 'Ask the player to stay at one station'],
     correct: 'Watch the whole choreography first',
-    explain: 'Have the player demonstrate the reaches, turns, pedals and transitions; place area mics round the useful playing zones, then a dedicated mic only where a source stays poorly covered.',
+    explain: 'Have the player demonstrate the reaches, turns, pedals and transitions; place area mics around the useful playing zones, then a dedicated mic only where a source stays poorly covered.',
     why: {
       'One close mic on each instrument at once': 'That adds channels before you know what is covered.',
       'Ask the player to stay at one station': 'The music decides the stations; the mics follow the player.',
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage with a band: the percussion ensemble is reinforced; one player moves between stations. Wedges in front.',
     setups: [
       { id: 'a', label: 'Close directional mics on the stations that need it, wedges in their rejection', ok: true, power: 'phantom', feedback: 'Gain before feedback where it is needed; the monitors where the mics hear least.' },
-      { id: 'b', label: 'Two area mics round the moving player’s stations, plus the congas', ok: true, power: 'phantom', feedback: 'Fair: the movement covered with few channels, checked for overlap.' },
+      { id: 'b', label: 'Two area mics around the moving player’s stations, plus the congas', ok: true, power: 'phantom', feedback: 'Fair: the movement covered with few channels, checked for overlap.' },
       { id: 'c', label: 'A distant spaced pair turned up for the PA', ok: false, power: 'phantom', feedback: 'It raises the stage spill and the PA with the percussion.' },
       { id: 'd', label: 'A fixed mic where the shaker started, nothing else', ok: false, power: 'none', feedback: 'A fixed capsule cannot follow an instrument moved out of its pickup.' },
       { id: 'e', label: 'Push the wedges until they ring, then back off', ok: false, power: 'none', feedback: 'Not until they ring: set the level the players need, with a margin.' },
@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the conga mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the conga mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the pair from 2 m to 2.5 m. What changes?', options: ['Which surfaces and instruments dominate', 'Only the level', 'Nothing a listener would notice'], after: 'Higher, the distances to the front and back instruments change — and so do the surfaces the pair hears. Compare at matched level; higher is not automatically better.' },
   context: { prompt: 'The wedge sits in front of the congas on the floor. Can the conga mic’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The pair and the conga mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another instrument.' },
@@ -528,7 +528,7 @@ export const E12_LESSON: EnsembleLesson = {
   setting: {
     items: [
       { id: 'paths', label: 'the players’ paths, pedals and changes', short: 'PATHS', note: 'Stands and cables clear of the walking routes, the pedals and the instrument changes; overhead hardware out of reach.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Secure stands and cables without interfering with player paths, pedals or instrument changes (L61)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'moves', label: 'one player at several stations', short: 'MOVEMENT', note: 'Watch the whole choreography; area mics round the useful playing zones, a dedicated mic only where a source stays poorly covered. Avoid covering one loud cymbal equally with every area mic.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Place area microphones around useful playing zones (L55); Avoid covering the same loud cymbal equally with every area microphone (L56)' }, tag: 'COVERAGE', scene: 'all' },
+      { id: 'moves', label: 'one player at several stations', short: 'MOVEMENT', note: 'Watch the whole choreography; area mics around the useful playing zones, a dedicated mic only where a source stays poorly covered. Avoid covering one loud cymbal equally with every area mic.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Place area microphones around useful playing zones (L55); Avoid covering the same loud cymbal equally with every area microphone (L56)' }, tag: 'COVERAGE', scene: 'all' },
       { id: 'metal', label: 'loud metal near quiet parts', short: 'METAL', note: 'A loud cymbal next to a quiet shaker reaches the shaker’s mic too: move the source, with the players, before raising a mic that hears both.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Moving a loud metal source away from a quiet shaker can be more effective (L15)' }, tag: 'SPILL', scene: 'all' },
       { id: 'res', label: 'resonators and vibrating bars', short: 'BARS', note: 'Never block a resonator opening or touch a vibrating bar; keep the mallets’ path above the bars clear.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Never block resonator openings or touch vibrating bars (L50)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'mon', label: 'the wedges and the PA', short: 'MONITORS', note: 'Monitors by each mic’s real polar diagram, rechecked after any move; fewer unnecessary open mics.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Use the actual model’s polar diagrams to position monitors (L60)' }, tag: 'FEEDBACK', scene: 'stage' },

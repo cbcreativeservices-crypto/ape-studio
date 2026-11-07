@@ -91,7 +91,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'ride.under' },
     opposite: {
       surface: 'rideTop',
-      note: 'One mic over the ride and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states, no setting is required.',
+      note: 'One mic over the ride and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; no setting is required.',
     },
     learn: [
       'A mic under the ride tends to hear less stick and more of the wash — and its rear faces the floor. A second perspective, kept only if it helps the ride in the whole kit.',

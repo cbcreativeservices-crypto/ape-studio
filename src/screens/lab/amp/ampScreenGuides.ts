@@ -26,7 +26,7 @@ import type { AmpModuleId } from '../../../features/amp/ampContent';
  *  them (pinned by the test), so the host can key the guide by step index. */
 export type AmpStepGuide = { key: string; kind: 'rack' | 'read'; guide: ScreenGuide };
 
-const RUN_SLOW = 'RUN and SLOW start, stop or slow the moving playhead (one STEP ¼ key when motion is reduced). ⤢ FULL SCREEN enlarges the display.';
+const RUN_SLOW = 'RUN and SLOW start, stop or slow the moving playhead (with reduced motion on, one STEP ¼ key replaces them). ⤢ FULL SCREEN enlarges the display.';
 const STRIP = 'The strip under the title moves between steps and modules; ‹ goes back one screen, to the lab menu.';
 
 export const AMP_HOME_GUIDE: ScreenGuide = {
@@ -62,12 +62,12 @@ export const AMP_HOME_GUIDE: ScreenGuide = {
 
 export const AMP_END_GUIDE: ScreenGuide = {
   seeing: [
-    'WHAT’S LEFT: the modules not yet marked complete, the Final assessment (your best score once submitted), and last the CHECK row for Check your understanding. LAB COMPLETE only once all are done, the check passed included.',
+    'WHAT’S LEFT: the modules not yet marked complete, the Final assessment (your best score once submitted), and last the CHECK row for Check your understanding. LAB COMPLETE shows only once all are done, including a passed check.',
     'Completed items fold into one ✓ DONE row; REVIEW ▾ lists them.',
     'CHECK YOUR UNDERSTANDING: the lab menu’s quiz, here too. Passing it counts this lab toward certificates.',
   ],
   control: [
-    'Tap a row to open it; the Final assessment row opens Module 8. The Check your understanding row moves this screen up to the check, which sits on it.',
+    'Tap a row to open it; the Final assessment row opens Module 8. The Check your understanding row scrolls to the check on this same screen.',
     'Answer the CHECK YOUR UNDERSTANDING questions; a wrong pick explains itself and lets you try another.',
     'PRACTICE AGAIN FROM THE START opens Module 1 — it never clears what you have done.',
     'DONE · BACK TO LABS goes back one screen: to the lab menu from a module, out of the lab from the menu.',
@@ -162,7 +162,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
       kind: 'rack',
       guide: {
         seeing: [
-          'A transformer: PRIMARY · Np and SECONDARY · Ns windings on a laminated steel CORE, with the changing magnetic field looping round it.',
+          'A transformer: PRIMARY · Np and SECONDARY · Ns windings on a laminated steel CORE, with the changing magnetic field looping around it.',
           'The input wave sits at the left; the output wave at the right grows or shrinks with the turns ratio.',
           'Readouts: KIND, RATIO (Np to Ns), Vs and Is — the secondary’s volts and amps for 120 V and 1 A on the primary.',
         ],
@@ -472,7 +472,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'Load builder: Parallel or Series; + 16 Ω, + 8 Ω or + 4 Ω adds a cabinet (up to four); CLEAR starts again.',
           'Power: 8 Ω, 4 Ω or 2 Ω at 28.3 Vrms. Bridge: Stereo or Bridge mode, then an 8 Ω or 4 Ω bridged load.',
           'Watts: slide the Power ratio P2 ÷ P1 from 0.25× to 10×.',
-          'Inspection: pick a Rack, then the finding you see. Decoder: pick a Sheet, tick what is missing, tap CHECK.',
+          'Inspection: pick a Rack, then the finding you see. Decoder: pick a Sheet, check what is missing, tap CHECK.',
           'At the end: CHECK YOURSELF questions, the TAKEAWAY and MARK COMPLETE ›.',
         ],
         changes: [
@@ -565,7 +565,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         ],
         control: [
           'SOURCE, MIXER and AMP IN faders (0–100%): the three stage levels.',
-          'SETUP key: Operating mode — Stereo or Bridge; Supply condition — Healthy or Sagging (weak mains); Speaker load (nominal) — 8, 4 or 2 Ω; Ventilation — Clear or Blocked.',
+          'SETUP key: Operating mode — Stereo or Bridge; Supply condition — Healthy or Sagging (weak AC power); Speaker load (nominal) — 8, 4 or 2 Ω; Ventilation — Clear or Blocked.',
           'RUN; ⤢ FULL SCREEN. SCORE THIS CONFIGURATION grades it as often as you like; any change clears the score.',
           STRIP,
         ],

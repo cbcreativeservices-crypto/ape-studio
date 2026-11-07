@@ -131,14 +131,14 @@ export const GLOSSARY_CONCEPTS = {
   safety: [
     'Equipment Ground',
     'Safety ground',
-    'Never lift safety earth',
+    'Never lift safety ground',
     'Ground-Lift Adapter',
     'Lifted Ground Hazard',
     'Ground loop',
     'Ground Fault',
     'Equipment Grounding Conductor',
     'Neutral Conductor',
-    'protective earth conductor',
+    'safety ground conductor',
   ],
   testing: [
     'Cable Tester',

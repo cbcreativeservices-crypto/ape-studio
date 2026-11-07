@@ -355,12 +355,12 @@ const symptoms: Symptom[] = [
     id: 'fc.s.harsh',
     observation: 'Harsh attack',
     firstChecks: 'Is the pair or the contact making it — or is the mic too direct?',
-    options: ['The contact and pair, then a safe angle', 'Push the mic closer to soften the attack', 'Cut the treble on the desk straight away'],
+    options: ['The contact and pair, then a safe angle', 'Push the mic closer to soften the attack', 'Cut the treble on the desk right away'],
     correct: 'The contact and pair, then a safe angle',
     explain: 'Compare the technique and the pair, then a safe angle or distance at matched level.',
     why: {
-      'Push the mic closer to soften the attack': 'Closer tends to more attack, not less.',
-      'Cut the treble on the desk straight away': 'Find whether the source or the mic makes it before EQ.',
+      'Push the mic closer to soften the attack': 'Closer tends to give more attack, not less.',
+      'Cut the treble on the desk right away': 'Find whether the source or the mic makes it before EQ.',
     },
   },
   {
@@ -427,7 +427,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what happens if the two cymbals stay together after the stroke?', options: ['The ring is choked', 'They ring louder', 'Nothing changes'], after: 'Now STEP through the stroke (or PLAY ONCE), then try the plate’s shapes.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 30 cm to 60 cm. What changes most?', options: ['More room, steadier level', 'More attack', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -438,12 +438,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'fc.q.1',
     covers: 'instrument',
     prompt: 'What are finger cymbals?',
-    options: ['A pair of small cymbals that sound when struck together', 'A single small cymbal on a short stand, struck with a stick', 'Tiny bells tied in a ring round the player’s wrist'],
+    options: ['A pair of small cymbals that sound when struck together', 'A single small cymbal on a short stand, struck with a stick', 'Tiny bells tied in a ring around the player’s wrist'],
     correct: 'A pair of small cymbals that sound when struck together',
     explain: 'A pair of small metal plates — concussion idiophones. (Crotales, a tuned keyboard of small cymbals, are a different instrument.)',
     why: {
       'A single small cymbal on a short stand, struck with a stick': 'They are a pair, struck together — held or worn on the fingers.',
-      'Tiny bells tied in a ring round the player’s wrist': 'They are small cymbals, not bells.',
+      'Tiny bells tied in a ring around the player’s wrist': 'They are small cymbals, not bells.',
     },
   },
   {
@@ -527,7 +527,7 @@ export const I06B_LESSON: Lesson = {
       { title: 'Edge-first', text: 'One cymbal is held flat; the other is dropped edge-first toward it.', byVariant: { dance: 'The thumb and a finger bring their two cymbals together, in rhythm.' } },
       { title: 'The edges meet', text: 'The edge strikes the other cymbal near its rim: the bright ATTACK.' },
       { title: 'Apart, both ring', text: 'The upper cymbal lifts away and both plates ring in many shapes at once. Kept pressed together, they would choke.', byVariant: { dance: 'Thumb and finger part and both plates ring in many shapes at once. Kept pressed together, they would choke.' } },
-      { title: 'Sound leaves all round', text: 'Sound leaves both faces of both small plates. A mic a little above sees both cymbals and the release.', byVariant: { dance: 'Sound leaves both faces of both small plates — while the dancer moves on, so the distance to a fixed mic keeps changing.' } },
+      { title: 'Sound leaves all around', text: 'Sound leaves both faces of both small plates. A mic a little above sees both cymbals and the release.', byVariant: { dance: 'Sound leaves both faces of both small plates — while the dancer moves on, so the distance to a fixed mic keeps changing.' } },
     ],
     attack: 'The start of each stroke: edge meeting edge — very brief and very bright. A mic close to the contact, or aimed straight at it, tends to hear more of it; the contact, the force and the pair change it before the mic does.',
     body: 'The ring after the cymbals part: both small plates shimmering, until the player lets it fade or damps it. Pressed together they choke. A mic that sees both cymbals and the release hears attack and ring together. Tendencies — pairs and players vary.',

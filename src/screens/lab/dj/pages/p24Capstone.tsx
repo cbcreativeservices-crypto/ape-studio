@@ -528,7 +528,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>The board is the method: every card’s meter is a tap of the real signal. A dark card after a live one is where to look. The tempos are matched for you, with key lock on — the lesson here is the system.</P>
-        <Note tone="safety">Real faults at real events: turn the MASTER down before you touch an output cable, never remove a mains earth, and keep your ears protected while you troubleshoot. A hum here is 60 Hz mains (50 Hz in many countries).</Note>
+        <Note tone="safety">Real faults at real events: turn the MASTER down before you touch an output cable, never remove a safety ground, and keep your ears protected while you troubleshoot. A hum here is 60 Hz from the power line (50 Hz in many countries).</Note>
       </Step>
       <Step n={4}>
         <Do>Power up safely, cue privately, make a clean transition, announce to the room and the recording, fix the event’s fault, and debrief it.</Do>

@@ -695,7 +695,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         seeing: [
           'The display: the waveform, the gain-reduction strip and the limiter faceplate — INPUT (the drive), CEILING −1.0 dBFS, RELEASE 80 ms, GR.',
-          'While you drag DRIVE the picture is an estimate, labelled ESTIMATE · RENDERS WHEN YOU LET GO.',
+          'While you drag DRIVE the picture is an estimate, labeled ESTIMATE · RENDERS WHEN YOU LET GO.',
           'The bezel: PEAK, TRUE PK, LUFS, PLR and MATCH dB.',
         ],
         control: [
@@ -844,25 +844,25 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       key: 'checklist', title: 'Delivery checklist', rack: true,
       guide: {
         seeing: [
-          'The display: a delivery sheet for the chosen destination — its sample brief and the lines to confirm, filling in as you tick them.',
-          'The bezel: DESTINATION and CONFIRMED (green when every line is ticked).',
+          'The display: a delivery sheet for the chosen destination — its sample brief and the lines to confirm, filling in as you check them.',
+          'The bezel: DESTINATION and CONFIRMED (green when every line is checked).',
           'The notes: the brief, then FACT and EXAMPLE lines.',
         ],
         control: [
           'DESTINATION in the dock: ride it, or tap it for the list.',
-          'CONFIRM opens the checklist: tap a line to tick it, tap again to clear it.',
+          'CONFIRM opens the checklist: tap a line to check it, tap again to clear it.',
         ],
         changes: [
-          'Every destination has its own list, and keeps its own ticks when you switch.',
-          'FACTS are facts; EXAMPLES are labelled examples to verify against the destination’s current spec — not the rule.',
+          'Every destination has its own list, and keeps its own check marks when you switch.',
+          'FACTS are facts; EXAMPLES are labeled examples to verify against the destination’s current spec — not the rule.',
         ],
         teaches: [
           'Confirm the destination’s current spec and the client’s request, deliver exactly that, and document it.',
           'The order of operations: sample-rate conversion first, dither to 16-bit as the very last step, once.',
         ],
         tryThis: [
-          'Ride DESTINATION to CD preparation, open CONFIRM and tick every line: CONFIRMED turns green.',
-          'Switch to Vinyl preparation and back: each destination keeps its own ticks.',
+          'Ride DESTINATION to CD preparation, open CONFIRM and check every line: CONFIRMED turns green.',
+          'Switch to Vinyl preparation and back: each destination keeps its own check marks.',
         ],
       },
     },
@@ -963,23 +963,23 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       key: 'checks', title: 'Listening checks and tools', rack: false,
       guide: {
         seeing: [
-          'A checklist of listening checks and tools for this EP, each ☐ until ticked.',
+          'A checklist of listening checks and tools for this EP, each ☐ until checked.',
           'A card at the foot: Ready? with REVEAL THE KEY ›.',
         ],
         control: [
-          'Tap a line to tick it (☑); tap again to clear it. Your ticks are kept.',
+          'Tap a line to check it (☑); tap again to clear it. Your check marks are kept.',
           'REVEAL THE KEY › shows the key and a reason under each line.',
         ],
         changes: [
           'After the reveal, lines that differ from the key are marked Needed: or Not this:, with the reasoning.',
-          'The card counts how many lines agree with the key: ticked where a check is needed, left clear where it is not.',
+          'The card counts how many lines agree with the key: checked where a check is needed, left clear where it is not.',
         ],
         teaches: [
           'Choosing checks from the brief: what this EP needs, and what would break what the client protected.',
           'The point is the reasoning, not the score.',
         ],
         tryThis: [
-          'Tick your list with the brief open in your mind, then reveal and read only the lines that differ.',
+          'Check your list with the brief open in your mind, then reveal and read only the lines that differ.',
           'Look for any line that would undo something the client asked to keep.',
         ],
       },
@@ -1017,15 +1017,15 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       key: 'qc', title: 'Final QC checklist', rack: false,
       guide: {
         seeing: [
-          'The final QC checklist: nine lines on the exported files, each ☐ until ticked.',
+          'The final QC checklist: nine lines on the exported files, each ☐ until checked.',
           'A status card under it, then KEY TERMS, the TAKEAWAY and the module’s credit line.',
         ],
         control: [
-          'Tap a line to tick it (☑); tap again to clear it. Your ticks are kept.',
+          'Tap a line to check it (☑); tap again to clear it. Your check marks are kept.',
           'NEXT › here is FINISH: it opens the what’s-left screen for the whole lab.',
         ],
         changes: [
-          'With every line ticked the card reads QC complete — or Delivered once the four track decisions are answered too.',
+          'With every line checked the card reads QC complete — or Delivered once the four track decisions are answered too.',
           'That moment credits the module.',
         ],
         teaches: [
@@ -1033,7 +1033,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
           'A mastering job ends with a delivery somebody can use, and a note of what was sent.',
         ],
         tryThis: [
-          'Tick each line only when you can say how you would check it on a real file.',
+          'Check each line only when you can say how you would check it on a real file.',
           'If the card says decisions are still open, press ‹ PREV three times to reach step 2, What can mastering address?, and answer them.',
         ],
       },
@@ -1058,11 +1058,11 @@ export const MASTERING_END_GUIDE: ScreenGuide = {
     'Tap a module’s row to open it on the step that finishes it: its PRACTICE deck, or Module 8’s track decisions — its QC checklist once those four are saved. A finished module opens at its first step.',
     'PRACTICE AGAIN FROM THE START opens Module 1 at its first step; saved answers stay, and it never undoes a finished module.',
     'DONE · BACK TO LABS leaves the lab.',
-    'On the strip, ‹ PREV returns to the step you came from — your answers and ticks are kept, its other settings start fresh — and ⏮ opens Module 1. Tap the WHAT’S LEFT ▾ readout for the list of modules.',
+    'On the strip, ‹ PREV returns to the step you came from — your answers and check marks are kept, its other settings start fresh — and ⏮ opens Module 1. Tap the WHAT’S LEFT ▾ readout for the list of modules.',
   ],
   changes: [
-    'A module is done — “credited” inside the module — the moment every one of its decisions has an answer, right or wrong. Module 8 also needs every QC line ticked.',
-    'START OVER (PRACTICE), at the foot of the module list, asks first, then clears your answers and Module 8 ticks and opens Module 1; finished modules stay done.',
+    'A module is done — “credited” inside the module — the moment every one of its decisions has an answer, right or wrong. Module 8 also needs every QC line checked.',
+    'START OVER (PRACTICE), below the module list, asks first, then clears your answers and Module 8 check marks and opens Module 1; finished modules stay done.',
     'Progress is kept on this device. Signed out, the line under the title says what is kept.',
   ],
   teaches: [

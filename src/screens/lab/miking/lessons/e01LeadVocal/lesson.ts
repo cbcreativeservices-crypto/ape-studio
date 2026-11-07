@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a lead vocal mic in the right order, choose and justify a setup for a studio take and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['lv.prac.order', 'lv.prac.gain', 'lv.prac.setup1', 'lv.prac.setup2', 'lv.prac.3', 'lv.mix.1', 'lv.mix.2', 'lv.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real singer.' },
-    takeaway: 'Distance from the lips, clearance from the face, headroom for the loudest note, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a “hotter” signal or a male-versus-female rule do not — and more than one setup can pass.',
+    takeaway: 'Distance from the lips, clearance from the face, headroom for the loudest note, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a “hotter” signal or a male-versus-female rule does not — and more than one setup can pass.',
   },
 };
 
@@ -155,7 +155,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The puff goes straight ahead out of the lips. That is why a screen sits in front of a studio vocal mic, and why a small angle or a little distance helps.',
     why: {
       'Up and out toward the singer’s nose': 'The nose carries m, n and ng — the puff of a P goes straight out of the lips.',
-      'Out to all sides of the mouth evenly': 'Sound spreads round the front; the air of a P goes straight ahead.',
+      'Out to all sides of the mouth evenly': 'Sound spreads around the front; the air of a P goes straight ahead.',
     },
   },
   {
@@ -403,7 +403,7 @@ const symptoms: Symptom[] = [
     explain: 'Small distance changes are big level changes close up. A rehearsed working zone and a mark on the floor keep it steady — compression cannot fix a moving tone.',
     why: {
       'Compress it hard until the level stops moving around': 'Compression evens the level but not the changing tone and room — and it brings the room up.',
-      'Ask the singer to stand completely still': 'Movement is part of singing; agree a zone instead.',
+      'Ask the singer to stand completely still': 'Movement is part of singing; agree on a zone instead.',
     },
   },
   {
@@ -473,7 +473,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a screened mic from 25 cm to 15 cm on the mouth’s axis. What changes?', options: ['More low end', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the singer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -513,7 +513,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The puff goes straight ahead out of the lips — a screen, a small angle or more distance keeps it off a capsule.',
     why: {
       'Upward and out toward the singer’s nose': 'The nose carries m, n and ng. The puff of a P goes straight out.',
-      'Out to the sides of the mouth': 'Sound spreads round the front; the air of a P goes straight ahead.',
+      'Out to the sides of the mouth': 'Sound spreads around the front; the air of a P goes straight ahead.',
     },
   },
   {
@@ -576,7 +576,7 @@ export const E01_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'The voice is an instrument you cannot see: breath from the lungs sets two small vocal folds in the throat buzzing, and the throat, the tongue and the mouth shape that buzz into vowels and words. Almost all of it leaves through the open mouth — on m, n and ng through the nose instead.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'The lead vocal of every style — pop, rock, soul, jazz, classical, rap — in the studio and on stage. Intimate, breathy, belted, shouted or whispered: each asks something different of the mic.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries the words and the melody, often the most important sound in the mix. Its range is huge: from a whisper to a belt that can reach about 135 dB right at the lips — and the singer moves.', src: 'DPA-VOICE' },
-    { title: 'EVERY VOICE IS DIFFERENT', text: 'A low male voice, a high female voice, a mixed voice or falsetto each have their own balance and level — but none of that is a rule for choosing a mic. Hear the singer’s actual delivery first.', src: 'LESSON' },
+    { title: 'EVERY VOICE IS DIFFERENT', text: 'A low male voice, a high female voice, a mixed voice or falsetto each has its own balance and level — but none of that is a rule for choosing a mic. Hear the singer’s actual delivery first.', src: 'LESSON' },
   ],
   sound: {
     stages: [

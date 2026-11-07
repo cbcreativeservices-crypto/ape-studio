@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a practice session in order, choose and justify setups for two briefs, and say what would justify another detail channel.',
     credit: { scenarios: ['mo.prac.order', 'mo.prac.gain', 'mo.prac.setup1', 'mo.prac.setup2', 'mo.prac.3', 'mo.mix.1', 'mo.mix.2', 'mo.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Approved places, a fixed sector and a stable ambience, headroom for the nearest pass, dry connectors and calm around animals pass. A closer position or a louder test do not.',
+    takeaway: 'Approved places, a fixed sector and a stable ambience, headroom for the nearest pass, dry connectors and calm around animals pass. A closer position or a louder test does not.',
   },
 };
 
@@ -138,12 +138,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mo.set.3',
     page: 'setups',
-    prompt: 'Your mic needs mains power on a wet pool deck. Who sets it up?',
-    options: ['The venue’s qualified electrical authority', 'You, with a splash-proof extension lead', 'A crew member, if the plug sits high'],
+    prompt: 'Your mic needs AC power on a wet pool deck. Who sets it up?',
+    options: ['The venue’s qualified electrical authority', 'You, with a splash-proof extension cord', 'A crew member, if the plug sits high'],
     correct: 'The venue’s qualified electrical authority',
-    explain: 'Wet-area electrics are reviewed and approved by a qualified person; mains equipment stays out of splash and immersion. If protection cannot be verified, use an approved dry perimeter feed.',
+    explain: 'Wet-area electrics are reviewed and approved by a qualified person; AC-powered equipment stays out of splash and immersion. If protection cannot be verified, use an approved dry perimeter feed.',
     why: {
-      'You, with a splash-proof extension lead': 'A splash-proof lead does not make the whole installation safe.',
+      'You, with a splash-proof extension cord': 'A splash-proof cord does not make the whole installation safe.',
       'A crew member, if the plug sits high': 'A dry-looking plug is not an electrical review.',
     },
   },
@@ -331,11 +331,11 @@ const scenarios: MikingScenario[] = [
     id: 'mo.prac.gain',
     page: 'practice',
     prompt: 'In the practice, a gentle clap peaks at −28 dBFS. Your strongest repeatable clap is louder. Your gain?',
-    options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap right up to −6 dBFS', 'Leave it as it is and normalize it later'],
+    options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap all the way up to −6 dBFS', 'Leave it as it is and normalize it later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: near −12 dBFS is a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
     why: {
-      'Bring the gentle clap right up to −6 dBFS': 'With a gentle clap already at −6 dBFS, your strongest clap clips.',
+      'Bring the gentle clap all the way up to −6 dBFS': 'With a gentle clap already at −6 dBFS, your strongest clap clips.',
       'Leave it as it is and normalize it later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',
     },
   },
@@ -573,7 +573,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.6',
     covers: 'setups',
-    prompt: 'Who reviews mains power on a wet pool deck?',
+    prompt: 'Who reviews AC power on a wet pool deck?',
     options: ['A qualified electrical person', 'The audio crew, working carefully', 'Nobody, if it is battery-run'],
     correct: 'A qualified electrical person',
     explain: 'The venue’s qualified electrical authority reviews and approves wet-area electrics; battery power alone is not a review.',

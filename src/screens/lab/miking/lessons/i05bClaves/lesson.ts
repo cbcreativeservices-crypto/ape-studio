@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The middle swings strongly in its lowest bending shape',
     explain: 'An unclamped bar’s lowest shape swings at its middle (and most at its ends) and stays put at two points about a fifth of the way in. A strike at the middle drives the ring strongly.',
     why: {
-      'The middle is where the wood is at its very thickest': 'Most claves are about as thick in the middle as at the ends; the shape of its bending is the reason.',
+      'The middle is where the wood is at its very thickest': 'Most claves are about as thick in the middle as at the ends; the shape of the bending is the reason.',
       'The middle is farthest from the player’s supporting fingers': 'The fingers support it near its still points; between them, the middle is where it swings most.',
     },
   },
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where will the struck clave move least?', options: ['A little way in from each end', 'At its exact middle', 'At its two very ends'], after: 'Now STEP through the strike (or PLAY ONCE) and watch the blue still points.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: from 30 cm to 60 cm away — what grows?', options: ['The room and the spill', 'The click', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

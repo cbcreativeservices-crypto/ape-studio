@@ -69,11 +69,11 @@ const surfaces: ReferenceSurface[] = [
   { id: 'joint', partId: 'ww.bell', label: 'the top of the bell', point: A.joint, normal: N_THIRD, target: true },
 ];
 
-const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap round the clarinet just above the bell', c: A.strap, axis: norm(frameAt(L, 592).t), r: radiusAt(SPEC, 592) + 1.5 }];
+const rims: Rim[] = [{ id: 'clip.bell', label: 'a strap around the clarinet just above the bell', c: A.strap, axis: norm(frameAt(L, 592).t), r: radiusAt(SPEC, 592) + 1.5 }];
 
 export const WORDS: WindPartWords = {
   roles: {
-    mouthpiece: 'The mouthpiece, with the single cane reed held against it by the metal ligature. The player’s breath sets the reed vibrating; it lets the air in in puffs, in step with the air column.',
+    mouthpiece: 'The mouthpiece, with the single cane reed held against it by the metal ligature. The player’s breath sets the reed vibrating; it lets the air in, in puffs, in step with the air column.',
     barrel: 'A short wooden piece between the mouthpiece and the upper joint; pulling it out a little tunes the whole clarinet.',
     upper: 'The upper joint, under the left hand: tone holes, ring keys and the thumb hole behind, and the register key that moves the clarinet up a twelfth.',
     lower: 'The lower joint, under the right hand: the lower tone holes and their keys. One third of the way up from the bell sits on this joint.',
@@ -82,7 +82,7 @@ export const WORDS: WindPartWords = {
   keys: 'About two dozen tone holes along the body, closed by the fingers, ring keys and padded keys on rods. As the player fingers each note, the first open hole moves — and the sound leaves there.',
   exciter: { label: 'mouthpiece and reed', short: 'reed', role: 'The cane reed vibrates against the mouthpiece. Its edge, the player’s breath and the tonguing are heard close up.' },
   hands: 'Both hands cover the holes and work the keys — the left above, the right below, the thumbs behind. Nothing may sit in the fingers’ way.',
-  player: 'The clarinettist, seated or standing. They breathe, phrase and move the bell — leave room.',
+  player: 'The clarinetist, seated or standing. They breathe, phrase and move the bell — leave room.',
   head: 'The player’s head: the mouthpiece is held in the lips. Keep a mic and its boom well clear of the face.',
 };
 
@@ -100,8 +100,8 @@ function model(Lt: Layout): InstrumentModel {
       exciter: 'The reed and the player’s breath: a mic very close to the mouthpiece hears the reed’s edge and the tonguing.',
     }),
     variants: [
-      { id: 'seated', label: 'SEATED', blurb: 'The clarinettist sits, as in an orchestra or a band: the bell at about knee height, in front of the knees.' },
-      { id: 'standing', label: 'STANDING', blurb: 'The clarinettist stands, as for a solo or a gig: the same hold, the floor and the legs farther away.' },
+      { id: 'seated', label: 'SEATED', blurb: 'The clarinetist sits, as in an orchestra or a band: the bell at about knee height, in front of the knees.' },
+      { id: 'standing', label: 'STANDING', blurb: 'The clarinetist stands, as for a solo or a gig: the same hold, the floor and the legs farther away.' },
     ],
   });
 }

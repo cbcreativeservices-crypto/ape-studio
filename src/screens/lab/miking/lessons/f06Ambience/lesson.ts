@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A plaza: traffic all the time, a bus and a siren now and then. Which is the bed?',
     options: ['The traffic’s steady sound', 'The bus as it pulls away again', 'The siren as it passes by'],
     correct: 'The traffic’s steady sound',
-    explain: 'The bed is the continuous layer of a place; the bus and the siren are events on top of it. A take needs long enough to hold a normal cycle of both.',
+    explain: 'The bed is the continuous layer of a place; the bus and the siren are events on top of it. A take needs to be long enough to hold a normal cycle of both.',
     why: {
       'The bus as it pulls away again': 'A bus is an event: it comes and goes over the steady bed.',
       'The siren as it passes by': 'A siren is an intermittent event — note it in the log; it is not the bed.',
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Listen first: the main sources and where they move, the wind, the reflecting surfaces, how far the scene reaches, and whether speech could be understood. Then choose a listening point.',
     why: {
       'Setting the input gain high': 'Gain is set on the loudest likely event once the mic is placed, not first.',
-      'Fitting the widest pair you have': 'The pair follows the destination and what you heard — not the other way round.',
+      'Fitting the widest pair you have': 'The pair follows the destination and what you heard — not the other way around.',
     },
   },
   {
@@ -168,10 +168,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'amb.mic.1',
     page: 'microphone',
-    prompt: 'You want the whole place, all round you, in one mono track. A fair first choice?',
+    prompt: 'You want the whole place, all around you, in one mono track. A fair first choice?',
     options: ['An omni at the listening point', 'A cardioid aimed at the ground', 'A figure-8 alone, decoded as stereo'],
     correct: 'An omni at the listening point',
-    explain: 'An omni hears about equally all round: the whole place in one track. A directional mic aimed at a region is the other fair choice — when one region matters more.',
+    explain: 'An omni hears about equally all around: the whole place in one track. A directional mic aimed at a region is the other fair choice — when one region matters more.',
     why: {
       'A cardioid aimed at the ground': 'Aimed at the ground it favors the ground; for the whole place an omni is the simple start.',
       'A figure-8 alone, decoded as stereo': 'A figure-8 alone is not stereo: it is the Side of an M/S pair and needs a Mid.',
@@ -183,9 +183,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A cardioid faces a quiet courtyard, its back to a busy street. What tends to happen?',
     options: ['Less street, but still some of it', 'The street disappears from the take', 'More street than an omni would hear'],
     correct: 'Less street, but still some of it',
-    explain: 'A directional mic leans toward a region; its rear rejection depends on pitch and on the reflections round it. No pattern erases the city.',
+    explain: 'A directional mic leans toward a region; its rear rejection depends on pitch and on the reflections around it. No pattern erases the city.',
     why: {
-      'The street disappears from the take': 'Rejection is partial and changes with pitch; reflections bring the street round to the front too.',
+      'The street disappears from the take': 'Rejection is partial and changes with pitch; reflections bring the street around to the front too.',
       'More street than an omni would hear': 'Facing away, a cardioid hears less of the street than an omni at the same spot.',
     },
   },
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'ORTF is “17 cm and 110°”. What is the 110°?',
     options: ['The angle between the two axes', 'The angle of each capsule from ahead', 'The spread of the source in front'],
     correct: 'The angle between the two axes',
-    explain: '110° is the included angle between the capsules’ axes — 55° each side of the front — with the capsules 17 cm apart. Move the whole pair, never the geometry.',
+    explain: '110° is the included angle between the capsules’ axes — 55° on each side of the front — with the capsules 17 cm apart. Move the whole pair, never the geometry.',
     why: {
       'The angle of each capsule from ahead': 'Then the two would point 140° apart, both partly backward. Each capsule is 55° off the front.',
       'The spread of the source in front': 'That is the pair’s recording angle (about 95°), not its 110°.',
@@ -527,7 +527,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One protected omni in the open square, off the PA’s front', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: one stable open channel, little PA in it — check at show level.' },
       { id: 'b', label: 'One cardioid facing the square, its back to the PA', ok: true, power: 'phantom', feedback: 'A fair live choice: the rear toward the PA — check the margin with the operator.' },
-      { id: 'c', label: 'Four ambience mics open round the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
+      { id: 'c', label: 'Four ambience mics open around the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
       { id: 'd', label: 'A stand on the sidewalk, nearest the road', ok: false, power: 'phantom', feedback: 'The sidewalk stays clear. Find a safe spot off it.' },
       { id: 'e', label: 'Raise the ambience until it rings, then back off', ok: false, power: 'phantom', feedback: 'Not until it rings: set the level the scene needs, with a margin.' },
     ],
@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you move it: two meters nearer the stream, what grows most?', options: ['The water', 'The birds', 'Both the same'], after: 'Now move LISTEN AT toward the water and back, and watch SINCE THE START.' },
-  microphone: { prompt: 'Before you move anything: where does a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front of it'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where does a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front of it'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic 6 m back from the stream. What changes?', options: ['More birds and wood, less water', 'More water', 'Nothing you could hear'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Open grassland, a breeze: is foam enough?', options: ['Usually not', 'Yes, it is enough', 'Only at night'], after: 'Now add the layers with COVER and change SITE.' },
   twoMic: { prompt: 'Which pair places a source by level alone?', options: ['X/Y', 'Spaced omnis', 'ORTF'], after: 'Now sweep BEARING with each PAIR and watch TIME.' },

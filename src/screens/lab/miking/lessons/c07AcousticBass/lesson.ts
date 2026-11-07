@@ -26,9 +26,9 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a bassist — both hands, the long neck, their voice — the other paths (pickup, DI, amp), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a bassist — both hands, the long neck, their voice — the other paths (pickup, DI, amp), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
-    takeaway: 'The space round the bass is the player’s. A pickup and a DI are another path, not a mic. Ask the player first, and protect your hearing.',
+    takeaway: 'The space around the bass is the player’s. A pickup and a DI are another path, not a mic. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one bass mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real bass.' },
-    takeaway: 'Safe clearance from the player, correct power and level checks, honest labels for every path, pattern reasoning and polarity versus delay pass. A brand or a “bigger diaphragm” reason do not.',
+    takeaway: 'Safe clearance from the player, correct power and level checks, honest labels for every path, pattern reasoning and polarity versus delay pass. A brand or a “bigger diaphragm” reason does not.',
   },
 };
 
@@ -112,7 +112,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The bass has a pickup going to a DI. What is that path?',
     options: ['A microphone built into the bass for the stage', 'The same sound as the room mic, just louder', 'A separate electrical signal, not a microphone'],
     correct: 'A separate electrical signal, not a microphone',
-    explain: 'A pickup turns string or top motion into an electrical signal; it does not hear the air round the bass. Label it as its own path — and an internal mic, if there is one, hears the inside of the body.',
+    explain: 'A pickup turns string or top motion into an electrical signal; it does not hear the air around the bass. Label it as its own path — and an internal mic, if there is one, hears the inside of the body.',
     why: {
       'A microphone built into the bass for the stage': 'Some basses add an internal mic, but a pickup and its DI are an electrical path, not a mic.',
       'The same sound as the room mic, just louder': 'It hears something different from a mic outside: its own response and timing.',
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated bassist?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a seated bassist?',
     options: ['The front of the bass, so that the audience can see it clearly', 'The floor by the chair, which belongs to the DI and its cable', 'Both hands, the long neck’s path and their view of it'],
     correct: 'Both hands, the long neck’s path and their view of it',
     explain: 'Clearance comes first: the plucking hand over the body, the fretting hand along a long neck, and the player’s view of it. Stop the player before anything moves.',
@@ -248,7 +248,7 @@ const symptoms: Symptom[] = [
     explain: 'Close to the hole, or at a room’s build-up spot, some notes pile up. Move first; EQ only for a specific problem.',
     why: {
       'Boost the treble until the boom is no longer noticed': 'EQ hides it without fixing it. Change the position first.',
-      'Swap to a different mic with a larger diaphragm instead': 'A bigger diaphragm does not cure a room mode or a hole-bound position.',
+      'Swap to a different mic with a larger diaphragm instead': 'A bigger diaphragm does not cure a room mode or a mic on the hole.',
     },
   },
   {
@@ -334,7 +334,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The bass has a pickup. What is it?',
     options: ['A microphone that hears the bass from outside', 'A part of the bridge that makes the top louder', 'A separate electrical path, not a microphone'],
     correct: 'A separate electrical path, not a microphone',
-    explain: 'A pickup turns motion into an electrical signal; it does not hear the air round the bass. Label it as its own path.',
+    explain: 'A pickup turns motion into an electrical signal; it does not hear the air around the bass. Label it as its own path.',
     why: {
       'A microphone that hears the bass from outside': 'A mic hears the air; a pickup senses the instrument electrically.',
       'A part of the bridge that makes the top louder': 'It does not change the acoustic sound; it is a separate output.',
@@ -367,7 +367,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a seated bassist?',
+    prompt: 'What must a stand mic stay out of, around a seated bassist?',
     options: ['The front of the bass, so the audience can see it clearly', 'The space behind the chair, where the cables run', 'Both hands, the long neck and their view of it'],
     correct: 'Both hands, the long neck and their view of it',
     explain: 'The plucking hand works over the body, the fretting hand travels a long neck, and the player watches it. In front of the bass is usually where a mic comes in.',
@@ -405,10 +405,10 @@ export const C07_LESSON: Lesson = {
       { title: 'The finger pulls a string', text: 'A finger, a thumb or a pick pulls a heavy string aside and lets it go. That release is where the ATTACK — the thump or click at the start of the note — begins.' },
       { title: 'The string swings', text: 'Released, the string swings between its two still ends — the saddle and the nut (or a fret) — slowly, for a low note. Its lowest shape is drawn here many times larger than it really moves.' },
       { title: 'The bridge drives the top', text: 'Each swing tugs at the saddle, so the bridge rocks and drives the top. The top moves the air — inside the body too.' },
-      { title: 'Sound leaves', text: 'Sound leaves from the top round the bridge and through the sound hole, where the body’s air breathes. A body this size radiates the deepest notes less strongly than the upper ones. The ringing that follows is the BODY of the note.' },
+      { title: 'Sound leaves', text: 'Sound leaves from the top around the bridge and through the sound hole, where the body’s air breathes. A body this size radiates the deepest notes less strongly than the upper ones. The ringing that follows is the BODY of the note.' },
     ],
     attack: 'The start of the note: the finger, thumb or pick releasing a heavy string. It is heard most directly near the strings and the hands — a mic toward the neck hears more of it.',
-    body: 'The note’s ring: the strings, the top and the body’s air together. Much of it leaves round the bridge and through the hole — a mic toward the hole hears more body, and boom close in. Both are tendencies, and basses vary.',
+    body: 'The note’s ring: the strings, the top and the body’s air together. Much of it leaves around the bridge and through the hole — a mic toward the hole hears more body, and boom close in. Both are tendencies, and basses vary.',
     head: { diameterMm: 105, rods: 0, label: 'the sound hole', strikeSrc: 'LESSON' },
   },
   setting: {

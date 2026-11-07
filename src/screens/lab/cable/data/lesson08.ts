@@ -172,7 +172,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels from the mixer to a POWERED loudspeaker?',
-        options: ['LINE-LEVEL AUDIO', 'LOUDSPEAKER-LEVEL AUDIO', 'AC MAINS POWER', 'NETWORKED AUDIO'],
+        options: ['LINE-LEVEL AUDIO', 'LOUDSPEAKER-LEVEL AUDIO', 'AC POWER', 'NETWORKED AUDIO'],
         correct: 'LINE-LEVEL AUDIO',
         explain:
           'A powered loudspeaker amplifies INSIDE the cabinet, so the mixer sends it line-level audio. Its power arrives separately, from the wall — two connections, two different things traveling.',
@@ -184,7 +184,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         correct: '3-PIN XLR',
         explain:
           'A line-level feed to a powered loudspeaker typically rides 3-pin XLR into the cabinet’s input panel. speakON-style connectors carry amplifier output only — they are not how line level reaches a powered box.',
-        hint: 'This is a line-level SIGNAL connection — not amplifier output, and not mains.',
+        hint: 'This is a line-level SIGNAL connection — not amplifier output, and not AC power.',
       },
       {
         prompt: 'Construction?',
@@ -214,7 +214,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels from the mixer to the power amplifier’s input?',
-        options: ['LINE-LEVEL AUDIO', 'LOUDSPEAKER-LEVEL AUDIO', 'MIC-LEVEL AUDIO', 'AC MAINS POWER'],
+        options: ['LINE-LEVEL AUDIO', 'LOUDSPEAKER-LEVEL AUDIO', 'MIC-LEVEL AUDIO', 'AC POWER'],
         correct: 'LINE-LEVEL AUDIO',
         explain:
           'Line level is the working level professional gear trades in — the mixer’s output feeds the amplifier’s input at line level. Loudspeaker level does not exist until the amplifier has done its work.',
@@ -257,7 +257,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels from the amplifier to a PASSIVE loudspeaker?',
-        options: ['LOUDSPEAKER-LEVEL AUDIO', 'LINE-LEVEL AUDIO', 'AC MAINS POWER', 'INSTRUMENT-LEVEL AUDIO'],
+        options: ['LOUDSPEAKER-LEVEL AUDIO', 'LINE-LEVEL AUDIO', 'AC POWER', 'INSTRUMENT-LEVEL AUDIO'],
         correct: 'LOUDSPEAKER-LEVEL AUDIO',
         explain:
           'An amplifier’s output is loudspeaker-level — many volts (often tens of volts on a big amp) with real current behind it. It goes to loudspeaker terminals, over cable sized for the job — never into a mic or line input.',
@@ -513,7 +513,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels here?',
-        options: ['DIGITAL AUDIO, SENT BACK DOWN THE LINK', 'ANALOG LINE-LEVEL AUDIO', 'NETWORKED AUDIO', 'AC MAINS POWER'],
+        options: ['DIGITAL AUDIO, SENT BACK DOWN THE LINK', 'ANALOG LINE-LEVEL AUDIO', 'NETWORKED AUDIO', 'AC POWER'],
         correct: 'DIGITAL AUDIO, SENT BACK DOWN THE LINK',
         explain:
           'ARC/eARC reverses AUDIO back down an HDMI link — the TV returns digital audio to the soundbar over the same cable that normally carries picture toward a display.',
@@ -555,10 +555,10 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels?',
-        options: ['AC MAINS POWER', 'LOUDSPEAKER-LEVEL AUDIO', 'LOW-VOLTAGE DC POWER', 'LINE-LEVEL AUDIO'],
-        correct: 'AC MAINS POWER',
+        options: ['AC POWER', 'LOUDSPEAKER-LEVEL AUDIO', 'LOW-VOLTAGE DC POWER', 'LINE-LEVEL AUDIO'],
+        correct: 'AC POWER',
         explain:
-          'This is wall power — AC mains. It shares nothing with the line-level signal feed the same cabinet also needs: two connections, two different things traveling.',
+          'This is wall power — AC power. It shares nothing with the line-level signal feed the same cabinet also needs: two connections, two different things traveling.',
         hint: 'The powered speaker needs two cables — this is the one from the WALL.',
       },
       {
@@ -567,15 +567,15 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         correct: 'IEC C13 INTO THE C14 INLET',
         accept: ['POWERCON-FAMILY, IF THAT IS THE INLET'],
         explain:
-          'The cabinet’s inlet decides: many powered loudspeakers take a C13/C14 cordset, and touring cabinets often wear a locking powerCON-family inlet instead — same mains seriousness, better retention. A speakON-style connector is never a mains connector, whatever it visually resembles.',
-        hint: 'Match the cabinet’s power INLET — and remember which twist-lock family is mains and which is loudspeaker.',
+          'The cabinet’s inlet decides: many powered loudspeakers take a C13/C14 cordset, and touring cabinets often wear a locking powerCON-family inlet instead — same AC power seriousness, better retention. A speakON-style connector is never an AC power connector, whatever it visually resembles.',
+        hint: 'Match the cabinet’s power INLET — and remember which twist-lock family is AC power and which is loudspeaker.',
       },
       {
         prompt: 'Which cord?',
         options: ['A CORD WHOSE PRINTED RATING SUITS THE LOAD, UNDAMAGED', 'ANY IEC LEAD — THEY ALL FIT', 'THE ONE WITH TAPE OVER THE JACKET NICK'],
         correct: 'A CORD WHOSE PRINTED RATING SUITS THE LOAD, UNDAMAGED',
         explain:
-          'The identical coupler ships on cords of very different gauge and regional voltage — the printed rating on the cord jacket governs, never the shape. And damaged mains cords leave service immediately; tape is not a repair.',
+          'The identical coupler ships on cords of very different gauge and regional voltage — the printed rating on the cord jacket governs, never the shape. And damaged power cords leave service immediately; tape is not a repair.',
         hint: 'The coupler is identical across many cords — where is the real rating written?',
       },
       {
@@ -598,7 +598,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
     steps: [
       {
         prompt: 'What travels?',
-        options: ['LOW-VOLTAGE DC POWER', 'AC MAINS POWER', 'POWER + DATA TOGETHER', 'CONTROL DATA'],
+        options: ['LOW-VOLTAGE DC POWER', 'AC POWER', 'POWER + DATA TOGETHER', 'CONTROL DATA'],
         correct: 'LOW-VOLTAGE DC POWER',
         explain:
           'Low-voltage DC for a small device — where voltage, polarity and current capacity must all match the device. The danger here is mainly to equipment, not to people.',

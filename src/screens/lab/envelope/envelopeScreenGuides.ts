@@ -82,7 +82,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Drag Attack all the way left: the readout says attack 0 ms → rise time 0.0 ms, an instant step no real source makes. All the way right: attack 2.0 s → rise time 1596.0 ms.',
       'Tap RESET (attack 40 ms): rise time 32.0 ms. Tap ATTACK: LINEAR to switch to SNAP: 20.5 ms — a snap does most of its climbing early.',
-      'Drag Sustain level to 0 %: the READOUT card says the sound is percussive — it can only decay. Through S, the envelope line and the wave flatten onto the centre (zero) line.',
+      'Drag Sustain level to 0 %: the READOUT card says the sound is percussive — it can only decay. Through S, the envelope line and the wave flatten onto the center (zero) line.',
     ],
   },
 
@@ -294,16 +294,16 @@ export const ENVELOPE_END_GUIDE: ScreenGuide = {
     'Tap any listed row to jump straight to that page.',
     'REVIEW ▾ on the ✓ DONE line unfolds the finished pages; tap one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing. DONE · BACK TO LABS leaves the lab.',
-    "In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page ticks.",
+    "In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page check marks.",
   ],
   changes: [
     'Pages 1–5 count as done once you move a slider or tap a choice button or numbered marker, or with NEXT ›. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
     'Check Yourself counts once all six are right, Check your understanding once all four are. A jump never marks a page.',
-    'Rows read ✓ DONE: a page tick is progress, not credit. Passing the check completes the lab, for any certificate that needs it.',
+    'Rows read ✓ DONE: a page ✓ is progress, not credit. Passing the check completes the lab, for any certificate that needs it.',
   ],
   teaches: [
     'Which of the lab’s ideas you have worked through, and which are still ahead.',
-    'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the page ticks for a fresh run; a passed check stays.',
+    'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the page check marks for a fresh run; a passed check stays.',
   ],
   tryThis: [
     "The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT'S LEFT ›, just under the page list: it has joined the ✓ DONE line.",

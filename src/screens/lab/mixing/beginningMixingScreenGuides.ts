@@ -118,7 +118,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Once solved: THE CANONICAL PATH — YOURS NOW, numbered, and the drawing retitles to THE PATH — SIGNAL ORDER.',
     ],
     control: [
-      'Tap the station buttons in the order audio travels, from source to output. A placed station turns ✓ and greys out.',
+      'Tap the station buttons in the order audio travels, from source to output. A placed station turns ✓ and grays out.',
       'RESET clears your order and starts again (it is off once the path is solved).',
     ],
     changes: [
@@ -455,7 +455,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Play THE MIX, then IN MONO: watch GTR and KEYS slide from the sides to the center.',
-      'Open Listen QUIETLY, then turn your own volume right down while THE MIX plays: does the lead still lead?',
+      'Open Listen QUIETLY, then turn your own volume all the way down while THE MIX plays: does the lead still lead?',
     ],
   },
 
@@ -503,9 +503,9 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       '▶ WHERE YOU STARTED, ▶ YOUR MIX and ▶ YOURS, MONO play each render, all matched; the picture follows the one you press.',
     ],
     changes: [
-      'Step 2 ticks itself when five tracks are shaped.',
-      'Steps 4–6 tick when you play YOUR MIX: the render adds a lead compressor (3:1), the shared plate (lead and snare sends) and a +3 dB chorus ride on the lead.',
-      'Step 7 ticks when YOURS, MONO has played. When all eight are ✓, WHERE TO GO DEEPER appears.',
+      'Step 2 is ✓ on its own when five tracks are shaped.',
+      'Steps 4–6 are ✓ when you play YOUR MIX: the render adds a lead compressor (3:1), the shared plate (lead and snare sends) and a +3 dB chorus ride on the lead.',
+      'Step 7 is ✓ when YOURS, MONO has played. When all eight are ✓, WHERE TO GO DEEPER appears.',
     ],
     teaches: [
       'The whole process once, in order: organize, balance, fix masking, compress, share a space, automate, check mono, export.',
@@ -513,7 +513,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Next: the Advanced Mixing lab picks up where this page ends.',
     ],
     tryThis: [
-      'Shape five tracks on YOUR CONSOLE: step 2 ticks. Then play YOUR MIX: steps 4, 5 and 6 tick.',
+      'Shape five tracks on YOUR CONSOLE: step 2 is ✓. Then play YOUR MIX: steps 4, 5 and 6 are ✓.',
       'Play YOURS, MONO and check that your anchor still leads with everything folded to the center.',
     ],
   },

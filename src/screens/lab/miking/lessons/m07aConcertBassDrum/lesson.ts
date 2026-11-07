@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The mallet strikes the exact center of the head. Which of its vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike drives a shape in proportion to how much the head moves at the strike point in that shape. Shapes with a still line across the head are still at the center — which is one reason players choose their strike area for color.',
+    explain: 'A strike drives a shape in proportion to how much the head moves at the strike point in that shape. Shapes with a still line across the head stay still at the center — which is one reason players choose their strike area for color.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The mallet touches one area. A shape is driven only as much as the head moves there.',
       'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there in that shape.',
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cbd.set.2',
     page: 'setting',
-    prompt: 'Where must a bass-drum spot’s stand and cable stay out of?',
+    prompt: 'What must a bass-drum spot’s stand and cable stay out of?',
     options: ['The mallet’s swing, both damping hands, and the casters', 'The front of the drum, so the audience can see the head', 'The brass row, so that the mic hears less of the brass'],
     correct: 'The mallet’s swing, both damping hands, and the casters',
     explain: 'The player strikes with one hand and damps with the other — on either head. Route stands and cables clear of all of it, and of the stand’s casters and the walking path.',
@@ -297,11 +297,11 @@ const scenarios: MikingScenario[] = [
     id: 'cbd.two.3',
     page: 'twoMic',
     prompt: 'You try a second mic on the far head. Should its polarity be inverted as a rule?',
-    options: ['No fixed rule: compare both states in mono, at matched level', 'Yes — a far-head mic is wired the wrong way round by nature', 'Yes, and delay it too, so both mics line up exactly in time again'],
+    options: ['No fixed rule: compare both states in mono, at matched level', 'Yes — a far-head mic is wired the wrong way around by nature', 'Yes, and delay it too, so both mics line up exactly in time again'],
     correct: 'No fixed rule: compare both states in mono, at matched level',
     explain: 'A fixed automatic reversal for the far head is unjustified. Check both spots together, then against the main pickup; remove the far-head mic if it adds little.',
     why: {
-      'Yes — a far-head mic is wired the wrong way round by nature': 'It is not wired wrong: facing the far head it often hears the thump opposite, but positions and arrival times also decide the sum. Compare both states.',
+      'Yes — a far-head mic is wired the wrong way around by nature': 'It is not wired wrong: facing the far head it often hears the thump opposite, but positions and arrival times also decide the sum. Compare both states.',
       'Yes, and delay it too, so both mics line up exactly in time again': 'One source in a hall cannot line up at every frequency and every reflection; judge by ear.',
     },
   },
@@ -414,7 +414,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the mallet pushes the playing head in, what does the FAR head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the playing head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the spot from about 45 cm to closer and steeper. What changes?', options: ['More of the room', 'More of the mallet and the head', 'It depends on this drum and room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits off to the side of a mic looking down at the drum. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

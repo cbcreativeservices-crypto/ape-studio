@@ -285,7 +285,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.equal(val(p3 + 0.004), 3);
     // the dot is on the −60 line; its label sits at the bottom edge, on the time axis
     assert.match(VIZ, /<SvgText x=\{rtX\} y=\{H - 2\} fill=\{AMBER\}[^>]*>\s*\{`RT60 \$\{fmt2sig\(rt60\)\} s`\}/);
-    assert.match(REVERB_SCREEN_GUIDES.learn.tryThis[0], /slide RT60 to 3\.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labelled RT60 3\.0 s on the time axis below/);
+    assert.match(REVERB_SCREEN_GUIDES.learn.tryThis[0], /slide RT60 to 3\.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3\.0 s on the time axis below/);
   });
   it('CHECK 2 (D41 fix 2026-11-01): a FIXED 7.5 s axis — the RT60 marker slides from near the left (0.40 s) to near the right (6.0 s)', () => {
     assert.match(VIZ, /export const DECAY_SPAN_S = 7\.5;/);

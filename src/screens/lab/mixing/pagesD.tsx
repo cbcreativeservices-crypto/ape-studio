@@ -196,7 +196,7 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>NAME IT LIKE YOU MEAN TO FIND IT</Eyebrow>
         <Prompt>“final_FINAL_2.wav” is a horror story. A name carries song, version, and date:</Prompt>
-        <Btn label={named ? '✓ OurSong_Mix_v3_2026-09-11.wav' : 'BUILD: OurSong_Mix_v3_2026-09-11.wav'} tone={named ? 'primary' : 'plain'} selected={named} onPress={() => setNamed(true)} a11y="Build the file name Our Song mix version three" />
+        <Btn label={named ? '✓ OurSong_Mix_v3_2026-09-11.wav' : 'BUILD: OurSong_Mix_v3_2026-09-11.wav'} tone={named ? 'primary' : 'plain'} selected={named} onPress={() => setNamed(true)} a11y="Build the file name: Our Song mix version three" />
         {named ? <Body>Song, what it is, which version, when. Six months from now, this name still answers every question.</Body> : null}
       </Card>
       <Card>

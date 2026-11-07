@@ -50,7 +50,7 @@ function harpParts(g: HarpGeom, pre: 'hp' | 'lv', V: VariantId[]): Part[] {
     { id: `${pre}.neck`, label: 'neck', short: 'neck', role: 'The curved arm along the top, holding the tuning pins' + (pre === 'lv' ? ' and the levers that sharpen each string.' : ' and the discs the pedals turn.'), clearance: HARP_CLEAR.neck, prov: dflt, variants: V },
     { id: `${pre}.pillar`, label: 'pillar', short: 'pillar', role: 'The column at the front, carrying the neck’s pull down to the base' + (pre === 'hp' ? ' (and, inside it, the pedal rods).' : '.'), clearance: HARP_CLEAR.neck, prov: { kind: 'trial', src: 'MET-ERARD', note: '"L. of pillar: 165.7 cm"' }, variants: V, solid: { kind: 'capsule', a: v3(g.pillar.a), b: v3(g.pillar.b), r: g.pillar.r } },
     { id: `${pre}.crown`, label: 'crown', short: 'crown', role: 'The top of the pillar — the tallest point of the harp. A spot mic often starts near here, looking down at the soundboard.', clearance: HARP_CLEAR.neck, prov: pre === 'hp' ? { kind: 'sourced', src: 'DPA-HARP', quote: 'a full sized pedal harp with its 190 cm height' } : dflt, variants: V, solid: { kind: 'capsule', a: { x: g.crown.c[0], y: g.crown.top + g.crown.r, z: 0 }, b: { x: g.crown.c[0], y: g.crown.c[1] + 40 * k, z: 0 }, r: g.crown.r } },
-    { id: `${pre}.base`, label: 'base', short: 'base', role: 'The plinth the harp stands on' + (pre === 'hp' ? ', with the pedals round it.' : '.'), prov: dflt, variants: V, solid: box(g.base.x0, g.base.y0, -g.base.hw, g.base.x1, 0, g.base.hw) },
+    { id: `${pre}.base`, label: 'base', short: 'base', role: 'The plinth the harp stands on' + (pre === 'hp' ? ', with the pedals around it.' : '.'), prov: dflt, variants: V, solid: box(g.base.x0, g.base.y0, -g.base.hw, g.base.x1, 0, g.base.hw) },
   );
   // The neck as capsules through its lower edge (raised by its own depth).
   const nk = g.neck;
@@ -59,7 +59,7 @@ function harpParts(g: HarpGeom, pre: 'hp' | 'lv', V: VariantId[]): Part[] {
     const b = nk[Math.min(nk.length - 1, i + 4)];
     out.push({ id: `${pre}.neck${i}`, label: 'neck', short: 'neck', role: 'The neck.', clearance: HARP_CLEAR.neck, prov: dflt, variants: V, listIn: [], solid: { kind: 'capsule', a: { x: a[0], y: a[1] - 32 * k, z: 0 }, b: { x: b[0], y: b[1] - 32 * k, z: 0 }, r: 36 * k } });
   }
-  if (g.pedals) out.push({ id: `${pre}.pedals`, label: 'pedals', short: 'pedals', role: 'Seven pedals round the base, worked by the harpist’s feet to change the strings’ pitches — they move, and they knock: keep stands, cables and mics clear of them.', moving: true, prov: { kind: 'unknown', needed: 'the pedals’ count and layout (drawing default)' }, variants: V, solid: box(g.base.x0 - 130, -70, -g.base.hw, g.base.x0 + 10, 0, g.base.hw) });
+  if (g.pedals) out.push({ id: `${pre}.pedals`, label: 'pedals', short: 'pedals', role: 'Seven pedals around the base, worked by the harpist’s feet to change the strings’ pitches — they move, and they knock: keep stands, cables and mics clear of them.', moving: true, prov: { kind: 'unknown', needed: 'the pedals’ count and layout (drawing default)' }, variants: V, solid: box(g.base.x0 - 130, -70, -g.base.hw, g.base.x0 + 10, 0, g.base.hw) });
   return out;
 }
 
@@ -83,7 +83,7 @@ const hl = harpistAt(true);
 const parts: Part[] = [
   ...harpParts(HP, 'hp', PV),
   ...harpParts(LV, 'lv', LVV),
-  { id: 'chair', label: 'the harpist and the chair', short: 'harpist', role: 'The harpist sits behind the harp with the soundbox on their right shoulder, reaching round both sides of the strings. Nothing goes over their head, in their reach, or across their view of the music.', prov: ill('GEOMETRY_PROPOSAL: seated at x = −750, seat 550 (drawing defaults)'), variants: ALL, solid: box(h.seat.x0, h.seat.y - 50, -h.seat.hw, h.seat.x1, 0, h.seat.hw) },
+  { id: 'chair', label: 'the harpist and the chair', short: 'harpist', role: 'The harpist sits behind the harp with the soundbox on their right shoulder, reaching around both sides of the strings. Nothing goes over their head, in their reach, or across their view of the music.', prov: ill('GEOMETRY_PROPOSAL: seated at x = −750, seat 550 (drawing defaults)'), variants: ALL, solid: box(h.seat.x0, h.seat.y - 50, -h.seat.hw, h.seat.x1, 0, h.seat.hw) },
 ];
 
 const envelopes: Envelope[] = [
@@ -129,7 +129,7 @@ export const HARP_MODEL: InstrumentModel = {
   lines,
   envelopes,
   variants: [
-    { id: 'pedal', label: 'CONCERT PEDAL HARP', blurb: 'A full-size pedal harp, about 1.9 m tall: the pedals round the base change the strings’ pitches.', phrase: 'its pedals' },
+    { id: 'pedal', label: 'CONCERT PEDAL HARP', blurb: 'A full-size pedal harp, about 1.9 m tall: the pedals around the base change the strings’ pitches.', phrase: 'its pedals' },
     { id: 'lever', label: 'LEVER HARP', blurb: 'A smaller lever (Celtic) harp — levers on the neck instead of pedals, a different scale and balance. Don’t copy a concert harp’s measurements without listening.', phrase: 'its levers' },
   ],
   defaultVariant: 'pedal',

@@ -67,7 +67,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'Nothing moves here. This page sets the picture the rest of the lab uses.',
       'A patchbay puts outputs (signal leaving gear) in one row and inputs (signal arriving) in the row under it, so each column joins one source to one destination.',
-      'Some bays are wired the other way round: the label decides, not habit.',
+      'Some bays are wired the other way around: the label decides, not habit.',
     ],
     teaches: [
       'What a patchbay is: every important input and output of a studio on one panel.',
@@ -123,7 +123,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
-      'Goal chips: SEE THE DEAD END (top only) and COMPLETE THE ROUTE (both jacks). Each ticks once you make it; both complete the page.',
+      'Goal chips: SEE THE DEAD END (top only) and COMPLETE THE ROUTE (both jacks). Each is checked once you make it; both complete the page.',
       'The prompt asks you to predict where the console’s signal goes before you read the status line.',
     ],
     changes: [
@@ -195,7 +195,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Slide PLUG INSERTION to 84%: CONTACTS still read TOUCHING. One step more, at 85%, they read OPEN and NORMAL reads BROKEN.',
       'Stop at 50%: the plug is half in, yet CONTACTS read TOUCHING. The switch moves only late in the travel.',
-      'Push to 100%, then back to 0%: both goal chips tick as the normal breaks, then restores.',
+      'Push to 100%, then back to 0%: both goal chips are checked as the normal breaks, then restores.',
     ],
   },
 
@@ -330,7 +330,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Full, half and thru side by side, in one reference to come back to.',
       'Of these three wirings, only half-normal taps a source without interrupting it.',
       '“Through” and “non-normalled” are other names for thru.',
-      'Next: predicting, then diagnosing unlabelled bays.',
+      'Next: predicting, then diagnosing unlabeled bays.',
     ],
     tryThis: [
       'Cover the HALF (COMMON) column, say each answer, then uncover it to check.',
@@ -367,7 +367,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 12 · Patchbay detective (reading) ─────────────────────────────────────
   p12: {
     seeing: [
-      'Three CASE cards: an unlabelled pair, then the result of each test, marked ▸.',
+      'Three CASE cards: an unlabeled pair, then the result of each test, marked ▸.',
       'Under each case, YOUR VERDICT: Full-normal, Half-normal or Thru.',
     ],
     control: [
@@ -579,7 +579,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 20 · Inside the cord: T · R · S (rack, cutaway) ───────────────────────
   p20: {
     seeing: [
-      'The jack cutaway again, the plug starting 90% in. Past 30%, its metal bands are labelled T, R and S.',
+      'The jack cutaway again, the plug starting 90% in. Past 30%, its metal bands are labeled T, R and S.',
       'Readouts: INSERTION, CONTACTS, NORMAL. The CONCEPTUAL MODEL badge sits under the drawing.',
       'Below: a T · R · S card and an UNDERSTANDING CHECK.',
     ],

@@ -222,7 +222,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The part decides: a few neighboring bars suit one mic; a part that traverses the keyboard needs a wider view or a pair.',
     why: {
       'Nothing: a single mic over the middle covers the whole keyboard alike': 'A close single mic favors the bars nearest it.',
-      'The first needs a pair; the second needs only one mic': 'The other way round: the wide part is the harder one to cover.',
+      'The first needs a pair; the second needs only one mic': 'The other way around: the wide part is the harder one to cover.',
     },
   },
   {
@@ -397,7 +397,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: from one mic above the middle to the off-axis position on the audience side. What changes?', options: ['Less click, more of the keyboard and room', 'More click from one bar', 'It depends on the passage and the room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The side fill sits off to the side of a mic looking down at the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Grilles together, angled 135° apart: the lowest bar sounds. Which reaches the two mics differently?', options: ['Its arrival time', 'Its level', 'Neither'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
@@ -514,7 +514,7 @@ const copy: Partial<LessonCopy> = {
     stageA11y: 'The section on a stage, from above: a floor wedge in front of the xylophone, a side fill on stage left, the audience below.',
     studioA11y: 'The xylophone in a studio room, from above: the walls around it, no monitors.',
     stageIdle: 'Two monitors: a wedge in front, facing the player, and a side fill at stage left. The PA faces the audience.',
-    studioIdle: 'No monitors. A room pair farther away can add natural space — and room noise.',
+    studioIdle: 'No monitors. A room pair farther away can add natural space — but also room noise.',
     before: [
       { title: 'LISTEN FROM THE ROOM FIRST', text: 'Low, middle and high notes, single strokes, fast repeated notes and the loudest accent — from where the audience will hear them. The player may change mallets for a color.' },
       { title: 'MALLETS ARE THE OWNER’S', text: 'Never metal on xylophone bars. Advice on other materials differs between documents: this instrument’s maker and its owner decide. If a brighter sound needs an unsuitable mallet, change the placement instead.' },
@@ -656,7 +656,7 @@ export const I09_LESSON: MalletLesson = {
       { id: 'front', label: 'a floor wedge in front of the xylophone', short: 'WEDGE', note: 'On the floor in front, facing the player, below the mic’s front: no pattern null reaches it. Keep its send only as high as needed.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side fill at stage left', short: 'SIDE FILL', note: 'On a stand at about head height beyond the low end — almost level with a mic above the bars: a null can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'Listen to the xylophone’s sum in mono at audience positions: a mono PA does not reproduce a hard pan.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
-      { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A room pair farther away can add natural space if the room sounds good — and room and outside noise.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
+      { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A room pair farther away can add natural space if the room sounds good — but also room and outside noise.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: test at performance level with neighbors and monitors on; aim the real pattern’s rejection at loud neighbors; move in small steps.',
     studio: 'RECORDING: one overhead view for a restricted range, the pairs for the whole keyboard, a room mic as an option — checked in mono.',

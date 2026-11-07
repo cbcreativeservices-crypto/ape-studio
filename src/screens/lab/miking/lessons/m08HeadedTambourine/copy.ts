@@ -19,10 +19,10 @@ export const TAMB_COPY: LessonCopy = {
   },
   instrument: {
     figureBadge: 'A 10 in headed tambourine, edge-on, held at about 45°',
-    figureLabel: 'Side view of a 10 inch headed tambourine seen edge-on, held at about 45 degrees with its head facing up and toward the mic: the wooden frame, the skin head on its front face, and two staggered rows of jingle pairs in slots round the frame.',
+    figureLabel: 'Side view of a 10 inch headed tambourine seen edge-on, held at about 45 degrees with its head facing up and toward the mic: the wooden frame, the skin head on its front face, and two staggered rows of jingle pairs in slots around the frame.',
     partsBadge: 'A 10 in headed tambourine · tap a part to name it',
     partsLooking: { side: 'Side view · the tambourine edge-on', top: 'Top view · the head from above' },
-    partsIdle: 'A head of skin or plastic on a frame of wood or plastic, with pairs of metal jingles round it — a drum and a set of jingles in one instrument. The next page shows how each part sounds.',
+    partsIdle: 'A head of skin or plastic on a frame of wood or plastic, with pairs of metal jingles around it — a drum and a set of jingles in one instrument. The next page shows how each part sounds.',
     variantNotes: {
       shaken: 'SHAKEN: the same hold, swung side to side or rolled by thumb or finger. The jingles lead — and in a shake the frame moves, so its distance to a fixed mic changes.',
       mounted: 'MOUNTED: flat on a compatible mount, struck with sticks. The instrument stays put — but the mount can add noises of its own, and only a mount made for it is used.',
@@ -116,7 +116,7 @@ export const TAMB_COPY: LessonCopy = {
     workedAim: 'Face the tambourine — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of the whole motion — the striking hand, the shake’s swing, the sticks, the frame and its jingles. Clearance comes first: 15–30 cm is a starting distance, not a safety clearance, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Aimed at the head tends to bring more body; at the rim and jingles, more bright attack; a little farther, a blend with more room — and instruments and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Aimed at the head, a mic tends to bring more body; at the rim and jingles, more bright attack; a little farther, a blend with more room — and instruments and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: { smallDynCard: 'If the jingles sound too cutting through a condenser, a dynamic (or a ribbon, kept well out of the swing) can give a gentler balance — compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic. Watch PEAK meters, not slow average meters — a tambourine’s brief peaks overload an input that a slow meter says is fine.',
     availableLead: 'Starting points for this mic and way of playing',

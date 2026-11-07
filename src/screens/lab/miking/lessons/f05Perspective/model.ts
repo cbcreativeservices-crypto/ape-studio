@@ -61,7 +61,7 @@ export const F05_ZONES: DocumentedZone[] = [
     variants: ['keys'],
     micTypeIds: ['ldcRoom'],
     bandProv: ill('3 m out and 2 m up are drawing defaults; the close + room method is sourced'),
-    tendency: 'The keys with the room round them: a perspective to blend under the close mic for a wider shot — not a left or right channel.',
+    tendency: 'The keys with the room around them: a perspective to blend under the close mic for a wider shot — not a left or right channel.',
     checks: ['Each channel alone, then the sum in mono', 'Whether the room suits the pictured place', 'Its stand outside the lane'],
   }),
   foleyZone({

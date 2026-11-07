@@ -65,7 +65,7 @@ export const BASS_CLARINET_ART: LessonArt = windLessonArt({
   setting: {
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Which model — to low E♭ or to low C — and which lowest note does the part use? Seated or standing, how much does the instrument move? What sound do they want? Hear it unamplified first, low to high, quiet and loud.' },
-      { title: 'WORK WITH THE INSTRUMENT AS IT IS', text: 'Never use the neck, rods, pads or finish as a mount. Only a clip confirmed for this instrument, with the player’s agreement — else a stand. Keep stands and cables off the peg’s path and away from the chair.' },
+      { title: 'WORK WITH THE INSTRUMENT AS IT IS', text: 'Never use the neck, rods, pads or finish as a mount. Only a clip confirmed for this instrument, with the player’s agreement — otherwise a stand. Keep stands and cables off the peg’s path and away from the chair.' },
     ],
     hearing: 'Protect your hearing during rehearsals and soundcheck: the brass and percussion near a woodwind section can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it.',
     sectionLanding: 'Tap anything in the section — or step through ITEM — to see what it means for a bass clarinet mic. There is nothing to answer yet.',

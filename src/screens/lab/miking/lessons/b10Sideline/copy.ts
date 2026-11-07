@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'PLAN THE POSITION BEFORE THE HANDOFF', text: 'Confirm the permitted interview zone, the camera’s framing, the cable or radio path, the program feed and who moves the mic. Mark where the reporter and the guest stand, the crowd and the PA, the wind, and the nearest clear exit.' },
     SPORTS_SAFETY.play,
     SPORTS_SAFETY.approval,
-    { title: 'ASK ABOUT THE GUEST', text: 'Are they walking, out of breath, wearing a helmet or a head covering, carrying equipment, under kit rules? Rehearse with the camera operator so the mic stays close without hiding the face or hitting the lens.' },
+    { title: 'ASK ABOUT THE GUEST', text: 'Are they walking, out of breath, wearing a helmet or a head covering, carrying equipment, under uniform rules? Rehearse with the camera operator so the mic stays close without hiding the face or hitting the lens.' },
     SPORTS_SAFETY.weather,
     SPORTS_SAFETY.lightning,
     { title: 'STOP OR MOVE', text: 'If play, the crowd, the weather or the venue’s people make the spot unsafe, stop the interview or move it. Never follow a guest into an unapproved area for a better angle.' },

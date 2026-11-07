@@ -35,7 +35,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'A RECORDING', text: 'Build the sound with one main array first; add as few supports as you can (in this lab, at most two at first), each for a stated reason; ambience later. Keep the raw channels and their geometry noted for the mix.' },
       { title: 'REINFORCEMENT', text: 'Find what already reaches the audience. Close, directional support where it is needed; fewer open mics; monitors placed by the real polar diagrams, at the level the players need. A beautiful distant array may be wrong for the PA.' },
-      { title: 'BOTH AT ONCE', text: 'Give every mic a role: capture, PA, or both. A recording pair need not feed the PA; a shared preamp’s gain reaches every feed on it — agree who controls gain and phantom power.' },
+      { title: 'BOTH AT ONCE', text: 'Give every mic a role: capture, PA, or both. A recording pair need not feed the PA; a shared preamp’s gain reaches every feed on it — agree on who controls gain and phantom power.' },
     ],
   },
   two: {

@@ -110,7 +110,7 @@ export function EggGrip({ w, h, mode, swing, accessibilityLabel }: { w: number; 
   const end = Math.abs(swing) > 0.8;
   const labels: StaticLabel[] = [
     { id: 'grip', text: cupped ? 'PALM OVER PART OF THE SHELL' : 'FINGERTIPS: THE SHELL OPEN', short: cupped ? 'CUPPED' : 'OPEN', u: 0, v: -68, align: 'center', tone: 'amber' },
-    { id: 'out', text: cupped ? 'LESS OUT OF THE COVERED SIDE' : 'OUT ALL ROUND', short: 'OUT', u: 0, v: 66, align: 'center', tone: 'blue' },
+    { id: 'out', text: cupped ? 'LESS OUT OF THE COVERED SIDE' : 'OUT ALL AROUND', short: 'OUT', u: 0, v: 66, align: 'center', tone: 'blue' },
   ];
   return (
     <SoundCanvas w={w} h={h} box={SOUND_BOX} label={accessibilityLabel} labels={labels}>

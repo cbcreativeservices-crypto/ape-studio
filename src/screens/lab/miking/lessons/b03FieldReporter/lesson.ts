@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Where the voices come from',
     goal: 'See where speech leaves each person, what one mic hears shared between them or moved to whoever speaks, why a directional mic needs to point at the speaking mouth, and what wind does at the capsule.',
     credit: { scenarios: ['b3.snd.1', 'b3.snd.2', 'b3.snd.3'], note: 'Answer the three checks.' },
-    takeaway: 'Every distance is read from the lips. A shared omni favors neither voice and hears the street all round; moved to the speaker, the voice comes up. A directional mic pointed between two people serves neither. Check wind at the capsule.',
+    takeaway: 'Every distance is read from the lips. A shared omni favors neither voice and hears the street all around; moved to the speaker, the voice comes up. A directional mic pointed between two people serves neither. Check wind at the capsule.',
   },
   setting: {
     title: 'Before any mic',
@@ -55,7 +55,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the omni at chest height between the two in a quiet place, or close to the speaking mouth when it is loud — then move it and see what changes.',
-    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The shared place is an easy start; the louder the place, the closer the mic goes to whoever is speaking. Clearance from faces and the lens comes first.',
   },
   context: {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A loud street is behind the pair. Why move the omni toward whoever is speaking?',
     options: ['The voice comes up against the street', 'The omni starts to hear only one side', 'The street gets farther from the mic'],
     correct: 'The voice comes up against the street',
-    explain: 'Closer to the speaking mouth, the voice rises by distance while the distant street barely changes: more voice against the background. The omni still hears all round.',
+    explain: 'Closer to the speaking mouth, the voice rises by distance while the distant street barely changes: more voice against the background. The omni still hears all around.',
     why: {
       'The omni starts to hear only one side': 'Its pattern does not change: an omni hears every side wherever it is.',
       'The street gets farther from the mic': 'A short move hardly changes the distance to the street, which is meters away; the mouth is what comes closer.',
@@ -145,9 +145,9 @@ const scenarios: MikingScenario[] = [
     id: 'b3.set.3',
     page: 'setting',
     prompt: 'The quietest spot for the interview is on the edge of the road. What do you do?',
-    options: ['Stay on the pavement; turn the pair instead', 'Use it, with the camera watching the traffic', 'A short interview there is fine'],
-    correct: 'Stay on the pavement; turn the pair instead',
-    explain: 'Nobody stands in a vehicle path for a quieter background. Turn the pair so the loudest source is less intrusive, move along the pavement, or bring the mic closer to the speaker.',
+    options: ['Stay on the sidewalk; turn the pair instead', 'Use it, with the camera watching the traffic', 'A short interview there is fine'],
+    correct: 'Stay on the sidewalk; turn the pair instead',
+    explain: 'Nobody stands in a vehicle path for a quieter background. Turn the pair so the loudest source is less intrusive, move along the sidewalk, or bring the mic closer to the speaker.',
     why: {
       'Use it, with the camera watching the traffic': 'Watching traffic does not make a road a safe place to stand.',
       'A short interview there is fine': 'A short time in a vehicle path is still in a vehicle path.',
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before a live report from a busy place, what should the crew agree first?',
     options: ['A clear signal to stop or move', 'Which word starts the first answer', 'The order of the questions'],
     correct: 'A clear signal to stop or move',
-    explain: 'Agree a clear stop or relocate signal before going on air: if the place becomes unsafe, everyone knows what it looks like.',
+    explain: 'Agree on a clear stop or relocate signal before going on air: if the place becomes unsafe, everyone knows what it looks like.',
     why: {
       'Which word starts the first answer': 'The words can change; the safety signal must not.',
       'The order of the questions': 'Questions change on air as the story moves; the stop signal is the one thing to settle first.',
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Being close to the speaking mouth',
     explain: 'Dynamic is how it turns sound into a signal; omni is how it hears. An omni dynamic hears the crowd, the traffic and the PA from every side — closeness is what favors the voice.',
     why: {
-      'Its dynamic capsule, which rejects distant sound': 'A dynamic capsule is not a pattern: an omni dynamic hears all round.',
+      'Its dynamic capsule, which rejects distant sound': 'A dynamic capsule is not a pattern: an omni dynamic hears all around.',
       'Being held up high, above the crowd': 'Height changes the distances a little, not the pattern — and it takes the mic away from the mouth.',
     },
   },
@@ -302,11 +302,11 @@ const scenarios: MikingScenario[] = [
     id: 'b3.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · A strong wind picks up at the interview. What is the first fix?',
-    options: ['A fitted foam or fur, then shelter', 'A high-pass filter turned right up', 'Turning the input gain up higher'],
+    options: ['A fitted foam or fur, then shelter', 'A high-pass filter turned all the way up', 'Turning the input gain up higher'],
     correct: 'A fitted foam or fur, then shelter',
     explain: 'Protect the capsule first: a fitted foam for light air, a fitted fur for stronger wind, then turn the pair or move to a sheltered, permitted spot. A filter cannot undo an overloaded mic.',
     why: {
-      'A high-pass filter turned right up': 'A filter thins the voice and cannot reverse overload.',
+      'A high-pass filter turned all the way up': 'A filter thins the voice and cannot reverse overload.',
       'Turning the input gain up higher': 'More gain makes the wind rumble louder and overload sooner.',
     },
   },
@@ -405,7 +405,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Where is the mic — shared or at the speaker? Which way does the pair face? A wind cover?',
     options: ['Move the mic to the speaker; turn the pair', 'Turn the channel up until the voices lead', 'Point the mic at the traffic to measure it'],
     correct: 'Move the mic to the speaker; turn the pair',
-    explain: 'In a loud place, bring the mic to whoever is speaking just before they start, turn the pair so the traffic is less intrusive, or move along the pavement.',
+    explain: 'In a loud place, bring the mic to whoever is speaking just before they start, turn the pair so the traffic is less intrusive, or move along the sidewalk.',
     why: {
       'Turn the channel up until the voices lead': 'Gain raises the traffic with the voices.',
       'Point the mic at the traffic to measure it': 'That favors the traffic, not the voices.',
@@ -469,7 +469,7 @@ const orderTasks: OrderTask[] = [
     prompt: 'Tap the steps of a live field interview in the order you would do them.',
     steps: [
       { text: 'Get permission; pick a safe spot out of traffic', early: 'Start with where it is safe and permitted to stand.' },
-      { text: 'Agree the shot, the route and a stop signal', early: 'Agree the plan once the spot is chosen.' },
+      { text: 'Agree on the shot, the route and a stop signal', early: 'Agree on the plan once the spot is chosen.' },
       { text: 'Choose the mic and fit its wind cover', early: 'Choose the mic once the plan is known.' },
       { text: 'Set gain on the loudest likely speech', early: 'Set gain once the mic is chosen.' },
       { text: 'Rehearse the handoff with the guest', early: 'Rehearse once the gain is set.' },
@@ -563,7 +563,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The quietest spot is at the edge of the road. What do you do?',
     options: ['Stay off the road; turn the pair', 'Use it while the traffic is light', 'Fine with a spotter watching the cars'],
     correct: 'Stay off the road; turn the pair',
-    explain: 'Never put people in a vehicle path for a quieter background: turn the pair or move along the pavement.',
+    explain: 'Never put people in a vehicle path for a quieter background: turn the pair or move along the sidewalk.',
     why: {
       'Use it while the traffic is light': 'Light traffic is still traffic.',
       'Fine with a spotter watching the cars': 'A spotter does not make a road a safe place to stand.',
@@ -662,6 +662,6 @@ export const B03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are measured from the lips to the mic’s front and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
   copy: B03_COPY,
 };

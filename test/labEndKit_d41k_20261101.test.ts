@@ -100,7 +100,7 @@ describe('K1+ a members-only preview records nothing — signed in or not (endLe
 
 describe('K2 practice wording is true', () => {
   it('a progress lab whose START OVER clears ticks says so', () => {
-    assert.match(endNote('progress', true), /START OVER \(PRACTICE\) clears the ticks/);
+    assert.match(endNote('progress', true), /START OVER \(PRACTICE\) clears the check marks/);
     assert.doesNotMatch(endNote('progress', true), /never clears/);
     assert.match(endNote('progress', false), /never clears what you have already done/);
   });
@@ -131,7 +131,7 @@ describe('K3 PagedLab START OVER confirm says only what happens', () => {
   it('page-credit labs: credited pages keep their ✓; check-only credit: ticks clear, credit stays; neither: ticks clear', () => {
     assert.match(s, /const pageCredit = !!creditLabKey \|\| pageCreditKeys\.length > 0;/);
     assert.match(s, /const checkCredit = !!check \|\| !!creditCheckId;/);
-    assert.match(s, /pageCredit\s*\? `Starts \$\{title\} again from its first page\. Credited pages keep their ✓\.`\s*: checkCredit\s*\? `Starts \$\{title\} again from its first page and clears its page ticks\. Credit you have already earned stays\.`\s*: `Starts \$\{title\} again from its first page and clears its page ticks\.`/);
+    assert.match(s, /pageCredit\s*\? `Starts \$\{title\} again from its first page\. Credited pages keep their ✓\.`\s*: checkCredit\s*\? `Starts \$\{title\} again from its first page and clears its page check marks\. Credit you have already earned stays\.`\s*: `Starts \$\{title\} again from its first page and clears its page check marks\.`/);
   });
 });
 

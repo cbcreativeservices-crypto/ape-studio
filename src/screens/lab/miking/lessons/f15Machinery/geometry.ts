@@ -46,7 +46,7 @@ const ROOM = ill('drawing default: a small table and the wall behind it');
 const solids = exclusionSolids(EXCL);
 
 const PARTS: Part[] = [
-  { id: 'fan.guard', label: 'the guard', short: 'guard', role: 'The wire cage round the blades. It stays on, always: nothing — a mic, a stand, a finger — reaches through it.', solid: { kind: 'cyl', a: { x: FAN.guardBack, y: HUB.y, z: 0 }, b: { x: FAN.guardFront, y: HUB.y, z: 0 }, r: FAN.guardR }, prov: FANP },
+  { id: 'fan.guard', label: 'the guard', short: 'guard', role: 'The wire cage around the blades. It stays on, always: nothing — a mic, a stand, a finger — reaches through it.', solid: { kind: 'cyl', a: { x: FAN.guardBack, y: HUB.y, z: 0 }, b: { x: FAN.guardFront, y: HUB.y, z: 0 }, r: FAN.guardR }, prov: FANP },
   { id: 'fan.blades', label: 'the blades', short: 'blades', role: 'The spinning blades push the air forward — and make the fan’s whoosh and its blade tone.', prov: FANP },
   { id: 'fan.motor', label: 'the motor housing', short: 'motor', role: 'The motor behind the blades: its hum, and a rattle if a part works loose. A close mic beside it hears more of it than a mic farther out.', solid: { kind: 'cyl', a: { x: FAN.guardBack, y: HUB.y, z: 0 }, b: { x: FAN.motorBack, y: HUB.y, z: 0 }, r: FAN.motorR }, prov: FANP },
   { id: 'fan.vent', label: 'the rear vent', short: 'rear vent', role: 'Slots at the back of the motor where it draws cooling air: sound leaves here too.', prov: FANP },
@@ -80,7 +80,7 @@ export const F15_MODEL: InstrumentModel = measureModel({
   ],
   surfaces: F15_SURFACES,
   lines: F15_LINES,
-  variants: [{ id: 'fan', label: 'GUARDED DESK FAN', blurb: 'A low-risk device under its own instructions: guards on, an exclusion zone round it, the mics outside it.', phrase: 'on a small table' }],
+  variants: [{ id: 'fan', label: 'GUARDED DESK FAN', blurb: 'A low-risk device under its own instructions: guards on, an exclusion zone around it, the mics outside it.', phrase: 'on a small table' }],
   defaultVariant: 'fan',
   views: F15_VIEWS,
   viewTags: { side: 'SIDE', top: 'FROM ABOVE' },

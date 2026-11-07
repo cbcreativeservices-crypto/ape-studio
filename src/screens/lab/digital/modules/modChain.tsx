@@ -477,9 +477,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
           {viz ? <viz.FloatView width={width} value01={value01} /> : <VizUnavailableCard />}
           <Badge text="SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields (1 sign · 8 exponent · 23 mantissa bits)" />
           <Text style={dstyles.caption}>
-            Ride the VALUE key in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps
-            decade to decade while the MANTISSA slides smoothly between steps. The exponent is why
-            float can represent both whispers and explosions: the ruler itself rescales.
+            Ride the VALUE fader in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps decade to decade while the MANTISSA slides smoothly between steps. The exponent is why float can represent both whispers and explosions: the ruler itself rescales.
           </Text>
         </PanelCard>
 

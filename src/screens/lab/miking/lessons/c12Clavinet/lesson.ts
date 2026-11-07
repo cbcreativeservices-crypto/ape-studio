@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the clavinet’s surroundings — the keyboardist, the pedals, the amp, the cables and the power — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['cv.set.1', 'cv.set.2', 'cv.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Draw the whole signal path first. The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input or phantom power. Keep cables, mains and a hot amp safe, and protect your hearing.',
+    takeaway: 'Draw the whole signal path first. The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input or phantom power. Keep cables, AC power and a hot amp safe, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a clavinet capture in the right order, choose and justify a setup for two different briefs, and say what would justify a second signal.',
     credit: { scenarios: ['cv.prac.order', 'cv.prac.gain', 'cv.prac.setup1', 'cv.prac.setup2', 'cv.prac.3', 'cv.mix.1', 'cv.mix.2', 'cv.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real clavinet and amp.' },
-    takeaway: 'Knowing which part of the chain is captured, safe electrical practice, a repeatable position and correct level checks pass. A brand or the “closest” position do not — and more than one setup can pass.',
+    takeaway: 'Knowing which part of the chain is captured, safe electrical practice, a repeatable position and correct level checks pass. A brand or the “closest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -443,12 +443,12 @@ const symptoms: Symptom[] = [
     id: 'cv.sym.dull',
     observation: 'The amp mic is dull or lacks attack',
     firstChecks: 'The capsule too far off axis or at the edge: move slightly toward the center; compare the distance.',
-    options: ['Move slightly toward the center and compare the distance', 'Boost the treble until the attack comes back', 'Change to a different amplifier straight away, before the next take'],
+    options: ['Move slightly toward the center and compare the distance', 'Boost the treble until the attack comes back', 'Change to a different amplifier right away, before the next take'],
     correct: 'Move slightly toward the center and compare the distance',
     explain: 'At the edge or turned away, the bite softens. Move back toward the center a little at a time.',
     why: {
       'Boost the treble until the attack comes back': 'EQ before position hides the cause.',
-      'Change to a different amplifier straight away, before the next take': 'The amp is the player’s sound. Move the mic first.',
+      'Change to a different amplifier right away, before the next take': 'The amp is the player’s sound. Move the mic first.',
     },
   },
   {
@@ -546,7 +546,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now STEP through the key (or PLAY ONCE) and watch where the signal goes.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the close mic from the center of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which way should the mic’s rejection point?', options: ['Toward the loudest monitor', 'Away from the loudest monitor', 'Straight up'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

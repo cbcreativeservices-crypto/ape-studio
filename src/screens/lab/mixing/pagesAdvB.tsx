@@ -338,7 +338,7 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
   const depthItems = [
     { id: 'multi', name: 'Multiple spaces', blurb: 'A tight room for the band, a longer space for the vocal, a plate for the snare — layers of distance, each on its own return.' },
     { id: 'predelay', name: 'Pre-delay as position', blurb: 'Longer pre-delay = the voice steps FORWARD of its room. The gap before the reverb answers is a distance dial.' },
-    { id: 'filtered', name: 'Filtered ambience', blurb: 'High-pass the return so the room never muddies the low end; low-pass it to push the space further back.' },
+    { id: 'filtered', name: 'Filtered ambience', blurb: 'High-pass the return so the room never muddies the low end; low-pass it to push the space farther back.' },
     { id: 'tempo', name: 'Tempo delays & throws', blurb: 'Delays locked to the beat vanish into the groove. An automated THROW on one word makes a moment.' },
   ] as const;
   const [seen, setSeen] = useState<Set<string>>(new Set());
@@ -358,7 +358,7 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>THE TWO SPACES, MEASURED</Eyebrow>
-        <Prompt>The shared reverb’s own decay, measured: how long each space takes to fall 60 dB (its RT60). A longer tail reads as a bigger, further room.</Prompt>
+        <Prompt>The shared reverb’s own decay, measured: how long each space takes to fall 60 dB (its RT60). A longer tail reads as a bigger, farther room.</Prompt>
         <DecayPlot space={space} />
       </Card>
       <Card>

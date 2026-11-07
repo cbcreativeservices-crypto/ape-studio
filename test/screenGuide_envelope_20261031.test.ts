@@ -272,7 +272,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   it('vetted: with the wave drawn, level 0 is the centre line (not the floor)', () => {
     const chart = code('src/screens/lab/envelope/EnvelopeChart.tsx');
     assert.match(chart, /const y = showWave \? \(v: number\) => mid - v \* halfH/);
-    assert.match(GUIDES.p1.tryThis[2], /flatten onto the centre \(zero\) line/);
+    assert.match(GUIDES.p1.tryThis[2], /flatten onto the center \(zero\) line/);
     assert.doesNotMatch(GUIDES.p1.tryThis.join(' '), /drops to the floor/);
   });
   it('vetted: Hold is time at the sustain level, after attack + decay (adsrTotalMs = A + D + hold + R)', () => {
@@ -377,7 +377,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(END_SCREEN, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
     assert.match(t, /✓ DONE line/);
-    assert.match(END.changes[2], /^Rows read ✓ DONE: a page tick is progress, not credit\./);
+    assert.match(END.changes[2], /^Rows read ✓ DONE: a page ✓ is progress, not credit\./);
     assert.doesNotMatch(t, /CREDITED/); // a word this lab's end screen never shows
     // the check row: label + CHECK in the number column, listed last
     assert.match(PAGED, /label: 'Check your understanding', kind: 'check'/);
@@ -398,7 +398,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing\. DONE · BACK TO LABS leaves the lab\./);
     // D41 K2: PagedLab's START OVER clears ticks, so its end screen's note says so (endNote).
     assert.match(PAGED_END, /\bstartOver\b/);
-    assert.match(LAB_END, /'PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the ticks for a fresh run\.'/);
+    assert.match(LAB_END, /'PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the check marks for a fresh run\.'/);
     // …but START OVER (PRACTICE) at the foot of CONTENTS DOES clear the page
     // ticks: no creditLabKey / pageCreditKeys here, so only the banked check
     // survives doReset. The guide must never say "nothing is taken away".
@@ -406,8 +406,8 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /resetPagedProgress\(labId\)\)\.then\(\(\) => \{\s*const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)\s*: \(!!creditLabKey && bankedPages\.has/);
     assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
-    assert.match(END.teaches[1], /^PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the page ticks for a fresh run; a passed check stays\.$/);
-    assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page ticks\./);
+    assert.match(END.teaches[1], /^PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the page check marks for a fresh run; a passed check stays\.$/);
+    assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page check marks\./);
     assert.doesNotMatch(t, /Nothing is taken away/i);
   });
   it('the strip on the end screen: ⏮ live, ‹ PREV leaves back to the page, readout WHAT’S LEFT ▾ opens the list; CONTENTS footer WHAT’S LEFT ›', () => {

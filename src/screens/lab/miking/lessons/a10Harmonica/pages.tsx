@@ -35,7 +35,7 @@ const G = AMP.grilleX;
 function useHandChamber(_p: PageProps): MikingStep {
   const [state, setState] = useState<HandState>('half');
   const s = HAND_STATES.find((q) => q.id === state)!;
-  const out = state === 'open' ? 'STRAIGHT OUT' : state === 'half' ? 'THROUGH THE GAP' : state === 'cupped' ? 'ROUND THE HANDS' : 'INTO THE MIC';
+  const out = state === 'open' ? 'STRAIGHT OUT' : state === 'half' ? 'THROUGH THE GAP' : state === 'cupped' ? 'AROUND THE HANDS' : 'INTO THE MIC';
   return {
     key: 'hands',
     title: 'The hands’ chamber',
@@ -43,7 +43,7 @@ function useHandChamber(_p: PageProps): MikingStep {
     layout: 'rack',
     rack: {
       render: (w, h) => <HandChamber w={w} h={h} state={state} accessibilityLabel={`The harmonica at the lips in the hands, from the side: ${s.label.toLowerCase()}. ${s.text}`} />,
-      badge: 'A simplified picture of the hands round the harmonica · the drawing changes, nothing is played',
+      badge: 'A simplified picture of the hands around the harmonica · the drawing changes, nothing is played',
       bezel: [
         { k: 'HANDS', v: s.short, flex: 1.2 },
         { k: 'CHAMBER', v: state === 'open' ? 'OPEN' : state === 'half' ? 'PARTLY' : 'CLOSED', flex: 1 },
@@ -65,7 +65,7 @@ function useHandChamber(_p: PageProps): MikingStep {
     },
     well: (
       <>
-        <Landing looking="The harmonica at the lips · from the player’s right" prompt="Choose HANDS: open, partly cupped, fully cupped, or cupped round a harp mic. Where does the sound leave?" />
+        <Landing looking="The harmonica at the lips · from the player’s right" prompt="Choose HANDS: open, partly cupped, fully cupped, or cupped around a harp mic. Where does the sound leave?" />
         <Card>
           <Point title={s.label}>{s.text}</Point>
         </Card>
@@ -219,7 +219,7 @@ const workedAcoustic = (z: DocumentedZone) => [
   { title: 'MEASURED FROM', text: 'From the harmonica — its hole face at the lips — to the mic’s FRONT, rounded to ≈ 5 mm. The readout also says how far the mic is off the line straight out of the harmonica (the breath line).', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'THE HEIGHT', text: 'At about mouth and hand height, facing the playing zone. If breath bursts dominate, move a little off the breath line — the next zone.', cell: 1 },
-  { title: 'THE AIM', text: `At the hands round the harmonica — the lab counts anything within ±${z.aim?.maxOffAxis ?? 25}°. Closer for detail and isolation; farther, in a quiet room, for a more integrated sound: one change at a time.`, cell: 2 },
+  { title: 'THE AIM', text: `At the hands around the harmonica — the lab counts anything within ±${z.aim?.maxOffAxis ?? 25}°. Closer for detail and isolation; farther, in a quiet room, for a more integrated sound: one change at a time.`, cell: 2 },
   { title: 'CLEARANCE', text: 'Just beyond the hands’ whole movement, never able to swing into the mouth, the instrument or a neck holder; the stand stable, its cable away from the player’s feet.', cell: 3 },
 ];
 const workedAmp = (z: DocumentedZone) => [
@@ -240,7 +240,7 @@ const HAND_ACOUSTIC: HandSpec = {
     mic: 'smallDynCard',
     looking: 'the harmonica player from above',
     prompt: 'Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — switch PATH below to try the harp amp’s speaker.',
-    label: 'The harmonica player, the hands round the harmonica',
+    label: 'The harmonica player, the hands around the harmonica',
     tried: (p) => `You predicted “${p}”. Farther back, the mic hears more of the room and less breath and detail; closer, more detail, more isolation — and more breath. Compare the same phrase at a similar level.`,
     notes: () => <VariantChips />,
   },
@@ -270,10 +270,10 @@ const SPEC: FreeReedSpec = {
   meet: {
     intro: BASE.intro,
     front: HARP_FRONT,
-    figure: { title: 'HARMONICA', badge: 'A 10-hole harmonica, taken apart and at the lips · a simplified drawing · switch PATH for the harp amp', label: (v) => (v === 'amp' ? 'A combo amp with one 12 inch speaker, seen from the front, drawn without its grille cloth so the speaker behind it shows; the control panel across the top.' : 'A 10-hole harmonica taken apart, drawn larger than life: two chrome cover plates, two brass reed plates with ten reeds each, and the comb with its ten holes. Beside it, the harmonica at the lips with the hands cupped round its back.') },
+    figure: { title: 'HARMONICA', badge: 'A 10-hole harmonica, taken apart and at the lips · a simplified drawing · switch PATH for the harp amp', label: (v) => (v === 'amp' ? 'A combo amp with one 12-inch speaker, seen from the front, drawn without its grille cloth so the speaker behind it shows; the control panel across the top.' : 'A 10-hole harmonica taken apart, drawn larger than life: two chrome cover plates, two brass reed plates with ten reeds each, and the comb with its ten holes. Beside it, the harmonica at the lips with the hands cupped around its back.') },
     partsBadge: 'Tap a part to name it · switch PATH for the harp amp',
     partsLooking: (v) => (v === 'amp' ? 'From the front · the harp amp, its speaker shown behind the cloth' : 'The harmonica taken apart · and at the lips'),
-    partsNote: 'Two things to meet: the harmonica (and the hands round it), and — on the amplified path — the harp amp. Switch PATH to see the amp.',
+    partsNote: 'Two things to meet: the harmonica (and the hands around it), and — on the amplified path — the harp amp. Switch PATH to see the amp.',
     partsWarn: 'Ask before you touch the player’s harmonicas or hands; they are the player’s to move. A stand that can strike the mouth, the instrument or a neck holder is never acceptable.',
     variantKey: 'PATH',
   },

@@ -51,9 +51,9 @@ export const PIANO_COPY: LessonCopy = {
     silentNote: '',
   },
   setting: {
-    kitA11y: 'The piano and the pianist from above, with the music desk, the bench and what sits round them.',
+    kitA11y: 'The piano and the pianist from above, with the music desk, the bench and what sits around them.',
     kitLanding: 'Tap anything around the piano — or step through ITEM — to see what it means for a piano mic. There is nothing to answer yet.',
-    kitIdle: 'The pianist sits at the keys; their hands sweep the whole keyboard and their feet work the pedals. Everything else round the piano is either their space or something a mic will hear.',
+    kitIdle: 'The pianist sits at the keys; their hands sweep the whole keyboard and their feet work the pedals. Everything else around the piano is either their space or something a mic will hear.',
     leftHanded: '',
     stageA11y: 'The piano on a stage, from above: the pianist’s wedge, a singer’s wedge, other players, and the audience below, beyond the curved side.',
     studioA11y: 'The piano in a studio room, from above: no monitors; a pair of mics just outside the curve.',
@@ -69,7 +69,7 @@ export const PIANO_COPY: LessonCopy = {
     workedLine: 'This starting point also places the mic relative to {line}: the readout says how far behind (or in front of) it the mic is.',
     workedAim: 'Aim it as the starting point says — the lab counts it while the mic faces the way it names. Height, distance from the hammers and angle are separate things to try.',
     workedClear: 'Clear of everything — the strings, the dampers and hammers, the lid and its stick, the pianist’s hands and sight line. Clearance comes first, before any number: set the lid first, then place the mic, and take the mic out before the lid is lowered.',
-    blocked: { grand: ' The boom reaches in from the curved side, under the lid.', short: ' Under a short-stick lid there is very little room.', baby: ' The boom reaches in from the curved side, under the lid.', upright: ' The arm comes up out of the top, or round the back.', uprightFront: ' The arm comes up past the open front.' },
+    blocked: { grand: ' The boom reaches in from the curved side, under the lid.', short: ' Under a short-stick lid there is very little room.', baby: ' The boom reaches in from the curved side, under the lid.', upright: ' The arm comes up out of the top, or around the back.', uprightFront: ' The arm comes up past the open front.' },
     reveal: 'Nearer the hammers tends to bring more attack and mechanism; farther away, a softer attack — and every piano and room is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try with a small condenser: start in a blue zone, then change one thing at a time — the height, the distance from the hammers, the angle. With the omni capsule, distance changes the room more than the lows.',

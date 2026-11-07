@@ -156,9 +156,9 @@ function faceMark(c: CabDraw, id: string, s: number): CabMark | null {
     case 'spk.grille':
       return { shapes: [edge(6)], hidden: true, note: say('GRILLE CLOTH · IN FRONT OF THIS SPEAKER', 'CLOTH IN FRONT') };
     case 'spk.baffle':
-      return { shapes: [edge(6), disc(0, 0, sec.rCut)], hidden: true, note: say('BAFFLE · THE BOARD ROUND THE SPEAKER', 'BAFFLE AROUND') };
+      return { shapes: [edge(6), disc(0, 0, sec.rCut)], hidden: true, note: say('BAFFLE · THE BOARD AROUND THE SPEAKER', 'BAFFLE AROUND') };
     case 'spk.cabinet':
-      return { shapes: [edge(6), edge(36)], hidden: true, note: say('CABINET · ROUND THIS SPEAKER', 'CABINET AROUND') };
+      return { shapes: [edge(6), edge(36)], hidden: true, note: say('CABINET · AROUND THIS SPEAKER', 'CABINET AROUND') };
     case 'spk.back':
     case 'spk.openBack':
       return { shapes: [edge(6), edge(20)], hidden: true, note: say(`${backWords(c)} · BEHIND THIS SPEAKER`, 'BEHIND THIS SPEAKER') };

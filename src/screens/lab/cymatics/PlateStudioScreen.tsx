@@ -95,9 +95,9 @@ const MULTI: { id: string; label: string; ratio: number | null }[] = [
 const SAND_AMOUNTS = [1500, 3000, 5000];
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
-  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the Academy ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the amplitude ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
   { id: 'overlay', label: 'Particles + heat', short: 'S+H', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while violet regions fall — opposite sides of a nodal line move in opposite directions. Neither colour is on the amplitude ramp: this view shows DIRECTION, not level. Fades between resonances.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while violet regions fall — opposite sides of a nodal line move in opposite directions. Neither color is on the amplitude ramp: this view shows DIRECTION, not level. Fades between resonances.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
@@ -450,7 +450,7 @@ function PlateStudio() {
           <Text style={styles.trayHead}>SUPPORT / CLAMP</Text>
           <View style={styles.chips}>
             <LabChip label="None (free on post)" selected={spec.support == null} onPress={() => patch({ support: null })} onLongPress={() => openLesson('support')} />
-            <LabChip label="Clamp centre" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * asp } })} onLongPress={() => openLesson('support')} />
+            <LabChip label="Clamp center" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * asp } })} onLongPress={() => openLesson('support')} />
             <LabChip label="Drag on plate" selected={dragTarget === 'support'} onPress={() => setDragTarget(dragTarget === 'support' ? null : 'support')} />
           </View>
           <Text style={styles.trayHead}>RUN</Text>
@@ -681,7 +681,7 @@ function PlateStudio() {
           </View>
         ) : null}
         {view === 'heat' || view === 'overlay' || view === 'plate3d' || view === 'section' ? (
-          <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the most motion">
+          <View style={styles.keyRow} accessible accessibilityLabel="Color key: black is still, red is the most motion">
             <Text style={styles.keyText}>STILL</Text>
             <LinearGradient colors={HEAT_KEY} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.keyBar} />
             <Text style={styles.keyText}>MOST MOTION</Text>
@@ -705,7 +705,7 @@ function PlateStudio() {
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
                   ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate just moves as a whole and forms no figure.`
-                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Next mode up: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organize.${res.next ? ` Next mode up: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
           </Text>
           <View style={styles.rowBetween}>
             <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>

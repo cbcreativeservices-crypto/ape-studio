@@ -169,8 +169,8 @@ const scenarios: MikingScenario[] = [
     id: 'oh.mic.1',
     page: 'microphone',
     prompt: 'The overheads should bring in the room as well as the kit. Which pattern is a natural first try?',
-    options: ['Omni — it hears all round, room included', 'Cardioid — it reaches deeper into the room', 'Supercardioid — its rear lobe hears the room'],
-    correct: 'Omni — it hears all round, room included',
+    options: ['Omni — it hears all around, room included', 'Cardioid — it reaches deeper into the room', 'Supercardioid — its rear lobe hears the room'],
+    correct: 'Omni — it hears all around, room included',
     explain: 'An omni picks up from every direction, so it hears more of the room; a cardioid favors what it faces. A pattern chooses directions — it does not reach farther.',
     why: {
       'Cardioid — it reaches deeper into the room': 'A pattern does not reach farther; a cardioid favors its front and rejects its back, so it hears less of the room than an omni.',
@@ -181,12 +181,12 @@ const scenarios: MikingScenario[] = [
     id: 'oh.mic.2',
     page: 'microphone',
     prompt: 'A side-address condenser goes over the kit. Which part of it faces the kit?',
-    options: ['The face of its body, from the side', 'Its end, the way a pencil mic is aimed', 'Whichever side: a condenser hears all round'],
+    options: ['The face of its body, from the side', 'Its end, the way a pencil mic is aimed', 'Whichever side: a condenser hears all around'],
     correct: 'The face of its body, from the side',
     explain: 'A side-address mic hears out of the side of its body — its front face. Aim the face at the kit; the end points elsewhere.',
     why: {
       'Its end, the way a pencil mic is aimed': 'That is an end-address mic. A side-address mic is aimed with the face of its body.',
-      'Whichever side: a condenser hears all round': 'Being a condenser says nothing about the pattern; this one is a cardioid, aimed with its face.',
+      'Whichever side: a condenser hears all around': 'Being a condenser says nothing about the pattern; this one is a cardioid, aimed with its face.',
     },
   },
   {
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Adding what the PA needs, or feeding a recording',
     explain: 'Start from what the audience already hears. An overhead may add cymbals or detail — or feed a recording or broadcast — at the cost of stage spill.',
     why: {
-      'Making the cymbals louder, whatever the room and the band': 'If the audience already hears the cymbals, more of them may only make the sound harsher — and costs gain before feedback.',
+      'Making the cymbals louder, whatever the room and the band': 'If the audience already hears the cymbals, more of them may only make the sound harsher — and cost gain before feedback.',
       'Standing in for the close mics on the drums': 'On a loud stage, overheads are far from the drums and full of spill: close mics usually carry the drums.',
     },
   },
@@ -551,7 +551,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the stick strikes the top of the cymbal. Which way does the cymbal send its sound?', options: ['Only upward, toward the ceiling', 'Up and down, from both faces', 'Only out from the edge'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch where the sound leaves.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the mic over the snare from 1 m to 1.2 m. What changes?', options: ['More cymbals and room', 'More kick and snare', 'It depends on this kit and room'], after: 'Rest a mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum fill sits behind and below the side mic. How can its pattern help?', options: ['Turn or tilt the mic so a null faces it', 'It cannot: the fill is behind it', 'Only a louder mic helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Both mics are the same distance from the snare. Are they the same distance from the kick?', options: ['Yes, the same', 'No, different', 'Only if both are condensers'], after: 'Now switch SOURCE to the kick and read the delay.' },

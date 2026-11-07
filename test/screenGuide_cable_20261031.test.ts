@@ -181,10 +181,10 @@ describe('4. each guide quotes its screen’s real names', () => {
     l04_same_plug: ['THE PLUG BOTH CABLES WEAR', 'WHY THEY LOOK ALIKE', 'Interchangeable?', 'IT DEPENDS', 'THE HONEST RESULT OF CHOOSING WRONG', 'NEXT LOOK-ALIKE ›', 'One way only'],
     l05_loudspeaker: ['THE FOUR DIFFERENT CONNECTIONS', 'WHAT TRAVELS', 'CONNECTORS THAT SERVE IT', 'THE LOUDSPEAKER CONNECTORS', 'BINDING POST', 'BANANA PLUG', 'BARE WIRE', 'LEGACY 1/4-INCH TS', 'INSTRUMENT CABLE VS LOUDSPEAKER CABLE', 'SAME PLUG — DIFFERENT CABLE', 'ROUTING PICKS', 'NEXT SCENARIO ›', 'Passive loudspeaker (full-range)'],
     l06_digital: ['THE CONNECTORS — BROWSE ALL TEN', 'WHAT THE RECORDS TEACH', 'USB — THE PLUG DOES NOT DEFINE THE CABLE', 'MIDI — INSTRUCTIONS, NOT AUDIO', 'ETHERNET — ONE PLUG, MANY SYSTEMS', 'COAX & OPTICAL', 'AV & CONTROL', 'USB MICRO-B', 'ETHERNET 8P8C', 'MIDI DIN-5', 'CONNECTING IT', 'CABLE BEHIND IT'],
-    l07_power: ['TWO KINDS OF POWER', 'AC MAINS', 'LOW-VOLTAGE DC', 'THREE CONDUCTORS, THREE ROLES', 'NEMA 5-15', 'POWER CONNECTOR BROWSER · 10 RECORDS', 'THE NEVER LIST', 'RECOGNIZE — NEVER HANDLE', 'WALL & IEC', 'DC & NEGOTIATED', 'DC BARREL', 'NEMA TWIST-LOCK', 'STAGE PIN', 'CAM FEEDER', 'MULTICIRCUIT', 'Protective earth'],
+    l07_power: ['TWO KINDS OF POWER', 'AC POWER', 'LOW-VOLTAGE DC', 'THREE CONDUCTORS, THREE ROLES', 'NEMA 5-15', 'POWER CONNECTOR BROWSER · 10 RECORDS', 'THE NEVER LIST', 'RECOGNIZE — NEVER HANDLE', 'WALL & IEC', 'DC & NEGOTIATED', 'DC BARREL', 'NEMA TWIST-LOCK', 'STAGE PIN', 'CAM FEEDER', 'MULTICIRCUIT', 'Safety ground'],
     l08_selection: ['FOURTEEN CONNECTIONS TO CABLE', 'MIC → MIXER', 'DC SUPPLY → DEVICE', 'DECISION', 'NEXT DECISION ›', 'SOLVE CONNECTION ✓', 'NEXT CONNECTION ›', 'NOTHING — XLR IS HOT-SAFE', 'GUITAR → DI', 'YES — THE PLUGS MATCH', 'MIXER → POWERED SPKR'],
-    l09_handling: ['CORRECT PRACTICES', 'GRIP THE BODY', 'DEFECTIVE = OUT', 'THE INSPECTION EYE', 'THE INSPECTION SCENE', 'FAULT', 'NEXT ITEM ›', 'FINISH INSPECTION ✓', 'COIL OVER-UNDER', 'NO KNOTS, NO TIGHT BENDS', 'SIGNAL APART FROM MAINS'],
-    l10_tester: ['VIRTUAL CABLE TESTER', 'INSIDE THE CABLE', 'PATH', 'EXPECTED', 'MEASURED', 'FAULT', 'NETWORK', 'POWER', 'CONNECT BOTH ENDS ›', 'RUN TEST ›', 'NAME THE FAULT', 'DECIDE THE DISPOSITION', 'PASSES — RETURN TO SERVICE', 'RELABEL IT AND KEEP USING IT', 'REPAIR (QUALIFIED PERSON), THEN RETEST', 'REMOVE FROM SERVICE', 'PRACTICE AGAIN ↻', 'Round → EARTH', 'Pin 2 → Pin 3', 'DROPS ON FLEX', 'SPLIT'],
+    l09_handling: ['CORRECT PRACTICES', 'GRIP THE BODY', 'DEFECTIVE = OUT', 'THE INSPECTION EYE', 'THE INSPECTION SCENE', 'FAULT', 'NEXT ITEM ›', 'FINISH INSPECTION ✓', 'COIL OVER-UNDER', 'NO KNOTS, NO TIGHT BENDS', 'SIGNAL APART FROM AC POWER'],
+    l10_tester: ['VIRTUAL CABLE TESTER', 'INSIDE THE CABLE', 'PATH', 'EXPECTED', 'MEASURED', 'FAULT', 'NETWORK', 'POWER', 'CONNECT BOTH ENDS ›', 'RUN TEST ›', 'NAME THE FAULT', 'DECIDE THE DISPOSITION', 'PASSES — RETURN TO SERVICE', 'RELABEL IT AND KEEP USING IT', 'REPAIR (QUALIFIED PERSON), THEN RETEST', 'REMOVE FROM SERVICE', 'PRACTICE AGAIN ↻', 'Round → GROUND', 'Pin 2 → Pin 3', 'DROPS ON FLEX', 'SPLIT'],
     l11_challenge: ['TWO SYSTEMS TO CABLE, END TO END', 'SHOW A', 'STUDIO B', 'SIGNAL PATH', 'POWER-UP SEQUENCE', 'FAULT HUNT', 'DATA & CONTROL', 'WHAT TRAVELS HERE?', 'NEXT CONNECTION ›', 'FINISH STAGE ✓', 'CONFIRM ORDER', 'NAME WHY IT FAILS', 'WHICH WAY AROUND?', 'Powered main loudspeakers'],
     l12_final: ['LAB PROGRESS', 'WHAT’S LEFT', 'LAB COMPLETE', 'GENERAL', 'CRITICAL SAFETY', 'REVIEW CONNECTORS ›', 'RETRY FINAL CHALLENGE ›'],
   };
@@ -302,7 +302,7 @@ describe('5. the outcomes TRY THIS quotes are the ones the data produces', () =>
     assert.equal(b.disposition, 'repair_qualified');
     const h = c('CABLE H');
     const hm = Object.fromEntries(h.actualMap.map((r: { path: string; value: string }) => [r.path, r.value]));
-    assert.equal(hm['Round → EARTH'], 'OPEN');
+    assert.equal(hm['Round → GROUND'], 'OPEN');
     assert.equal(h.disposition, 'remove');
   });
   it('Connector tester + fault finder: the lamps quoted are lampFor’s answers', async () => {
@@ -443,7 +443,7 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.doesNotMatch(T, /check row|optional/i, 'no check row and no optional pages: the guide names neither');
     // Rows are page titles, not stations (the misconceptions page and the Final carry no STATION tag).
     assert.doesNotMatch(T, /station/i);
-    assert.ok(T.includes('Which pages of the lab, from Connector, cable, signal to the Final'));
+    assert.ok(T.includes('Which pages of the lab, from “Connector, cable, signal” to the Final'));
     assert.match(code(`${CONN_DIR}/pagesA.tsx`), /title: 'Connector, cable, signal'/);
     // The line under the title: how much is left + whether the work is saved (every endLead branch).
     assert.match(LE, /<Text style=\{styles\.lead\}>\{endLead\(w, \{ mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen\(\), account \}\)\}<\/Text>/);

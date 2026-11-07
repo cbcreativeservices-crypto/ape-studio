@@ -212,7 +212,7 @@ function F13TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
       layout: 'read',
       body: (
         <Card>
-          <Point title="THE TAIL AND THE FLOOR">Record the full excitation and a tail long enough to reach the floor; watch the input for clipping and the output for limiting; repeat each set-up to catch a cough, a door or a failed run. A decay that merges into the floor supports no late slope.</Point>
+          <Point title="THE TAIL AND THE FLOOR">Record the full excitation and a tail long enough to reach the floor; watch the input for clipping and the output for limiting; repeat each setup to catch a cough, a door or a failed run. A decay that merges into the floor supports no late slope.</Point>
           <Point title="BAND BY BAND">Look at the impulse response and the decay curve in bands, not one broadband figure. Report T20, T30 and EDT separately, mark the bands with too little range, and keep each position’s result visible before any average.</Point>
           <Point title="NOT ONE CLEAN SLOPE">Small rooms and spaces that are not diffuse may bend: early spikes, two slopes, low-frequency modes. Say so rather than forcing one number.</Point>
         </Card>

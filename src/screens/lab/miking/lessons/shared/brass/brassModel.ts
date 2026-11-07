@@ -64,7 +64,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
       id: i === 0 ? 'br.bell' : `br.bell${i}`,
       label: 'bell',
       short: 'bell',
-      role: `The flared end of the tube, ${spec.bell.mm} mm across at the rim on this ${name}. Most of the sound leaves here — the low notes spreading all round, the high ones beaming forward along its axis.`,
+      role: `The flared end of the tube, ${spec.bell.mm} mm across at the rim on this ${name}. Most of the sound leaves here — the low notes spreading all around, the high ones beaming forward along its axis.`,
       prov: bellProv,
       ...(i === 0 ? {} : { listIn: [] }),
       solid: { kind: 'frustum', a, b, ra: bellRadius(spec, xs[i]) + 1, rb: bellRadius(spec, xs[i + 1]) + (i === 2 ? 3 : 1) },
@@ -76,7 +76,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
     'br.bell': { label: 'bell', short: 'bell', role: '' },
     'br.leadpipe': { label: 'leadpipe', short: 'leadpipe', role: 'The tube the mouthpiece fits into: the air column starts here.' },
     'br.slides': { label: 'tuning and valve slides', short: 'slides', role: 'Short U-shaped slides set the tuning; the valve slides are the extra lengths each valve brings in. Players pull them out to tune — keep clips and cables clear.' },
-    'br.valves': { label: slide ? 'valve section' : 'valves', short: slide ? 'valves' : 'valves', role: slide ? 'Two rotary valves in the bell section, worked by the left hand: each brings in an extra loop of tube for the lowest notes.' : 'Three piston valves. Pressing one sends the air round an extra loop of tube, lowering the pitch.' },
+    'br.valves': { label: slide ? 'valve section' : 'valves', short: slide ? 'valves' : 'valves', role: slide ? 'Two rotary valves in the bell section, worked by the left hand: each brings in an extra loop of tube for the lowest notes.' : 'Three piston valves. Pressing one sends the air around an extra loop of tube, lowering the pitch.' },
     'br.slide': { label: 'slide', short: 'slide', role: 'The long U of tube the right hand moves: out to make the tube longer and the pitch lower — seven positions from 1st (closed) to 7th (out at arm’s length). It is precision tubing: keep everything clear of it.' },
   };
   for (const t of P.tubes) {
@@ -139,7 +139,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
       id: 'br.slidePath',
       label: 'the slide’s path',
       short: 'slide path',
-      role: `The outer slide and its crook travel from 1st position out to 7th — about ${Math.round(SLIDE_7TH / 10)} cm further out — with the right hand. A stand, boom, cable or mic anywhere in this path, or close beside it, is in the wrong place: leave a comfortable buffer.`,
+      role: `The outer slide and its crook travel from 1st position out to 7th — about ${Math.round(SLIDE_7TH / 10)} cm farther out — with the right hand. A stand, boom, cable or mic anywhere in this path, or close beside it, is in the wrong place: leave a comfortable buffer.`,
       moving: true,
       prov: ill('env.tb.slide: the DERIVED 7th-position travel (559 mm) with drawing-default margins'),
       clearance: SLIDE_BUFFER,
@@ -199,7 +199,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
     name: o.name,
     parts,
     regions: [
-      { id: 'r.bell', partId: 'br.bell', label: 'the bell', anchor: { x: 0, y: 0, z: 0 }, prov: bellProv, note: 'Nearly all the sound leaves at the bell: the low notes spread out all round it, and the higher the pitch, the more it beams straight ahead along the bell’s axis.' },
+      { id: 'r.bell', partId: 'br.bell', label: 'the bell', anchor: { x: 0, y: 0, z: 0 }, prov: bellProv, note: 'Nearly all the sound leaves at the bell: the low notes spread out all around it, and the higher the pitch, the more it beams straight ahead along the bell’s axis.' },
       { id: 'r.lips', partId: 'br.mouthpiece', label: 'the mouthpiece', anchor: P.mouthpiece.cup, prov: ill('the cup'), note: 'The buzzing lips start the sound inside the cup; breath and lip noise leave here too, faintly.' },
       ...(P.valves.length ? [{ id: 'r.valves', partId: 'br.leadpipe', label: 'the valves', anchor: P.valves[1].c, prov: ill('the middle valve'), note: 'The valves click and the air rushes as they move — a close mic near them hears it.' }] : []),
       ...(P.slide ? [{ id: 'r.slide', partId: 'br.slide', label: 'the slide', anchor: P.slide.crook, prov: ill('the crook'), note: 'The slide carries the air column out and back; it makes little sound of its own.' }] : []),

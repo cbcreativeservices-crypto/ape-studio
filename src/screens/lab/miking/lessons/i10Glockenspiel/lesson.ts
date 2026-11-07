@@ -216,7 +216,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Closer to the bars, or higher? What tends to differ?',
     options: ['Closer: more immediate, may favor one area', 'Closer: more even across the whole keyboard', 'Higher: less of the room and less of the spill'],
     correct: 'Closer: more immediate, may favor one area',
-    explain: 'Moving closer may improve direct-to-spill ratio but exaggerate one area of the keyboard; higher integrates more of it, with more room.',
+    explain: 'Moving closer may improve the direct-to-spill ratio but exaggerate one area of the keyboard; higher integrates more of it, with more room.',
     why: {
       'Closer: more even across the whole keyboard': 'Closer favors the bars nearest it.',
       'Higher: less of the room and less of the spill': 'Higher hears more of the room and the stage.',
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a steel bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: a mic 10–15 cm above the bars, as one close example has it. What will the drawing show?', options: ['It sits inside the mallets’ travel', 'It is the safest position', 'It is too far to hear the bars'], after: 'Look for the red band, then rest the mic in two blue zones.' },
   context: { prompt: 'The side fill sits off to the side of a mic above the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Two mics close together, angled apart, over the middle: the lowest bar sounds. How big is their arrival-time difference?', options: ['Small', 'Large', 'Exactly zero'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
@@ -524,7 +524,7 @@ const copy: Partial<LessonCopy> = {
     before: [
       { title: 'IDENTIFY THE INSTRUMENT', text: 'Tubes or a box? A damper pedal or hand damping? Which mallets are approved? Ask for the passage: low and high notes, accents, rolls or repeated notes, and the intended damping.' },
       { title: 'MAP THE PATH', text: 'The lowest and highest played notes, both hands’ reach, the mallet swing, the damping hand, the score and any pedal. Stands and cables outside them all; a case or support is not a mic mount.' },
-      { title: 'STABLE AND UNTOUCHED', text: 'Stabilize the instrument by its own instructions; never adjust a gas spring, the damper or a resonator to fit a mic, never prop a lid without the owner — and lock it before any stand goes near.' },
+      { title: 'STABLE AND UNTOUCHED', text: 'Stabilize the instrument by its own instructions; never adjust a gas spring, the damper or a resonator to fit a mic, never prop a lid without the owner — and lock the instrument in place before any stand goes near.' },
       BEFORE_STANDS,
     ],
     plan: {

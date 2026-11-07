@@ -78,7 +78,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and tick each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list. FACTS are facts; EXAMPLES are labeled as examples to verify against the destination's current specification — they are not the rule.</Body>
+              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and check each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list. FACTS are facts; EXAMPLES are labeled as examples to verify against the destination's current specification — they are not the rule.</Body>
               <Card tone="accent">
                 <Point title={dest.name}>{dest.brief}</Point>
                 {dest.facts.map((f) => <Body key={f}>• FACT — {f}</Body>)}

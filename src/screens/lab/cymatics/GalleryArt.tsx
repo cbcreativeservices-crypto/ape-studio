@@ -130,7 +130,7 @@ export function GalleryArt({
           .saveArtwork(a)
           .then((ok) => {
             if (ok) onArtwork(a);
-            else notify('Artwork not saved', 'The last coloring changes could not be saved on this device. Open COLOUR to redo them.');
+            else notify('Artwork not saved', 'The last coloring changes could not be saved on this device. Open COLOR to redo them.');
           });
       }
     },
@@ -182,7 +182,7 @@ export function GalleryArt({
       helpKey: 'art_fill',
       render: () => (
         <View style={styles.tray}>
-          <Text style={styles.trayHead}>COLOUR</Text>
+          <Text style={styles.trayHead}>COLOR</Text>
           <View style={styles.swatches}>
             {SWATCHES.map((c) => (
               <Pressable
@@ -200,7 +200,7 @@ export function GalleryArt({
             ))}
           </View>
           <View style={styles.chips}>
-            <LabChip label="Custom colour…" selected={false} onPress={() => setPickerOpen(true)} onLongPress={() => onHelp('art_fill')} />
+            <LabChip label="Custom color…" selected={false} onPress={() => setPickerOpen(true)} onLongPress={() => onHelp('art_fill')} />
             <LabChip label={erase ? 'Erase ON — tap a region' : 'Erase'} selected={erase} onPress={() => setErase((e) => !e)} onLongPress={() => onHelp('art_fill')} />
           </View>
           {/* Undo / redo / clear — moved off the bezel and out of the well
@@ -212,7 +212,7 @@ export function GalleryArt({
             <LabChip label={canRedo ? `Redo (${hist.list.length - 1 - hist.i}) ›` : 'Redo — nothing to redo ›'} selected={false} onPress={canRedo ? redo : () => {}} onLongPress={() => onHelp('art_fill')} />
             <LabChip label="Clear all fills" selected={false} onPress={() => patch({ fills: [] })} onLongPress={() => onHelp('art_fill')} />
           </View>
-          <Text style={styles.trayBlurb}>Tap a region on the figure to fill it with this colour. Regions are the areas between nodal lines — the parts of the plate that move together.</Text>
+          <Text style={styles.trayBlurb}>Tap a region on the figure to fill it with this color. Regions are the areas between nodal lines — the parts of the plate that move together.</Text>
         </View>
       ),
     },
@@ -229,7 +229,7 @@ export function GalleryArt({
             <LabChip label="Solid" selected={style === 'solid'} onPress={() => setStyle('solid')} onLongPress={() => onHelp('art_style')} />
             <LabChip label="Gradient" selected={style === 'gradient'} onPress={() => setStyle('gradient')} onLongPress={() => onHelp('art_style')} />
           </View>
-          <Text style={styles.trayBlurb}>{style === 'gradient' ? 'Gradient shades each region from its centre outward — the colour at the middle, 45 % darker at the edge. Reads as height: antinode in the middle, still line at the edge.' : 'Solid paints the region flat.'}</Text>
+          <Text style={styles.trayBlurb}>{style === 'gradient' ? 'Gradient shades each region from its center outward — the color at the middle, 45 % darker at the edge. Reads as height: antinode in the middle, still line at the edge.' : 'Solid paints the region flat.'}</Text>
           <Text style={styles.trayHead}>NODAL LINES</Text>
           <View style={styles.swatches}>
             {[...LINE_COLORS, fillColor].map((c, i) => (
@@ -313,9 +313,9 @@ export function GalleryArt({
       {/* Custom colour — an IN-TREE overlay (never a nested Modal). */}
       {pickerOpen ? (
         <View style={styles.overlay}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setPickerOpen(false)} accessibilityRole="button" accessibilityLabel="Close colour picker" />
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setPickerOpen(false)} accessibilityRole="button" accessibilityLabel="Close color picker" />
           <View style={styles.overlayCard}>
-            <Text style={styles.pickerTitle}>CUSTOM FILL COLOUR</Text>
+            <Text style={styles.pickerTitle}>CUSTOM FILL COLOR</Text>
             <SpectrumColorPicker
               value={fillColor}
               onPick={(hex) => {

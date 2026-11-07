@@ -309,7 +309,7 @@ export function BellSpread({ w, h, s, register, accessibilityLabel }: { w: numbe
   const b = s.bell;
   const p = useMemo(() => spreadArcs(b, register), [b, register]);
   const [ru, rv] = prj('side', b.rim);
-  const labels: StaticLabel[] = [{ id: 'reg', text: register === 'low' ? 'LOW NOTES: ALL ROUND' : register === 'mid' ? 'MIDDLE: WIDER IN FRONT OF THE BELL' : 'HIGH OVERTONES: ALONG THE BELL’S AXIS', short: register.toUpperCase(), u: ru, v: rv - b.R - 420, align: 'center', tone: 'amber' }];
+  const labels: StaticLabel[] = [{ id: 'reg', text: register === 'low' ? 'LOW NOTES: ALL AROUND' : register === 'mid' ? 'MIDDLE: WIDER IN FRONT OF THE BELL' : 'HIGH OVERTONES: ALONG THE BELL’S AXIS', short: register.toUpperCase(), u: ru, v: rv - b.R - 420, align: 'center', tone: 'amber' }];
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>

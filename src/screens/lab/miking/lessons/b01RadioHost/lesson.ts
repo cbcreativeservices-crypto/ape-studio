@@ -78,7 +78,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a host’s mic in the right order, choose and justify a setup for a two-host podcast and a live talk show, and say what would justify a second mic.',
     credit: { scenarios: ['b1.prac.order', 'b1.prac.gain', 'b1.prac.setup1', 'b1.prac.setup2', 'b1.prac.3', 'b1.mix.1', 'b1.mix.2', 'b1.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real host.' },
-    takeaway: 'The address side, a repeatable distance from the lips, plosive control, proximity effect where it applies, a channel per host, and an honest line between bleed and feedback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'The address side, a repeatable distance from the lips, plosive control, proximity effect where it applies, a channel per host, and an honest line between bleed and feedback pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The arm holds the mic still while the head turns about its center: the mouth moves away and off the axis — more so the closer the mic is.',
     why: {
       'The arm turns the mic to follow the head': 'A desk arm holds still; only someone moving it, or a headset, follows the head.',
-      'Nothing: the distance stays the same': 'The mouth swings round the head’s center, so its distance and angle to the mic change.',
+      'Nothing: the distance stays the same': 'The mouth swings around the head’s center, so its distance and angle to the mic change.',
     },
   },
   {
@@ -373,7 +373,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b1.mix.1',
     page: 'practice',
-    prompt: 'A mic sits low over a hard desk, the voice sounds hollow. A first idea to try?',
+    prompt: 'A mic sits low over a hard desk; the voice sounds hollow. A first idea to try?',
     options: ['Raise the mic off the desk, nearer the mouth', 'Boost the treble to bring back the lost clarity', 'Turn the mic’s pattern to omni'],
     correct: 'Raise the mic off the desk, nearer the mouth',
     explain: 'Nearer the mouth and farther from the desk, the desk’s copy arrives later and weaker. A soft cloth on the desk is another idea. EQ cannot put back a canceled frequency.',
@@ -537,7 +537,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The host turns to a guest; the mic stays on its arm. Which mic changes most?',
     options: ['A very close one: the same turn is a bigger change', 'A farther one, since it was already the quieter one', 'Neither: an arm keeps the mic aimed at the mouth'],
     correct: 'A very close one: the same turn is a bigger change',
-    explain: 'The mouth swings round the head’s center by much the same amount; at a close mic that is a bigger share of the distance and angle — a bigger change in level and tone.',
+    explain: 'The mouth swings around the head’s center by much the same amount; at a close mic that is a bigger share of the distance and angle — a bigger change in level and tone.',
     why: {
       'A farther one, since it was already the quieter one': 'Farther away, the same movement is a smaller share of the distance.',
       'Neither: an arm keeps the mic aimed at the mouth': 'An arm holds still; the mouth moves.',

@@ -183,7 +183,7 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
       <VocalFolds voiced={voiced} reduceMotion={ctx.reduceMotion} controls={toggle} />
       <Card>
         <Eyebrow>{voiced ? 'FOLDS TOGETHER, VIBRATING' : 'FOLDS APART, AIR ONLY'}</Eyebrow>
-        <Body>{voiced ? `The folds are brought together; air pressure blows them open and they snap shut again, over and over — that is the pitch of the voice. "${p.voiced}" as in "${p.example[1]}".` : `The folds are held open; the only sound is the noise made further up — a burst or a hiss at the ${p.place}. "${p.unvoiced}" as in "${p.example[0]}".`}</Body>
+        <Body>{voiced ? `The folds are brought together; air pressure blows them open and they snap shut again, over and over — that is the pitch of the voice. "${p.voiced}" as in "${p.example[1]}".` : `The folds are held open; the only sound is the noise made farther up — a burst or a hiss at the ${p.place}. "${p.unvoiced}" as in "${p.example[0]}".`}</Body>
         {ctx.reduceMotion && voiced ? <Text style={styles.see}>Reduced motion: the folds are shown mid-cycle instead of animating.</Text> : null}
       </Card>
       <Notice>Look at the right-hand trace: voiced is a regular train of pulses (a pitch); unvoiced is ragged noise with no repeating pattern.</Notice>

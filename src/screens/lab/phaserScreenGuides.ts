@@ -67,7 +67,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'It is the third Modulation lab, after Chorus and Flanger, and contrasts phase with time. A good next step: Distortion & Saturation. Each picture is a teaching model.',
     ],
     tryThis: [
-      'Open SWEEP and set DEPTH (SWEEP) to STATIC. Then drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one either side of CENTER.',
+      'Open SWEEP and set DEPTH (SWEEP) to STATIC. Then drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one on either side of CENTER.',
       'Tap STAGES through 2, 4, 6 and 8: the caption under DESIGNED RESPONSE says 1, 2, 3, then 4 notches, and OUT shows that many dips.',
       'Step RES from 0% to 60%: the peaks between the dips rise above the dotted input line — listen for the sweep starting to ring.',
     ],

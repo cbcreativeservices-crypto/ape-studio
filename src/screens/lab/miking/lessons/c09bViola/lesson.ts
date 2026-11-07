@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A clip that fits a violin: can you put it on a viola?',
     options: ['Yes: violin and viola clips are interchangeable', 'No: a viola is too large and too deep to take an instrument clip', 'Only if its maker says it fits that viola — check its depth'],
     correct: 'Only if its maker says it fits that viola — check its depth',
-    explain: 'Mounts are not interchangeable instructions: use one its maker lists for the viola, check this instrument’s depth, finish, chin and shoulder rests and the bow path — with the player’s consent.',
+    explain: 'Mounts are not interchangeable: use one its maker lists for the viola, check this instrument’s depth, finish, chin and shoulder rests and the bow path — with the player’s consent.',
     why: {
       'Yes: violin and viola clips are interchangeable': 'Some clips fit both; check the maker’s fit for this viola.',
       'No: a viola is too large and too deep to take an instrument clip': 'Clips and holders made for the viola exist; use one that fits.',
@@ -457,7 +457,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you bring a cardioid from a meter to 25 cm from the viola. What changes?', options: ['More definition, and more low end', 'More of the room', 'It depends on this viola'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will a supercardioid aimed at the viola reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

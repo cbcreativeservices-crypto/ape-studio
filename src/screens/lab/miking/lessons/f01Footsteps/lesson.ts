@@ -78,7 +78,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a footstep mic in the right order, choose and justify a setup for a quiet Foley stage and a live theater booth, and say what would justify a second mic.',
     credit: { scenarios: ['f01.prac.order', 'f01.prac.gain', 'f01.prac.setup1', 'f01.prac.setup2', 'f01.prac.3', 'f01.mix.1', 'f01.mix.2', 'f01.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'Shoe and surface named, the movement and the exit path clear, a starting point read to the capsule, headroom for the hardest step, and a mono check for a second mic pass. A brand or a louder signal do not — and more than one setup can pass.',
+    takeaway: 'Shoe and surface named, the movement and the exit path clear, a starting point read to the capsule, headroom for the hardest step, and a mono check for a second mic pass. A brand or a louder signal does not — and more than one setup can pass.',
   },
 };
 
@@ -240,12 +240,12 @@ const scenarios: MikingScenario[] = [
     id: 'f01.ctx.studio',
     page: 'context',
     prompt: 'A quiet Foley stage, footsteps for a medium shot. A fair first plan?',
-    options: ['One directional mic about 0.9–1.8 m out, a stable step area', 'A mic inside the pit’s rim, as close as it fits', 'Three mics round the pit, all open and summed together at once'],
+    options: ['One directional mic about 0.9–1.8 m out, a stable step area', 'A mic inside the pit’s rim, as close as it fits', 'Three mics around the pit, all open and summed together at once'],
     correct: 'One directional mic about 0.9–1.8 m out, a stable step area',
     explain: 'On a quiet stage one directional mic outside the movement — about 0.9–1.8 m out, aimed at the steps — with a stable surface and separate monitoring is a place to begin. Add a perspective only if the scene wants it.',
     why: {
       'A mic inside the pit’s rim, as close as it fits': 'Inside the rim is the landing area: the mic stays outside the movement.',
-      'Three mics round the pit, all open and summed together at once': 'Each extra mic adds room, noise and timing differences. Start with one and add for a reason.',
+      'Three mics around the pit, all open and summed together at once': 'Each extra mic adds room, noise and timing differences. Start with one and add for a reason.',
     },
   },
   {
@@ -389,7 +389,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small supercardioid about 1 m out, the wedge off its rear to one side', ok: true, power: 'phantom', feedback: 'A fair live choice if the wedge sits near its rejection — check at show level.' },
       { id: 'c', label: 'A room mic 3 m back, so the PA sounds natural', ok: false, power: 'phantom', feedback: 'A farther mic hears the PA and the wedge: it often runs out of gain before feedback live.' },
       { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check the gain with the operator, short of any ring.' },
-      { id: 'e', label: 'Three mics round the pit, all open on the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
+      { id: 'e', label: 'Three mics around the pit, all open on the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
     ],
     reasons: [DOC_REASON('the middle of the steps'), CLEAR_REASON('the movement and the exit path'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not during the cue. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level.' }],
     explain: 'Two setups pass. What passes is the reasoning: one close, protected pickup, the wedge in its rejection, clearance of the movement, and gain checked with the operator — never by making it ring.',
@@ -398,7 +398,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a footstep’s sharp contact start?', options: ['In the walker’s knee', 'Where the heel meets the floor', 'In the room’s walls'], after: 'Now STEP through (or PLAY ONCE) and watch the heel, the sole, the surface and the floor under it.' },
-  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 1.8 m to 1 m from the steps. What changes?', options: ['More contact, uneven steps', 'More room', 'It depends on this floor'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the performer. Where will a supercardioid aimed at the steps reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -503,7 +503,7 @@ export const F01_LESSON: Lesson & { sp: SpExtra } = {
     stages: [
       { title: 'The heel lands', text: 'The heel meets the surface: the sharp contact of the step starts here, right at floor level.' },
       { title: 'The sole rolls', text: 'The sole rolls to the toe and pushes off: the shoe’s own creak, and a scuff if it drags.' },
-      { title: 'The surface answers', text: 'The surface rings or hushes under the shoe — its texture is part of the step.', byVariant: { tile: 'The tiles click under the hard heel: a sharp, short contact with the glaze’s ring.', wood: 'The boards knock under the heel and flex a little — the start of the panel’s boom.', gravel: 'The stones crunch, grind and scatter round the shoe: grains and uneven strikes over the whole area.', carpet: 'The carpet hushes the contact: a soft, quiet step, the boards under it barely heard yet.', live: 'The concrete slab gives a hard, clear slap — a step that reads through a PA.' } },
+      { title: 'The surface answers', text: 'The surface rings or hushes under the shoe — its texture is part of the step.', byVariant: { tile: 'The tiles click under the hard heel: a sharp, short contact with the glaze’s ring.', wood: 'The boards knock under the heel and flex a little — the start of the panel’s boom.', gravel: 'The stones crunch, grind and scatter around the shoe: grains and uneven strikes over the whole area.', carpet: 'The carpet hushes the contact: a soft, quiet step, the boards under it barely heard yet.', live: 'The concrete slab gives a hard, clear slap — a step that reads through a PA.' } },
       { title: 'The floor and the room', text: 'What lies under the surface and the room carry it on: the floor, then the walls.', byVariant: { wood: 'The air gap under the boards rings: a low boom joins the step, then the room’s reflections.', carpet: 'The boards under the carpet carry the step on, then the room’s reflections.' } },
     ],
     attack: 'The heel’s contact on a hard surface is short and sharp; on carpet it is soft and quiet; in gravel it is many small crunches. A close mic tends to hear more of it.',

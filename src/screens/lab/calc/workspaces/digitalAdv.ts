@@ -358,7 +358,7 @@ const TIMECODE: Workspace = {
       formula: 'offset = duration × (1/1000)',
       plainFormula: 'The pulldown offset equals the duration times one one-thousandth.',
       explain:
-        'The 0.1% difference between 30 fps and 29.97 fps (and 48 kHz and 47.952 kHz), from the 1000/1001 film-to-video factor. Over an hour it is exactly 3.6 seconds of drift — the classic reason audio pulls up or down to stay locked to picture.',
+        'The 0.1% difference between 30 fps and 29.97 fps (and 48 kHz and 47.952 kHz), from the 1000/1001 film-to-video factor. Over an hour it is about 3.6 seconds of drift — the classic reason audio pulls up or down to stay locked to picture.',
       keySymbols: ['×', '/'],
       note: 'The 1000/1001 factor between 30 fps and 29.97 fps (and 48 kHz ↔︎ 47.952 kHz).',
       compute: (v) => {
@@ -372,7 +372,7 @@ const TIMECODE: Workspace = {
         const off = n(v.dur) / 1000;
         return [
           `0.1% of ${fmt(n(v.dur))} s = ${fmt(off)} s of drift between 30 fps and 29.97 fps material.`,
-          `Over an hour that is exactly 3.6 s — audio pulled up/down by 1000/1001 to match.`,
+          `Over an hour that is about 3.6 s — audio pulled up/down by 1000/1001 to match.`,
         ];
       },
     },
@@ -405,7 +405,7 @@ const FIRLEN: Workspace = {
     'fred harris’s rule of thumb (harris, Multirate Signal Processing for Communication Systems): N ≈ (fs/Δf)·(A/22), ' +
     'with Δf the transition width (Hz) and A the stopband attenuation (dB). The result is exactly what ' +
     'that rule gives; the rule itself is an ESTIMATE — an optimal (Parks–McClellan) design usually ' +
-    'lands within about 10% of it, a windowed-sinc design needs more taps. Linear-phase latency = ' +
+    'lands within about 10% of it; a windowed-sinc design needs more taps. Linear-phase latency = ' +
     '(N−1)/2 samples, exactly. A transition band wider than half the sample rate is refused.',
   glossary: ['FIR Filter', 'Linear Phase', 'Latency', 'Sample Rate', 'Transition Band'],
   fields: [

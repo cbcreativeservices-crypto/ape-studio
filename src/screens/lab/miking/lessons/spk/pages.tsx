@@ -98,14 +98,14 @@ const PART_ORDER = ['spk.grille', 'spk.cabinet', 'spk.baffle', 'spk.cone', 'spk.
 
 /** The rotary cabinet's parts, in plain words (orient page). */
 const LESLIE_PARTS: { id: string; title: string; text: string; view: 'inside' | 'front' }[] = [
-  { id: 'les.upper', title: 'UPPER LOUVERS', text: 'Slatted openings round the top, where the horn’s sound leaves. Upper mics go OUTSIDE them — nothing goes through.', view: 'front' },
-  { id: 'les.lower', title: 'LOWER OPENINGS', text: 'Openings round the bottom, where the low rotor’s sound leaves. The lower mic goes outside one of them.', view: 'front' },
+  { id: 'les.upper', title: 'UPPER LOUVERS', text: 'Slatted openings around the top, where the horn’s sound leaves. Upper mics go OUTSIDE them — nothing goes through.', view: 'front' },
+  { id: 'les.lower', title: 'LOWER OPENINGS', text: 'Openings around the bottom, where the low rotor’s sound leaves. The lower mic goes outside one of them.', view: 'front' },
   { id: 'les.cabinet', title: 'THE CABINET', text: 'A closed wooden cabinet with turning parts, hot parts and dangerous voltages inside. It stays closed: only a qualified technician opens it.', view: 'front' },
   { id: 'les.horn', title: 'HORN ROTOR', text: `Two horn bells turning on one axis at the top — on the classic cabinet only one sounds; the other is blocked and balances it. The highs, above about ${CROSSOVER_HZ} Hz, sweep past a mic once per turn.`, view: 'inside' },
   { id: 'les.driver', title: 'HORN DRIVER', text: 'The speaker under the horn rotor that feeds it; the bells turn above it.', view: 'inside' },
   { id: 'les.xo', title: 'CROSSOVER AND AMPLIFIER', text: `The crossover splits the sound at about ${CROSSOVER_HZ} Hz: highs up to the horn, lows down to the woofer. The amplifier inside is installed equipment, not a mic input.`, view: 'inside' },
   { id: 'les.woofer', title: 'WOOFER', text: 'A 15 in speaker facing DOWN into the low rotor. It does not turn.', view: 'inside' },
-  { id: 'les.drum', title: 'LOW ROTOR', text: 'A turning drum under the woofer with one opening that throws the low sound round the cabinet. Drawn here with one scoop — a drawing choice.', view: 'inside' },
+  { id: 'les.drum', title: 'LOW ROTOR', text: 'A turning drum under the woofer with one opening that throws the low sound around the cabinet. Drawn here with one scoop — a drawing choice.', view: 'inside' },
 ];
 
 /* ═══════════════ 1 · MEET THE SPEAKERS ═══════════════ */
@@ -549,7 +549,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
       },
       well: (
         <>
-          <Landing looking={`The rotary cabinet · ${lView === 'plan' ? 'from above' : lView === 'inside' ? 'inside view' : 'from the front'}`} prompt={les.motion ? 'Press RUN, then switch SPEED from SLOW to FAST and back. Watch the speed strip: which rotor gets there first?' : 'Switch SPEED, then STEP the rotors round. The speed strip shows how long each change takes.'} />
+          <Landing looking={`The rotary cabinet · ${lView === 'plan' ? 'from above' : lView === 'inside' ? 'inside view' : 'from the front'}`} prompt={les.motion ? 'Press RUN, then switch SPEED from SLOW to FAST and back. Watch the speed strip: which rotor gets there first?' : 'Switch SPEED, then STEP the rotors around. The speed strip shows how long each change takes.'} />
           <Card>
             <Point title="TWO ROTORS, TWO RATES">{rampWords()}</Point>
           </Card>
@@ -709,7 +709,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
       },
       well: (
         <>
-          <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits round the cabinets — or step through ITEM." />
+          <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits around the cabinets — or step through ITEM." />
           <Body>{scene === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
           {ps ? (
             <Card>
@@ -948,7 +948,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       ? { kind: 'action', id: 'run', label: les.running ? 'PAUSE' : 'RUN', onPress: () => (les.running ? les.pause() : (les.setMode(les.mode === 'stop' ? 'slow' : les.mode), les.run())), tint: colors.green }
       : { kind: 'action', id: 'step', label: 'STEP', onPress: () => (les.mode === 'stop' ? les.setMode('slow') : les.step()), tint: colors.green },
     { kind: 'options', id: 'speed', label: 'SPEED', valueLabel: les.mode === 'fast' ? 'FAST' : les.mode === 'slow' ? 'SLOW' : 'STOP', selectedId: les.mode, onSelect: (id: string) => les.setMode(id as RotorMode), options: [{ id: 'slow', label: 'SLOW (CHORALE)' }, { id: 'fast', label: 'FAST (TREMOLO)' }, { id: 'stop', label: 'STOP' }] },
-    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics round them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
+    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics around them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
   ];
   const offParams: DockParam[] = [
     {
@@ -976,9 +976,9 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       format: () => (power ? 'switch the cabinet OFF to move a mic' : `${fmtLen(dClose)} outside the cabinet`),
       formatShort: () => lenCell(dClose).v.replace('≈ ', ''),
     },
-    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The tables’ usual place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
+    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The usual published place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
     { kind: 'toggle', id: 'power', label: 'CABINET OFF', value: false, onToggle: () => setPower(true) },
-    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics round them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
+    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics around them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
   ];
   const leslieParams = power ? onParams : offParams;
 

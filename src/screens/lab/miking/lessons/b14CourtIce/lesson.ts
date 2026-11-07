@@ -19,7 +19,7 @@ import { B14_COPY } from './copy.ts';
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet court, racket and ice sports from a microphone’s point of view: the clear space round each, the routes and fixtures — and how distance changes what reaches a mic from outside the line.',
+    goal: 'Meet court, racket and ice sports from a microphone’s point of view: the clear space around each, the routes and fixtures — and how distance changes what reaches a mic from outside the line.',
     credit: { scenarios: ['cl.meet.1', 'cl.meet.2', 'cl.meet.3'], note: 'Answer the three checks on the clear band, the floor and the structure.' },
     takeaway: 'Contacts happen at different heights and move across the court; the mic stays outside the clear space. Air and structure are two different things for a mic to hear.',
   },
@@ -75,7 +75,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cl.meet.1',
     page: 'meet',
-    prompt: 'What is the clear band round a basketball court for?',
+    prompt: 'What is the clear band around a basketball court for?',
     options: ['Clearance — no obstruction inside it', 'A strip where the crew may set up stands', 'A good place for the floor mics to sit'],
     correct: 'Clearance — no obstruction inside it',
     explain: 'It is a typical clear zone of about 2 m with no obstruction — a clearance, not a crew strip. Check your event’s rules and its assigned positions.',
@@ -413,7 +413,7 @@ const symptoms: Symptom[] = [
   {
     id: 'cl.sym.wind',
     observation: 'Outdoor tennis: rumble on the perimeter shotgun',
-    firstChecks: 'Is the basket and fur fitted? Is the suspension working?',
+    firstChecks: 'Are the basket and fur fitted? Is the suspension working?',
     options: ['Fit the basket and fur', 'Tape over the tube’s side slots', 'Cut the low end hard in the mix'],
     correct: 'Fit the basket and fur',
     explain: 'A compatible wind suspension; never tape over the slots. Wind protection is not water resistance.',
@@ -465,7 +465,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An ice hockey game: approved fixed positions outside the enclosure, the glass and boards to respect.',
     setups: [
-      { id: 'a', label: 'Fixed mics at approved end and side places outside the glass', ok: true, power: 'phantom', feedback: 'A suggested start: sectors distributed round the rink, the glass checked by listening.' },
+      { id: 'a', label: 'Fixed mics at approved end and side places outside the glass', ok: true, power: 'phantom', feedback: 'A suggested start: sectors distributed around the rink, the glass checked by listening.' },
       { id: 'b', label: 'An approved elevated feed, plus ambience', ok: true, power: 'phantom', feedback: 'A fair start where the glass screens a low position — with qualified approval of the whole installation.' },
       { id: 'c', label: 'A handheld mic through a camera opening', ok: false, power: 'phantom', feedback: 'Camera openings are assigned facilities, not audio access.' },
       { id: 'd', label: 'A mic screwed to the ice-facing boards', ok: false, power: 'phantom', feedback: 'No exposed hardware faces the ice; never drill the boards.' },
@@ -494,7 +494,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'meet',
-    prompt: 'What is the 2 m band round a basketball court?',
+    prompt: 'What is the 2 m band around a basketball court?',
     options: ['A clearance, not a crew strip', 'A crew strip beside the court', 'Space for floor mics only'],
     correct: 'A clearance, not a crew strip',
     explain: 'No obstruction within about 2 m — check your event’s rules.',

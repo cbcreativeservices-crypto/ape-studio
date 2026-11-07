@@ -78,7 +78,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions: a farther view can suit a quiet hall, and a close mic can suit a dense studio score.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: hear the line with the room first. Live: decide what the euphonium already gives the audience — the section mics may carry it — and what the PA must add.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Closer pickup gives a tighter sound and better isolation; farther, a fuller sound with more room and neighbors. Arrange the wedges round the mic’s rejection.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Closer pickup gives a tighter sound and better isolation; farther, a fuller sound with more room and neighbors. Arrange the wedges around the mic’s rejection.' },
         { title: 'MOVEMENT', text: 'The player tilts the bell, may rise to stand, and uses both hands on valves. A stand needs room for all of it; a confirmed clip moves with the bell.' },
         { title: 'MOUNTING', text: 'A clip advertised for trumpet or trombone may not fit a euphonium bell. Only one its maker confirms, with the player’s agreement — or a stand. Never tape on the finish.' },
       ],

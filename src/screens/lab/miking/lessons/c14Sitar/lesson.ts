@@ -31,9 +31,9 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a sitar player on the floor — the mizrab hand, the long neck, the bends, the gourd — the neighbors (tabla, tanpura), what a stage and a studio add, and what to do before any mic.',
+    goal: 'Know the space around a sitar player on the floor — the mizrab hand, the long neck, the bends, the gourd — the neighbors (tabla, tanpura), what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
-    takeaway: 'The space round the sitar is the player’s, low on the floor. Check what this sitar has before promising a sound. Ask the player first, and protect your hearing.',
+    takeaway: 'The space around the sitar is the player’s, low on the floor. Check what this sitar has before promising a sound. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one sitar mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real sitar.' },
-    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a capsule size do not.',
+    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a capsule size does not.',
   },
 };
 
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a sitar player on the floor?',
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a sitar player on the floor?',
     options: ['The front of the gourd, so that the audience can see the inlay', 'The mizrab hand, the neck’s travel, the gourd and their view', 'The rug at the front, which belongs to the floor wedge'],
     correct: 'The mizrab hand, the neck’s travel, the gourd and their view',
     explain: 'Clearance comes first: the mizrab hand over the board, the left hand pulling strings far across the frets, the gourd resting on the foot, and the player’s view. Stop the player before anything moves.',
@@ -396,7 +396,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a sitar player on the floor?',
+    prompt: 'What must a stand mic stay out of, around a sitar player on the floor?',
     options: ['The front of the gourd, so the audience can see it clearly', 'The mizrab hand, the neck’s travel, the gourd and their view', 'The space behind the player, where the tanpura sits'],
     correct: 'The mizrab hand, the neck’s travel, the gourd and their view',
     explain: 'The mizrab works over the board, the left hand pulls strings far across a long neck, the gourd rests on the foot, and the player watches. In front of the board is usually where a mic comes in.',
@@ -434,7 +434,7 @@ export const C14_LESSON: Lesson = {
       { title: 'The mizrab plucks', text: 'A wire plectrum worn on the index finger — the mizrab — strikes a main string over the board, near where the neck begins. That is where the ATTACK starts.' },
       { title: 'The string swings — grazing the bridge', text: 'Released, the string swings between its still ends — the broad main bridge and the nut, or the fret it is pressed to. As it swings it grazes the bridge’s gently curved top: the bright, buzzing edge the player intends. Motion drawn many times larger.' },
       { title: 'The bridge drives the board', text: 'Each swing works the broad bridge, and the bridge drives the thin board over the gourd. The board moves the air — the air inside the gourd too.' },
-      { title: 'Sound leaves', text: 'Sound leaves mostly from the board round the bridge, toward a listener in front. The strings and the left hand are heard most directly toward the neck.' },
+      { title: 'Sound leaves', text: 'Sound leaves mostly from the board around the bridge, toward a listener in front. The strings and the left hand are heard most directly toward the neck.' },
       { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music run over their own small bridge. The board sets them going when the played note lines up with their tuning — and ring on after it. On a sitar that has them; the next steps show why only some notes do it.' },
     ],
     attack: 'The start of the note: the mizrab’s strike and the string grazing the broad bridge — a bright, buzzing onset. It is heard most directly close to the bridge; a close mic there makes it dominate.',

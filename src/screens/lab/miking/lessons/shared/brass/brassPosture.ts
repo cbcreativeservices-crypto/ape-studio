@@ -535,7 +535,7 @@ export function slidePose(spec: BrassSpec, s = 0): HornPose {
     player,
     slideArm,
     hands: {
-      L: { sk: L.sk, elbow: L.elbow, contact: [0, 1, 2, 3, 4], thumb: bass ? 'on the F valve trigger' : 'round the bell brace' },
+      L: { sk: L.sk, elbow: L.elbow, contact: [0, 1, 2, 3, 4], thumb: bass ? 'on the F valve trigger' : 'around the bell brace' },
       R: { sk: R.sk, elbow: R.elbow, contact: [0, 1, 4], thumb: 'behind the outer slide brace' },
     },
   };

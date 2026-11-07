@@ -122,7 +122,7 @@ export function cameraLooking(lens: Vec3, target: Vec3, vFovDeg: number, aspect 
 export type ShotPresetId = 'close' | 'wide';
 export const SHOT_PRESETS: Readonly<Record<ShotPresetId, { label: string; words: string; top: number; bottom: number }>> = {
   close: { label: 'CLOSE', words: 'head and shoulders', top: -270, bottom: 330 },
-  wide: { label: 'WIDE', words: 'to the waist, room round them', top: -420, bottom: 760 },
+  wide: { label: 'WIDE', words: 'to the waist, room around them', top: -420, bottom: 760 },
 };
 export const SHOT_PRESET_IDS: readonly ShotPresetId[] = ['close', 'wide'];
 

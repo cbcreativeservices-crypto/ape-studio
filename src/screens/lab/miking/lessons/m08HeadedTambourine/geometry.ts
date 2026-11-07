@@ -20,7 +20,7 @@ function instrumentParts(p: Pose, suffix: string, vars: string[]): Part[] {
   return [
     { id: `tb.head${suffix}`, label: 'head', short: 'head', role: 'The skin stretched over one face of the frame. Struck by the hand, the fist, the knee or a stick, it adds a low and mid body to the jingles.', moving: true, clearance: TAMB_DIMS.headClear, prov: TAMB_DIMS.d.prov, variants: vars, solid: { kind: 'slab', c: p.c, axis: into, r: R, x0: -0.5, x1: 0.5 } },
     { id: `tb.frame${suffix}`, label: 'frame (shell)', short: 'frame', role: 'The ring the head is fixed to, wood or plastic, open at the back. The player holds it — and, shaken, it moves.', moving: true, prov: TAMB_DIMS.d.prov, variants: vars, solid: { kind: 'tube', c: p.c, axis: into, rIn: R - FT, rOut: R, x0: 0, x1: DEPTH } },
-    { id: `tb.jingles${suffix}`, label: 'jingle pairs (a staggered double row)', short: 'jingles', role: 'Pairs of thin metal discs loose on pins in slots round the frame, in one or two rows (two staggered rows here). Every stroke and shake throws them against each other: the bright, metallic part of the sound.', moving: true, prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, variants: vars, solid: { kind: 'tube', c: p.c, axis: into, rIn: R, rOut: R + JINGLE_OUT, x0: 5, x1: DEPTH - 5 } },
+    { id: `tb.jingles${suffix}`, label: 'jingle pairs (a staggered double row)', short: 'jingles', role: 'Pairs of thin metal discs loose on pins in slots around the frame, in one or two rows (two staggered rows here). Every stroke and shake throws them against each other: the bright, metallic part of the sound.', moving: true, prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, variants: vars, solid: { kind: 'tube', c: p.c, axis: into, rIn: R, rOut: R + JINGLE_OUT, x0: 5, x1: DEPTH - 5 } },
   ];
 }
 
@@ -69,9 +69,9 @@ export const TAMB_MODEL: InstrumentModel = {
   parts,
   regions: [
     { id: 'r.head', partId: 'tb.head', label: 'head', anchor: POSES.held.c, prov: TAMB_DIMS.d.prov, note: 'The struck head: the low and mid body of the sound, radiating from both faces (the back is open).', variants: HELD },
-    { id: 'r.jingles', partId: 'tb.jingles', label: 'jingles', anchor: add(POSES.held.c, POSES.held.e1, R), prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, note: 'The jingle pairs round the frame: the bright, metallic attack.', variants: HELD },
+    { id: 'r.jingles', partId: 'tb.jingles', label: 'jingles', anchor: add(POSES.held.c, POSES.held.e1, R), prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, note: 'The jingle pairs around the frame: the bright, metallic attack.', variants: HELD },
     { id: 'r.headM', partId: 'tb.headM', label: 'head', anchor: M.c, prov: TAMB_DIMS.d.prov, note: 'The struck head of the mounted tambourine.', variants: ['mounted'] },
-    { id: 'r.jinglesM', partId: 'tb.jinglesM', label: 'jingles', anchor: add(M.c, M.e1, R), prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, note: 'The jingle pairs round the frame.', variants: ['mounted'] },
+    { id: 'r.jinglesM', partId: 'tb.jinglesM', label: 'jingles', anchor: add(M.c, M.e1, R), prov: { kind: 'sourced', src: 'YMH-CPCAT', quote: 'staggered double row, silver jingles' }, note: 'The jingle pairs around the frame.', variants: ['mounted'] },
   ],
   surfaces: [...surfaces(POSES.held, 'held'), ...surfaces(POSES.shaken, 'shaken'), ...surfaces(M, 'mounted')],
   lines: [...lines(POSES.held, 'held'), ...lines(POSES.shaken, 'shaken'), ...lines(M, 'mounted')],

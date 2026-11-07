@@ -218,10 +218,10 @@ describe('DJ-R3-PHONES — Screen 4 draws it from the PHONES jack', () => {
 describe('DJ-R3-ADAPTER — Screen 20’s unbalanced run: a jack lead with an XLR adapter', () => {
   const p20 = read(`${DJ}pages/p20Pa.tsx`);
   it('names it in the chip, the tray note, the scene’s words and the why; the hum mechanism stays', () => {
-    assert.match(p20, /<LabChip label="JACK LEAD \+ XLR ADAPTER" selected=\{v\.cable === 'UNBAL'\}/);
-    assert.match(p20, /A jack lead with an XLR adapter — unbalanced: an XLR-to-jack lead from your MASTER OUT, its 6\.35 mm TS jack in a jack-to-XLR adapter at the stage box\. Every plug fits, but the TS jack ties pin 3 to pin 1, so the line no longer balances\./);
-    assert.match(p20, /'a jack lead with an XLR adapter at the stage box — unbalanced'/);
-    assert.match(p20, /why="This run is a jack lead with an XLR adapter — unbalanced: the 6\.35 mm TS jack ties pin 3 to pin 1, so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum\./);
+    assert.match(p20, /<LabChip label="JACK CABLE \+ XLR ADAPTER" selected=\{v\.cable === 'UNBAL'\}/);
+    assert.match(p20, /A jack cable with an XLR adapter — unbalanced: an XLR-to-jack cable from your MASTER OUT, its 6\.35 mm TS jack in a jack-to-XLR adapter at the stage box\. Every plug fits, but the TS jack ties pin 3 to pin 1, so the line no longer balances\./);
+    assert.match(p20, /'a jack cable with an XLR adapter at the stage box — unbalanced'/);
+    assert.match(p20, /why="This run is a jack cable with an XLR adapter — unbalanced: the 6\.35 mm TS jack ties pin 3 to pin 1, so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s ground and the stage’s ground: that is the hum\./);
     assert.doesNotMatch(p20, /XLR ENDS, UNBALANCED WIRING|e\.g\. an adaptor lead/);
     // the balanced run is unchanged
     assert.match(p20, /<LabChip label="XLR \(BALANCED\)" selected=\{v\.cable === 'XLR'\}/);

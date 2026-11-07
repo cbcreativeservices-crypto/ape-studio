@@ -173,8 +173,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
           <Text style={styles.compareLine}>• Balance improves relatively</Text>
           <Text style={styles.compareLine}>• Whole signal gets louder</Text>
           <Text style={styles.compareLine}>
-            • Costs headroom and gain staging — the signal is louder, thus reducing available
-            headroom into the next stage
+            • Costs headroom and complicates gain staging — the louder signal leaves less headroom into the next stage
           </Text>
         </View>
       </View>

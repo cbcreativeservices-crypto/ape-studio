@@ -192,7 +192,7 @@ export const TABLA_MODEL: InstrumentModel = {
     { id: 'bayanAxis', label: 'the bayan’s axis', point: BAYAN.H, dir: BAYAN.u },
   ],
   envelopes,
-  variants: [{ id: 'pair', label: 'RIGHT-HANDED', blurb: 'The dayan on the player’s right, the bayan on the left — a left-handed player may set them the other way round. Name each drum by what it is, not by “left” or “right”.' }],
+  variants: [{ id: 'pair', label: 'RIGHT-HANDED', blurb: 'The dayan on the player’s right, the bayan on the left — a left-handed player may set them the other way around. Name each drum by what it is, not by “left” or “right”.' }],
   defaultVariant: 'pair',
   views: { side: { u0: -850, u1: 1100, v0: -1150, v1: 40 }, top: { u0: -850, u1: 1100, v0: -560, v1: 560 } },
   viewTags: { side: 'FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },

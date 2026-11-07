@@ -81,7 +81,7 @@ export function TambourineStrike({ w, h, variant, reveal, shown, accessibilityLa
   if (shown >= 1) labels.push({ id: 's1', text: shaken ? '① THE HAND SHAKES THE FRAME' : '① HAND STRIKES', short: '① STRIKE', u: -140, v: -175, align: 'center', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: shaken ? '② HEAD BARELY MOVES' : '② HEAD PUSHED IN', short: '② HEAD', u: 80, v: -60, align: 'left', tone: 'blue' });
   if (shown >= 3) labels.push({ id: 's3', text: '③ JINGLES CLASH', short: '③ JINGLES', u: 0, v: DEPTH + 40, align: 'center', tone: 'amber' });
-  if (shown >= 4) labels.push({ id: 's4', text: '④ FROM BOTH FACES AND ALL ROUND', short: '④ ALL ROUND', u: 0, v: -205, align: 'center', tone: 'blue' });
+  if (shown >= 4) labels.push({ id: 's4', text: '④ FROM BOTH FACES AND ALL AROUND', short: '④ ALL ROUND', u: 0, v: -205, align: 'center', tone: 'blue' });
   labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: SOUND_BOX.u1 - 10, v: SOUND_BOX.v1 - 18, align: 'right', tone: 'illustrative' });
   return (
     <View style={{ width: w, height: h }}>

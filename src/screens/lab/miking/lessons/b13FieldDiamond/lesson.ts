@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a practice session in order, choose and justify setups for two briefs, and say what would justify a second action mic.',
     credit: { scenarios: ['fd.prac.order', 'fd.prac.gain', 'fd.prac.setup1', 'fd.prac.setup2', 'fd.prac.3', 'fd.mix.1', 'fd.mix.2', 'fd.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Approved places, named zones, an ambience bed, honest gaps with handoffs, and a chain with room pass. A bigger dish or a higher gain do not — and more than one setup can pass.',
+    takeaway: 'Approved places, named zones, an ambience bed, honest gaps with handoffs, and a chain with room pass. A bigger dish or a higher gain does not — and more than one setup can pass.',
   },
 };
 
@@ -417,7 +417,7 @@ const symptoms: Symptom[] = [
   {
     id: 'fd.sym.wind',
     observation: 'Rumble and wind noise on the perimeter shotgun',
-    firstChecks: 'Is the basket and fur fitted? Is the suspension working, the cable clear of it?',
+    firstChecks: 'Are the basket and fur fitted? Is the suspension working, the cable clear of it?',
     options: ['Check the windshield and its mount', 'Cut all the low end with a deep filter', 'Tape over the slots in the tube'],
     correct: 'Check the windshield and its mount',
     explain: 'Fit the basket and fur, keep the suspension working and the cable off it. Never tape over the tube’s slots — that changes the mic.',

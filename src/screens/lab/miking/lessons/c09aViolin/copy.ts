@@ -28,7 +28,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { standing: 'vn.front', seated: 'vn.front' },
     workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line the strings follow.',
-    workedAim: 'Aim it at the bridge and the top round it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
+    workedAim: 'Aim it at the bridge and the top around it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep, the bow arm out to the tip of a stroke, the player’s head and the violin itself. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer tends to bring more of the bow — articulation, and some scratch; farther, more of the whole violin and the room. Violins and rooms vary, so “it depends on this violin” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
@@ -41,7 +41,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bridge, where the bow meets the strings, the side, or the bridge’s foot. They are starting points, not rules — the stand distances especially are modest suggestions. Move from there and listen: there is no single right answer, and every violin and room is different.',
       separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play all four strings, quiet bow starts and the loudest passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm at the tip of a stroke, and the player’s head. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm at the tip of a stroke, and the player’s head. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels; leave more room on a real stage.',
       tendencies: 'Toward the bridge and the bow tends to bring more articulation and scratch; toward an f-hole, more body and level, sometimes a duller color; farther, more of the whole violin and the room. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and violins vary.',
     },
   },

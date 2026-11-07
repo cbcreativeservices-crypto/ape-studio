@@ -181,7 +181,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>READ THE PLOT</Eyebrow>
-        <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the mids and highs keep falling, fast (the lows still spread wide). Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
+        <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the mids and highs keep falling, fast (the lows still spread wide). Narrow coverage throws farther and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
       </Card>
       <KeyFact>Near field, far field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. Keep microphones out of the mains’ coverage where you can. Most seats should hear one main clearly; where two mains overlap, as in the middle of a left-right pair, expect some comb filtering, and align them for the seats that matter most.</KeyFact>
       <DeeperRow>
@@ -353,7 +353,7 @@ const PROC_BLOCKS: readonly { id: string; name: string; what: string; where: str
   { id: 'geq', name: 'Graphic EQ', what: 'Fixed bands at fixed widths. Fast for ringing out a wedge, coarse for tuning a system; heavy graphic EQ leaves phase and tone worse than the problem it fixed.', where: 'Monitor outputs' },
   { id: 'delay', name: 'Delay', what: 'Time alignment for fills, delays and subs — set from the distance, verified by measurement.', where: 'Processor outputs' },
   { id: 'polarity', name: 'Polarity', what: 'A flip per output, to bring a reversed cabinet or a crossover region back into agreement.', where: 'Processor outputs' },
-  { id: 'limiter', name: 'Limiters', what: 'The loudspeaker’s insurance, set from the cabinet’s ratings and the amplifier’s gain — never by ear on the night.', where: 'Processor outputs' },
+  { id: 'limiter', name: 'Limiters', what: 'The loudspeaker’s insurance, set from the cabinet’s ratings and the amplifier’s gain — never by ear during the show.', where: 'Processor outputs' },
   { id: 'presets', name: 'System presets', what: 'The manufacturer’s crossover, EQ and limiter settings for a cabinet-amplifier pairing. The starting point, not the end.', where: 'Processor' },
 ];
 

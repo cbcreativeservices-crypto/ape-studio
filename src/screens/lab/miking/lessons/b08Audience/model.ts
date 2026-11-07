@@ -100,7 +100,7 @@ export const B08_ZONES: DocumentedZone[] = [
     rect: STUDIO.cornerL,
     hr: [2.0, 3.0],
     dist: [4500, 8000],
-    tendency: 'Its own part of the audience on its own channel — not a stereo pair: unequal local events and PA pickup can wander and color the mono sum.',
+    tendency: 'Its own part of the audience on its own channel — not a stereo pair: unequal local events and PA pickup can make the image wander and color the mono sum.',
     checks: ['Each channel alone, then the mono sum', 'The PA beside it', 'The channel map named'],
   }),
   crowdZone({

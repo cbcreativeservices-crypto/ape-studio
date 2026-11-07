@@ -275,7 +275,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // labels: a dock key has ~10 characters of room.
   const tapsLeft = c.tapsNeeded - sim.tapped.length;
   const stageKey = !investigated
-    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap round the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
+    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap around the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
     : !hypothesised
       ? optionsParam({ id: 'where', label: 'WHERE?', value: '', options: c.areas.map((a) => ({ key: a, label: a, short: a.split(' ')[0].toUpperCase() })), onChange: nameArea, sticky: false })
       : optionsParam({ id: 'fix', label: 'FIX', value: lastFix ?? '', options: c.fixes.map((f) => ({ key: f.id, label: f.label, short: f.id.toUpperCase() })), onChange: applyFix, sticky: false });
@@ -290,7 +290,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             <>
               <SectionTitle>SYMPTOM → WHERE TO LOOK</SectionTitle>
               <CompareTable left="Symptom" right="Possible areas to investigate" rows={SYMPTOMS.map((s) => [s.title, s.areas.join(' · ')] as [string, string])} />
-              <Body>Every row has more than one possible cause. The strategy is always the same: LISTEN (strike, tap round the lugs, look at the hardware) → say WHERE you think it is → then FIX, and strike again. The next step puts five of these on the simulated drum in exactly that order.</Body>
+              <Body>Every row has more than one possible cause. The strategy is always the same: LISTEN (strike, tap around the lugs, look at the hardware) → say WHERE you think it is → then FIX, and strike again. The next step puts five of these on the simulated drum in exactly that order.</Body>
               <SectionTitle>BY EAR, BY REFERENCE, BY DEVICE</SectionTitle>
               <Card>
                 <Point title="Tuning by ear">The method of Chapter 3: lug taps for evenness, the stroke from the seat for the sound. It is the skill everything else supports.</Point>
@@ -339,7 +339,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
           },
           well: (
             <>
-              <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (use VIEW below for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP round the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
+              <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (use VIEW below for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP around the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
               <DrumStatus playing={pb.playing || tap.playing} pending={pb.pending || tap.pending} failed={pb.failed || tap.failed} rendering={pb.status === 'rendering' || tap.status === 'rendering'} idle={`stopped · ${!struck ? 'press ▶ STRIKE to begin' : !tappedEnough ? `▶ TAP ${c.tapsNeeded - sim.tapped.length} more lug${c.tapsNeeded - sim.tapped.length === 1 ? '' : 's'}` : !hypothesised ? 'open WHERE? and name the area' : 'pick a FIX and strike again'}`} label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
               <Feedback tone="warn">{`${c.title}: ${c.symptom} (cleared ${cleared.size} of ${SYMPTOMS.length})`}</Feedback>
               {whereNote && !fixInfo ? <Feedback tone={sim.hypothesisRight === false ? 'warn' : 'info'}>{whereNote}</Feedback> : null}
@@ -374,7 +374,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="A drum will not hold tuning — name two hardware causes before you retune." a="A rod backing out under vibration (fit a nylon washer or lug lock); a worn washer, stripped insert or damaged lug." />
-              <RecallCard q="A tom warbles. What do you do BEFORE touching a rod?" a="Strike and listen, tap round every lug, read the spread and the beat — then even the odd lugs. A gel hides the warble; it does not cure it." />
+              <RecallCard q="A tom warbles. What do you do BEFORE touching a rod?" a="Strike and listen, tap around every lug, read the spread and the beat — then even the odd lugs. A gel hides the warble; it does not cure it." />
               <RecallCard q="What is a tuning device for, and what is it not for?" a="Consistency — the same numbers at every lug, the same setup next week. It does not hear the head relationship, the room or the music; the ear decides." />
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>

@@ -118,12 +118,12 @@ const scenarios: MikingScenario[] = [
     id: 'gg.set.1',
     page: 'setting',
     prompt: 'Before placing a gong mic, what do you ask the player to show you?',
-    options: ['Quiet and forceful strokes, rolls, and the decay or damping', 'Only the loudest stroke, so the gain can be set from it first', 'Nothing yet: set the mic first, then fit the strokes round it'],
+    options: ['Quiet and forceful strokes, rolls, and the decay or damping', 'Only the loudest stroke, so the gain can be set from it first', 'Nothing yet: set the mic first, then fit the strokes around it'],
     correct: 'Quiet and forceful strokes, rolls, and the decay or damping',
     explain: 'The whole dynamic range and the endings decide the gain and the perspective; the swing and the mallet’s arc decide where a mic can go.',
     why: {
       'Only the loudest stroke, so the gain can be set from it first': 'Gain needs the loudest AND the quietest — and the bloom and the decay matter as much as the stroke.',
-      'Nothing yet: set the mic first, then fit the strokes round it': 'Never fit the player round a mic; place the mic for the gong and the strokes.',
+      'Nothing yet: set the mic first, then fit the strokes around it': 'Never fit the player around a mic; place the mic for the gong and the strokes.',
     },
   },
   hearingCheck(W),
@@ -440,7 +440,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a tam-tam is struck once. What happens just after the stroke?', options: ['The sound can swell', 'It only fades', 'It goes silent'], after: 'Now STEP through the stroke (or PLAY ONCE), then try the face’s shapes — and switch GONG.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you back the mic away from 60 cm to 120 cm. What changes most?', options: ['More bloom and room', 'More presence', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A front mic and a room mic about 2 m apart. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -537,11 +537,11 @@ export const I12_LESSON: Lesson = {
     stages: [
       { title: 'The mallet lands', text: 'The soft mallet strikes the face a little off center. That contact is the ATTACK — softened by the mallet’s felt.', byVariant: { bossed: 'The soft mallet strikes the boss. That contact is the ATTACK — softened by the mallet’s felt.' } },
       { title: 'Broad shapes first', text: 'The face moves first in a few broad shapes — drawn here, much larger than life, as blue and amber regions.' },
-      { title: 'The build-up', text: 'Then the energy spreads into many finer shapes across the face: the sound SWELLS after the stroke — the bloom. The order of events, not their speed.', byVariant: { bossed: 'Struck on the boss, the face rings mostly in its ring-shaped shapes, round the boss: a steadier, more pitch-centered tone.' } },
+      { title: 'The build-up', text: 'Then the energy spreads into many finer shapes across the face: the sound SWELLS after the stroke — the bloom. The order of events, not their speed.', byVariant: { bossed: 'Struck on the boss, the face rings mostly in its ring-shaped shapes, around the boss: a steadier, more pitch-centered tone.' } },
       { title: 'Front and back', text: 'The plate pushes air from both faces as it rings, and the whole gong swings gently on its cords. It decays slowly unless the player damps it.' },
     ],
     attack: 'The mallet’s contact: soft and broad with a felt mallet, harder with a harder one. A close mic near the struck area tends to hear more of the impact and of that local area of the face.',
-    body: 'The bloom and the long decay: on a tam-tam the sound can swell after the stroke as finer shapes take over; a bossed gong rings more steadily round its boss. Both faces radiate. A farther, broader view hears more of the bloom and the room. Tendencies — gongs, mallets and players vary.',
+    body: 'The bloom and the long decay: on a tam-tam the sound can swell after the stroke as finer shapes take over; a bossed gong rings more steadily around its boss. Both faces radiate. A farther, broader view hears more of the bloom and the room. Tendencies — gongs, mallets and players vary.',
     head: { diameterMm: 812.8, rods: 0, label: 'a 32 in tam-tam', strikeSrc: 'PAI-GONG' },
   },
   setting: {

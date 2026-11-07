@@ -22,6 +22,6 @@ export const HORN_MODEL: InstrumentModel = lowBrassModel(SPEC, {
     leadpipe: 'Where the player’s lips buzz into the mouthpiece; the leadpipe carries the air into the valves. Nothing goes near the player’s face or this line.',
     slides: 'U-shaped tuning slides stick out of the coil; the player pulls them to tune and to empty water. No clamp or cable here.',
     player: 'The horn player sits facing the audience. The right arm hangs at the side, the forearm forward into the bell; the left hand works the valves. Their space — and the bell’s — comes first.',
-    hand: 'The right hand sits inside the bell: it supports the horn and shades the tone and the pitch; pushed further in, it “stops” the note for a keen, metallic sound. Never move it to fit a mic.',
+    hand: 'The right hand sits inside the bell: it supports the horn and shades the tone and the pitch; pushed farther in, it “stops” the note for a keen, metallic sound. Never move it to fit a mic.',
   },
 });

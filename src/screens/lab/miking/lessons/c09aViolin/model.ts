@@ -68,7 +68,7 @@ const CLOSE_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 25, prov: ill('aimed at where the bow meets the strings: within 25°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.contact, ax.z, 45, 250, 350),
-  tendency: 'More articulation and presence from the bow; listen that the rosin and scratch do not take over, and play all four strings — the E can sound brighter than the G.',
+  tendency: 'More articulation and presence from the bow; check by ear that the rosin and scratch do not take over, and play all four strings — the E can sound brighter than the G.',
   checks: ['The bow’s sweep and the bow arm at the tip of a stroke', 'Scratch and rosin noise', 'The G string against the E'],
 };
 

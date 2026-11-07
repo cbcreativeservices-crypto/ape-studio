@@ -405,13 +405,7 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
             <Text style={styles.readout}>e = B · l · v — voltage tracks the coil’s VELOCITY</Text>
             <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
               <Text style={styles.caption}>
-                A dynamic mic is a tiny generator run in reverse of a speaker. Sound pressure moves the
-                diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire
-                through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s
-                SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle
-                (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside
-                the gap cancels stray hum. The rear port and phase-shift felt are what make it directional —
-                the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
+                A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt are what make it directional — the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
               </Text>
             </CollapsibleSection>
           </View>

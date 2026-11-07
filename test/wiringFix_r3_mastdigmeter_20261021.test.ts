@@ -80,16 +80,16 @@ describe('R3-MT-01 — 60 Hz is one mains frequency, not every mains', () => {
   const c = read('src/screens/lab/meter/modules/modMeterC.tsx');
   const b = read('src/screens/lab/meter/modules/modMeterB.tsx');
   it('Meter C hum card: the answer option and hint speak of the mains frequency', () => {
-    assert.match(c, /'Spikes at the mains frequency and its exact multiples',/);
+    assert.match(c, /'Spikes at the power-line frequency and its exact multiples',/);
     assert.match(c, /60 Hz in North America \(drawn here\) and 50 Hz in most other countries/);
-    assert.match(c, /wrongHint: 'What in every studio oscillates at the mains frequency, forever\?'/);
+    assert.match(c, /wrongHint: 'What in every studio oscillates at the power-line frequency, forever\?'/);
     assert.match(c, /50\/100\/150 Hz in most other countries/);
     assert.doesNotMatch(c, /exactly 60 Hz|'Spikes at 60 Hz|'The 60 Hz comb/);
   });
   it('Meter B blurbs and checks', () => {
-    assert.match(b, /hum: 'Thin spikes at the mains frequency \(60 Hz in North America, 50 Hz in most other countries\)/);
+    assert.match(b, /hum: 'Thin spikes at the power-line frequency \(60 Hz in North America, 50 Hz in most other countries\)/);
     assert.match(b, /\(60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries\)/);
-    assert.match(b, /locked to the mains frequency and its multiples \(60\/120\/180 Hz here\)/);
+    assert.match(b, /locked to the power-line frequency and its multiples \(60\/120\/180 Hz here\)/);
     assert.doesNotMatch(b, /Thin spikes at 60 Hz|locked to 60\/120\/180 Hz;/);
   });
   it('the drawn hum is still a 60 Hz series, so "here" is true', () => {

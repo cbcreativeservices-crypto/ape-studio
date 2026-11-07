@@ -173,6 +173,6 @@ describe('fixed cable-lab findings stay fixed', () => {
   it('PB-03 phantom rule matches the rule book (L6): off before patching, check the mic', () => {
     const s = src('patchbay/pagesD.tsx');
     assert.doesNotMatch(s, /Where a design requires it, turn phantom/);
-    assert.match(s, /Turn phantom power OFF[^']*check the mic/);
+    assert.match(s, /Turn phantom power OFF[^']*check whether it’s a ribbon mic/);
   });
 });

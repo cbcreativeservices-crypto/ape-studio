@@ -97,7 +97,7 @@ function gymnastics(): VenueScene {
     surface: 'mat',
     markings: [{ pts: rect(f), closed: true }, { pts: rect(run), closed: true }, { pts: rect({ x0: 31.6, y0: 5.4, x1: 32.6, y1: 6.6 }), closed: true }, { pts: rect(mat), closed: true }],
     keepClear: [
-      ...band('border', f, 1, 'the floor’s border', 'drawing', 'The border round the floor area, and room for a gymnast to step out: no stand or cable in it.'),
+      ...band('border', f, 1, 'the floor’s border', 'drawing', 'The border around the floor area, and room for a gymnast to step out: no stand or cable in it.'),
       { id: 'vault', label: 'the vault: run-up, board, table, landing and recovery', short: 'KEEP CLEAR', poly: rect({ x0: 14.5, y0: 2.5, x1: 41, y1: 9.5 }), basis: 'drawing', note: 'The whole run-up, the board, the table and its padding, the landing mats and the recovery space past them. A mic goes beyond all of it, only at a position the event has approved — not beside the table.' },
     ],
     routes: [
@@ -171,8 +171,8 @@ function wrestling(): VenueScene {
     surface: 'mat',
     markings: [{ pts: [], circle: { c, r: r - 1 } }, { pts: [], circle: { c, r: 0.5 } }],
     keepClear: [
-      { id: 'protect', label: 'the protection border', short: 'KEEP CLEAR', poly: ringPts(c, r, r + border), basis: 'rule', note: `A ${CLEAR_ZONE_WORDS}: about 9 m across for the wrestling area, with about 1.5 m of protection border round it at top events. The action can carry on into the border before a stop — it is never a mic strip.` },
-      { id: 'open', label: 'the open space round the mat', short: 'KEEP CLEAR', poly: ringPts(c, r + border, r + border + 1.5), basis: 'drawing', note: 'Open space round the whole mat: officials, coaches and the medical team move through it.' },
+      { id: 'protect', label: 'the protection border', short: 'KEEP CLEAR', poly: ringPts(c, r, r + border), basis: 'rule', note: `A ${CLEAR_ZONE_WORDS}: about 9 m across for the wrestling area, with about 1.5 m of protection border around it at top events. The action can carry on into the border before a stop — it is never a mic strip.` },
+      { id: 'open', label: 'the open space around the mat', short: 'KEEP CLEAR', poly: ringPts(c, r + border, r + border + 1.5), basis: 'drawing', note: 'Open space around the whole mat: officials, coaches and the medical team move through it.' },
     ],
     routes: [
       { id: 'coachA', label: 'a coach’s corner', short: 'COACH', pts: [p2(-7.6, -5.2), p2(-6.2, -4.2)], kind: 'bench' },
@@ -204,7 +204,7 @@ function judo(): VenueScene {
     play: rect(f),
     surface: 'mat',
     markings: [{ pts: rect(f), closed: true }],
-    keepClear: band('safety', f, 3, 'the safety area', 'drawing', 'The safety area round the competition area. Its size here is a drawing only — check the event plan; nothing hard is hidden at a tile joint and no cable runs under active tatami.'),
+    keepClear: band('safety', f, 3, 'the safety area', 'drawing', 'The safety area around the competition area. Its size here is a drawing only — check the event plan; nothing hard is hidden at a tile joint and no cable runs under active tatami.'),
     routes: [
       { id: 'ref', label: 'the referees’ and judges’ places', short: 'OFFICIALS', pts: [p2(-2.6, -3.6), p2(-3.6, -2.6)], kind: 'officials' },
       { id: 'med', label: 'the medical route', short: 'MEDICAL', pts: [p2(S + 5.5, S / 2), p2(S + 3.4, S / 2)], kind: 'medical' },
@@ -363,7 +363,7 @@ function container(): VenueScene {
     play: rect(CONTAINER.tank),
     surface: 'water',
     markings: [{ pts: rect(CONTAINER.tank), closed: true }],
-    keepClear: band('splash', CONTAINER.tank, 0.3, 'the splash zone round the container', 'drawing', 'No mains equipment, plug or connector here — only the sensor’s cable, secured, on its way to the dry side.'),
+    keepClear: band('splash', CONTAINER.tank, 0.3, 'the splash zone around the container', 'drawing', 'No AC-powered equipment, plug or connector here — only the sensor’s cable, secured, on its way to the dry side.'),
     routes: [{ id: 'cable', label: 'the sensor cable, strain-relieved, to the dry side', short: 'CABLE', pts: [p2(0.7, 0.4), p2(1.9, 0.4)], kind: 'crew' }],
     footprints: [{ id: 'dry', label: 'the dry equipment area', short: 'DRY SIDE', rect: CONTAINER.dry }],
     cameras: [],
@@ -386,11 +386,11 @@ function arena(): VenueScene {
   return {
     id: 'arena',
     label: 'Arena',
-    blurb: 'A court inside a seating bowl: the action on the floor, the audience all round, the PA overhead and every camera’s frame — the complete picture.',
+    blurb: 'A court inside a seating bowl: the action on the floor, the audience all around, the PA overhead and every camera’s frame — the complete picture.',
     play: rect(f),
     surface: 'court',
     markings: basketballMarkings(L, W),
-    keepClear: band('band', f, 2, 'the clear band round the court', 'drawing', 'The clear band round the floor: benches, officials and players chasing a ball use it.'),
+    keepClear: band('band', f, 2, 'the clear band around the court', 'drawing', 'The clear band around the floor: benches, officials and players chasing a ball use it.'),
     routes: [
       { id: 'bench', label: 'the benches and the officials’ table', short: 'BENCH · TABLE', pts: [p2(L / 2 - 8, -2.8), p2(L / 2 + 8, -2.8)], kind: 'bench' },
       { id: 'tunnel', label: 'the players’ tunnel and the medical route', short: 'TUNNEL · MEDICAL', pts: [p2(L + 2.4, W / 2), p2(L + 6.2, W / 2)], kind: 'medical' },

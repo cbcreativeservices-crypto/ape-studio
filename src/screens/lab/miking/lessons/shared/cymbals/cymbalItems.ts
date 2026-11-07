@@ -198,7 +198,7 @@ export function symptoms(w: CymWords, o: { neighbour: string; air?: boolean }): 
           firstChecks: 'Move the mic out of the air that rushes from the edges; a high-pass filter only after.',
           options: ['Move the mic out of the air that leaves the edges', 'Turn the bass up so the thump blends into the kit', 'Ask the player to close the pedal more slowly all night'],
           correct: 'Move the mic out of the air that leaves the edges',
-          explain: 'When the pair closes, air rushes out sideways from between the edges. Move the mic up or round from the edge; a high-pass filter helps after, not instead.',
+          explain: 'When the pair closes, air rushes out sideways from between the edges. Move the mic up or around from the edge; a high-pass filter helps after, not instead.',
           why: {
             'Turn the bass up so the thump blends into the kit': 'That makes the thump louder. Move the mic out of the air first.',
             'Ask the player to close the pedal more slowly all night': 'The player plays the music. Move the mic, not the performance.',

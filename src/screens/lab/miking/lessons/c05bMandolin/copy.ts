@@ -28,13 +28,13 @@ export const C05B_COPY = stringsCopy({
   soundReveal: 'Eight thin strings move very little air on their own: the floating bridge drives the carved TOP, and the top and the air in the small body make the sound.',
   soundAfter: 'Then the strings, the top and the body ring on — briefly, on a small, bright instrument. Players keep a note going by picking it fast and repeatedly: tremolo.',
   shapesNote2: 'This is an ideal string between rigid ends. On a mandolin each note is a PAIR of strings tuned together, and the bridge is a floating one on a carved top.',
-  coupledNote: 'The top bows in and out round the bridge and pumps the air through the opening — a simplified picture of the lowest motion. A close mic hears the part of the top, the opening or the strings it faces most.',
+  coupledNote: 'The top bows in and out around the bridge and pumps the air through the opening — a simplified picture of the lowest motion. A close mic hears the part of the top, the opening or the strings it faces most.',
   setting: {
     kitA11y: 'The mandolin player from above, standing on a strap, a vocal mic in front of the mouth.',
-    kitIdle: 'The space round a mandolin player is theirs: the picking arc over the top, the fretting hand on a short neck, and the instrument turning as they move.',
+    kitIdle: 'The space around a mandolin player is theirs: the picking arc over the top, the fretting hand on a short neck, and the instrument turning as they move.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the player with a floor wedge in front, a shared band mic out front, the band upstage, the PA at the front corners.',
-    studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls round them.',
+    studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls around them.',
     stageIdle: 'A wedge in front, the band behind, the PA facing out — or a shared band mic the players step in to for solos.',
     studioIdle: 'No monitors on the floor. The room is part of the picture now — a small instrument in a big space.',
     before: [

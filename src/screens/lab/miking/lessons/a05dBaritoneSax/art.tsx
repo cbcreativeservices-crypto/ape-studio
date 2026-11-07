@@ -22,7 +22,7 @@ export const A05D_ART: LessonArt = makeSaxLessonArt(BARITONE_SAX, {
   },
   setting: {
     ...A05D_PLAN,
-    nearA11y: 'A baritone player from above, the big horn hanging to their right, the bell’s wide swing hatched round it; a music stand in front, a tenor and an alto along the row to the left, the drum kit behind.',
+    nearA11y: 'A baritone player from above, the big horn hanging to their right, the bell’s wide swing hatched around it; a music stand in front, a tenor and an alto along the row to the left, the drum kit behind.',
     wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
     nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a baritone mic. There is nothing to answer yet.',
     nearIdle: 'The baritone hangs on its harness to the player’s right; the big horn swings widely as they turn, and the hands never leave the keys. Everything else is a neighbor a baritone mic will hear.',

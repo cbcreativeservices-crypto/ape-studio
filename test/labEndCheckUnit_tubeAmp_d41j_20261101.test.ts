@@ -102,8 +102,8 @@ describe('Amp: the understanding check joins the modules and the final', () => {
   });
   it('the end guide says so', async () => {
     const { AMP_END_GUIDE } = await import('../src/screens/lab/amp/ampScreenGuides.ts');
-    assert.match(AMP_END_GUIDE.seeing[0], /CHECK row for Check your understanding\. LAB COMPLETE only once all are done, the check passed included/);
-    assert.match(AMP_END_GUIDE.control.join(' '), /The Check your understanding row moves this screen up to the check/); // D41 K6
+    assert.match(AMP_END_GUIDE.seeing[0], /CHECK row for Check your understanding\. LAB COMPLETE shows only once all are done, including a passed check/);
+    assert.match(AMP_END_GUIDE.control.join(' '), /The Check your understanding row scrolls to the check on this same screen/); // D41 K6
     assert.match(AMP_END_GUIDE.changes.join(' '), /RESET LAB PROGRESS keeps it passed/);
   });
 });

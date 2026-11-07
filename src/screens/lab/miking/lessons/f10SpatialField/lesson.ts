@@ -19,7 +19,7 @@ import { F10_COPY } from './copy.ts';
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the scene in brief — the listener’s point, the scene front, the sources and the place round them — see how sound arrives there from every side, and decide the deliverable first.',
+    goal: 'Meet the scene in brief — the listener’s point, the scene front, the sources and the place around them — see how sound arrives there from every side, and decide the deliverable first.',
     credit: { scenarios: ['sp.meet.1', 'sp.meet.2', 'sp.meet.3'], note: 'Answer the three checks on the listener’s point, the arriving sound and the deliverable.' },
     takeaway: 'Start from the listener: where they are, which way they face, what they will listen on. A spatial mic hears everything that reaches its place — it cannot later isolate one source.',
   },
@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a spatial recording in order, choose and justify a setup for two briefs, and say what would justify a close mic beside the array.',
     credit: { scenarios: ['sp.prac.order', 'sp.prac.gain', 'sp.prac.setup1', 'sp.prac.setup2', 'sp.prac.3', 'sp.mix.1', 'sp.mix.2', 'sp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The field sheet is optional — it needs a real place and permission.' },
-    takeaway: 'The deliverable first, the listener’s point, the front logged, the channels kept right and recorded, the destinations checked, and the place and its people kept safe pass. A brand or a “bigger” array do not — and more than one setup can pass.',
+    takeaway: 'The deliverable first, the listener’s point, the front logged, the channels kept right and recorded, the destinations checked, and the place and its people kept safe pass. A brand or a “bigger” array does not — and more than one setup can pass.',
   },
 };
 
@@ -219,11 +219,11 @@ const scenarios: MikingScenario[] = [
     id: 'sp.place.2',
     page: 'placement',
     prompt: 'You turn the rig 40° away from the scene front. What changes?',
-    options: ['The picture turns: front sounds land off to one side', 'Nothing: a spatial mic hears all the way round anyway', 'Only the level of the front source drops a little'],
+    options: ['The picture turns: front sounds land off to one side', 'Nothing: a spatial mic hears all the way around anyway', 'Only the level of the front source drops a little'],
     correct: 'The picture turns: front sounds land off to one side',
     explain: 'The rig’s front is the listener’s front: turned, the scene turns with it. Face the scene front and log it.',
     why: {
-      'Nothing: a spatial mic hears all the way round anyway': 'It hears all round, but its front decides where each sound is placed.',
+      'Nothing: a spatial mic hears all the way around anyway': 'It hears all around, but its front decides where each sound is placed.',
       'Only the level of the front source drops a little': 'Direction, not only level, moves.',
     },
   },
@@ -392,11 +392,11 @@ const symptoms: Symptom[] = [
     id: 'sp.sym.turned',
     observation: 'The front source plays back off to one side',
     firstChecks: 'Was the rig’s front to the scene front? Is the front logged? Are the tracks in order?',
-    options: ['Check the rig’s front and the track order', 'Pan the whole mix back round to the center again', 'Turn the front source up in the mix instead'],
+    options: ['Check the rig’s front and the track order', 'Pan the whole mix back around to the center again', 'Turn the front source up in the mix instead'],
     correct: 'Check the rig’s front and the track order',
     explain: 'A rig facing away turns the picture; two swapped tracks mirror it. Check the log and the channel map: a logged turn can be undone in the decoder, and a swap by putting the tracks back in order.',
     why: {
-      'Pan the whole mix back round to the center again': 'Panning hides the cause; check the front and the map first.',
+      'Pan the whole mix back around to the center again': 'Panning hides the cause; check the front and the map first.',
       'Turn the front source up in the mix instead': 'Level does not move a direction.',
     },
   },
@@ -418,7 +418,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Was the figure-8’s positive side marked the right way? Check with a walker.',
     options: ['Check the Side’s positive lobe in the decode', 'Swap the front and the rear Mid tracks around', 'Re-record it all with a wider array of mics'],
     correct: 'Check the Side’s positive lobe in the decode',
-    explain: 'With the Side’s polarity the wrong way round, left and right swap. Mark the positive side before recording; flip it in the decode only once you have checked.',
+    explain: 'With the Side’s polarity the wrong way around, left and right swap. Mark the positive side before recording; flip it in the decode only once you have checked.',
     why: {
       'Swap the front and the rear Mid tracks around': 'That swaps front and rear, not left and right.',
       'Re-record it all with a wider array of mics': 'The capture is fine; the decode needs the Side’s polarity.',
@@ -473,7 +473,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'sp.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · A headphone documentary walk through a market: one listener’s point of view, people moving round, a footpath.',
+    brief: 'BRIEF 1 · A headphone documentary walk through a market: one listener’s point of view, people moving around, a footpath.',
     setups: [
       { id: 'a', label: 'A binaural head at a listener’s height, clear of the path', ok: true, power: 'phantom', feedback: 'A suggested start for headphones — check the take on the headphones it is for.' },
       { id: 'b', label: 'An Ambisonic mic upright, its front logged, rendered binaurally', ok: true, power: 'phantom', feedback: 'A suggested start: turnable later, rendered for headphones — keep the four tracks right.' },
@@ -493,7 +493,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'sp.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · An outdoor concert streamed in surround and stereo, a PA either side of the stage, a singer who must be clear.',
+    brief: 'BRIEF 2 · An outdoor concert streamed in surround and stereo, a PA on either side of the stage, a singer who must be clear.',
     setups: [
       { id: 'a', label: 'An Ambisonic mic in the audience, plus a close mic on the singer', ok: true, power: 'phantom', feedback: 'A suggested start: the place and the voice as two layers — keep the array off the PA.' },
       { id: 'b', label: 'A five-channel array in the audience, plus close mics for the PA', ok: true, power: 'phantom', feedback: 'A suggested start for a surround stream — check the stereo and mono downmix.' },

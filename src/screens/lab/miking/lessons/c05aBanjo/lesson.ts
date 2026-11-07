@@ -27,9 +27,9 @@ const pages: LessonPages = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know the space round a banjo player — the picking forearm on the rim, the long neck, their voice — a bluegrass stage and a studio, and what to do before any mic.',
+    goal: 'Know the space around a banjo player — the picking forearm on the rim, the long neck, their voice — a bluegrass stage and a studio, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
-    takeaway: 'The space round the banjo is the player’s, and the setup is theirs too. A bluegrass band may share mics — an ensemble technique. Ask the player first, and protect your hearing: a banjo is loud up close.',
+    takeaway: 'The space around the banjo is the player’s, and the setup is theirs too. A bluegrass band may share mics — an ensemble technique. Ask the player first, and protect your hearing: a banjo is loud up close.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one banjo mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real banjo.' },
-    takeaway: 'A reproducible, balanced one-mic position, power and level checks, a mono check of any pair, and hands, hardware and hearing kept safe pass. A brand or a “loudest spot” do not.',
+    takeaway: 'A reproducible, balanced one-mic position, power and level checks, a mono check of any pair, and hands, hardware and hearing kept safe pass. A brand or a “loudest spot” does not.',
   },
 };
 
@@ -195,13 +195,13 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.2`,
     page: 'placement',
-    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a banjo player?',
-    options: ['The front of the banjo, so the audience can see the head', 'The floor round the player’s feet, which is kept for the DI', 'The picking hand and forearm, the fretting hand and the neck'],
+    prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, around a banjo player?',
+    options: ['The front of the banjo, so the audience can see the head', 'The floor around the player’s feet, which is kept for the DI', 'The picking hand and forearm, the fretting hand and the neck'],
     correct: 'The picking hand and forearm, the fretting hand and the neck',
     explain: 'The picking forearm rests on the rim, the hand works over the head, the fretting hand travels the neck — and the neck swings as the player moves. Stop the player before anything moves.',
     why: {
       'The front of the banjo, so the audience can see the head': 'In front of the banjo is usually where the mic goes. Protect the player’s space.',
-      'The floor round the player’s feet, which is kept for the DI': 'Cables need a route, but the safety question is the hands and the neck.',
+      'The floor around the player’s feet, which is kept for the DI': 'Cables need a route, but the safety question is the hands and the neck.',
     },
   },
   ...contextChecks(P, BANJO),
@@ -368,7 +368,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'What must a stand mic stay out of, round a banjo player?',
+    prompt: 'What must a stand mic stay out of, around a banjo player?',
     options: ['The front of the banjo, so the audience can see the head clearly', 'The space behind the player, where the cables run', 'The picking hand and forearm, the fretting hand and the neck'],
     correct: 'The picking hand and forearm, the fretting hand and the neck',
     explain: 'The forearm rests on the rim, the hand picks over the head, the other hand travels the neck. In front of the head is usually where a mic comes in.',

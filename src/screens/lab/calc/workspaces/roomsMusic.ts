@@ -557,7 +557,7 @@ const WS_FILESIZE: Workspace = {
   mistakes: [
     'Mixing bits and bytes — data rates quote bits, files store bytes; the ÷8 is where most estimates go wrong by a factor of eight.',
     'Forgetting channel count: stereo doubles everything, and a 24-track session multiplies it by 24.',
-    'Planning to fill storage to 100% — leave a reserve (filesystem overhead, safety margin, that one extra take always happens).',
+    'Planning to fill storage to 100% — leave a reserve (filesystem overhead, safety margin, the one extra take that always happens).',
   ],
   warnings:
     'This is uncompressed PCM (WAV/AIFF) math: rate = sample rate × bit depth × channels. ' +

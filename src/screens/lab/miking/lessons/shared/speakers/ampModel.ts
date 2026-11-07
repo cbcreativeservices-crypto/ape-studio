@@ -91,7 +91,7 @@ function parts(rig: AmpRig): Part[] {
     out.push(
       { id: 'spk.openBack', label: 'open back', short: 'open back', role: 'The back is open: the back of the cone sounds out behind the amp too — opposite in polarity to the front. The amp needs the air behind it to stay clear.', prov: spec.backProv },
       { id: 'amp.panel', label: 'control panel', short: 'controls', role: 'The player’s knobs and the input jack. These settings are the player’s sound: leave them as they set them.', prov: COMBO.panelH.prov },
-      { id: 'amp.chassis', label: 'amplifier chassis', short: 'chassis', role: 'The amplifier itself, hanging inside the top of the box, with its valves (tubes) below it. Hot and live inside: no mic, hand or stand goes in there.', prov: COMBO.chassisH.prov },
+      { id: 'amp.chassis', label: 'amplifier chassis', short: 'chassis', role: 'The amplifier itself, hanging inside the top of the box, with its tubes below it. Hot and live inside: no mic, hand or stand goes in there.', prov: COMBO.chassisH.prov },
     );
   } else {
     out.push(

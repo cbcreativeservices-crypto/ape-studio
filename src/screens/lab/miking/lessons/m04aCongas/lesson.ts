@@ -332,7 +332,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes — each hears less of the other drum; still check in mono',
     explain: '3:1 can reduce interacting pickup between mics on different sources — and one mic per conga is exactly that case. Each mic still hears the other drum a little, later, so judge the pair by ear, in mono, on every stroke.',
     why: {
-      'No — 3:1 applies only to two mics on the same drum': 'It is the other way round: 3:1 is about mics on DIFFERENT sources — one mic per drum is where it applies.',
+      'No — 3:1 applies only to two mics on the same drum': 'It is the other way around: 3:1 is about mics on DIFFERENT sources — one mic per drum is where it applies.',
       'Yes — spaced 3:1, the pair can no longer comb at all': 'It reduces the other drum in each mic; it does not remove it. Whatever is left still arrives late and can comb — check in mono.',
     },
   },
@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside the shell stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a meter away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the tumba, best reject the floor wedge in front of the drums?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -664,7 +664,7 @@ export const M04A_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the congas (the same drawing as every other page)', short: 'CONGAS', note: 'The conga on the player’s left, the tumba on the right, both standing on the floor here — or raised on stands.', prov: { kind: 'sourced', src: 'LP-CLASSIC', quote: '11-3/4″ Conga, 12-1/2″ Tumba, 30″ tall' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'drums', label: 'the congas', short: 'CONGAS', note: 'The conga on the player’s left, the tumba on the right, both standing on the floor here — or raised on stands.', prov: { kind: 'sourced', src: 'LP-CLASSIC', quote: '11-3/4″ Conga, 12-1/2″ Tumba, 30″ tall' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'player', label: 'the player, standing behind the drums', short: 'PLAYER', note: 'Their hands work over the player’s side of both heads; their wrists, knees and footing move all the time. Nothing of yours goes through that space.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor. Its spill reaches an open conga mic — closer, directional mics help, and a distant mic hears more of it.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into a conga mic — especially a bottom mic or a distant one.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },

@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'Meet the bassoon',
     goal: 'Get to know the bassoon — what it is, where you meet it, what it does in the music, and its folded parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A double reed on a curved bocal drives about 2.6 m of conical tube, folded in two: down the wing joint, round the boot, up the long joint to the bell above the player’s head.',
+    takeaway: 'A double reed on a curved bocal drives about 2.6 m of conical tube, folded in two: down the wing joint, around the boot, up the long joint to the bell above the player’s head.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -89,7 +89,7 @@ const scenarios: MikingScenario[] = [
     correct: 'From the bell, at the top above the head',
     explain: 'With every hole closed, the whole folded tube sounds and the sound has only one way out: the bell at the top. One note higher opens a hole just below the bell, and the sound leaves there.',
     why: {
-      'From the boot, at the bottom of the fold': 'The boot is the middle of the tube’s path; with every hole closed the air goes on round it, up to the bell.',
+      'From the boot, at the bottom of the fold': 'The boot is the middle of the tube’s path; with every hole closed the air goes on around it, up to the bell.',
       'From the reed and the bocal, at the lips': 'The reed starts the sound; it leaves where the tube meets the open air.',
     },
   },
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · As the bassoon plays higher, where does the sound leave?',
     options: ['From the bell, whatever the note', 'From open holes nearer the reed', 'From the reed, closer to the player'],
     correct: 'From open holes nearer the reed',
-    explain: 'The lowest note leaves from the bell. In the low range, each note up opens a hole closer to the reed: down the long joint, round the boot, up the wing joint.',
+    explain: 'The lowest note leaves from the bell. In the low range, each note up opens a hole closer to the reed: down the long joint, around the boot, up the wing joint.',
     why: {
       'From the bell, whatever the note': 'Only the lowest note, every hole closed, leaves mainly from the bell.',
       'From the reed, closer to the player': 'The reed starts the sound; it leaves where the tube meets the open air.',
@@ -152,7 +152,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With sound leaving the holes, the boot and the bell in a pattern that changes note by note, a broad pickup can hold the instrument together — where the room and the neighbors allow. A cardioid separates when needed.',
     why: {
       'It rejects the room better than a cardioid': 'An omni rejects nothing: it hears more room, not less.',
-      'It hears the bell only, which carries the tone': 'An omni hears all round; most notes leave from the holes, not the bell.',
+      'It hears the bell only, which carries the tone': 'An omni hears all around; most notes leave from the holes, not the bell.',
     },
   },
   {
@@ -256,8 +256,8 @@ const scenarios: MikingScenario[] = [
     id: 'bsn.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · A supercardioid’s deepest rejection is…',
-    options: ['At its sides, square to the front (90°)', 'Toward the rear, either side of the axis', 'Straight behind it, right on the rear axis'],
-    correct: 'Toward the rear, either side of the axis',
+    options: ['At its sides, square to the front (90°)', 'Toward the rear, on either side of the axis', 'Straight behind it, right on the rear axis'],
+    correct: 'Toward the rear, on either side of the axis',
     explain: 'A supercardioid rejects most near 125° — toward the rear, off the axis — with a small lobe straight behind. Place a wedge for the actual pattern.',
     why: {
       'At its sides, square to the front (90°)': 'At 90° the pickup is still fair; the rejection deepens toward the rear.',
@@ -363,7 +363,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A miniature on the bell joint, aimed down the instrument at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the bassoon — check the clip and the lowest note.' },
       { id: 'b', label: 'A cardioid close to the long joint, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
       { id: 'c', label: 'An omni a meter away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a meter away hears the band and the wedge more than the bassoon.' },
-      { id: 'd', label: 'A clip squeezed round the bocal', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal: it is delicate and can be bent.' },
+      { id: 'd', label: 'A clip squeezed around the bocal', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal: it is delicate and can be bent.' },
       { id: 'e', label: 'A mic straight into the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'A bell-only view hears the lowest note; turned up, it brings the stage and feedback.' },
     ],
     reasons: [docReason('the bell joint or the long joint'), clearReason('the bocal, the hands, the seat strap and the cable path'), POWER_REASON, { id: 'r.move', label: 'A mic on the bassoon holds its distance as the player moves', role: 'optional', feedback: 'A fair live reason for a clip mic.' }, BRAND_REASON('bassoon'), { id: 'r.loudest', label: 'Turn it up until the bassoon is louder than the band', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
@@ -373,7 +373,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: WindLesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does the bassoon’s very lowest note leave?', options: ['The boot', 'The bell at the top', 'The bocal'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from the keys up toward the bell. What changes?', options: ['More of the lowest note', 'More of the high notes', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the bassoon reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -398,7 +398,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Why is the bassoon folded in two?',
     options: ['About 2.6 m of tube fits in a 1.35 m instrument', 'The fold makes the bassoon a brass instrument', 'The second half of the folded tube is decorative only'],
     correct: 'About 2.6 m of tube fits in a 1.35 m instrument',
-    explain: 'The bore runs down the wing joint, round a U-tube in the boot and up the long joint to the bell: about 2.6 m of tube in an instrument about 1.35 m tall.',
+    explain: 'The bore runs down the wing joint, around a U-tube in the boot and up the long joint to the bell: about 2.6 m of tube in an instrument about 1.35 m tall.',
     why: {
       'The fold makes the bassoon a brass instrument': 'It is a double-reed woodwind; the fold only saves length.',
       'The second half of the folded tube is decorative only': 'The whole folded tube is the air column that sounds.',
@@ -412,7 +412,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'From the bell, above the head',
     explain: 'With every hole closed, the whole tube sounds and the sound leaves from the bell at the top.',
     why: {
-      'From the boot, at the bottom of the fold': 'The air goes on round the boot; with every hole closed it leaves at the bell.',
+      'From the boot, at the bottom of the fold': 'The air goes on around the boot; with every hole closed it leaves at the bell.',
       'From the bocal, at the reed': 'The reed starts the sound; the bell lets it out.',
     },
   },
@@ -422,7 +422,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'As the bassoon plays higher, where does most of each note leave?',
     options: ['From the bell, whatever note is being played', 'From the reed, which sits nearer to the player', 'Closer to the reed, at the first open hole'],
     correct: 'Closer to the reed, at the first open hole',
-    explain: 'Through the low register, each note up opens a hole closer to the reed along the tube — down the long joint, round the boot, up the wing joint — and most of the sound leaves there.',
+    explain: 'Through the low register, each note up opens a hole closer to the reed along the tube — down the long joint, around the boot, up the wing joint — and most of the sound leaves there.',
     why: {
       'From the bell, whatever note is being played': 'Only the lowest note leaves mainly from the bell.',
       'From the reed, which sits nearer to the player': 'The reed starts the sound; it leaves where the tube is open.',
@@ -484,7 +484,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the long joint a third of the way down from the bell, the boot’s holes, the keys from the side, the bell. They are starting points for different goals, not rules.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note, the middle and the top each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the bocal and reed, the fingers and thumbs, the seat strap and the bell beside the head. The engine stops the mic and names what it would touch.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the bocal and reed, the fingers and thumbs, the seat strap and the bell beside the head. The lab stops the mic and names what it would touch.',
       tendencies: 'Toward the bell tends to bring the lowest note forward; toward the holes, the middle register; very close to the keys, clicks; farther, more room and blend. A directional mic up close also lifts the lows. These are tendencies, and bassoons vary.',
     },
   },
@@ -552,7 +552,7 @@ const copy: Partial<LessonCopy> = {
     refTitle: 'MEASURED FROM',
     otherRef: 'The same number measured from another part of the bassoon — the bell, the boot, the reed — would put the mic somewhere else.',
     noAim: 'This starting point gives no aim, so the mic simply faces the bassoon. Distance, height and angle are still separate things to try.',
-    clipMount: 'Mount: a clip made for this bassoon, on a strap round the bell joint — never the bocal — with the player’s agreement',
+    clipMount: 'Mount: a clip made for this bassoon, on a strap around the bell joint — never the bocal — with the player’s agreement',
     standMount: 'Mount: a weighted stand placed clear of the bocal, the hands, the seat strap and the bell',
     inPath: 'bassoon in path',
     facing: 'facing the bassoon',
@@ -585,8 +585,8 @@ export const A09B_LESSON: WindLesson = {
     stages: [
       { title: 'Breath on the double reed', text: 'The player’s lips hold the two cane blades; the breath pushes them together, narrowing the slit the air comes through.' },
       { title: 'The blades open and close', text: 'The blades snap shut and spring open again, letting the air in in puffs — in step with the long air column behind them.' },
-      { title: 'The folded air column rings', text: 'A pressure wave runs down the bocal and the wing joint, round the boot and up the long joint, reflecting where the tube first meets the open air: a standing wave along the whole fold.' },
-      { title: 'Sound leaves the bassoon', text: 'The lowest note leaves from the bell at the top; through the low register, each note above opens a hole closer to the reed along the tube, and most of its sound leaves there — so the source moves down the long joint, round the boot and up the wing joint as the pitch rises.' },
+      { title: 'The folded air column rings', text: 'A pressure wave runs down the bocal and the wing joint, around the boot and up the long joint, reflecting where the tube first meets the open air: a standing wave along the whole fold.' },
+      { title: 'Sound leaves the bassoon', text: 'The lowest note leaves from the bell at the top; through the low register, each note above opens a hole closer to the reed along the tube, and most of its sound leaves there — so the source moves down the long joint, around the boot and up the wing joint as the pitch rises.' },
     ],
     attack: 'The start of a note: the tongue releasing the reed and the reed’s buzz — strongest near the reed and bocal. A mic close to the reed or the keys hears more of it, and of the clicks.',
     body: 'The sustained tone: the folded cone ringing, leaving from the open holes, the boot region and the bell in a pattern that changes with every note. A little distance tends to blend those outlets with the room. Both are tendencies, and bassoons vary.',
@@ -637,7 +637,7 @@ export const A09B_LESSON: WindLesson = {
     soundSubject: 'A bassoon on its side, keys toward you, its folded air column drawn open',
     breath: 'Breath and the reed’s buzz are heard close to the reed and the bocal, at the player’s face — a body-facing mic hears little wind.',
     keys: 'Long rods, the thumbs’ many keys and the pads closing: loud within a few centimeters of the boot and the wing joint.',
-    directivity: 'Measured round a player in an anechoic (echoless) room: around 125 Hz the bassoon radiates about equally in every direction; between 1 and 2 kHz its pattern is most pronounced, and the 1 kHz band beams strongly toward the bell.',
+    directivity: 'Measured around a player in an anechoic (echoless) room: around 125 Hz the bassoon radiates about equally in every direction; between 1 and 2 kHz its pattern is most pronounced, and the 1 kHz band beams strongly toward the bell.',
     noteDefault: 9,
   }),
 };

@@ -901,7 +901,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
     safety: {
       level: 'signal',
       cautions: [
-        'The red light in an audio optical port is low-power LED light, generally considered harmless. Still, make it a habit never to stare into ANY optical port: other fiber systems use stronger laser light you cannot see, so keep the habit for every port.',
+        'The red light in an audio optical port is low-power LED light, generally considered harmless. Still, make it a habit never to stare into ANY optical port: other fiber systems use stronger laser light you cannot see.',
       ],
     },
     glossary: [],

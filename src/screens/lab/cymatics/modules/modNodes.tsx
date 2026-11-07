@@ -29,8 +29,8 @@ const F_MAX = 3000;
 const N = 48;
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The still lines of the nearest mode — the Chladni figure that would form. Fades between resonances.' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — neighbours across a nodal line move in opposite directions. Neither colour is on the amplitude ramp: this is direction, not level.' },
-  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How far each point moves, on the Academy ramp: black = still, red = the most. Dark between resonances.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — neighbors across a nodal line move in opposite directions. Neither color is on the amplitude ramp: this is direction, not level.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How far each point moves, on the amplitude ramp: black = still, red = the most. Dark between resonances.' },
   { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand walks off the moving regions and settles on the still lines.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated motion, strobed to a few hertz so you can see it.' },
 ];
@@ -121,7 +121,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
     <CymaticsRackLayout
       rack={{
         size: 'M',
-        badge: `SIMULATION · APPROXIMATED — ${shape === 'circle' ? 'Bessel disc modes, edge-driven' : 'Ritz square-plate modes, centre-driven'}`,
+        badge: `SIMULATION · APPROXIMATED — ${shape === 'circle' ? 'Bessel disc modes, edge-driven' : 'Ritz square-plate modes, center-driven'}`,
         onHelp: help,
         onGuide: () => help('display'),
         initialParam: 'freq',
@@ -170,13 +170,12 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       caption="Ride FREQ onto a mode and watch the figure snap in; ride away and watch it dissolve. Or open FREQ and tap LAND ON to land on the next mode up."
     >
       <Text style={P.body}>
-        Each stable Chladni figure is one <Text style={P.strong}>normal mode</Text> of the plate. Nodal lines are where the plate does not move; the
-        regions between them move — and neighbours across a line move in opposite directions.
+        Each stable Chladni figure is one <Text style={P.strong}>normal mode</Text> of the plate. Nodal lines are where the plate does not move; the regions between them move — and neighbors across a line move in opposite directions.
       </Text>
       <Text style={P.h}>WHAT TO NOTICE</Text>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Higher modes generally carry more nodal lines — more still lines, more lobes, finer figures.</Text></View>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Change the shape and the whole family changes: a disc’s modes are nodal circles and diameters; a square’s are the classic crossed and diagonal figures.</Text></View>
-      <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Between two modes nothing organises — the RES cell reads BETWEEN and the heat map goes dark. A pattern belongs to a resonance, not to a frequency.</Text></View>
+      <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Between two modes nothing organizes — the RES cell reads BETWEEN and the heat map goes dark. A pattern belongs to a resonance, not to a frequency.</Text></View>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>The same ideas are used to study violin and guitar plates, bells, gongs, cymbals, and engineering structures.</Text></View>
       <Text style={P.caption}>
         {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'Sound needs the native engine — SILENT still drives the plate.'} Nothing moves without a drive.

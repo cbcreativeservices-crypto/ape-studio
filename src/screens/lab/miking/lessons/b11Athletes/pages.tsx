@@ -35,7 +35,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
       wearer: {
         coach: 'A coach at the sideline: an approved chest mic leaves both hands for the work; an approved headset holds a steadier distance. Their team headset is their own system — a broadcast mic never taps into it.',
         official: 'An official: the event’s announcement mic or headset, opened on purpose to the PA and muted again. The officials’ private circuit is a different system and stays closed.',
-        athlete: 'An athlete in contact kit, only where the rules, the team and the athlete approve: the exact approved place, clear of the helmet, the pads and the contact zones. Many sports refuse a mount entirely.',
+        athlete: 'An athlete in contact gear, only where the rules, the team and the athlete approve: the exact approved place, clear of the helmet, the pads and the contact zones. Many sports refuse a mount entirely.',
       },
     },
   });

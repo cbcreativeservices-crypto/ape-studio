@@ -144,7 +144,7 @@ function F07Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       badge: 'The layers drawn as real objects · the curls at the capsule are a cue, not a level',
       looking: 'A shotgun and its wind protection',
       prompt: 'Add the layers with COVER at the forest, then on open grassland.',
-      after: 'Foam can do in a sheltered forest; open grassland needs fur, a basket and its suspension. A dish is a large surface in the wind too — and a low-cut filter can take a real low call with the rumble: note its state.',
+      after: 'Foam can be enough in a sheltered forest; open grassland needs fur, a basket and its suspension. A dish is a large surface in the wind too — and a low-cut filter can take a real low call with the rumble: note its state.',
     },
     onTried: done,
     prediction: lesson.predictions.context,

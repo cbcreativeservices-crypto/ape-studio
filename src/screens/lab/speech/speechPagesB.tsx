@@ -350,7 +350,7 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
         colors={cols}
         a11y={`Typical speaking pitch and formant ranges, 60 hertz to 4 kilohertz: ${VOICE_RANGES.map((r) => `${r.name}, pitch ${r.f0LoHz} to ${r.f0HiHz} hertz, typical about ${r.f0TypicalHz}; formants F1 to F3 from ${r.fmLoHz} to ${r.fmHiHz} hertz`).join('. ')}. Typical, overlapping in real people, not fixed.`}
       />
-      <Notice>The pitch pills nearly touch and real voices spill past their edges — the gaps between them are an artefact of averaging, not a rule.</Notice>
+      <Notice>The pitch pills nearly touch and real voices spill past their edges — the gaps between them are an artifact of averaging, not a rule.</Notice>
       <Notice>The thin ticks across each formant band are that voice's harmonics at its typical pitch: packed close for a low voice, far apart for a child. The mouth can only boost harmonics that are there.</Notice>
       <Card tone="note">
         <Eyebrow>TYPICAL, NOT FIXED</Eyebrow>

@@ -88,7 +88,7 @@ const TP_SIDE: Z = {
   aim: { maxOffAxis: 30, prov: ill('aimed toward the bell: within 30°') },
   requires: { variant: 'trumpet', micTypeIds: STAND },
   draw: draw(TP, 25, 55, 300, 600, UP),
-  tendency: 'A softer, mellower top with less bite — the high harmonics beam along the axis, and this mic sits beside that beam. Listen that the attacks still read.',
+  tendency: 'A softer, mellower top with less bite — the high harmonics beam along the axis, and this mic sits beside that beam. Check by ear that the attacks still read.',
   checks: ['Attacks and high notes still clear', 'The tone as the bell swings toward and away from the mic', 'More of the room and the neighbors'],
 };
 
@@ -191,7 +191,7 @@ const FH_CLOSE: Z = {
   aim: { maxOffAxis: 25, prov: ill('aimed toward the bell: within 25°') },
   requires: { variant: 'flugelhorn', micTypeIds: STAND },
   draw: draw(FH, 5, 30, 300, 600, UP),
-  tendency: 'More focus and more of the bell’s own color, less room — and more breath and valve noise. Listen that the mellow character survives.',
+  tendency: 'More focus and more of the bell’s own color, less room — and more breath and valve noise. Check by ear that the mellow character survives.',
   checks: ['Breath and valve noise', 'Attacks against the softness the player wants', 'Spill and the room against the farther view'],
 };
 

@@ -36,7 +36,7 @@ const BASE = standingVoiceCopy({
   contextPoints: [
     { title: 'STUDIO', text: 'No PA: a natural voice, low clothing noise and the picture come first — a visible lav, a hidden one, a headset or a boom can all work.' },
     { title: 'LIVE', text: 'With a PA, a capsule close to the mouth — a headset — keeps the voice ahead of the loudspeakers and the room better than a lav on the chest. It is not a license to raise the PA.' },
-    { title: 'ONE VOICE, ONE MIC', text: 'A headset and a lectern mic open on the same voice comb in the sum and cost margin before feedback. Agree who mutes which.' },
+    { title: 'ONE VOICE, ONE MIC', text: 'A headset and a lectern mic open on the same voice comb in the sum and cost margin before feedback. Agree on who mutes which.' },
     { title: 'THE PATH', text: 'Check the radio along the whole path the presenter walks, the batteries, and what goes to the PA, the stream, the recorder and the earpiece.' },
   ],
 });
@@ -78,7 +78,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     ...BASE.placement!,
     workedZone: { studio: 'b5.sternum', live: 'b5.headset' },
     workedAim: 'An omni lav’s aim matters little — point it up toward the mouth; the lab counts it while it points within about {tol}° of the lips. A directional one is aimed with care.',
-    workedClear: 'Clear of the wearer’s movement: the capsule on a firm edge, off rubbing fabric, hair and jewellery, the cable looped at the clip and secured lower down. The wearer agreed to all of it. Clearance comes first, before any number.',
+    workedClear: 'Clear of the wearer’s movement: the capsule on a firm edge, off rubbing fabric, hair and jewelry, the cable looped at the clip and secured lower down. The wearer agreed to all of it. Clearance comes first, before any number.',
     reveal: 'On the chest the distance holds as long as the chest does, but a turn of the head moves the mouth away; beside the mouth a headset keeps its distance; under one layer of cloth the top end can dull. People and clothes vary, so “it depends on this presenter” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness. If a puff reaches it, turning it upside down in its clip is one trial on some models.',

@@ -373,7 +373,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: bypass
           ? 'BYPASSED — output flat · dim = the would-be composite'
-          : 'BANDS (thin, coloured) + COMBINED (bold)',
+          : 'BANDS (thin, colored) + COMBINED (bold)',
         bezel: [
           { k: 'BAND', v: selMeta.label, tint: selMeta.color },
           { k: 'FREQ', v: fmtHz(selF) },
@@ -438,10 +438,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
     >
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
-          Real EQs run several filters at once — and the filters INTERACT. The thin coloured curves are each
-          band alone; the bold curve is what they produce TOGETHER. Drag a node right on the glass:
-          sideways = frequency, up/down = gain. The BAND tray picks (and switches on) a band; its
-          FREQ, GAIN and Q ride the fader.
+          Real EQs run several filters at once — and the filters INTERACT. The thin colored curves are each band alone; the bold curve is what they produce TOGETHER. Drag a node right on the glass: sideways = frequency, up/down = gain. The BAND tray picks (and switches on) a band; its FREQ, GAIN and Q ride the fader.
         </GlossaryText>
 
         {!selBell && (

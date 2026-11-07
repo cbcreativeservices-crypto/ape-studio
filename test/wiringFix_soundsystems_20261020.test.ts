@@ -202,7 +202,7 @@ describe('SS-10 · small inconsistencies', () => {
     const ids = con.bandConsole().channels.map((c) => c.id);
     assert.ok(!ids.some((id) => /tom/i.test(id)));
     assert.doesNotMatch(CONSOLE, /kick, bass, floor tom and keyboard/);
-    assert.match(LEARN_B, /on this lab’s console kick, bass and keys/);
+    assert.match(LEARN_B, /on this lab’s console: kick, bass and keys/);
     assert.match(LEARN_B, /a matrix taking MAIN sends the whole mix/);
   });
   it('2.1 via the sub: L and R on two inputs keep the tops stereo; one cable is a mono feed (round 2, SS-R2-09)', () => {

@@ -44,7 +44,7 @@ export const BELL_MODEL: InstrumentModel = smallPercModel({
   id: 'cowbell7',
   name: '7 in cowbell',
   states: [
-    state(STATES.mounted, 'MOUNTED', 'On a stand’s clamp, the mouth toward the player, struck on its top with a stick: the bell stays put while the stick moves round it.', 'on a stand'),
+    state(STATES.mounted, 'MOUNTED', 'On a stand’s clamp, the mouth toward the player, struck on its top with a stick: the bell stays put while the stick moves around it.', 'on a stand'),
     state(STATES.handheld, 'HANDHELD', 'Held in the left palm by the closed end, the mouth away from the player, struck with a stick: the hand damps it a little and it moves.', 'held in the hand'),
   ],
   views: {

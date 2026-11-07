@@ -50,7 +50,7 @@ const SUB_FEEDS: Record<SubFeedMode, { name: string; path: string; reaches: stri
   aux: {
     name: 'Aux-fed',
     path: 'Selected channels → post-fader aux send → aux output → processor LOW input → subwoofer',
-    reaches: 'Only the channels you send — on this lab’s console kick, bass and keys (a floor tom often joins them on a full kit). Nothing else — however low it goes.',
+    reaches: 'Only the channels you send — on this lab’s console: kick, bass and keys (a floor tom often joins them on a full kit). Nothing else — however low it goes.',
     control: 'Per channel AND overall: each send level, and the aux master as a sub fader.',
     when: 'Band mixing where a clean, controlled low end matters and the operator is at the console all night.',
     reachesShort: 'SENT ONLY',
@@ -178,7 +178,7 @@ const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: 
     placed: [{ slot: 'subC', kind: 'passiveSub' }, { slot: 'subC2', kind: 'passiveSub' }],
     beams: [subBeam('subC', { pattern: 'endfire', gain: 0.9, y: (slotDef('subC').y + slotDef('subC2').y) / 2 })],
     orient: 'Two subs in a line front-to-back on the center line, the FRONT box delayed by the time sound takes to travel from the rear box to it.',
-    what: 'Subs in a line front-to-back; each box further forward is delayed by the time sound takes to travel to it from the box behind, so the outputs arrive together going forward and out of step going backward.',
+    what: 'Subs in a line front-to-back; each box farther forward is delayed by the time sound takes to travel to it from the box behind, so the outputs arrive together going forward and out of step going backward.',
     cost: 'The most directional low end a ground stack can make; it needs depth in front of the stage and exact delays — the spacing sets the frequency where the rejection is deepest.',
     pattern: 'END-FIRE',
     rig: 'GROUND',
@@ -727,7 +727,7 @@ function PowerBand({ amp, match, dist, spl, w, h }: { amp: number; match: 'under
   // To scale, from the cabinet at the line's left end.
   const out = (m: number) => (m / LISTENER_MAX_M) * 100;
   return (
-    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${justOver ? 'just over the band, fine with the limiter set' : match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}. Listener ${dist} metres from the cabinet: ${spl.toFixed(1)} dB SPL`}>
+    <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${justOver ? 'just over the band, fine with the limiter set' : match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}. Listener ${dist} meters from the cabinet: ${spl.toFixed(1)} dB SPL`}>
       <View style={styles.bandRow}>
         <View style={styles.bandEnd}>
           <GearGlyph kind="amp" size={glyph} label="Amplifier" legends={false} />

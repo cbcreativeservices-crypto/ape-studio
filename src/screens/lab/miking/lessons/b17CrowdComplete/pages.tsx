@@ -47,7 +47,7 @@ const VENUES: readonly SportId[] = ['arena', 'soccer', 'hockey'];
 
 function B17Meet(p: PageProps) {
   const { lesson, journey } = p;
-  const tour = usePlanTourStep({ sports: VENUES, title: 'The venues', prompt: 'Step through LAYER on each venue: the action, what stays clear, the routes, the approved places — and the crowd and the PA all round.', a11yLead: 'A plan of' });
+  const tour = usePlanTourStep({ sports: VENUES, title: 'The venues', prompt: 'Step through LAYER on each venue: the action, what stays clear, the routes, the approved places — and the crowd and the PA all around.', a11yLead: 'A plan of' });
   const range = useRangeStep({ scene: PRACTICE_CROWD, from: PC.S, fromH: PC.hS, fromLabel: 'S', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the action and the three audience places, as seen from the stereo center S.' });
   const box = PRACTICE_CROWD.frame;
   const steps: MikingStep[] = [

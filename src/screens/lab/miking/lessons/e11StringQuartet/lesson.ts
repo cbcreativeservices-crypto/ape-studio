@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — height and distance separately — and see how the cello, the first violin and the inner voices change.',
     credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Closer tends to more direct sound but favors the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
+    takeaway: 'Closer tends to give more direct sound but favors the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
   },
   context: {
     title: 'Quiet hall or loud stage',
@@ -401,7 +401,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern hears the most of the room around a quartet?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern hears the most of the room around a quartet?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1 m to 2 m in front. What changes most?', options: ['More room, the players evened out', 'Only the level', 'The first violin dominates more'], after: 'Farther back, the distances to the four players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The monitor sits in front of the cello spot. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a cello spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
@@ -480,12 +480,12 @@ export const E11_LESSON: EnsembleLesson = {
       prompt: 'A quartet recording setup, in order:',
       steps: [
         { text: 'Sketch the seating, loudspeakers, paths and stands', early: 'Start with the plan: where everyone sits and where things go.' },
-        { text: 'Hear the range of playing; approve clearances with them', early: 'Hear them and agree clearances before any mic goes up.' },
+        { text: 'Hear the range of playing; approve clearances with them', early: 'Hear them and agree on clearances before any mic goes up.' },
         { text: 'Build an X/Y or 17 cm main pair', early: 'The main pair comes before any comparison or support.' },
         { text: 'Change height, then distance, one at a time', early: 'Adjust once the pair is up and you have a first picture.' },
         { text: 'Add one support only if a line needs it', early: 'A support comes last, for a stated line.' },
       ],
-      explain: 'Plan, hear the players and agree clearances, build the pair, change one thing at a time — and only then a support for a stated line.',
+      explain: 'Plan, hear the players and agree on clearances, build the pair, change one thing at a time — and only then a support for a stated line.',
     },
   ],
   setupTasks,
@@ -520,7 +520,7 @@ export const E11_LESSON: EnsembleLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Sketch the seating, hear the range of playing and agree clearances, build a main pair and change one thing at a time, add one support only for a stated line, and adapt for a quiet hall or a loud stage without provoking feedback. With the players’ agreement, log what you tried below.',
+    task: 'Sketch the seating, hear the range of playing and agree on clearances, build a main pair and change one thing at a time, add one support only for a stated line, and adapt for a quiet hall or a loud stage without provoking feedback. With the players’ agreement, log what you tried below.',
     fields: [
       { id: 'seat', label: 'The seating and the room', kind: 'text' },
       { id: 'goal', label: 'What it is for', kind: 'choice', choices: ['recording', 'quiet hall', 'band stage'] },
@@ -552,7 +552,7 @@ export const E11_LESSON: EnsembleLesson = {
       mainAt: Q_C,
     },
     before: [
-      { title: 'SEAT THEM AS THEY LIKE', text: 'Preserve the players’ eye contact and the conductor’s view; the mics adapt to the seating, not the other way round.' },
+      { title: 'SEAT THEM AS THEY LIKE', text: 'Preserve the players’ eye contact and the conductor’s view; the mics adapt to the seating, not the other way around.' },
       { title: 'HEAR THE RANGE', text: 'Soft sustained notes, a strong accent, pizzicato, low cello notes, inner-voice passages — and tremolo, harmonics or mutes if used. Note the balance first.' },
       { title: 'DECIDE WHAT IT IS FOR', text: 'The quartet blending in the room, or separate sources for reinforcement and production control — neither is best everywhere.' },
       { title: 'CLEARANCES', text: 'The bow’s sweep, the left hand, the chair, the cello’s endpin and the cable slack — checked with the players, before anything is final.' },

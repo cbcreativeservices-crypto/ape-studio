@@ -20,7 +20,7 @@ const pages: LessonPages = {
     title: 'Meet the cajón',
     goal: 'Get to know the cajón — what it is, where you meet it, what it does in the music, where its port is and how the player sits on it — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A wooden box the player sits on and strikes: the plate and the box sound, on most cajóns wires add a buzz, the port lets out the low end. Find THIS cajón’s port first.',
+    takeaway: 'A wooden box the player sits on and strikes: the plate and the box sound; on most cajóns, wires add a buzz; the port lets out the low end. Find THIS cajón’s port first.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -154,8 +154,8 @@ const scenarios: MikingScenario[] = [
     id: 'caj.mic.clamp',
     page: 'microphone',
     prompt: 'A clip-on mic at the port: when is it fair?',
-    options: ['Only on a clamp made for the port, with the player’s say', 'Whenever the stage is crowded and short of stands and booms', 'Inside the box, resting loose on the bottom'],
-    correct: 'Only on a clamp made for the port, with the player’s say',
+    options: ['Only on a clamp made for the port, with the player’s say-so', 'Whenever the stage is crowded and short of stands and booms', 'Inside the box, resting loose on the bottom'],
+    correct: 'Only on a clamp made for the port, with the player’s say-so',
     explain: 'Do not fasten a clamp to thin wood or into a port unless that hardware is designed for this model — and never a loose mic inside.',
     why: {
       'Whenever the stage is crowded and short of stands and booms': 'A crowded stage is not a compatible clamp.',
@@ -394,14 +394,14 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A small condenser in front of the plate', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'e', label: 'A mic straight down the port’s axis, 5 cm away', ok: false, power: 'none', feedback: 'Square in the port’s air: pops and boom.' },
     ],
-    reasons: [{ id: 'r.doc', label: 'It is at the side the port really is, offset from its air, outside the player’s motion', role: 'required', feedback: 'Say where the port is — and how the mic stays clear.' }, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Fewer open mics keep spill and feedback down', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, TECH_REASON],
+    reasons: [{ id: 'r.doc', label: 'It is on the side where the port really is, offset from its air, outside the player’s motion', role: 'required', feedback: 'Say where the port is — and how the mic stays clear.' }, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Fewer open mics keep spill and feedback down', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, TECH_REASON],
     explain: 'Two setups pass. What passes is the reasoning: the port where it is, clearance, and power the input can supply.',
   },
 ];
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a center stroke — where does much of the low end leave?', options: ['The port', 'The top of the box', 'The feet'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate and the port.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: a front mic aimed at the middle, or at a top corner — which hears more slap?', options: ['The middle', 'A top corner', 'It depends on this cajón'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A front and a rear mic face opposite ways. If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -475,7 +475,7 @@ export const I02_LESSON: SpLesson = {
   id: 'I02',
   labId: 'percussion',
   title: 'Cajón',
-  subtitle: 'A box you sit on: find the port first — front, back, or both — outside the hands, knees and the way off',
+  subtitle: 'A box you sit on: find the port first — front, back, or both — clear of the hands, the knees and the player’s way off',
   noun: { one: 'cajón', many: 'cajones' },
   model: CAJ_MODEL,
   micTypeIds: ['orchSdc', 'kickDynCard', 'portClip'],
@@ -507,7 +507,7 @@ export const I02_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'cajon', label: 'the cajón player', short: 'CAJÓN', note: 'Seated on the box, knees either side of the plate; the way off the box is to their left — keep it clear. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'cajon', label: 'the cajón player', short: 'CAJÓN', note: 'Seated on the box, knees on either side of the plate; the way off the box is to their left — keep it clear. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'vocal', label: 'the singer and their mic', short: 'VOCAL MIC', note: 'Beside the cajón: their mic hears the box, and the cajón’s mic hears the voice.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       { id: 'guitar', label: 'the acoustic guitarist', short: 'GUITAR', note: 'Another open mic or pickup close by: spill both ways.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout' }, tag: 'SPILL', scene: 'kit' },
       ...stageItems('the cajón', 'One front or port mic may be enough; a second only for a defined bass or slap need.'),

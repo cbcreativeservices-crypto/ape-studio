@@ -35,7 +35,7 @@ describe('multimeter: rectified-supply buzz is caught on 50 Hz power too', () =>
   });
   it('the help text no longer says the buzz is 120 Hz only', () => {
     const help = read('features/lab/guidedLessons/toolHelp.tsx');
-    assert.match(help, /supply buzz at twice the mains \(100 or 120 Hz\)/);
+    assert.match(help, /supply buzz at twice the power-line frequency \(100 or 120 Hz\)/);
     assert.doesNotMatch(help, /120 Hz supply buzz \(on 60 Hz power\)/);
   });
 });

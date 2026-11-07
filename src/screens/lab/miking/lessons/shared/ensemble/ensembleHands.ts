@@ -588,7 +588,7 @@ function trumpetHold(): Hold {
   const lf0 = handFrame(ax(v1 - 6, -100, -40), lAlong, unit(v3(-0.92, 0.1, 0.36)), v3(0, 1, 0));
   const lsk = fit(lf0, lp, lThumb, { curl: 1.2, keep: near(lf0, 4000), slide: 20 });
   return {
-    L: arm('L', S.L, lsk, [0, 1, 2, 4], 'round the first valve casing', ax(v2, 0), HANG),
+    L: arm('L', S.L, lsk, [0, 1, 2, 4], 'around the first valve casing', ax(v2, 0), HANG),
     R: arm('R', S.R, rsk, [0, 1, 2, 4], 'under the leadpipe', ax(v2, 0), HANG),
   };
 }
@@ -673,7 +673,7 @@ function tubaHold(): Hold {
   const lf0 = handFrame(add(tube, v3(-80, -10, -40)), la, v3(-0.8, 0.1, 0.6), v3(0, 1, 0));
   const lsk = fit(lf0, lp, lThumb, { curl: 1.2, keep: near(lf0, 600), slide: 40 });
   return {
-    L: arm('L', S.L, lsk, [0, 1, 2, 4], 'round the tube', tube),
+    L: arm('L', S.L, lsk, [0, 1, 2, 4], 'around the tube', tube),
     R: arm('R', S.R, rsk, [0, 1, 2], 'under the valve block', btn(1), { drop: 30, dropW: 1 }),
   };
 }

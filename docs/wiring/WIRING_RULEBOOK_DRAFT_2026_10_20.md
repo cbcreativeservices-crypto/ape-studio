@@ -88,22 +88,22 @@
 | ID | Rule | Status | Source |
 |---|---|---|---|
 | R1 | Every cable is traceable along its own lane from the plug at its source to the plug at its destination. No cable ends in mid-air unless it is shown as unplugged (a loose end hangs under gravity). | H (D70; cite corrected, Comp B 2026-10-21) | owner D67–D70 |
-| R2 | Audio cables run apart from mains power cables. Where they must cross, they cross at right angles. | C (best practice) | Rane; AES installation practice |
+| R2 | Audio cables run apart from AC power cables. Where they must cross, they cross at right angles. | C (best practice) | Rane; AES installation practice |
 | R3 | No cable hangs by its connector: show a service loop or strain relief at the gear. | C | Best practice |
 | R4 | Walkway crossings are covered by a cable ramp or taped flat. | C | Venue safety practice |
 | R5 | Cable type matches the signal: mic cable for mic, speaker cable for speakers, 75 Ω for word clock/video, Cat5e+ for Dante, and so on. | U | — |
 | R6 | Drawings are at true scale and dimensions (D67). Connectors are drawn with the right gender and the right number of pins. Plugs are shown seated. | H | owner D67–D68 |
 | R7 | All controls sit in the bottom dock; the bezel is read-only (D67–D70). | H | owner |
-| R8 | Mic/line, loudspeaker, mains and data run as separate groups, in separate bundles and on separate supports where practical. Where groups must meet, they cross at 90° (R2). (Comp B, 2026-10-21) | C | Installation practice |
+| R8 | Mic/line, loudspeaker, AC power and data run as separate groups, in separate bundles and on separate supports where practical. Where groups must meet, they cross at 90° (R2). (Comp B, 2026-10-21) | C | Installation practice |
 
 ## 7. Power and grounding
 
 | ID | Rule | Status | Source |
 |---|---|---|---|
 | G1 | Power on: sources → mixer/processing → amplifiers or powered speakers **last**. Power off in reverse: speakers **first**. | U (best practice) | Owner, 2026-10-20: "Powering on goes from input to output (speakers last), powering down goes from output to input (speakers first)." |
-| G2 | Never lift, cut or defeat the mains safety earth. | U | Electrical codes |
+| G2 | Never lift, cut or defeat the safety ground. | U | Electrical codes |
 | G3 | Legitimate hum fixes: a DI or isolator ground-lift switch (pin 1 at the DI only), an isolation transformer, balanced connections, and powering gear from the same circuit. | U | Rane notes; Whitlock |
-| G4 | A turntable's ground wire goes to the mixer's GND post. It is a **signal** ground, not a safety earth. | U | — |
+| G4 | A turntable's ground wire goes to the mixer's GND post. It is a **signal** ground, not a safety ground. | U | — |
 
 ---
 

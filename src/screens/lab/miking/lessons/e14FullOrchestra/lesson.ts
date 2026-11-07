@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why is a spaced main pair usually two omnis?',
     options: ['They hear the hall with the orchestra', 'They reject the audience behind them', 'They need no phantom power to work at all'],
     correct: 'They hear the hall with the orchestra',
-    explain: 'Omnis hear all round: the orchestra with the hall’s sound, and an even low end at a distance. Their spacing makes the stereo image from time differences.',
+    explain: 'Omnis hear all around: the orchestra with the hall’s sound, and an even low end at a distance. Their spacing makes the stereo image from time differences.',
     why: {
       'They reject the audience behind them': 'An omni rejects nothing; it hears the audience too.',
       'They need no phantom power to work at all': 'Power depends on the mic, not its pattern; most need phantom power.',
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Higher, the distances to the front and back rows even out and the pair sees past the front players — more back rows and hall, less front-desk weight. Compare at matched level.',
     why: {
       'Only the level: nothing else moves': 'Height changes the balance of rows and the room, not only the level.',
-      'The pair hears the front desks more': 'It is the other way round: higher favors them less.',
+      'The pair hears the front desks more': 'It is the other way around: higher favors them less.',
     },
   },
   {
@@ -235,7 +235,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With the bells facing back, a mic in front hears the horns largely by reflection — softer and later. Their sound in the hall depends on the surface behind them.',
     why: {
       'Their bells directly, at full level': 'The bells face away from it.',
-      'Nothing at all from the horns': 'It still hears them, by the reflections and round the players.',
+      'Nothing at all from the horns': 'It still hears them, by the reflections and around the players.',
     },
   },
   supportFirst('orc', 'twoMic'),
@@ -387,7 +387,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A broadcast concert with a light PA for a soloist. Phantom power is available; cameras need clear sightlines.',
     setups: [
-      { id: 'a', label: 'The main pair for the broadcast, plus a woodwind support; the PA fed only from the soloist’s close mic', ok: true, power: 'phantom', feedback: 'Scale from the pair, a named support, and the PA kept apart.' },
+      { id: 'a', label: 'The main pair for the broadcast, plus a woodwind support; the PA fed only from the soloist’s close mic', ok: true, power: 'phantom', feedback: 'The picture comes from the pair, plus a named support mic, with the PA kept apart.' },
       { id: 'b', label: 'A tree for the broadcast, nothing from it to the PA, section mics kept below the camera lines', ok: true, power: 'phantom', feedback: 'Fair: the broadcast gets its picture, the PA stays separate.' },
       { id: 'c', label: 'The main pair sent to the PA at high level', ok: false, power: 'phantom', feedback: 'A distant pair in the PA invites feedback and a wash.' },
       { id: 'd', label: 'Stands in the aisles, out of the cameras’ shot', ok: false, power: 'phantom', feedback: 'Aisles and exits stay clear.' },
@@ -399,7 +399,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern hears the most of the hall?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern hears the most of the hall?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the main pair from 3 m to 4 m. What changes most?', options: ['The back rows come forward', 'Only the level', 'The front desks get louder'], after: 'Higher, the distances to the rows even out: the NEAR / FAR readout shrinks, and the back rows and the hall come up against the front desks. Compare at matched level.' },
   context: { prompt: 'The side-fill monitor sits in front of the support, off to the side. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a woodwind support. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
@@ -547,7 +547,7 @@ export const E14_LESSON: EnsembleLesson = {
     meet: {
       figureTitle: 'FULL ORCHESTRA',
       figureBadge: 'From above, as the conductor sees it · a typical layout, not a particular orchestra',
-      sectionsNote: 'Strings at the front in arcs round the podium, woodwinds behind them on a low riser, then brass, with timpani and percussion at the back. Tap a section.',
+      sectionsNote: 'Strings at the front in arcs around the podium, woodwinds behind them on a low riser, then brass, with timpani and percussion at the back. Tap a section.',
       soundNote: 'The arcs show WHERE each instrument’s sound leaves it — never how loud. The horns point back, the trumpets and trombones forward, the strings up and out: a main pair hears the blend the hall makes of them.',
       mainAt: MAIN_C,
     },

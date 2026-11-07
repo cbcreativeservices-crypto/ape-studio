@@ -115,7 +115,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     tryThis: [
       'On SPEECH, raise GAIN to +2.0 dB: CLIP still says CLEAN (PEAK −0.6). At +3.0 dB it reads +0.4 OVER and the wave turns red.',
       'Back at +0.0 dB, switch SPEECH to WHITE NOISE: CREST drops from 10.0 dB to 4.7 dB. A steady sound leaves little gap.',
-      'On SPEECH, slide DC to +30 %: DC reads +31.5 % (the clip carries +1.5 % of its own) and CLIP trips +0.4 OVER. The offset spent your headroom.',
+      'On SPEECH, slide DC to +30 %: DC reads +31.5 % (the recording carries +1.5 % of its own) and CLIP trips +0.4 OVER. The offset spent your headroom.',
     ],
   },
 
@@ -159,7 +159,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     control: [
       'Push GAIN (−12 to +12 dB) and see how the needle, the lamp and the frame respond. It starts at +0.0 dB.',
       'SIGNAL offers SNARE, ORGAN, PINK NOISE and SPEECH. The tray stays open, so you can swap sounds while the needle answers.',
-      'FULL SCREEN shows the meter face at the whole phone, the clearest way to see the needle lag behind the PEAK lamp.',
+      'FULL SCREEN shows the meter face across the whole phone, the clearest way to see the needle lag behind the PEAK lamp.',
     ],
     changes: [
       'The needle averages about 300 ms. A snare crack is over before it moves far; a held organ chord keeps pushing, so the needle climbs and sits.',
@@ -226,7 +226,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Read the shape, not each bar: where the energy sits, smooth or spiky, what sticks up.',
-      'Beginners call any tall spike hum. Hum is a family of spikes at the mains frequency and its multiples; feedback is one spike that grows.',
+      'Beginners call any tall spike hum. Hum is a family of spikes at the power-line frequency and its multiples; feedback is one spike that grows.',
       'A finished mix usually slopes down like pink noise, not flat.',
     ],
     tryThis: [
@@ -240,7 +240,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   spectrogram: {
     seeing: [
       'Think of this as a spectrum filmed over time. OLDER ← TIME → NOW runs across, FREQUENCY ↑ runs up, and color is LEVEL, on the HI / LO strip at right.',
-      'The film loops every 5 seconds, so a pattern you missed comes round again.',
+      'The film loops every 5 seconds, so a pattern you missed comes around again.',
       'The frame prints the axes so you can’t lose them: TIME (new → right), FREQ (↑ up), LEVEL (= color). MODE says SCROLL or SNAP.',
     ],
     control: [

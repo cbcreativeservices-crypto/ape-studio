@@ -792,7 +792,7 @@ const WS_DOSE: Workspace = {
             text:
               (pel > 100
                 ? `PEL dose ${fmt(pel)}% — this day exceeds the OSHA permissible exposure limit (sound at 90 dBA or more counted).`
-                : `PEL dose ${fmt(pel)}% of the OSHA permissible exposure limit is used (sound at 90 dBA or more counted).`) +
+                : `PEL dose: ${fmt(pel)}% of the OSHA permissible exposure limit is used (sound at 90 dBA or more counted).`) +
               ' ' +
               (action >= 50
                 ? `Action-level dose ${fmt(action)}% — at or above 50%, the hearing-conservation action level (sound at 80 dBA or more counted).`
@@ -1099,7 +1099,7 @@ const WS_LIMITER: Workspace = {
     'protection need different time constants — and excursion often needs frequency-dependent ' +
     'limiting the single threshold here cannot provide. Speaker rating types (AES, continuous, ' +
     'program, peak) are NOT interchangeable: the math trusts that the wattage you entered is a ' +
-    'CONTINUOUS/RMS-style rating, and that is the user’s responsibility to verify. Note your ' +
+    'CONTINUOUS/RMS-style rating, and that’s your responsibility to verify. Note your ' +
     'processor’s reference level convention (dBu vs dBFS and its analog reference) before ' +
     'dialing in the result.',
   glossary: ['Limiter', 'Headroom', 'Gain Staging', 'Power', 'Impedance', 'Decibel'],

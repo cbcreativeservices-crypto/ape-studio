@@ -89,14 +89,14 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
   frequency: {
     seeing: [
       'LISTEN FOR, then a question: name the tone, which of A and B is higher, or which of A, B and C is a named tone.',
-      'To name the tone: nine octave centers, 63 Hz–16 kHz (level 1); 13 third-octaves (level 2); all 25 (3–4). Else A/B or Clip A/B/C.',
+      'To name the tone: nine octave centers, 63 Hz–16 kHz (level 1); 13 third-octaves (level 2); all 25 (3–4). Otherwise A/B or Clip A/B/C.',
       'Then: the verdict, the truth line and SEE IT, a SPECTRUM of what you heard.',
       'Header: your “last 20” score and level. Above the question: trial number and streak.',
     ],
     control: [
       '▶ plays a clip and ■ stops it. At the top level each clip allows two plays while you answer.',
       'Tap an answer chip to answer. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
-      'My playback can’t reproduce sub-bass: tick it to skip trials at or below 80 Hz, from the next trial.',
+      'My playback can’t reproduce sub-bass: check it to skip trials at or below 80 Hz, from the next trial.',
       '⤢ FULL SCREEN enlarges SEE IT with the ▶ chips under it. FINISH · SEE WHAT’S LEFT › lists what does not count yet.',
     ],
     changes: [
@@ -112,7 +112,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Watch the truth line: a 125 Hz tone adds “+3.0 dB makeup”, 63 Hz adds “+6.0 dB”, 250 Hz and up add none.',
-      'At level 1 tick the sub-bass box: from the next trial the 63 Hz chip is gone, leaving eight, 125 Hz to 16 kHz.',
+      'At level 1 check the sub-bass box: from the next trial the 63 Hz chip is gone, leaving eight, 125 Hz to 16 kHz.',
       'On a “Which tone is higher?” pair, play A and B and check SEE IT: the higher tone’s peak sits further right.',
     ],
   },
@@ -161,7 +161,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
       '▶ A and ▶ B play the clips (■ stops); at the top level each allows two plays.',
       'Tap a band name to answer; NEXT TRIAL › moves on.',
       'SOURCE: Synth, Piano or Guitar — the recordings take over from the next trial.',
-      'My playback can’t reproduce sub-bass: tick it to drop the Sub Bass band (20–60 Hz).',
+      'My playback can’t reproduce sub-bass: check it to drop the Sub Bass band (20–60 Hz).',
       '⤢ FULL SCREEN enlarges SEE IT. FINISH · SEE WHAT’S LEFT › lists what does not count yet.',
     ],
     changes: [
@@ -176,7 +176,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Read a truth line like “+9 dB in Low Mid (250 Hz–500 Hz), centered near 354 Hz”, then replay B listening for mud.',
-      'At level 2 or above tick the sub-bass box: from the next trial Sub Bass is gone and seven bands remain.',
+      'At level 2 or above check the sub-bass box: from the next trial Sub Bass is gone and seven bands remain.',
       'Pick Guitar: when the chord has too little energy for a move, the truth line says that trial used pink noise.',
     ],
   },
@@ -227,15 +227,15 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     changes: [
       'Levels 1–2 play each fault alone. Level 3 hides it under a music bed made by the app; level 4 mixes the faults laid on top (hum, hiss, clicks…) deeper still.',
       'At levels 1–2 a look-alike earns half credit: Hum and Ground loop, Crackle and Click, Distortion and Clipping.',
-      'Hum is the mains rate (wall power: 50 or 60 Hz) with soft harmonics — smooth. Buzz has the same rate with 60 harmonics — edgy.',
+      'Hum is the power-line rate (wall power: 50 or 60 Hz) with soft harmonics — smooth. Buzz has the same rate with 60 harmonics — edgy.',
     ],
     teaches: [
       'The names of common faults, and the first clue to each: steady or one-off, smooth or rough.',
-      'That each fault leaves a mark an analyzer shows: mains harmonics, a raised noise floor, a spike, a hole.',
+      'That each fault leaves a mark an analyzer shows: power-line harmonics, a raised noise floor, a spike, a hole.',
       'Naming the fault is the first step to finding its cause: a cable, a ground, a level, an edit.',
     ],
     tryThis: [
-      'When Hum comes up, SEE IT shows a few peaks at the far left, the low end. On Buzz they run on up to 3 kHz (50 Hz mains) or 3.6 kHz (60 Hz).',
+      'When Hum comes up, SEE IT shows a few peaks at the far left, the low end. On Buzz they run on up to 3 kHz (50 Hz power) or 3.6 kHz (60 Hz).',
       'Compare Dropout and Click on the WAVEFORM: a hole in the sound versus a single spike.',
       'Decide steady or one-off first on every trial, before you look at the chips.',
     ],

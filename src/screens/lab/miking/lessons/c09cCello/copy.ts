@@ -26,7 +26,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { seated: 'vc.front' },
     workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line the strings follow.',
-    workedAim: 'Aim it at the bridge and the top round it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
+    workedAim: 'Aim it at the bridge and the top around it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep on both sides, the bow arm, the cellist, the endpin and the feet. Clearance comes first, before any number, and the cellist stops before a real mic moves.',
     blocked: {},
     reveal: 'Moving away tends to bring in more of the whole cello — and of the room and the neighbors — and cellos vary, so “it depends on this cello” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
@@ -39,7 +39,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bridge, or the bridge’s foot. They are starting points, not rules: move from there and listen — there is no single right answer, and every cello and room is different.',
       separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play both the lowest and the highest string each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
-      clearance: 'Clearance comes first. Stop the cellist before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm, and the endpin and feet on the floor. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Stop the cellist before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep (both ends of the bow), the bow arm, and the endpin and feet on the floor. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels; leave more room on a real stage.',
       tendencies: 'Closer to the bridge tends to bring more bow and string detail; farther brings more of the whole body and the room. With a directional mic up close, proximity effect also lifts the low strings. These are tendencies, and cellos vary.',
     },
   },

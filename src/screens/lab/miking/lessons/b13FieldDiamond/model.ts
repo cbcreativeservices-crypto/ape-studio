@@ -217,7 +217,7 @@ export const B13_PLACE: PlanZone[] = [
 const zone = (id: string, label: string, short: string, c: { x: number; y: number }, r: number, ok: CoverageTask['ok'], handoff: string, why: string, tag: CoverageZone['tag'] = 'detail'): CoverageTask => ({ id, label, short, c, r, tag, ok, handoff, why });
 export const B13_COVERAGE: CoverageTask[] = [
   zone('cA', 'Around A (near, straight ahead)', 'A', PF.A, 2.6, ['detail'], 'the dish at M, then the ambience at E', 'About 10 m, on the shotgun’s axis: the fair place to expect usable detail — confirmed by listening on the day.', 'ambience'),
-  zone('cB', 'Around B (18.9 m, 32° left)', 'B', PF.B, 2.6, ['detail', 'ambience'], 'the dish turned to B, else the ambience at E', 'Off the fixed shotgun’s axis, but inside the dish’s arc: detail if the dish reaches it, else ambience only.'),
+  zone('cB', 'Around B (18.9 m, 32° left)', 'B', PF.B, 2.6, ['detail', 'ambience'], 'the dish turned to B, otherwise the ambience at E', 'Off the fixed shotgun’s axis, but inside the dish’s arc: detail if the dish reaches it, otherwise ambience only.'),
   zone('cC', 'Around C (24 m)', 'C', PF.C, 2.6, ['ambience', 'detail'], 'the ambience at E', 'The farthest: perhaps some detail from the dish; mostly the ambience bed. Raising gain raises the background too.'),
   zone('cX', 'The near-left corner (58° left)', 'CORNER', { x: 2, y: 2 }, 2.2, ['ambience', 'unavailable'], 'the ambience at E — and say the gap', 'Outside the dish’s safe turn arc and far off the shotgun’s axis: ambience only, or unavailable. Never step out of the arc to chase it.'),
 ];

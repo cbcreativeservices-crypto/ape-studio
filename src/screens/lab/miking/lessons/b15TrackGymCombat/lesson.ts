@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tg.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · What is the border round a wrestling mat for?',
+    prompt: 'FROM EARLIER · What is the border around a wrestling mat for?',
     options: ['Protection, and action can continue into it', 'A strip where the crew may set up their mics', 'Coaches, who may stand in it at will'],
     correct: 'Protection, and action can continue into it',
     explain: 'The protection border is part of the competition space: the action can carry on into it before a stop. It is never a mic strip — the mic goes outside the whole envelope.',
@@ -587,7 +587,7 @@ export const B15_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Starts, footwork, landings, apparatus and combat action — track running, artistic gymnastics, boxing, wrestling and judo — picked up from permitted places while the performance space stays clear.', src: 'LESSON-B15' },
     { title: 'APPROVAL FIRST', text: 'Accreditation alone does not authorize a mic on an apparatus, a ring or a mat. The whole installation — mount, cover, cable, any movement — is approved, and every athlete, official, coach, medical and emergency route stays open.', src: 'LESSON-B15' },
     { title: 'A PERSPECTIVE, NOT A COUNT', text: 'A fixed detail feed follows one named place; an ambience feed carries the venue through the gaps. Neither does both jobs equally well — start with one useful sector and the ambience.', src: 'LESSON-B15' },
-    { title: 'THE PRACTICE ROOM', text: 'Here you practice in a quiet room: three source points on one walking line and two equipment areas either side. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B15' },
+    { title: 'THE PRACTICE ROOM', text: 'Here you practice in a quiet room: three source points on one walking line and two equipment areas on either side. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B15' },
   ],
   sound: {
     stages: [

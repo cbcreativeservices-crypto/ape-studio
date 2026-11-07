@@ -99,7 +99,7 @@ describe('R5-DJ-01 — Screen 20 SYSTEM: CH B INPUT is fed by the processor’s 
   }
 
   it('the a11y and MODEL §15 say so; the CH B output sentence still holds', () => {
-    assert.match(p20, /The processor’s right-hand line comes into the amp’s CH B input on a second XLR\. The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN\./);
+    assert.match(p20, /The processor’s right-hand line comes into the amp’s CH B input on a second XLR\. The amp’s CH B output feeds the other top, TOP R, on its own Speakon cable out of view, and the amp’s power cable is plugged into its AC IN\./);
     const model = read('docs/labs/dj/MODEL.md');
     const s15 = model.slice(model.indexOf('## 15.'), model.indexOf('## 16.'));
     assert.match(s15, /R5-DJ-01/);

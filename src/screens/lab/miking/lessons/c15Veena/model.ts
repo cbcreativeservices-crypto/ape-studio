@@ -34,7 +34,7 @@ export function c15ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
     {
       id: 'plate',
       label: 'Over the middle of the top plate',
-      band: 'Start about 30–50 cm (12–20 in) from the top plate, out of the plucking hand’s reach, aimed at a broad area round the middle of the plate, on the far side of the bridge from the neck.',
+      band: 'Start about 30–50 cm (12–20 in) from the top plate, out of the plucking hand’s reach, aimed at a broad area around the middle of the plate, on the far side of the bridge from the neck.',
       kind: 'trial',
       src: 'EXT-23505',
       quote: 'Each microphone is kept at a radial distance, R = 0.25 m from the point O; further mapping at R = 0.5 m, R = 0.75 m',

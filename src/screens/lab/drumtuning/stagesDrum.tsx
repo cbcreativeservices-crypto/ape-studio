@@ -406,7 +406,7 @@ export const PARTS: readonly { id: DrumPart; label: string; short: string; role:
   { id: 'reso', label: 'Resonant head', short: 'RESO', role: 'Not struck — moved by the air the batter pushes. It shapes sustain, the sense of pitch and the bend.' },
   { id: 'shell', label: 'Shell', short: 'SHELL', role: 'Holds the heads apart and encloses the air. Its material and depth color the sound — along with everything else here, never alone.' },
   { id: 'edge', label: 'Bearing edges', short: 'EDGE', role: 'The shaped rims the heads sit on. The profile sets how much head touches shell — contact, sustain, ease of tuning.' },
-  { id: 'hoop', label: 'Hoops', short: 'HOOP', role: 'Press the head down onto the bearing edge evenly all the way round. A bent hoop cannot.' },
+  { id: 'hoop', label: 'Hoops', short: 'HOOP', role: 'Press the head down onto the bearing edge evenly all the way around. A bent hoop cannot.' },
   { id: 'rods', label: 'Tension rods', short: 'RODS', role: 'Pull the hoop down. Each rod sets the tension near it; together they set the pitch.' },
   { id: 'lugs', label: 'Lugs', short: 'LUGS', role: 'The threaded casings on the shell the rods screw into. Worn inserts and missing washers let tuning drift.' },
   { id: 'air', label: 'Air inside', short: 'AIR', role: 'Couples the two heads: when the batter moves in, the air pushes the resonant head. The relationship between the heads lives here.' },

@@ -34,7 +34,7 @@ export const REPORTER_COVERS: readonly Cover[] = [
 
 export const REPORTER_SITES: readonly Site[] = [
   { id: 'sheltered', label: 'A sheltered doorway', short: 'SHELTERED', what: 'Out of the wind: only light, steady air at the mic.' },
-  { id: 'street', label: 'An open street', short: 'STREET', what: 'Gusts round the corners of buildings and from passing vehicles.' },
+  { id: 'street', label: 'An open street', short: 'STREET', what: 'Gusts around the corners of buildings and from passing vehicles.' },
   { id: 'exposed', label: 'An exposed waterfront', short: 'EXPOSED', what: 'Strong, steady wind straight across the mic.' },
 ];
 

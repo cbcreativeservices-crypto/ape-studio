@@ -700,7 +700,7 @@ describe('D42 · P3 polish pins', () => {
   it('K2: a one-input calculation drops "in each"; K3: the bezel is placed under YOUR ANSWER', () => {
     for (const b of BUILT) {
       const c0 = b.gd.control[0];
-      if (b.fn.inputs.length === 1 && !/list box/.test(c0)) assert.match(c0, /\. Type a number; a grey number/, b.id);
+      if (b.fn.inputs.length === 1 && !/list box/.test(c0)) assert.match(c0, /\. Type a number; a gray number/, b.id);
       if (b.fn.inputs.length > 1 && !/list box/.test(c0)) assert.match(c0, /Type a number in each;/, b.id);
       assert.match(b.gd.seeing[1], /^Just under YOUR ANSWER: FUNCTION/, b.id);
     }

@@ -67,7 +67,7 @@ function parts(): Part[] {
 
 function regions(): RadiatingRegion[] {
   return [
-    { id: 'r.jingle', partId: 'f03.keys', label: 'the jingle', anchor: v3(0, 30, 0), prov: ill('the keys hanging from the ring'), variants: ['keys', 'live'], note: 'Keys strike keys below the ring: small, bright metal clicks spread round the hand.' },
+    { id: 'r.jingle', partId: 'f03.keys', label: 'the jingle', anchor: v3(0, 30, 0), prov: ill('the keys hanging from the ring'), variants: ['keys', 'live'], note: 'Keys strike keys below the ring: small, bright metal clicks spread around the hand.' },
     { id: 'r.bend', partId: 'f03.paper', label: 'the bend', anchor: v3(0, 0, 0), prov: ill('the sheet’s bend line'), variants: ['paper'], note: 'Where the sheet bends and rubs on the table: friction and a crisp crackle.' },
     { id: 'r.latch', partId: 'f03.handle', label: 'the latch', anchor: v3(0, 0, 0), prov: ill('the handle and latch'), variants: ['door'], note: 'The latch releases and catches: a small, sharp click at the door’s edge.' },
     { id: 'r.panel', partId: 'f03.leaf', label: 'the panel', anchor: v3(0, -300, 450), prov: ill('the panel’s middle'), variants: ['door'], note: 'The panel resonates as it swings and when it closes: the door’s body, spread over its whole face.' },

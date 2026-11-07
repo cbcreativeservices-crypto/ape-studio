@@ -147,7 +147,7 @@ describe('2. each guide quotes its page’s real names', () => {
     p15: ['MEASURE — BS.1770-STYLE ESTIMATES', 'TRIM ', 'MEASURE', 'MEASURING…', 'LOUDNESS', 'TRUE PEAK', 'clear of −1', 'above −1', 'THE TRANSLATION CHECKS', 'THE MIX', 'MONO'],
     p16: ['THE DELIVERABLES VOCABULARY', 'Tracks vs multitracks vs stems', 'Alternate mixes', 'Standard stem sets', 'Identical starts & lengths', 'Names & versions'],
     p17: ['RUN IT — REAL MATH ON THE REAL SESSION', 'RUN THE NULL TEST', 'CLEAN BUS', 'BUS COMP ON FULL MIX', 'NULLS ✓', 'BROKEN ✗'],
-    p18: ['THE PRACTICES', 'Version control', 'Metadata & documentation', 'Archive & recall', 'THE DELIVERY CHECKLIST — TICKED, NOT REMEMBERED', '☐', '☑'],
+    p18: ['THE PRACTICES', 'Version control', 'Metadata & documentation', 'Archive & recall', 'THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED', '☐', '☑'],
     p19: ['CASE 1 — “IT’S MUDDY”', 'CASE 2 — “IT’S HARSH”', 'CASE 3 — “THE VOCAL IS BURIED”', 'What is actually wrong?', 'Solve all three cases', 'FLAWED', 'REPAIRED'],
     p20: ['THE MIXER’S MANTRA', 'STEP 1 — DIAGNOSE THE HANDOFF', 'THE HANDOFF', 'THE HANDOFF — YOUR DIAGNOSIS', 'THE REPAIR CONSOLE', 'HIGH-PASS THE KEYS (220 Hz)', 'BACK TO THE FLAWED HANDOFF', 'LISTEN — HANDOFF VS YOUR REPAIR', 'YOUR REPAIR', 'REPAIR, MONO', 'THE STEPS — VERIFIED AS YOU WORK', '7 · Deliver', '2 · Rebuild the balance', '3 · Clear the mud', '6 · Translation check', 'DELIVERED'],
   };

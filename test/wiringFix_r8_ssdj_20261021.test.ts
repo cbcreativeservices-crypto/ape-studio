@@ -58,7 +58,7 @@ describe('R7-SS-01 — end-fire: the front box is delayed', () => {
   const block = b.slice(b.indexOf('  endfire: {'), b.indexOf('  flown: {'));
   it('names the FRONT box as the delayed one, by the rear-to-front travel time', () => {
     assert.match(block, /the FRONT box delayed by the time sound takes to travel from the rear box to it/);
-    assert.match(block, /each box further forward is delayed by the time sound takes to travel to it from the box behind/);
+    assert.match(block, /each box farther forward is delayed by the time sound takes to travel to it from the box behind/);
     assert.doesNotMatch(block, /rear box delayed/);
   });
 });

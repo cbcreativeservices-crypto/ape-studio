@@ -272,7 +272,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
         <View style={{ gap: 6 }}>
           {st && !st.inFront ? (
             <Text style={styles.warn}>
-              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Ride SEAT further into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
+              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Ride SEAT farther into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
             </Text>
           ) : st ? (
             <Text style={styles.line}>
@@ -316,7 +316,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
         A good starting point, not a law: the two speakers and your head form an equilateral triangle (a 60° listening angle), the two speakers sit at the same distance from their side walls and from the front wall, and the listening position is on the room's center line. Matched left and right geometry is what the makers of monitors ask for first, because the two early-reflection sets then arrive alike and the center image stays put.
       </Body>
       <Body>
-        Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; further away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
+        Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; farther away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
       </Body>
       <Caption>A stand must be rated for the monitor's mass with a wide or weighted base; midfields and anything on a wall bracket go into structure with rated hardware. Route cables along the wall; if one must cross a walkway, use a cable ramp or tape it flat.</Caption>
       <Caption>{SAFETY_LEVEL_NOTE}</Caption>
@@ -337,7 +337,7 @@ function SetupTray({ ctx }: { ctx: RoomLabCtx }) {
       <Chips items={CONFIGS} value={design.monitoring.config} onPick={(id) => update((d) => applyConfig(d, id))} />
       <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a center and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions often even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
       <Caption>Set the sub's crossover, polarity and phase/delay by measuring at the seat — the wrong polarity makes a hole at the crossover frequency.</Caption>
-      <Caption>ITU-R BS.775: centre 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds spawn on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
+      <Caption>ITU-R BS.775: center 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds spawn on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
       <Caption>After calibrating, leave the monitors' own gain alone and set level at the monitor controller; red clip lights on a monitor mean turn down, not treat the room.</Caption>
       <TrayHeading>LISTENING DISTANCE CLASS</TrayHeading>
       <Chips items={FIELDS} value={design.monitoring.field} onPick={(id) => update((d) => ({ ...d, monitoring: { ...d.monitoring, field: id } }))} />

@@ -446,7 +446,7 @@ const reverbConfig: FxLabConfig = {
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
     'Display: level in decibels (dashed guides 30 dB apart), so a decay is a straight slope. Each click (gray) crosses the stage; after the ' +
-    'pre-delay gap the reverb (amber) arrives and falls 60 dB in RT60 or sooner: HF DAMPING dulls the tail on every trip round ' +
+    'pre-delay gap the reverb (amber) arrives and falls 60 dB in RT60 or sooner: HF DAMPING dulls the tail on every trip around ' +
     'the reverb, so this 1 kHz click fades fastest with DARK. A longer RT60 is a gentler slope, and the ' +
     'tails pile up into a wash. OUT redraws from the left each time a click reaches the stage; its ruler counts seconds since then.',
   // The burst names its pitch: the generator keeps the LAST frequency any lab
@@ -1642,7 +1642,7 @@ const phaseConfig: FxLabConfig = {
       ],
       correctIdx: 0,
       reveal:
-        'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is per-frequency timing offset. The button fixes a polarity problem (a miswired cable, two mics facing each other); it cannot fix an alignment problem.',
+        'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is a per-frequency timing offset. The button fixes a polarity problem (a miswired cable, two mics facing each other); it cannot fix an alignment problem.',
       wrongHint: 'The lab\u2019s intro names the distinction — and the DLY R fader is the phase side.',
     },
   ],

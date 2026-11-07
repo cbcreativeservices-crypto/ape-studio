@@ -54,7 +54,7 @@ const TERMS = [
   { term: 'House left', def: 'Which speaker is LEFT is the venue’s call. In live sound it is usually HOUSE LEFT — the crowd’s left, your RIGHT as you face them. Ask the engineer; many club systems run mono. (This lab draws PA L at house left.)' },
   { term: 'Balanced line', def: 'Two signal wires and a shield; the input takes the difference between them, so hum picked up equally on both cancels. That is why long runs to a venue are usually XLR.' },
   { term: 'Crossover', def: 'Splits the music by frequency: the tops get the part above the crossover point (100 Hz here), the subs the part below. Bass is usually sent to the subs in MONO.' },
-  { term: 'Coverage angle', def: 'A speaker’s nominal angle is where it is 6 dB down from straight ahead — a 90° top is −6 dB at 45° each side. Outside that, the level falls away fast. A single sub spreads almost evenly all round.' },
+  { term: 'Coverage angle', def: 'A speaker’s nominal angle is where it is 6 dB down from straight ahead — a 90° top is −6 dB at 45° each side. Outside that, the level falls away fast. A single sub spreads almost evenly all around.' },
 ] as const;
 
 export const GOALS_PA = ['Hand off DJ L and DJ R, balanced', 'Raise the room by the engineer’s gain', 'Crossover on: flat where tops meet subs', 'Tops placed: no hole, decks out of the beam', '4-hour dose at the decks ≤ 100 %', 'On your own: tops behind you, dose ≤ 100 %', 'Find the hum on the floor', 'Pass the check'] as const;
@@ -255,7 +255,7 @@ export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
       {v.tops === 'PASSIVE' ? (
         <Group>
           <PowerAmpRear x={SYS_AMP_AT.x} y={SYS_AMP_AT.y} />
-          <CableRun r={{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'MAINS', farKind: 'mains' }} />
+          <CableRun r={{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'AC POWER', farKind: 'mains' }} />
           <CableRun r={{ id: 'ampInA', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_A, plugged: true, live, label: 'FROM PROCESSOR' }} />
           <CableRun r={{ id: 'ampInB', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_B, plugged: true, live, label: 'FROM PROCESSOR R' }} />
           <SpeakerLead pts={AMP_OUT_B} live={live} />
@@ -307,9 +307,9 @@ function VenueTray({ tr, onAsk }: { tr: Transport; onAsk: (msg: string) => void 
       </Row>
       <Row head="THE 20 m RUN TO THE STAGE BOX">
         <LabChip label="XLR (BALANCED)" selected={v.cable === 'XLR'} onPress={() => set({ cable: 'XLR' })} compact />
-        <LabChip label="JACK LEAD + XLR ADAPTER" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
+        <LabChip label="JACK CABLE + XLR ADAPTER" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
       </Row>
-      {v.cable === 'UNBAL' ? <TrayNote tone="warn">A jack lead with an XLR adapter — unbalanced: an XLR-to-jack lead from your MASTER OUT, its 6.35 mm TS jack in a jack-to-XLR adapter at the stage box. Every plug fits, but the TS jack ties pin 3 to pin 1, so the line no longer balances.</TrayNote> : null}
+      {v.cable === 'UNBAL' ? <TrayNote tone="warn">A jack cable with an XLR adapter — unbalanced: an XLR-to-jack cable from your MASTER OUT, its 6.35 mm TS jack in a jack-to-XLR adapter at the stage box. Every plug fits, but the TS jack ties pin 3 to pin 1, so the line no longer balances.</TrayNote> : null}
       <Row head={`ASK THE ENGINEER (their gain on your feed: ${v.gainDb >= 0 ? '+' : '−'}${Math.abs(v.gainDb)} dB)`}>
         <LabChip label="“UP 3 dB, PLEASE”" selected={false} onPress={() => ask(3)} compact />
         <LabChip label="“DOWN 3 dB”" selected={false} onPress={() => ask(-3)} compact />
@@ -467,7 +467,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               <PlanView spec={{ map, place: v.place, subPos: v.subPos, subs: v.subs, feedDbfs: feed > -90 ? feed : -20, monitors: true, turntable: true, edges: map === 'TOPS', points: true, djTone: dose != null && dose > 100 ? '#ff5a48' : '#5bff85' }} />
             </Scene>
           ) : view === 'HANDOFF' ? (
-            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'a jack lead with an XLR adapter at the stage box — unbalanced'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
+            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'a jack cable with an XLR adapter at the stage box — unbalanced'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
               <HandoffView booth={booth} />
             </Scene>
           ) : (
@@ -478,7 +478,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               motion={motion}
               fit={{ x: 0, y: h * 0.5, w, h: h * 0.5 }}
               aspect={false}
-              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The processor’s right-hand line comes into the amp’s CH B input on a second XLR. The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
+              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The processor’s right-hand line comes into the amp’s CH B input on a second XLR. The amp’s CH B output feeds the other top, TOP R, on its own Speakon cable out of view, and the amp’s power cable is plugged into its AC IN. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
               obstacles={sysObstacles(v.tops)}
               obstaclesAt={v.tops === 'PASSIVE' ? sysObstaclesAt : undefined}
               soft={v.tops === 'PASSIVE' ? SYS_SOFT : undefined}
@@ -530,11 +530,11 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
         {swapped ? <Note>L and R are swapped against the venue’s labels: swap the two inputs.</Note> : null}
       </Step>
       <Step n={3}>
-        <P>In SYSTEM, the crossover is OFF: the tops’ and the sub’s own roll-offs overlap and the SUM bulges round 100 Hz. Turn it ON and watch SUM go flat — the tops above, the sub below, in mono. It is flat here because this sub and these tops arrive together; in a real system the engineer also time-aligns them (a delay and the polarity at the processor), and a sub far from its tops can cancel round the crossover point.</P>
+        <P>In SYSTEM, the crossover is OFF: the tops’ and the sub’s own roll-offs overlap and the SUM bulges around 100 Hz. Turn it ON and watch SUM go flat — the tops above, the sub below, in mono. It is flat here because this sub and these tops arrive together; in a real system the engineer also time-aligns them (a delay and the polarity at the processor), and a sub far from its tops can cancel around the crossover point.</P>
         <P>A venue with ONE input for the DJ gets a mono mix: the mixer’s MONO switch, or a summing box — never a Y-cable joining two outputs, which makes them fight each other.</P>
         <P>In the ROOM, the tops aimed straight down leave a hole in front of the floor. Try each placement: the front corners, aimed in, cover the floor evenly and keep the decks out of their beam; behind the DJ, the decks become the loudest seat in the house. (The map is a simplified picture of the mid range: no height, no reflections. The SUBS map shows 60 Hz: two spaced subs add in step in some places and cancel in others — move a meter and the bass changes.)</P>
         <Note>The TT LOOP (turntable loop) reading on the ROOM’s strip is a different loop from mic feedback: the subs shake the table and the turntable’s stylus plays the shaking back — low and slow (Screen 17). Mic feedback rings at whatever pitch the loop peaks first, often the mids or highs. Distance and isolation cure the turntable loop; turning a mic down does not.</Note>
-        <Note tone="safety">Real stands: on level ground, legs fully out, the top locked on the pole, the legs taped clear of feet, and kept within the stand’s rated height and load. With passive speakers, the amplifier is OFF (or its level down) while you connect or move a speaker cable — its terminals can carry a shock-level voltage on a big amplifier.</Note>
+        <Note tone="safety">Real stands: on level ground, legs fully out, the top locked on the pole, the legs marked with tape so no one trips on them, and kept within the stand’s rated height and load. With passive speakers, the amplifier is OFF (or its level down) while you connect or move a speaker cable — its terminals can carry a shock-level voltage on a big amplifier.</Note>
         <Note tone="safety">At the decks you hear the PA’s spill AND the booth monitors, for hours. This dose counts the room at the decks only — your headphones add to it, often more than the room. A 4-hour set at more than about 88 dBA is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA with a 5 dB rule). Turn the BOOTH down before you turn the headphones up; take breaks; wear musicians’ earplugs. This is a modeled level — a phone’s volume is not your ears’ level.</Note>
       </Step>
       <Step n={4}>
@@ -580,7 +580,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={venueHandoffOk(evOf(booth).venue) && !floorHum}
           hints={['The booth and the headphones are clean, so where does the hum get in: before the mixer, or after it?', 'Look at the HANDOFF: what kind of cable makes the 20 m run to the stage box?', 'Open VENUE: the 20 m run.']}
-          why="This run is a jack lead with an XLR adapter — unbalanced: the 6.35 mm TS jack ties pin 3 to pin 1, so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum. A balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
+          why="This run is a jack cable with an XLR adapter — unbalanced: the 6.35 mm TS jack ties pin 3 to pin 1, so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s ground and the stage’s ground: that is the hum. A balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />

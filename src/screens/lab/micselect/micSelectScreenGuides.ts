@@ -134,7 +134,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   // ── LESSON 4 · FREQUENCY RESPONSE & TONAL CHARACTER ──────────────────────
   curves: {
     seeing: [
-      'A response graph from 20 Hz (left) to 20 kHz (right). The amber line is the chosen curve; the grey line is flat.',
+      'A response graph from 20 Hz (left) to 20 kHz (right). The amber line is the chosen curve; the gray line is flat.',
       'Every curve is fictional but realistic — read the SHAPE, not a brand.',
       'Under it: EMPHASIZES, ATTENUATES and WHERE THAT IS USEFUL; then a CHECK YOURSELF question and the lesson banner.',
     ],
@@ -144,7 +144,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'NEXT: SENSITIVITY, NOISE & SPL ›, or the strip, moves on.',
     ],
     changes: [
-      'Above the grey line, that range comes out louder; below it, quieter.',
+      'Above the gray line, that range comes out louder; below it, quieter.',
       'The low rolloff falls more the lower it goes. The strongly shaped curve lifts the lows and the highs and scoops the low-mids between — EQ built into the mic.',
     ],
     teaches: [
@@ -296,7 +296,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     ],
     control: [
       'Tap a mic to pick it; a new pick clears the factors.',
-      'Tick the factors that drove the choice, then CHECK MY REASONING.',
+      'Check the factors that drove the choice, then CHECK MY REASONING.',
       'Once the original brief has been checked, CHANGE ONE VARIABLE appears: Original brief, plus "The boom operator is no longer available", "The interview is now inside a quiet studio" and "The interviewee must walk around freely". Pick again, then CHECK.',
       'NEXT: BUILD YOUR MIC LOCKER ›, or the strip, moves on.',
     ],
@@ -310,7 +310,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'How to justify a choice by its factors, and how one changed condition changes the answer.',
     ],
     tryThis: [
-      'Pick Microphone B (the shotgun), tick Directionality, Working distance / application and Wind protection, and CHECK MY REASONING: ✓, with all three key factors.',
+      'Pick Microphone B (the shotgun), check Directionality, Working distance / application and Wind protection, and CHECK MY REASONING: ✓, with all three key factors.',
       'Now choose "The boom operator is no longer available": Microphone D, the rugged handheld, is the strongest pick; E, the lavalier, is also defensible.',
       'Try "The interview is now inside a quiet studio": wind and traffic are gone — Microphone A, the large-diaphragm condenser.',
     ],
@@ -319,7 +319,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   // ── OPTIONAL · BUILD YOUR MIC LOCKER ─────────────────────────────────────
   locker: {
     seeing: [
-      'Six slots, ten jobs this week. Ten mics to tick, each row saying which jobs it covers.',
+      'Six slots, ten jobs this week. Ten mics to check, each row saying which jobs it covers.',
       'Two counters, SLOTS USED and JOBS COVERED (green at nine or more). THIS WEEK’S JOBS marks each job ✓ covered or —.',
     ],
     control: [

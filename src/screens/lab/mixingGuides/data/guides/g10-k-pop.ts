@@ -279,7 +279,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater shows run 96–102 dBA LAeq,15min; arenas and stadiums 100–106 dBA. That is above the WHO’s 100 dBA LAeq,15min guideline, so keep to the low end where you can. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs — levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
+      "text": "Theater shows run 96–102 dBA LAeq,15min; arenas and stadiums 100–106 dBA. That is above the WHO’s 100 dBA LAeq,15min guideline, so keep to the bottom of that range where you can. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs — levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favor of punch and vocal clarity in the back rows."
     },
     {
       "label": "Studio / streaming:",

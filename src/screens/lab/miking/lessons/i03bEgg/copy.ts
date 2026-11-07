@@ -50,10 +50,10 @@ export const EGG_COPY: LessonCopy = spCopy({
       cells: ['GRIP', 'THE SHELL', 'OUT'],
       together: {
         option: 'FINGERTIPS (SHELL OPEN)',
-        blurb: 'Held in the fingers: the shell is open to the air all round.',
+        blurb: 'Held in the fingers: the shell is open to the air all around.',
         short: 'OPEN',
         title: 'HELD IN THE FINGERTIPS',
-        card: 'Held lightly in the fingers, the shell meets the air all round: the grains’ impacts leave in every direction.',
+        card: 'Held lightly in the fingers, the shell meets the air all around: the grains’ impacts leave in every direction.',
         v0: 'FINGERTIPS',
         v1: 'OPEN',
         air: { plus: 'ALL ROUND', minus: 'ALL ROUND', rest: 'ALL ROUND' },

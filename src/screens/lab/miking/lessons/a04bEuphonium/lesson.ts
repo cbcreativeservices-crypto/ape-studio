@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how buzzing lips become a euphonium note — the pulse down the tube, the standing wave, the bell — and where the bell sends the sound.',
     credit: { scenarios: ['eu.snd.1', 'eu.snd.2', 'eu.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Nearly all of the sound leaves from the bell. The low notes spread nearly all round; the attacks and upper overtones go where the bell points — up, or to the front. Tendencies: euphoniums and rooms vary.',
+    takeaway: 'Nearly all of the sound leaves from the bell. The low notes spread nearly all around; the attacks and upper overtones go where the bell points — up, or to the front. Tendencies: euphoniums and rooms vary.',
   },
   setting: {
     title: 'Where it sits',
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one euphonium mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['eu.prac.order', 'eu.prac.gain', 'eu.prac.setup1', 'eu.prac.setup2', 'eu.prac.3', 'eu.mix.1', 'eu.mix.2', 'eu.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real euphonium.' },
-    takeaway: 'The horn identified and its bell found, safe clearance from the tilt, the hands and the path to stand, headroom, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a diaphragm size do not — and more than one setup can pass.',
+    takeaway: 'The horn identified and its bell found, safe clearance from the tilt, the hands and the path to stand, headroom, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a diaphragm size does not — and more than one setup can pass.',
   },
 };
 
@@ -93,12 +93,12 @@ const scenarios: MikingScenario[] = [
     id: 'eu.snd.2',
     page: 'sound',
     prompt: 'A bell-front euphonium plays a loud phrase. Where do its upper overtones mostly go?',
-    options: ['Forward, round the bell’s axis — toward the audience', 'Straight up, the same way as from an upright bell', 'Evenly all round, just like its lowest notes'],
-    correct: 'Forward, round the bell’s axis — toward the audience',
+    options: ['Forward, around the bell’s axis — toward the audience', 'Straight up, the same way as from an upright bell', 'Evenly all around, just like its lowest notes'],
+    correct: 'Forward, around the bell’s axis — toward the audience',
     explain: 'The overtones follow the bell’s axis. A front bell sends them forward — toward the audience and any mic in front; an upright bell sends them up.',
     why: {
       'Straight up, the same way as from an upright bell': 'That is the upright model. Turning the bell forward turns the overtones with it.',
-      'Evenly all round, just like its lowest notes': 'Only the lowest notes spread nearly all round. The overtones follow the bell.',
+      'Evenly all around, just like its lowest notes': 'Only the lowest notes spread nearly all around. The overtones follow the bell.',
     },
   },
   {
@@ -142,12 +142,12 @@ const scenarios: MikingScenario[] = [
     id: 'eu.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · An upright euphonium’s upper overtones leave mostly…',
-    options: ['Up, round the bell’s axis', 'Forward, past the player', 'Evenly in all directions'],
-    correct: 'Up, round the bell’s axis',
+    options: ['Up, around the bell’s axis', 'Forward, past the player', 'Evenly in all directions'],
+    correct: 'Up, around the bell’s axis',
     explain: 'The overtones follow the bell. From an upright bell they go up — which is why a mic above the bell, aimed toward its edge, hears them.',
     why: {
       'Forward, past the player': 'That is a bell-front euphonium.',
-      'Evenly in all directions': 'Only the lowest notes spread nearly all round.',
+      'Evenly in all directions': 'Only the lowest notes spread nearly all around.',
     },
   },
   {
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a big band. One channel for a bell-front euphonium; the player stands for solos.',
     setups: [
-      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the stand clear of the path to stand', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, set for the real bell — check the wedges round its rejection.' },
+      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the stand clear of the path to stand', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, set for the real bell — check the wedges around its rejection.' },
       { id: 'b', label: 'A clip its maker confirms for this bell, the cable away from both valve hands and the mute', ok: true, power: 'phantom', feedback: 'A suggested option when a confirmed clip exists: it follows the player who stands for solos.' },
       { id: 'c', label: 'A mic 60 cm above where an upright bell would be', ok: false, power: 'phantom', feedback: 'That suits an upright bell. This one faces the front: point the stand in its real direction.' },
       { id: 'd', label: 'A trumpet clip taped to the bell, for a quick fit', ok: false, power: 'phantom', feedback: 'A trumpet clip may not fit, and tape on a valuable finish is never the answer.' },
@@ -432,7 +432,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a euphonium’s sound leave the instrument?', options: ['From the bell’s opening', 'From the whole body at once', 'From the fourth valve'], after: 'Now STEP through (or PLAY ONCE) and follow the sound from the lips to the bell.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from about 30 cm to about 60 cm from the bell. What changes?', options: ['More valve and breath detail', 'More of the room and the section', 'It depends on this euphonium'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid facing back at a front bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -554,12 +554,12 @@ export const A04B_LESSON: Lesson = {
       { title: 'The bell turns some of it back', text: 'At the flaring bell, much of the pulse turns back up the tube. Going to and fro, it sets up a standing wave in the air column, and the lips lock onto it — that holds the note’s pitch.' },
       {
         title: 'Sound leaves the bell',
-        text: 'What escapes leaves from the bell — pointing up here. The low notes spread nearly all round; the attacks and upper overtones go mostly up, round the bell’s axis.',
-        byVariant: { front: 'What escapes leaves from the bell — facing the audience here. The low notes spread nearly all round; the attacks and upper overtones go mostly forward, round the bell’s axis.' },
+        text: 'What escapes leaves from the bell — pointing up here. The low notes spread nearly all around; the attacks and upper overtones go mostly up, around the bell’s axis.',
+        byVariant: { front: 'What escapes leaves from the bell — facing the audience here. The low notes spread nearly all around; the attacks and upper overtones go mostly forward, around the bell’s axis.' },
       },
     ],
     attack: 'The start of each note: the tongue releasing the air and the lips starting to buzz — an edge that can carry strong upper harmonics. It leaves the bell, so a mic nearer the bell’s axis tends to hear more of it.',
-    body: 'The sustained, rounded tone: the standing wave in the tube, leaving the bell — the low notes nearly all round, the overtones along the bell’s axis — and the room. A mic farther away tends to hear more of the whole euphonium, the room and the section. Tendencies: euphoniums vary.',
+    body: 'The sustained, rounded tone: the standing wave in the tube, leaving the bell — the low notes nearly all around, the overtones along the bell’s axis — and the room. A mic farther away tends to hear more of the whole euphonium, the room and the section. Tendencies: euphoniums vary.',
     head: { diameterMm: 0, rods: 0, label: 'the air column', strikeSrc: 'UNSW-BRASS' },
   },
   setting: {
@@ -573,7 +573,7 @@ export const A04B_LESSON: Lesson = {
       { id: 'main', label: 'a main pair for the ensemble', short: 'MAIN PAIR', note: 'In a studio recording of a band, a main pair hears the whole ensemble; a euphonium mic is a spot that supports it.', prov: { kind: 'illustrative', reason: 'a generic main pair' }, tag: 'MAIN PAIR', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges; a good room carries the euphonium’s size and its phrase.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors feed the players, the PA faces the audience, and the band reaches every open mic. A loud stage pushes toward a closer, directional mic with the wedges round its rejection — tested with the whole band.',
+    stage: 'LIVE: monitors feed the players, the PA faces the audience, and the band reaches every open mic. A loud stage pushes toward a closer, directional mic with the wedges around its rejection — tested with the whole band.',
     studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A farther view can carry a lyrical line; in a band, a main pair may carry it already.',
   },
   diagnostic,

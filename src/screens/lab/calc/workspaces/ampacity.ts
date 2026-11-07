@@ -319,7 +319,7 @@ function stepsOf(e: Ok | Refusal): string[] {
     s.push(`240.4(D): ${e.sizeName} copper may be protected at no more than ${e.ocpdMax} A, whatever the table says.`);
   }
   const parts = [`${fmt(e.corrected)} A (corrected)`, `0.8 × ${e.termLimit} A = ${fmt(0.8 * e.termLimit)} A (125% rule at the terminals)`];
-  if (e.ocpdMax !== null) parts.push(`0.8 × ${e.ocpdMax} A = ${fmt(0.8 * e.ocpdMax)} A (the largest breaker allowed)`);
+  if (e.ocpdMax !== null) parts.push(`0.8 × ${e.ocpdMax} A = ${fmt(0.8 * e.ocpdMax)} A (limit from the largest breaker)`);
   s.push(
     `A continuous load (3 hours or more) is sized at 125% for the conductor and its breaker (210.19, 210.20), so the most it may be is the smallest of ${parts.join(', ')}: ${fmt(e.continuous)} A.`,
   );

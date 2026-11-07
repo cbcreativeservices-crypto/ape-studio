@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the handheld under about 15 cm from the speaking mouth, a little below the breath — then move it and see what changes.',
-    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Close to the speaking mouth, out of the breath, clear of faces and the lens; the approved area and the exit come first.',
   },
   context: {
@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up an interview in the right order, choose and justify a setup for a sudden sideline exchange and a scheduled post-event guest, and say what would justify a second mic.',
     credit: { scenarios: ['b10.prac.order', 'b10.prac.gain', 'b10.prac.setup1', 'b10.prac.setup2', 'b10.prac.3', 'b10.mix.1', 'b10.mix.2', 'b10.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The interview sheet is optional — it needs a real interview.' },
-    takeaway: 'A mic at the speaking mouth before the answer, a channel per voice, the real destination checked, a fallback ready — inside the approved area with the exit clear. A brand, a long shotgun from far away or a hotter signal do not pass.',
+    takeaway: 'A mic at the speaking mouth before the answer, a channel per voice, the real destination checked, a fallback ready — inside the approved area with the exit clear. A brand, a long shotgun from far away or a hotter signal does not pass.',
   },
 };
 
@@ -358,8 +358,8 @@ const scenarios: MikingScenario[] = [
     id: 'b10.prac.3',
     page: 'practice',
     prompt: 'What would justify a second handheld at a sideline interview?',
-    options: ['A handoff that cannot work, both on own channels', 'More mics make the interview sound bigger', 'The guest’s voice needs more level than one gives'],
-    correct: 'A handoff that cannot work, both on own channels',
+    options: ['A handoff that cannot work, both on their own channels', 'More mics make the interview sound bigger', 'The guest’s voice needs more level than one gives'],
+    correct: 'A handoff that cannot work, both on their own channels',
     explain: 'Separate handhelds earn their place when a handoff is impractical and both know how to use one — each on its own channel, the unused one down.',
     why: {
       'More mics make the interview sound bigger': 'More open mics mean more crowd and more comb.',
@@ -382,11 +382,11 @@ const scenarios: MikingScenario[] = [
     id: 'b10.mix.2',
     page: 'practice',
     prompt: 'The radio mic drops out at one interview mark. Who decides a new frequency?',
-    options: ['The event’s radio coordinator', 'You, on the receiver straight away', 'The guest’s team, on the day'],
+    options: ['The event’s radio coordinator', 'You, on the receiver right away', 'The guest’s team, on the day'],
     correct: 'The event’s radio coordinator',
     explain: 'The radio coordinator owns the frequencies. Walk the marks and the route, listen for dropouts, and use the cabled fallback while it is fixed.',
     why: {
-      'You, on the receiver straight away': 'Changing a frequency alone can collide with other systems.',
+      'You, on the receiver right away': 'Changing a frequency alone can collide with other systems.',
       'The guest’s team, on the day': 'Frequencies are coordinated for the whole venue.',
     },
   },

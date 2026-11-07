@@ -132,12 +132,12 @@ const scenarios: MikingScenario[] = [
     id: 'pb.set.2',
     page: 'setting',
     prompt: 'Where do the stand and cable go for a walking pass?',
-    options: ['Outside the path and its envelope', 'At the path’s edge, cable across it', 'In the path, the walker steps round'],
+    options: ['Outside the path and its envelope', 'At the path’s edge, cable across it', 'In the path, the walker steps around'],
     correct: 'Outside the path and its envelope',
     explain: 'Keep mics, stands, cables and crew outside the travel path, including the walker’s possible deviation and stopping room.',
     why: {
       'At the path’s edge, cable across it': 'A cable across the path is a trip hazard; route it away from the path.',
-      'In the path, the walker steps round': 'Nothing goes in the path: the walker watches the route, not the mic.',
+      'In the path, the walker steps around': 'Nothing goes in the path: the walker watches the route, not the mic.',
     },
   },
   {
@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want an even pickup pattern across the whole pass. A fair first choice?',
     options: ['A fixed omni beside the path', 'A narrow shotgun aimed at one spot', 'A figure-8 with its side to the path'],
     correct: 'A fixed omni beside the path',
-    explain: 'An omni hears about equally all round: the level follows distance alone, with no off-axis change. A directional mic aimed at the crossing is the other fair choice.',
+    explain: 'An omni hears about equally all around: the level follows distance alone, with no off-axis change. A directional mic aimed at the crossing is the other fair choice.',
     why: {
       'A narrow shotgun aimed at one spot': 'A narrow mic can lose the ends of the pass off its axis.',
       'A figure-8 with its side to the path': 'Its sides are its nulls: the crossing would sit in its rejection.',
@@ -489,7 +489,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'An X/Y pair 3 m from the path’s line, outside the envelope', ok: true, power: 'phantom', feedback: 'A suggested starting point: the walker crosses the image and the pair holds in mono.' },
       { id: 'b', label: 'An M/S pair at the same spot, Mid and Side labeled', ok: true, power: 'phantom', feedback: 'A fair choice: decoded, it crosses the image; in mono the Mid remains.' },
       { id: 'c', label: 'A stand at the path’s edge, its cable across the path', ok: false, power: 'phantom', feedback: 'The cable across the path is a trip hazard; route it away.' },
-      { id: 'd', label: 'Spaced omnis 4 m apart either side of the path', ok: false, power: 'phantom', feedback: 'One mic sits on the far side, so its cable crosses the path — and wide spacing combs in mono.' },
+      { id: 'd', label: 'Spaced omnis 4 m apart on either side of the path', ok: false, power: 'phantom', feedback: 'One mic sits on the far side, so its cable crosses the path — and wide spacing combs in mono.' },
       { id: 'e', label: 'A tracked shotgun, the operator walking alongside', ok: false, power: 'phantom', feedback: 'The operator stays at a fixed station — and the brief asked for a stationary viewer.' },
     ],
     reasons: [
@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you drag: where along the path is the level highest?', options: ['At the closest point', 'At the start', 'At the end'], after: 'Now drag SOURCE the whole way and watch LEVEL and PITCH.' },
-  microphone: { prompt: 'Before you move anything: where does a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front of it'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where does a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front of it'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic closer to the path. What changes?', options: ['A steeper arc', 'A gentler arc', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which shows the walker crossing from left to right?', options: ['A fixed pair', 'One tracked mic', 'Both the same'], after: 'Now drag SOURCE with each PAIR, then with ONE MIC.' },
   twoMic: { prompt: 'As the walker moves, the time between the start and end mics…', options: ['Keeps changing', 'Stays fixed', 'Is always zero'], after: 'Now drag SOURCE and watch Δt.' },

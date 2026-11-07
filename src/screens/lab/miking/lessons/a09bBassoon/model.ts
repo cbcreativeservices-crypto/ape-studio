@@ -103,7 +103,7 @@ const BELL_Z: Omit<DocumentedZone, 'start'> = {
 const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   id: 'bsn.clip',
   label: 'Miniature on the bell joint, aimed down at the keys',
-  band: 'On a strap round the bell joint, bring the capsule about 3–13 cm out and aim it DOWN the instrument toward the keys — not into the bell. With a longer gooseneck, look farther down toward the wing joint’s keys.',
+  band: 'On a strap around the bell joint, bring the capsule about 3–13 cm out and aim it DOWN the instrument toward the keys — not into the bell. With a longer gooseneck, look farther down toward the wing joint’s keys.',
   kind: 'sourced',
   src: 'DPA-BSN',
   quote: 'fixed around the bassoon at the top, close to the bell, but not necessarily pointed into the bell! Point it downward, toward the keys (DPA-MOUNT: … the 4099U bassoon … point it towards the upper joint)',

@@ -11,16 +11,15 @@
  * `wrong` (optional, indexed by ORIGINAL option index) gives each distractor
  * its own misconception-targeting feedback; while it is present the correct
  * explanation stays hidden until the learner gets it right, so "try again"
- * is real retrieval rather than copying. Without `wrong` the legacy
- * behaviour is kept unchanged for the labs that already use this component.
+ * is real retrieval rather than copying. Without `wrong`, the first miss
+ * says only "Not quite — try again." and the explanation shows as a hint
+ * from the second miss on (owner decision 7, 2026-11-07; checkFeedback.ts).
  */
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card, Eyebrow } from './primitives';
-
-// NEW COPY — generic fallback when a distractor has no bespoke feedback.
-const GENERIC_WRONG = 'Not quite. Re-read the question — which quantity does it actually ask about?';
+import { checkFeedback } from './checkFeedback';
 
 export function UnderstandingCheck({
   question, options, correct, explain, onCorrect, wrong, eyebrow = 'UNDERSTANDING CHECK',
@@ -36,6 +35,10 @@ export function UnderstandingCheck({
   eyebrow?: string;
 }) {
   const [picked, setPicked] = useState<number | null>(null); // ORIGINAL index
+  // Wrong picks so far (owner decision 7, 2026-11-07): the first miss on a
+  // check with no `wrong` map does not reveal the explanation.
+  const [misses, setMisses] = useState(0);
+  const missesRef = useRef(0);
   // Synchronous guard: a same-frame double tap on the right answer lands
   // before `disabled` re-renders, and must not fire onCorrect twice
   // (bug hunt 2026-09-29).
@@ -50,14 +53,13 @@ export function UnderstandingCheck({
     return idx;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature]);
+  // A new question (new options) starts the miss count again.
+  useEffect(() => {
+    missesRef.current = 0;
+    setMisses(0);
+  }, [signature]);
   const right = picked === correct;
-  const feedback = picked == null
-    ? null
-    : right
-      ? `✓ ${explain}`
-      : wrong
-        ? (wrong[picked] ?? GENERIC_WRONG)
-        : `${explain} — try again with that in mind.`;
+  const feedback = checkFeedback({ picked, correct, explain, wrong, misses });
   return (
     <Card>
       <Eyebrow>{eyebrow}</Eyebrow>
@@ -77,9 +79,14 @@ export function UnderstandingCheck({
               if (ok) {
                 solvedRef.current = true;
                 onCorrect?.();
+              } else {
+                missesRef.current += 1;
+                setMisses(missesRef.current);
               }
-              const said = ok ? explain : wrong ? (wrong[i] ?? GENERIC_WRONG) : explain;
-              AccessibilityInfo.announceForAccessibility?.(`${ok ? 'Correct.' : 'Not quite.'} ${said}`);
+              // Spoken text = the shown line, so a screen reader is not told
+              // the explanation on a first miss either.
+              const said = checkFeedback({ picked: i, correct, explain, wrong, misses: missesRef.current }) ?? '';
+              AccessibilityInfo.announceForAccessibility?.(ok ? `Correct. ${explain}` : wrong || missesRef.current > 1 ? `Not quite. ${said}` : said);
             }}
             style={[styles.opt, isRight && styles.optRight, isWrong && styles.optWrong]}
             accessibilityRole="button"

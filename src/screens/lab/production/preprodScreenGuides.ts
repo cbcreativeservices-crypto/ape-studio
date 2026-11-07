@@ -110,7 +110,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Type one name in “Who approves the finished work?”: “Nobody can end this project” leaves. Make it “Sam Lee and Alex Ray”: “More than one person has the final yes”.',
       'Set “When must it be finished?” to a date before today: the badge reads BLOCKED and “The completion date has already passed” appears.',
-      'Tick Livestream under “Where will it be presented?”: a livestream finding appears until Livestream or broadcast feed is ticked under “Which services are included?”.',
+      'Check Livestream under “Where will it be presented?”: a livestream finding appears until Livestream or broadcast feed is checked under “Which services are included?”.',
     ],
   },
 
@@ -230,7 +230,7 @@ export const PREPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'All five checks start ○. Open the plan, type one name in “Who approves the finished work?”, come back: “A single approver is named” turns ✓.',
-      'Tick a service under “Which services are included?” and enter 2 in “Revision rounds included”: “At least one service is selected and a revision count is entered” turns ✓.',
+      'Check a service under “Which services are included?” and enter 2 in “Revision rounds included”: “At least one service is selected and a revision count is entered” turns ✓.',
     ],
   },
   'deliverable-detective': {

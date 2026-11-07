@@ -61,7 +61,7 @@ export const CONNECTOR_INK_LABELS: Record<ConnectorInk, string> = {
   signalPos: 'Signal + (non-inverting)',
   signalNeg: 'Signal − (inverting)',
   shield: 'Shield / screen',
-  groundEarth: 'Protective earth / ground',
+  groundEarth: 'Safety ground',
   neutral: 'Neutral',
   lineHot: 'Line / hot',
   dcPos: 'DC +',

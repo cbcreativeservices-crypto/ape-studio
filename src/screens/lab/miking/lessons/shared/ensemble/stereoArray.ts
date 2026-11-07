@@ -251,7 +251,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     locked: false,
     pattern: 'cardioid',
     recordingAngle: null,
-    what: 'One large-diaphragm condenser, cardioid, on a stand at the singers’ mouth height — the singers round its front, each mouth about the same distance away.',
+    what: 'One large-diaphragm condenser, cardioid, on a stand at the singers’ mouth height — the singers around its front, each mouth about the same distance away.',
     tends: 'A natural blend the singers make themselves; less control of any one voice afterwards.',
     check: 'Every mouth at a matched distance, the loudest singer a step back, nobody outside the front of the pattern.',
     art: 'ldc',
@@ -326,7 +326,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'A cardioid facing forward, a cardioid facing back and a sideways figure-8 between them, close together — three tracks, decoded to front and rear afterwards.',
     tends: 'Compact, and the width and the rear level can be set after recording; the decode has to be done on purpose, with the figure-8’s positive side known.',
-    check: 'Mark the figure-8’s positive side before recording, keep three separate tracks, and check that left, right and rear follow a walker round the array.',
+    check: 'Mark the figure-8’s positive side before recording, keep three separate tracks, and check that left, right and rear follow a walker around the array.',
     prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #3 (PRACTICE): forward cardioid, backward cardioid, shared figure-8; M/S decode CONFIRMED (UA-MS)' },
   },
   surround50: {

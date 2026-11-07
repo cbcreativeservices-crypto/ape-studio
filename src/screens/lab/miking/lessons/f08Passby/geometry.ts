@@ -52,7 +52,7 @@ const PARTS: Part[] = [
 
 const REGIONS: RadiatingRegion[] = [
   { id: 'steps', partId: 'walker', label: 'the walker’s steps', anchor: { x: ROUTE_X, y: -WALK_SOURCE_H, z: 0 }, prov: SITE, variants: ['walk'], note: 'Footsteps, clothes and breath, moving along the path: loudest as they pass the closest point.' },
-  { id: 'vehicle', partId: 'vehicle', label: 'the vehicle', anchor: { x: VEH_X, y: -600, z: 0 }, prov: SITE, variants: ['vehicle'], note: 'Tyres, engine and exhaust, moving along the route.' },
+  { id: 'vehicle', partId: 'vehicle', label: 'the vehicle', anchor: { x: VEH_X, y: -600, z: 0 }, prov: SITE, variants: ['vehicle'], note: 'Tires, engine and exhaust, moving along the route.' },
 ];
 
 /** Distances are read from the path's centre line (or the route's). */

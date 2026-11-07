@@ -100,7 +100,7 @@ function sectionsFrom(seats: readonly Seat[], defs: readonly Omit<Section, 'seat
   return defs.map((d) => ({ ...d, seats: seats.filter((s) => s.section === d.id).map((s) => s.id) })).filter((d) => d.seats.length);
 }
 
-const SINGS = 'From the singer’s mouth: forward and round the front of the head — the highest frequencies mostly straight ahead, the lows all round.';
+const SINGS = 'From the singer’s mouth: forward and around the front of the head — the highest frequencies mostly straight ahead, the lows all around.';
 const voiceSec = (id: string, label: string, short: string, radiates = SINGS): Omit<Section, 'seats'> => ({ id, label, short, family: 'voices', radiates });
 const TRIO = [voiceSec('hi', 'high harmony', 'HIGH'), voiceSec('mid', 'middle part', 'MIDDLE'), voiceSec('lo', 'low harmony', 'LOW')];
 const SATB = (what: string) => [
@@ -173,8 +173,8 @@ function circleOf(): Seating {
   });
   return {
     id: 'vocal.circle',
-    label: 'Four singers round one mic',
-    blurb: 'Four singers standing in a circle round one microphone in a studio, facing it — they balance themselves by stepping in and out.',
+    label: 'Four singers around one mic',
+    blurb: 'Four singers standing in a circle around one microphone in a studio, facing it — they balance themselves by stepping in and out.',
     seats,
     sections: sectionsFrom(seats, QUARTET),
     risers: [],
@@ -348,7 +348,7 @@ export function voiceSeating(id: VoiceSeatingId): Seating {
     case 'vocal.line':
       return lineOf();
     case 'vocal.shared':
-      return arcRound('vocal.shared', [-60, 0, 60], ['hi', 'mid', 'lo'], TRIO, 'Three singers round one mic', 'Three singers on an arc round one shared microphone, each mouth about the same distance from it — they balance by stepping in and out.');
+      return arcRound('vocal.shared', [-60, 0, 60], ['hi', 'mid', 'lo'], TRIO, 'Three singers around one mic', 'Three singers on an arc around one shared microphone, each mouth about the same distance from it — they balance by stepping in and out.');
     case 'vocal.circle':
       return circleOf();
     case 'duo.shared':

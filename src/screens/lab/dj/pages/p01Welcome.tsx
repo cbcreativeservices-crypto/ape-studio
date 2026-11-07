@@ -210,7 +210,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
         <Do>Start deck A, switch who you listen as, stop everything with ■ STOP, then RESET the booth. Then find the loudest safe level for a 4-hour set.</Do>
         <ExposureTile onFound={() => setTile(true)} />
         <GoalChips goals={goals.slice(0, 5)} latched={latched.slice(0, 5)} />
-        <Note tone="try">In a real booth: start with the headphone and booth levels DOWN, bring them up slowly, wear one ear off the headphones when you can, take breaks in quiet, and use earplugs made for music in loud rooms.</Note>
+        <Note tone="try">In a real booth: start with the headphone and booth levels DOWN, bring them up slowly, keep one ear off the headphones when you can, take breaks in quiet, and use earplugs made for music in loud rooms.</Note>
       </Step>
       <Step n={5}>
         <UnderstandingCheck

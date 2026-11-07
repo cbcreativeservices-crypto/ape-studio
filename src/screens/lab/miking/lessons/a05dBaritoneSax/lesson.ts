@@ -67,7 +67,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   setup: (R) => saxSetupTasks('bs', 'baritone', R),
   neighbours: [
     { id: 'n1', label: 'a tenor beside (the next horn in the section)', short: 'TENOR', note: 'In a section the next horn sits close: a close mic on the baritone hears it too — more so from the side.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
-    { id: 'n2', label: 'an alto further along the row', short: 'ALTO', note: 'Farther away, but still heard by the baritone’s mic.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
+    { id: 'n2', label: 'an alto farther along the row', short: 'ALTO', note: 'Farther away, but still heard by the baritone’s mic.', prov: { kind: 'illustrative', reason: 'a typical big-band sax row' }, tag: 'SPILL', scene: 'kit' },
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A closer directional mic improves the direct sound against the spill, but its smaller zone shows every turn of the big horn; keep stands clear of its travel.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A big horn rewards distance: a farther mic — the triangle — takes in the whole baritone, alone or beside a close mic.',

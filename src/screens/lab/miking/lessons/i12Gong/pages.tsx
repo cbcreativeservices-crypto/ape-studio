@@ -39,7 +39,7 @@ const HAND: HandSpec = {
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the gong in its frame with the player beside its struck face; a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the gong in its frame and the player, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
     looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
-    first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
+    first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits around the swing and the mallet’s arc.',
     before: [
       { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised center, a more pitch-centered sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },
       { title: 'THE SWING AND THE SUSPENSION', text: 'The gong must swing freely without touching the stand. Check the cords, the stand’s rating, locks and feet with the owner or the venue’s crew — the gong and its suspension are theirs. Mark the full swing and the mallet’s arc.' },
@@ -146,7 +146,7 @@ const SPEC: MetalSpec = {
       { k: 'FACE', at: kindOf(v) === 'bossed' ? ['AT REST', 'BROAD', 'BOSS TONE', 'RINGING'] : ['AT REST', 'BROAD', 'BUILD-UP', 'RINGING'], flex: 1.1 },
       { k: 'SOUND', at: ['—', '—', kindOf(v) === 'bossed' ? 'STEADY' : 'SWELLS', 'BOTH FACES'], flex: 1.1 },
     ],
-    after: (v) => (kindOf(v) === 'bossed' ? 'It decays slowly round the boss’s tone unless the player damps it. Very close to the boss, a mic exaggerates the mallet’s impact — compare a broader view.' : 'It decays slowly after the bloom unless the player damps it — keep the whole rise and decay in every comparison. How fast it swells depends on the gong and the stroke.'),
+    after: (v) => (kindOf(v) === 'bossed' ? 'It decays slowly around the boss’s tone unless the player damps it. Very close to the boss, a mic exaggerates the mallet’s impact — compare a broader view.' : 'It decays slowly after the bloom unless the player damps it — keep the whole rise and decay in every comparison. How fast it swells depends on the gong and the stroke.'),
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real gong sounds depends on the gong, the mallet, the stroke and the room. The pictures show where the sound comes from and where it leaves.',
     variantKey: 'GONG',
     shapes: {

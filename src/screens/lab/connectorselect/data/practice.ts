@@ -78,7 +78,7 @@ export const CROSS_SECTIONS: readonly CrossSection[] = [
     id: 'optical',
     name: 'Optical cable',
     layers: ['Jacket', 'Buffer', 'Cladding', 'Light-carrying core'],
-    blurb: 'No copper at all: light in a core wrapped in cladding. Immune to electrical interference — and to sharp bends it is not.',
+    blurb: 'No copper at all: light in a core wrapped in cladding. Immune to electrical interference — but not to sharp bends.',
     job: 'TOSLINK optical digital audio.',
   },
   {
@@ -130,7 +130,7 @@ export const SAFETY_RULES: readonly SafetyRule[] = [
   {
     id: 'no_ground_defeat',
     rule: 'Never defeat the AC safety ground to eliminate hum.',
-    why: 'The ground pin bonds the chassis to earth, so a fault trips the breaker instead of leaving the chassis and mic bodies live. Hum has proper fixes; removing shock protection is not one of them.',
+    why: 'The ground pin bonds the chassis to ground, so a fault trips the breaker instead of leaving the chassis and mic bodies live. Hum has proper fixes; removing shock protection is not one of them.',
   },
   {
     id: 'adapters_dont_convert',
@@ -150,7 +150,7 @@ export const SAFETY_RULES: readonly SafetyRule[] = [
   {
     id: 'power_separate',
     rule: 'Keep power connectors visually and conceptually separate from audio connectors.',
-    why: 'Mains power has its own connectors, its own rules and its own lab. The habit of separating the two families is itself a safety practice.',
+    why: 'AC power has its own connectors, its own rules and its own lab. The habit of separating the two families is itself a safety practice.',
   },
 ];
 

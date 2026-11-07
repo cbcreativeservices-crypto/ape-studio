@@ -158,7 +158,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   'LEARN|What else the mic hears': {
     seeing: 'What reaches the mic besides the source, what the mic and its stand keep clear of, and what changes ON A STAGE (LIVE) or IN A STUDIO.',
     tryThis: [
-      'Pick one neighbour named here and decide which way the mic’s quiet side would face to hear less of it.',
+      'Pick one neighbor named here and decide which way the mic’s quiet side would face to hear less of it.',
       'Go back one step to Starting setups and compare two: what does each one gain, and what does it give up?',
     ],
   },
@@ -180,15 +180,15 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     ],
   },
   'COMPARE|Patterns': {
-    seeing: 'A pickup pattern from above with a test source round it — a simplified shape, the same at every pitch.',
-    control: 'SOURCE ANGLE swings the test source from the mic’s front (0°) round to directly behind (180°). TYPE and PATTERN change the mic.',
+    seeing: 'A pickup pattern from above with a test source around it — a simplified shape, the same at every pitch.',
+    control: 'SOURCE ANGLE swings the test source from the mic’s front (0°) around to directly behind (180°). TYPE and PATTERN change the mic.',
     changes: 'PICKUP is the pattern’s level at that angle compared with straight ahead. Where the pattern hears nothing, a null appears (DEEP NULL): sound from there cancels at the capsule. Real mics still hear a little from there.',
     tryThis: [
       'Make the prediction, then sweep SOURCE ANGLE slowly, front to back: the NULL readout shows where this pattern rejects most.',
       (s) =>
         optsOf(s, 'PATTERN').some(isCardioid)
-          ? 'With a cardioid PATTERN, set SOURCE ANGLE all the way round: PICKUP reads DEEP NULL, directly behind.'
-          : 'Set SOURCE ANGLE all the way round, directly behind: PICKUP shows how much this pattern hears from the back.',
+          ? 'With a cardioid PATTERN, set SOURCE ANGLE all the way around: PICKUP reads DEEP NULL, directly behind.'
+          : 'Set SOURCE ANGLE all the way around, directly behind: PICKUP shows how much this pattern hears from the back.',
     ],
   },
   'LEARN|By property, not brand': {
@@ -254,8 +254,8 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   },
   'PRACTICE|Your setup': {
     seeing: 'Setup briefs: each accepts more than one setup, and the check reads your reasons.',
-    control: 'Choose a setup, then tick every reason that justifies it.',
-    tryThis: ['On a brief, choose a setup and tick only the reasons you could defend to the people you are working with.'],
+    control: 'Choose a setup, then check every reason that justifies it.',
+    tryThis: ['On a brief, choose a setup and check only the reasons you could defend to the people you are working with.'],
   },
   'PRACTICE|Mixed review': {
     seeing: 'Questions reaching back across the lesson, and an optional OBSERVATION SHEET for a real session.',
@@ -340,7 +340,7 @@ const STAGE_WORDS: Record<PageId, StageWords> = {
   practice: {
     changes: ['A brief can accept more than one setup: the check reads your reasons, not a single “right” position.'],
     teaches: 'Putting the whole lesson together, with reasons.',
-    tryThis: 'On a setup brief, choose a setup and tick only the reasons you could defend.',
+    tryThis: 'On a setup brief, choose a setup and check only the reasons you could defend.',
   },
 };
 
@@ -572,7 +572,7 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
       CHIP_LINE,
     ],
     changes: [
-      'Finishing a first-two module counts at once on screen, so this activity opens even before anything is saved.',
+      'Finishing one of the first two modules counts at once on screen, so this activity opens even before anything is saved.',
       'A passed quick check opens every activity but credits nothing: the first two modules still earn their own credit.',
     ],
     teaches: [
@@ -631,7 +631,7 @@ export function mikingHubGuide(family?: { family: string }): ScreenGuide {
     ],
     changes: [
       'A tile’s count grows as that lesson’s modules are done; practicing again never lowers it.',
-      'If progress cannot be read, the count shows — and a note says so; every lesson still opens.',
+      'If progress cannot be read, the count shows “—” and a note says so; every lesson still opens.',
     ],
     teaches: [
       'Every lesson follows one journey: where the sound leaves, real starting setups, the microphones, the Placement Studio, advanced situations and practice — silent, in drawings.',

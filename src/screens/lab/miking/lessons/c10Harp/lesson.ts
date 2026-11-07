@@ -17,7 +17,7 @@ const pages: LessonPages = {
     title: 'Meet the harp',
     goal: 'Get to know the harp — the concert pedal harp and the smaller lever harp: what it is, where you meet it, what it does in the music, and its parts, from the soundboard to the pillar — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The strings stand between the soundboard and the neck; the soundbox leans back onto the harpist’s shoulder, with sound holes in its back; the pillar carries the pull. The harpist’s hands, feet and view take the space round it.',
+    takeaway: 'The strings stand between the soundboard and the neck; the soundbox leans back onto the harpist’s shoulder, with sound holes in its back; the pillar carries the pull. The harpist’s hands, feet and view take the space around it.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one harp mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['hp.prac.order', 'hp.prac.gain', 'hp.prac.setup1', 'hp.prac.setup2', 'hp.prac.3', 'hp.mix.1', 'hp.mix.2', 'hp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real harp.' },
-    takeaway: 'Clearance from the harpist, an approved mount, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or the “closest” position do not — and more than one setup can pass.',
+    takeaway: 'Clearance from the harpist, an approved mount, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or the “closest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -235,7 +235,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why keep a front mic a little to one side of the strings rather than right in their plane?',
     options: ['The strings are loudest exactly in their own plane', 'The harpist’s hands work both sides of the strings there', 'The starting points are all measured from the string plane itself'],
     correct: 'The harpist’s hands work both sides of the strings there',
-    explain: 'The hands reach round both sides of the strings: a mic in their plane is in the way. A little to one side, it still looks back at the board.',
+    explain: 'The hands reach around both sides of the strings: a mic in their plane is in the way. A little to one side, it still looks back at the board.',
     why: {
       'The strings are loudest exactly in their own plane': 'The reason is the hands’ space, not loudness.',
       'The starting points are all measured from the string plane itself': 'Most are measured from the soundboard; the side offset is about clearance.',
@@ -247,7 +247,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What must a harp mic, its stand and its cable stay out of?',
     options: ['The front of the harp, so that the audience can see the strings and the hands', 'The harpist’s hands and view, the pedals, and the space over their head', 'The soundbox’s back, which must not be looked at by a mic'],
     correct: 'The harpist’s hands and view, the pedals, and the space over their head',
-    explain: 'Clearance comes first: the hands round the strings, the feet on the pedals, the view to the music, and nothing swinging over the harp or the harpist.',
+    explain: 'Clearance comes first: the hands around the strings, the feet on the pedals, the view to the music, and nothing swinging over the harp or the harpist.',
     why: {
       'The front of the harp, so that the audience can see the strings and the hands': 'The front is often where a mic starts. The space to protect is the harpist’s.',
       'The soundbox’s back, which must not be looked at by a mic': 'A mic may look at the back (the sound holes) — clear of the harpist.',
@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what makes most of a harp’s sound?', options: ['The string itself', 'The soundboard', 'The pillar'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch the board.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from 30 cm to 60 cm from the soundboard. What changes?', options: ['More boom', 'More of the whole harp', 'It depends on this harp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid, facing the harp, reject the harpist’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

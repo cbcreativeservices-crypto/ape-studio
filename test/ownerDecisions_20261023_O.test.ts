@@ -79,7 +79,7 @@ const TEXT: { item: string; file: string; now: string; gone: string }[] = [
   {
     item: '16 inline jack',
     file: 'src/screens/lab/cable/data/lesson02.ts',
-    now: 'one travels with the cable, the other stays put. Some cables (extension leads, Y-cables) end in an inline jack.',
+    now: 'one travels with the cable, the other stays put. Some cables (extension cords, Y-cables) end in an inline jack.',
     gone: 'the other stays put.\',',
   },
   {

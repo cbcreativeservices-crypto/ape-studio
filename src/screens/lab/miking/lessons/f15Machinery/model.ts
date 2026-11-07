@@ -133,7 +133,7 @@ export const F15_ZONES: DocumentedZone[] = [
     drawn: { top: { cu: 0, cv: 0, r0: 1950, r1: 2100, a0: 25, a1: 35 }, side: { u0: 1600, u1: 1900, v0: EAR_Y - 100, v1: EAR_Y + 100 } },
     requires: { micTypeIds: ['sdcCard', 'measFF'] },
     start: toward(S.far, HUB),
-    tendency: 'The fan with the room round it, as a listener would meet it — a designed perspective, not an unaltered measurement.',
+    tendency: 'The fan with the room around it, as a listener would meet it — a designed perspective, not an unaltered measurement.',
     checks: ['The load and the surface logged', 'A layered effect labeled as designed', 'Beside the airflow, not in it'],
   },
 ];

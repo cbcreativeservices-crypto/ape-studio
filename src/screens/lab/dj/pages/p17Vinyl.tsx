@@ -39,7 +39,7 @@ const TERMS = [
   { term: 'Tracking force', def: 'How hard the stylus presses into the groove, in grams — set by the counterweight. Each cartridge states its range; this one 3–5 g.' },
   { term: 'Anti-skate', def: 'A small outward push that cancels the record’s pull toward the center, so the stylus presses both groove walls evenly.' },
   { term: 'Phono stage', def: 'The preamp a raw cartridge needs: about +36 dB for the moving-magnet cartridges DJs use, and the RIAA curve undone (bass back up, treble back down). Exactly one in the chain.' },
-  { term: 'Ground wire', def: 'The thin wire from the turntable to the mixer’s GND post. A SIGNAL ground against hum — never a reason to touch the mains earth.' },
+  { term: 'Ground wire', def: 'The thin wire from the turntable to the mixer’s GND post. A SIGNAL ground against hum — never a reason to touch the safety ground.' },
 ] as const;
 
 export const GOALS_VINYL = ['Balance, zero, set 4 g', 'Check it with a stylus scale', 'Match the anti-skate', 'Ground it: lose the hum', 'Stop the howl, booth still up', 'Fix the thin, quiet record', 'Pass the check'] as const;
@@ -113,7 +113,7 @@ function PhonoTray({ onView }: { onView: () => void }) {
       <Choices head="TURNTABLE PLUGS GO INTO" value={plugTarget(b)} items={[{ id: 'phono', label: 'CH1 PHONO' }, { id: 'line', label: 'CH1 LINE' }]} onPick={(k) => plugTo(k as 'phono' | 'line')} />
       {hot ? <TrayNote warn>HOT-PATCH — those plugs moved on a channel the crowd is hearing. The lab keeps it quiet; for real, pull CH1’s fader down first.</TrayNote> : null}
       <Choices head="CH1 INPUT SELECTOR" value={b.ch[1].input} items={[{ id: 'PHONO', label: 'PHONO' }, { id: 'LINE', label: 'LINE' }]} onPick={(i) => { onView(); updateBooth((x) => ({ ...x, ch: { ...x.ch, 1: { ...x.ch[1], input: i as 'PHONO' } } })); }} />
-      <Choices head="GROUND WIRE → MIXER GND POST" value={v.gnd ? 'on' : 'off'} items={[{ id: 'on', label: 'CONNECTED' }, { id: 'off', label: 'LOOSE' }]} onPick={(g) => { onView(); setV(() => ({ gnd: g === 'on' })); }} note="A signal ground. If a buzz stays with the wire on, look at the cables and the turntable’s own ground — never lift the mains plug’s earth." />
+      <Choices head="GROUND WIRE → MIXER GND POST" value={v.gnd ? 'on' : 'off'} items={[{ id: 'on', label: 'CONNECTED' }, { id: 'off', label: 'LOOSE' }]} onPick={(g) => { onView(); setV(() => ({ gnd: g === 'on' })); }} note="A signal ground. If a buzz stays with the wire on, look at the cables and the turntable’s own ground — never lift the power plug’s ground." />
     </View>
   );
 }

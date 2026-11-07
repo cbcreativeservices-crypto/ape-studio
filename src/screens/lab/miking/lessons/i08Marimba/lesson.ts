@@ -407,7 +407,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one mic over the middle, then one of a spaced pair over the low half. What changes?', options: ['More of the low notes in this mic', 'More of the whole keyboard', 'It depends on the passage and the room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The side fill sits off to the side of a mic looking down at the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Grilles together, angled 135° apart: the lowest bar sounds. Which reaches the two mics differently?', options: ['Its arrival time', 'Its level', 'Neither'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
@@ -555,7 +555,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 60–100 cm above the middle of the PLAYED span, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an optional effect, a mic under the pipes. Starting points, not rules.',
       separate: 'Height, the place along the keyboard and the angle are separate variables: change one at a time, with low, middle and high notes, rolls and chords.',
-      clearance: 'Clearance comes first. The player’s whole reach along the keyboard sets it, not a still pose. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
+      clearance: 'Clearance comes first. The player’s whole reach along the keyboard sets it, not a still pose. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel. Leave more room on a real stage.',
       tendencies: 'Closer to one end favors it; higher blends the keyboard and adds room and spill. Under the pipes: a colored, local sound. All tendencies to check by ear.',
     },
   },

@@ -114,7 +114,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cr.set.1',
     page: 'setting',
-    prompt: 'On the shared kit, what is under the 16 in crash?',
+    prompt: 'On this kit, what is under the 16 in crash?',
     options: ['The 10 in rack tom', 'The floor tom on its legs', 'The kick drum’s pedal'],
     correct: 'The 10 in rack tom',
     explain: 'A crash often hangs over a rack tom: a crash mic aimed down hears the tom, and the tom mic hears the crash.',
@@ -313,12 +313,12 @@ const scenarios: MikingScenario[] = [
     id: 'cr.mix.3',
     page: 'practice',
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
-    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns round to face down at the floor'],
+    options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face down at the floor'],
     correct: 'The sign of its signal; the delay stays the same',
     explain: 'Polarity flips the sign; only distance changes when a sound arrives. Compare both states in mono.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
-      'The mic’s pattern turns round to face down at the floor': 'The pattern stays where the mic points. Only the sign flips.',
+      'The mic’s pattern turns around to face down at the floor': 'The pattern stays where the mic points. Only the sign flips.',
     },
   },
 ];
@@ -350,13 +350,13 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'Tighten the crash’s wing nut so it cannot swing into a close mic', ok: false, power: 'none', feedback: 'A cymbal must move freely — over-tightening chokes it and can crack it. Move the mic.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the crash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
-    explain: 'Two plans pass: no crash mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
+    explain: 'Two plans pass: no crash mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and use a mic this input can power.',
   },
 ];
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the shoulder of the stick strikes the edge with a glancing blow. What does the plate do?', options: ['Opens up and swings', 'Stops dead', 'Only rings at the edge'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic’s aim from the edge toward the bell. What changes?', options: ['More of the spread', 'A more focused tone', 'It depends on this crash'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the crash points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -448,7 +448,7 @@ export const I01C_LESSON: CymbalLesson = {
     { title: 'WHAT IT IS', text: 'A cymbal for accents, struck on its edge with a glancing blow that lets it open up at once. It sits loose on its felts, most often on a boom stand, and swings after each hit.', src: 'ZIL-L11' },
     { title: 'WHERE YOU MEET IT', text: 'On nearly every drum kit — often one on each side, high over the rack toms — on stage and in the studio.', src: 'ZIL-L11' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Accents and peaks: the big moments. Crashes run from thin and light (fast, short) to thick and heavy (louder, longer). Ask the player how they should sit — and whether the overheads already carry them.', src: 'ZIL-L11' },
-    { title: 'ITS SIZE', text: 'The most popular crashes run from 16 to 18 in (40.6–45.7 cm); both are drawn here, on the shared kit.', src: 'ZIL-L11' },
+    { title: 'ITS SIZE', text: 'The most popular crashes run from 16 to 18 in (40.6–45.7 cm); both are drawn here, on this kit.', src: 'ZIL-L11' },
   ],
   sound: {
     stages: CRASH_CYM.strike.stages,

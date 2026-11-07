@@ -24,7 +24,7 @@ export const E03_COPY: Partial<LessonCopy> = standingVoiceCopy({
   },
   before: [
     { title: 'HEAR THE REAL DELIVERY FIRST', text: 'Ask for the actual verse, the loudest ad-lib, the quietest internal rhyme, the words full of P, B, T, K and S, and any shouted hook. Watch the head, the hands and the stance — and whether the artist works a handheld or a stand mic. Rap is not one sound: a low, conversational flow and a shouted hook ask different things.' },
-    { title: 'A WORKING ZONE, NOT A CHASE', text: 'Do not chase every syllable with a moving mic. Agree a working zone with the performer and rehearse the loudest and quietest lines inside it; a mark on the floor helps.' },
+    { title: 'A WORKING ZONE, NOT A CHASE', text: 'Do not chase every syllable with a moving mic. Agree on a working zone with the performer and rehearse the loudest and quietest lines inside it; a mark on the floor helps.' },
     { title: 'HEADPHONES, AIR AND THE CAPSULE', text: 'Closed-back headphones, the loudspeakers off, a mix clear enough to hear the consonants and the beat without turning it up dangerously. Protect the capsule from breath and moisture with a screen or a windscreen, and never blow into a mic to test it.' },
   ],
   studio: {

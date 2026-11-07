@@ -14,7 +14,7 @@ export const C05C_COPY = stringsCopy({
   subject: { soprano: 'a seated player with a soprano ukulele' },
   variantKey: 'SIZE',
   variantShort: { soprano: 'soprano ukulele' },
-  figureLabel: 'Front view of a seated player with a soprano ukulele: a small figure-of-eight body with a round sound hole, a tie bridge, four nylon strings over a short neck to a small headstock, the strumming hand over the body.',
+  figureLabel: 'Front view of a seated player with a soprano ukulele: a small figure-eight body with a round sound hole, a tie bridge, four nylon strings over a short neck to a small headstock, the strumming hand over the body.',
   partsIdle: 'Four nylon strings drive the bridge; the bridge drives the small top; the top and the air in the body make the sound — the next page shows how.',
   radiator: 'top',
   strikes: [
@@ -28,13 +28,13 @@ export const C05C_COPY = stringsCopy({
   soundReveal: 'Four soft nylon strings move very little air: the bridge drives the small TOP, and the top and the air in the little body make the sound.',
   soundAfter: 'Then the strings, the top and the small body ring on briefly — the BODY of the sound. A small body radiates the lowest notes less strongly; check them anyway.',
   shapesNote2: 'This is an ideal string between rigid ends. On this soprano the neck meets the body at the 12th fret — the exact middle of the open string — so a strum there leaves the even shapes still.',
-  coupledNote: 'The top bows in and out round the bridge and pumps the air through the sound hole — a simplified picture of the lowest motion. The sound hole is not the whole instrument.',
+  coupledNote: 'The top bows in and out around the bridge and pumps the air through the sound hole — a simplified picture of the lowest motion. The sound hole is not the whole instrument.',
   setting: {
     kitA11y: 'The player from above, seated with the ukulele: the chair behind, a vocal mic in front of the mouth, a DI box on the floor.',
-    kitIdle: 'The space round a ukulele player is theirs: the strumming arc over a small body, the fretting hand on a short neck — and often their voice, right above.',
+    kitIdle: 'The space around a ukulele player is theirs: the strumming arc over a small body, the fretting hand on a short neck — and often their voice, right above.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the player with a floor wedge in front, the band upstage, the PA at the front corners and the audience edge.',
-    studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls round them.',
+    studioA11y: 'A studio room from above: the player on a rug, no monitors on the floor, the walls around them.',
     stageIdle: 'A wedge in front, the band behind, the PA facing out: a small, quiet instrument against a loud stage — the pickup may carry it.',
     studioIdle: 'No monitors on the floor. The room is part of the picture now; a broad position can show a small body well.',
     before: [

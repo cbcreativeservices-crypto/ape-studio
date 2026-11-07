@@ -355,7 +355,7 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
           'The compressed vocal, quieter',
         ]}
         correct={0}
-        explain="With the bottom jack empty the half-normal contact closes again: the console silently falls back to the DRY vocal. Sessions have shipped un-compressed takes exactly this way — listen when a cord moves."
+        explain="With the bottom jack empty the half-normal contact closes again: the console silently falls back to the DRY vocal. Sessions have shipped uncompressed takes exactly this way — listen when a cord moves."
         wrong={[
           undefined,
           'Trace the vocal pair: with the bottom empty, what does its own normal do? The ① SEND tap never broke it.',

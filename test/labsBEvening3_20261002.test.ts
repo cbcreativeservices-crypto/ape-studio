@@ -57,7 +57,7 @@ test('pattern store: an unreadable artwork list rejects instead of reading as "n
 test('gallery: COLOUR › opens the board only from a fresh read of the pattern artwork', () => {
   const src = read('src/screens/lab/cymatics/GalleryScreen.tsx');
   assert.doesNotMatch(src, /onPress=\{\(\) => setMode\('art'\)\}/, 'no direct jump to the board');
-  assert.match(src, /label="Colour ›" selected=\{false\} onPress=\{openArt\}/);
+  assert.match(src, /label="Color ›" selected=\{false\} onPress=\{openArt\}/);
   const open = between(src, 'const openArt = useLatchedPress(async () => {', 'const doDelete');
   assert.match(open, /a = await patternStore\(\)\.loadArtwork\(id\);\s*\} catch \{\s*notify\(/, 'an unreadable artwork is said, the board stays shut');
   assert.match(open, /if \(modeRef\.current !== 'open' \|\| currentIdRef\.current !== id\) return;/);

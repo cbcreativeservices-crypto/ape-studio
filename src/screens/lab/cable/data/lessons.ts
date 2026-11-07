@@ -81,7 +81,7 @@ export const CABLE_LESSONS: CableLessonDef[] = [
     tag: 'LESSON 7',
     title: 'POWER CONNECTORS & ELECTRICAL SAFETY',
     intro:
-      'Identify power connectors, inspect them, and use them safely. Protective ground is never optional, damaged cords leave service, and mains wiring belongs to qualified people — this lesson draws those lines clearly.',
+      'Identify power connectors, inspect them, and use them safely. Protective ground is never optional, damaged cords leave service, and AC wiring belongs to qualified people — this lesson draws those lines clearly.',
     unit: 'l07_power',
   },
   {

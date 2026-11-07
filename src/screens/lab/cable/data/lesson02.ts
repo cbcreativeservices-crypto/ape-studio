@@ -33,7 +33,7 @@ export const CONNECTOR_TERMS: AnatomyTerm[] = [
   {
     id: 'jack',
     label: 'JACK',
-    def: 'The fixed connector a plug goes into, mounted on equipment or a panel. Plug and jack are a pair: one travels with the cable, the other stays put. Some cables (extension leads, Y-cables) end in an inline jack.',
+    def: 'The fixed connector a plug goes into, mounted on equipment or a panel. Plug and jack are a pair: one travels with the cable, the other stays put. Some cables (extension cords, Y-cables) end in an inline jack.',
   },
   {
     id: 'socket_receptacle',
@@ -196,11 +196,11 @@ export const CROSS_SECTIONS: CrossSection[] = [
     id: 'ac_3c_grounded',
     chip: 'AC POWER',
     label: '3-CONDUCTOR GROUNDED AC CORD',
-    tagline: 'Wall power on the move: line, neutral, and protective earth.',
+    tagline: 'Wall power on the move: line, neutral, and safety ground.',
     layers: [
       { name: 'JACKET', role: 'Tough outer cover; the printed rating on it governs what the cord may carry.' },
       { name: 'INSULATION', role: 'Each of the three conductors wears its own insulation, colored to a regional code.' },
-      { name: 'THREE CONDUCTORS', role: 'Line, neutral, and protective earth.' },
+      { name: 'THREE CONDUCTORS', role: 'Line, neutral, and safety ground.' },
     ],
     note:
       'Conductor colors are a regional code, not a worldwide one — recognition knowledge only. Cord wiring and plug termination are qualified-person work; this cross-section is for recognition, never for rewiring.',

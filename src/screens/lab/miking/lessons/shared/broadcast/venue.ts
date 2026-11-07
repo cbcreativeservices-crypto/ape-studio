@@ -140,7 +140,7 @@ export const EVENT = {
 export const EVENT_SCENE: VenueScene = {
   id: 'eventHall',
   label: 'Multi-section event',
-  blurb: 'A larger event: three sections round a wide stage, aisles between them, PA clusters high at the stage’s corners and a front fill, a camera riser at the back.',
+  blurb: 'A larger event: three sections around a wide stage, aisles between them, PA clusters high at the stage’s corners and a front fill, a camera riser at the back.',
   play: rect(-7.5, -7, 7.5, 0),
   surface: 'mock',
   markings: [],

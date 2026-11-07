@@ -48,7 +48,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     seeing: [
-      'The SIDEBAND SPECTRUM: a stick per frequency. Height = strength (Bessel maths): |J| 1 is full, 0.5 is half.',
+      'The SIDEBAND SPECTRUM: a stick per frequency. Height = strength (Bessel math): |J| 1 is full, 0.5 is half.',
       'Green = carrier (fc); amber = sidebands. Dim dashed = a sideband reflected below 0 Hz, folded up; if it lands on a stick, the two combine; red dashed = ALIASED past Nyquist (24 kHz, half a 48 kHz sample rate).',
       'FC, FM, I: carrier, modulator, index. BW: estimated spread, red when its top passes 24 kHz.',
     ],

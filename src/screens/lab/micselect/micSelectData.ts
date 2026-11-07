@@ -61,7 +61,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Commonly handles very high SPL',
     ],
     apps: 'Live vocals, drums, guitar amplifiers, general reinforcement.',
-    limitation: 'Transient and high-frequency detail is generally below a good condenser.',
+    limitation: 'Transient and high-frequency detail is generally below a good condenser’s.',
   },
   {
     key: 'condenser',
@@ -121,7 +121,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Studio centerpiece form factor',
     ],
     apps: 'Studio vocals, voiceover, room and instrument recording.',
-    limitation: 'Off-axis response is usually less consistent than a small-diaphragm design.',
+    limitation: 'Off-axis response is usually less consistent than a small-diaphragm design’s.',
   },
   {
     key: 'sdc',
@@ -136,7 +136,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'The most common choice for stereo pairs',
     ],
     apps: 'Acoustic instruments, drum overheads, choir, orchestra, stereo arrays.',
-    limitation: 'Self-noise typically runs higher than a comparable large-diaphragm design.',
+    limitation: 'Self-noise typically runs higher than in a comparable large-diaphragm design.',
   },
   {
     key: 'lav',
@@ -559,7 +559,7 @@ export const SPL_MATCH: Record<string, Record<string, { v: MatchVerdict; note: s
   },
   mid: {
     cond: { v: 'good', note: 'Well within range — output is strong, noise is irrelevant here.' },
-    dyn: { v: 'good', note: 'Solid territory: hot enough source that low sensitivity is no cost.' },
+    dyn: { v: 'good', note: 'Solid territory: a hot enough source that low sensitivity is no cost.' },
     lav: { v: 'good', note: 'Fine — placement, not electronics, is the challenge now.' },
   },
   loud: {

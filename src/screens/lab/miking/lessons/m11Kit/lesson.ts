@@ -209,11 +209,11 @@ const scenarios: MikingScenario[] = [
     id: 'kt.place.1',
     page: 'placement',
     prompt: 'A one-mic plan is missing the kick. What do you try first?',
-    options: ['Moving or re-aiming the one mic', 'Adding a kick mic straight away', 'Turning the whole channel up'],
+    options: ['Moving or re-aiming the one mic', 'Adding a kick mic right away', 'Turning the whole channel up'],
     correct: 'Moving or re-aiming the one mic',
     explain: 'If the kick is missing, test the position before adding a spot — then add a kick mic if the music still needs it.',
     why: {
-      'Adding a kick mic straight away': 'A second channel may be right, but try the position first: it may already fix it.',
+      'Adding a kick mic right away': 'A second channel may be right, but try the position first: it may already fix it.',
       'Turning the whole channel up': 'Louder keeps the same balance: the kick stays missing relative to the rest.',
     },
   },
@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a close snare mic. Does it hear the hi-hat?', options: ['No — it is too close to the snare', 'Yes, a little later and quieter', 'Only if it is aimed at the hi-hat'], after: 'Now STEP through the cymbal’s stroke (or PLAY ONCE), then see who arrives first at each mic.' },
-  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you add a close tom mic to a four-mic base. What else gets louder in that new channel?', options: ['The rest of the kit, later and quieter', 'Only the tom it is aimed at', 'It depends on the tom’s tuning'], after: 'Now build the two plans and count what each added channel costs.' },
   context: { prompt: 'Predict: on a loud small stage, which drum channels does the PA need first?', options: ['The ones the audience cannot already hear', 'Every drum and cymbal, all equally', 'Only the overhead pair'], after: 'Now route each channel and read where it goes.' },
   twoMic: { prompt: 'If you flip the overhead’s polarity, what happens to its delay behind the kick mic?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -653,7 +653,7 @@ export const M11_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'OFTEN FIRST', note: 'Often the first spot added: a whole-kit mic can leave the kick light. Air puffs from a port, the pedal’s action and the bass player share its space.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
+      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'OFTEN FIRST', note: 'Often the first spot added: a whole-kit mic can leave the kick light. Air puffs from the port, the pedal’s moving parts and the nearby bass player all share its space.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
       { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'TOP, MAYBE BOTTOM', note: 'A top mic from outside the sticks’ path; a bottom mic for the wires is optional. The hi-hat beside it bleeds in.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
       { id: 'hihat', label: 'the hi-hats', short: 'HI-HATS', tag: 'SPOT IF NEEDED', note: 'Loud in the snare mic and the overheads. A spot only when its pattern needs its own balance — away from the air that puffs out as it closes.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
       { id: 'toms', label: 'the rack toms', short: 'TOMS', planIds: ['tom1', 'tom2'], tag: 'ONE EACH OR SHARED', note: 'A mic per tom, or one shared mic where the coverage and the bleed allow. Their fills may already be clear in the overheads.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },

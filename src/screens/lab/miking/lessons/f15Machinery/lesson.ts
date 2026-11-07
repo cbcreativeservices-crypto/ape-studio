@@ -23,9 +23,9 @@ import { F15_COPY } from './copy.ts';
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the device',
-    goal: 'Meet the lesson’s device — a guarded desk fan on a small table — its guard, its motor, the exclusion zone round it and the airflow ahead of it, before any mic.',
+    goal: 'Meet the lesson’s device — a guarded desk fan on a small table — its guard, its motor, the exclusion zone around it and the airflow ahead of it, before any mic.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A low-risk, guarded device under its own instructions, an exclusion zone round it, and the question first: a creative sound, a comparison, a fault, a work-position level or a sound power.',
+    takeaway: 'A low-risk, guarded device under its own instructions, an exclusion zone around it, and the question first: a creative sound, a comparison, a fault, a work-position level or a sound power.',
   },
   sound: {
     title: 'How the fan reaches A, B and C',
@@ -53,7 +53,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Keep out',
-    goal: 'Find where a mic may and may not go round a running device — the exclusion zone, the airflow — and see the industrial machine that is a no-go.',
+    goal: 'Find where a mic may and may not go around a running device — the exclusion zone, the airflow — and see the industrial machine that is a no-go.',
     credit: { scenarios: ['mp.ctx.1', 'mp.ctx.2', 'mp.rec.3'], interactive: 'keepOut', note: 'In KEEP OUT, try a position in the zone, one in the airflow and a clear one, look at the no-go machine, and answer the three checks.' },
     takeaway: 'Nothing enters the exclusion zone; a capsule in the airflow reads wind; an industrial machine is never a place to practice — guards on, lockout by authorized people only.',
   },
@@ -216,9 +216,9 @@ const scenarios: MikingScenario[] = [
     id: 'mp.place.2',
     page: 'placement',
     prompt: 'Position C is behind the fan, past its motor. How do you reach it?',
-    options: ['Round the outside of the zone', 'Across the top of the guard, quickly', 'Through the gap by the table'],
-    correct: 'Round the outside of the zone',
-    explain: 'Walk round, outside the exclusion zone: never reach across or through the guard, and keep the cable clear of it.',
+    options: ['Around the outside of the zone', 'Across the top of the guard, quickly', 'Through the gap by the table'],
+    correct: 'Around the outside of the zone',
+    explain: 'Walk around, outside the exclusion zone: never reach across or through the guard, and keep the cable clear of it.',
     why: {
       'Across the top of the guard, quickly': 'Reaching over a running fan puts hands, sleeves and cables in its zone.',
       'Through the gap by the table': 'Any path inside the zone is out, however short.',
@@ -245,7 +245,7 @@ const scenarios: MikingScenario[] = [
     explain: 'If the operating state or the background changed, a change in sound is not evidence about the device. Check the cycle and the room before the hardware.',
     why: {
       'The mic, which must have failed': 'A failed mic is a late suspect: first the operating state and the background.',
-      'The fan’s blades, for chips and damage': 'Possible, but the commoner causes are the load, the speed and the room.',
+      'The fan’s blades, for chips and damage': 'Possible, but the more common causes are the load, the speed and the room.',
     },
   },
   {
@@ -311,7 +311,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mp.two.3',
     page: 'twoMic',
-    prompt: 'What does a formal sound-power survey need that your walk round does not have?',
+    prompt: 'What does a formal sound-power survey need that your walk-around does not have?',
     options: ['A defined surface, room and method', 'More mics on the same three spots', 'A louder speed setting on the fan itself'],
     correct: 'A defined surface, room and method',
     explain: 'A defined measurement surface, positions, a qualifying environment, the operating conditions and the corrections of the current method — and a qualified team.',
@@ -416,7 +416,7 @@ const symptoms: Symptom[] = [
     explain: 'An intermittent rattle can fall between short takes. Capture complete cycles with a marker and repeat them.',
     why: {
       'The mic, which is intermittent': 'A faulty mic would show in every sound, not only the rattle.',
-      'The room, which keeps changing': 'Check the room too, but a short take is the commoner cause.',
+      'The room, which keeps changing': 'Check the room too, but a short take is the more common cause.',
     },
   },
   {
@@ -446,9 +446,9 @@ const symptoms: Symptom[] = [
   {
     id: 'mp.sym.6',
     observation: 'You cannot reach position C without leaning over the fan',
-    firstChecks: 'A path round the zone, or leaving C out',
-    options: ['Walk round, or leave C out', 'Lean over it, quickly', 'Switch it on low and reach'],
-    correct: 'Walk round, or leave C out',
+    firstChecks: 'A path around the zone, or leaving C out',
+    options: ['Walk around, or leave C out', 'Lean over it, quickly', 'Switch it on low and reach'],
+    correct: 'Walk around, or leave C out',
     explain: 'If a position cannot be reached safely from outside the zone, omit it — never lean or reach over a running device.',
     why: {
       'Lean over it, quickly': 'Quickly is still inside the zone, over a running fan.',
@@ -463,7 +463,7 @@ const orderTasks: OrderTask[] = [
     page: 'practice',
     prompt: 'A product session, start to finish: put the steps in order.',
     steps: [
-      { text: 'Write the purpose; agree permission and safe access with the owner', early: 'Permission and the purpose come before anything is set up.' },
+      { text: 'Write the purpose; agree on permission and safe access with the owner', early: 'Permission and the purpose come before anything is set up.' },
       { text: 'Sketch the device, its guard and the exclusion zone; mark A, B and C outside it', early: 'The zone is drawn before any position is chosen.' },
       { text: 'With the device off, record the background', early: 'The background comes before the device runs.' },
       { text: 'Run whole cycles at A and repeat, staying outside the zone', early: 'A comes once the background is logged.' },
@@ -616,7 +616,7 @@ export const F15_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Miking a product while it runs, from repeatable, safe positions: what a user hears at a stated point, a comparison before and after a change, or clues to a fault — each claim no bigger than the setup.', src: 'F15-LESSON' },
     { title: 'THE DEVICE', text: 'A low-risk, intact, guarded device under its own instructions — here a desk fan on a small table. Industrial machines are not a place to practice: they appear here only as a no-go example.', src: 'F15-LESSON' },
     { title: 'TWO KINDS OF SIGNAL', text: 'A mic reads the airborne pressure where its capsule sits; a contact sensor, fixed on by someone qualified while the device is isolated, reads the housing’s vibration in other units.', src: 'F15-LESSON' },
-    { title: 'THE KEEP-OUTS', text: 'Round the running fan, an exclusion zone — the guard plus a margin — and its airflow. Nothing goes inside either: the drawing’s 0.3 m margin and 30° cone are drawings; the device and the site set the real ones.', src: 'F15-LESSON' },
+    { title: 'THE KEEP-OUTS', text: 'Around the running fan, an exclusion zone — the guard plus a margin — and its airflow. Nothing goes inside either: the drawing’s 0.3 m margin and 30° cone are drawings; the device and the site set the real ones.', src: 'F15-LESSON' },
   ],
   sound: {
     stages: [

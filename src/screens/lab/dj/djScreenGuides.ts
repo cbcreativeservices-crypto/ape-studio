@@ -28,7 +28,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'The DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Under it, who you are listening as.',
       'Readouts: BOOTH (the sound status), LISTENING AS and PLAYBACK (how loud the lab asks the phone to play).',
-      'The well holds the five steps, the A LOUD NIGHT, IN NUMBERS tile and a fault to fix.',
+      'The page holds the five steps, the A LOUD NIGHT, IN NUMBERS tile and a fault to fix.',
     ],
     control: [
       'PLAY A: start deck A.',
@@ -415,7 +415,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'SETUP: OUTPUT DEVICE, BUFFER (samples), SAMPLE RATE and the workload.',
-      'OUTPUT: send software deck 1 and 2 to a USB pair, and set each channel’s input selector.',
+      'OUTPUT: send software decks 1 and 2 to a USB pair, and set each channel’s input selector.',
       'RIG: plug or unplug the controller’s and the mixer’s USB.',
       'DECKS: play both.',
       STOP,
@@ -532,7 +532,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Screen 20; the Sound Systems Lab covers the PA in depth. Recording comes on Screen 21.',
     ],
     tryThis: [
-      'In VENUE put MASTER L into DJ L and MASTER R into DJ R, with MASTER at its unity mark, ASK THE ENGINEER until FLOOR reads about 95 dBA — this model’s suggested level for a busy floor.',
+      'In VENUE put MASTER L into DJ L and MASTER R into DJ R, with MASTER at its unity mark, then ASK THE ENGINEER until FLOOR reads about 95 dBA — this model’s suggested level for a busy floor.',
       'Try each placement in SETUP and bring 4-HOUR DOSE to 100 % or less — your dose at the decks from the room alone; headphones add to it.',
     ],
   },
@@ -576,7 +576,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       STOP,
     ],
     changes: [
-      'A clock lead carries timing and no sound; an audio lead carries sound and no tempo.',
+      'A clock cable carries timing and no sound; an audio cable carries sound and no tempo.',
       'Clock sets the tempo, not the bar: started off the beat, the machine runs in tempo but out of phase.',
     ],
     teaches: [
@@ -602,7 +602,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       STOP,
     ],
     changes: [
-      'Connecting a laptop whose charger is earthed on another circuit closes a ground loop: a hum on CH 2.',
+      'Connecting a laptop whose charger is grounded on another circuit closes a ground loop: a hum on CH 2.',
       'Levels matched in the headphones (CH 2 AVG within 2 dB of CH 1 AVG) let the room change DJs without a jump or a gap.',
     ],
     teaches: [
@@ -665,8 +665,8 @@ export const DJ_END_GUIDE: ScreenGuide = {
     'WHAT’S LEFT ▾ at the top opens the list of screens; START OVER (PRACTICE), at its foot, asks first, then clears every ✓ DONE mark and reopens Screen 1 for a fresh run.',
   ],
   changes: [
-    'A screen counts once every goal chip on it ticks in one visit: its tasks, its troubleshooting exercise and, on most screens, Pass the check. It marks itself; NEXT never counts it.',
-    'Left: is what your last visit this session missed (every goal, if not opened yet). Chips start empty each visit, so a screen counts only when all tick in one visit.',
+    'A screen counts once every goal chip on it is ✓ in one visit: its tasks, its troubleshooting exercise and, on most screens, Pass the check. It marks itself; NEXT never counts it.',
+    'Left: is what your last visit this session missed (every goal, if not opened yet). Chips start empty each visit, so a screen counts only when all are ✓ in one visit.',
     'Screens 16–18 are optional and never hold back LAB COMPLETE.',
   ],
   teaches: [
@@ -674,7 +674,7 @@ export const DJ_END_GUIDE: ScreenGuide = {
     'With every required screen done, the lab counts toward the DJ credentials that list it. Reopening a screen to practice never clears its ✓ DONE. A fresh run never takes back credential credit already earned.',
   ],
   tryThis: [
-    'Jump to the first screen still listed and tick every goal chip on it in that one visit; its Left: line names the ones your last visit missed.',
+    'Jump to the first screen still listed and check every goal chip on it in that one visit; its Left: line names the ones your last visit missed.',
     'Tap REVIEW ▾ and open a finished screen: its goal chips start empty for practice, and it stays ✓ DONE here.',
   ],
 };

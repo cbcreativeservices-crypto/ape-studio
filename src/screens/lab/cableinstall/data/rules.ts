@@ -587,7 +587,7 @@ export const CI_RULES: CiRule[] = [
     authorityClass: 'code',
     jurisdiction: 'US',
     severity: 'critical',
-    studentText: 'Permanent mains wiring must be installed by appropriately qualified personnel under applicable local requirements — this lab teaches recognition and coordination, not electrical installation.',
+    studentText: 'Permanent AC wiring must be installed by appropriately qualified personnel under applicable local requirements — this lab teaches recognition and coordination, not electrical installation.',
     whyText:
       'Electrical distribution is regulated, licensed work. The AV professional\'s job around it: recognize approved cable and routing, protect it, coordinate separation, and never modify distribution, open energized equipment, or defeat grounding.',
     sourceRefs: ['nec', 'osha'],

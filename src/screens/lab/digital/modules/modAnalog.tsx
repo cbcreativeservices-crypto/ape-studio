@@ -730,7 +730,7 @@ export function SamplingModule(p: DigitalModuleProps) {
               />
             ))}
           </View>
-          <Text style={dstyles.caption}>The CUTOFF key sets where the filter starts rolling off.</Text>
+          <Text style={dstyles.caption}>The CUTOFF fader sets where the filter starts rolling off.</Text>
         </View>
       ),
     },

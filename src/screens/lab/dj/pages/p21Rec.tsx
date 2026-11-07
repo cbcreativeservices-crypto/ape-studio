@@ -65,9 +65,9 @@ export const GOALS_REC = ['Tap REC OUT, then move MASTER: the take stays', 'Capt
 export function lookFor(tap: RecTap): string {
   switch (tap) {
     case 'REC_OUT':
-      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead: two RCA plugs (white and red) in the mixer’s REC OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
+      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split cable: two RCA plugs (white and red) in the mixer’s REC OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
     case 'BOOTH':
-      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead: two ¼-inch (6.35 mm) jack plugs in the mixer’s BOOTH OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
+      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split cable: two ¼-inch (6.35 mm) jack plugs in the mixer’s BOOTH OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
     case 'LOOPBACK':
       return 'You are looking at the back of the mixer and a laptop. No lead joins them: loopback records only what the computer plays. The take is below.';
     default:

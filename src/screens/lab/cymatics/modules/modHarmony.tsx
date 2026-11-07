@@ -395,7 +395,7 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
     <CymaticsRackLayout
       rack={{
         size: 'L',
-        badge: view === 'spectrum' ? 'CALCULATED — two lines, at the level the pair plays' : view === 'lissajous' ? 'CALCULATED — the Harmonograph’s geometry' : 'CALCULATED — sines added point by point, amplitude on the Academy ramp',
+        badge: view === 'spectrum' ? 'CALCULATED — two lines, at the level the pair plays' : view === 'lissajous' ? 'CALCULATED — the Harmonograph’s geometry' : 'CALCULATED — sines added point by point, amplitude on a color ramp',
         onHelp: help,
         onGuide: () => help(view === 'lissajous' ? 'lissajous' : 'ratio'),
         initialParam: 'base',

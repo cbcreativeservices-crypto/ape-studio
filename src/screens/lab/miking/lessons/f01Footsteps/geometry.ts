@@ -104,7 +104,7 @@ function regions(): RadiatingRegion[] {
   ];
   for (const v of ['tile', 'wood', 'gravel', 'carpet', 'live']) {
     const s = surfaceOf(v);
-    out.push({ id: `r.surface.${v}`, partId: `f01.surface.${v}`, label: 'the surface', anchor: v3(0, 0, 0), prov: ill('the middle of the footfall area — the lesson’s reference point'), variants: [v], note: s.loose ? 'The stones scatter and grind round the shoe: a texture that spreads over the whole area the walker works.' : 'The surface under the shoe rings or hushes: tile clicks, boards knock, carpet whispers — its texture is part of the step.' });
+    out.push({ id: `r.surface.${v}`, partId: `f01.surface.${v}`, label: 'the surface', anchor: v3(0, 0, 0), prov: ill('the middle of the footfall area — the lesson’s reference point'), variants: [v], note: s.loose ? 'The stones scatter and grind around the shoe: a texture that spreads over the whole area the walker works.' : 'The surface under the shoe rings or hushes: tile clicks, boards knock, carpet whispers — its texture is part of the step.' });
     if (s.hollow) out.push({ id: `r.under.${v}`, partId: `f01.under.${v}`, label: 'the hollow under it', anchor: v3(0, 60, 0), prov: ill('the panel’s air gap (drawing default)'), variants: [v], note: 'The boards flex and the air gap under them rings: a low boom that travels through the floor into the step.' });
   }
   return out;

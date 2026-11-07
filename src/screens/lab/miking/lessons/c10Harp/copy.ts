@@ -44,7 +44,7 @@ export const HARP_COPY: LessonCopy = {
   setting: {
     kitA11y: 'The harp and the harpist from above, with the music stand and the chair.',
     kitLanding: 'Tap anything around the harp — or step through ITEM — to see what it means for a harp mic. There is nothing to answer yet.',
-    kitIdle: 'The harpist sits close behind the harp, reaching round both sides of the strings, with their feet on the pedals. Everything round the harp is either their space or something a mic will hear.',
+    kitIdle: 'The harpist sits close behind the harp, reaching around both sides of the strings, with their feet on the pedals. Everything around the harp is either their space or something a mic will hear.',
     leftHanded: '',
     stageA11y: 'The harp on a stage, from above: the harpist’s wedge downstage, other players, and the audience.',
     studioA11y: 'The harp in a studio room, from above: a spaced pair of mics about 2 m away, toward the room’s center.',
@@ -59,7 +59,7 @@ export const HARP_COPY: LessonCopy = {
     workedZone: { pedal: 'hp.front', lever: 'lv.front' },
     workedLine: 'This starting point also places the mic relative to {line}: the readout says how far to one side of them the mic is.',
     workedAim: 'Aim it as the starting point says — the lab counts it while the mic faces the way it names. Distance, height and angle are separate things to try.',
-    workedClear: 'Clear of everything — the strings and the harpist’s hands round them, the pillar, the neck, the pedals and the harpist’s view. Clearance comes first, before any number.',
+    workedClear: 'Clear of everything — the strings and the harpist’s hands around them, the pillar, the neck, the pedals and the harpist’s view. Clearance comes first, before any number.',
     blocked: {},
     reveal: 'Closer to the board tends to bring more of one region and of its low resonance; farther away, more of the whole harp and the room — and every harp and room is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
