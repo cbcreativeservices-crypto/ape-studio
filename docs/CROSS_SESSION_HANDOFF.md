@@ -675,22 +675,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 11:31 · ccode · 7257e741
+changed: Audio Community Forum, first slice: FORUM tab and the approved screens [MD:D44]
+affects other side: nothing on the server changed; the app now calls 20 forum_* functions and forum-moderate on branch forum-next-build (allow-list shrunk to match). Forum stays OFF: forum_enabled false, COMMUNITY_VISIBLE false, next store build only, never OTA. Read-only server checks only. Not exercised against the live server: every screen was seen on the dev sample, because forum_enabled is false.
+needs (none blocks this slice; owner decides before launch): (1) seed the pinned welcome post in Announcements, zero topics are live, and until then "once per account" is per device only; (2) add topic_id to forum_notices_mine, without it Edit and Repost from a notice starts from the 280-character excerpt; (3) add tracked_reason and fields to forum_topics_list, the Ideas screen now makes one forum_topic_get per row (capped at 30); (4) a server check for rules acceptance (brief item h) and a shipped-version field remain open.
+
+
+### 2026-11-06 20:55 · ccode · 1078b803
+changed: Merge OTA into 1.0.1: purchase race fix, clearer sign-in messages [MD:E1]
+affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
+needs: confirm the deployed validate-purchase matches this commit.
+
+
 ### 2026-11-06 13:01 · ccode · a70f8e2f
 changed: Merge OTA into 1.0.1: Commercial 70V meeting room image [MD:E1]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app and must-do list only, from the commit file list).
+needs: nothing
 
 
 ### 2026-11-06 08:20 · ccode · b9a06b14
 changed: Merge OTA into 1.0.1: red line mutes on tap, website preview [MD:E1]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the backend (app and website files only, from the commit file list).
+needs: nothing
 
 
 ### 2026-11-06 07:42 · ccode · b43323e5
 changed: Merge OTA fixes into 1.0.1: Skip on every viewing, Apple purchase routing [MD:E1]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: this merge changes supabase/functions/validate-purchase/index.ts. Filled from the commit file list by the forum session, which did not make it and did NOT check whether that version is deployed.
+needs: confirm the deployed validate-purchase matches this commit.
 
 
 ### 2026-11-06 00:05 · ccode · (this commit)
