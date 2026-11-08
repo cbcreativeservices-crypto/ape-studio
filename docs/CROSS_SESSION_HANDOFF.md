@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 10:12 · ccode · 5cea0e31
+changed: must-do D44: 14th OTA published (two-profile wording) [MD:D44]
+affects other side: nothing (app wording OTA 14 live: iOS 0c3e7fd5, Android 8b44846b).
+needs: nothing.
+
+
 ### 2026-11-08 09:57 · ccode · f4e62863
 changed: must-do D44: founder profile published; two-profile wording fix committed, not published [MD:D44]
 affects other side: nothing.
