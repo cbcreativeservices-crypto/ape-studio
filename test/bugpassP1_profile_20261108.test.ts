@@ -169,7 +169,7 @@ test('CODE-1-01: LISTED follows the listing, and the switch is held only on the 
   assert.doesNotMatch(sw, /disabled=\{!profileComplete\}/, 'a listed member with an incomplete form could not unlist');
   // "Before I can be listed" / "needed to get listed" only while not listed.
   assert.match(s, /\{needsInfo \? \(\s*<View style=\{styles\.gapBox\}>/);
-  assert.match(s, /: needsInfo\s*\? `\$\{missing\.length\} detail\$\{missing\.length === 1 \? '' : 's'\} needed to get listed ›`/);
+  assert.match(s, /: needsInfo\s*\?[\s\S]{0,400}?`Pro Registry: \$\{missing\.length\} detail\$\{missing\.length === 1 \? '' : 's'\} needed to get listed ›`/);
   assert.match(s, /summary=\{registryActive \? 'LISTED' : needsInfo \? 'needs info' : 'private'\}/);
   assert.match(s, /disabled=\{!needsInfo\}/, 'the strip is a button only while details are needed to list');
 });

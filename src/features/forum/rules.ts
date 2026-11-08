@@ -58,10 +58,13 @@ const REFUSALS: Record<string, string> = {
   account_restricted: 'Your account cannot post right now. If you think this is a mistake, contact support.',
   muted: 'You can read the forum, but you cannot post for now. Your notices show when you can post again.',
   email_unconfirmed: 'Confirm your email address to post.',
-  profile_unpublished: 'Publish your community profile to post. You can do that in My Profile.',
+  // "My Profile" alone also names the Profile tab, whose Pro Registry page is a
+  // different profile: the owner followed it there and the forum stayed shut
+  // (2026-11-08). Name the Audio Community profile and the button that opens it.
+  profile_unpublished: 'Publish your Audio Community profile to post. Tap MY PROFILE to set it up.',
   employer_careers_only:
     'Verified employers without a community profile can post only in Careers & Business and Hiring & Gigs.',
-  adult_attestation: 'Confirm that you are 18 or over in My Profile to post.',
+  adult_attestation: 'Confirm that you are 18 or over in your Audio Community profile to post. Tap MY PROFILE to do it.',
   staff_only: 'Only the Academy can start topics here.',
   jobs_employers_careers_only:
     'Only verified employers and institutions can post jobs, and only in Careers & Business or Hiring & Gigs.',

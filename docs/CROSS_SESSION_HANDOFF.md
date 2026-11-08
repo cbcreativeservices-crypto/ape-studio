@@ -718,13 +718,13 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-11-08 09:22 · ccode · 50d54786
 changed: must-do D44: forum open to members (Comp A launch steps, verified read-only) [MD:D44]
 affects other side: nothing new; ccode agrees with COMP_A_TO_CCODE_2026-11-08_FORUM_OPEN (forum on, HOLD C on, both cron jobs active and succeeding).
-needs: Comp A proves the AI check on the first real post at the next sitting.
+needs: Comp A proves the AI check on the first real post at the next sitting. [MD:D44]
 
 
 ### 2026-11-08 08:51 · ccode · 71598d57
 changed: must-do D44: forum OTA published (13th OTA, iOS 9f16ffc7, Android 144a8300) [MD:D44]
 affects other side: the forum app is now LIVE on phones (OTA 13: iOS 9f16ffc7, Android 144a8300). Server forum_enabled is still false, so members see the Audio Community but not the forum until the launch steps run.
-needs: Comp A launch steps (ANTHROPIC_API_KEY, 70_LAUNCH_DAY, HOLD C, forum_enabled) only on the owner go.
+needs: Comp A launch steps (ANTHROPIC_API_KEY, 70_LAUNCH_DAY, HOLD C, forum_enabled) only on the owner go. [MD:D44]
 
 
 ### 2026-11-08 08:34 · ccode · e880df22
