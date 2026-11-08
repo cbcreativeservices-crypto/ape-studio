@@ -17,7 +17,7 @@ export const AI_DISCLOSURE =
 
 /** What can be appealed, truly: a child-safety removal is not (review 2026-11-07). */
 export const RULES_APPEAL_LINE =
-  'Anyone can report a post, and a removal can be appealed to a person, except under the child-safety rule.';
+  'Anyone can report a post. If your post is removed, you can appeal to a person, except under the child-safety rule.';
 
 /** Before a first post (Apple 5.1.2(i): explicit permission, Play: rules
  *  accepted before posting). App-side: the server has no check yet. */

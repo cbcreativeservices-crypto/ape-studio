@@ -119,7 +119,7 @@ export function ForumNoticesScreen() {
           ) : read.face === 'unreadable' ? (
             <ForumUnreadable error={read.error} code={read.code} onRetry={() => void read.reload()} />
           ) : (
-            <ForumEmpty title="No notices" text="Nothing has happened to your posts." />
+            <ForumEmpty title="No notices" text="Reviews, removals and appeals about your posts will show here." />
           )
         }
       />

@@ -109,7 +109,7 @@ export function ForumMineScreen() {
           ) : marks.face === 'unreadable' ? (
             <ForumUnreadable error={marks.error} code={marks.code} onRetry={() => void marks.reload()} />
           ) : (
-            <ForumEmpty title="No bookmarks yet" text="Use ··· on any post to keep it here." />
+            <ForumEmpty title="No bookmarks yet" text="Tap ··· on any post, then Bookmark, to keep it here." />
           )
         }
       />

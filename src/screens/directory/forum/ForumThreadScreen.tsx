@@ -474,7 +474,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     (post: ForumPost) => {
       confirmDialog(
         post.isOpening ? 'Delete this topic?' : 'Delete this reply?',
-        post.isOpening ? 'The whole thread goes with it.' : 'It will be gone for everyone.',
+        post.isOpening ? 'This deletes the whole thread.' : 'It will be deleted for everyone.',
         'DELETE',
         () => {
           void deletePost(post.id).then((r) => {
@@ -581,7 +581,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       items.push({
         key: 'correct',
         label: 'Suggest a correction',
-        note: 'The author is told and can accept it',
+        note: 'The author is notified and can accept it',
         onPress: () => {
           setCorrecting({ postId: p.id, name: p.author.name });
           input.current?.focus();

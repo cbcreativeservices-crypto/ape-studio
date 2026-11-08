@@ -185,7 +185,7 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
               <AnnounceRow
                 mark="⚑"
                 head="Your posts"
-                text="There is a notice for you"
+                text="You have a new notice"
                 onPress={() => navigation.navigate('ForumNotices')}
               />
             ) : null}
@@ -312,7 +312,7 @@ function SearchResults({
       </View>
     );
   }
-  if (hits.face === 'unreadable') return <ForumEmpty title="This could not be searched" text={hits.error ?? ''} />;
+  if (hits.face === 'unreadable') return <ForumEmpty title="Search could not be completed" text={hits.error ?? ''} />;
   if (hits.rows.length === 0) {
     return <ForumEmpty title="No topics match" text="Try other words, or ask the community." />;
   }

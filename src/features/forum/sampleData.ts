@@ -667,7 +667,7 @@ export function sampleSubmit(input: SubmitInput): ForumResult<PostOutcome> {
     return { ok: true, value: { postId: fresh.id, topicId: t.id, state: v.state, reason: v.reason, urgentCategory: null } };
   }
   const slug = input.category ?? 'ask-the-community';
-  if ((input.title ?? '').trim().length < TITLE_MIN) return refuse('bad_title', 'Give it a title of at least 5 characters.');
+  if ((input.title ?? '').trim().length < TITLE_MIN) return refuse('bad_title', 'The title needs at least 5 characters.');
   const id = nextId();
   const t = topic(id, slug, input.title ?? '', ME, 0, {
     topicKind: input.topicKind,

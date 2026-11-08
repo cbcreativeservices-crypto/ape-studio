@@ -324,7 +324,7 @@ export function ForumUnreadable({
   }
   return (
     <View style={st.face}>
-      <Text style={st.faceHead}>This could not be read</Text>
+      <Text style={st.faceHead}>This could not be loaded</Text>
       <Text style={st.faceText}>{error}</Text>
       <RetryOrSignIn message={error} onRetry={onRetry} />
     </View>

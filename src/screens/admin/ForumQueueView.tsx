@@ -89,7 +89,7 @@ export function ForumQueueView() {
       <Text style={st.usage}>
         AI this month: {usage.face === 'ready' ? aiUsageLine(usage.value) : usage.face === 'loading' ? '…' : 'could not be read'}
       </Text>
-      {usage.value?.capHitAt ? <Text style={st.usageHot}>The cap was reached. New posts are being held.</Text> : null}
+      {usage.value?.capHitAt ? <Text style={st.usageHot}>The monthly AI spending cap was reached. New posts are being held.</Text> : null}
       <View style={st.tabs} accessibilityRole="tablist">
         {SECTIONS.map((s) => (
           <Pressable
@@ -222,7 +222,7 @@ function QueueList() {
         `${what} ${item.author?.name ?? 'this member'}?`,
         status === 'banned'
           ? 'Their profile is unpublished at once and they can no longer post or contact anyone.'
-          : `They cannot post or contact anyone until it lifts, after ${days} days.`,
+          : `They cannot post or contact anyone for ${days} days.`,
         what,
         () => {
           run(String(item.logId), async () => {
@@ -545,7 +545,7 @@ function TrackedList() {
               multiline
               maxLength={1000}
               style={st.input}
-              placeholder="Reason. For shipped, start with the version: v1.1: Now in Settings."
+              placeholder="Reason. For Shipped, start with the version, for example: v1.1: Now in Settings."
               placeholderTextColor={F.muted}
               accessibilityLabel="Reason"
               textAlignVertical="top"
