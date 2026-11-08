@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 12:02 · ccode · 7dd905cc
+changed: must-do D52: Guided Lessons + screen guides loaded, not published [MD:D52]
+affects other side: Comp A: GUIDED_LESSONS_RETURN done (commit 59d9d098, 19,660/0, fingerprints match, DJ 88 dBA, code-values list in Downloads/2026-11-08_GUIDED_LESSONS_LOADED_REPORT). Not published.
+needs: owner publish go [MD:D52]
+
+
 ### 2026-11-08 12:01 · ccode · 59d9d098
 changed: Guided Lessons + screen guides: Comp B return loaded (39 lessons with outcomes/steps, 635 screen intros), intro card, guides ON (D52); miking module lock removed; DJ floor 88 dBA (owner 2026-11-08) [MD:D44]
 affects other side: nothing (app wording only; next OTA).
