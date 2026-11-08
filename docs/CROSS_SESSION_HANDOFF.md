@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 08:25 · ccode · 462de265
+changed: must-do D44: founder protection applied live by Comp A, verified read-only [MD:D44]
+affects other side: nothing. ccode re-read the live server and agrees with COMP_A_TO_CCODE_2026-11-08_FOUNDER_PROTECT_APPLIED (6 bodies md5-match, academy=true on the welcome post, F70/F80 in place). No repo test pins directory_search md5, so no ratchet change here.
+needs: nothing.
+
+
 ### 2026-11-08 04:22 · ccode · 1eec80f9
 changed: Must-do D44: overnight 3-round forum + profile bug test, 120 fixes, Comp A package ready [MD:D44] [MD:D57]
 affects other side: must-do D44 overnight note only.
