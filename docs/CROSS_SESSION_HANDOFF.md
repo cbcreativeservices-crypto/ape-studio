@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 09:57 · ccode · f4e62863
+changed: must-do D44: founder profile published; two-profile wording fix committed, not published [MD:D44]
+affects other side: nothing.
+needs: nothing.
+
+
 ### 2026-11-08 09:22 · ccode · 50d54786
 changed: must-do D44: forum open to members (Comp A launch steps, verified read-only) [MD:D44]
 affects other side: nothing new; ccode agrees with COMP_A_TO_CCODE_2026-11-08_FORUM_OPEN (forum on, HOLD C on, both cron jobs active and succeeding).
