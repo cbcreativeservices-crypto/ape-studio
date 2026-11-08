@@ -1005,7 +1005,10 @@ export function ProfileScreen() {
             {registryActive
               ? 'LISTED: your public page is live'
               : needsInfo
-                ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
+                ? // Names the Pro Registry: the Audio Community (forum) profile is a
+                  // separate one, and "get listed" alone sent the owner here to
+                  // open the forum (2026-11-08).
+                  `Pro Registry: ${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
                 : 'PRIVATE: no public page'}
           </Text>
         </Pressable>
