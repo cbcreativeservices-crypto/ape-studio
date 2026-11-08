@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 04:22 · ccode · 1eec80f9
+changed: Must-do D44: overnight 3-round forum + profile bug test, 120 fixes, Comp A package ready [MD:D44] [MD:D57]
+affects other side: must-do D44 overnight note only.
+needs: nothing
+
+
 ### 2026-11-08 04:09 · ccode · 7cda2bc0
 changed: Forum + profile bug pass 3 (final): 30 findings fixed and independently checked (sort/paging races, popups hold while sending, nothing typed is cut silently, owner never resends a member action) [MD:D44] [MD:D57]
 affects other side: bug pass 3 (final) fixes, not published; Comp A server package (founder protect, contact light, area label) ready after this commit.
