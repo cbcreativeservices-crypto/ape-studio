@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 03:01 · ccode · e33c3a7e
+changed: Forum + profile bug pass 2: 37 findings fixed and independently checked (typing kept while sending, drafts never cross accounts, no N-of-total or percentage on Profile, owner queue confirms safety decisions) [MD:D44] [MD:D57]
+affects other side: bug pass 2 fixes (forum, directory, profile, owner queue), not published; server package for Comp A HELD until pass 3.
+needs: nothing
+
+
 ### 2026-11-08 01:27 · ccode · 16dd87d8
 changed: Forum + profile bug pass 1: 53 findings fixed and independently checked (double post, instructor share privacy, sample never writes live, cold-start forum tap, Academy account protected in the app) [MD:D44] [MD:D57]
 affects other side: bug pass 1 fixes (forum, directory, profile, owner queue), not published; server package FOUNDER_PROTECT for Comp A.
