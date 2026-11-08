@@ -7,7 +7,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLatchedPress } from '../../../lib/latch';
 import { fonts } from '../../../theme/tokens';
 import { appealPost, reportPost } from '../../../features/forum/api';
-import { APPEAL_MAX, REPORT_REASONS } from '../../../features/forum/rules';
+import { APPEAL_MAX, REPORT_DETAIL_MAX, REPORT_REASONS } from '../../../features/forum/rules';
 import { AlsoBlockChip, Chip, ChipWrap } from '../directoryBits';
 import { AmberButton, F, FieldLabel, Popup, PopupScroll, QuietButton } from './forumBits';
 
@@ -95,6 +95,8 @@ function useMounted() {
 
 function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportProps & { postId: string }) {
   const [reason, setReason] = useState<string | null>(null);
+  /** What the reasons cannot say, "Something else" above all (UI-2-13). */
+  const [detail, setDetail] = useState('');
   // On by default, as the shared chip's rule says (UI-1-11).
   const [alsoBlock, setAlsoBlock] = useState(canBlock);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,7 @@ function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportPro
   const send = useLatchedPress(async () => {
     if (!reason) return;
     setBusy(true);
-    const r = await reportPost(postId, reason);
+    const r = await reportPost(postId, reason, detail.trim() || undefined);
     if (!mounted.current) return;
     setBusy(false);
     if (r.ok) onDone({ alsoBlock });
@@ -123,6 +125,18 @@ function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportPro
             <Chip key={r.key} label={r.label} on={reason === r.key} onPress={() => setReason(r.key)} />
           ))}
         </ChipWrap>
+        <TextInput
+          value={detail}
+          onChangeText={setDetail}
+          multiline
+          maxLength={REPORT_DETAIL_MAX}
+          editable={!busy}
+          style={[st.input, st.detail]}
+          placeholder={reason === 'other' ? 'Tell us what is wrong' : 'Anything else we should know (optional)'}
+          placeholderTextColor={F.muted}
+          accessibilityLabel="Report details"
+          textAlignVertical="top"
+        />
         {canBlock ? <AlsoBlockChip on={alsoBlock} onToggle={() => setAlsoBlock((b) => !b)} /> : null}
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.buttons}>
@@ -220,4 +234,5 @@ const st = StyleSheet.create({
     fontSize: 14,
     color: F.text,
   },
+  detail: { minHeight: 64, marginTop: 10 },
 });

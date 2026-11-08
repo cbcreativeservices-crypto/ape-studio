@@ -145,10 +145,10 @@ describe('2–5. Profile: unread is never shown as zero or empty', () => {
     assert.doesNotMatch(s, /profile\?\.completeCount \?\? 0/);
   });
 
-  it('4. whole-curriculum readout: unread profile is "—", not "Not started yet" / "0%"', () => {
-    assert.match(s, /\{!profile\s*\? '—'\s*: profile\.overallPct > 0/);
-    assert.match(s, /\? \(profile \? `\$\{profile\.overallPct\}%` : '—'\)/);
-    assert.match(s, /text: profile \? `\$\{pctClamped\}% complete` : 'Progress not loaded'/);
+  it('4. whole-academy readout: unread profile is "—", not "Not started yet"; a count, never a percentage (D117, bug pass 2026-11-08)', () => {
+    assert.match(s, /academyTopicsDone\(profile \? profile\.completeCount : null\)/);
+    assert.match(s, /summary=\{myProgressSummary\(goalCount, showBigPicture, profile \? profile\.completeCount : null\)\}/);
+    assert.doesNotMatch(s, /overallPct/);
   });
 
   it('5. MY CERTIFICATES / MY PROGRAMS: the empty copy only once the bundles were READ', () => {

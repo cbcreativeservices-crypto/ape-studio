@@ -65,6 +65,7 @@ import {
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useInFlightLatch } from '../../lib/latch';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
+import { academyTopicsDone, myProgressSummary, topicsDoneHint } from '../../features/profile/progressWords';
 import { cardColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
 import { AppHeader, TabIconTile } from '../../components/AppHeader';
@@ -141,9 +142,10 @@ function SubGroup({
  * One credential / field / subject row with its completion count.
  *
  * `done` is `null` when the catalog progress has not loaded yet. It renders as
- * "— of 12 topics" rather than "0 of 12", because a zero stated before the read
- * lands is a claim about the learner's work that we have not checked — the same
- * failed-load-is-not-empty rule the progress reads above follow.
+ * "—" rather than a zero, because a zero stated before the read lands is a
+ * claim about the learner's work that we have not checked — the same
+ * failed-load-is-not-empty rule the progress reads above follow. Progress says
+ * what was done ("3 topics done"), never "N of total" (D117; bug pass 2, S-2).
  */
 function CatalogRow({
   name,
@@ -165,7 +167,7 @@ function CatalogRow({
   showProgress?: boolean;
 }) {
   const hint = showProgress
-    ? `${done == null ? '—' : done} of ${total} ${total === 1 ? 'topic' : 'topics'} complete`
+    ? topicsDoneHint(done, total)
     : `${total} ${total === 1 ? 'topic' : 'topics'}`;
   const inner = (
     <View style={styles.rowMain}>
@@ -808,10 +810,6 @@ export function ProfileScreen() {
         ? colors.amber
         : colors.textSubAlt;
   const goalCount = certBundles.length + programBundles.length;
-  // Clamped ONCE, so the bar width and the value a screen reader hears can
-  // never disagree — they did on LedMeter, where the label and aria-valuenow
-  // were computed separately and drifted apart (2026-09-21).
-  const pctClamped = Math.min(100, Math.max(0, profile?.overallPct ?? 0));
 
   // One header for both faces below (so one Settings door).
   const headerRow = (
@@ -1051,59 +1049,21 @@ export function ProfileScreen() {
           title="MY PROGRESS"
           /* The collapsed header used to read "2% · 3 goals" — the academy-wide
              figure, in the most prominent spot on the screen, before the
-             learner had opened anything. It now leads with the goals they
-             chose, and only carries the percentage once they have asked for
-             the big picture. */
-          summary={
-            goalCount
-              ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile ? `${profile.overallPct}%` : '—'}` : ''}`
-              : showBigPicture
-                ? (profile ? `${profile.overallPct}%` : '—')
-                : ''
-          }
+             learner had opened anything. It leads with the goals they chose,
+             and carries the whole-academy count ("163 topics done", never a
+             percentage, D117) only once they have asked for the big picture. */
+          summary={myProgressSummary(goalCount, showBigPicture, profile ? profile.completeCount : null)}
         >
-          {/* Whole-curriculum progress — a readout, not a link. HIDDEN by
-              default; see the big-picture note above. */}
+          {/* Across the whole academy — a readout, not a link. HIDDEN by
+              default; see the big-picture note above. A COUNT of what was
+              done, with no percentage and no bar (D117, 2026-10-29; bug pass
+              2, S-2): both measured the learner against everything the academy
+              offers. Unread is "—", never "Not started yet" (hunt 13). */}
           {showBigPicture ? (
           <View style={styles.readoutRow}>
             <View style={styles.readoutHead}>
-              {/* RENAMED 2026-09-17: this is completed-topics ÷ the live topic
-                  count, and there is no "Full Course Certification" award in
-                  the app — the label promised a credential never issued. */}
-              <Text style={styles.rowLabel}>Whole-curriculum progress</Text>
-              {/* SAY BOTH NUMBERS (owner 2026-09-22: "check the logic and how
-                  the my progress - progress bars show their readout"). A bare
-                  "98% complete" tells the learner nothing about the scale of
-                  what is left; "163 of 166 topics" does. The total is only
-                  printed once it is known — a denominator of 0 would render
-                  "0 of 0", which reads as a broken curriculum. */}
-              <Text style={styles.rowHint}>
-                {/* Unread is not "Not started yet" (hunt 13): "—". */}
-                {!profile
-                  ? '—'
-                  : profile.overallPct > 0
-                  ? `${profile.overallPct}% complete${
-                      profile?.topicTotal
-                        ? ` · ${profile.completeCount} of ${profile.topicTotal} topics`
-                        : ''
-                    }`
-                  : 'Not started yet'}
-              </Text>
-            </View>
-            {/* The bar carried NO accessible value, so a screen reader heard
-                the label and nothing of the progress it exists to show — the
-                same gap fixed on LedMeter on 2026-09-21. `progressbar` is not
-                an RN accessibilityRole, so the value goes on the adjustable
-                role, with aria-* for RN-web where the DOM takes it directly. */}
-            <View
-              style={styles.progressTrack}
-              accessibilityRole="adjustable"
-              accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: profile ? `${pctClamped}% complete` : 'Progress not loaded' }}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={pctClamped}
-            >
-              <View style={[styles.progressFill, { width: `${pctClamped}%` }]} />
+              <Text style={styles.rowLabel}>Across the whole academy</Text>
+              <Text style={styles.rowHint}>{academyTopicsDone(profile ? profile.completeCount : null)}</Text>
             </View>
           </View>
           ) : null}
@@ -1198,7 +1158,7 @@ export function ProfileScreen() {
                       label={f.field.toUpperCase()}
                       summary={
                         showBigPicture
-                          ? `${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`
+                          ? topicsDoneHint(catalogDone(fieldGs), fieldGs.length)
                           : `${fieldGs.length} topics`
                       }
                       onFirstOpen={wantCatalog}
@@ -1897,8 +1857,6 @@ const styles = StyleSheet.create({
   // Whole-curriculum progress readout (retrospective, non-navigating).
   readoutRow: { paddingVertical: 9, paddingHorizontal: 4 },
   readoutHead: {},
-  progressTrack: { height: 6, borderRadius: 3, backgroundColor: '#26262b', overflow: 'hidden', marginTop: 8 },
-  progressFill: { height: 6, borderRadius: 3, backgroundColor: colors.green },
   rowLabelIndent: { paddingLeft: 12 },
   // Collapsible catalogue groups inside MY PROGRESS. Deliberately quieter than
   // Section's own header: these are groups WITHIN a section, not sections.

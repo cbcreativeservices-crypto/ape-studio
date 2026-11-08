@@ -53,7 +53,7 @@ const COPY: Record<StepId, { kicker: string; title: string; helper: string }> = 
   areas: {
     kicker: 'STEP 1',
     title: 'Where does your audio life happen?',
-    helper: 'Pick up to three. There is no wrong answer here — if you are still working it out, say so; that is an option too.',
+    helper: 'Pick up to three. There is no wrong answer here. If you are still working it out, say so; that is an option too.',
   },
   roles: {
     kicker: 'STEP 2',
@@ -63,7 +63,7 @@ const COPY: Record<StepId, { kicker: string; title: string; helper: string }> = 
   openTo: {
     kicker: 'STEP 3',
     title: 'What are you open to?',
-    helper: 'Up to three. Nobody can contact you about anything you have not chosen here — this list IS the permission.',
+    helper: 'Up to three. Nobody can contact you about anything you have not chosen here. This list IS the permission.',
   },
   name: {
     kicker: 'STEP 4',

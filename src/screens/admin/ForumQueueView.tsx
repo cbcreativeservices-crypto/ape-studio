@@ -54,7 +54,7 @@ import {
   trackedProblem,
   urgentLabel,
 } from '../../features/forum/rules';
-import type { ForumTopic, TrackedStatus } from '../../features/forum/types';
+import type { ForumResult, ForumTopic, TrackedStatus } from '../../features/forum/types';
 import { useForumRead } from '../../features/forum/useForumRead';
 import { useSendingPer } from '../directory/directoryBits';
 import {
@@ -70,7 +70,18 @@ import {
   StatusStamp,
   type MenuItem,
 } from '../directory/forum/forumBits';
-import { createPopupTurns, offersRetry, trackedCapNote } from './forumQueueFaces';
+import {
+  askThenDecide,
+  createDecisionGuard,
+  createPopupTurns,
+  offersRetry,
+  QUEUE_LIMIT,
+  queueCapNote,
+  queueDecisionAsk,
+  queueResultLine,
+  trackedCapNote,
+  visibleQueueItems,
+} from './forumQueueFaces';
 
 type Section = 'queue' | 'appeals' | 'tracked';
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
@@ -166,42 +177,112 @@ function Act({
 
 const SUSPEND_DAYS = [7, 30];
 
+/** One queue read, and whether it came back full: `full` rides with the list,
+ *  so a cleared batch still knows more may be waiting (CODE-2-14). */
+type QueueRead = { items: QueueItem[]; full: boolean };
+async function fetchQueueRead(): Promise<ForumResult<QueueRead>> {
+  const r = await fetchQueue();
+  return r.ok ? { ok: true, value: { items: r.value, full: r.value.length >= QUEUE_LIMIT } } : r;
+}
+
 function QueueList() {
   const navigation = useNavigation() as unknown as Nav;
-  const read = useForumRead<QueueItem[]>(fetchQueue, []);
+  const read = useForumRead<QueueRead>(fetchQueueRead, []);
   const [busy, run] = useSendingPer();
   const [memberOf, setMemberOf] = useState<QueueItem | null>(null);
-
-  const done = useCallback((logId: number) => read.patch((rows) => rows.filter((r) => r.logId !== logId)), [read]);
-
-  const decide = useCallback(
-    (item: QueueItem, decision: QueueDecision, note?: string) => {
+  // What the last accepted decision did, in words (UI-2-15). Set only from a
+  // write's own answer.
+  const [result, setResult] = useState<string | null>(null);
+  const readAgain = useLatchedPress(() => read.reload());
+  // One decision per item: a second is refused while one is pending, and after
+  // one landed (O-1).
+  const guard = useRef(createDecisionGuard()).current;
+  /** Send `task` for an item already claimed. A task that landed marks the
+   *  item decided; one that `run` refused (the item is busy) or that did not
+   *  land releases the claim. */
+  const send = useCallback(
+    (item: QueueItem, task: () => Promise<boolean>) => {
+      let started = false;
       run(String(item.logId), async () => {
+        started = true;
+        let landed = false;
+        try {
+          landed = await task();
+        } finally {
+          if (landed) guard.land(item.logId);
+          else guard.release(item.logId);
+        }
+      });
+      if (!started) guard.release(item.logId);
+    },
+    [guard, run],
+  );
+
+  const done = useCallback(
+    (logId: number) => read.patch((q) => ({ ...q, items: q.items.filter((r) => r.logId !== logId) })),
+    [read],
+  );
+
+  const decideNow = useCallback(
+    (item: QueueItem, decision: QueueDecision, note?: string) => {
+      send(item, async () => {
         const r = await decideQueueItem(item.logId, decision, note);
-        if (r.ok) done(item.logId);
-        else notify('Not saved', r.error);
+        if (r.ok) {
+          done(item.logId);
+          setResult(queueResultLine(decision, item.author?.name));
+          return true;
+        }
+        notify('Not saved', r.error);
+        return false;
       });
     },
-    [done, run],
+    [done, send],
+  );
+
+  // A threat, self-harm or child-safety item asks first: DISMISS, CONFIRM and
+  // RESTORE take it off the queue with no undo here (UI-2-15).
+  const decide = useCallback(
+    (item: QueueItem, decision: QueueDecision, note?: string) => {
+      const ask = queueDecisionAsk(decision, {
+        urgentCategory: item.urgentCategory,
+        child: isChildItem(item),
+        hasMember: !!item.targetUser,
+        name: item.author?.name,
+      });
+      // The claim is taken in YES, never before the question (N-1).
+      askThenDecide(
+        guard,
+        item.logId,
+        ask,
+        (q, yes) => confirmDialog(q.title, q.body, q.yes, yes, { destructive: q.destructive }),
+        () => decideNow(item, decision, note),
+      );
+    },
+    [decideNow, guard],
   );
 
   const onPost = useCallback(
     (item: QueueItem, action: PostAction) => {
       const postId = item.postId;
-      if (!postId) return;
-      run(String(item.logId), async () => {
+      if (!postId || !guard.claim(item.logId)) return;
+      send(item, async () => {
         // forum_admin_post_action shows this reason to the member as it is.
         const r = await actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule));
         if (!r.ok) {
           notify('Not saved', r.error);
-          return;
+          return false;
         }
         const d = await decideQueueItem(item.logId, 'noted', action);
-        if (d.ok) done(item.logId);
-        else notify('Done, but still listed', d.error);
+        if (d.ok) {
+          done(item.logId);
+          setResult(queueResultLine(action === 'please_edit' ? 'please_edit' : 'noted', item.author?.name));
+          return true;
+        }
+        notify('Done, but still listed', d.error);
+        return false;
       });
     },
-    [done, run],
+    [done, guard, send],
   );
 
   const onUser = useCallback(
@@ -232,28 +313,44 @@ function QueueList() {
       const user = item.targetUser;
       if (!user) return;
       const what = status === 'banned' ? 'Ban' : `Suspend for ${days} days`;
-      confirmDialog(
-        `${what} ${item.author?.name ?? 'this member'}?`,
+      const body =
         status === 'banned'
           ? 'Their profile is unpublished at once and they can no longer post or contact anyone.'
-          : `They cannot post or contact anyone for ${days} days.`,
-        what,
+          : `They cannot post or contact anyone for ${days} days.`;
+      // The claim is taken in YES, never before the question (N-1). The title
+      // names the member, so two items never make identical questions.
+      askThenDecide(
+        guard,
+        item.logId,
+        body,
+        (b, yes) =>
+          confirmDialog(
+            `${what} ${item.author?.name ?? 'this member'}?`,
+            b,
+            what,
+            yes,
+            { destructive: true },
+          ),
         () => {
-          run(String(item.logId), async () => {
+          send(item, async () => {
             const r = await setMemberStanding(user, status, days, standingReasonCode(item.rule));
             if (!r.ok) {
               notify('Not saved', r.error);
-              return;
+              return false;
             }
             const d = await decideQueueItem(item.logId, status);
-            if (d.ok) done(item.logId);
-            else notify('Done, but still listed', d.error);
+            if (d.ok) {
+              done(item.logId);
+              setResult(queueResultLine(status, item.author?.name, days));
+              return true;
+            }
+            notify('Done, but still listed', d.error);
+            return false;
           });
         },
-        { destructive: true },
       );
     },
-    [done, run],
+    [done, guard, send],
   );
 
   const memberItems: MenuItem[] = memberOf
@@ -273,12 +370,40 @@ function QueueList() {
 
   if (read.face === 'loading') return <ForumLoading label="Loading the queue…" />;
   if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
-  if (read.value.length === 0) return <Text style={st.muted}>Nothing is waiting for you.</Text>;
+  // Never an item whose decision landed, even from a read that started before
+  // it landed (N-2).
+  const items = visibleQueueItems(read.value.items, guard);
+  const capNote = queueCapNote(read.value.full, items.length);
+  const resultLine = result ? (
+    <Text style={st.result} accessibilityLiveRegion="polite">
+      {result}
+    </Text>
+  ) : null;
+  const capLine = capNote ? (
+    <View style={st.capNote}>
+      <Text style={st.meta}>{capNote}</Text>
+      <Pressable onPress={readAgain} hitSlop={8} accessibilityRole="button" accessibilityLabel="Read the queue again">
+        <Text style={st.retry}>READ AGAIN</Text>
+      </Pressable>
+    </View>
+  ) : null;
+  // A cleared batch that came back full is not "nothing waiting" (CODE-2-14).
+  if (items.length === 0) {
+    return (
+      <>
+        {read.stale ? <StaleNote /> : null}
+        {resultLine}
+        {capLine ?? <Text style={st.muted}>Nothing is waiting for you.</Text>}
+      </>
+    );
+  }
 
   return (
     <>
       {read.stale ? <StaleNote /> : null}
-      {read.value.map((item) => {
+      {resultLine}
+      {capLine}
+      {items.map((item) => {
         const urgent = urgentLabel(item.urgentCategory);
         // The row OR the post: an older row about a child-safety post has no
         // urgent category of its own (isChildItem).
@@ -669,6 +794,8 @@ const st = StyleSheet.create({
   },
   child: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: F.red, marginTop: 8 },
   meta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.sub, marginTop: 6 },
+  result: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.amber, marginBottom: 8 },
+  capNote: { gap: 6, marginBottom: 10 },
   rec: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: F.steel, marginTop: 6 },
   reports: { fontFamily: fonts.mono, fontSize: 10.5, color: F.amber, marginTop: 6 },
   appeal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.text, marginTop: 8 },

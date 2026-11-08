@@ -89,9 +89,35 @@ export function replyLandedSeen(fingerprint: string): void {
   settleClientId(fingerprint, true);
 }
 
+/**
+ * Which post each landed id made (bug pass 2, CODE-2-07). The server answers a
+ * known id with the post it already made, even a DELETED one: the same words
+ * posted again after a delete never landed and opened the deleted topic.
+ * Deleting a post frees the id it was sent with.
+ */
+const landedPosts = new Map<string, string>();
+
+export function landedAs(fingerprint: string, postId: string): void {
+  if (!postId) return;
+  landedPosts.delete(postId);
+  landedPosts.set(postId, fingerprint);
+  while (landedPosts.size > MAX_KEPT) {
+    const oldest = landedPosts.keys().next().value as string;
+    landedPosts.delete(oldest);
+  }
+}
+
+/** The post was deleted: the same words sent again are a new post. */
+export function forgetLandedPost(postId: string): void {
+  const fingerprint = landedPosts.get(postId);
+  landedPosts.delete(postId);
+  if (fingerprint) ids.delete(fingerprint);
+}
+
 /** The account wipe, and tests. */
 export function resetPostOnce(): void {
   ids.clear();
+  landedPosts.clear();
 }
 
 registerLocalStoreReset(resetPostOnce);

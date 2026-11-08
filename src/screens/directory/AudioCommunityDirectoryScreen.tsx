@@ -33,7 +33,7 @@ import {
   type PublicProfile,
   type ReportReason,
 } from '../../features/directory/api';
-import { requestsLeftLine } from '../../features/directory/rules';
+import { NO_OPEN_TO_LINE, contactOffer, requestsLeftLine } from '../../features/directory/rules';
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
@@ -318,7 +318,7 @@ function MemberSheet({
             {p || (!settled && seedName) ? (
               <ChannelBadge
                 name={p ? p.displayName : seedName ?? ''}
-                led={p?.contactEnabled ? 'green' : 'off'}
+                led={p && contactOffer(p) === 'send' ? 'green' : 'off'}
                 size={40}
               />
             ) : null}
@@ -399,7 +399,7 @@ function MemberSheet({
                   <Text style={st.credHead}>VERIFIED CREDENTIALS</Text>
                   <Text style={st.cred}>
                     Couldn’t load this member’s credentials just now. This is not a statement that
-                    they hold none — please try again shortly.
+                    they hold none. Please try again shortly.
                   </Text>
                 </>
               ) : data.credentials.length ? (
@@ -425,8 +425,14 @@ function MemberSheet({
                 </>
               ) : null}
 
-              {p.contactEnabled && !sent && reported !== 'blocked' ? (
+              {/* Contact ON with no Open To topics (bug pass 2026-11-08,
+                  UI-2-03): the server refuses every purpose such a member has
+                  not listed, so the composer had nothing to pick and a SEND
+                  that never woke up. Say why instead of opening it. */}
+              {sent || reported === 'blocked' ? null : contactOffer(p) === 'send' ? (
                 <PrimaryButton label="SEND A CONTACT REQUEST" tone="green" onPress={() => setContactOpen(true)} />
+              ) : contactOffer(p) === 'no-topics' ? (
+                <Helper>{NO_OPEN_TO_LINE}</Helper>
               ) : null}
 
               {/* ── BLOCK ASKS FIRST, INSIDE THE SHEET (bug hunt 2026-09-29) ──
@@ -603,37 +609,47 @@ function ContactSheet({
           <Text accessibilityRole="header" style={st.sheetTitle}>
             SEND A CONTACT REQUEST
           </Text>
-          <Helper>
-            Choose what this is about — you can only pick something this member is open to. Keep it
-            short and professional. Links and contact details are not allowed in a first message.
-          </Helper>
-          <ChipWrap>
-            {openTo.map((o) => (
-              <Chip key={o} label={o} on={purpose === slug(o)} onPress={() => setPurpose(slug(o))} />
-            ))}
-          </ChipWrap>
-          <TextInput
-            style={st.input}
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Why you’re getting in touch"
-            placeholderTextColor={colors.textMuted}
-            multiline
-            maxLength={500}
-            accessibilityLabel="Your message"
-          />
-          {/* The weekly cap is worth naming only as it gets close — a
-              counter on every open would read as a warning about the user. */}
-          {allow && allow.requestsLeftThisWeek <= 3 ? (
-            <Text style={st.allowance}>{requestsLeftLine(allow.requestsLeftThisWeek)}</Text>
-          ) : null}
+          {/* Never a sheet with no way forward (UI-2-03): the member sheet
+              hides the button when there is nothing to choose, and this
+              guard covers any other way in. No topics = the reason and
+              CANCEL, never a box to type into and a SEND that cannot wake. */}
+          {!openTo.length ? (
+            <Helper>{NO_OPEN_TO_LINE}</Helper>
+          ) : (
+            <>
+              <Helper>
+                Choose what this is about. You can only pick something this member is open to. Keep it
+                short and professional. Links and contact details are not allowed in a first message.
+              </Helper>
+              <ChipWrap>
+                {openTo.map((o) => (
+                  <Chip key={o} label={o} on={purpose === slug(o)} onPress={() => setPurpose(slug(o))} />
+                ))}
+              </ChipWrap>
+              <TextInput
+                style={st.input}
+                value={message}
+                onChangeText={setMessage}
+                placeholder="Why you’re getting in touch"
+                placeholderTextColor={colors.textMuted}
+                multiline
+                maxLength={500}
+                accessibilityLabel="Your message"
+              />
+              {/* The weekly cap is worth naming only as it gets close — a
+                  counter on every open would read as a warning about the user. */}
+              {allow && allow.requestsLeftThisWeek <= 3 ? (
+                <Text style={st.allowance}>{requestsLeftLine(allow.requestsLeftThisWeek)}</Text>
+              ) : null}
 
-          <PrimaryButton
-            label="SEND REQUEST"
-            tone="green"
-            disabled={sending || !purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
-            onPress={() => runSend(() => onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage('')))}
-          />
+              <PrimaryButton
+                label="SEND REQUEST"
+                tone="green"
+                disabled={sending || !purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
+                onPress={() => runSend(() => onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage('')))}
+              />
+            </>
+          )}
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
       </KeyboardAvoidingView>

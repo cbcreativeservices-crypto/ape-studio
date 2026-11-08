@@ -57,6 +57,7 @@ import {
 } from '../../features/directory/profileLeave';
 import { sampleDirectoryOn, sampleGen } from '../../features/directory/sampleThreads';
 import { ProfileSetupFlow } from './ProfileSetupFlow';
+import { CONTACT_NEEDS_OPEN_TO_LINE, contactOffer } from '../../features/directory/rules';
 import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 import { cardColumn } from '../../theme/readingColumn';
@@ -638,8 +639,8 @@ export function MyProfileView() {
         <View style={st.legacy}>
           <Text style={st.legacyTitle}>Bring your old profile across?</Text>
           <Text style={st.legacyBody}>
-            Your previous work areas can be sorted into the new sections. Nothing is published —
-            you’ll review it first.
+            Your previous work areas can be sorted into the new sections. Nothing is published.
+            You’ll review it first.
             {legacy.roles.length
               ? ` “${legacy.roles.map((r) => label('roles', r)).join('” and “')}” move to How I’m Involved, because they describe a role rather than a work area.`
               : ''}
@@ -667,7 +668,7 @@ export function MyProfileView() {
       {p.needsIdentityReview ? (
         <Banner tone="warn">
           Check your public display name below. It came from the name on your certificates, which is
-          not the same thing as a directory name — confirm it before you appear in search.
+          not the same thing as a directory name. Confirm it before you appear in search.
         </Banner>
       ) : null}
 
@@ -720,7 +721,7 @@ export function MyProfileView() {
         not replace verified credentials.
       </Helper>
       {p.areas.length === 0 ? (
-        <Banner tone="info">Choose an area above first — specialties are grouped under them.</Banner>
+        <Banner tone="info">Choose an area above first. Specialties are grouped under them.</Banner>
       ) : (
         <>
           <CountHint used={p.specialties.length} cap={LIMITS.specialties} noun="specialties" />
@@ -798,7 +799,7 @@ export function MyProfileView() {
       </Text>
 
       <Section title="LOCATION & LANGUAGES" summary={p.countryCode || 'optional'}>
-        <Helper>All optional. Country and general region only — never an exact address.</Helper>
+        <Helper>All optional. Country and general region only, never an exact address.</Helper>
         <TextInput
           style={st.input}
           value={p.countryCode}
@@ -940,6 +941,9 @@ export function MyProfileView() {
         Your email address is never shown. Verified members can send limited contact requests
         through Pro Audio Training Academy. You can accept, decline, block or report any request.
       </Helper>
+      {/* Contact ON, Open To empty (UI-2-03 follow-up): the server refuses
+          every request to this member, so say so at the switch. */}
+      {contactOffer(p) === 'no-topics' ? <Banner tone="warn">{CONTACT_NEEDS_OPEN_TO_LINE}</Banner> : null}
 
       <SelfReportedNote />
 

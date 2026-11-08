@@ -479,10 +479,16 @@ export function carryAskValues(from: AskFormKind, to: AskFormKind, v: AskValues)
  * (after leaving mid-post, or from a second Ask form) lands once (bug pass
  * 2026-11-08, CODE-1-05).
  */
-export function askDraftText(v: AskValues, clientId: string | null): string {
+export function askDraftText(v: AskValues, clientId: string | null, extra?: AskExtras): string {
   if (!Object.values(v).some((x) => x.trim())) return '';
-  return JSON.stringify(clientId ? { ...v, clientId } : v);
+  // The linked lab and the job kind are part of the post: kept with the words
+  // and the id, so a restored draft posts the same post (bug pass 2, CODE-2-07).
+  const more = extra ? { ...(extra.lab ? { lab: extra.lab } : {}), ...(extra.job ? { job: true } : {}) } : {};
+  return JSON.stringify(clientId ? { ...v, ...more, clientId } : { ...v, ...more });
 }
+
+/** What an Ask post carries besides its words. */
+export type AskExtras = { lab: string | null; job: boolean };
 
 /**
  * A reply draft as kept on the phone: the words, what they quote or correct,
@@ -537,7 +543,9 @@ export function canReportOrBlock(author: Pick<ForumAuthor, 'academy'>): boolean 
   return !author.academy;
 }
 
-export function askDraftRead(stored: string): { values: Partial<AskValues>; clientId: string | null } | null {
+export function askDraftRead(
+  stored: string,
+): { values: Partial<AskValues>; clientId: string | null; lab: string | null; job: boolean } | null {
   try {
     const raw = JSON.parse(stored) as Record<string, unknown>;
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
@@ -545,7 +553,12 @@ export function askDraftRead(stored: string): { values: Partial<AskValues>; clie
     for (const k of Object.keys(EMPTY_ASK) as (keyof AskValues)[]) {
       if (typeof raw[k] === 'string') values[k] = raw[k] as string;
     }
-    return { values, clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null };
+    return {
+      values,
+      clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null,
+      lab: typeof raw.lab === 'string' && raw.lab ? raw.lab : null,
+      job: raw.job === true,
+    };
   } catch {
     return null;
   }
@@ -685,6 +698,13 @@ export const REPORT_REASONS: { key: string; label: string }[] = [
   { key: 'child_safety', label: 'Child safety' },
   { key: 'other', label: 'Something else' },
 ];
+
+/**
+ * A report's own words (UI-2-13). The server keeps 1000 characters INCLUDING
+ * its "[forum: <reason>] " prefix (forum_report), so the box stops where the
+ * longest reason's prefix still leaves every word typed: nothing is cut.
+ */
+export const REPORT_DETAIL_MAX = 1000 - Math.max(...REPORT_REASONS.map((r) => `[forum: ${r.key}] `.length));
 
 /* ── Moderation: what the AUTHOR sees ────────────────────────────────── */
 
@@ -1593,4 +1613,126 @@ export function rulesKept(device: boolean, server: 'recorded' | 'missing' | 'fai
  *  the popup is shown again, so I AGREE records it there. */
 export function asksForRules(code: string | null | undefined): boolean {
   return code === 'rules_not_accepted';
+}
+
+/* ── Bug pass 2 (2026-11-08) ─────────────────────────────────────────── */
+
+/**
+ * What stays in a reply box once a send lands (CODE-2-01). The box stays
+ * editable while a reply is out, so words typed meanwhile must not be wiped
+ * with the sent ones: only the text that was sent is cleared, as Requests does.
+ * Text that no longer starts with what was sent (an edit inside it) is kept
+ * whole: the member sees it and decides.
+ */
+export function unsentRemainder(sentRaw: string, current: string): string {
+  if (current === sentRaw) return '';
+  return current.startsWith(sentRaw) ? current.slice(sentRaw.length).replace(/^\s+/, '') : current;
+}
+
+export type ReplyTargets = {
+  quote: { postId: string; excerpt: string; name: string } | null;
+  correcting: { postId: string; name: string } | null;
+};
+
+/**
+ * A quote and a correction in one reply must be about the SAME post (UI-2-01).
+ * A correction to Diego that quotes Maya reads as a correction of Maya. The
+ * newest choice wins: quoting another post ends a correction of a different
+ * one, and starting a correction drops a quote of a different post.
+ */
+export function withQuote(cur: ReplyTargets, quote: ReplyTargets['quote']): ReplyTargets {
+  const keep = !!quote && !!cur.correcting && cur.correcting.postId === quote.postId;
+  return { quote, correcting: !quote || keep ? cur.correcting : null };
+}
+
+export function withCorrection(cur: ReplyTargets, correcting: ReplyTargets['correcting']): ReplyTargets {
+  const keep = !!correcting && !!cur.quote && cur.quote.postId === correcting.postId;
+  return { correcting, quote: !correcting || keep ? cur.quote : null };
+}
+
+/**
+ * ACCEPT AND EDIT: what to do once the edit's answer is in (CODE-2-05). The
+ * correction is marked accepted only when the corrected text is published.
+ * A refused edit keeps the form open with the reason, so it can be fixed; an
+ * edit waiting for a review goes back to the thread, where its card shows,
+ * and the correction stays open.
+ */
+export function acceptEditStep(
+  state: string,
+  reason: string | null,
+): { kind: 'accept' } | { kind: 'stay'; text: string } | { kind: 'back'; title: string; text: string } {
+  const k = outcomeKind(state);
+  if (k === 'published') return { kind: 'accept' };
+  if (k === 'removed') {
+    return {
+      kind: 'stay',
+      text: `${reason ?? 'Your edit was not published.'} The correction is still open. Change your text and repost.`,
+    };
+  }
+  return {
+    kind: 'back',
+    title: 'Edit being reviewed',
+    text: 'Your edit is being reviewed. The correction stays open; accept it again once your edit is published.',
+  };
+}
+
+/** A bookmark's reminder: when it will come, or when it came (CODE-2-09). */
+export function reminderLine(iso: string, now: number = Date.now()): string {
+  const d = new Date(iso);
+  const t = d.getTime();
+  if (Number.isNaN(t)) return '';
+  const day = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  const date = d.getFullYear() === new Date(now).getFullYear() ? day : `${day}, ${d.getFullYear()}`;
+  return t > now ? `Reminder set · ${date}` : `Reminded ${date}`;
+}
+
+/** The quoted words with who said them, once that post is in the thread
+ *  (UI-2-09): the display name as the server sends it ("Former member",
+ *  "Prof. Channing Booth"), never cut to a first word. */
+export function quoteLine(excerpt: string, quotedName: string | null): string {
+  const name = (quotedName ?? '').trim();
+  return name ? `${name}: ${excerpt}` : excerpt;
+}
+
+/** Quote and Suggest a correction only where a reply can be sent (UI-2-02). */
+export function canStartReply(block: { kind: string }): boolean {
+  return block.kind === 'open';
+}
+
+/**
+ * A topic list's next page: the offset to read from, or null when the server
+ * said there is no more (CODE-2-08). Counted from what the server answered
+ * (the first page, then every later page), never from the rows drawn, which
+ * drop a topic that moved between pages.
+ */
+export function nextTopicsPage(first: number, later: { read: number; full: boolean | null }, page: number): number | null {
+  const full = later.full ?? first >= page;
+  if (first === 0 || !full) return null;
+  return first + later.read;
+}
+
+/**
+ * Whether a pending once-only id still belongs to the post (CODE-2-07). The
+ * id was made for one lab and one job kind: a different one is a new post with
+ * a new id, but the same ones set back (a restored draft, a lab unlinked and
+ * linked again) are the same post, and its id is kept, so it lands once.
+ */
+export function pendingIdFits(madeFor: AskExtras | null, now: AskExtras): boolean {
+  return !madeFor || (madeFor.lab === now.lab && madeFor.job === now.job);
+}
+
+/**
+ * The Ask draft as the 800 ms timer writes it (CODE-2-07, re-check). A
+ * restored draft that was being posted keeps its pending id on disk for as
+ * long as the post is still the same post: re-picking the same category or
+ * linking the same lab again must not write it back without the id, or a
+ * second app kill posts the topic twice.
+ */
+export function askDraftForSave(
+  values: AskValues,
+  pendingId: string | null,
+  madeFor: AskExtras | null,
+  now: AskExtras,
+): string {
+  return askDraftText(values, pendingIdFits(madeFor, now) ? pendingId : null, now);
 }

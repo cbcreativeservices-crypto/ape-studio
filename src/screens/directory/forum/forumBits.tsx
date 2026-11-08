@@ -462,6 +462,7 @@ export function Field({
   multiline,
   maxLength,
   label,
+  editable = true,
 }: {
   value: string;
   onChangeText: (t: string) => void;
@@ -469,6 +470,8 @@ export function Field({
   multiline?: boolean;
   maxLength?: number;
   label: string;
+  /** Off while the form is posting: what is sent is what is on screen. */
+  editable?: boolean;
 }) {
   return (
     <TextInput
@@ -478,7 +481,8 @@ export function Field({
       placeholderTextColor={F.muted}
       multiline={multiline}
       maxLength={maxLength}
-      style={[st.fld, multiline && st.fldTa]}
+      editable={editable}
+      style={[st.fld, multiline && st.fldTa, !editable && st.fldOff]}
       accessibilityLabel={label}
       textAlignVertical={multiline ? 'top' : 'center'}
     />
@@ -486,9 +490,26 @@ export function Field({
 }
 
 /** A form row that opens a popup. */
-export function PickField({ value, onPress, label }: { value: string; onPress: () => void; label: string }) {
+export function PickField({
+  value,
+  onPress,
+  label,
+  disabled,
+}: {
+  value: string;
+  onPress: () => void;
+  label: string;
+  disabled?: boolean;
+}) {
   return (
-    <Pressable onPress={onPress} style={st.fld} accessibilityRole="button" accessibilityLabel={`${label}: ${value}`}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={[st.fld, disabled && st.fldOff]}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${value}`}
+      accessibilityState={{ disabled: !!disabled }}
+    >
       <Text style={st.pickText}>{value} ›</Text>
     </Pressable>
   );
@@ -933,6 +954,7 @@ const st = StyleSheet.create({
     color: F.text,
   },
   fldTa: { minHeight: 58 },
+  fldOff: { opacity: 0.6 },
   pickText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: F.sub },
   modcard: { borderRadius: 14, padding: 12, borderWidth: 1 },
   mod_hold: { borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(255,198,77,.06)' },

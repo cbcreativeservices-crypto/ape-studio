@@ -715,7 +715,10 @@ export function sampleEdit(postId: string, body: string, title?: string): ForumR
     modRule: v.rule,
     modReason: v.reason,
     edited: true,
-    publishedAt: v.modState === 'published' ? ago(0) : null,
+    // As the server does: an edit of a published post keeps its place and its
+    // date (forum-moderate sets edited_at only); a post first published by
+    // this edit is dated now (UI-2-06).
+    publishedAt: found.post.publishedAt ?? (v.modState === 'published' ? ago(0) : null),
   });
   if (title && found.post.isOpening) found.topic.title = title;
   if (v.modState === 'published') found.topic.replyCount = found.topic.posts.filter((p) => !p.isOpening && p.modState === 'published').length;

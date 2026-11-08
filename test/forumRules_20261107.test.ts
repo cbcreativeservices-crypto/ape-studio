@@ -817,7 +817,8 @@ describe('house rules', () => {
   it('rules are accepted before a first post, on both ways of posting', () => {
     for (const f of ['ForumAskScreen', 'ForumThreadScreen']) {
       const src = code(`src/screens/directory/forum/${f}.tsx`);
-      assert.match(src, /if \(!flags\.rulesAccepted\) \{\s*setRulesOpen\(true\);\s*return;/, f);
+      // Bug pass 2 (CODE-2-12): from the stored record once read, or this session.
+      assert.match(src, /if \(!\(await rulesAgreed\(\)\)\) \{\s*setRulesOpen\(true\);\s*return;/, f);
     }
   });
 });

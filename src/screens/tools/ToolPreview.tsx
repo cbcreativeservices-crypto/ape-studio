@@ -31,7 +31,12 @@ export function ToolPreview({
   initialParams?: Record<string, unknown>;
   /** Extra routes for a multi-screen flow (the Career Finder navigates
    *  between six screens); the first route is still `name`. */
-  screens?: { name: string; component: ComponentType }[];
+  screens?: {
+    name: string;
+    component: ComponentType;
+    /** As the app's stack: one route per id (the forum thread, by topic). */
+    getId?: (o: { params?: object }) => string | undefined;
+  }[];
 }) {
   return (
     <EntitlementProvider>
@@ -39,7 +44,9 @@ export function ToolPreview({
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
             <Stack.Screen name={name} component={component} initialParams={initialParams} />
-            {screens?.map((s) => <Stack.Screen key={s.name} name={s.name} component={s.component} />)}
+            {screens?.map((s) => (
+              <Stack.Screen key={s.name} name={s.name} component={s.component} getId={s.getId as never} />
+            ))}
           </Stack.Navigator>
         </NavigationContainer>
       </AudioOutputGate>

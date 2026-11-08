@@ -51,6 +51,32 @@ export function requestsLeftLine(left: number): string {
   return `${left} contact ${left === 1 ? 'request' : 'requests'} left for now. Each one frees up 7 days after you send it.`;
 }
 
+/**
+ * What the member sheet offers for contact (bug pass 2026-11-08, UI-2-03).
+ * The server refuses any purpose the recipient has not listed under Open To
+ * (contact_request_send, §6.5; docs/APE_DIRECTORY_TESTS.sql "purpose must match
+ * an active Open To selection"). A member with contact ON and no Open To
+ * choices can therefore never be sent a request, and the composer opened onto
+ * "Choose what this is about" with nothing to choose and a SEND that never
+ * woke up. 'no-topics' replaces the button with NO_OPEN_TO_LINE.
+ */
+export function contactOffer(p: { contactEnabled: boolean; openTo: readonly string[] }): 'send' | 'no-topics' | 'off' {
+  if (!p.contactEnabled) return 'off';
+  return p.openTo.length ? 'send' : 'no-topics';
+}
+
+/** Said in place of SEND A CONTACT REQUEST when the member lists no Open To topics. */
+export const NO_OPEN_TO_LINE =
+  'This member hasn’t listed anything they are open to yet, so you can’t send them a contact request.';
+
+/**
+ * Said under the member's own "Let members contact me" switch when it is ON
+ * and Open To is empty (bug pass 2026-11-08, UI-2-03 follow-up): the server
+ * refuses every request to such a member, and nothing told them so.
+ */
+export const CONTACT_NEEDS_OPEN_TO_LINE =
+  'Pick at least one thing you are open to, under OPEN TO above, or nobody can send you a request.';
+
 /** A report's optional detail as sent: trimmed, and null when only spaces. */
 export function reportDetail(detail: string | null | undefined): string | null {
   const t = (detail ?? '').trim();
@@ -276,7 +302,7 @@ export function readableError(message: string | undefined): string {
   if (m.includes('wait for a reply'))
     return 'Wait for a reply before sending more.';
   if (m.includes('already have an open conversation'))
-    return 'You already have an open conversation with this member — continue it under Requests.';
+    return 'You already have an open conversation with this member. Continue it under Requests.';
   if (m.includes('message is longer than'))
     return 'That message is longer than 1,000 characters. Shorten it and send again.';
   if (m.includes('already answered')) return 'That request has already been answered.';
@@ -314,7 +340,7 @@ export function readableError(message: string | undefined): string {
   if (m.includes('this conversation is closed'))
     return 'This conversation is closed. Nothing you have already sent was removed.';
   if (m.includes('this conversation is not open'))
-    return 'This conversation is not open yet — the other member has not accepted your request.';
+    return 'This conversation is not open yet. The other member has not accepted your request.';
   if (m.includes('that is your own profile')) return 'That is your own profile.';
   // contact_block / contact_report: the profile behind the open sheet was
   // deleted since it was read (hunt 9, 2026-10-03). It fell through to
@@ -322,5 +348,5 @@ export function readableError(message: string | undefined): string {
   // fail the same way.
   if (m.includes('no such member')) return 'That member’s profile is no longer available.';
   if (m.includes('sign in first')) return 'Your session has ended. Sign in again to continue.';
-  return 'Something went wrong on our side. Nothing you entered was lost — try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
+  return 'Something went wrong on our side. Nothing you entered was lost. Try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
 }

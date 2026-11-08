@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
 import { fonts } from '../../../theme/tokens';
 import { fetchBookmarks, fetchForumMe, setBookmark } from '../../../features/forum/api';
-import { BADGE_MEANINGS, levelFace, timeAgo } from '../../../features/forum/rules';
+import { BADGE_MEANINGS, levelFace, reminderLine } from '../../../features/forum/rules';
 import type { ForumBookmark, ForumMe } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { useReloadOnReturn } from '../../../features/forum/useReloadOnReturn';
@@ -90,7 +90,9 @@ export function ForumMineScreen() {
               <Text style={st.markEx} numberOfLines={2}>
                 {item.excerpt}
               </Text>
-              {item.remindAt ? <Text style={st.remind}>Reminder set · {reminderWhen(item.remindAt)}</Text> : null}
+              {item.remindAt && reminderLine(item.remindAt) ? (
+                <Text style={st.remind}>{reminderLine(item.remindAt)}</Text>
+              ) : null}
             </Pressable>
             <Pressable
               onPress={() => remove(item)}
@@ -115,12 +117,6 @@ export function ForumMineScreen() {
       />
     </View>
   );
-}
-
-function reminderWhen(iso: string): string {
-  const t = new Date(iso).getTime();
-  if (Number.isNaN(t)) return '';
-  return t > Date.now() ? new Date(iso).toLocaleDateString() : `${timeAgo(iso)} ago`;
 }
 
 function MeBlock({ read }: { read: ReturnType<typeof useForumRead<ForumMe | null>> }) {

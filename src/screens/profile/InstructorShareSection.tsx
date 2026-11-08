@@ -14,7 +14,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { Modal } from '../../components/DimModal';
 import { Section } from '../../components/Section';
@@ -36,6 +36,7 @@ import {
 import { confirmDialog, notify } from '../../lib/confirm';
 import { fetchMyRegistryName } from '../../features/profile/api';
 import { createInFlightLatch, useLatchedPress } from '../../lib/latch';
+import { createFocusGate } from '../../features/profile/focusGate';
 import { colors, fonts } from '../../theme/tokens';
 
 /** `code` is the code that was LOOKED UP: the share goes to the instructor
@@ -68,6 +69,16 @@ export function InstructorShareSection() {
    *  not hold FIND (or the field) in the next one. Its answer is dropped by
    *  `popupTicket`. */
   const [findLatch, setFindLatch] = useState(createInFlightLatch);
+  /** Profile is a TAB, so it stays mounted while another tab is in front, and
+   *  the RN Modal and `notify` are global: an answer that lands after the
+   *  member left Profile must open nothing over Study or My Progress (bug pass
+   *  2, CODE-2-11). Kept in a ref so an await reads it as it is NOW. */
+  const isFocused = useIsFocused();
+  const focusedRef = useRef(isFocused);
+  focusedRef.current = isFocused;
+  /** Drops an answer nobody waits for; keeps a failure until Profile is back
+   *  in front (features/profile/focusGate.ts). */
+  const [gate] = useState(() => createFocusGate(() => focusedRef.current));
 
   // Newest read wins; a failed read re-asks when Profile (a tab, so it stays
   // mounted) is focused again — "reopen Profile" has to work.
@@ -88,8 +99,10 @@ export function InstructorShareSection() {
   }, [load]);
   useFocusEffect(
     useCallback(() => {
+      // A failed stop that landed while another tab was in front is told now.
+      gate.onFocus();
       if (failed.current) void load();
-    }, [load]),
+    }, [load, gate]),
   );
 
   const openPopup = () => {
@@ -102,6 +115,10 @@ export function InstructorShareSection() {
     setPopupError(null);
     setPopupOpen(true);
   };
+  /** Only while Profile is in front (CODE-2-11): for answers that land after
+   *  an await. */
+  const notifyOnProfile: typeof notify = (...a) => gate.ifFocused(() => notify(...a));
+  const openPopupOnProfile = () => gate.ifFocused(openPopup);
   const closePopup = () => {
     // A share already sent cannot be called back, so CANCEL waits for it.
     if (sharing) return;
@@ -158,7 +175,11 @@ export function InstructorShareSection() {
     const r = await stopSharingWithInstructor();
     const now = await load();
     if (!r.ok || now.state !== 'off') {
-      notify(SHARE_COPY.notConfirmedTitle, r.ok ? SHARE_COPY.readFailed : r.error);
+      // A stop we could not confirm must be seen, but never over another tab:
+      // if Profile is not in front it waits for the next focus (CODE-2-11
+      // follow-up).
+      const body = r.ok ? SHARE_COPY.readFailed : r.error;
+      gate.nowOrOnFocus(() => notify(SHARE_COPY.notConfirmedTitle, body));
     }
   });
 
@@ -178,6 +199,12 @@ export function InstructorShareSection() {
   // part of the email before the @. A read that fails is said as such, never
   // treated as "no name".
   const startShare = useLatchedPress(async () => {
+    // Everything below lands after the read, when Profile may no longer be in
+    // front: the notice and the popup open only over Profile (CODE-2-11). The
+    // switch never turned on, so a dropped answer costs nothing: the member
+    // turns it on again back on Profile.
+    const notify = notifyOnProfile;
+    const openPopup = openPopupOnProfile;
     let name: string | null;
     try {
       name = await fetchMyRegistryName();

@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import { notify } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { fonts } from '../../../theme/tokens';
@@ -24,19 +24,23 @@ import {
   type ForumCategory,
   type ForumRights,
 } from '../../../features/forum/api';
-import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
-import { useForumFlags } from '../../../features/forum/forumFlags';
-import { clientIdFor, forgetClientId, postFingerprint } from '../../../features/forum/postOnce';
+import { clearDraft, draftOwner, draftOwnerStale, readDraft, saveDraft } from '../../../features/forum/drafts';
+import { rulesAgreed, useForumFlags } from '../../../features/forum/forumFlags';
+import { clientIdFor, forgetClientId, landedAs, postFingerprint } from '../../../features/forum/postOnce';
+import { GlossaryLinkProvider, useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import {
   ASK_SLUG,
   BODY_MAX,
   EMPTY_ASK,
+  acceptEditStep,
   SEARCH_MIN,
   TITLE_MAX,
   askChoices,
   askDraftRead,
+  askDraftForSave,
   askDraftText,
   askFormOf,
+  pendingIdFits,
   askProblem,
   carryAskValues,
   composeAskBody,
@@ -121,7 +125,13 @@ export function ForumAskScreen() {
       </View>
     );
   }
-  return <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />;
+  // The glossary terms under the title open in place, over the form, so the
+  // half-written question is right there after (UI-2-07).
+  return (
+    <GlossaryLinkProvider>
+      <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />
+    </GlossaryLinkProvider>
+  );
 }
 
 function AskForm({
@@ -139,6 +149,7 @@ function AskForm({
 }) {
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
+  const openTerm = useGlossaryOpener();
 
   /** Only categories this member may start a topic in, and what to say when
    *  there is none, or when the one they came for is refused (askChoices). */
@@ -161,16 +172,42 @@ function AskForm({
   });
   const touched = useRef(false);
   const clientId = useRef<string | null>(null);
+  /** Nothing on the form changes while it is posting: what goes out is what
+   *  is on screen, and nothing typed meanwhile is dropped (CODE-2-01). */
+  const postingNow = useRef(false);
   const set = useCallback((patch: Partial<AskValues>) => {
+    if (postingNow.current) return;
     touched.current = true;
     // A retry keeps its id so it lands once; a CHANGED form is a new post.
     clientId.current = null;
     setValues((v) => ({ ...v, ...patch }));
   }, []);
-  const [lab, setLab] = useState<string | null>(null);
-  const [job, setJob] = useState(false);
+  const [lab, setLabValue] = useState<string | null>(null);
+  const [job, setJobValue] = useState(false);
+  /** The lab and job kind the pending id was made for. The lab and the job
+   *  kind are part of the post: a different one is a new post with a new id,
+   *  the same ones set back keep it, so a restored post lands once (CODE-2-07). */
+  const idMadeFor = useRef<{ lab: string | null; job: boolean } | null>(null);
+  // Touched only by a real change: the same lab or job set again (re-picking
+  // the same category) writes nothing over a restored draft (CODE-2-07).
+  const setLab = (next: string | null) => {
+    if (postingNow.current || next === lab) return;
+    touched.current = true;
+    setLabValue(next);
+  };
+  const setJob = (next: boolean | ((j: boolean) => boolean)) => {
+    if (postingNow.current) return;
+    const value = typeof next === 'function' ? next(job) : next;
+    if (value === job) return;
+    touched.current = true;
+    setJobValue(value);
+  };
   const [error, setError] = useState<string | null>(null);
-  const [posting, setPosting] = useState(false);
+  const [posting, setPostingState] = useState(false);
+  const setPosting = (on: boolean) => {
+    postingNow.current = on;
+    setPostingState(on);
+  };
 
   const [picking, setPicking] = useState(false);
   const [pickingLab, setPickingLab] = useState(false);
@@ -179,6 +216,8 @@ function AskForm({
 
   /* ── Draft saved ─────────────────────────────────────────────────── */
   const draftName = draftKey({ slug: labThread ? `lab:${labThread.key}` : category?.slug });
+  /** Whose draft this is: never written after the account wipe (CODE-2-06). */
+  const owner = useRef(draftOwner());
   const [draftSaved, setDraftSaved] = useState(false);
   useEffect(() => {
     if (edit) return undefined;
@@ -189,6 +228,9 @@ function AskForm({
       const got = askDraftRead(stored);
       if (!got) return;
       setValues({ ...EMPTY_ASK, ...got.values });
+      setLabValue(got.lab);
+      setJobValue(got.job);
+      idMadeFor.current = got.clientId ? { lab: got.lab, job: got.job } : null;
       // A draft that was being posted keeps its once-only id: posting it again
       // lands once (CODE-1-05).
       clientId.current = got.clientId;
@@ -206,11 +248,14 @@ function AskForm({
   useEffect(() => {
     if (edit || !touched.current) return undefined;
     let live = true;
-    const text = askDraftText(values, null);
+    // A pending id stays with the draft while the post is still the same post
+    // (CODE-2-07): set() drops it when the words change.
+    const text = askDraftForSave(values, clientId.current, idMadeFor.current, { lab, job });
     unsaved.current = { name: draftName, text };
     const t = setTimeout(() => {
       saveTimer.current = null;
       unsaved.current = null;
+      if (draftOwnerStale(owner.current)) return;
       void saveDraft(draftName, text).then((ok) => {
         if (live) setDraftSaved(ok && hasStarted(values));
       });
@@ -220,11 +265,13 @@ function AskForm({
       live = false;
       clearTimeout(t);
     };
-  }, [draftName, edit, values]);
+  }, [draftName, edit, job, lab, values]);
   // An immediate BACK keeps the last words typed: the timer above dies with
-  // the screen, so the write happens here.
+  // the screen, so the write happens here. Never after the account changed:
+  // a forced sign-out unmounts this form AFTER the wipe (CODE-2-06).
   useEffect(
     () => () => {
+      if (draftOwnerStale(owner.current)) return;
       const last = unsaved.current;
       if (last) void saveDraft(last.name, last.text);
     },
@@ -235,6 +282,7 @@ function AskForm({
    *  cleared, so a posted question never comes back under the first category),
    *  and the words typed move into the new form's box (CODE-1-06, UI-1-02). */
   const pickCategory = (next: ForumCategory | null) => {
+    if (postingNow.current) return;
     if (next && next.slug !== category?.slug) {
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = null;
@@ -296,6 +344,22 @@ function AskForm({
     if (edit) {
       const body = guided ? composeAskBody(values) : values.body.trim();
       const r = await editPost(edit.postId, body, edit.isOpening ? values.title.trim() : undefined);
+      // ACCEPT AND EDIT: accepted only once the corrected text is published.
+      // A refused edit stays here with its reason; one waiting for a review
+      // goes back to its card in the thread. The correction stays open either
+      // way (CODE-2-05).
+      const step = r.ok && edit.acceptCorrection ? acceptEditStep(r.value.state, r.value.reason) : null;
+      if (step && step.kind === 'stay') {
+        setPosting(false);
+        setError(step.text);
+        return;
+      }
+      if (step && step.kind === 'back') {
+        setPosting(false);
+        notify(step.title, step.text);
+        safeGoBack(navigation as never);
+        return;
+      }
       if (r.ok && edit.acceptCorrection) {
         // The edit is in: now the correction is accepted (UI-1-01).
         const a = await resolveCorrection(edit.acceptCorrection, true);
@@ -309,13 +373,18 @@ function AskForm({
     // The same post sent again (a restored draft, a second Ask form on the
     // stack) reuses its once-only id, and the draft keeps it until the post
     // has landed (CODE-1-05).
-    const fingerprint = postFingerprint(labThread ? `lab:${labThread.key}` : `ask:${category?.slug ?? ''}`, values);
+    const fingerprint = postFingerprint(
+      labThread ? `lab:${labThread.key}` : `ask:${category?.slug ?? ''}`,
+      labThread ? values : { ...values, lab, job },
+    );
+    if (!pendingIdFits(idMadeFor.current, { lab, job })) clientId.current = null;
     const cid = clientIdFor(fingerprint, clientId.current, () => Crypto.randomUUID());
     clientId.current = cid;
+    idMadeFor.current = { lab, job };
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = null;
     unsaved.current = null;
-    await saveDraft(draftName, askDraftText(values, cid));
+    await saveDraft(draftName, askDraftText(values, cid, { lab, job }));
     if (labThread) {
       const r = await submitPost({ body: values.body.trim(), clientId: cid, labThread });
       setPosting(false);
@@ -333,6 +402,7 @@ function AskForm({
         setError(hidden);
         return;
       }
+      landedAs(fingerprint, r.value.postId);
       if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
       else navigation.navigate('ForumThread', { topicId: r.value.topicId });
       return;
@@ -365,13 +435,18 @@ function AskForm({
       setError(hidden);
       return;
     }
+    // Deleting this topic later frees its id: the same words posted again are
+    // a new topic, never the deleted one (CODE-2-07).
+    landedAs(fingerprint, r.value.postId);
     // The author sees their own post here, whatever the check decided.
     if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
     else navigation.navigate('ForumThread', { topicId: r.value.topicId });
   }, [category, draftName, edit, form, guided, job, lab, labThread, navigation, problem, values]);
 
+  // Asked from the stored agreement once it is read, never from the store's
+  // empty start, and once per session when the phone cannot keep it (CODE-2-12).
   const post = useLatchedPress(async () => {
-    if (!flags.rulesAccepted) {
+    if (!(await rulesAgreed())) {
       setRulesOpen(true);
       return;
     }
@@ -383,6 +458,27 @@ function AskForm({
     if (ok) await postNow();
     else notify('Not saved', RULES_NOT_SAVED);
   });
+
+  /** CANCEL throws the draft away, once asked; BACK keeps it (UI-2-10). */
+  const cancel = () => {
+    if (edit || !hasStarted(values)) {
+      safeGoBack(navigation as never);
+      return;
+    }
+    confirmDialog(
+      'Discard this draft?',
+      'What you typed here will be deleted from this phone. To keep it for later, go back instead.',
+      'DISCARD',
+      () => {
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        saveTimer.current = null;
+        unsaved.current = null;
+        void clearDraft(draftName);
+        safeGoBack(navigation as never);
+      },
+      { destructive: true },
+    );
+  };
 
   const headerTitle = labThread ? `Discuss: ${labThread.title}` : edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
   const headerSub = edit?.partial
@@ -426,7 +522,7 @@ function AskForm({
         {!edit && !labThread ? (
           <View>
             <FieldLabel>CATEGORY</FieldLabel>
-            <PickField label="Category" value={category?.name ?? 'Choose one'} onPress={() => setPicking(true)} />
+            <PickField label="Category" value={category?.name ?? 'Choose one'} onPress={() => setPicking(true)} disabled={posting} />
           </View>
         ) : null}
         {(!edit || edit.isOpening) && !labThread ? (
@@ -435,6 +531,7 @@ function AskForm({
             <Field
               label="Title"
               value={values.title}
+              editable={!posting}
               onChangeText={(t) => set({ title: t })}
               maxLength={TITLE_MAX}
               placeholder={form === 'question' ? 'Vocals sound thin in my mixes' : 'A clear, short title'}
@@ -462,7 +559,7 @@ function AskForm({
             {similar.terms.map((term) => (
               <Pressable
                 key={term}
-                onPress={() => navigation.navigate('PublicGlossary', { query: term })}
+                onPress={() => (openTerm ? openTerm(term) : navigation.navigate('PublicGlossary', { query: term }))}
                 style={st.simRow}
                 accessibilityRole="button"
                 accessibilityLabel={`Glossary: ${term}`}
@@ -482,12 +579,12 @@ function AskForm({
           </View>
         ) : null}
 
-        <FormFields form={shownForm} values={values} set={set} />
+        <FormFields form={shownForm} values={values} set={set} locked={posting} />
 
         {!edit && !labThread && form === 'question' ? (
           <View>
             <FieldLabel>LINK A LAB (OPTIONAL)</FieldLabel>
-            <PickField label="Link a lab" value={lab ?? 'Choose a lab'} onPress={() => setPickingLab(true)} />
+            <PickField label="Link a lab" value={lab ?? 'Choose a lab'} onPress={() => setPickingLab(true)} disabled={posting} />
           </View>
         ) : null}
         {!edit && !labThread && canPostJob ? (
@@ -499,7 +596,7 @@ function AskForm({
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.btnrow}>
           {/* Off while posting: leaving cannot stop a post that is out (CODE-1-05). */}
-          <QuietButton label="CANCEL" onPress={() => safeGoBack(navigation as never)} disabled={posting} />
+          <QuietButton label="CANCEL" onPress={cancel} disabled={posting} />
           <AmberButton
             label={edit ? 'REPOST' : labThread ? 'POST' : POST_LABEL[form]}
             onPress={post}
@@ -560,11 +657,15 @@ function FormFields({
   form,
   values,
   set,
+  locked,
 }: {
   form: AskFormKind;
   values: AskValues;
   set: (patch: Partial<AskValues>) => void;
+  /** Posting: the fields hold what is being sent. */
+  locked: boolean;
 }) {
+  const editable = !locked;
   if (form === 'question') {
     return (
       <>
@@ -572,6 +673,7 @@ function FormFields({
           <FieldLabel>WHAT ARE YOU TRYING TO DO?</FieldLabel>
           <Field
             label="What are you trying to do?"
+            editable={editable}
             value={values.trying}
             onChangeText={(t) => set({ trying: t })}
             placeholder="Get a fuller, warmer lead vocal for a podcast"
@@ -583,6 +685,7 @@ function FormFields({
           <FieldLabel>GEAR AND SIGNAL CHAIN</FieldLabel>
           <Field
             label="Gear and signal chain"
+            editable={editable}
             value={values.gear}
             onChangeText={(t) => set({ gear: t })}
             placeholder="Condenser mic → interface → DAW"
@@ -593,6 +696,7 @@ function FormFields({
           <FieldLabel>WHAT HAVE YOU TRIED?</FieldLabel>
           <Field
             label="What have you tried?"
+            editable={editable}
             value={values.tried}
             onChangeText={(t) => set({ tried: t })}
             placeholder="Boosted 200 Hz; it got muddy"
@@ -606,11 +710,11 @@ function FormFields({
   if (form === 'glossary') {
     return (
       <>
-        <LabelledField label="TERM" value={values.term} onChange={(t) => set({ term: t })} />
-        <LabelledField label="CURRENT TEXT (OPTIONAL)" value={values.current} onChange={(t) => set({ current: t })} multiline />
-        <LabelledField label="PROPOSED TEXT" value={values.proposed} onChange={(t) => set({ proposed: t })} multiline />
-        <LabelledField label="WHY SHOULD IT CHANGE?" value={values.reason} onChange={(t) => set({ reason: t })} multiline />
-        <LabelledField label="SOURCE" value={values.source} onChange={(t) => set({ source: t })} />
+        <LabelledField label="TERM" value={values.term} onChange={(t) => set({ term: t })} editable={editable} />
+        <LabelledField label="CURRENT TEXT (OPTIONAL)" value={values.current} onChange={(t) => set({ current: t })} multiline editable={editable} />
+        <LabelledField label="PROPOSED TEXT" value={values.proposed} onChange={(t) => set({ proposed: t })} multiline editable={editable} />
+        <LabelledField label="WHY SHOULD IT CHANGE?" value={values.reason} onChange={(t) => set({ reason: t })} multiline editable={editable} />
+        <LabelledField label="SOURCE" value={values.source} onChange={(t) => set({ source: t })} editable={editable} />
       </>
     );
   }
@@ -621,6 +725,7 @@ function FormFields({
         value={values.body}
         onChange={(t) => set({ body: t })}
         multiline
+        editable={editable}
       />
       {form === 'idea' ? (
         <View>
@@ -642,16 +747,18 @@ function LabelledField({
   value,
   onChange,
   multiline,
+  editable = true,
 }: {
   label: string;
   value: string;
   onChange: (t: string) => void;
   multiline?: boolean;
+  editable?: boolean;
 }) {
   return (
     <View>
       <FieldLabel>{label}</FieldLabel>
-      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} maxLength={BODY_MAX} />
+      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} maxLength={BODY_MAX} editable={editable} />
     </View>
   );
 }
@@ -700,6 +807,9 @@ function PickList({
               <Text style={st.pickClear}>{clearLabel}</Text>
             </Pressable>
           ) : null
+        }
+        ListEmptyComponent={
+          q.trim() ? <Text style={st.pickEmpty}>Nothing matches that search. Try fewer letters.</Text> : null
         }
         renderItem={({ item }) => (
           <Pressable
@@ -757,4 +867,5 @@ const st = StyleSheet.create({
   pickRow: { minHeight: 44, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: F.line },
   pickRowText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: F.text },
   pickClear: { fontFamily: fonts.barlowMedium, fontSize: 14, color: F.amber },
+  pickEmpty: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: F.sub, paddingVertical: 12 },
 });

@@ -38,10 +38,27 @@ import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifi
 import { KindSwitchRow } from './KindSwitchRow';
 import { InstructorCodeRow } from './InstructorCodeRow';
 import { setFeedbackIdentity } from '../../lib/feedback';
+import { getFeedbackIdentity } from '../../lib/feedbackTags';
+import { employerSectionFace, knownVerifierKind } from '../../features/profile/employerFace';
+import { useLatchedPress } from '../../lib/latch';
+import { recordVerifierAnswer, useRememberedVerifierKind } from '../../features/profile/verifierKindMemory';
+import { supabase } from '../../lib/supabase';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { PublicPageRow } from './PublicPageRow';
 import { colors, fonts } from '../../theme/tokens';
 
 const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
+
+/** The signed-in account, read locally. `null` = none or the read stalled:
+ *  either way no remembered kind is evidence. */
+async function signedInUid(): Promise<string | null> {
+  try {
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'employerSection');
+    return timedOut ? null : result.data.session?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * `queueReasons` are written by `employer_decide()` for the ADMIN queue —
@@ -78,6 +95,8 @@ export function EmployerSection() {
    *  the section must not say the account is no longer active. */
   const [verifyFailed, setVerifyFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  /** Whose remembered verifier kind may be used (verifierKindMemory.ts). */
+  const [uid, setUid] = useState<string | null>(null);
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [picked, setPicked] = useState<Record<string, string[]>>({});
   /**
@@ -118,14 +137,25 @@ export function EmployerSection() {
   const pickedLoaded = useRef(false);
   const load = useCallback(async () => {
     const ticket = ++loadTicket.current;
-    const [state, who] = await Promise.all([
+    const [state, who, me] = await Promise.all([
       fetchMyEmployerApplication(),
       myVerifierKind(),
+      signedInUid(),
     ]);
     if (ticket !== loadTicket.current) return;
+    setUid(me);
+    // Only a SERVER answer is remembered on the device: a kind is kept, a
+    // clean 'none' forgets, 'unknown' changes nothing (CODE-2-13 follow-up).
+    if (me && who !== 'unknown') void recordVerifierAnswer(me, who);
     // 'unknown' = the check FAILED (null here), never "not verified".
     const isVerified = who === 'unknown' ? null : who !== 'none';
-    setVerifierKind(who === 'none' || who === 'unknown' ? null : who);
+    // A FAILED check keeps the kind this sign-in already learned (sign-in fill,
+    // or this section's last good read), so the couldn't-check face can be
+    // drawn and worded for a verified account (bug pass 2, CODE-2-13). Every
+    // verified-only row also checks `verified`, so this opens nothing.
+    setVerifierKind(
+      who === 'none' ? null : who === 'unknown' ? knownVerifierKind(getFeedbackIdentity().role) : who,
+    );
     // Feedback emails carry the verified kind as `role=` so the inbox can route
     // employers/instructors first (Comp A 2026-11-02). From THIS existing read
     // only — no new query; a failed read ('unknown') leaves it as it was.
@@ -168,11 +198,30 @@ export function EmployerSection() {
     }, [load]),
   );
 
-  // Nothing to say to a member, so say nothing.
-  if (!loaded || (!app && !verified)) return null;
+  /** TRY AGAIN on the couldn't-check face; one read at a time. */
+  const retry = useLatchedPress(() => load());
+
+  // A cold, offline launch knows nothing in memory: the kind the server last
+  // confirmed for THIS account, kept on the device, words the couldn't-check
+  // face. It is read from the device after the first render, so the section
+  // re-renders when it lands (CODE-2-13 follow-up).
+  const remembered = useRememberedVerifierKind(uid);
+  useEffect(() => {
+    if (verifyFailed && !verifierKind && remembered) setVerifierKind(remembered);
+  }, [verifyFailed, verifierKind, remembered]);
+
+  // Nothing to say to a member, so say nothing. But a VERIFIED account whose
+  // reads both failed is not "nothing here": it gets the couldn't-check face
+  // with a retry (bug pass 2, CODE-2-13). What this sign-in already knows is
+  // the only evidence the account is one, so a learner still sees nothing.
+  const face = employerSectionFace({ loaded, hasApp: !!app, verified, verifyFailed, knownKind: verifierKind });
+  if (face === 'hidden') return null;
+  const unreadable = face === 'unreadable';
 
   /** The verified kind when known, else what the application asked for. */
   const copy = VERIFIER_COPY[verifierKind ?? app?.kind ?? 'employer'];
+  /** The couldn't-check line below is showing: offer the retry beside it. */
+  const checkFailedShown = !verified && app?.status !== 'pending' && app?.status !== 'rejected' && verifyFailed;
 
   const toggle = async (kind: Kind, slug: string) => {
     const current = pickedRef.current[kind] ?? [];
@@ -273,6 +322,12 @@ export function EmployerSection() {
         <Text style={styles.body}>This application is no longer active.</Text>
       )}
 
+      {checkFailedShown ? (
+        <Pressable style={styles.link} onPress={retry} accessibilityRole="button" accessibilityLabel="Try again">
+          <Text style={styles.linkText}>TRY AGAIN ›</Text>
+        </Pressable>
+      ) : null}
+
       {note ? <Text style={styles.warn}>{note}</Text> : null}
 
       {/* A verified INSTRUCTOR's code for students (instructor_my_code).
@@ -306,7 +361,9 @@ export function EmployerSection() {
         </Text>
       ) : null}
 
-      {!verified ? (
+      {/* An account known to be verified has nothing to apply for: only
+          the retry is offered while its reads are failing. */}
+      {!verified && !unreadable ? (
         <Pressable
           style={styles.link}
           // `void` does not handle a rejection: no browser / a blocked open was

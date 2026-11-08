@@ -31,7 +31,7 @@ import {
 } from './forumBits';
 import { AppealPopup } from './forumPopups';
 
-type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
+type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void; isFocused: () => boolean };
 
 const NOTICE_EDIT_UNREAD = 'Your post could not be loaded. Check your connection and try again.';
 
@@ -53,6 +53,9 @@ export function ForumNoticesScreen() {
   /** The whole post when the thread is known and readable, else the excerpt. */
   const editFrom = useLatchedPress(async (n: ForumNotice, postId: string) => {
     const full = await fetchNoticeEdit(n.topicId, postId);
+    // The member moved on (OPEN THE THREAD, Back) while this was read: the
+    // form never opens over where they went (CODE-2-10).
+    if (!navigation.isFocused()) return;
     if (full === 'failed') {
       // The thread is known but did not answer: never guess from the excerpt,
       // which would treat a topic as a reply (CODE-1-17).
@@ -123,7 +126,7 @@ export function ForumNoticesScreen() {
 
   return (
     <View style={forumStyles.root}>
-      <ForumHeader title="Your post" sub="What the review decided" />
+      <ForumHeader title="Your posts" sub="What the review decided" />
       <FlatList
         data={read.face === 'ready' ? (read.value?.notices ?? []) : []}
         keyExtractor={(n) => String(n.id)}

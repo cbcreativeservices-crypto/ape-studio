@@ -542,7 +542,7 @@ export function ExploreView({
 
       {showFilters && taxErr ? (
         <View>
-          <Banner tone="warn">Couldn’t load the filter options — check your connection.</Banner>
+          <Banner tone="warn">Couldn’t load the filter options. Check your connection.</Banner>
           <PrimaryButton label="RETRY" onPress={() => void loadTax()} />
         </View>
       ) : null}

@@ -40,3 +40,10 @@ describe('CODE-1-33: a forum tap waits for sign-in', () => {
     assert.match(app, /function drainParkedForumTap\(\): void \{[\s\S]*?takeParkedForumTap\(base\)/);
   });
 });
+
+describe('CODE-2-02: a thread for a different topic opens on top', () => {
+  it('ForumThread has one screen per topic id', () => {
+    const nav = readFileSync('src/navigation/RootNavigator.tsx', 'utf8').replace(/\r\n/g, '\n');
+    assert.match(nav, /name="ForumThread"[\s\S]{0,120}getId=\{\(\{ params \}\) => \(params as \{ topicId\?: string \} \| undefined\)\?\.topicId\}/);
+  });
+});

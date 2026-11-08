@@ -8,6 +8,7 @@
  * never touches a real draft.
  */
 import { createLocalStore } from '../storage/localStore';
+import { localStoreWipeCount } from '../storage/localStoreRegistry';
 import { sampleForumOn } from './sampleSwitch.ts';
 
 type Drafts = Record<string, string>;
@@ -54,3 +55,21 @@ export async function saveDraft(key: string, text: string): Promise<boolean> {
 }
 
 export const clearDraft = (key: string) => saveDraft(key, '');
+
+/**
+ * Whose drafts a screen is writing: this account (the wipe count) and this
+ * world (the dev sample or the real store). Taken when the screen mounts
+ * (bug pass 2, CODE-2-06). A forced sign-out runs the wipe FIRST and then
+ * unmounts the screen, so its last-words flush landed in the next member's
+ * store; a write whose owner changed is dropped.
+ */
+export type DraftOwner = { wipe: number; sample: boolean };
+
+export function draftOwner(): DraftOwner {
+  return { wipe: localStoreWipeCount(), sample: sampleForumOn() };
+}
+
+/** The account was wiped, or the sample opened or closed, since `o` was taken. */
+export function draftOwnerStale(o: DraftOwner): boolean {
+  return o.wipe !== localStoreWipeCount() || o.sample !== sampleForumOn();
+}

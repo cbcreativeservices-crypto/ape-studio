@@ -4,10 +4,11 @@
  * takes the place of the posting button for anyone who may not post there.
  */
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
+import { fonts } from '../../../theme/tokens';
 import {
   fetchForumHome,
   fetchLoungeTopics,
@@ -22,6 +23,7 @@ import {
   PRO_LOUNGE_REFUSAL,
   SORT_LABELS,
   emptyTopicsWords,
+  nextTopicsPage,
   postingDock,
   refusalNeedsProfile,
   refusalText,
@@ -52,6 +54,7 @@ type Params = { slug?: string; lounge?: boolean };
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
 
 const PAGE = 30;
+const MORE_TOPICS_UNREAD = 'More topics could not be loaded. Check your connection and try again.';
 const FOLLOW: { level: FollowLevel; label: string; note: string }[] = [
   { level: 'all', label: 'Every new topic', note: 'An alert for each new topic here' },
   { level: 'replies', label: 'Replies to me only', note: 'Only when someone answers you' },
@@ -85,17 +88,46 @@ export function ForumCategoryScreen() {
     const seen = new Set(first.map((t) => t.id));
     return [...first, ...more.filter((t) => !seen.has(t.id))];
   }, [more, topics.value]);
-  const showMore = useLatchedPress(async () => {
-    if (lounge || rows.length === 0 || rows.length % PAGE !== 0) return;
-    const r = await fetchTopics(slug ?? null, sort, PAGE, rows.length);
-    if (r.ok) setMore((m) => [...m, ...r.value]);
+  /**
+   * Where the next page starts and whether there is one, from what the server
+   * ANSWERED, not from the rows drawn: a topic that moved between pages is
+   * drawn once, and that used to stop paging for good (CODE-2-08).
+   */
+  const [paging, setPaging] = useState<{ read: number; full: boolean | null }>({ read: 0, full: null });
+  /** The last page read failed: said in words, with a way to try again. */
+  const [moreFailed, setMoreFailed] = useState(false);
+  const next = nextTopicsPage(topics.value?.length ?? 0, paging, PAGE);
+  const loadMore = useLatchedPress(async () => {
+    if (lounge || next === null) return;
+    const r = await fetchTopics(slug ?? null, sort, PAGE, next);
+    if (!r.ok) {
+      setMoreFailed(true);
+      return;
+    }
+    setMoreFailed(false);
+    setMore((m) => [...m, ...r.value]);
+    setPaging((p) => ({ read: p.read + r.value.length, full: r.value.length >= PAGE }));
   });
+  // Scrolling to the end reads on; after a failure only the button tries again.
+  const showMore = () => {
+    if (!moreFailed) loadMore();
+  };
 
-  useReloadOnReturn(topics.reload);
+  // Back from a thread: the first page again, and the pages after it are
+  // dropped, never kept from before (CODE-2-08).
+  const reloadTopics = useCallback(async () => {
+    await topics.reload();
+    setMore([]);
+    setPaging({ read: 0, full: null });
+    setMoreFailed(false);
+  }, [topics]);
+  useReloadOnReturn(reloadTopics);
 
   const open = useCallback((t: ForumTopic) => navigation.navigate('ForumThread', topicRoute(t)), [navigation]);
   const changeSort = useCallback((s: TopicSort) => {
     setMore([]);
+    setPaging({ read: 0, full: null });
+    setMoreFailed(false);
     setSort(s);
   }, []);
 
@@ -168,6 +200,19 @@ export function ForumCategoryScreen() {
         renderItem={({ item, index }) => <TopicRow topic={item} spelled={index === 0} plates={showPlates} onPress={open} />}
         onEndReachedThreshold={0.4}
         onEndReached={showMore}
+        ListFooterComponent={
+          moreFailed && topics.face === 'ready' ? (
+            <Pressable
+              onPress={loadMore}
+              style={({ pressed }) => [st.moreFailed, pressed && st.pressed]}
+              accessibilityRole="button"
+              accessibilityLabel="Try loading more topics again"
+            >
+              <Text style={st.moreFailedText}>{MORE_TOPICS_UNREAD}</Text>
+              <Text style={st.moreFailedKey}>TRY AGAIN</Text>
+            </Pressable>
+          ) : null
+        }
         ListEmptyComponent={
           topics.face === 'loading' ? (
             <ForumLoading label="Loading topics…" />
@@ -197,4 +242,8 @@ const st = StyleSheet.create({
   list: { paddingHorizontal: 16, paddingBottom: 24, flexGrow: 1 },
   top: { paddingTop: 12 },
   dock: { paddingHorizontal: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: F.line, backgroundColor: F.bg },
+  pressed: { opacity: 0.7 },
+  moreFailed: { minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingVertical: 12, gap: 6 },
+  moreFailedText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: F.sub, textAlign: 'center' },
+  moreFailedKey: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 1.25, color: F.amber },
 });

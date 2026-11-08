@@ -411,7 +411,7 @@ describe('the harness and the house rules', () => {
   it('the swipe addition is the five approved screens, and no more', () => {
     const nav = read('src/navigation/RootNavigator.tsx');
     for (const s of ['ForumCategory', 'ForumThread', 'ForumAsk', 'ForumIdeas', 'ForumNotices']) {
-      assert.match(nav, new RegExp(`name="${s}" getComponent=\\{Lazy\\.${s}\\} options=\\{swipe\\}`), s);
+      assert.match(nav, new RegExp(`name="${s}"\\s+getComponent=\\{Lazy\\.${s}\\}\\s+options=\\{swipe\\}`), s);
     }
     assert.match(nav, /name="ForumMine" getComponent=\{Lazy\.ForumMine\} \/>/);
   });

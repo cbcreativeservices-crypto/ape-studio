@@ -125,9 +125,11 @@ describe('CODE-1-05: a post sent again from anywhere keeps its once-only id', ()
   it('both posting screens use the shared id and the draft carries it; CANCEL is off while posting', () => {
     const a = ask();
     assert.match(a, /clientIdFor\(fingerprint, clientId\.current/);
-    assert.match(a, /await saveDraft\(draftName, askDraftText\(values, cid\)\)/);
+    // Pass 2 (CODE-2-07): the draft also keeps the lab and the job kind.
+    assert.match(a, /await saveDraft\(draftName, askDraftText\(values, cid, \{ lab, job \}\)\)/);
     assert.match(a, /clientId\.current = got\.clientId/);
-    assert.match(a, /label="CANCEL" onPress=\{\(\) => safeGoBack\(navigation as never\)\} disabled=\{posting\}/);
+    // Pass 2 (UI-2-10): CANCEL asks, then discards; still off while posting.
+    assert.match(a, /label="CANCEL" onPress=\{cancel\} disabled=\{posting\}/);
     assert.doesNotMatch(a, /clientId\.current = clientId\.current \?\? Crypto\.randomUUID\(\)/);
     const t = thread();
     assert.match(t, /clientIdFor\(fingerprint, clientId\.current/);
@@ -470,7 +472,8 @@ describe('CODE-1-05 (c): POST within 800 ms of the last keystroke keeps the id i
     const a = ask();
     const post = a.slice(a.indexOf('const postNow'), a.indexOf('const r = await submitPost'));
     const clear = post.indexOf('if (saveTimer.current) clearTimeout(saveTimer.current);');
-    const write = post.indexOf('await saveDraft(draftName, askDraftText(values, cid));');
+    // Pass 2 (CODE-2-07): the draft also keeps the lab and the job kind.
+    const write = post.indexOf('await saveDraft(draftName, askDraftText(values, cid, { lab, job }));');
     assert.ok(clear > 0 && write > clear);
     assert.match(a, /saveTimer\.current = t;/);
   });

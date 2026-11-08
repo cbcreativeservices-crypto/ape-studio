@@ -39,17 +39,19 @@ import {
   type ForumThread,
 } from '../../../features/forum/api';
 import { amIForumAdmin, setTopicFlags } from '../../../features/forum/adminApi';
-import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
+import { clearDraft, draftOwner, draftOwnerStale, readDraft, saveDraft } from '../../../features/forum/drafts';
 import { beginFlag, endFlag, flaggedPostIds } from '../../../features/forum/flaggedPosts';
 import {
   clientIdFor,
   forgetClientId,
+  forgetLandedPost,
+  landedAs,
   onReplyLanded,
   postFingerprint,
   replyLandedSeen,
   settleClientId,
 } from '../../../features/forum/postOnce';
-import { useForumFlags } from '../../../features/forum/forumFlags';
+import { rulesAgreed, useForumFlags } from '../../../features/forum/forumFlags';
 import { searchDirectory } from '../../../features/directory/api';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import {
@@ -83,6 +85,8 @@ import {
   refusalNeedsProfile,
   RULES_NOT_SAVED,
   asksForRules,
+  canStartReply,
+  quoteLine,
   replyBlock,
   replyDraftRead,
   replyDraftText,
@@ -92,6 +96,9 @@ import {
   trackedFace,
   timeAgo,
   tomorrowMorning,
+  unsentRemainder,
+  withCorrection,
+  withQuote,
   type MentionPerson,
 } from '../../../features/forum/rules';
 import type { ReactionKind } from '../../../features/forum/types';
@@ -116,6 +123,7 @@ import {
   StaleNote,
   StatusStamp,
   ThreadHeader,
+  ForumEmpty,
   forumStyles,
   openMyProfile,
   type MenuItem,
@@ -157,13 +165,25 @@ const SAFETY_NOTE =
 export function ForumThreadScreen() {
   const route = useRoute();
   const { topicId, welcome, jumpTo, unread } = (route.params ?? {}) as Params;
-  if (welcome || !topicId) return <LocalWelcome />;
+  if (welcome) return <LocalWelcome />;
+  // No topic id (an answer that did not say which topic): say so, never the
+  // founder's welcome in its place (bug pass 2, S-1).
+  if (!topicId) return <NoTopic />;
   return (
     <GlossaryLinkProvider>
       {/* key: a thread opened over another (a forum tap, a link in a post)
           starts fresh, never with the last one's posts, draft or marks. */}
       <Thread key={topicId} topicId={topicId} jumpTo={jumpTo ?? null} unreadMark={!!unread} />
     </GlossaryLinkProvider>
+  );
+}
+
+function NoTopic() {
+  return (
+    <View style={forumStyles.root}>
+      <ThreadHeader label="" />
+      <ForumEmpty title="This topic could not be opened" text="Go back and open it from the list of topics." />
+    </View>
   );
 }
 
@@ -229,10 +249,35 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   const value = read.value;
   /** Every post read so far: what `posts` holds from the next render on. */
   const readAll = useMemo(() => (value ? mergePosts(value.posts, later) : []), [value, later]);
+  /** A tap's answer written into the read itself (patchPost): drawn in place,
+   *  never reordered, and never undone by the next SHOW MORE (CODE-2-04). */
+  const patching = useRef(false);
   // Drawn from the same merge, ordered on the read (never on a tap).
   useEffect(() => {
+    if (value && patching.current) {
+      patching.current = false;
+      const byId = new Map(mergePosts(value.posts, later).map((p) => [p.id, p]));
+      setPosts((rows) => rows.map((p) => byId.get(p.id) ?? p));
+      return;
+    }
     if (value) setPosts(orderPosts(mergePosts(value.posts, later), value.topic.categoryKind === 'qa'));
   }, [value, later]);
+  const valueNow = useRef(value);
+  valueNow.current = value;
+  const laterNow = useRef(later);
+  laterNow.current = later;
+  /** Change one post where it was read: the first page, else the later pages. */
+  const patchPost = useCallback(
+    (id: string, fn: (p: ForumPost) => ForumPost) => {
+      const onFirst = !!valueNow.current?.posts.some((p) => p.id === id);
+      const onLater = laterNow.current.some((p) => p.id === id);
+      if (!onFirst && !onLater) return;
+      patching.current = true;
+      if (onFirst) read.patch((v) => ({ ...v, posts: v.posts.map((p) => (p.id === id ? fn(p) : p)) }));
+      else setLater((l) => l.map((p) => (p.id === id ? fn(p) : p)));
+    },
+    [read],
+  );
   const hasMore = !!value && value.posts.length >= POSTS_PAGE && laterFull !== false;
 
   /** Pages from `from`: one, or every page to the end. Null when one failed. */
@@ -259,6 +304,23 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     setLaterFull(r.full);
     return true;
   }, [readPages]);
+  /**
+   * Read again after a write (delete, block, report, a Solution mark, back
+   * from Edit): the later pages too, so a deleted or blocked post past the
+   * first page does not stay drawn (CODE-2-03). A failed later read drops
+   * them (SHOW MORE POSTS reads them again) rather than keep a stale copy.
+   */
+  const refreshLater = useCallback(async () => {
+    if (laterNow.current.length === 0) return;
+    if (!(await readToEnd())) {
+      setLater([]);
+      setLaterFull(null);
+    }
+  }, [readToEnd]);
+  const reloadAll = useCallback(async () => {
+    await read.reload();
+    await refreshLater();
+  }, [read, refreshLater]);
   const [loadingMore, setLoadingMore] = useState(false);
   const showMore = useLatchedPress(async () => {
     setLoadingMore(true);
@@ -283,7 +345,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   }, [value, topicId]);
 
   // Back from Edit and Repost.
-  useReloadOnReturn(read.reload);
+  useReloadOnReturn(reloadAll);
 
   /** Everyone in this thread: who @ can suggest, and whose mentions are drawn. */
   const people = useMemo<MentionPerson[]>(
@@ -298,6 +360,8 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   );
   const names = useMemo(() => threadMentionNames(posts), [posts]);
   const mineIds = useMemo(() => new Set(posts.filter((p) => p.isMine).map((p) => p.id)), [posts]);
+  /** Who wrote each post, so a quote says who said it (UI-2-09). */
+  const authorOf = useMemo(() => new Map(posts.map((p) => [p.id, p.author.name])), [posts]);
   /** My forum name, from a post of mine in this thread: MARKED BY YOU (UI-1-12). */
   const myName = useMemo(() => posts.find((p) => p.isMine)?.author.name ?? null, [posts]);
 
@@ -335,6 +399,20 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     const soon = runSoon(() => list.current?.scrollToIndex({ index: step.index, animated: false, viewPosition: 0 }));
     return () => soon.cancel();
   }, [hasMore, jumpTo, jumpLanded, posts, readAll, readToEnd]);
+  // A forum tap for THIS thread while it is open swaps only the route's
+  // params: read again and jump to the new post (CODE-2-02).
+  const lastJump = useRef(jumpTo);
+  useEffect(() => {
+    if (lastJump.current === jumpTo) return;
+    lastJump.current = jumpTo;
+    jumped.current = false;
+    jumpRead.current = false;
+    jumpReading.current = true;
+    void reloadAll().then(() => {
+      jumpReading.current = false;
+      setJumpLanded((n) => n + 1);
+    });
+  }, [jumpTo, reloadAll]);
 
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
@@ -358,22 +436,16 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
           notify('Not saved', r.error);
           return;
         }
-        setPosts((rows) =>
-          rows.map((p) =>
-            p.id === post.id
-              ? {
-                  ...p,
-                  helpfulCount: r.value.helpful,
-                  thanksCount: r.value.thanks,
-                  insightfulCount: r.value.insightful,
-                  myReactions: on ? [...p.myReactions, kind] : p.myReactions.filter((k) => k !== kind),
-                }
-              : p,
-          ),
-        );
+        patchPost(post.id, (p) => ({
+          ...p,
+          helpfulCount: r.value.helpful,
+          thanksCount: r.value.thanks,
+          insightfulCount: r.value.insightful,
+          myReactions: on ? [...p.myReactions.filter((k) => k !== kind), kind] : p.myReactions.filter((k) => k !== kind),
+        }));
       });
     },
-    [runReact],
+    [patchPost, runReact],
   );
 
   /* ── The reply box ───────────────────────────────────────────────── */
@@ -397,6 +469,9 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
 
   /* ── Draft saved ─────────────────────────────────────────────────── */
   const draftName = draftKey({ topicId });
+  /** Whose draft this is: a write after a sign-out or the account wipe would
+   *  land in the next member's store, so it is dropped (CODE-2-06). */
+  const owner = useRef(draftOwner());
   const typed = useRef(false);
   const [draftSaved, setDraftSaved] = useState(false);
   useEffect(() => {
@@ -427,6 +502,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     const t = setTimeout(() => {
       saveTimer.current = null;
       unsaved.current = null;
+      if (draftOwnerStale(owner.current)) return;
       void saveDraft(draftName, text).then((ok) => {
         if (live) setDraftSaved(ok && !!draft.trim());
       });
@@ -438,9 +514,11 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     };
   }, [correcting, draft, draftName, quote]);
   // An immediate BACK keeps the last words typed: the timer above dies with
-  // the screen, so the write happens here.
+  // the screen, so the write happens here. Never after the account changed:
+  // a forced sign-out unmounts this screen AFTER the wipe (CODE-2-06).
   useEffect(
     () => () => {
+      if (draftOwnerStale(owner.current)) return;
       const last = unsaved.current;
       if (last) void saveDraft(last.name, last.text);
     },
@@ -452,17 +530,27 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     clientId.current = null;
     setDraft(text);
   }, []);
-  /** A new quote or correction target is a changed reply too. */
+  /** A new quote or correction target is a changed reply too. A quote and a
+   *  correction are about the same post, or only the newest is kept (UI-2-01). */
+  const targets = useRef({ quote, correcting });
+  targets.current = { quote, correcting };
   const quoteFor = useCallback((next: { postId: string; excerpt: string; name: string } | null) => {
     typed.current = true;
     clientId.current = null;
-    setQuote(next);
+    const t = withQuote(targets.current, next);
+    setQuote(t.quote);
+    setCorrecting(t.correcting);
   }, []);
   const correctFor = useCallback((next: { postId: string; name: string } | null) => {
     typed.current = true;
     clientId.current = null;
-    setCorrecting(next);
+    const t = withCorrection(targets.current, next);
+    setQuote(t.quote);
+    setCorrecting(t.correcting);
   }, []);
+  /** What is in the box now, for a send that lands later (CODE-2-01). */
+  const draftNow = useRef(draft);
+  draftNow.current = draft;
   /** This box's reply as it would be sent now, for a reply that landed elsewhere. */
   const mineNow = useRef<string | null>(null);
   mineNow.current = draft.trim()
@@ -527,6 +615,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   const sendNow = useCallback(async () => {
     const body = draft.trim();
     if (!body) return;
+    // What this press sends: words typed while it is out are kept (CODE-2-01).
+    const sentRaw = draft;
+    const sentQuote = quote?.postId ?? null;
+    const sentCorrection = correcting?.postId ?? null;
     setSending(true);
     setSendError(null);
     // The same id for the same reply, from this box or a reopened one (a draft
@@ -567,15 +659,35 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     // thread was left): kept, for the restored draft (CODE-1-05 d, N1).
     if (onScreen.current) replyLandedSeen(fingerprint);
     else settleClientId(fingerprint, false);
+    // Deleting this reply later frees its id: the same words again are a new
+    // reply, never the deleted one (CODE-2-07).
+    landedAs(fingerprint, r.value.postId);
     clientId.current = null;
-    typed.current = false;
-    unsaved.current = null;
-    setDraft('');
-    setDraftSaved(false);
-    setQuote(null);
-    setCorrecting(null);
     setPicked([]);
-    void clearDraft(draftName);
+    // Only what was sent is cleared. Words typed while it was out stay in the
+    // box and in the draft (CODE-2-01).
+    const rest = unsentRemainder(sentRaw, draftNow.current);
+    const restQuote = targets.current.quote?.postId === sentQuote ? null : targets.current.quote;
+    const restCorrection = targets.current.correcting?.postId === sentCorrection ? null : targets.current.correcting;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = null;
+    unsaved.current = null;
+    if (rest.trim()) {
+      typed.current = true;
+      setDraft(rest);
+      setQuote(restQuote);
+      setCorrecting(restCorrection);
+      if (!draftOwnerStale(owner.current)) {
+        void saveDraft(draftName, replyDraftText({ body: rest, quote: restQuote, correcting: restCorrection, clientId: null }));
+      }
+    } else {
+      typed.current = false;
+      setDraft('');
+      setDraftSaved(false);
+      setQuote(null);
+      setCorrecting(null);
+      void clearDraft(draftName);
+    }
     const hidden = hiddenOutcomeNote(r.value);
     // A long thread: the new reply is past the first page, so the pages up to
     // the end are read and the list scrolls once it is there (CODE-1-08).
@@ -584,20 +696,23 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     pinToEnd.current = hidden ? null : long ? r.value.postId : true;
     await read.reload();
     if (long && !hidden) await readToEnd();
+    else await refreshLater();
     if (hidden) {
       forgetClientId(fingerprint);
       // Never in the thread (the server keeps it from every list): say so here.
       setSendError(hidden);
     } else if (r.value.state === 'checking') {
       // The check ran past the wait: read once more when it should have landed.
-      recheck.current = setTimeout(() => void read.reload(), 8000);
+      recheck.current = setTimeout(() => void reloadAll(), 8000);
     } else if (outcomeKind(r.value.state) === 'removed') {
       setSendError(null);
     }
-  }, [allPeople, correcting, draft, draftName, quote, read, readToEnd, topicId, value]);
+  }, [allPeople, correcting, draft, draftName, quote, read, readToEnd, refreshLater, reloadAll, topicId, value]);
 
+  // Asked from the stored agreement once it is read, never from the store's
+  // empty start, and once per session when the phone cannot keep it (CODE-2-12).
   const send = useLatchedPress(async () => {
-    if (!flags.rulesAccepted) {
+    if (!(await rulesAgreed())) {
       setRulesOpen(true);
       return;
     }
@@ -645,13 +760,13 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
               return;
             }
             if (post.isOpening) safeGoBack(navigation as never);
-            else void read.reload();
+            else void reloadAll();
           });
         },
         { destructive: true },
       );
     },
-    [navigation, read],
+    [navigation, reloadAll],
   );
 
   const edit = useCallback(
@@ -681,23 +796,24 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
               notify('Not deleted', r.error);
               return;
             }
+            forgetLandedPost(post.id);
             if (post.isOpening) safeGoBack(navigation as never);
-            else void read.reload();
+            else void reloadAll();
           });
         },
         { destructive: true },
       );
     },
-    [navigation, read],
+    [navigation, reloadAll],
   );
 
   const setSolution = useCallback(
     async (post: ForumPost | null) => {
       const r = await markSolution(topicId, post ? post.id : null);
-      if (r.ok) await read.reload();
+      if (r.ok) await reloadAll();
       else notify('Not saved', r.error);
     },
-    [read, topicId],
+    [reloadAll, topicId],
   );
 
   const bookmark = useCallback(async (post: ForumPost, on: boolean, remindAt?: string) => {
@@ -706,9 +822,9 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       notify('Not saved', r.error);
       return;
     }
-    setPosts((rows) => rows.map((p) => (p.id === post.id ? { ...p, bookmarked: on } : p)));
+    patchPost(post.id, (p) => ({ ...p, bookmarked: on }));
     if (remindAt) notify('Reminder set', 'We will remind you tomorrow morning.');
-  }, []);
+  }, [patchPost]);
 
   // Asked first, as Report is, and once per post (bug pass 2026-11-08, UI-1-18).
   // The item is hidden from the moment FLAG is pressed, and the send is
@@ -764,7 +880,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       notify('Not saved', r.error);
       return;
     }
-    await read.reload();
+    await reloadAll();
   });
 
   /* ── An idea's vote, here as on Ideas & Requests (UI-1-16) ───────── */
@@ -812,7 +928,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     if (!topic) return [];
     const items: MenuItem[] = [];
     const published = p.modState === 'published';
-    if (published && !announcements) {
+    // Only where a reply can be sent: a locked topic drew no box, and the
+    // quote waited unseen for the unlock (UI-2-02).
+    const replying = canStartReply(replyBlock(topic, value?.rights ?? null));
+    if (published && !announcements && replying) {
       items.push({
         key: 'quote',
         label: 'Quote reply',
@@ -822,7 +941,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         },
       });
     }
-    if (published && !p.isMine && !p.isOpening && !announcements && p.postKind !== 'correction') {
+    if (published && replying && !p.isMine && !p.isOpening && !announcements && p.postKind !== 'correction') {
       items.push({
         key: 'correct',
         label: 'Suggest a correction',
@@ -875,7 +994,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       }
     }
     return items;
-  }, [announcements, block, bookmark, edit, flag, flagged, remove, setSolution, topic]);
+  }, [announcements, block, bookmark, correctFor, edit, flag, flagged, quoteFor, remove, setSolution, topic, value]);
 
   const menuItems = useMemo(() => (menuPost ? itemsFor(menuPost) : []), [itemsFor, menuPost]);
   const opening_ = posts.find((p) => p.isOpening) ?? null;
@@ -899,12 +1018,13 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         onAppeal={(p) => setAppealId(p.id)}
         appealed={appealSent(item.id, myAppeals, appealed)}
         names={names}
+        quotedName={item.quotePostId ? (authorOf.get(item.quotePostId) ?? null) : null}
         targetIsMine={!!item.correctionOfPostId && mineIds.has(item.correctionOfPostId)}
         onResolve={resolve}
         firstUnread={unreadMark && item.id === jumpTo}
       />
     ),
-    [announcements, appealed, edit, jumpTo, mineIds, myAppeals, myName, names, qa, react, reacting, resolve, unreadMark, value],
+    [announcements, appealed, authorOf, edit, jumpTo, mineIds, myAppeals, myName, names, qa, react, reacting, resolve, unreadMark, value],
   );
 
   /* ── Faces ───────────────────────────────────────────────────────── */
@@ -1092,12 +1212,12 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
             void blockPostAuthor(p.id, p.author.token).then((b) => {
               if (!b.ok) notify('Report sent, not blocked', b.error);
               else if (p.isOpening) safeGoBack(navigation as never);
-              else void read.reload();
+              else void reloadAll();
             });
           } else {
             // A child-safety report hides the post at once: read again, so it
             // does not stay on the reporter's screen.
-            void read.reload();
+            void reloadAll();
           }
           notify('Report sent', 'Thank you. It is being reviewed now.');
         }}
@@ -1129,6 +1249,7 @@ const PostCard = memo(function PostCard({
   onAppeal,
   appealed,
   names,
+  quotedName,
   targetIsMine,
   onResolve,
   firstUnread,
@@ -1145,6 +1266,8 @@ const PostCard = memo(function PostCard({
   onAppeal: (p: ForumPost) => void;
   appealed: boolean;
   names: string[];
+  /** Who wrote the quoted post, when it is in this thread. */
+  quotedName: string | null;
   /** This correction is about my post, so I may answer it. */
   targetIsMine: boolean;
   onResolve: (p: ForumPost, accept: boolean) => void;
@@ -1207,7 +1330,7 @@ const PostCard = memo(function PostCard({
               <MoreKey onPress={() => onMore(post)} label={`Options for ${post.author.name}'s post`} style={st.postMore} />
             ) : null}
           </View>
-          {post.quoteExcerpt ? <Text style={st.quote}>{post.quoteExcerpt}</Text> : null}
+          {post.quoteExcerpt ? <Text style={st.quote}>{quoteLine(post.quoteExcerpt, quotedName)}</Text> : null}
           {fields ? (
             <View style={st.fields}>
               {fields.trying ? <Answer label="TRYING TO" text={fields.trying} names={names} /> : null}

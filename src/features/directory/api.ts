@@ -233,7 +233,7 @@ export async function saveCommunityProfile(p: CommunityProfile): Promise<SaveRes
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Your changes are still here — try again.' };
+    return { ok: false, error: 'No connection. Your changes are still here. Try again.' };
   }
 }
 
@@ -246,7 +246,7 @@ export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult>
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -266,7 +266,7 @@ export async function publishCommunityProfile(on: boolean, adult = false): Promi
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -279,7 +279,7 @@ export async function setDiscoverable(on: boolean): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -292,7 +292,7 @@ export async function setContactEnabled(on: boolean): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -305,7 +305,7 @@ export async function deleteCommunityProfile(): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -659,7 +659,7 @@ export async function sendContactRequest(
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -750,7 +750,7 @@ export async function sendThreadMessage(requestId: string, body: string, clientM
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
