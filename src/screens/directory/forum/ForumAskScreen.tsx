@@ -314,7 +314,7 @@ function AskForm({
 
   const headerTitle = labThread ? `Discuss: ${labThread.title}` : edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
   const headerSub = edit?.partial
-    ? 'Only the start of your post is shown. What you repost replaces all of it.'
+    ? 'Only the start of your post is shown here. When you repost, your new text replaces the whole post.'
     : edit
       ? 'Checked again before others see it'
       : labThread

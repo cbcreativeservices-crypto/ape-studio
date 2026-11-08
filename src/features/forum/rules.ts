@@ -54,32 +54,32 @@ const REFUSALS: Record<string, string> = {
   forum_closed: FORUM_CLOSED,
   pro_lounge_members_only: PRO_LOUNGE_REFUSAL,
   account_restricted: 'Your account cannot post right now. If you think this is a mistake, contact support.',
-  muted: 'You can read the forum but not post for now. Your notices say when this ends.',
+  muted: 'You can read the forum, but you cannot post for now. Your notices show when you can post again.',
   email_unconfirmed: 'Confirm your email address to post.',
   profile_unpublished: 'Publish your community profile to post. You can do that in My Profile.',
   employer_careers_only:
-    'Without a community profile, verified employers post in Careers & Business and Hiring & Gigs only.',
+    'Verified employers without a community profile can post only in Careers & Business and Hiring & Gigs.',
   adult_attestation: 'Confirm that you are 18 or over in My Profile to post.',
-  staff_only: 'Topics here are posted by the Academy.',
+  staff_only: 'Only the Academy can start topics here.',
   jobs_employers_careers_only:
-    'Job posts are for verified employers and institutions, in Careers & Business or Hiring & Gigs.',
-  rate_limited_replies: 'You are posting quickly. Give it a little while and try again.',
+    'Only verified employers and institutions can post jobs, and only in Careers & Business or Hiring & Gigs.',
+  rate_limited_replies: 'You are posting very quickly. Wait a little while, then try again.',
   rate_limited_topics: 'You have reached today’s limit for new topics. You can post again tomorrow.',
   rate_limited_reports: 'You have sent a lot of reports this hour. Try again later.',
   links_after_new: 'New members can add links after a few days. Remove the link and post again.',
   too_short: 'Write something first.',
-  too_long: 'That is too long. Keep it under 10,000 characters.',
-  bad_title: `Give it a title of at least ${TITLE_MIN} characters.`,
+  too_long: 'Your post is too long. Keep it under 10,000 characters.',
+  bad_title: `The title needs at least ${TITLE_MIN} characters.`,
   bad_fields: 'Some of the details are missing. Check the form and try again.',
-  bad_quote: 'That quote is no longer available. Remove it and post again.',
-  bad_card: 'That lab link could not be used. Remove it and post again.',
-  too_many_mentions: 'Too many people are mentioned in this post.',
+  bad_quote: 'The post you quoted is no longer available. Remove the quote and post again.',
+  bad_card: 'That lab cannot be linked. Remove the lab link and post again.',
+  too_many_mentions: 'You mentioned too many people. Mention fewer, then post again.',
   locked: 'This topic is closed to new replies.',
   not_found: 'This is no longer available.',
   not_allowed: 'That is not available for this post.',
   not_yours: 'Only the author can do that.',
   no_category: 'That category is no longer available.',
-  already_open: 'Your appeal is already with us.',
+  already_open: 'You already appealed this. A person is reviewing it.',
   bad_reason: 'Choose a reason first.',
   rules_not_accepted: 'Agree to the community rules to post. Read them, tap I AGREE, then try again.',
 };
@@ -418,7 +418,7 @@ export const EMPTY_ASK: AskValues = {
 /** Why the form cannot be posted yet, or null. */
 export function askProblem(form: AskFormKind, v: AskValues): string | null {
   const title = v.title.trim().length;
-  if (title < TITLE_MIN) return `Give it a title of at least ${TITLE_MIN} characters.`;
+  if (title < TITLE_MIN) return `The title needs at least ${TITLE_MIN} characters.`;
   if (title > TITLE_MAX) return `Keep the title under ${TITLE_MAX} characters.`;
   if (form === 'question' && !v.trying.trim()) return 'Say what you are trying to do.';
   if ((form === 'discussion' || form === 'idea' || form === 'bug') && !v.body.trim()) return 'Write something first.';
@@ -637,7 +637,7 @@ export function moderationFace(p: ForumPost): ModFace {
       return {
         kind: 'review',
         head: 'EDIT BEING REVIEWED',
-        text: 'Others still see your earlier version until this edit has been reviewed.',
+        text: 'Others see your earlier version until this edit is reviewed.',
         canEdit: false,
         crisis,
       };
@@ -829,8 +829,8 @@ export function mergeTopics(lists: ForumTopic[][]): ForumTopic[] {
 /* ── Levels and badges ───────────────────────────────────────────────── */
 
 const LEVELS: Record<TrustLevel, { label: string; mark: string | null; next: string | null }> = {
-  new: { label: 'New member', mark: 'NEW', next: 'A few days of reading and a few posts nobody had to hide make you a Member.' },
-  member: { label: 'Member', mark: null, next: 'Steady helpful replies over the weeks make you a Regular.' },
+  new: { label: 'New member', mark: 'NEW', next: 'You become a Member after a few days of reading and a few posts that follow the rules.' },
+  member: { label: 'Member', mark: null, next: 'You become a Regular after weeks of helpful replies.' },
   regular: { label: 'Regular', mark: 'REGULAR', next: null },
   leader: { label: 'Leader', mark: 'LEADER', next: null },
 };
@@ -848,9 +848,9 @@ export function levelFace(trust: TrustLevel | null | undefined): { label: string
 
 /** The launch set's badges, with what each one means. */
 export const BADGE_MEANINGS: Record<string, string> = {
-  'first-solution': 'A reply of yours was marked as the Solution.',
+  'first-solution': 'One of your replies was marked as the Solution.',
   mentor: 'Ten of your replies were marked as the Solution.',
-  'glossary-contributor': 'A glossary correction of yours was accepted.',
+  'glossary-contributor': 'One of your glossary corrections was accepted.',
   'bug-hunter': 'A bug you reported was confirmed.',
   welcomer: 'Your replies helped new members with their first questions.',
 };
@@ -1129,7 +1129,7 @@ export function appealEditOf(
 export const APPEAL_EDIT_UNSEEN =
   'This appeal is about an edit the app cannot show yet, so OVERTURN is off. UPHOLD keeps the decision; the edit stays unpublished.';
 export const APPEAL_STATE_UNKNOWN =
-  'The app cannot tell whether this appeal is about an edit it cannot show, so OVERTURN is off. UPHOLD keeps the decision.';
+  'This appeal may be about an edit the app cannot show, so OVERTURN is off. UPHOLD keeps the decision.';
 
 /** What the queue offers on an item. A child-safety post is never restored or
  *  sent back for editing from here, and an edit is never restored unseen. */
@@ -1188,7 +1188,7 @@ export function trackedChoices(kind: TopicKind): TrackedStatus[] {
 export function trackedProblem(status: TrackedStatus, reason: string, current?: TrackedStatus | null): string | null {
   // The server changes nothing (not even the reason) when the status is the same.
   if (current && status === current) return 'This is already the status. Choose another one to change it.';
-  return status === 'declined' && !reason.trim() ? 'A declined item needs a reason.' : null;
+  return status === 'declined' && !reason.trim() ? 'Add a reason before you decline this.' : null;
 }
 
 /** "$3.20 of the $50.00 cap, 412 checks" for the AI usage line. */
@@ -1207,23 +1207,23 @@ export function aiUsageLine(u: { calls: number; costUsd: number; capUsd: number 
  * plain sentence here, never a rule code (review 2026-11-07, Medium 6).
  */
 const MEMBER_REASONS: Record<string, string> = {
-  respect: 'A post of yours was rude to another member. Criticize the mix, not the person.',
-  harassment: 'Posts of yours singled out another member. Leave people alone when they ask.',
-  hate: 'A post of yours attacked people for who they are. That is never allowed here.',
-  sexual: 'A post of yours had sexual content. Keep the forum about audio.',
-  threat: 'A post of yours read as a threat. Threats are never allowed here, even as a joke.',
+  respect: 'One of your posts was rude to another member. Criticize the mix, not the person.',
+  harassment: 'Some of your posts singled out another member. Leave people alone when they ask.',
+  hate: 'One of your posts attacked people for who they are. That is never allowed here.',
+  sexual: 'One of your posts had sexual content. Keep the forum about audio.',
+  threat: 'One of your posts read as a threat. Threats are never allowed here, even as a joke.',
   self_harm:
-    'A post of yours was reviewed by a person for safety. If you are struggling, please reach out to someone you trust.',
-  spam: 'Posts of yours read as spam. Post once, on topic, and without ads.',
-  self_promotion: 'A post of yours promoted a business outside Careers & Business.',
-  privacy: 'A post of yours shared someone else’s private details.',
-  piracy: 'A post of yours shared pirated software or samples.',
-  unsafe_advice: 'A post of yours gave advice that could hurt someone. Point people to a qualified professional instead.',
-  beginner_shaming: 'A post of yours put a beginner down. Beginners are welcome here.',
-  impersonation: 'A post of yours pretended to be someone else.',
-  off_topic: 'Posts of yours were off topic. Keep threads about audio.',
+    'One of your posts was reviewed by a person for safety. If you are struggling, please reach out to someone you trust.',
+  spam: 'Some of your posts read as spam. Post once, on topic, and without ads.',
+  self_promotion: 'One of your posts promoted a business outside Careers & Business. Promote your business only there.',
+  privacy: 'One of your posts shared someone else’s private details.',
+  piracy: 'One of your posts shared pirated software or samples.',
+  unsafe_advice: 'One of your posts gave advice that could hurt someone. Point people to a qualified professional instead.',
+  beginner_shaming: 'One of your posts put a beginner down. Beginners are welcome here.',
+  impersonation: 'One of your posts pretended to be someone else.',
+  off_topic: 'Some of your posts were off topic. Keep threads about audio.',
 };
-export const MEMBER_REASON_DEFAULT = 'A post of yours broke the community rules.';
+export const MEMBER_REASON_DEFAULT = 'One of your posts broke the community rules.';
 
 export function memberReason(rule: string | null | undefined): string {
   return (rule && MEMBER_REASONS[rule]) || MEMBER_REASON_DEFAULT;
@@ -1369,11 +1369,11 @@ export function missingFunction(err: { code?: unknown; message?: unknown } | nul
 }
 
 /** Block, when the server cannot block from a post and the author has no profile. */
-export const BLOCK_NO_PROFILE = 'This member has no community profile to block. You can report the post instead.';
+export const BLOCK_NO_PROFILE = 'You cannot block this member because they have no community profile. You can report the post instead.';
 
 /** The rules agreement is kept on this phone; when the phone refused to keep it
  *  the post is not sent, and the member is told. */
-export const RULES_NOT_SAVED = 'This phone could not save that you agreed to the rules, so nothing was posted. Try again.';
+export const RULES_NOT_SAVED = 'Your agreement to the rules could not be saved, so nothing was posted. Try again.';
 
 /**
  * Whether the rules agreement counts as kept. The server's record
