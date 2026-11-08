@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 09:57 · ccode · ccd24afa
+changed: Port a0374c8c: forum post gate names the Audio Community profile; Profile strip names the Pro Registry (owner 2026-11-08) [MD:D44]
+affects other side: nothing (app wording; same as OTA branch a0374c8c).
+needs: nothing.
+
+
 ### 2026-11-08 04:16 · ccode · df25303b
 changed: Port forum + profile bug passes 1-3 from the update branch (16dd87d8, e33c3a7e, 7cda2bc0): 120 findings fixed and checked [MD:D44]
 affects other side: bug passes 1-3 ported to the store-build branch; Comp A server package ready (owner sends).
