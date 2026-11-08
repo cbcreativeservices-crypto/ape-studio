@@ -52,6 +52,7 @@ export function authorOf(v: unknown): ForumAuthor {
     graduate: yes(a.graduate),
     trust: TRUST.includes(trust) ? (trust as TrustLevel) : null,
     former: yes(a.former),
+    academy: a.academy === true,
   };
 }
 

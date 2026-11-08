@@ -47,6 +47,8 @@ export const PRO_LOUNGE_REFUSAL =
   'Posting here is for academy graduates and verified employers, companies, institutions and instructors.';
 export const FORUM_UNREADABLE = 'We could not reach the forum. Check your connection and try again.';
 export const FORUM_SIGN_IN = 'Sign in to use the forum.';
+/** A failed read shown to a KNOWN guest, over SIGN IN (UI-3-04). */
+export const FORUM_SIGN_IN_TO_SEE = 'Sign in to see the forum.';
 export const FORUM_CLOSED = 'The forum is not open yet.';
 
 const REFUSALS: Record<string, string> = {
@@ -428,7 +430,161 @@ export function askProblem(form: AskFormKind, v: AskValues): string | null {
     if (!v.reason.trim()) return 'Say why it should change.';
     if (!v.source.trim()) return 'Add a source.';
   }
-  return null;
+  // The server refuses a body past BODY_MAX, and a guided question or a
+  // glossary change is joined into ONE body (bug pass 2026-11-08, CODE-1-19 /
+  // UI-1-04): say so before POST, with how much to cut. Every form, since the
+  // boxes no longer stop the typing or a paste at BODY_MAX: that cut the end
+  // off with no word (bug pass 3, UI-3-01).
+  return tooLongText(topicFrom(form, v).body.length);
+}
+
+/**
+ * A body past BODY_MAX, said before POST with how much to cut (UI-3-01). The
+ * boxes never cut a paste silently: the words stay, and this says why POST is
+ * off. Null when it fits.
+ */
+export function tooLongText(length: number, what: 'post' | 'reply' = 'post'): string | null {
+  const over = length - BODY_MAX;
+  if (over <= 0) return null;
+  return `Your ${what} is too long. Shorten it by ${over.toLocaleString('en-US')} ${over === 1 ? 'character' : 'characters'}.`;
+}
+
+/** ACCEPT AND EDIT with the text left as it was (UI-3-02). */
+export const CORRECTION_NEEDS_CHANGE =
+  'Your text is the same as before. Change it to take in the correction, then repost.';
+
+/**
+ * ACCEPT AND EDIT: the correction is marked accepted only when the text
+ * really changed (bug pass 3, UI-3-02). A repost of the same words would
+ * show "Correction accepted" under the text that is still wrong. Compared as
+ * it is sent (trimmed), so a space added at the end is not a change.
+ */
+export function editTakesCorrection(sentBefore: string, sentNow: string): boolean {
+  return sentBefore.trim() !== sentNow.trim();
+}
+
+/**
+ * Switching category can change the form (a question to a bug report). The
+ * text already typed moves into the new form's main box, so nothing is dropped
+ * where the member cannot see it (bug pass 2026-11-08, UI-1-02).
+ */
+export function carryAskValues(from: AskFormKind, to: AskFormKind, v: AskValues): AskValues {
+  if (from === to) return v;
+  // The boxes each form has, and the one its words move into.
+  const boxes: Record<AskFormKind, (keyof AskValues)[]> = {
+    question: ['trying', 'gear', 'tried'],
+    discussion: ['body'],
+    idea: ['body'],
+    bug: ['body'],
+    glossary: ['term', 'current', 'proposed', 'reason', 'source'],
+  };
+  const main: Record<AskFormKind, keyof AskValues> = {
+    question: 'trying',
+    discussion: 'body',
+    idea: 'body',
+    bug: 'body',
+    // A correction's free-text box: the words typed elsewhere say why.
+    glossary: 'reason',
+  };
+  const shared = (k: keyof AskValues) => boxes[to].includes(k);
+  const moving = boxes[from].filter((k) => !shared(k));
+  const text = moving.map((k) => v[k].trim()).filter(Boolean).join('\n\n');
+  const target = main[to];
+  if (!text || v[target].trim()) return v;
+  const next = { ...v, [target]: text };
+  for (const k of moving) next[k] = '';
+  return next;
+}
+
+/**
+ * An Ask draft as kept on the phone. A post that was sent but may not have
+ * answered yet keeps its once-only id with it, so the same draft posted again
+ * (after leaving mid-post, or from a second Ask form) lands once (bug pass
+ * 2026-11-08, CODE-1-05).
+ */
+export function askDraftText(v: AskValues, clientId: string | null, extra?: AskExtras): string {
+  if (!Object.values(v).some((x) => x.trim())) return '';
+  // The linked lab and the job kind are part of the post: kept with the words
+  // and the id, so a restored draft posts the same post (bug pass 2, CODE-2-07).
+  const more = extra ? { ...(extra.lab ? { lab: extra.lab } : {}), ...(extra.job ? { job: true } : {}) } : {};
+  return JSON.stringify(clientId ? { ...v, ...more, clientId } : { ...v, ...more });
+}
+
+/** What an Ask post carries besides its words. */
+export type AskExtras = { lab: string | null; job: boolean };
+
+/**
+ * A reply draft as kept on the phone: the words, what they quote or correct,
+ * and, while it is being sent, its once-only id. A reply resent after leaving
+ * (or after the app restarted) is then the SAME reply, quote and all, and
+ * lands once (bug pass 2026-11-08, CODE-1-05 a/b). A draft with nothing but
+ * words is kept as plain text, as before, and plain text reads back as words.
+ */
+export type ReplyDraft = {
+  body: string;
+  quote: { postId: string; excerpt: string; name: string } | null;
+  correcting: { postId: string; name: string } | null;
+  clientId: string | null;
+};
+
+export function replyDraftText(d: ReplyDraft): string {
+  if (!d.body.trim()) return '';
+  if (!d.quote && !d.correcting && !d.clientId) return d.body;
+  return JSON.stringify({ reply: 1, body: d.body, quote: d.quote, correcting: d.correcting, clientId: d.clientId });
+}
+
+export function replyDraftRead(stored: string): ReplyDraft {
+  const plain: ReplyDraft = { body: stored, quote: null, correcting: null, clientId: null };
+  if (!stored.startsWith('{')) return plain;
+  try {
+    const raw = JSON.parse(stored) as Record<string, unknown>;
+    if (!raw || raw.reply !== 1 || typeof raw.body !== 'string') return plain;
+    const q = raw.quote as Record<string, unknown> | null;
+    const c = raw.correcting as Record<string, unknown> | null;
+    const s = (x: unknown) => (typeof x === 'string' ? x : '');
+    return {
+      body: raw.body,
+      quote: q && typeof q.postId === 'string' ? { postId: q.postId, excerpt: s(q.excerpt), name: s(q.name) } : null,
+      correcting: c && typeof c.postId === 'string' ? { postId: c.postId, name: s(c.name) } : null,
+      clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null,
+    };
+  } catch {
+    return plain;
+  }
+}
+
+/**
+ * The Academy's own account (the founder, who reads appeals and posts every
+ * announcement) cannot be reported or blocked by members (owner rule
+ * 2026-11-08). `academy: true` in the author JSON arrives once the Comp A
+ * package 2026-11-08_FOR_COMP_A_FOUNDER_PROTECT is applied (SERVER_GAPS row
+ * 35, NOT applied yet). Until then nobody is marked and the options still
+ * show; after it, the server is the guard too (forum_report and
+ * forum_block_author refuse with not_allowed).
+ */
+export function canReportOrBlock(author: Pick<ForumAuthor, 'academy'>): boolean {
+  return !author.academy;
+}
+
+export function askDraftRead(
+  stored: string,
+): { values: Partial<AskValues>; clientId: string | null; lab: string | null; job: boolean } | null {
+  try {
+    const raw = JSON.parse(stored) as Record<string, unknown>;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const values: Partial<AskValues> = {};
+    for (const k of Object.keys(EMPTY_ASK) as (keyof AskValues)[]) {
+      if (typeof raw[k] === 'string') values[k] = raw[k] as string;
+    }
+    return {
+      values,
+      clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null,
+      lab: typeof raw.lab === 'string' && raw.lab ? raw.lab : null,
+      job: raw.job === true,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export type TopicDraft = { title: string; body: string; topicKind: TopicKind; fields: Record<string, unknown> };
@@ -565,6 +721,13 @@ export const REPORT_REASONS: { key: string; label: string }[] = [
   { key: 'child_safety', label: 'Child safety' },
   { key: 'other', label: 'Something else' },
 ];
+
+/**
+ * A report's own words (UI-2-13). The server keeps 1000 characters INCLUDING
+ * its "[forum: <reason>] " prefix (forum_report), so the box stops where the
+ * longest reason's prefix still leaves every word typed: nothing is cut.
+ */
+export const REPORT_DETAIL_MAX = 1000 - Math.max(...REPORT_REASONS.map((r) => `[forum: ${r.key}] `.length));
 
 /* ── Moderation: what the AUTHOR sees ────────────────────────────────── */
 
@@ -753,13 +916,16 @@ export function noticeFace(n: ForumNotice): NoticeFace {
         canAppeal: true,
       };
     case 'blocked':
+      // Never an appeal or a repost under the child-safety rule, as the hidden
+      // case and moderationFace (bug pass 2026-11-08, CODE-1-16).
       return {
         ...base,
         tone: 'removed',
         head: rule ? `REMOVED · ${rule}` : 'REMOVED',
         text: n.message ?? 'This post was removed.',
-        canEdit: true,
-        canAppeal: true,
+        canEdit: n.rule !== 'child_safety',
+        canAppeal: n.rule !== 'child_safety',
+        how: n.rule === 'child_safety' ? null : how,
       };
     case 'hidden':
       // Hidden by member reports, waiting for a review: not a removal yet, and
@@ -924,6 +1090,37 @@ export function splitMentions(text: string, names: string[]): BodyPart[] {
 export function tomorrowMorning(now: Date = new Date()): string {
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0, 0);
   return d.toISOString();
+}
+
+/**
+ * The next step for a thread opened at a post (a tapped alert, a bookmark):
+ * wait, read the later pages, or decide. A post past the first page is only
+ * decided once it is in the list ON SCREEN: in the render where the later
+ * pages arrive, the drawn list is still the old one, and deciding then sent
+ * the member to the top for good (bug pass 2026-11-08, CODE-1-08 / J1).
+ *  - shown: the list as drawn; read: every post read so far (any order).
+ */
+export type JumpStep = { kind: 'wait' } | { kind: 'read' } | { kind: 'top' } | { kind: 'jump'; index: number };
+
+export function jumpStep(input: {
+  jumpTo: string | null | undefined;
+  shown: Pick<ForumPost, 'id'>[];
+  read: Pick<ForumPost, 'id'>[];
+  hasMore: boolean;
+  triedRead: boolean;
+  reading: boolean;
+}): JumpStep {
+  const { jumpTo, shown, read } = input;
+  if (shown.length === 0 || input.reading) return { kind: 'wait' };
+  if (!jumpTo) return { kind: 'top' };
+  if (shown.some((p) => p.id === jumpTo)) {
+    const index = jumpIndex(shown, jumpTo);
+    return index === null ? { kind: 'top' } : { kind: 'jump', index };
+  }
+  // Read, but not drawn yet: the next render has it.
+  if (read.some((p) => p.id === jumpTo)) return { kind: 'wait' };
+  if (input.hasMore && !input.triedRead) return { kind: 'read' };
+  return { kind: 'top' };
 }
 
 /** Where a thread opens, or null to start at the top. */
@@ -1193,7 +1390,8 @@ export function trackedProblem(status: TrackedStatus, reason: string, current?: 
 
 /** "$3.20 of the $50.00 cap, 412 checks" for the AI usage line. */
 export function aiUsageLine(u: { calls: number; costUsd: number; capUsd: number } | null): string {
-  if (!u) return 'No AI use recorded this month.';
+  // Shown after "AI this month:", so it does not say "this month" again (UI-1-19).
+  if (!u) return 'No AI use recorded yet.';
   const calls = u.calls === 1 ? '1 check' : `${u.calls} checks`;
   return `$${u.costUsd.toFixed(2)} of the $${u.capUsd.toFixed(2)} cap · ${calls}`;
 }
@@ -1341,6 +1539,54 @@ export function solutionMarker(
 }
 
 /**
+ * The words after "MARKED BY": YOU when the marker is the member reading, else
+ * the marker's first name (bug pass 2026-11-08, UI-1-12).
+ */
+export function solutionMarkedBy(marker: string | null, myName: string | null): string | null {
+  if (!marker) return null;
+  if (myName && marker === myName) return 'YOU';
+  return firstName(marker).toUpperCase();
+}
+
+/**
+ * Edit and Repost from a notice's excerpt: the text without the cut marks, and
+ * whether it is only part of the post. An excerpt is partial when it is at the
+ * limit OR the server cut it ("…" at either end) (bug pass 2026-11-08, UI-1-06).
+ */
+export function noticeExcerptEdit(excerpt: string | null | undefined): { body: string; partial: boolean } {
+  const raw = excerpt ?? '';
+  return {
+    body: raw.replace(/^…|…$/g, ''),
+    partial: raw.length >= EXCERPT_MAX || /^…|…$/.test(raw),
+  };
+}
+
+/**
+ * What an empty topic list says, by the sort that is on. "Nothing posted yet"
+ * is only true for Latest: an empty Top this week means nothing was busy this
+ * week (bug pass 2026-11-08, UI-1-05).
+ */
+export function emptyTopicsWords(sort: TopicSort, inCategory: boolean): { title: string; text: string } {
+  if (sort === 'unanswered') {
+    return {
+      title: 'Nothing is waiting',
+      text: inCategory ? 'No question here is waiting for an answer.' : 'No question is waiting for an answer.',
+    };
+  }
+  if (sort === 'top_week') {
+    return { title: 'Nothing this week', text: `Nothing in ${SORT_LABELS.top_week} yet. Try ${SORT_LABELS.latest}.` };
+  }
+  return inCategory
+    ? { title: 'Nothing posted here yet', text: 'Start the first topic.' }
+    : { title: 'Nothing posted yet', text: 'Be the first. Ask a question, or share what you know.' };
+}
+
+/** "1 reply" / "3 replies", for a search result's line (CODE-1-23). */
+export function replyCountText(n: number): string {
+  return n === 1 ? '1 reply' : `${n} replies`;
+}
+
+/**
  * Names whose @mentions are drawn in a thread: everyone posting in it, and,
  * once the server sends them (row 17), everyone a post mentions.
  */
@@ -1390,4 +1636,126 @@ export function rulesKept(device: boolean, server: 'recorded' | 'missing' | 'fai
  *  the popup is shown again, so I AGREE records it there. */
 export function asksForRules(code: string | null | undefined): boolean {
   return code === 'rules_not_accepted';
+}
+
+/* ── Bug pass 2 (2026-11-08) ─────────────────────────────────────────── */
+
+/**
+ * What stays in a reply box once a send lands (CODE-2-01). The box stays
+ * editable while a reply is out, so words typed meanwhile must not be wiped
+ * with the sent ones: only the text that was sent is cleared, as Requests does.
+ * Text that no longer starts with what was sent (an edit inside it) is kept
+ * whole: the member sees it and decides.
+ */
+export function unsentRemainder(sentRaw: string, current: string): string {
+  if (current === sentRaw) return '';
+  return current.startsWith(sentRaw) ? current.slice(sentRaw.length).replace(/^\s+/, '') : current;
+}
+
+export type ReplyTargets = {
+  quote: { postId: string; excerpt: string; name: string } | null;
+  correcting: { postId: string; name: string } | null;
+};
+
+/**
+ * A quote and a correction in one reply must be about the SAME post (UI-2-01).
+ * A correction to Diego that quotes Maya reads as a correction of Maya. The
+ * newest choice wins: quoting another post ends a correction of a different
+ * one, and starting a correction drops a quote of a different post.
+ */
+export function withQuote(cur: ReplyTargets, quote: ReplyTargets['quote']): ReplyTargets {
+  const keep = !!quote && !!cur.correcting && cur.correcting.postId === quote.postId;
+  return { quote, correcting: !quote || keep ? cur.correcting : null };
+}
+
+export function withCorrection(cur: ReplyTargets, correcting: ReplyTargets['correcting']): ReplyTargets {
+  const keep = !!correcting && !!cur.quote && cur.quote.postId === correcting.postId;
+  return { correcting, quote: !correcting || keep ? cur.quote : null };
+}
+
+/**
+ * ACCEPT AND EDIT: what to do once the edit's answer is in (CODE-2-05). The
+ * correction is marked accepted only when the corrected text is published.
+ * A refused edit keeps the form open with the reason, so it can be fixed; an
+ * edit waiting for a review goes back to the thread, where its card shows,
+ * and the correction stays open.
+ */
+export function acceptEditStep(
+  state: string,
+  reason: string | null,
+): { kind: 'accept' } | { kind: 'stay'; text: string } | { kind: 'back'; title: string; text: string } {
+  const k = outcomeKind(state);
+  if (k === 'published') return { kind: 'accept' };
+  if (k === 'removed') {
+    return {
+      kind: 'stay',
+      text: `${reason ?? 'Your edit was not published.'} The correction is still open. Change your text and repost.`,
+    };
+  }
+  return {
+    kind: 'back',
+    title: 'Edit being reviewed',
+    text: 'Your edit is being reviewed. The correction stays open; accept it again once your edit is published.',
+  };
+}
+
+/** A bookmark's reminder: when it will come, or when it came (CODE-2-09). */
+export function reminderLine(iso: string, now: number = Date.now()): string {
+  const d = new Date(iso);
+  const t = d.getTime();
+  if (Number.isNaN(t)) return '';
+  const day = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  const date = d.getFullYear() === new Date(now).getFullYear() ? day : `${day}, ${d.getFullYear()}`;
+  return t > now ? `Reminder set · ${date}` : `Reminded ${date}`;
+}
+
+/** The quoted words with who said them, once that post is in the thread
+ *  (UI-2-09): the display name as the server sends it ("Former member",
+ *  "Prof. Channing Booth"), never cut to a first word. */
+export function quoteLine(excerpt: string, quotedName: string | null): string {
+  const name = (quotedName ?? '').trim();
+  return name ? `${name}: ${excerpt}` : excerpt;
+}
+
+/** Quote and Suggest a correction only where a reply can be sent (UI-2-02). */
+export function canStartReply(block: { kind: string }): boolean {
+  return block.kind === 'open';
+}
+
+/**
+ * A topic list's next page: the offset to read from, or null when the server
+ * said there is no more (CODE-2-08). Counted from what the server answered
+ * (the first page, then every later page), never from the rows drawn, which
+ * drop a topic that moved between pages.
+ */
+export function nextTopicsPage(first: number, later: { read: number; full: boolean | null }, page: number): number | null {
+  const full = later.full ?? first >= page;
+  if (first === 0 || !full) return null;
+  return first + later.read;
+}
+
+/**
+ * Whether a pending once-only id still belongs to the post (CODE-2-07). The
+ * id was made for one lab and one job kind: a different one is a new post with
+ * a new id, but the same ones set back (a restored draft, a lab unlinked and
+ * linked again) are the same post, and its id is kept, so it lands once.
+ */
+export function pendingIdFits(madeFor: AskExtras | null, now: AskExtras): boolean {
+  return !madeFor || (madeFor.lab === now.lab && madeFor.job === now.job);
+}
+
+/**
+ * The Ask draft as the 800 ms timer writes it (CODE-2-07, re-check). A
+ * restored draft that was being posted keeps its pending id on disk for as
+ * long as the post is still the same post: re-picking the same category or
+ * linking the same lab again must not write it back without the id, or a
+ * second app kill posts the topic twice.
+ */
+export function askDraftForSave(
+  values: AskValues,
+  pendingId: string | null,
+  madeFor: AskExtras | null,
+  now: AskExtras,
+): string {
+  return askDraftText(values, pendingIdFits(madeFor, now) ? pendingId : null, now);
 }

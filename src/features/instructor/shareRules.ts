@@ -88,7 +88,7 @@ export const SHARE_COPY = {
     // A certificate name is required before sharing (owner 2026-10-27), so
     // the instructor never sees the email-derived account name.
     'Your name: the name on your certificates (fill in “Name on your certificates” in Profile before you share).',
-    'Each topic you are enrolled in, have studied or have completed — including topics you completed before you turned this on: done or in progress, your best score, and how far you are in each study method, flashcards included.',
+    'Each topic you are enrolled in, have studied or have completed, including topics you completed before you turned this on: done or in progress, your best score, and how far you are in each study method, flashcards included.',
     'Your quiz attempts, practice ones too: how many, each score and the date.',
     'Your labs: the labs for those topics’ certificates and the Audio Fundamentals labs, plus any other lab you finished.',
     'Your final exam attempts (score, pass or not) and the certificates you have earned.',
@@ -102,9 +102,17 @@ export const SHARE_COPY = {
   oneAtATime: 'You can share with one instructor at a time. A new code replaces the old one.',
   guest: 'Sharing needs an account. Sign in or create one to share your progress with an instructor.',
   readFailed:
-    'Couldn’t check whether you are sharing just now. Check your connection and reopen Profile — nothing has been changed.',
+    'Couldn’t check whether you are sharing just now. Check your connection and reopen Profile. Nothing has been changed.',
+  /** The server ACCEPTED the stop, but the read after it failed or still said
+   *  "on": never "nothing has been changed" (bug pass 3, CODE-3-06). */
+  stopUnconfirmed:
+    'Your request to stop sharing was sent, but we couldn’t confirm it just now. Reopen Profile to check.',
+  /** The certificate-name read before sharing failed: about the NAME, not the
+   *  share (CODE-3-06). The switch never turned on. */
+  nameReadFailed:
+    'Couldn’t check the name on your certificates just now. Check your connection and try again. Nothing has been shared.',
   checking: 'Checking…',
-  inactive: 'Your instructor’s account is no longer verified — nothing is being shared.',
+  inactive: 'Your instructor’s account is no longer verified, so nothing is being shared.',
   // The code popup.
   enterTitle: 'Your instructor’s code',
   enterBody: 'Type the 8-character code your instructor gave you. Capitals and dashes don’t matter.',
@@ -118,7 +126,7 @@ export const SHARE_COPY = {
   ownCode: 'That is your own instructor code.',
   needsAccount: 'Sharing needs an account. Sign in first.',
   notConfirmed:
-    'Couldn’t reach the Academy to confirm that. Check your connection — this section shows what the server last said.',
+    'Couldn’t reach the Academy to confirm that. Check your connection. This section shows what the server last said.',
   // Results.
   sharedTitle: 'Sharing is on',
   stopTitle: 'Stop sharing?',
@@ -144,6 +152,29 @@ export function sharingSince(s: InstructorShare): string {
 /** The confirm card's line — asked before the switch flips. */
 export function confirmLine(s: { instructorName: string; school: string | null }): string {
   return `Share your progress with ${whoLabel(s)}? They will see what is listed under “What your instructor sees”, until you turn this off.`;
+}
+
+/**
+ * What to tell the member after STOP SHARING (CODE-3-06). `stop` is the
+ * instructor_share_off answer, `now` the state read straight after it. null =
+ * confirmed off, nothing to say. A stop the server ACCEPTED is never reported
+ * as "nothing has been changed".
+ */
+export function stopOutcomeLine(
+  stop: { ok: true } | { ok: false; error: string },
+  now: 'guest' | 'off' | 'on' | 'error',
+): string | null {
+  if (!stop.ok) return stop.error;
+  // 'guest': the session had already ended, so instructor_share_off was never
+  // called (api.ts) and nothing was sent; the section shows the guest line and
+  // no share can exist without an account (check P3, R1).
+  return now === 'off' || now === 'guest' ? null : SHARE_COPY.stopUnconfirmed;
+}
+
+/** The section's own line when the share read failed: after an accepted stop
+ *  it must not say "nothing has been changed" either (CODE-3-06). */
+export function shareReadFailedLine(stopSent: boolean): string {
+  return stopSent ? SHARE_COPY.stopUnconfirmed : SHARE_COPY.readFailed;
 }
 
 /** After turning it off. */

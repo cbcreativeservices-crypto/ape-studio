@@ -50,12 +50,9 @@ describe('deep links and push taps do not reach the directory', () => {
 
 describe('Pro Registry SET UP MY PROFILE', () => {
   const src = read('src/screens/directory/DirectoryScreen.tsx');
-  it('opens the directory only when the switch is on, otherwise Profile', () => {
-    assert.match(
-      src,
-      /COMMUNITY_VISIBLE\s*\? \(navigation as any\)\.navigate\('AudioCommunityDirectory'\)\s*: \(navigation as any\)\.popTo\('Main', \{ screen: 'Profile' \}\)/,
-    );
-    assert.equal(src.match(/navigate\('AudioCommunityDirectory'\)/g)?.length, 1);
+  it('always opens Profile, where the Registry name and listing live (bug pass 2026-11-08, CODE-1-10)', () => {
+    assert.match(src, /onPress=\{\(\) => \(navigation as any\)\.popTo\('Main', \{ screen: 'Profile' \}\)\}/);
+    assert.doesNotMatch(src, /navigate\('AudioCommunityDirectory'\)/);
   });
   it('its badge is behind the switch', () => {
     assert.match(src, /\{COMMUNITY_VISIBLE \? <CommunityBadge /);

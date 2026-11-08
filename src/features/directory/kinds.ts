@@ -8,6 +8,7 @@
  * a list that stopped early says so rather than reading as everyone.
  */
 import type { VerifierKind } from '../employer/verifierKind.ts';
+import { acceptsContact } from './rules.ts';
 
 export type DirectoryChip = 'all' | 'graduates' | VerifierKind;
 
@@ -58,6 +59,55 @@ export function scanNote(scanned: number, total: number): string | null {
 export function chipEmpty(chip: DirectoryChip): { title: string; line: string } {
   const label = DIRECTORY_CHIPS.find((c) => c.key === chip)?.label.toLowerCase() ?? 'members';
   return { title: `No ${label} listed yet`, line: 'The directory is new, so it is still filling up.' };
+}
+
+/**
+ * What a chip lists, as a counted noun: "1 employer", "6 companies". The
+ * "Showing 30 of 45 …" line used it too late, so every kind chip counted
+ * "members" (bug pass 2026-11-08, CODE-1-30).
+ */
+export function chipNoun(chip: DirectoryChip, n: number): string {
+  const one: Record<DirectoryChip, string> = {
+    all: 'member',
+    graduates: 'graduate',
+    employer: 'employer',
+    company: 'company',
+    institution: 'institution',
+    instructor: 'instructor',
+  };
+  const word = one[chip];
+  return n === 1 ? word : word === 'company' ? 'companies' : `${word}s`;
+}
+
+/**
+ * A member card's screen-reader label (bug pass 2026-11-08, UI-1-17): one
+ * full stop between parts, never two after an initial ("Maya R.. GRADUATE"),
+ * and "1 verified credential" in the singular.
+ */
+export function memberCardA11y(c: {
+  displayName: string;
+  plate: string | null;
+  primaryArea: string | null;
+  roles: string[];
+  credentialCount: number;
+  contactEnabled: boolean;
+  /** Only when the row carries it (search rows do not yet; see acceptsContact). */
+  openTo?: readonly string[] | null;
+}): string {
+  const parts = [
+    c.displayName,
+    c.plate,
+    c.primaryArea,
+    c.roles.join(', '),
+    c.credentialCount
+      ? `${c.credentialCount} verified ${c.credentialCount === 1 ? 'credential' : 'credentials'}`
+      : null,
+    // The sheet's rule (UI-3-08): see acceptsContact in rules.ts.
+    acceptsContact(c) ? 'open to contact' : null,
+  ]
+    .map((s) => (s ?? '').trim())
+    .filter(Boolean);
+  return parts.reduce((acc, s) => (acc ? `${acc}${/[.!?]$/.test(acc) ? ' ' : '. '}${s}` : s), '');
 }
 
 /** "Maya R." under a tile; a long name keeps its first word. */

@@ -48,7 +48,7 @@ const uid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0'
 
 function person(
   name: string,
-  over: { verifiedKind?: VerifiedKind; graduate?: boolean; trust?: ForumAuthor['trust'] } = {},
+  over: { verifiedKind?: VerifiedKind; graduate?: boolean; trust?: ForumAuthor['trust']; academy?: boolean } = {},
 ): ForumAuthor {
   return {
     name,
@@ -57,11 +57,13 @@ function person(
     graduate: over.graduate ?? false,
     trust: over.trust ?? 'member',
     former: false,
+    academy: over.academy ?? false,
   };
 }
 
 const ME = person('Alex P.');
-const FOUNDER = person('Prof. Channing Booth', { trust: 'leader' });
+// The Academy's own account: no Report or Block on its posts (owner 2026-11-08).
+const FOUNDER = person('Prof. Channing Booth', { trust: 'leader', academy: true });
 const JORDAN = person('Jordan L.', { trust: 'new' });
 // The same public token as her row in the sample directory: real data has one.
 const MAYA = { ...person('Maya R.', { graduate: true, trust: 'regular' }), token: '00000000-0000-4000-9000-000000000001' };
@@ -550,13 +552,17 @@ function markUnread(): void {
   }
 }
 
-export function sampleLounge(): ForumTopic[] {
+/** The lounge as one feed, in the sort asked for, as the server does (the
+ *  harness's sort chips did nothing: UI-1-09). */
+export function sampleLounge(sort: TopicSort = 'latest'): ForumTopic[] {
   if (sampleState()?.face === 'empty') return [];
   const lounge = categories().filter((c) => c.groupSlug === 'pro_lounge').map((c) => c.slug);
   const at = (t: ForumTopic) => t.lastPostAt ?? t.createdAt;
-  return ready()
-    .filter((t) => lounge.includes(t.categorySlug))
-    .sort((a, b) => (at(a) < at(b) ? 1 : -1))
+  const score = (t: SampleTopic) => t.posts.reduce((n, p) => n + p.helpfulCount + p.thanksCount, 0) + t.replyCount * 2;
+  const pool = ready().filter((t) => lounge.includes(t.categorySlug));
+  const rows = sort === 'unanswered' ? pool.filter((t) => !t.solved && t.replyCount === 0) : pool;
+  return [...rows]
+    .sort((a, b) => (sort === 'top_week' ? score(b) - score(a) : at(a) < at(b) ? 1 : -1))
     .map(bare);
 }
 
@@ -634,8 +640,20 @@ function refuse<T>(code: string, error: string): ForumResult<T> {
   return { ok: false, error, code };
 }
 
+/** The server lands a post once per clientId: so does the sample, so the
+ *  harness shows a repeated send as the one post (CODE-1-05). */
+const landed = new Map<string, PostOutcome>();
+
 export function sampleSubmit(input: SubmitInput): ForumResult<PostOutcome> {
   if (!sampleForumOn()) return refuse('not_allowed', 'Sample is off.');
+  const again = input.clientId ? landed.get(input.clientId) : undefined;
+  if (again) return { ok: true, value: again };
+  const r = sampleSubmitNew(input);
+  if (r.ok && input.clientId) landed.set(input.clientId, r.value);
+  return r;
+}
+
+function sampleSubmitNew(input: SubmitInput): ForumResult<PostOutcome> {
   const v = verdict(input.body);
   const fresh = post(ME, input.body, 0, {
     modState: v.modState,
@@ -697,7 +715,10 @@ export function sampleEdit(postId: string, body: string, title?: string): ForumR
     modRule: v.rule,
     modReason: v.reason,
     edited: true,
-    publishedAt: v.modState === 'published' ? ago(0) : null,
+    // As the server does: an edit of a published post keeps its place and its
+    // date (forum-moderate sets edited_at only); a post first published by
+    // this edit is dated now (UI-2-06).
+    publishedAt: found.post.publishedAt ?? (v.modState === 'published' ? ago(0) : null),
   });
   if (title && found.post.isOpening) found.topic.title = title;
   if (v.modState === 'published') found.topic.replyCount = found.topic.posts.filter((p) => !p.isOpening && p.modState === 'published').length;
@@ -1035,7 +1056,7 @@ export function sampleQueue(): QueueItem[] {
     queueRow(7, {
       action: 'budget_hold',
       actor: 'system',
-      reason: 'Monthly AI cap reached — held unchecked.',
+      reason: 'Monthly AI cap reached, so it was held unchecked.',
       postState: 'published',
       postBody: 'The approved reply everyone can still see.',
     }),

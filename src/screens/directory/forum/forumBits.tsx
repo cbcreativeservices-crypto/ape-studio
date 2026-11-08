@@ -18,8 +18,10 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { popupCard } from '../../../theme/readingColumn';
 import { fonts } from '../../../theme/tokens';
 import { sampleForumOn } from '../../../features/forum/sampleSwitch';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import {
   FORUM_CLOSED,
+  FORUM_SIGN_IN_TO_SEE,
   SORTS,
   SORT_LABELS,
   badgeName,
@@ -314,6 +316,10 @@ export function ForumUnreadable({
   code: string | null;
   onRetry: () => void;
 }) {
+  // A KNOWN guest is offered SIGN IN (RetryOrSignIn), so the words say sign
+  // in too, never "check your connection" over a SIGN IN button (bug pass 3,
+  // UI-3-04). A member whose read failed keeps the reason and RETRY.
+  const { guest } = useGuestWording();
   if (code === 'forum_closed') {
     return (
       <View style={st.face}>
@@ -325,7 +331,7 @@ export function ForumUnreadable({
   return (
     <View style={st.face}>
       <Text style={st.faceHead}>This could not be loaded</Text>
-      <Text style={st.faceText}>{error}</Text>
+      <Text style={st.faceText}>{guest ? FORUM_SIGN_IN_TO_SEE : error}</Text>
       <RetryOrSignIn message={error} onRetry={onRetry} />
     </View>
   );
@@ -377,17 +383,46 @@ export function AmberButton({
   );
 }
 
-export function QuietButton({ label, onPress, style }: { label: string; onPress: () => void; style?: StyleProp<ViewStyle> }) {
+export function QuietButton({
+  label,
+  onPress,
+  style,
+  disabled,
+}: {
+  label: string;
+  onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  /** Off while the write beside it is out (a CANCEL that cannot cancel it). */
+  disabled?: boolean;
+}) {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [st.sbtn, pressed && st.pressed, style]}
+      disabled={disabled}
+      style={({ pressed }) => [st.sbtn, disabled && st.sbtnOff, pressed && !disabled && st.pressed, style]}
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
     >
       <Text style={st.sbtnText}>{label}</Text>
     </Pressable>
   );
+}
+
+/**
+ * MY PROFILE from a forum notice: back to the Audio Community screen already
+ * under this one, on its profile tab. `navigate` pushed a SECOND copy, so BACK
+ * returned to the stale notice and each trip grew the stack (bug pass
+ * 2026-11-08, CODE-1-09). popTo adds it only when it is not in the stack.
+ */
+export function openMyProfile(navigation: unknown): void {
+  const nav = navigation as {
+    popTo?: (route: string, params?: object) => void;
+    navigate: (route: string, params?: object) => void;
+  };
+  if (nav.popTo) nav.popTo('AudioCommunityDirectory', { tab: 'profile' });
+  else nav.navigate('AudioCommunityDirectory', { tab: 'profile' });
 }
 
 /** `.locked`: the notice that takes the reply box's place. */
@@ -433,6 +468,7 @@ export function Field({
   multiline,
   maxLength,
   label,
+  editable = true,
 }: {
   value: string;
   onChangeText: (t: string) => void;
@@ -440,6 +476,8 @@ export function Field({
   multiline?: boolean;
   maxLength?: number;
   label: string;
+  /** Off while the form is posting: what is sent is what is on screen. */
+  editable?: boolean;
 }) {
   return (
     <TextInput
@@ -449,7 +487,8 @@ export function Field({
       placeholderTextColor={F.muted}
       multiline={multiline}
       maxLength={maxLength}
-      style={[st.fld, multiline && st.fldTa]}
+      editable={editable}
+      style={[st.fld, multiline && st.fldTa, !editable && st.fldOff]}
       accessibilityLabel={label}
       textAlignVertical={multiline ? 'top' : 'center'}
     />
@@ -457,9 +496,26 @@ export function Field({
 }
 
 /** A form row that opens a popup. */
-export function PickField({ value, onPress, label }: { value: string; onPress: () => void; label: string }) {
+export function PickField({
+  value,
+  onPress,
+  label,
+  disabled,
+}: {
+  value: string;
+  onPress: () => void;
+  label: string;
+  disabled?: boolean;
+}) {
   return (
-    <Pressable onPress={onPress} style={st.fld} accessibilityRole="button" accessibilityLabel={`${label}: ${value}`}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={[st.fld, disabled && st.fldOff]}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${value}`}
+      accessibilityState={{ disabled: !!disabled }}
+    >
       <Text style={st.pickText}>{value} ›</Text>
     </Pressable>
   );
@@ -869,6 +925,7 @@ const st = StyleSheet.create({
     borderWidth: 1,
     borderColor: F.line2,
   },
+  sbtnOff: { opacity: 0.45 },
   sbtnText: { fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 1.3, color: F.sub },
   locked: {
     marginHorizontal: 14,
@@ -903,6 +960,7 @@ const st = StyleSheet.create({
     color: F.text,
   },
   fldTa: { minHeight: 58 },
+  fldOff: { opacity: 0.6 },
   pickText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: F.sub },
   modcard: { borderRadius: 14, padding: 12, borderWidth: 1 },
   mod_hold: { borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(255,198,77,.06)' },

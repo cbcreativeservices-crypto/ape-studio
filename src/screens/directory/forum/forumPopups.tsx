@@ -2,12 +2,12 @@
  * The forum's three popups that write: accept the community rules, report a
  * post, and appeal a decision. Centred over the dim, never in the page flow.
  */
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLatchedPress } from '../../../lib/latch';
 import { fonts } from '../../../theme/tokens';
 import { appealPost, reportPost } from '../../../features/forum/api';
-import { APPEAL_MAX, REPORT_REASONS } from '../../../features/forum/rules';
+import { APPEAL_MAX, REPORT_DETAIL_MAX, REPORT_REASONS } from '../../../features/forum/rules';
 import { AlsoBlockChip, Chip, ChipWrap } from '../directoryBits';
 import { AmberButton, F, FieldLabel, Popup, PopupScroll, QuietButton } from './forumBits';
 
@@ -73,23 +73,88 @@ type ReportProps = {
 };
 
 export function ReportPopup(props: ReportProps) {
+  const hold = useHoldWhileSending(props.onClose);
   return (
-    <Popup visible={!!props.postId} onClose={props.onClose} label="Report post">
-      {props.postId ? <ReportCard key={props.postId} {...props} postId={props.postId} /> : null}
+    <Popup visible={!!props.postId} onClose={hold.close} closeOnBackdrop={!hold.busy} label="Report post">
+      {props.postId ? <ReportCard key={props.postId} {...props} postId={props.postId} onBusy={hold.setBusy} /> : null}
     </Popup>
   );
 }
 
-function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportProps & { postId: string }) {
+/**
+ * While a report or an appeal is out, the popup stays: the dim and Android
+ * BACK closed it as CANCEL could not. The card then went before the answer,
+ * so what came after it never ran: the "Also block them" the member asked
+ * for, the reload that hides a reported post, the notice, and an appeal's
+ * APPEAL stayed offered (bug pass 3, CODE-3-04 / CODE-3-12).
+ */
+export function useHoldWhileSending(onClose: () => void) {
+  const [busy, setBusyState] = useState(false);
+  const busyNow = useRef(false);
+  const setBusy = useCallback((on: boolean) => {
+    busyNow.current = on;
+    setBusyState(on);
+  }, []);
+  const close = useCallback(() => {
+    if (busyNow.current) return;
+    onClose();
+  }, [onClose]);
+  return { busy, setBusy, close };
+}
+
+/** The card's busy, told to its popup too (so the popup holds while it is
+ *  out), and let go if the card goes. */
+function useBusyHeld(here: (on: boolean) => void, popup: (on: boolean) => void) {
+  // Let go on unmount only ([]-deps reading a ref: a cleanup-only effect must
+  // not re-run its cleanup on a dep change, house ratchet patternP12 G6).
+  const popupRef = useRef(popup);
+  popupRef.current = popup;
+  useEffect(() => () => popupRef.current(false), []);
+  return useCallback(
+    (on: boolean) => {
+      here(on);
+      popup(on);
+    },
+    [here, popup],
+  );
+}
+
+/** True while the card is on screen: an answer that lands after the popup
+ *  closed (or another post's report opened) does nothing (CODE-1-20). */
+function useMounted() {
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  return mounted;
+}
+
+function ReportCard({
+  postId,
+  authorName,
+  canBlock,
+  onClose,
+  onDone,
+  onBusy,
+}: ReportProps & { postId: string; onBusy: (on: boolean) => void }) {
   const [reason, setReason] = useState<string | null>(null);
-  const [alsoBlock, setAlsoBlock] = useState(false);
+  /** What the reasons cannot say, "Something else" above all (UI-2-13). */
+  const [detail, setDetail] = useState('');
+  // On by default, as the shared chip's rule says (UI-1-11).
+  const [alsoBlock, setAlsoBlock] = useState(canBlock);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusyHere] = useState(false);
+  const setBusy = useBusyHeld(setBusyHere, onBusy);
+  const mounted = useMounted();
 
   const send = useLatchedPress(async () => {
     if (!reason) return;
     setBusy(true);
-    const r = await reportPost(postId, reason);
+    const r = await reportPost(postId, reason, detail.trim() || undefined);
+    if (!mounted.current) return;
     setBusy(false);
     if (r.ok) onDone({ alsoBlock });
     else setError(r.error);
@@ -107,10 +172,22 @@ function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportPro
             <Chip key={r.key} label={r.label} on={reason === r.key} onPress={() => setReason(r.key)} />
           ))}
         </ChipWrap>
+        <TextInput
+          value={detail}
+          onChangeText={setDetail}
+          multiline
+          maxLength={REPORT_DETAIL_MAX}
+          editable={!busy}
+          style={[st.input, st.detail]}
+          placeholder={reason === 'other' ? 'Tell us what is wrong' : 'Anything else we should know (optional)'}
+          placeholderTextColor={F.muted}
+          accessibilityLabel="Report details"
+          textAlignVertical="top"
+        />
         {canBlock ? <AlsoBlockChip on={alsoBlock} onToggle={() => setAlsoBlock((b) => !b)} /> : null}
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.buttons}>
-          <QuietButton label="CANCEL" onPress={onClose} />
+          <QuietButton label="CANCEL" onPress={onClose} disabled={busy} />
           <AmberButton label="SEND REPORT" onPress={send} busy={busy} disabled={!reason} style={st.grow} />
         </View>
       </PopupScroll>
@@ -121,22 +198,26 @@ function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportPro
 type AppealProps = { postId: string | null; onClose: () => void; onDone: () => void };
 
 export function AppealPopup(props: AppealProps) {
+  const hold = useHoldWhileSending(props.onClose);
   return (
-    <Popup visible={!!props.postId} onClose={props.onClose} label="Appeal">
-      {props.postId ? <AppealCard key={props.postId} {...props} postId={props.postId} /> : null}
+    <Popup visible={!!props.postId} onClose={hold.close} closeOnBackdrop={!hold.busy} label="Appeal">
+      {props.postId ? <AppealCard key={props.postId} {...props} postId={props.postId} onBusy={hold.setBusy} /> : null}
     </Popup>
   );
 }
 
-function AppealCard({ postId, onClose, onDone }: AppealProps & { postId: string }) {
+function AppealCard({ postId, onClose, onDone, onBusy }: AppealProps & { postId: string; onBusy: (on: boolean) => void }) {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusyHere] = useState(false);
+  const setBusy = useBusyHeld(setBusyHere, onBusy);
+  const mounted = useMounted();
 
   const send = useLatchedPress(async () => {
     if (!text.trim()) return;
     setBusy(true);
     const r = await appealPost(postId, text.trim());
+    if (!mounted.current) return;
     setBusy(false);
     if (r.ok) onDone();
     else setError(r.error);
@@ -163,7 +244,7 @@ function AppealCard({ postId, onClose, onDone }: AppealProps & { postId: string 
         />
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.buttons}>
-          <QuietButton label="CANCEL" onPress={onClose} />
+          <QuietButton label="CANCEL" onPress={onClose} disabled={busy} />
           <AmberButton label="SEND APPEAL" onPress={send} busy={busy} disabled={!text.trim()} style={st.grow} />
         </View>
       </PopupScroll>
@@ -202,4 +283,5 @@ const st = StyleSheet.create({
     fontSize: 14,
     color: F.text,
   },
+  detail: { minHeight: 64, marginTop: 10 },
 });

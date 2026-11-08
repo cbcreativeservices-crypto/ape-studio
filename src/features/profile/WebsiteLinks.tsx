@@ -44,7 +44,7 @@ export function WebsiteLinks() {
       ))}
       {failed ? (
         <Text style={styles.warn}>
-          Couldn’t open the website — visit {websiteUrl().replace(/^https?:\/\//, '')}/{failed} in your browser.
+          Couldn’t open the website. Visit {websiteUrl().replace(/^https?:\/\//, '')}/{failed} in your browser.
         </Text>
       ) : null}
     </View>

@@ -8,6 +8,8 @@ import { fonts } from '../../theme/tokens';
 import { fetchGraduates, type GraduateCard } from '../../features/directory/kindsApi';
 import { DIRECTORY_CHIPS, stripName, type DirectoryChip } from '../../features/directory/kinds';
 import { ChannelBadge } from './ChannelBadge';
+import { needsSignIn } from './directoryBits';
+import { useGuestWording } from '../../features/commercial/useTier';
 
 const P = {
   panel: '#121318',
@@ -65,17 +67,20 @@ export const RecentGraduates = memo(function RecentGraduates({
   /** Absent when the list below is already the graduates. */
   onSeeAll?: () => void;
 }) {
-  const [state, setState] = useState<{ face: 'loading' | 'failed' | 'ready'; rows: GraduateCard[] }>({
+  const [state, setState] = useState<{ face: 'loading' | 'failed' | 'ready'; rows: GraduateCard[]; error?: string }>({
     face: 'loading',
     rows: [],
   });
+  // A KNOWN guest only (bug pass 2026-11-08, CODE-1-31): the same rule as
+  // RetryOrSignIn, so a guest is never offered a RETRY that cannot work.
+  const { guest } = useGuestWording();
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let alive = true;
     setState((s) => ({ ...s, face: 'loading' }));
     void fetchGraduates({}, 0, STRIP_SIZE).then((r) => {
       if (!alive) return;
-      setState(r.status === 'ok' ? { face: 'ready', rows: r.results } : { face: 'failed', rows: [] });
+      setState(r.status === 'ok' ? { face: 'ready', rows: r.results } : { face: 'failed', rows: [], error: r.error });
     });
     return () => {
       alive = false;
@@ -84,6 +89,8 @@ export const RecentGraduates = memo(function RecentGraduates({
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
   if (state.face === 'loading') return null;
+  // Signed out: the list below already says SIGN IN; the strip adds nothing.
+  if (state.face === 'failed' && needsSignIn(guest, state.error)) return null;
   if (state.face === 'failed') {
     return (
       <View style={st.failed}>

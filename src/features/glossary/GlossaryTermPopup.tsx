@@ -412,7 +412,7 @@ export function GlossaryTermPopup({
                   ? 'This is the opening of the entry. Your account is still being checked — try this term again in a moment.'
                   : partial === 'unanswered'
                   ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.'
-                  : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Open the Glossary to try again.'}
+                  : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Close the term and open it again to retry.'}
               </Text>
             ) : null}
             {row?.plain_english?.trim() ? (

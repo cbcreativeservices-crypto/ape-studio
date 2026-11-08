@@ -174,9 +174,27 @@ function openForumThread(tap: { topicId: string; postId: string | null }): void 
     base = undefined;
   }
   // Never above the sign-in screen (forumTapLands), as openCommunityPath.
-  const { forumTapLands } = require('./src/features/notifications/communityRules') as typeof import('./src/features/notifications/communityRules');
-  if (!forumTapLands(base)) return;
+  const { forumTapLands, parkForumTap } = require('./src/features/notifications/communityRules') as typeof import('./src/features/notifications/communityRules');
+  // Still on Splash or the sign-in screen: keep the tap and open it once a
+  // signed-in screen is the root (drainParkedForumTap, onStateChange).
+  if (!forumTapLands(base)) {
+    parkForumTap(tap);
+    return;
+  }
   navigationRef.navigate('ForumThread', tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId });
+}
+
+/** Opens a parked forum tap once the stack's root is a signed-in screen. */
+function drainParkedForumTap(): void {
+  let base: string | undefined;
+  try {
+    base = navigationRef.getRootState()?.routes?.[0]?.name;
+  } catch {
+    base = undefined;
+  }
+  const { takeParkedForumTap } = require('./src/features/notifications/communityRules') as typeof import('./src/features/notifications/communityRules');
+  const tap = takeParkedForumTap(base);
+  if (tap) navigationRef.navigate('ForumThread', tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId });
 }
 
 function openCommunityPath(path: string): void {
@@ -512,6 +530,9 @@ function App() {
                 // …and a cold-start FORUM alert tap.
                 flushForumTapNav(openForumThread);
               }}
+              // A forum tap parked on Splash or the sign-in screen opens once a
+              // signed-in screen is the root (bug pass 2026-11-08, CODE-1-33).
+              onStateChange={drainParkedForumTap}
             >
               <RootNavigator />
             </NavigationContainer>

@@ -15,7 +15,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
-import { LIMITS, readableError } from './rules';
+import { LIMITS, readableError, reportDetail } from './rules';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
 import { sampleForumOn } from '../forum/sampleSwitch.ts';
@@ -24,13 +24,28 @@ import { cardOf } from './kinds.ts';
 import {
   sampleAllowance,
   sampleBlock,
+  sampleBlockMember,
+  sampleContactRequest,
+  sampleDeleteProfile,
   sampleDirectoryOn,
   sampleMessages,
+  sampleMyProfile,
+  samplePublish,
   sampleReport,
   sampleRespond,
+  sampleSaveProfile,
   sampleSend,
+  sampleSetFeatured,
+  sampleSetSwitch,
   sampleThreads,
 } from './sampleThreads.ts';
+
+/**
+ * The fallback when an ACTION (accept, decline, block, report) threw. Nothing
+ * was typed for these, so "Your changes are still on this screen" was untrue
+ * (bug pass 2026-11-08, CODE-1-24).
+ */
+export const ACTION_FAILED = 'Something went wrong, so that didn’t go through. Try again.';
 
 export { LIMITS, readableError };
 
@@ -162,6 +177,7 @@ export type MyProfileLoad =
   | { status: 'error'; error: string };
 
 export async function fetchMyCommunityProfile(): Promise<MyProfileLoad> {
+  if (sampleDirectoryOn()) return sampleMyProfile(); // dev preview only
   try {
     const { data, error } = await supabase.rpc('community_profile_mine');
     if (error) return { status: 'error', error: readableError(error.message) };
@@ -200,6 +216,7 @@ export async function fetchMyCommunityProfile(): Promise<MyProfileLoad> {
 export type SaveResult = { ok: true } | { ok: false; error: string };
 
 export async function saveCommunityProfile(p: CommunityProfile): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleSaveProfile(p); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_save', {
       p_display_name: p.displayName,
@@ -216,11 +233,12 @@ export async function saveCommunityProfile(p: CommunityProfile): Promise<SaveRes
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Your changes are still here — try again.' };
+    return { ok: false, error: 'No connection. Your changes are still here. Try again.' };
   }
 }
 
 export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleSetFeatured(ids); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_set_credentials', { p_ids: ids });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -228,7 +246,7 @@ export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult>
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -236,6 +254,7 @@ export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult>
 export const DIRECTORY_POLICY_VERSION = '2026-08-31.1';
 
 export async function publishCommunityProfile(on: boolean, adult = false): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return samplePublish(on, adult); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_publish', {
       p_on: on,
@@ -247,11 +266,12 @@ export async function publishCommunityProfile(on: boolean, adult = false): Promi
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
 export async function setDiscoverable(on: boolean): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleSetSwitch('discoverable', on); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_set_discoverable', { p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -259,11 +279,12 @@ export async function setDiscoverable(on: boolean): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
 export async function setContactEnabled(on: boolean): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleSetSwitch('contactEnabled', on); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_set_contact', { p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -271,11 +292,12 @@ export async function setContactEnabled(on: boolean): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
 export async function deleteCommunityProfile(): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleDeleteProfile(); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_delete');
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -283,7 +305,7 @@ export async function deleteCommunityProfile(): Promise<SaveResult> {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -625,6 +647,7 @@ export async function sendContactRequest(
   purpose: string,
   message: string,
 ): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleContactRequest(toToken, purpose, message); // dev preview only
   try {
     const { error } = await supabase.rpc('contact_request_send', {
       p_to_token: toToken,
@@ -636,7 +659,7 @@ export async function sendContactRequest(
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -652,7 +675,7 @@ export async function respondToRequest(
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: ACTION_FAILED };
   }
 }
 
@@ -727,7 +750,7 @@ export async function sendThreadMessage(requestId: string, body: string, clientM
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen. Try again.' };
   }
 }
 
@@ -756,13 +779,14 @@ export async function blockThread(requestId: string, on = true): Promise<SaveRes
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: ACTION_FAILED };
   }
 }
 
 /** Token-scoped block. Still used where a token is genuinely in hand (the
  *  member sheet in the directory); prefer `blockThread` from a conversation. */
 export async function blockMember(token: string, on = true): Promise<SaveResult> {
+  if (sampleDirectoryOn()) return sampleBlockMember(token, on); // dev preview only
   try {
     const { error } = await supabase.rpc('contact_block', { p_token: token, p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
@@ -770,7 +794,7 @@ export async function blockMember(token: string, on = true): Promise<SaveResult>
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: ACTION_FAILED };
   }
 }
 
@@ -788,13 +812,15 @@ export async function reportMember(input: {
       p_token: input.token ?? null,
       p_request_id: input.requestId ?? null,
       p_reason: input.reason,
-      p_detail: input.detail ?? null,
+      // Trimmed, and nothing at all for spaces only (bug pass 2026-11-08,
+      // CODE-1-28): both report sheets sent the box exactly as typed.
+      p_detail: reportDetail(input.detail),
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path
     // goes through readableError above. Only a genuine thrown exception
     // reaches here, so blaming the connection was wrong every time.
-    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
+    return { ok: false, error: ACTION_FAILED };
   }
 }

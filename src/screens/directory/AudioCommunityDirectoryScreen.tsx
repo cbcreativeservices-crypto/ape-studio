@@ -33,6 +33,7 @@ import {
   type PublicProfile,
   type ReportReason,
 } from '../../features/directory/api';
+import { NO_OPEN_TO_LINE, contactOffer, requestsLeftLine } from '../../features/directory/rules';
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
@@ -83,6 +84,7 @@ export function AudioCommunityDirectoryScreen() {
   // hands the id back once used (openThreadId → null), so setting it again is
   // a change there: it re-reads the list, and the conversation it re-opens
   // re-reads its messages.
+  const [memberToken, setMemberToken] = useState<string | null>(null);
   const params = route.params;
   const lastParams = useRef(params);
   useEffect(() => {
@@ -90,6 +92,10 @@ export function AudioCommunityDirectoryScreen() {
     lastParams.current = params;
     const next = directoryParams(params);
     const wanted = tabOf(params, next.requests);
+    // A tap that moves the screen closes an open member sheet first (bug pass
+    // 2026-11-08, CODE-1-18): its Modal stayed up over REQUESTS, and the
+    // conversation sheet RequestsView then opened could not present over it.
+    if (wanted || next.thread) setMemberToken(null);
     if (wanted) setTab(wanted);
     if (next.thread) setOpenThreadId(next.thread);
   }, [params]);
@@ -102,7 +108,6 @@ export function AudioCommunityDirectoryScreen() {
   if (tab === 'forum') forumOpened.current = true;
   const ForumHome = forumOpened.current ? loadForumHome() : null;
   const inbox = useCommunityInbox();
-  const [memberToken, setMemberToken] = useState<string | null>(null);
   /** The tapped card's display name, so the sheet's title is right from its
    *  first frame instead of "MEMBER" until the profile read lands. */
   const [memberSeedName, setMemberSeedName] = useState<string | undefined>(undefined);
@@ -250,6 +255,8 @@ function MemberSheet({
   /** A report went through — acknowledged in the sheet (see the BLOCK note).
    *  'blocked' = the "Also block them" block went through too (#13). */
   const [reported, setReported] = useState<false | 'reported' | 'blocked'>(false);
+  /** Reports that went through, so the report box starts the next one clean. */
+  const [reportsSent, setReportsSent] = useState(0);
   /** BLOCK was tapped and is waiting for its confirmation. */
   const [confirmBlock, setConfirmBlock] = useState(false);
   // Per member (night pass 3): this sheet outlives each member, and one shared
@@ -311,7 +318,7 @@ function MemberSheet({
             {p || (!settled && seedName) ? (
               <ChannelBadge
                 name={p ? p.displayName : seedName ?? ''}
-                led={p?.contactEnabled ? 'green' : 'off'}
+                led={p && contactOffer(p) === 'send' ? 'green' : 'off'}
                 size={40}
               />
             ) : null}
@@ -392,7 +399,7 @@ function MemberSheet({
                   <Text style={st.credHead}>VERIFIED CREDENTIALS</Text>
                   <Text style={st.cred}>
                     Couldn’t load this member’s credentials just now. This is not a statement that
-                    they hold none — please try again shortly.
+                    they hold none. Please try again shortly.
                   </Text>
                 </>
               ) : data.credentials.length ? (
@@ -418,8 +425,14 @@ function MemberSheet({
                 </>
               ) : null}
 
-              {p.contactEnabled && !sent && reported !== 'blocked' ? (
+              {/* Contact ON with no Open To topics (bug pass 2026-11-08,
+                  UI-2-03): the server refuses every purpose such a member has
+                  not listed, so the composer had nothing to pick and a SEND
+                  that never woke up. Say why instead of opening it. */}
+              {sent || reported === 'blocked' ? null : contactOffer(p) === 'send' ? (
                 <PrimaryButton label="SEND A CONTACT REQUEST" tone="green" onPress={() => setContactOpen(true)} />
+              ) : contactOffer(p) === 'no-topics' ? (
+                <Helper>{NO_OPEN_TO_LINE}</Helper>
               ) : null}
 
               {/* ── BLOCK ASKS FIRST, INSIDE THE SHEET (bug hunt 2026-09-29) ──
@@ -482,7 +495,12 @@ function MemberSheet({
 
               <SelfReportedNote />
 
+              {/* KEYED BY MEMBER (bug pass 2026-11-08, P1 check): the
+                  composer and the report box are per member, so a sheet that
+                  moves on to the next member before an answer lands never
+                  carries one member's words to another. */}
               <ContactSheet
+                key={`contact-${token}`}
                 open={contactOpen}
                 onClose={() => setContactOpen(false)}
                 openTo={p.openTo}
@@ -501,6 +519,7 @@ function MemberSheet({
                 }
               />
               <ReportSheet
+                key={`report-${token}`}
                 open={reportOpen}
                 onClose={() => setReportOpen(false)}
                 // "Also block them" (toddler hunt 2026-10-14, #13) — the same
@@ -509,6 +528,7 @@ function MemberSheet({
                 // the person asked for); only the on-screen answer is fenced
                 // to this member. 'blocked' is what the SERVER did, never what
                 // the chip said; a refused block keeps its own error up.
+                // `detail` is trimmed in reportMember (CODE-1-28).
                 onSend={(reason, detail, alsoBlock) =>
                   reportMember({ token, reason, detail }).then(async (r) => {
                     const b = r.ok && alsoBlock ? await blockMember(token, true) : null;
@@ -520,8 +540,10 @@ function MemberSheet({
                     // not received (bug hunt 2026-09-29; Requests says so too).
                     setErr(b && !b.ok ? b.error : null);
                     setReported(b?.ok ? 'blocked' : 'reported');
+                    setReportsSent((n) => n + 1);
                   })
                 }
+                sentCount={reportsSent}
               />
             </>
           )}
@@ -587,41 +609,47 @@ function ContactSheet({
           <Text accessibilityRole="header" style={st.sheetTitle}>
             SEND A CONTACT REQUEST
           </Text>
-          <Helper>
-            Choose what this is about — you can only pick something this member is open to. Keep it
-            short and professional. Links and contact details are not allowed in a first message.
-          </Helper>
-          <ChipWrap>
-            {openTo.map((o) => (
-              <Chip key={o} label={o} on={purpose === slug(o)} onPress={() => setPurpose(slug(o))} />
-            ))}
-          </ChipWrap>
-          <TextInput
-            style={st.input}
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Why you’re getting in touch"
-            placeholderTextColor={colors.textMuted}
-            multiline
-            maxLength={500}
-            accessibilityLabel="Your message"
-          />
-          {/* The weekly cap is worth naming only as it gets close — a
-              counter on every open would read as a warning about the user. */}
-          {allow && allow.requestsLeftThisWeek <= 3 ? (
-            <Text style={st.allowance}>
-              {allow.requestsLeftThisWeek === 0
-                ? 'No contact requests left this week.'
-                : `${allow.requestsLeftThisWeek} contact ${allow.requestsLeftThisWeek === 1 ? 'request' : 'requests'} left this week.`}
-            </Text>
-          ) : null}
+          {/* Never a sheet with no way forward (UI-2-03): the member sheet
+              hides the button when there is nothing to choose, and this
+              guard covers any other way in. No topics = the reason and
+              CANCEL, never a box to type into and a SEND that cannot wake. */}
+          {!openTo.length ? (
+            <Helper>{NO_OPEN_TO_LINE}</Helper>
+          ) : (
+            <>
+              <Helper>
+                Choose what this is about. You can only pick something this member is open to. Keep it
+                short and professional. Links and contact details are not allowed in a first message.
+              </Helper>
+              <ChipWrap>
+                {openTo.map((o) => (
+                  <Chip key={o} label={o} on={purpose === slug(o)} onPress={() => setPurpose(slug(o))} />
+                ))}
+              </ChipWrap>
+              <TextInput
+                style={st.input}
+                value={message}
+                onChangeText={setMessage}
+                placeholder="Why you’re getting in touch"
+                placeholderTextColor={colors.textMuted}
+                multiline
+                maxLength={500}
+                accessibilityLabel="Your message"
+              />
+              {/* The weekly cap is worth naming only as it gets close — a
+                  counter on every open would read as a warning about the user. */}
+              {allow && allow.requestsLeftThisWeek <= 3 ? (
+                <Text style={st.allowance}>{requestsLeftLine(allow.requestsLeftThisWeek)}</Text>
+              ) : null}
 
-          <PrimaryButton
-            label="SEND REQUEST"
-            tone="green"
-            disabled={sending || !purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
-            onPress={() => runSend(() => onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage('')))}
-          />
+              <PrimaryButton
+                label="SEND REQUEST"
+                tone="green"
+                disabled={sending || !purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
+                onPress={() => runSend(() => onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage('')))}
+              />
+            </>
+          )}
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
       </KeyboardAvoidingView>
@@ -641,14 +669,25 @@ function ReportSheet({
   open,
   onClose,
   onSend,
+  sentCount,
 }: {
   open: boolean;
   onClose: () => void;
   onSend: (reason: ReportReason, detail: string, alsoBlock: boolean) => Promise<unknown>;
+  /** Goes up each time a report went through. */
+  sentCount: number;
 }) {
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
+  // A sent report starts the next one clean (bug pass 2026-11-08, CODE-1-28):
+  // the last report's words and reason stayed in the box. A refused one keeps
+  // them, so nothing typed is lost.
+  useEffect(() => {
+    if (sentCount === 0) return;
+    setDetail('');
+    setReason('spam');
+  }, [sentCount]);
   /** On by default, as in Requests — see AlsoBlockChip. */
   const [alsoBlock, setAlsoBlock] = useState(true);
   const [sending, runSend] = useSending();

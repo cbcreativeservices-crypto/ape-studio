@@ -38,10 +38,28 @@ import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifi
 import { KindSwitchRow } from './KindSwitchRow';
 import { InstructorCodeRow } from './InstructorCodeRow';
 import { setFeedbackIdentity } from '../../lib/feedback';
+import { getFeedbackIdentity } from '../../lib/feedbackTags';
+import { employerSectionFace, knownVerifierKind } from '../../features/profile/employerFace';
+import { useLatchedPress } from '../../lib/latch';
+import { recordVerifierAnswer, useRememberedVerifierKind } from '../../features/profile/verifierKindMemory';
+import { supabase } from '../../lib/supabase';
+import { safeSessionResult } from '../../lib/getSessionSafe';
+import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
 import { PublicPageRow } from './PublicPageRow';
 import { colors, fonts } from '../../theme/tokens';
 
 const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
+
+/** The signed-in account, read locally. `null` = none or the read stalled:
+ *  either way no remembered kind is evidence. */
+async function signedInUid(): Promise<string | null> {
+  try {
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'employerSection');
+    return timedOut ? null : result.data.session?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * `queueReasons` are written by `employer_decide()` for the ADMIN queue —
@@ -53,7 +71,7 @@ const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
  */
 const QUEUE_REASON_LABEL: Record<string, string> = {
   'work email not confirmed':
-    'Your work email has not been confirmed yet — open your application on the website and enter the code we emailed you.',
+    'Your work email has not been confirmed yet. Open your application on the website and enter the code we emailed you.',
   'work email is not at the company domain':
     'The work email you gave is not at your company’s own domain.',
   'consumer mailbox provider':
@@ -78,6 +96,8 @@ export function EmployerSection() {
    *  the section must not say the account is no longer active. */
   const [verifyFailed, setVerifyFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  /** Whose remembered verifier kind may be used (verifierKindMemory.ts). */
+  const [uid, setUid] = useState<string | null>(null);
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [picked, setPicked] = useState<Record<string, string[]>>({});
   /**
@@ -118,14 +138,40 @@ export function EmployerSection() {
   const pickedLoaded = useRef(false);
   const load = useCallback(async () => {
     const ticket = ++loadTicket.current;
-    const [state, who] = await Promise.all([
+    // The account wipe this load started under (bug pass 3, CODE-3-11). A load
+    // that lands after sign-out must not write the OLD account's role into the
+    // feedback identity or its verifier kind back onto the device.
+    const wipe = localStoreWipeCount();
+    /** A wipe ran while this load was out (check P3, R2). By the time the
+     *  count has moved, the wipe's in-memory resets have all run (same tick as
+     *  the bump), so read again for whoever is signed in NOW, and mark the
+     *  load failed so a focus re-reads too. Never leave the section hidden.
+     *  After a sign-out the section unmounts first, and the ticket check
+     *  before each fence stops the load before it gets here. */
+    const readAgain = () => {
+      failedRef.current = true;
+      void load();
+    };
+    const [state, who, me] = await Promise.all([
       fetchMyEmployerApplication(),
       myVerifierKind(),
+      signedInUid(),
     ]);
     if (ticket !== loadTicket.current) return;
+    if (wipe !== localStoreWipeCount()) return readAgain();
+    setUid(me);
+    // Only a SERVER answer is remembered on the device: a kind is kept, a
+    // clean 'none' forgets, 'unknown' changes nothing (CODE-2-13 follow-up).
+    if (me && who !== 'unknown') void recordVerifierAnswer(me, who);
     // 'unknown' = the check FAILED (null here), never "not verified".
     const isVerified = who === 'unknown' ? null : who !== 'none';
-    setVerifierKind(who === 'none' || who === 'unknown' ? null : who);
+    // A FAILED check keeps the kind this sign-in already learned (sign-in fill,
+    // or this section's last good read), so the couldn't-check face can be
+    // drawn and worded for a verified account (bug pass 2, CODE-2-13). Every
+    // verified-only row also checks `verified`, so this opens nothing.
+    setVerifierKind(
+      who === 'none' ? null : who === 'unknown' ? knownVerifierKind(getFeedbackIdentity().role) : who,
+    );
     // Feedback emails carry the verified kind as `role=` so the inbox can route
     // employers/instructors first (Comp A 2026-11-02). From THIS existing read
     // only — no new query; a failed read ('unknown') leaves it as it was.
@@ -142,6 +188,7 @@ export function EmployerSection() {
     if (isVerified) {
       const [t, mine] = await Promise.all([fetchTaxonomy(), fetchMyEmployerInterests()]);
       if (ticket !== loadTicket.current) return;
+      if (wipe !== localStoreWipeCount()) return readAgain();
       setTax(t);
       if (!t || !mine) failedRef.current = true;
       // A retry that now reads the stored choices clears the earlier failure.
@@ -160,6 +207,8 @@ export function EmployerSection() {
 
   useEffect(() => {
     void load();
+    // Unmount: any load still out lands nowhere (CODE-3-11).
+    return () => void ++loadTicket.current;
   }, [load]);
 
   useFocusEffect(
@@ -168,11 +217,30 @@ export function EmployerSection() {
     }, [load]),
   );
 
-  // Nothing to say to a member, so say nothing.
-  if (!loaded || (!app && !verified)) return null;
+  /** TRY AGAIN on the couldn't-check face; one read at a time. */
+  const retry = useLatchedPress(() => load());
+
+  // A cold, offline launch knows nothing in memory: the kind the server last
+  // confirmed for THIS account, kept on the device, words the couldn't-check
+  // face. It is read from the device after the first render, so the section
+  // re-renders when it lands (CODE-2-13 follow-up).
+  const remembered = useRememberedVerifierKind(uid);
+  useEffect(() => {
+    if (verifyFailed && !verifierKind && remembered) setVerifierKind(remembered);
+  }, [verifyFailed, verifierKind, remembered]);
+
+  // Nothing to say to a member, so say nothing. But a VERIFIED account whose
+  // reads both failed is not "nothing here": it gets the couldn't-check face
+  // with a retry (bug pass 2, CODE-2-13). What this sign-in already knows is
+  // the only evidence the account is one, so a learner still sees nothing.
+  const face = employerSectionFace({ loaded, hasApp: !!app, verified, verifyFailed, knownKind: verifierKind });
+  if (face === 'hidden') return null;
+  const unreadable = face === 'unreadable';
 
   /** The verified kind when known, else what the application asked for. */
   const copy = VERIFIER_COPY[verifierKind ?? app?.kind ?? 'employer'];
+  /** The couldn't-check line below is showing: offer the retry beside it. */
+  const checkFailedShown = !verified && app?.status !== 'pending' && app?.status !== 'rejected' && verifyFailed;
 
   const toggle = async (kind: Kind, slug: string) => {
     const current = pickedRef.current[kind] ?? [];
@@ -248,7 +316,7 @@ export function EmployerSection() {
               sent — this screen is the only place the answer appears. */}
           <Text style={styles.body}>
             We could not confirm everything automatically, so a person is looking at your
-            application. Nothing more is needed from you — check back on this screen for the
+            application. Nothing more is needed from you. Check back on this screen for the
             decision.
           </Text>
           {app.queueReasons.length ? (
@@ -272,6 +340,12 @@ export function EmployerSection() {
       ) : (
         <Text style={styles.body}>This application is no longer active.</Text>
       )}
+
+      {checkFailedShown ? (
+        <Pressable style={styles.link} onPress={retry} accessibilityRole="button" accessibilityLabel="Try again">
+          <Text style={styles.linkText}>TRY AGAIN ›</Text>
+        </Pressable>
+      ) : null}
 
       {note ? <Text style={styles.warn}>{note}</Text> : null}
 
@@ -306,14 +380,16 @@ export function EmployerSection() {
         </Text>
       ) : null}
 
-      {!verified ? (
+      {/* An account known to be verified has nothing to apply for: only
+          the retry is offered while its reads are failing. */}
+      {!verified && !unreadable ? (
         <Pressable
           style={styles.link}
           // `void` does not handle a rejection: no browser / a blocked open was
           // an unhandled promise rejection (2026-09-30 bug pass). Say where to go.
           onPress={() =>
             void Linking.openURL(APPLY_URL).catch(() =>
-              setNote('Couldn’t open the website — visit proaudiotrainingacademy.com/employers/apply in your browser.'),
+              setNote('Couldn’t open the website. Visit proaudiotrainingacademy.com/employers/apply in your browser.'),
             )
           }
           accessibilityRole="link"

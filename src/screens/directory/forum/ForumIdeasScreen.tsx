@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
 import { fonts } from '../../../theme/tokens';
-import { fetchTopicDetail, fetchTopics, voteIdea, type ForumTopic } from '../../../features/forum/api';
+import { IDEAS_MAX, fetchIdeas, fetchTopicDetail, voteIdea, type ForumTopic } from '../../../features/forum/api';
 import { IDEAS_SLUG, applyVote, sortIdeas, trackedFace } from '../../../features/forum/rules';
 import { ideaDetailsFromList } from '../../../features/forum/serverShapes';
 import { useForumRead } from '../../../features/forum/useForumRead';
@@ -44,9 +44,11 @@ const DETAIL_LIMIT = 30;
 export function ForumIdeasScreen() {
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
-  const read = useForumRead<ForumTopic[]>(() => fetchTopics(IDEAS_SLUG, 'latest', 100, 0), []);
+  // Every idea, not the newest 100, so the vote order is true (CODE-1-21).
+  const read = useForumRead<{ topics: ForumTopic[]; capped: boolean }>(() => fetchIdeas(IDEAS_SLUG), []);
   const [rows, setRows] = useState<ForumTopic[]>([]);
-  const value = read.value;
+  const value = read.value?.topics ?? null;
+  const capped = !!read.value?.capped;
   useEffect(() => {
     if (value) setRows(sortIdeas(value));
   }, [value]);
@@ -120,6 +122,9 @@ export function ForumIdeasScreen() {
             <SampleStamp />
             {read.stale ? <StaleNote /> : null}
           </>
+        }
+        ListFooterComponent={
+          capped ? <Text style={st.foot}>{`Showing the ${IDEAS_MAX} newest ideas, sorted by votes.`}</Text> : null
         }
         ListEmptyComponent={
           read.face === 'loading' ? (

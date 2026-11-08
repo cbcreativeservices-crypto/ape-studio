@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import { notify } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { fonts } from '../../../theme/tokens';
@@ -18,24 +18,34 @@ import {
   editPost,
   fetchForumHome,
   glossaryMatches,
+  resolveCorrection,
   searchTopics,
   submitPost,
   type ForumCategory,
   type ForumRights,
 } from '../../../features/forum/api';
-import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
-import { useForumFlags } from '../../../features/forum/forumFlags';
+import { clearDraft, draftOwner, draftOwnerStale, readDraft, saveDraft } from '../../../features/forum/drafts';
+import { rulesAgreed, useForumFlags } from '../../../features/forum/forumFlags';
+import { clientIdFor, forgetClientId, landedAs, postFingerprint } from '../../../features/forum/postOnce';
+import { GlossaryLinkProvider, useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import {
   ASK_SLUG,
-  BODY_MAX,
+  CORRECTION_NEEDS_CHANGE,
   EMPTY_ASK,
+  acceptEditStep,
   SEARCH_MIN,
   TITLE_MAX,
   askChoices,
+  askDraftRead,
+  askDraftForSave,
+  askDraftText,
   askFormOf,
+  pendingIdFits,
   askProblem,
+  carryAskValues,
   composeAskBody,
   draftKey,
+  editTakesCorrection,
   glossaryWords,
   hiddenOutcomeNote,
   labKeyOf,
@@ -43,6 +53,7 @@ import {
   refusalNeedsProfile,
   RULES_NOT_SAVED,
   asksForRules,
+  tooLongText,
   topicFrom,
   type AskFormKind,
 } from '../../../features/forum/rules';
@@ -63,10 +74,21 @@ import {
   QuietButton,
   SampleStamp,
   forumStyles,
+  openMyProfile,
 } from './forumBits';
 import { AI_DISCLOSURE, RulesPopup } from './forumPopups';
 
-type EditTarget = { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean; suggestion?: string };
+type EditTarget = {
+  postId: string;
+  isOpening: boolean;
+  body: string;
+  title?: string;
+  partial?: boolean;
+  suggestion?: string;
+  /** ACCEPT AND EDIT: this correction is marked accepted once the edit is
+   *  posted, never before, so CANCEL leaves it open (UI-1-01). */
+  acceptCorrection?: string;
+};
 type LabThread = { key: string; title: string };
 type Params = { slug?: string; edit?: EditTarget; labThread?: LabThread };
 type Nav = {
@@ -105,7 +127,13 @@ export function ForumAskScreen() {
       </View>
     );
   }
-  return <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />;
+  // The glossary terms under the title open in place, over the form, so the
+  // half-written question is right there after (UI-2-07).
+  return (
+    <GlossaryLinkProvider>
+      <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />
+    </GlossaryLinkProvider>
+  );
 }
 
 function AskForm({
@@ -123,6 +151,7 @@ function AskForm({
 }) {
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
+  const openTerm = useGlossaryOpener();
 
   /** Only categories this member may start a topic in, and what to say when
    *  there is none, or when the one they came for is refused (askChoices). */
@@ -143,18 +172,46 @@ function AskForm({
     if (!edit) return EMPTY_ASK;
     return { ...EMPTY_ASK, title: edit.title ?? '', ...(guided ?? { body: edit.body }) };
   });
+  /** The form as it opened: ACCEPT AND EDIT needs a real change (UI-3-02). */
+  const startValues = useRef(values);
   const touched = useRef(false);
   const clientId = useRef<string | null>(null);
+  /** Nothing on the form changes while it is posting: what goes out is what
+   *  is on screen, and nothing typed meanwhile is dropped (CODE-2-01). */
+  const postingNow = useRef(false);
   const set = useCallback((patch: Partial<AskValues>) => {
+    if (postingNow.current) return;
     touched.current = true;
     // A retry keeps its id so it lands once; a CHANGED form is a new post.
     clientId.current = null;
     setValues((v) => ({ ...v, ...patch }));
   }, []);
-  const [lab, setLab] = useState<string | null>(null);
-  const [job, setJob] = useState(false);
+  const [lab, setLabValue] = useState<string | null>(null);
+  const [job, setJobValue] = useState(false);
+  /** The lab and job kind the pending id was made for. The lab and the job
+   *  kind are part of the post: a different one is a new post with a new id,
+   *  the same ones set back keep it, so a restored post lands once (CODE-2-07). */
+  const idMadeFor = useRef<{ lab: string | null; job: boolean } | null>(null);
+  // Touched only by a real change: the same lab or job set again (re-picking
+  // the same category) writes nothing over a restored draft (CODE-2-07).
+  const setLab = (next: string | null) => {
+    if (postingNow.current || next === lab) return;
+    touched.current = true;
+    setLabValue(next);
+  };
+  const setJob = (next: boolean | ((j: boolean) => boolean)) => {
+    if (postingNow.current) return;
+    const value = typeof next === 'function' ? next(job) : next;
+    if (value === job) return;
+    touched.current = true;
+    setJobValue(value);
+  };
   const [error, setError] = useState<string | null>(null);
-  const [posting, setPosting] = useState(false);
+  const [posting, setPostingState] = useState(false);
+  const setPosting = (on: boolean) => {
+    postingNow.current = on;
+    setPostingState(on);
+  };
 
   const [picking, setPicking] = useState(false);
   const [pickingLab, setPickingLab] = useState(false);
@@ -163,35 +220,89 @@ function AskForm({
 
   /* ── Draft saved ─────────────────────────────────────────────────── */
   const draftName = draftKey({ slug: labThread ? `lab:${labThread.key}` : category?.slug });
+  /** Whose draft this is: never written after the account wipe (CODE-2-06). */
+  const owner = useRef(draftOwner());
   const [draftSaved, setDraftSaved] = useState(false);
   useEffect(() => {
     if (edit) return undefined;
     let live = true;
     void readDraft(draftName).then((stored) => {
       if (!live || !stored || touched.current) return;
-      try {
-        setValues({ ...EMPTY_ASK, ...(JSON.parse(stored) as Partial<AskValues>) });
-      } catch {
-        // Not ours to read: leave the form blank.
-      }
+      // Not ours to read: leave the form blank.
+      const got = askDraftRead(stored);
+      if (!got) return;
+      setValues({ ...EMPTY_ASK, ...got.values });
+      setLabValue(got.lab);
+      setJobValue(got.job);
+      idMadeFor.current = got.clientId ? { lab: got.lab, job: got.job } : null;
+      // A draft that was being posted keeps its once-only id: posting it again
+      // lands once (CODE-1-05).
+      clientId.current = got.clientId;
     });
     return () => {
       live = false;
     };
   }, [draftName, edit]);
+  /** Typed but not yet written: kept on the way out (CODE-1-22). */
+  const unsaved = useRef<{ name: string; text: string } | null>(null);
+  /** The pending write: cleared by POST, which writes the draft (with the id)
+   *  itself. Left running, it overwrote that draft without the id 800 ms
+   *  later, so a post cut off by an app restart went out twice (CODE-1-05 c). */
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (edit || !touched.current) return undefined;
     let live = true;
+    // A pending id stays with the draft while the post is still the same post
+    // (CODE-2-07): set() drops it when the words change.
+    const text = askDraftForSave(values, clientId.current, idMadeFor.current, { lab, job });
+    unsaved.current = { name: draftName, text };
     const t = setTimeout(() => {
-      void saveDraft(draftName, hasStarted(values) ? JSON.stringify(values) : '').then((ok) => {
+      saveTimer.current = null;
+      unsaved.current = null;
+      if (draftOwnerStale(owner.current)) return;
+      void saveDraft(draftName, text).then((ok) => {
         if (live) setDraftSaved(ok && hasStarted(values));
       });
     }, 800);
+    saveTimer.current = t;
     return () => {
       live = false;
       clearTimeout(t);
     };
-  }, [draftName, edit, values]);
+  }, [draftName, edit, job, lab, values]);
+  // An immediate BACK keeps the last words typed: the timer above dies with
+  // the screen, so the write happens here. Never after the account changed:
+  // a forced sign-out unmounts this form AFTER the wipe (CODE-2-06).
+  useEffect(
+    () => () => {
+      if (draftOwnerStale(owner.current)) return;
+      const last = unsaved.current;
+      if (last) void saveDraft(last.name, last.text);
+    },
+    [],
+  );
+
+  /** A new category may be a new form: the draft MOVES (the old key is
+   *  cleared, so a posted question never comes back under the first category),
+   *  and the words typed move into the new form's box (CODE-1-06, UI-1-02). */
+  const pickCategory = (next: ForumCategory | null) => {
+    if (postingNow.current) return;
+    if (next && next.slug !== category?.slug) {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+      void clearDraft(draftName);
+      unsaved.current = null;
+      clientId.current = null;
+      setDraftSaved(false);
+      if (hasStarted(values)) touched.current = true;
+      setValues((v) => carryAskValues(form, askFormOf(next), v));
+      // A job post is for the category it was marked in. Only a REAL change
+      // clears it: the same category picked again keeps a restored job post
+      // and its once-only id (bug pass 3, CODE-3-02).
+      setJob(false);
+    }
+    setCategory(next);
+  };
 
   /* ── Similar topics while typing the title ───────────────────────── */
   const [similar, setSimilar] = useState<{ topics: ForumSearchHit[]; terms: string[] }>({ topics: [], terms: [] });
@@ -219,14 +330,20 @@ function AskForm({
   // An edit changes the post's text, whatever form first wrote it.
   const shownForm: AskFormKind = labThread ? 'discussion' : edit ? (guided ? 'question' : 'discussion') : form;
   const replyEdit = !!edit && !edit.isOpening;
+  // The body as it is sent, for an edit (as postNow builds it).
+  const sentBody = (v: AskValues) => (guided ? composeAskBody(v) : v.body.trim());
+  // ACCEPT AND EDIT with nothing changed would mark the correction accepted
+  // under the same wrong text: REPOST stays off and says why (UI-3-02).
+  const sameAsBefore =
+    !!edit?.acceptCorrection && !editTakesCorrection(sentBody(startValues.current), sentBody(values));
   const problem =
-    replyEdit || labThread
+    (replyEdit || labThread
       ? values.body.trim()
-        ? null
+        ? tooLongText(values.body.trim().length)
         : 'Write something first.'
       : !edit && !category
         ? 'Choose a category first.'
-        : askProblem(shownForm, values);
+        : askProblem(shownForm, values)) ?? (sameAsBefore ? CORRECTION_NEEDS_CHANGE : null);
 
   const postNow = useCallback(async () => {
     if (problem || (!edit && !labThread && !category)) return;
@@ -241,27 +358,65 @@ function AskForm({
     if (edit) {
       const body = guided ? composeAskBody(values) : values.body.trim();
       const r = await editPost(edit.postId, body, edit.isOpening ? values.title.trim() : undefined);
+      // ACCEPT AND EDIT: accepted only once the corrected text is published.
+      // A refused edit stays here with its reason; one waiting for a review
+      // goes back to its card in the thread. The correction stays open either
+      // way (CODE-2-05).
+      const step = r.ok && edit.acceptCorrection ? acceptEditStep(r.value.state, r.value.reason) : null;
+      if (step && step.kind === 'stay') {
+        setPosting(false);
+        setError(step.text);
+        return;
+      }
+      if (step && step.kind === 'back') {
+        setPosting(false);
+        notify(step.title, step.text);
+        safeGoBack(navigation as never);
+        return;
+      }
+      if (r.ok && edit.acceptCorrection) {
+        // The edit is in: now the correction is accepted (UI-1-01).
+        const a = await resolveCorrection(edit.acceptCorrection, true);
+        if (!a.ok) notify('Correction still open', CORRECTION_NOT_MARKED);
+      }
       setPosting(false);
       if (!r.ok) refused(r);
       else safeGoBack(navigation as never);
       return;
     }
+    // The same post sent again (a restored draft, a second Ask form on the
+    // stack) reuses its once-only id, and the draft keeps it until the post
+    // has landed (CODE-1-05).
+    const fingerprint = postFingerprint(
+      labThread ? `lab:${labThread.key}` : `ask:${category?.slug ?? ''}`,
+      labThread ? values : { ...values, lab, job },
+    );
+    if (!pendingIdFits(idMadeFor.current, { lab, job })) clientId.current = null;
+    const cid = clientIdFor(fingerprint, clientId.current, () => Crypto.randomUUID());
+    clientId.current = cid;
+    idMadeFor.current = { lab, job };
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = null;
+    unsaved.current = null;
+    await saveDraft(draftName, askDraftText(values, cid, { lab, job }));
     if (labThread) {
-      clientId.current = clientId.current ?? Crypto.randomUUID();
-      const r = await submitPost({ body: values.body.trim(), clientId: clientId.current, labThread });
+      const r = await submitPost({ body: values.body.trim(), clientId: cid, labThread });
       setPosting(false);
       if (!r.ok) {
         refused(r);
         return;
       }
+      unsaved.current = null;
       void clearDraft(draftName);
       const hidden = hiddenOutcomeNote(r.value);
       if (hidden) {
+        forgetClientId(fingerprint);
         clientId.current = null;
         setValues(EMPTY_ASK);
         setError(hidden);
         return;
       }
+      landedAs(fingerprint, r.value.postId);
       if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
       else navigation.navigate('ForumThread', { topicId: r.value.topicId });
       return;
@@ -270,11 +425,10 @@ function AskForm({
       appVersion: Constants.expoConfig?.version ?? 'unknown',
       device: `${Platform.OS} ${String(Platform.Version)}`,
     });
-    clientId.current = clientId.current ?? Crypto.randomUUID();
     const r = await submitPost({
       ...draft,
       topicKind: job ? ('job' as TopicKind) : draft.topicKind,
-      clientId: clientId.current,
+      clientId: cid,
       category: category?.slug,
       labKey: lab ? labKeyOf(lab) : null,
     });
@@ -283,23 +437,30 @@ function AskForm({
       refused(r);
       return;
     }
+    unsaved.current = null;
     void clearDraft(draftName);
     // A post the child-safety screen stopped is in no list, so the thread would
     // open empty: say so here instead.
     const hidden = hiddenOutcomeNote(r.value);
     if (hidden) {
+      forgetClientId(fingerprint);
       clientId.current = null;
       setValues(EMPTY_ASK);
       setError(hidden);
       return;
     }
+    // Deleting this topic later frees its id: the same words posted again are
+    // a new topic, never the deleted one (CODE-2-07).
+    landedAs(fingerprint, r.value.postId);
     // The author sees their own post here, whatever the check decided.
     if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
     else navigation.navigate('ForumThread', { topicId: r.value.topicId });
   }, [category, draftName, edit, form, guided, job, lab, labThread, navigation, problem, values]);
 
+  // Asked from the stored agreement once it is read, never from the store's
+  // empty start, and once per session when the phone cannot keep it (CODE-2-12).
   const post = useLatchedPress(async () => {
-    if (!flags.rulesAccepted) {
+    if (!(await rulesAgreed())) {
       setRulesOpen(true);
       return;
     }
@@ -311,6 +472,27 @@ function AskForm({
     if (ok) await postNow();
     else notify('Not saved', RULES_NOT_SAVED);
   });
+
+  /** CANCEL throws the draft away, once asked; BACK keeps it (UI-2-10). */
+  const cancel = () => {
+    if (edit || !hasStarted(values)) {
+      safeGoBack(navigation as never);
+      return;
+    }
+    confirmDialog(
+      'Discard this draft?',
+      'What you typed here will be deleted from this phone. To keep it for later, go back instead.',
+      'DISCARD',
+      () => {
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        saveTimer.current = null;
+        unsaved.current = null;
+        void clearDraft(draftName);
+        safeGoBack(navigation as never);
+      },
+      { destructive: true },
+    );
+  };
 
   const headerTitle = labThread ? `Discuss: ${labThread.title}` : edit ? 'Edit your post' : (category?.name ?? 'Ask the Community');
   const headerSub = edit?.partial
@@ -329,7 +511,7 @@ function AskForm({
           solid
           action={
             refusalNeedsProfile(choices.refusalCode)
-              ? { label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }
+              ? { label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }
               : undefined
           }
         >
@@ -354,7 +536,7 @@ function AskForm({
         {!edit && !labThread ? (
           <View>
             <FieldLabel>CATEGORY</FieldLabel>
-            <PickField label="Category" value={category?.name ?? 'Choose one'} onPress={() => setPicking(true)} />
+            <PickField label="Category" value={category?.name ?? 'Choose one'} onPress={() => setPicking(true)} disabled={posting} />
           </View>
         ) : null}
         {(!edit || edit.isOpening) && !labThread ? (
@@ -363,6 +545,7 @@ function AskForm({
             <Field
               label="Title"
               value={values.title}
+              editable={!posting}
               onChangeText={(t) => set({ title: t })}
               maxLength={TITLE_MAX}
               placeholder={form === 'question' ? 'Vocals sound thin in my mixes' : 'A clear, short title'}
@@ -390,7 +573,7 @@ function AskForm({
             {similar.terms.map((term) => (
               <Pressable
                 key={term}
-                onPress={() => navigation.navigate('PublicGlossary', { query: term })}
+                onPress={() => (openTerm ? openTerm(term) : navigation.navigate('PublicGlossary', { query: term }))}
                 style={st.simRow}
                 accessibilityRole="button"
                 accessibilityLabel={`Glossary: ${term}`}
@@ -405,17 +588,17 @@ function AskForm({
 
         {edit?.suggestion ? (
           <View style={st.sim}>
-            <Text style={st.simHead}>THE CORRECTION YOU ACCEPTED</Text>
+            <Text style={st.simHead}>THE SUGGESTED CORRECTION</Text>
             <Text style={st.simText}>{edit.suggestion}</Text>
           </View>
         ) : null}
 
-        <FormFields form={shownForm} values={values} set={set} />
+        <FormFields form={shownForm} values={values} set={set} locked={posting} />
 
         {!edit && !labThread && form === 'question' ? (
           <View>
             <FieldLabel>LINK A LAB (OPTIONAL)</FieldLabel>
-            <PickField label="Link a lab" value={lab ?? 'Choose a lab'} onPress={() => setPickingLab(true)} />
+            <PickField label="Link a lab" value={lab ?? 'Choose a lab'} onPress={() => setPickingLab(true)} disabled={posting} />
           </View>
         ) : null}
         {!edit && !labThread && canPostJob ? (
@@ -426,7 +609,8 @@ function AskForm({
 
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.btnrow}>
-          <QuietButton label="CANCEL" onPress={() => safeGoBack(navigation as never)} />
+          {/* Off while posting: leaving cannot stop a post that is out (CODE-1-05). */}
+          <QuietButton label="CANCEL" onPress={cancel} disabled={posting} />
           <AmberButton
             label={edit ? 'REPOST' : labThread ? 'POST' : POST_LABEL[form]}
             onPress={post}
@@ -445,8 +629,7 @@ function AskForm({
           title="Choose a category"
           rows={open.map((c) => c.name)}
           onPick={(name) => {
-            setCategory(open.find((c) => c.name === name) ?? category);
-            setJob(false);
+            pickCategory(open.find((c) => c.name === name) ?? category);
             setPicking(false);
           }}
         />
@@ -475,6 +658,9 @@ function AskForm({
 
 const hasStarted = (v: AskValues) => Object.values(v).some((x) => x.trim().length > 0);
 
+const CORRECTION_NOT_MARKED =
+  'Your edit was sent, but the correction could not be marked as accepted. It is still open in the thread.';
+
 /** Required on the tap: the lab catalog is not in the start graph. */
 function labNames(): string[] {
   return (require('../../../features/forum/labLinks') as typeof import('../../../features/forum/labLinks')).labNames();
@@ -484,11 +670,15 @@ function FormFields({
   form,
   values,
   set,
+  locked,
 }: {
   form: AskFormKind;
   values: AskValues;
   set: (patch: Partial<AskValues>) => void;
+  /** Posting: the fields hold what is being sent. */
+  locked: boolean;
 }) {
+  const editable = !locked;
   if (form === 'question') {
     return (
       <>
@@ -496,32 +686,32 @@ function FormFields({
           <FieldLabel>WHAT ARE YOU TRYING TO DO?</FieldLabel>
           <Field
             label="What are you trying to do?"
+            editable={editable}
             value={values.trying}
             onChangeText={(t) => set({ trying: t })}
             placeholder="Get a fuller, warmer lead vocal for a podcast"
             multiline
-            maxLength={BODY_MAX}
           />
         </View>
         <View>
           <FieldLabel>GEAR AND SIGNAL CHAIN</FieldLabel>
           <Field
             label="Gear and signal chain"
+            editable={editable}
             value={values.gear}
             onChangeText={(t) => set({ gear: t })}
             placeholder="Condenser mic → interface → DAW"
-            maxLength={BODY_MAX}
           />
         </View>
         <View>
           <FieldLabel>WHAT HAVE YOU TRIED?</FieldLabel>
           <Field
             label="What have you tried?"
+            editable={editable}
             value={values.tried}
             onChangeText={(t) => set({ tried: t })}
             placeholder="Boosted 200 Hz; it got muddy"
             multiline
-            maxLength={BODY_MAX}
           />
         </View>
       </>
@@ -530,11 +720,11 @@ function FormFields({
   if (form === 'glossary') {
     return (
       <>
-        <LabelledField label="TERM" value={values.term} onChange={(t) => set({ term: t })} />
-        <LabelledField label="CURRENT TEXT (OPTIONAL)" value={values.current} onChange={(t) => set({ current: t })} multiline />
-        <LabelledField label="PROPOSED TEXT" value={values.proposed} onChange={(t) => set({ proposed: t })} multiline />
-        <LabelledField label="WHY SHOULD IT CHANGE?" value={values.reason} onChange={(t) => set({ reason: t })} multiline />
-        <LabelledField label="SOURCE" value={values.source} onChange={(t) => set({ source: t })} />
+        <LabelledField label="TERM" value={values.term} onChange={(t) => set({ term: t })} editable={editable} />
+        <LabelledField label="CURRENT TEXT (OPTIONAL)" value={values.current} onChange={(t) => set({ current: t })} multiline editable={editable} />
+        <LabelledField label="PROPOSED TEXT" value={values.proposed} onChange={(t) => set({ proposed: t })} multiline editable={editable} />
+        <LabelledField label="WHY SHOULD IT CHANGE?" value={values.reason} onChange={(t) => set({ reason: t })} multiline editable={editable} />
+        <LabelledField label="SOURCE" value={values.source} onChange={(t) => set({ source: t })} editable={editable} />
       </>
     );
   }
@@ -545,6 +735,7 @@ function FormFields({
         value={values.body}
         onChange={(t) => set({ body: t })}
         multiline
+        editable={editable}
       />
       {form === 'idea' ? (
         <View>
@@ -566,16 +757,20 @@ function LabelledField({
   value,
   onChange,
   multiline,
+  editable = true,
 }: {
   label: string;
   value: string;
   onChange: (t: string) => void;
   multiline?: boolean;
+  editable?: boolean;
 }) {
   return (
     <View>
       <FieldLabel>{label}</FieldLabel>
-      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} maxLength={BODY_MAX} />
+      {/* No maxLength: a paste past the limit keeps every word, and the line
+          under POST says how much to cut (UI-3-01). */}
+      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} editable={editable} />
     </View>
   );
 }
@@ -624,6 +819,9 @@ function PickList({
               <Text style={st.pickClear}>{clearLabel}</Text>
             </Pressable>
           ) : null
+        }
+        ListEmptyComponent={
+          q.trim() ? <Text style={st.pickEmpty}>Nothing matches that search. Try fewer letters.</Text> : null
         }
         renderItem={({ item }) => (
           <Pressable
@@ -681,4 +879,5 @@ const st = StyleSheet.create({
   pickRow: { minHeight: 44, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: F.line },
   pickRowText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: F.text },
   pickClear: { fontFamily: fonts.barlowMedium, fontSize: 14, color: F.amber },
+  pickEmpty: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: F.sub, paddingVertical: 12 },
 });

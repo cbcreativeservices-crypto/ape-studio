@@ -10,6 +10,7 @@
  */
 import { useCallback, useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import { sampleFlags, setSampleFlags, subscribeSample } from './sampleSwitch.ts';
 import { acceptForumRules } from './api';
 
@@ -24,6 +25,31 @@ const store = createLocalStore<Flags>({
     return { welcomeSeen: r.welcomeSeen === true, rulesAccepted: r.rulesAccepted === true };
   },
 });
+
+/**
+ * I AGREE was accepted this session (bug pass 2, CODE-2-12). With the phone's
+ * record UNREADABLE, the agreement could not be kept there, and every later
+ * send asked again although the member had just agreed. Cleared with the
+ * account.
+ */
+const session = { agreed: false };
+
+export function resetForumFlagsSession(): void {
+  session.agreed = false;
+}
+registerLocalStoreReset(resetForumFlagsSession);
+
+/**
+ * Whether the rules were agreed, from the stored record once it has been read
+ * (never from the store's empty start before it hydrates), or this session.
+ */
+export async function rulesAgreed(): Promise<boolean> {
+  const sample = sampleFlags();
+  if (sample) return sample.rulesAccepted;
+  if (session.agreed) return true;
+  await store.hydrate();
+  return !store.isUnreadable() && store.get().rulesAccepted;
+}
 
 export function useForumFlags(): Flags & {
   known: boolean;
@@ -41,7 +67,10 @@ export function useForumFlags(): Flags & {
       return true;
     }
     // Kept on the phone AND recorded on the account; either one is enough.
-    return acceptForumRules(() => store.mutate((f) => ({ ...f, rulesAccepted: true })));
+    return acceptForumRules(() => store.mutate((f) => ({ ...f, rulesAccepted: true }))).then((ok) => {
+      if (ok) session.agreed = true;
+      return ok;
+    });
   }, []);
   const markWelcomeSeen = useCallback(async () => {
     if (sampleFlags()) {

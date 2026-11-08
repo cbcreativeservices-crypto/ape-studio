@@ -622,7 +622,8 @@ describe('the welcome', () => {
 
 describe('reading the server', () => {
   it('fills the gaps a row may have', () => {
-    assert.deepEqual(authorOf(null), { name: 'Member', token: null, verifiedKind: null, graduate: false, trust: null, former: false });
+    // academy: owner rule 2026-11-08 (no Report or Block on the Academy's posts).
+    assert.deepEqual(authorOf(null), { name: 'Member', token: null, verifiedKind: null, graduate: false, trust: null, former: false, academy: false });
     assert.equal(authorOf({ name: 'A', verified_kind: 'spaceship' }).verifiedKind, null);
     assert.equal(authorOf({ name: 'Former member', former: true }).former, true);
     assert.equal(topicOf({ topic_id: 't', mod_state: null }).modState, 'published');
@@ -816,7 +817,8 @@ describe('house rules', () => {
   it('rules are accepted before a first post, on both ways of posting', () => {
     for (const f of ['ForumAskScreen', 'ForumThreadScreen']) {
       const src = code(`src/screens/directory/forum/${f}.tsx`);
-      assert.match(src, /if \(!flags\.rulesAccepted\) \{\s*setRulesOpen\(true\);\s*return;/, f);
+      // Bug pass 2 (CODE-2-12): from the stored record once read, or this session.
+      assert.match(src, /if \(!\(await rulesAgreed\(\)\)\) \{\s*setRulesOpen\(true\);\s*return;/, f);
     }
   });
 });

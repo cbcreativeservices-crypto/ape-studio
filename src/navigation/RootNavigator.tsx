@@ -445,7 +445,14 @@ export function RootNavigator() {
           hit before. */}
       <Stack.Screen name="AudioCommunityDirectory" getComponent={Lazy.AudioCommunityDirectory} options={swipe} />
       <Stack.Screen name="ForumCategory" getComponent={Lazy.ForumCategory} options={swipe} />
-      <Stack.Screen name="ForumThread" getComponent={Lazy.ForumThread} options={swipe} />
+      {/* One screen per topic (bug pass 2026-11-08, CODE-2-02): a tap or link to a
+          different thread opens it on top instead of replacing the one being read. */}
+      <Stack.Screen
+        name="ForumThread"
+        getComponent={Lazy.ForumThread}
+        options={swipe}
+        getId={({ params }) => (params as { topicId?: string } | undefined)?.topicId}
+      />
       <Stack.Screen name="ForumAsk" getComponent={Lazy.ForumAsk} options={swipe} />
       <Stack.Screen name="ForumIdeas" getComponent={Lazy.ForumIdeas} options={swipe} />
       <Stack.Screen name="ForumNotices" getComponent={Lazy.ForumNotices} options={swipe} />

@@ -117,7 +117,7 @@ describe('H12-3 Pro Registry: a failed name read is not "Add your Registry name"
   });
 
   it('the tile says it could not load the name, and only a genuine none asks to add one', () => {
-    assert.match(src, /\{registryName \|\|\s*\n\s*\(nameUnread\s*\n\s*\? 'Couldn’t load your Registry name — check your connection\.'\s*\n\s*: 'Add your Registry name — tap SET UP MY PROFILE below'\)\}/);
+    assert.match(src, /\{registryName \|\|\s*\n\s*\(nameUnread\s*\n\s*\? 'Couldn’t load your Registry name\. Check your connection\.'\s*\n\s*: 'Add your Registry name\. Tap SET UP MY PROFILE below\.'\)\}/);
   });
 
   it("an older account state's answer lands nowhere", () => {

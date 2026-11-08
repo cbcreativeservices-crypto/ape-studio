@@ -3,12 +3,13 @@
  * dev sample. DEV + WEB ONLY, like everything webPreviews.tsx renders. The same
  * list is in the DEV · VISUAL INDEX on a phone.
  */
-import { useCallback, type ComponentType } from 'react';
+import { useCallback, useRef, type ComponentType } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { AppDialogHost } from '../components/AppDialog';
 import { setSampleDirectory } from '../features/directory/sampleThreads';
 import { FORUM_SAMPLE_STATES, setSampleForum } from '../features/forum/sampleSwitch';
+import { safeGoBack } from '../lib/safeGoBack';
 import { fonts } from '../theme/tokens';
 
 /** One dialog host per screen, as RootNavigator's screenLayout does: a host draws
@@ -26,10 +27,22 @@ export function withDialogs(Screen: ComponentType): ComponentType {
 
 export function ForumPreviewScreen() {
   const navigation = useNavigation() as unknown as { navigate: (route: string, params?: object) => void };
+  /**
+   * A row tapped before this screen's first focus: that focus came AFTER the
+   * tap and switched the sample off again, so the state opened on the LIVE
+   * forum (bug pass 2026-11-08, UI-1-08). The switch is cleared only on a
+   * focus that no tap is waiting on; leaving clears the wait.
+   */
+  const opening = useRef(false);
   useFocusEffect(
     useCallback(() => {
-      setSampleForum(null);
-      setSampleDirectory(false);
+      if (!opening.current) {
+        setSampleForum(null);
+        setSampleDirectory(false);
+      }
+      return () => {
+        opening.current = false;
+      };
     }, []),
   );
   return (
@@ -40,6 +53,7 @@ export function ForumPreviewScreen() {
         <Pressable
           key={state.id}
           onPress={() => {
+            opening.current = true;
             setSampleForum(state);
             if (state.tab === 'directory') setSampleDirectory(true);
             navigation.navigate('AudioCommunityDirectory', { tab: state.tab ?? 'forum' });
@@ -59,8 +73,13 @@ export function ForumPreviewScreen() {
 /** Where a lab card lands in the harness: proof of the route, not the lab. */
 export function ForumLabStub() {
   const route = useRoute();
+  const navigation = useNavigation();
   return (
-    <View style={st.root}>
+    <View style={[st.root, st.body]}>
+      {/* A way back without reloading (UI-1-20). */}
+      <Pressable onPress={() => safeGoBack(navigation)} style={st.row} accessibilityRole="button" accessibilityLabel="Back">
+        <Text style={st.rowText}>‹ BACK</Text>
+      </Pressable>
       <Text style={st.title}>Lab route: {route.name}</Text>
       <Text style={st.sub}>A lab card opened this route. The real lab is not in this harness.</Text>
     </View>

@@ -72,10 +72,39 @@ export function forumTapFrom(data: unknown): ForumTap | null {
  * Whether a forum tap may open its thread now. Never above the sign-in screen
  * (the stack's root is `Auth` while signed out): a thread pushed there sits on
  * top of the sign-in and every read in it refuses (second review 2026-11-07).
- * The same rule openCommunityPath keeps.
+ * Nor above `Splash` (bug pass 2026-11-08, CODE-1-33): on a cold start the
+ * session is not known yet, and Splash resets the stack under the thread. A tap
+ * that cannot land is parked (parkForumTap) and opened once the stack's root is
+ * a signed-in screen (takeParkedForumTap), within FORUM_TAP_PARK_MS.
  */
 export function forumTapLands(rootRoute: string | null | undefined): boolean {
-  return rootRoute !== 'Auth';
+  return rootRoute !== 'Auth' && rootRoute !== 'Splash';
+}
+
+/** How long a parked forum tap waits for sign-in before it is dropped. */
+export const FORUM_TAP_PARK_MS = 10 * 60 * 1000;
+
+let parkedForumTap: { tap: ForumTap; at: number } | null = null;
+
+/** Keep the newest tap that could not land yet. */
+export function parkForumTap(tap: ForumTap, now: number = Date.now()): void {
+  parkedForumTap = { tap, at: now };
+}
+
+/**
+ * The parked tap, once it may land (and only once): null while the root is
+ * still Splash or Auth (or unknown), and null after FORUM_TAP_PARK_MS.
+ */
+export function takeParkedForumTap(rootRoute: string | null | undefined, now: number = Date.now()): ForumTap | null {
+  if (!parkedForumTap) return null;
+  if (now - parkedForumTap.at > FORUM_TAP_PARK_MS) {
+    parkedForumTap = null;
+    return null;
+  }
+  if (!rootRoute || !forumTapLands(rootRoute)) return null;
+  const { tap } = parkedForumTap;
+  parkedForumTap = null;
+  return tap;
 }
 
 /** Where a forum tap lands: the thread, opened at that post. */

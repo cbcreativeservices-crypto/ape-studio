@@ -19,10 +19,20 @@ import { colors, fonts } from '../../theme/tokens';
 import { DirectoryChipRow, RecentGraduates } from './DirectoryChips';
 import { KindPlate, type PlateKey } from './KindPlate';
 import { searchByChip, type ChipOutcome, type GraduateCard } from '../../features/directory/kindsApi';
-import { badgeLabel, chipEmpty, scanNote, type DirectoryChip, type MemberBadge, type VerifiedOrg } from '../../features/directory/kinds';
+import {
+  badgeLabel,
+  chipEmpty,
+  chipNoun,
+  memberCardA11y,
+  scanNote,
+  type DirectoryChip,
+  type MemberBadge,
+  type VerifiedOrg,
+} from '../../features/directory/kinds';
+import { acceptsContact } from '../../features/directory/rules';
 import { sampleState } from '../../features/forum/sampleSwitch';
 import { cardColumn } from '../../theme/readingColumn';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote, useFailedReadLine } from './directoryBits';
 import { ChannelBadge } from './ChannelBadge';
 // The country filter has to normalise a typed code exactly the way the profile
 // editor normalises a stored one, or the filter searches for something no
@@ -75,21 +85,21 @@ const MemberCard = memo(function MemberCard({
       onPress={() => onOpen(r.publicToken, r.displayName)}
       style={({ pressed }) => [st.card, pressed && st.cardPressed]}
       accessibilityRole="button"
-      accessibilityLabel={[
-        r.displayName,
+      accessibilityLabel={memberCardA11y({
+        displayName: r.displayName,
         plate,
-        r.primaryArea,
-        r.roles.join(', '),
-        r.credentialCount ? `${r.credentialCount} verified credentials` : null,
-        r.contactEnabled ? 'open to contact' : null,
-      ]
-        .filter(Boolean)
-        .join('. ')}
+        primaryArea: r.primaryArea,
+        roles: r.roles,
+        credentialCount: r.credentialCount,
+        contactEnabled: r.contactEnabled,
+      })}
       accessibilityHint="Opens their profile"
     >
       {/* The channel badge: green LED = accepts contact requests, dark = does
-          not (Explore's one LED fact — see ChannelBadge). */}
-      <ChannelBadge name={r.displayName} led={r.contactEnabled ? 'green' : 'off'} steel={!!badge?.verifiedKind} />
+          not (Explore's one LED fact — see ChannelBadge). The sheet's rule via
+          acceptsContact; a search row has no Open To yet, so the server change
+          held for Comp A (contact_enabled only with Open To) closes the rest. */}
+      <ChannelBadge name={r.displayName} led={acceptsContact(r) ? 'green' : 'off'} steel={!!badge?.verifiedKind} />
       <View style={st.cardBody}>
         <View style={st.nameRow}>
           <Text style={st.cardName}>{r.displayName}</Text>
@@ -153,16 +163,7 @@ const OrgCard = memo(function OrgCard({ org }: { org: VerifiedOrg }) {
 
 /** "6 graduates", "1 employer": what the chip is listing. */
 function countLine(chip: DirectoryChip, n: number): string {
-  const one: Record<DirectoryChip, string> = {
-    all: 'member',
-    graduates: 'graduate',
-    employer: 'employer',
-    company: 'company',
-    institution: 'institution',
-    instructor: 'instructor',
-  };
-  const word = one[chip];
-  return `${n} ${n === 1 ? word : word === 'company' ? 'companies' : `${word}s`}`;
+  return `${n} ${chipNoun(chip, n)}`;
 }
 
 /** The card's "where" words: country code and how they like to work. */
@@ -311,6 +312,8 @@ export function ExploreView({
    */
   const [moreErr, setMoreErr] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  // The words over a failed search agree with its button (UI-3-04).
+  const failLine = useFailedReadLine();
   const [showFilters, setShowFilters] = useState(false);
 
   // fetchTaxonomy resolves NULL on failure and caches only successes, so this
@@ -544,7 +547,7 @@ export function ExploreView({
 
       {showFilters && taxErr ? (
         <View>
-          <Banner tone="warn">Couldn’t load the filter options — check your connection.</Banner>
+          <Banner tone="warn">Couldn’t load the filter options. Check your connection.</Banner>
           <PrimaryButton label="RETRY" onPress={() => void loadTax()} />
         </View>
       ) : null}
@@ -559,7 +562,7 @@ export function ExploreView({
           to re-run one was to change a filter (network audit 2026-09-11). */}
       {err ? (
         <>
-          <Banner tone="warn">{err}</Banner>
+          <Banner tone="warn">{failLine(err)}</Banner>
           {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
           <RetryOrSignIn message={err} onRetry={() => void run(f)} />
         </>
@@ -588,7 +591,7 @@ export function ExploreView({
             {busy
               ? 'Searching the directory…'
               : hasMore
-                ? `Showing ${visibleRows.length} of ${visibleTotal} ${chip === 'graduates' ? 'graduates' : 'members'}`
+                ? `Showing ${visibleRows.length} of ${visibleTotal} ${chipNoun(chip, visibleTotal)}`
                 : countLine(chip, visibleTotal + orgs.length)}
           </Text>
           {visibleRows.map((r) => (

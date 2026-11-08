@@ -41,6 +41,86 @@ export function aboutIsSafe(text: string | null | undefined): boolean {
   return true;
 }
 
+/**
+ * The contact composer's allowance line. The server's window is ROLLING (the
+ * last 7 days, see readableError), so "left this week" described a weekly
+ * reset that never happens (bug pass 2026-11-08, CODE-1-29).
+ */
+export function requestsLeftLine(left: number): string {
+  if (left <= 0) return 'No contact requests left for now. Each one frees up 7 days after you sent it.';
+  return `${left} contact ${left === 1 ? 'request' : 'requests'} left for now. Each one frees up 7 days after you send it.`;
+}
+
+/**
+ * What the member sheet offers for contact (bug pass 2026-11-08, UI-2-03).
+ * The server refuses any purpose the recipient has not listed under Open To
+ * (contact_request_send, §6.5; docs/APE_DIRECTORY_TESTS.sql "purpose must match
+ * an active Open To selection"). A member with contact ON and no Open To
+ * choices can therefore never be sent a request, and the composer opened onto
+ * "Choose what this is about" with nothing to choose and a SEND that never
+ * woke up. 'no-topics' replaces the button with NO_OPEN_TO_LINE.
+ */
+export function contactOffer(p: { contactEnabled: boolean; openTo: readonly string[] }): 'send' | 'no-topics' | 'off' {
+  if (!p.contactEnabled) return 'off';
+  return p.openTo.length ? 'send' : 'no-topics';
+}
+
+/** Said in place of SEND A CONTACT REQUEST when the member lists no Open To topics. */
+export const NO_OPEN_TO_LINE =
+  'This member hasn’t listed anything they are open to yet, so you can’t send them a contact request.';
+
+/**
+ * Said under the member's own "Let members contact me" switch when it is ON
+ * and Open To is empty (bug pass 2026-11-08, UI-2-03 follow-up): the server
+ * refuses every request to such a member, and nothing told them so.
+ */
+export const CONTACT_NEEDS_OPEN_TO_LINE =
+  'Pick at least one thing you are open to, under OPEN TO above, or nobody can send you a request.';
+
+/**
+ * A member CARD's green LED and its "open to contact" screen-reader words
+ * (bug pass 2026-11-08, UI-3-08 / CODE-3-09): the same rule as the sheet's
+ * contactOffer(...) === 'send' wherever the row says what the member is open to.
+ *
+ * The directory_search / directory_graduates rows carry `contact_enabled` but
+ * NO `open_to` (cardOf in kinds.ts, fetchGraduates in kindsApi.ts), so a card
+ * cannot apply the Open To half itself. That half is a SERVER change, held for
+ * Comp A: the search rows' `contact_enabled` becomes true only when the member
+ * lists at least one Open To topic. Until it lands, a card for a member with
+ * contact ON and no Open To still shows green. Pass `openTo` when a row has it.
+ */
+export function acceptsContact(c: { contactEnabled: boolean; openTo?: readonly string[] | null }): boolean {
+  if (!c.contactEnabled) return false;
+  return c.openTo ? c.openTo.length > 0 : true;
+}
+
+/** Said in place of "check your connection" when the only way on is SIGN IN. */
+export const SIGN_IN_TO_SEE_DIRECTORY = 'Sign in to see the directory.';
+
+/**
+ * The words above a failed directory read (bug pass 2026-11-08, UI-3-04). When
+ * the button under them is SIGN IN (a KNOWN guest, or a server answer that
+ * itself says "Sign in"; the same test as needsSignIn in directoryBits.tsx),
+ * the words say sign in too, never "check your connection and try again" over
+ * a SIGN IN button. A signed-in member keeps the read's own message and RETRY.
+ */
+export function failedReadLine(
+  guest: boolean,
+  message: string | null | undefined,
+  fallback: string,
+  signInLine: string = SIGN_IN_TO_SEE_DIRECTORY,
+): string {
+  if (/\bSign in\b/.test(message ?? '')) return message as string;
+  if (guest) return signInLine;
+  return message || fallback;
+}
+
+/** A report's optional detail as sent: trimmed, and null when only spaces. */
+export function reportDetail(detail: string | null | undefined): string | null {
+  const t = (detail ?? '').trim();
+  return t ? t : null;
+}
+
 /** Why an About value was refused — so the UI can say something specific. */
 export function aboutProblem(text: string): string | null {
   if (aboutIsSafe(text)) return null;
@@ -168,6 +248,9 @@ export const COMMUNITY_RULES_MESSAGE =
  * can actually provoke; pass anything else through rather than inventing a
  * friendly lie about a failure we did not anticipate.
  */
+/** The Academy account cannot be blocked or reported (owner 2026-11-08). */
+export const ACADEMY_ACCOUNT_PROTECTED = 'The Academy account can’t be blocked or reported.';
+
 export function readableError(message: string | undefined): string {
   // An EMPTY message is as useless to a member as a missing one (edge-case QA
   // 2026-09-11): `message ?? fallback` let '' through, so a driver that
@@ -178,6 +261,9 @@ export function readableError(message: string | undefined): string {
   // that no other branch may swallow. Retrying the same text fails the same
   // way, so the copy asks for a rephrase, not a retry.
   if (m.includes('community_rules')) return COMMUNITY_RULES_MESSAGE;
+  // The Academy account cannot be blocked or reported (owner 2026-11-08):
+  // contact_block, contact_report and contact_block_thread refuse it with this code.
+  if (m.includes('academy account')) return ACADEMY_ACCOUNT_PROTECTED;
   // PostgREST rejects an anon caller at the GRANT before the function body
   // runs, so the friendly "sign in to browse" guard inside directory_search is
   // unreachable for a signed-out visitor — they got the raw
@@ -254,7 +340,7 @@ export function readableError(message: string | undefined): string {
   if (m.includes('wait for a reply'))
     return 'Wait for a reply before sending more.';
   if (m.includes('already have an open conversation'))
-    return 'You already have an open conversation with this member — continue it under Requests.';
+    return 'You already have an open conversation with this member. Continue it under Requests.';
   if (m.includes('message is longer than'))
     return 'That message is longer than 1,000 characters. Shorten it and send again.';
   if (m.includes('already answered')) return 'That request has already been answered.';
@@ -292,7 +378,7 @@ export function readableError(message: string | undefined): string {
   if (m.includes('this conversation is closed'))
     return 'This conversation is closed. Nothing you have already sent was removed.';
   if (m.includes('this conversation is not open'))
-    return 'This conversation is not open yet — the other member has not accepted your request.';
+    return 'This conversation is not open yet. The other member has not accepted your request.';
   if (m.includes('that is your own profile')) return 'That is your own profile.';
   // contact_block / contact_report: the profile behind the open sheet was
   // deleted since it was read (hunt 9, 2026-10-03). It fell through to
@@ -300,5 +386,5 @@ export function readableError(message: string | undefined): string {
   // fail the same way.
   if (m.includes('no such member')) return 'That member’s profile is no longer available.';
   if (m.includes('sign in first')) return 'Your session has ended. Sign in again to continue.';
-  return 'Something went wrong on our side. Nothing you entered was lost — try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
+  return 'Something went wrong on our side. Nothing you entered was lost. Try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
 }

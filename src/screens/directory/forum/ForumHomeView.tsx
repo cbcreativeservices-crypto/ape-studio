@@ -29,9 +29,11 @@ import {
   ASK_SLUG,
   IDEAS_SLUG,
   SEARCH_MIN,
+  emptyTopicsWords,
   groupCategories,
   refusalNeedsProfile,
   refusalText,
+  replyCountText,
 } from '../../../features/forum/rules';
 import { sampleState, takeSampleOpen } from '../../../features/forum/sampleSwitch';
 import type { ForumSearchHit, TopicSort } from '../../../features/forum/types';
@@ -251,11 +253,8 @@ function LatestList({
     return <ForumUnreadable error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   }
   if (read.value.length === 0) {
-    return sort === 'unanswered' ? (
-      <ForumEmpty title="Nothing is waiting" text="No question is waiting for an answer." />
-    ) : (
-      <ForumEmpty title="Nothing posted yet" text="Be the first. Ask a question, or share what you know." />
-    );
+    const words = emptyTopicsWords(sort, false);
+    return <ForumEmpty title={words.title} text={words.text} />;
   }
   return (
     <>
@@ -333,7 +332,7 @@ function SearchResults({
           </Text>
           <Text style={st.hitMeta}>
             {categories.find((c) => c.slug === h.categorySlug)?.name ?? h.categorySlug}
-            {h.categorySlug === ANNOUNCEMENTS_SLUG ? '' : ` · ${h.replyCount}`}
+            {h.categorySlug === ANNOUNCEMENTS_SLUG ? '' : ` · ${replyCountText(h.replyCount)}`}
           </Text>
         </Pressable>
       ))}

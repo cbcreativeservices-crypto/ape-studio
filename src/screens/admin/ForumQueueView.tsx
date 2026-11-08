@@ -10,7 +10,7 @@
  * the same account_set_standing as the rest of this screen, each behind a
  * question, and only the owner's hand: the AI never confirms a ban.
  */
-import { useCallback, useState } from 'react';
+import { createContext, useCallback, useContext, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -54,7 +54,7 @@ import {
   trackedProblem,
   urgentLabel,
 } from '../../features/forum/rules';
-import type { ForumTopic, TrackedStatus } from '../../features/forum/types';
+import type { ForumResult, ForumTopic, TrackedStatus } from '../../features/forum/types';
 import { useForumRead } from '../../features/forum/useForumRead';
 import { useSendingPer } from '../directory/directoryBits';
 import {
@@ -70,6 +70,22 @@ import {
   StatusStamp,
   type MenuItem,
 } from '../directory/forum/forumBits';
+import {
+  askThenDecide,
+  createDecisionGuard,
+  createMemberStepMemo,
+  createPopupTurns,
+  memberDoneQueueFailed,
+  offersRetry,
+  QUEUE_LIMIT,
+  queueCapNote,
+  queueDecisionAsk,
+  queueResultLine,
+  runTwoStep,
+  trackedCapNote,
+  visibleQueueItems,
+  type MemberStepMemo,
+} from './forumQueueFaces';
 
 type Section = 'queue' | 'appeals' | 'tracked';
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
@@ -83,6 +99,22 @@ const SECTIONS: { key: Section; label: string }[] = [
 export function ForumQueueView() {
   const [section, setSection] = useState<Section>('queue');
   const usage = useForumRead<AiUsage | null>(fetchAiUsage, []);
+  // The member step of PLEASE EDIT / Suspend / Ban that already landed, and the
+  // card line saying so, live here for the screen's life: QueueList unmounts
+  // on a tab switch, and a trip to APPEALS must not make the next tap resend
+  // the member action (CODE-3-05, check P3 follow-up 2).
+  const memberStep = useRef(createMemberStepMemo()).current;
+  const [partial, setPartial] = useState<Record<number, string>>({});
+  // Not the owner: the refusal is the whole page. No AI line that "could not
+  // be read", no tabs, no RETRY (UI-1-14).
+  if (usage.face === 'unreadable' && !offersRetry(usage.code)) {
+    return (
+      <ScrollView contentContainerStyle={st.body}>
+        <SampleStamp />
+        <Failed error={usage.error} code={usage.code} onRetry={() => void usage.reload()} />
+      </ScrollView>
+    );
+  }
   return (
     <ScrollView contentContainerStyle={st.body} keyboardShouldPersistTaps="handled">
       <SampleStamp />
@@ -105,19 +137,26 @@ export function ForumQueueView() {
           </Pressable>
         ))}
       </View>
-      {section === 'queue' ? <QueueList /> : section === 'appeals' ? <AppealList /> : <TrackedList />}
+      {section === 'queue' ? (
+        <QueueMemory.Provider value={{ memberStep, partial, setPartial }}>
+          <QueueList />
+        </QueueMemory.Provider>
+      ) : section === 'appeals' ? <AppealList /> : <TrackedList />}
     </ScrollView>
   );
 }
 
-/** A read that failed or was refused: never "nothing waiting". */
-function Failed({ error, onRetry }: { error: string | null; onRetry: () => void }) {
+/** A read that failed or was refused: never "nothing waiting". A refusal
+ *  offers no RETRY: it can never succeed for this account (UI-1-14). */
+function Failed({ error, code, onRetry }: { error: string | null; code: string | null; onRetry: () => void }) {
   return (
     <View style={st.warn}>
       <Text style={st.warnText}>{error}</Text>
-      <Pressable onPress={onRetry} hitSlop={8} accessibilityRole="button" accessibilityLabel="Retry">
-        <Text style={st.retry}>RETRY</Text>
-      </Pressable>
+      {offersRetry(code) ? (
+        <Pressable onPress={onRetry} hitSlop={8} accessibilityRole="button" accessibilityLabel="Retry">
+          <Text style={st.retry}>RETRY</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -152,42 +191,141 @@ function Act({
 
 const SUSPEND_DAYS = [7, 30];
 
+/** One queue read, and whether it came back full: `full` rides with the list,
+ *  so a cleared batch still knows more may be waiting (CODE-2-14). */
+type QueueRead = { items: QueueItem[]; full: boolean };
+async function fetchQueueRead(): Promise<ForumResult<QueueRead>> {
+  const r = await fetchQueue();
+  return r.ok ? { ok: true, value: { items: r.value, full: r.value.length >= QUEUE_LIMIT } } : r;
+}
+
+/** What QueueList must keep across a tab switch, held by ForumQueueView. */
+type QueueMemoryValue = {
+  memberStep: MemberStepMemo;
+  partial: Record<number, string>;
+  setPartial: Dispatch<SetStateAction<Record<number, string>>>;
+};
+const QueueMemory = createContext<QueueMemoryValue | null>(null);
+
 function QueueList() {
+  const memory = useContext(QueueMemory);
+  if (!memory) throw new Error('QueueList needs ForumQueueView (QueueMemory).');
+  const { memberStep, partial, setPartial } = memory;
   const navigation = useNavigation() as unknown as Nav;
-  const read = useForumRead<QueueItem[]>(fetchQueue, []);
+  const read = useForumRead<QueueRead>(fetchQueueRead, []);
   const [busy, run] = useSendingPer();
   const [memberOf, setMemberOf] = useState<QueueItem | null>(null);
-
-  const done = useCallback((logId: number) => read.patch((rows) => rows.filter((r) => r.logId !== logId)), [read]);
-
-  const decide = useCallback(
-    (item: QueueItem, decision: QueueDecision, note?: string) => {
+  // What the last accepted decision did, in words (UI-2-15). Set only from a
+  // write's own answer.
+  const [result, setResult] = useState<string | null>(null);
+  const readAgain = useLatchedPress(() => read.reload());
+  // One decision per item: a second is refused while one is pending, and after
+  // one landed (O-1).
+  const guard = useRef(createDecisionGuard()).current;
+  // The card line for an item whose member action landed but is still listed
+  // (held by ForumQueueView, above the tab switch).
+  const notePartial = useCallback((logId: number, line: string | null) => {
+    setPartial((p) => {
+      const next = { ...p };
+      if (line) next[logId] = line;
+      else delete next[logId];
+      return next;
+    });
+  }, [setPartial]);
+  /** Send `task` for an item already claimed. A task that landed marks the
+   *  item decided; one that `run` refused (the item is busy) or that did not
+   *  land releases the claim. */
+  const send = useCallback(
+    (item: QueueItem, task: () => Promise<boolean>) => {
+      let started = false;
       run(String(item.logId), async () => {
+        started = true;
+        let landed = false;
+        try {
+          landed = await task();
+        } finally {
+          if (landed) guard.land(item.logId);
+          else guard.release(item.logId);
+        }
+      });
+      if (!started) guard.release(item.logId);
+    },
+    [guard, run],
+  );
+
+  const done = useCallback(
+    (logId: number) => read.patch((q) => ({ ...q, items: q.items.filter((r) => r.logId !== logId) })),
+    [read],
+  );
+
+  const decideNow = useCallback(
+    (item: QueueItem, decision: QueueDecision, note?: string) => {
+      send(item, async () => {
         const r = await decideQueueItem(item.logId, decision, note);
-        if (r.ok) done(item.logId);
-        else notify('Not saved', r.error);
+        if (r.ok) {
+          done(item.logId);
+          setResult(queueResultLine(decision, item.author?.name));
+          return true;
+        }
+        notify('Not saved', r.error);
+        return false;
       });
     },
-    [done, run],
+    [done, send],
+  );
+
+  // A threat, self-harm or child-safety item asks first: DISMISS, CONFIRM and
+  // RESTORE take it off the queue with no undo here (UI-2-15).
+  const decide = useCallback(
+    (item: QueueItem, decision: QueueDecision, note?: string) => {
+      const ask = queueDecisionAsk(decision, {
+        urgentCategory: item.urgentCategory,
+        child: isChildItem(item),
+        hasMember: !!item.targetUser,
+        name: item.author?.name,
+      });
+      // The claim is taken in YES, never before the question (N-1).
+      askThenDecide(
+        guard,
+        item.logId,
+        ask,
+        (q, yes) => confirmDialog(q.title, q.body, q.yes, yes, { destructive: q.destructive }),
+        () => decideNow(item, decision, note),
+      );
+    },
+    [decideNow, guard],
   );
 
   const onPost = useCallback(
     (item: QueueItem, action: PostAction) => {
       const postId = item.postId;
-      if (!postId) return;
-      run(String(item.logId), async () => {
-        // forum_admin_post_action shows this reason to the member as it is.
-        const r = await actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule));
-        if (!r.ok) {
-          notify('Not saved', r.error);
-          return;
+      if (!postId || !guard.claim(item.logId)) return;
+      send(item, async () => {
+        const d = await runTwoStep(
+          memberStep,
+          item.logId,
+          action,
+          // forum_admin_post_action shows this reason to the member as it is.
+          () => actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule)),
+          () => decideQueueItem(item.logId, 'noted', action),
+        );
+        if (d.ok) {
+          done(item.logId);
+          setResult(queueResultLine(action === 'please_edit' ? 'please_edit' : 'noted', item.author?.name));
+          notePartial(item.logId, null);
+          return true;
         }
-        const d = await decideQueueItem(item.logId, 'noted', action);
-        if (d.ok) done(item.logId);
-        else notify('Done, but still listed', d.error);
+        if (d.step === 'member') {
+          notify('Not saved', d.error);
+          return false;
+        }
+        const m = memberDoneQueueFailed(action === 'please_edit' ? 'PLEASE EDIT' : action.toUpperCase());
+        notePartial(item.logId, `${m.title}. ${m.body}`);
+        notify(m.title, `${m.body}\n\n${d.error}`);
+        return false;
       });
     },
-    [done, run],
+    [done, guard, memberStep, notePartial, send],
   );
 
   const onUser = useCallback(
@@ -218,28 +356,58 @@ function QueueList() {
       const user = item.targetUser;
       if (!user) return;
       const what = status === 'banned' ? 'Ban' : `Suspend for ${days} days`;
-      confirmDialog(
-        `${what} ${item.author?.name ?? 'this member'}?`,
+      // One memo key per choice: a 30-day suspension after a 7-day one that
+      // landed is a new member action, never a retry of the old one.
+      const step = status === 'banned' ? 'banned' : `suspended:${days}`;
+      // The member step already landed: nothing new goes to the member, so
+      // there is nothing to ask; only the queue step is sent (CODE-3-05).
+      const already = memberStep.landed(item.logId, step);
+      const body =
         status === 'banned'
           ? 'Their profile is unpublished at once and they can no longer post or contact anyone.'
-          : `They cannot post or contact anyone for ${days} days.`,
-        what,
+          : `They cannot post or contact anyone for ${days} days.`;
+      // The claim is taken in YES, never before the question (N-1). The title
+      // names the member, so two items never make identical questions.
+      askThenDecide(
+        guard,
+        item.logId,
+        already ? null : body,
+        (b, yes) =>
+          confirmDialog(
+            `${what} ${item.author?.name ?? 'this member'}?`,
+            b,
+            what,
+            yes,
+            { destructive: true },
+          ),
         () => {
-          run(String(item.logId), async () => {
-            const r = await setMemberStanding(user, status, days, standingReasonCode(item.rule));
-            if (!r.ok) {
-              notify('Not saved', r.error);
-              return;
+          send(item, async () => {
+            const d = await runTwoStep(
+              memberStep,
+              item.logId,
+              step,
+              () => setMemberStanding(user, status, days, standingReasonCode(item.rule)),
+              () => decideQueueItem(item.logId, status),
+            );
+            if (d.ok) {
+              done(item.logId);
+              setResult(queueResultLine(status, item.author?.name, days));
+              notePartial(item.logId, null);
+              return true;
             }
-            const d = await decideQueueItem(item.logId, status);
-            if (d.ok) done(item.logId);
-            else notify('Done, but still listed', d.error);
+            if (d.step === 'member') {
+              notify('Not saved', d.error);
+              return false;
+            }
+            const m = memberDoneQueueFailed(`MEMBER › ${what}`);
+            notePartial(item.logId, `${m.title}. ${m.body}`);
+            notify(m.title, `${m.body}\n\n${d.error}`);
+            return false;
           });
         },
-        { destructive: true },
       );
     },
-    [done, run],
+    [done, guard, memberStep, notePartial, send],
   );
 
   const memberItems: MenuItem[] = memberOf
@@ -258,13 +426,41 @@ function QueueList() {
     : [];
 
   if (read.face === 'loading') return <ForumLoading label="Loading the queue…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
-  if (read.value.length === 0) return <Text style={st.muted}>Nothing is waiting for you.</Text>;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
+  // Never an item whose decision landed, even from a read that started before
+  // it landed (N-2).
+  const items = visibleQueueItems(read.value.items, guard);
+  const capNote = queueCapNote(read.value.full, items.length);
+  const resultLine = result ? (
+    <Text style={st.result} accessibilityLiveRegion="polite">
+      {result}
+    </Text>
+  ) : null;
+  const capLine = capNote ? (
+    <View style={st.capNote}>
+      <Text style={st.meta}>{capNote}</Text>
+      <Pressable onPress={readAgain} hitSlop={8} accessibilityRole="button" accessibilityLabel="Read the queue again">
+        <Text style={st.retry}>READ AGAIN</Text>
+      </Pressable>
+    </View>
+  ) : null;
+  // A cleared batch that came back full is not "nothing waiting" (CODE-2-14).
+  if (items.length === 0) {
+    return (
+      <>
+        {read.stale ? <StaleNote /> : null}
+        {resultLine}
+        {capLine ?? <Text style={st.muted}>Nothing is waiting for you.</Text>}
+      </>
+    );
+  }
 
   return (
     <>
       {read.stale ? <StaleNote /> : null}
-      {read.value.map((item) => {
+      {resultLine}
+      {capLine}
+      {items.map((item) => {
         const urgent = urgentLabel(item.urgentCategory);
         // The row OR the post: an older row about a child-safety post has no
         // urgent category of its own (isChildItem).
@@ -318,6 +514,7 @@ function QueueList() {
             {rule ? <Text style={st.meta}>{rule}</Text> : null}
             {item.reason ? <Text style={st.meta}>{item.reason}</Text> : null}
             {item.recommendation ? <Text style={st.rec}>Suggested: {queueWords(item.recommendation)}</Text> : null}
+            {partial[item.logId] ? <Text style={st.partial}>{partial[item.logId]}</Text> : null}
             {item.openReports > 0 ? (
               <Text style={st.reports}>
                 {item.openReports === 1 ? '1 open report' : `${item.openReports} open reports`}
@@ -348,28 +545,57 @@ function AppealList() {
   // it (SERVER_GAPS row 33). A failed read leaves it unknown: OVERTURN waits.
   const queue = useForumRead<QueueItem[]>(fetchQueue, []);
   const stateOf = (postId: string) => queue.value?.find((q) => q.postId === postId && q.postState)?.postState ?? null;
+  // `deciding` stays set while the popup fades out, so its title never flips
+  // to the other outcome (UI-1-13); `visible` is what opens and closes it.
   const [deciding, setDeciding] = useState<{ appeal: AdminAppeal; outcome: 'upheld' | 'overturned' } | null>(null);
+  const [visible, setVisible] = useState(false);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  // CANCEL, the scrim and BACK are held while SAVE is out: the decision cannot
+  // be called back, and a failure must stay on screen (CODE-3-13).
+  const savingRef = useRef(false);
+  // A save's answer lands only on the popup that sent it (CODE-1-15).
+  const turns = useRef(createPopupTurns()).current;
 
   const open = (appeal: AdminAppeal, outcome: 'upheld' | 'overturned') => {
+    turns.open();
     setNote('');
     setError(null);
     setDeciding({ appeal, outcome });
+    setVisible(true);
+  };
+  const shut = () => {
+    turns.close();
+    setVisible(false);
+  };
+  const close = () => {
+    if (savingRef.current) return;
+    shut();
   };
   const save = useLatchedPress(async () => {
-    if (!deciding) return;
-    const r = await decideAppeal(deciding.appeal.appealId, deciding.outcome, note.trim() || undefined);
-    if (!r.ok) {
-      setError(r.error);
-      return;
+    const turn = turns.current();
+    if (turn === null || !deciding) return;
+    const { appeal, outcome } = deciding;
+    savingRef.current = true;
+    setSaving(true);
+    try {
+      const r = await decideAppeal(appeal.appealId, outcome, note.trim() || undefined);
+      if (r.ok) read.patch((rows) => rows.filter((a) => a.appealId !== appeal.appealId));
+      if (!turns.isOpen(turn)) return;
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      shut();
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
-    read.patch((rows) => rows.filter((a) => a.appealId !== deciding.appeal.appealId));
-    setDeciding(null);
   });
 
   if (read.face === 'loading') return <ForumLoading label="Loading appeals…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   if (read.value.length === 0) return <Text style={st.muted}>No appeals are waiting.</Text>;
 
   return (
@@ -415,7 +641,7 @@ function AppealList() {
         </View>
         );
       })}
-      <Popup visible={!!deciding} onClose={() => setDeciding(null)} label="Decide this appeal">
+      <Popup visible={visible} onClose={close} label="Decide this appeal">
         <View style={st.popup}>
           <PopupScroll>
             <Text accessibilityRole="header" style={st.popupTitle}>
@@ -435,8 +661,8 @@ function AppealList() {
             />
             {error ? <Text style={st.error}>{error}</Text> : null}
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={() => setDeciding(null)} />
-              <AmberButton label="SAVE" onPress={save} style={st.grow} />
+              <QuietButton label="CANCEL" onPress={close} disabled={saving} />
+              <AmberButton label="SAVE" onPress={save} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
         </View>
@@ -458,45 +684,93 @@ const STATUS_WORD: Record<TrackedStatus, string> = {
 
 function TrackedList() {
   const read = useForumRead<ForumTopic[]>(fetchTracked, []);
+  // `topic` stays set while the popup fades out; `visible` opens and closes it.
   const [topic, setTopic] = useState<ForumTopic | null>(null);
+  const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState<TrackedStatus>('under_review');
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  // CANCEL, the scrim and BACK are held while SAVE, PIN or LOCK is out: the
+  // write cannot be called back, and a failure must stay on screen (CODE-3-13).
+  const [flagging, setFlagging] = useState(false);
+  const inFlight = useRef(0);
+  // An answer lands only on the popup that sent it: topic A's PIN never shows
+  // on topic B, and A's save never closes B (CODE-1-26).
+  const turns = useRef(createPopupTurns()).current;
 
   const open = (t: ForumTopic) => {
+    turns.open();
     setTopic(t);
     setStatus(t.trackedStatus ?? 'under_review');
     setReason('');
     setError(null);
+    setVisible(true);
+  };
+  const shut = () => {
+    turns.close();
+    setVisible(false);
+  };
+  const close = () => {
+    if (inFlight.current > 0) return;
+    shut();
   };
   const problem = trackedProblem(status, reason, topic?.trackedStatus ?? null);
   const save = useLatchedPress(async () => {
-    if (!topic || problem) return;
-    const r = await setTrackedStatus(topic.id, status, reason.trim() || undefined);
-    if (!r.ok) {
-      setError(r.error);
-      return;
+    const turn = turns.current();
+    if (turn === null || !topic || problem) return;
+    const id = topic.id;
+    // SAVE, PIN and LOCK share one error line: each try starts it clean, so an
+    // older failure never sits under a success (CODE-1-26).
+    setError(null);
+    inFlight.current += 1;
+    setSaving(true);
+    try {
+      const r = await setTrackedStatus(id, status, reason.trim() || undefined);
+      if (r.ok) read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, trackedStatus: status } : t)));
+      if (!turns.isOpen(turn)) return;
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      shut();
+    } finally {
+      inFlight.current -= 1;
+      setSaving(false);
     }
-    read.patch((rows) => rows.map((t) => (t.id === topic.id ? { ...t, trackedStatus: status } : t)));
-    setTopic(null);
   });
   const flag = useLatchedPress(async (flags: { pinned?: boolean; locked?: boolean }) => {
-    if (!topic) return;
-    const r = await setTopicFlags(topic.id, flags);
-    if (!r.ok) {
-      setError(r.error);
-      return;
+    const turn = turns.current();
+    if (turn === null || !topic) return;
+    const id = topic.id;
+    setError(null);
+    inFlight.current += 1;
+    setFlagging(true);
+    try {
+      const r = await setTopicFlags(id, flags);
+      if (r.ok) {
+        read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, ...flags } : t)));
+        // Whatever popup shows THIS topic now (even one reopened while the PIN
+        // was in flight) shows the answer; another topic's popup never does.
+        setTopic((t) => (t && t.id === id ? { ...t, ...flags } : t));
+        return;
+      }
+      // Only the error line is the sending popup's alone.
+      if (turns.isOpen(turn)) setError(r.error);
+    } finally {
+      inFlight.current -= 1;
+      setFlagging(false);
     }
-    read.patch((rows) => rows.map((t) => (t.id === topic.id ? { ...t, ...flags } : t)));
-    setTopic((t) => (t ? { ...t, ...flags } : t));
   });
 
   if (read.face === 'loading') return <ForumLoading label="Loading tracked topics…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   if (read.value.length === 0) return <Text style={st.muted}>No ideas, corrections or bug reports yet.</Text>;
+  const capNote = trackedCapNote(read.value);
 
   return (
     <>
+      {capNote ? <Text style={st.meta}>{capNote}</Text> : null}
       {read.value.map((t) => {
         const face = trackedFace(t.trackedStatus);
         return (
@@ -517,7 +791,7 @@ function TrackedList() {
           </Pressable>
         );
       })}
-      <Popup visible={!!topic} onClose={() => setTopic(null)} label="Set the status">
+      <Popup visible={visible} onClose={close} label="Set the status">
         <View style={st.popup}>
           <PopupScroll>
             <Text accessibilityRole="header" style={st.popupTitle}>
@@ -557,8 +831,8 @@ function TrackedList() {
               <Act label={topic?.locked ? 'UNLOCK' : 'LOCK'} onPress={() => flag({ locked: !topic?.locked })} />
             </View>
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={() => setTopic(null)} />
-              <AmberButton label="SAVE" onPress={save} disabled={!!problem} style={st.grow} />
+              <QuietButton label="CANCEL" onPress={close} disabled={saving || flagging} />
+              <AmberButton label="SAVE" onPress={save} disabled={!!problem} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
         </View>
@@ -604,6 +878,9 @@ const st = StyleSheet.create({
   },
   child: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: F.red, marginTop: 8 },
   meta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.sub, marginTop: 6 },
+  partial: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: F.amber, marginTop: 6 },
+  result: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.amber, marginBottom: 8 },
+  capNote: { gap: 6, marginBottom: 10 },
   rec: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: F.steel, marginTop: 6 },
   reports: { fontFamily: fonts.mono, fontSize: 10.5, color: F.amber, marginTop: 6 },
   appeal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.text, marginTop: 8 },

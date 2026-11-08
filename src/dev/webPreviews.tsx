@@ -11,7 +11,7 @@
  * inside its `__DEV__ && Platform.OS === 'web'` branch, so a phone never
  * evaluates it. The hashes, names and screens are unchanged.
  */
-import type { ComponentType, ReactElement } from 'react';
+import type { ComponentProps, ComponentType, ReactElement } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRoute } from '@react-navigation/native';
@@ -389,7 +389,7 @@ export function renderWebPreview(hash: string): ReactElement | null {
   // SVG) tool screen in a minimal navigator with the ape-dsp SIM overlay, so the
   // tool can be seen + iterated in the browser. Outside RootNavigator, so it
   // skips AmplitudeOrientation's web-Skia throw.
-  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens?: { name: string; component: ComponentType }[] } | null =
+  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens?: ComponentProps<typeof ToolPreview>['screens'] } | null =
     hash === '#careerfinderpreview'
         ? {
             name: 'CareerFinder',
@@ -411,7 +411,12 @@ export function renderWebPreview(hash: string): ReactElement | null {
             screens: [
               { name: 'AudioCommunityDirectory', component: withDialogs(AudioCommunityDirectoryScreen) },
               { name: 'ForumCategory', component: withDialogs(ForumCategoryScreen) },
-              { name: 'ForumThread', component: withDialogs(ForumThreadScreen) },
+              // getId as in RootNavigator: a thread per topic (bug pass 2, CODE-2-02).
+              {
+                name: 'ForumThread',
+                component: withDialogs(ForumThreadScreen),
+                getId: ({ params }: { params?: object }) => (params as { topicId?: string } | undefined)?.topicId,
+              },
               { name: 'ForumAsk', component: withDialogs(ForumAskScreen) },
               { name: 'ForumIdeas', component: withDialogs(ForumIdeasScreen) },
               { name: 'ForumNotices', component: withDialogs(ForumNoticesScreen) },

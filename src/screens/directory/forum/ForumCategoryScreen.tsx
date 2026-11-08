@@ -3,11 +3,12 @@
  * screen 3). Everyone signed in may read every thread; the Pro Lounge's notice
  * takes the place of the posting button for anyone who may not post there.
  */
-import { useCallback, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
+import { fonts } from '../../../theme/tokens';
 import {
   fetchForumHome,
   fetchLoungeTopics,
@@ -21,6 +22,8 @@ import {
   PRO_LOUNGE_GROUP,
   PRO_LOUNGE_REFUSAL,
   SORT_LABELS,
+  emptyTopicsWords,
+  nextTopicsPage,
   postingDock,
   refusalNeedsProfile,
   refusalText,
@@ -42,6 +45,7 @@ import {
   ThreadHeader,
   TopicRow,
   forumStyles,
+  openMyProfile,
   topicRoute,
 } from './forumBits';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -50,6 +54,7 @@ type Params = { slug?: string; lounge?: boolean };
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
 
 const PAGE = 30;
+const MORE_TOPICS_UNREAD = 'More topics could not be loaded. Check your connection and try again.';
 const FOLLOW: { level: FollowLevel; label: string; note: string }[] = [
   { level: 'all', label: 'Every new topic', note: 'An alert for each new topic here' },
   { level: 'replies', label: 'Replies to me only', note: 'Only when someone answers you' },
@@ -83,17 +88,58 @@ export function ForumCategoryScreen() {
     const seen = new Set(first.map((t) => t.id));
     return [...first, ...more.filter((t) => !seen.has(t.id))];
   }, [more, topics.value]);
-  const showMore = useLatchedPress(async () => {
-    if (lounge || rows.length === 0 || rows.length % PAGE !== 0) return;
-    const r = await fetchTopics(slug ?? null, sort, PAGE, rows.length);
-    if (r.ok) setMore((m) => [...m, ...r.value]);
+  /**
+   * Where the next page starts and whether there is one, from what the server
+   * ANSWERED, not from the rows drawn: a topic that moved between pages is
+   * drawn once, and that used to stop paging for good (CODE-2-08).
+   */
+  const [paging, setPaging] = useState<{ read: number; full: boolean | null }>({ read: 0, full: null });
+  /** The last page read failed: said in words, with a way to try again. */
+  const [moreFailed, setMoreFailed] = useState(false);
+  const next = nextTopicsPage(topics.value?.length ?? 0, paging, PAGE);
+  /** Which list a page read belongs to: a new sort or a reload starts a new
+   *  list, and a page still out for the old one is dropped when it lands. It
+   *  was appended under the new sort, and its count skipped the new sort's
+   *  own rows (bug pass 3, CODE-3-03). */
+  const listTicket = useRef(0);
+  const loadMore = useLatchedPress(async () => {
+    if (lounge || next === null) return;
+    const ticket = listTicket.current;
+    const r = await fetchTopics(slug ?? null, sort, PAGE, next);
+    if (ticket !== listTicket.current) return;
+    if (!r.ok) {
+      setMoreFailed(true);
+      return;
+    }
+    setMoreFailed(false);
+    setMore((m) => [...m, ...r.value]);
+    setPaging((p) => ({ read: p.read + r.value.length, full: r.value.length >= PAGE }));
   });
+  // Scrolling to the end reads on; after a failure only the button tries again.
+  const showMore = () => {
+    if (!moreFailed) loadMore();
+  };
 
-  useReloadOnReturn(topics.reload);
+  // Back from a thread: the first page again, and the pages after it are
+  // dropped, never kept from before (CODE-2-08).
+  const reloadTopics = useCallback(async () => {
+    listTicket.current++;
+    await topics.reload();
+    // Again once it is in: a page read begun during the reload counted from
+    // the old first page (CODE-3-03).
+    listTicket.current++;
+    setMore([]);
+    setPaging({ read: 0, full: null });
+    setMoreFailed(false);
+  }, [topics]);
+  useReloadOnReturn(reloadTopics);
 
   const open = useCallback((t: ForumTopic) => navigation.navigate('ForumThread', topicRoute(t)), [navigation]);
   const changeSort = useCallback((s: TopicSort) => {
+    listTicket.current++;
     setMore([]);
+    setPaging({ read: 0, full: null });
+    setMoreFailed(false);
     setSort(s);
   }, []);
 
@@ -106,7 +152,10 @@ export function ForumCategoryScreen() {
 
   const [following, setFollowing] = useState<FollowLevel | null>(null);
   const [menu, setMenu] = useState(false);
-  const followLevel = following ?? category?.followLevel ?? 'replies';
+  // A ✓ only from a read or a write: the category's row, read (no follow row
+  // there reads as 'replies', as before), or the level just saved. While the
+  // category is unread there is no ✓ at all (bug pass 3, UI-3-03).
+  const followLevel: FollowLevel | null = following ?? (category ? (category.followLevel ?? 'replies') : null);
   const choose = useCallback(
     async (level: FollowLevel) => {
       if (!slug) return;
@@ -138,7 +187,7 @@ export function ForumCategoryScreen() {
       {`${PRO_LOUNGE_REFUSAL} You can read every thread. Earn a credential to post here.`}
     </LockedNotice>
   ) : posting.kind === 'refusal' && refusalNeedsProfile(posting.code) ? (
-    <LockedNotice action={{ label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }}>
+    <LockedNotice action={{ label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }}>
       {refusalText(posting.code)}
     </LockedNotice>
   ) : posting.kind === 'refusal' ? (
@@ -166,15 +215,26 @@ export function ForumCategoryScreen() {
         renderItem={({ item, index }) => <TopicRow topic={item} spelled={index === 0} plates={showPlates} onPress={open} />}
         onEndReachedThreshold={0.4}
         onEndReached={showMore}
+        ListFooterComponent={
+          moreFailed && topics.face === 'ready' ? (
+            <Pressable
+              onPress={loadMore}
+              style={({ pressed }) => [st.moreFailed, pressed && st.pressed]}
+              accessibilityRole="button"
+              accessibilityLabel="Try loading more topics again"
+            >
+              <Text style={st.moreFailedText}>{MORE_TOPICS_UNREAD}</Text>
+              <Text style={st.moreFailedKey}>TRY AGAIN</Text>
+            </Pressable>
+          ) : null
+        }
         ListEmptyComponent={
           topics.face === 'loading' ? (
             <ForumLoading label="Loading topics…" />
           ) : topics.face === 'unreadable' ? (
             <ForumUnreadable error={topics.error} code={topics.code} onRetry={() => void topics.reload()} />
-          ) : sort === 'unanswered' ? (
-            <ForumEmpty title="Nothing is waiting" text="No question here is waiting for an answer." />
           ) : (
-            <ForumEmpty title="Nothing posted here yet" text="Start the first topic." />
+            <ForumEmpty {...emptyTopicsWords(sort, true)} />
           )
         }
       />
@@ -197,4 +257,8 @@ const st = StyleSheet.create({
   list: { paddingHorizontal: 16, paddingBottom: 24, flexGrow: 1 },
   top: { paddingTop: 12 },
   dock: { paddingHorizontal: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: F.line, backgroundColor: F.bg },
+  pressed: { opacity: 0.7 },
+  moreFailed: { minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingVertical: 12, gap: 6 },
+  moreFailedText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: F.sub, textAlign: 'center' },
+  moreFailedKey: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 1.25, color: F.amber },
 });
