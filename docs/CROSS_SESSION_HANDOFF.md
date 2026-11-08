@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 18:59 · ccode · 3395c151
+changed: Must-do E3: website instructor page published (03209253, owner go) [MD:E3] [MD:D57]
+affects other side: website instructor page live (03209253); must-do E3 note.
+needs: nothing
+
+
 ### 2026-11-07 15:49 · ccode · 7a86378a
 changed: Must-do: E3 E4 E5 D20 built on forum-next-build (one store build) [MD:D57]
 affects other side: must-do note only, forum one-build decision.
