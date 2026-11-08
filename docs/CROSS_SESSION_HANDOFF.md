@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 23:15 · ccode · 8982a3f9
+changed: Forum on the OTA branch (owner option A, via Comp A 2026-11-07): forum commits only, COMMUNITY_VISIBLE on, NOT published [MD:D44] [MD:D57]
+affects other side: forum code + COMMUNITY_VISIBLE on the OTA branch, NOT published.
+needs: nothing
+
+
 ### 2026-11-07 22:19 · ccode · 82fddf77
 changed: Must-do: twelfth OTA recorded, forum server applied by Comp A [MD:D44] [MD:D57]
 affects other side: must-do D44 + D57 notes only.
