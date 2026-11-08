@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 08:51 · ccode · 71598d57
+changed: must-do D44: forum OTA published (13th OTA, iOS 9f16ffc7, Android 144a8300) [MD:D44]
+affects other side: the forum app is now LIVE on phones (OTA 13: iOS 9f16ffc7, Android 144a8300). Server forum_enabled is still false, so members see the Audio Community but not the forum until the launch steps run.
+needs: Comp A launch steps (ANTHROPIC_API_KEY, 70_LAUNCH_DAY, HOLD C, forum_enabled) only on the owner go.
+
+
 ### 2026-11-08 08:34 · ccode · e880df22
 changed: must-do D44: owner decided the 4 bug-test HOLD items (keep all as is) [MD:D44]
 affects other side: nothing (no server change; policy version stays).
