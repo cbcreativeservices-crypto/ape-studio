@@ -78,6 +78,7 @@ export function ComposedPage({ parts, props }: { parts: readonly PagePart[]; pro
           hidden: host?.hidden,
           keep: p.keep,
           inactive: k !== active,
+          setupsTitle: host?.setupsTitle,
         };
         const Page = p.Page;
         return (

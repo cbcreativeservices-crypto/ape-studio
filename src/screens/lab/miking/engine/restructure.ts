@@ -29,7 +29,7 @@
  * itself and is served as written.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SourcePageId } from './model/types.ts';
-import { journeyPageOf, QUICK_CHECK_SIZE } from './journey.ts';
+import { journeyPageOf, QUICK_CHECK_SIZE, setupsTitle } from './journey.ts';
 
 /** HOW IT SOUNDS steps MEET IT leaves out (physics that does not say where the
  *  sound leaves). The page's LAST step is always kept: it carries the checks. */
@@ -148,7 +148,7 @@ function setupsContent(lesson: Lesson): PageContent {
   const set = lesson.pages.setting;
   const scenarios = (set?.credit.scenarios ?? []).filter((id) => !isRetired(lesson.id, id));
   return {
-    title: 'Starting setups',
+    title: setupsTitle(lesson.id),
     goal: `See real mic setups on the ${lesson.noun.subject ?? lesson.noun.one}, drawn where the mic goes — its type, its aim and its distance — one at a time. Then what else reaches the mic on a stage and in a studio, and what to settle before any mic goes up.`,
     credit: {
       scenarios,
@@ -167,13 +167,15 @@ const cache = new WeakMap<Lesson, Partial<Record<'meet' | 'setups', PageContent>
 export function pageOf(lesson: Lesson, id: PageId): PageContent {
   if (id !== 'meet' && id !== 'setups') return lesson.pages[id];
   const own = lesson.pages[id];
-  if (own) return own;
+  if (own && id === 'meet') return own;
   let c = cache.get(lesson);
   if (!c) {
     c = {};
     cache.set(lesson, c);
   }
-  if (!c[id]) c[id] = id === 'meet' ? meetContent(lesson) : setupsContent(lesson);
+  // Page 2's title is the lesson group's (journey.setupsTitle), even where a
+  // lesson wrote its own page-2 words.
+  if (!c[id]) c[id] = id === 'meet' ? meetContent(lesson) : own ? { ...own, title: setupsTitle(lesson.id) } : setupsContent(lesson);
   return c[id]!;
 }
 

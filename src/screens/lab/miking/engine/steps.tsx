@@ -47,6 +47,9 @@ export type StepHost = {
   /** A composed page's part whose steps are not on screen: render nothing
    *  (but stay mounted and report the titles). */
   inactive?: boolean;
+  /** Miking page 2's title for this lesson (journey.setupsTitle): the
+   *  step keyed 'setups' shows it in place of its internal name. */
+  setupsTitle?: string;
 };
 
 export const StepHostContext = createContext<StepHost | null>(null);
@@ -57,8 +60,10 @@ export function keptSteps<T extends { key: string }>(steps: readonly T[], keep?:
   return keep ? steps.filter((s, i) => keep(s.key, i, steps.length)) : [...steps];
 }
 
-export function PageSteps({ steps: all }: { steps: MikingStep[] }) {
+export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
   const host = useContext(StepHostContext);
+  const named = host?.setupsTitle;
+  const all = named ? raw.map((s) => (s.key === 'setups' ? { ...s, title: named } : s)) : raw;
   const onSteps = host?.onSteps;
   const steps = keptSteps(all, host?.keep);
   const titleKey = steps.map((s) => (s.kind === s.title.toUpperCase() ? s.title : `${s.kind} · ${s.title}`)).join('\u0001');

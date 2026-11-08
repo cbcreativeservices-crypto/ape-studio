@@ -27,7 +27,7 @@ export type Stage = { id: StageId; title: string; line: string; pages: readonly 
 
 export const STAGES: readonly Stage[] = [
   { id: 'meet', title: 'Meet it — where the sound comes from', line: 'What you are miking, in brief, and where the sound leaves.', pages: ['meet'] },
-  { id: 'setups', title: 'Starting setups', line: 'Real mic setups, drawn where the mic goes: one mic, two mics, close and farther back.', pages: ['setups'] },
+  { id: 'setups', title: 'Mic it — where the mics go', line: 'Real mic setups, drawn where the mic goes: one mic, two mics, close and farther back.', pages: ['setups'] },
   { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — seen where the mic goes.', pages: ['microphone'] },
   { id: 'placement', title: 'Placement Studio', line: 'Start from a setup, then move the mic and see what changes.', pages: ['placement'] },
   { id: 'advanced', title: 'Advanced', line: 'Studio or live, two microphones, troubleshooting.', pages: ['context', 'twoMic', 'troubleshoot'] },
@@ -35,6 +35,30 @@ export const STAGES: readonly Stage[] = [
 ];
 
 export const FOUNDATION_PAGES: readonly PageId[] = ['meet', 'setups'];
+
+/**
+ * PAGE 2's title, per lesson group (owner 2026-11-08: "Starting setups" did
+ * not fit every lab; each title matches page 1, "Meet it — where the sound
+ * comes from", and fits two lines of the header at phone width). The step
+ * itself keeps its internal name `SETUPS_STEP_NAME` (the screen guide's key).
+ */
+export const SETUPS_STEP_NAME = 'Starting setups';
+const COVER = new Set(['B08', 'B12', 'B13', 'B14', 'B15', 'B16', 'B17']);
+const MEASURE: Readonly<Record<string, string>> = {
+  F11: 'Measure it — where the mic goes',
+  F12: 'Measure it — where the meter goes',
+  F13: 'Measure it — where the mic goes',
+  F14: 'Measure it — where the mic goes',
+  F15: 'Measure it — where the mics go',
+  F16: 'Set it up — where the sensors go',
+};
+export const MIC_IT_TITLE = 'Mic it — where the mics go';
+export const COVER_IT_TITLE = 'Cover it — where the mics go';
+export function setupsTitle(lessonId: string): string {
+  return MEASURE[lessonId] ?? (COVER.has(lessonId) ? COVER_IT_TITLE : MIC_IT_TITLE);
+}
+/** Every page-2 title (the screen guide maps each back to its one note). */
+export const SETUPS_TITLES: readonly string[] = [...new Set([MIC_IT_TITLE, COVER_IT_TITLE, ...Object.values(MEASURE)])];
 
 /**
  * The journey page a piece of lesson data belongs to: the three source pages

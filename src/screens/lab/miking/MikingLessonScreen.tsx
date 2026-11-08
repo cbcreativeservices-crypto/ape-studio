@@ -50,7 +50,7 @@ import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, 
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
 import { lessonById } from './data/lessonLoader';
-import { isFoundation, journeyPageOf, pageGate, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
+import { isFoundation, journeyPageOf, pageGate, setupsTitle, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
 import { meetKeep, pageOf, restructureLesson } from './engine/restructure.ts';
 import { ComposedPage, type PagePart } from './engine/compose';
 import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
@@ -417,7 +417,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     here: page,
   };
   const gated = pageGate(page, met, quickPassed) === 'foundations';
-  const host: StepHost = { step: stepIdx, setStep, onSteps, onStepInfo, head, tail: gated ? null : tail, readWrap, hidden: ending };
+  const host: StepHost = { step: stepIdx, setStep, onSteps, onStepInfo, head, tail: gated ? null : tail, readWrap, hidden: ending, setupsTitle: setupsTitle(lesson.id) };
   // SCREEN GUIDE for what is on screen: the what's-left screen, the
   // Foundations card, or this module's step (mikingScreenGuides.ts).
   const prevTitle = pageIdx > 0 ? pageOf(lesson, PAGE_IDS[pageIdx - 1]).title : null;
