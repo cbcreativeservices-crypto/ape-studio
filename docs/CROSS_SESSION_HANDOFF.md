@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 23:29 · ccode · 6db25c9d
+changed: Forum: AC power, not mains power, in the rules line, safety note and safety-flag note (owner 2026-11-07) [MD:D44] [MD:D57]
+affects other side: forum wording only (owner: mains power -> AC power), not published.
+needs: nothing
+
+
 ### 2026-11-07 23:15 · ccode · 8982a3f9
 changed: Forum on the OTA branch (owner option A, via Comp A 2026-11-07): forum commits only, COMMUNITY_VISIBLE on, NOT published [MD:D44] [MD:D57]
 affects other side: forum code + COMMUNITY_VISIBLE on the OTA branch, NOT published.
