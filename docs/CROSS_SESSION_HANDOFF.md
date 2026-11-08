@@ -1,3 +1,43 @@
+## 2026-11-07 (late) — ccode -> A: ACK COMP_A_TO_CCODE_2026-11-07_FORUM_BY_OTA_GO: forum LIFTED to the OTA branch, NOT published
+
+- **Commit:** 8982a3f9 on ota-after-approval-39-23, pushed (stub 2cccdec2). 66 files.
+  - Only the five forum commits' own changes were applied (7257e741, 724a1930, 155b0257, e41979b7, b4d640e3), as diffs, not whole files.
+  - Why diffs: 7 of the 64 files also carry non-forum work on forum-next-build (instructor screen 6edb2e12, round review 90bb9838, check-guide retry 3a1f2fad). None of that came along.
+  - Also included: docs/forum/SERVER_GAPS.md (from 2cd3a75e), and the forum commits' trim of docs/live/SERVER_ONLY_ALLOWLIST.json. The liveServerMatch ratchet needs that trim, because the forum functions now have a caller.
+  - COMMUNITY_VISIBLE = true. The switch tests now pin it ON.
+- **Results:**
+  - tsc: 0 errors.
+  - Full suite: 19,330 tests, 0 failures (suite-gate GREEN).
+  - The trial's forum test set: 234/234. The four forum test files alone: 230/230.
+  - "adds no native dependency" passes.
+- **Fingerprints (unchanged, no fingerprint input touched):**
+  - Android a903813a075c6eb0f3183b2617d288dfff5092b2 = build 23.
+  - iOS 91355451dec6517c9266bc50afc38767ac65136e = build 39.
+- **Review HTML for the owner:** C:/Users/profe/Downloads/2026-11-07_FORUM_WORDING_REVIEW.html. It holds 432 forum sentences:
+  - **174 to review:** 146 new, 26 changed from the mockup (shown Before -> After), and 2 suggestions.
+  - **258 pre-approved:** 111 in the approved mockup, proposal or welcome, and 147 plain labels.
+  - **The 2 suggestions:** the rules line and the safety note still say "mains power". Today's approved lab text uses "AC power". No server forum function contains "mains" (checked read-only).
+- **Signed-in test method:** the web preview of this commit (workbench-web-8142, http://localhost:8142, running).
+  - The owner signs in as info@ and types his own password.
+  - Path: PROFILE -> sign in -> HOME -> Pro Registry -> SET UP MY PROFILE -> FORUM tab.
+  - info@ is admin, so admin_preview lets it see the forum while forum_enabled is false.
+  - Owner queue: PROFILE -> ADMIN -> Abuse reports -> FORUM.
+  - A phone is needed only for push taps, the iPhone Report popup and the crisis call link.
+- **What members see after the OTA while forum_enabled = false:**
+  - The Audio Community is back:
+    - the Home "Audio Community" button for paid members;
+    - Pro Registry SET UP MY PROFILE;
+    - the directory, profiles, messages and requests, with their alerts;
+    - directory deep links.
+  - The FORUM tab reads "The forum is not open yet. Please check back soon." The server raises forum_closed on every read, and the app shows its own message, not an error.
+  - "Discuss this lab" shows the same line in a popup.
+  - No welcome popup until the forum opens (welcomeDue needs a ready forum).
+  - No forum pushes, because the cron jobs are off.
+- **Note for launch day:** COMMUNITY_VISIBLE turns on the whole community, not only the forum. With this OTA, the directory, messages and requests come back for members.
+- **Stopped here.** Waiting for the owner's wording answers, his signed-in test and his publish go.
+- affects other side: nothing on the server; forum code and the community switch are on the OTA branch, not published.
+- needs: the owner's wording answers, signed-in test and publish go; then your launch-day steps, in order [MD:D44]
+
 ## 2026-10-24 (evening) — ccode -> A: BOTH STORES IN REVIEW (iOS 39 / Android 23)
 
 - **Apple:** iOS 1.0 (39) + Lifetime / Monthly / Annual + group are **Waiting for Review** (4:38 PM).
