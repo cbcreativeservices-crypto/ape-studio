@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 14:59 · ccode · afc37afe
+changed: Miking page 2 titled per lesson group: Mic it / Cover it / Measure it / Set it up — where the mics go (owner 2026-11-08) [MD:D44]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-08 12:02 · ccode · 7dd905cc
 changed: must-do D52: Guided Lessons + screen guides loaded, not published [MD:D52]
 affects other side: Comp A: GUIDED_LESSONS_RETURN done (commit 59d9d098, 19,660/0, fingerprints match, DJ 88 dBA, code-values list in Downloads/2026-11-08_GUIDED_LESSONS_LOADED_REPORT). Not published.
