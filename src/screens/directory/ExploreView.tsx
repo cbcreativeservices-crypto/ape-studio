@@ -29,9 +29,10 @@ import {
   type MemberBadge,
   type VerifiedOrg,
 } from '../../features/directory/kinds';
+import { acceptsContact } from '../../features/directory/rules';
 import { sampleState } from '../../features/forum/sampleSwitch';
 import { cardColumn } from '../../theme/readingColumn';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote, useFailedReadLine } from './directoryBits';
 import { ChannelBadge } from './ChannelBadge';
 // The country filter has to normalise a typed code exactly the way the profile
 // editor normalises a stored one, or the filter searches for something no
@@ -95,8 +96,10 @@ const MemberCard = memo(function MemberCard({
       accessibilityHint="Opens their profile"
     >
       {/* The channel badge: green LED = accepts contact requests, dark = does
-          not (Explore's one LED fact — see ChannelBadge). */}
-      <ChannelBadge name={r.displayName} led={r.contactEnabled ? 'green' : 'off'} steel={!!badge?.verifiedKind} />
+          not (Explore's one LED fact — see ChannelBadge). The sheet's rule via
+          acceptsContact; a search row has no Open To yet, so the server change
+          held for Comp A (contact_enabled only with Open To) closes the rest. */}
+      <ChannelBadge name={r.displayName} led={acceptsContact(r) ? 'green' : 'off'} steel={!!badge?.verifiedKind} />
       <View style={st.cardBody}>
         <View style={st.nameRow}>
           <Text style={st.cardName}>{r.displayName}</Text>
@@ -309,6 +312,8 @@ export function ExploreView({
    */
   const [moreErr, setMoreErr] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  // The words over a failed search agree with its button (UI-3-04).
+  const failLine = useFailedReadLine();
   const [showFilters, setShowFilters] = useState(false);
 
   // fetchTaxonomy resolves NULL on failure and caches only successes, so this
@@ -557,7 +562,7 @@ export function ExploreView({
           to re-run one was to change a filter (network audit 2026-09-11). */}
       {err ? (
         <>
-          <Banner tone="warn">{err}</Banner>
+          <Banner tone="warn">{failLine(err)}</Banner>
           {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
           <RetryOrSignIn message={err} onRetry={() => void run(f)} />
         </>

@@ -10,7 +10,7 @@
  * the same account_set_standing as the rest of this screen, each behind a
  * question, and only the owner's hand: the AI never confirms a ban.
  */
-import { useCallback, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -73,14 +73,18 @@ import {
 import {
   askThenDecide,
   createDecisionGuard,
+  createMemberStepMemo,
   createPopupTurns,
+  memberDoneQueueFailed,
   offersRetry,
   QUEUE_LIMIT,
   queueCapNote,
   queueDecisionAsk,
   queueResultLine,
+  runTwoStep,
   trackedCapNote,
   visibleQueueItems,
+  type MemberStepMemo,
 } from './forumQueueFaces';
 
 type Section = 'queue' | 'appeals' | 'tracked';
@@ -95,6 +99,12 @@ const SECTIONS: { key: Section; label: string }[] = [
 export function ForumQueueView() {
   const [section, setSection] = useState<Section>('queue');
   const usage = useForumRead<AiUsage | null>(fetchAiUsage, []);
+  // The member step of PLEASE EDIT / Suspend / Ban that already landed, and the
+  // card line saying so, live here for the screen's life: QueueList unmounts
+  // on a tab switch, and a trip to APPEALS must not make the next tap resend
+  // the member action (CODE-3-05, check P3 follow-up 2).
+  const memberStep = useRef(createMemberStepMemo()).current;
+  const [partial, setPartial] = useState<Record<number, string>>({});
   // Not the owner: the refusal is the whole page. No AI line that "could not
   // be read", no tabs, no RETRY (UI-1-14).
   if (usage.face === 'unreadable' && !offersRetry(usage.code)) {
@@ -127,7 +137,11 @@ export function ForumQueueView() {
           </Pressable>
         ))}
       </View>
-      {section === 'queue' ? <QueueList /> : section === 'appeals' ? <AppealList /> : <TrackedList />}
+      {section === 'queue' ? (
+        <QueueMemory.Provider value={{ memberStep, partial, setPartial }}>
+          <QueueList />
+        </QueueMemory.Provider>
+      ) : section === 'appeals' ? <AppealList /> : <TrackedList />}
     </ScrollView>
   );
 }
@@ -185,7 +199,18 @@ async function fetchQueueRead(): Promise<ForumResult<QueueRead>> {
   return r.ok ? { ok: true, value: { items: r.value, full: r.value.length >= QUEUE_LIMIT } } : r;
 }
 
+/** What QueueList must keep across a tab switch, held by ForumQueueView. */
+type QueueMemoryValue = {
+  memberStep: MemberStepMemo;
+  partial: Record<number, string>;
+  setPartial: Dispatch<SetStateAction<Record<number, string>>>;
+};
+const QueueMemory = createContext<QueueMemoryValue | null>(null);
+
 function QueueList() {
+  const memory = useContext(QueueMemory);
+  if (!memory) throw new Error('QueueList needs ForumQueueView (QueueMemory).');
+  const { memberStep, partial, setPartial } = memory;
   const navigation = useNavigation() as unknown as Nav;
   const read = useForumRead<QueueRead>(fetchQueueRead, []);
   const [busy, run] = useSendingPer();
@@ -197,6 +222,16 @@ function QueueList() {
   // One decision per item: a second is refused while one is pending, and after
   // one landed (O-1).
   const guard = useRef(createDecisionGuard()).current;
+  // The card line for an item whose member action landed but is still listed
+  // (held by ForumQueueView, above the tab switch).
+  const notePartial = useCallback((logId: number, line: string | null) => {
+    setPartial((p) => {
+      const next = { ...p };
+      if (line) next[logId] = line;
+      else delete next[logId];
+      return next;
+    });
+  }, [setPartial]);
   /** Send `task` for an item already claimed. A task that landed marks the
    *  item decided; one that `run` refused (the item is busy) or that did not
    *  land releases the claim. */
@@ -266,23 +301,31 @@ function QueueList() {
       const postId = item.postId;
       if (!postId || !guard.claim(item.logId)) return;
       send(item, async () => {
-        // forum_admin_post_action shows this reason to the member as it is.
-        const r = await actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule));
-        if (!r.ok) {
-          notify('Not saved', r.error);
-          return false;
-        }
-        const d = await decideQueueItem(item.logId, 'noted', action);
+        const d = await runTwoStep(
+          memberStep,
+          item.logId,
+          action,
+          // forum_admin_post_action shows this reason to the member as it is.
+          () => actOnPost(postId, action, action === 'please_edit' ? pleaseEditReason(item.rule) : memberReason(item.rule)),
+          () => decideQueueItem(item.logId, 'noted', action),
+        );
         if (d.ok) {
           done(item.logId);
           setResult(queueResultLine(action === 'please_edit' ? 'please_edit' : 'noted', item.author?.name));
+          notePartial(item.logId, null);
           return true;
         }
-        notify('Done, but still listed', d.error);
+        if (d.step === 'member') {
+          notify('Not saved', d.error);
+          return false;
+        }
+        const m = memberDoneQueueFailed(action === 'please_edit' ? 'PLEASE EDIT' : action.toUpperCase());
+        notePartial(item.logId, `${m.title}. ${m.body}`);
+        notify(m.title, `${m.body}\n\n${d.error}`);
         return false;
       });
     },
-    [done, guard, send],
+    [done, guard, memberStep, notePartial, send],
   );
 
   const onUser = useCallback(
@@ -313,6 +356,12 @@ function QueueList() {
       const user = item.targetUser;
       if (!user) return;
       const what = status === 'banned' ? 'Ban' : `Suspend for ${days} days`;
+      // One memo key per choice: a 30-day suspension after a 7-day one that
+      // landed is a new member action, never a retry of the old one.
+      const step = status === 'banned' ? 'banned' : `suspended:${days}`;
+      // The member step already landed: nothing new goes to the member, so
+      // there is nothing to ask; only the queue step is sent (CODE-3-05).
+      const already = memberStep.landed(item.logId, step);
       const body =
         status === 'banned'
           ? 'Their profile is unpublished at once and they can no longer post or contact anyone.'
@@ -322,7 +371,7 @@ function QueueList() {
       askThenDecide(
         guard,
         item.logId,
-        body,
+        already ? null : body,
         (b, yes) =>
           confirmDialog(
             `${what} ${item.author?.name ?? 'this member'}?`,
@@ -333,24 +382,32 @@ function QueueList() {
           ),
         () => {
           send(item, async () => {
-            const r = await setMemberStanding(user, status, days, standingReasonCode(item.rule));
-            if (!r.ok) {
-              notify('Not saved', r.error);
-              return false;
-            }
-            const d = await decideQueueItem(item.logId, status);
+            const d = await runTwoStep(
+              memberStep,
+              item.logId,
+              step,
+              () => setMemberStanding(user, status, days, standingReasonCode(item.rule)),
+              () => decideQueueItem(item.logId, status),
+            );
             if (d.ok) {
               done(item.logId);
               setResult(queueResultLine(status, item.author?.name, days));
+              notePartial(item.logId, null);
               return true;
             }
-            notify('Done, but still listed', d.error);
+            if (d.step === 'member') {
+              notify('Not saved', d.error);
+              return false;
+            }
+            const m = memberDoneQueueFailed(`MEMBER › ${what}`);
+            notePartial(item.logId, `${m.title}. ${m.body}`);
+            notify(m.title, `${m.body}\n\n${d.error}`);
             return false;
           });
         },
       );
     },
-    [done, guard, send],
+    [done, guard, memberStep, notePartial, send],
   );
 
   const memberItems: MenuItem[] = memberOf
@@ -457,6 +514,7 @@ function QueueList() {
             {rule ? <Text style={st.meta}>{rule}</Text> : null}
             {item.reason ? <Text style={st.meta}>{item.reason}</Text> : null}
             {item.recommendation ? <Text style={st.rec}>Suggested: {queueWords(item.recommendation)}</Text> : null}
+            {partial[item.logId] ? <Text style={st.partial}>{partial[item.logId]}</Text> : null}
             {item.openReports > 0 ? (
               <Text style={st.reports}>
                 {item.openReports === 1 ? '1 open report' : `${item.openReports} open reports`}
@@ -494,6 +552,9 @@ function AppealList() {
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  // CANCEL, the scrim and BACK are held while SAVE is out: the decision cannot
+  // be called back, and a failure must stay on screen (CODE-3-13).
+  const savingRef = useRef(false);
   // A save's answer lands only on the popup that sent it (CODE-1-15).
   const turns = useRef(createPopupTurns()).current;
 
@@ -504,14 +565,19 @@ function AppealList() {
     setDeciding({ appeal, outcome });
     setVisible(true);
   };
-  const close = () => {
+  const shut = () => {
     turns.close();
     setVisible(false);
+  };
+  const close = () => {
+    if (savingRef.current) return;
+    shut();
   };
   const save = useLatchedPress(async () => {
     const turn = turns.current();
     if (turn === null || !deciding) return;
     const { appeal, outcome } = deciding;
+    savingRef.current = true;
     setSaving(true);
     try {
       const r = await decideAppeal(appeal.appealId, outcome, note.trim() || undefined);
@@ -521,8 +587,9 @@ function AppealList() {
         setError(r.error);
         return;
       }
-      close();
+      shut();
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   });
@@ -594,7 +661,7 @@ function AppealList() {
             />
             {error ? <Text style={st.error}>{error}</Text> : null}
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={close} />
+              <QuietButton label="CANCEL" onPress={close} disabled={saving} />
               <AmberButton label="SAVE" onPress={save} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
@@ -624,6 +691,10 @@ function TrackedList() {
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  // CANCEL, the scrim and BACK are held while SAVE, PIN or LOCK is out: the
+  // write cannot be called back, and a failure must stay on screen (CODE-3-13).
+  const [flagging, setFlagging] = useState(false);
+  const inFlight = useRef(0);
   // An answer lands only on the popup that sent it: topic A's PIN never shows
   // on topic B, and A's save never closes B (CODE-1-26).
   const turns = useRef(createPopupTurns()).current;
@@ -636,9 +707,13 @@ function TrackedList() {
     setError(null);
     setVisible(true);
   };
-  const close = () => {
+  const shut = () => {
     turns.close();
     setVisible(false);
+  };
+  const close = () => {
+    if (inFlight.current > 0) return;
+    shut();
   };
   const problem = trackedProblem(status, reason, topic?.trackedStatus ?? null);
   const save = useLatchedPress(async () => {
@@ -648,6 +723,7 @@ function TrackedList() {
     // SAVE, PIN and LOCK share one error line: each try starts it clean, so an
     // older failure never sits under a success (CODE-1-26).
     setError(null);
+    inFlight.current += 1;
     setSaving(true);
     try {
       const r = await setTrackedStatus(id, status, reason.trim() || undefined);
@@ -657,8 +733,9 @@ function TrackedList() {
         setError(r.error);
         return;
       }
-      close();
+      shut();
     } finally {
+      inFlight.current -= 1;
       setSaving(false);
     }
   });
@@ -667,16 +744,23 @@ function TrackedList() {
     if (turn === null || !topic) return;
     const id = topic.id;
     setError(null);
-    const r = await setTopicFlags(id, flags);
-    if (r.ok) {
-      read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, ...flags } : t)));
-      // Whatever popup shows THIS topic now (even one reopened while the PIN
-      // was in flight) shows the answer; another topic's popup never does.
-      setTopic((t) => (t && t.id === id ? { ...t, ...flags } : t));
-      return;
+    inFlight.current += 1;
+    setFlagging(true);
+    try {
+      const r = await setTopicFlags(id, flags);
+      if (r.ok) {
+        read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, ...flags } : t)));
+        // Whatever popup shows THIS topic now (even one reopened while the PIN
+        // was in flight) shows the answer; another topic's popup never does.
+        setTopic((t) => (t && t.id === id ? { ...t, ...flags } : t));
+        return;
+      }
+      // Only the error line is the sending popup's alone.
+      if (turns.isOpen(turn)) setError(r.error);
+    } finally {
+      inFlight.current -= 1;
+      setFlagging(false);
     }
-    // Only the error line is the sending popup's alone.
-    if (turns.isOpen(turn)) setError(r.error);
   });
 
   if (read.face === 'loading') return <ForumLoading label="Loading tracked topics…" />;
@@ -747,7 +831,7 @@ function TrackedList() {
               <Act label={topic?.locked ? 'UNLOCK' : 'LOCK'} onPress={() => flag({ locked: !topic?.locked })} />
             </View>
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={close} />
+              <QuietButton label="CANCEL" onPress={close} disabled={saving || flagging} />
               <AmberButton label="SAVE" onPress={save} disabled={!!problem} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
@@ -794,6 +878,7 @@ const st = StyleSheet.create({
   },
   child: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: F.red, marginTop: 8 },
   meta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.sub, marginTop: 6 },
+  partial: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: F.amber, marginTop: 6 },
   result: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: F.amber, marginBottom: 8 },
   capNote: { gap: 6, marginBottom: 10 },
   rec: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: F.steel, marginTop: 6 },

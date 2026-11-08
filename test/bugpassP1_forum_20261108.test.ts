@@ -495,8 +495,8 @@ describe('CODE-1-05 (d): a reply SEEN to land releases its id; one not seen keep
     settleClientId(fp, false);
     assert.equal(clientIdFor(fp, null, make), first);
   });
-  it('the thread settles with whether it is still on screen', () => {
-    assert.match(thread(), /if \(onScreen\.current\) replyLandedSeen\(fingerprint\);\s*else settleClientId\(fingerprint, false\);/);
+  it('the thread settles: seen fans out, not seen releases too (pass 3, CODE-3-01)', () => {
+    assert.match(thread(), /if \(onScreen\.current\) replyLandedSeen\(fingerprint\);\s*else settleClientId\(fingerprint, true\);/);
   });
 });
 
@@ -568,7 +568,7 @@ describe('N1: a reply seen to land is dropped from every open box for it', () =>
   it('the thread listens with its current reply, and announces a seen landing', () => {
     const t = thread();
     assert.match(t, /onReplyLanded\(\(fingerprint\) => \{\s*if \(fingerprint !== mineNow\.current\) return;/);
-    assert.match(t, /if \(onScreen\.current\) replyLandedSeen\(fingerprint\);\s*else settleClientId\(fingerprint, false\);/);
+    assert.match(t, /if \(onScreen\.current\) replyLandedSeen\(fingerprint\);\s*else settleClientId\(fingerprint, true\);/);
   });
 });
 

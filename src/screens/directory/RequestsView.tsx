@@ -17,7 +17,7 @@ import { AppState, FlatList, KeyboardAvoidingView, Linking, Platform, Pressable,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
-import { AlsoBlockChip, Banner, Chip, ChipWrap, EmptyState, Helper, Loading, PrimaryButton, RetryOrSignIn, useSending, useSendingPer } from './directoryBits';
+import { AlsoBlockChip, Banner, Chip, ChipWrap, EmptyState, Helper, Loading, PrimaryButton, RetryOrSignIn, useFailedReadLine, useSending, useSendingPer } from './directoryBits';
 import { ChannelBadge, STEEL, type BadgeLed } from './ChannelBadge';
 import {
   blockThread,
@@ -519,6 +519,8 @@ export function RequestsView({
   // hiding real pending requests behind what read as an empty inbox. Loading /
   // error+Retry / empty are now three distinct states.
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  // The words over a failed load agree with its button (UI-3-04).
+  const failLine = useFailedReadLine();
   /** Counts failed reads, so a link waiting on one can tell it failed. */
   const [loadFails, setLoadFails] = useState(0);
   const [open, setOpen] = useState<ContactThread | null>(null);
@@ -688,7 +690,7 @@ export function RequestsView({
   if (threads === null && loadErr) {
     return (
       <ScrollView contentContainerStyle={st.body}>
-        <Banner tone="warn">{loadErr}</Banner>
+        <Banner tone="warn">{failLine(loadErr, loadErr ?? '', 'Sign in to see your contact requests.')}</Banner>
         {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
         <RetryOrSignIn message={loadErr} onRetry={() => void load()} />
       </ScrollView>
@@ -721,7 +723,7 @@ export function RequestsView({
                 stale, so say so rather than letting it look current. */}
             {loadErr ? (
               <>
-                <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner>
+                <Banner tone="warn">{`${failLine(loadErr, loadErr ?? '', 'Sign in to see your contact requests.')} Showing the last list that loaded.`}</Banner>
                 {/* A way to try again from here (CODE-1-27). */}
                 <RetryOrSignIn message={loadErr} onRetry={() => void load()} />
               </>

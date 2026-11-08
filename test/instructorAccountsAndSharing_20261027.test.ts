@@ -213,7 +213,8 @@ describe('R1 · "am I verified" asks my_verifier_kind', () => {
     assert.match(s, /name = await fetchMyRegistryName\(\)/);
     assert.match(s, /if \(!name\) \{\s*notify\(SHARE_COPY\.nameFirstTitle, SHARE_COPY\.nameFirstBody\);\s*return;\s*\}\s*openPopup\(\);/);
     // A failed read is not "no name": it says it couldn't check, and opens nothing.
-    assert.match(s, /catch \{\s*notify\(SHARE_COPY\.notConfirmedTitle, SHARE_COPY\.readFailed\);\s*return;\s*\}/);
+    // (bug pass 3, CODE-3-06: in words about the NAME read, not the share read.)
+    assert.match(s, /catch \{\s*notify\(SHARE_COPY\.notConfirmedTitle, SHARE_COPY\.nameReadFailed\);\s*return;\s*\}/);
   });
 });
 
@@ -325,7 +326,7 @@ describe('H2 · the words', () => {
   it('what the instructor sees matches the owner rulings and the server function', () => {
     const sees = rules.SHARE_COPY.sees.join(' ');
     // 2026-10-26: enrolled topics AND every completed topic, even before sharing.
-    assert.match(sees, /enrolled in, have studied or have completed — including topics you completed before you turned this on/);
+    assert.match(sees, /enrolled in, have studied or have completed, including topics you completed before you turned this on/);
     // Study methods (flashcards included) and quiz attempts: count, score, date.
     assert.match(sees, /flashcards included/);
     assert.match(sees, /quiz attempts, practice ones too: how many, each score and the date/);

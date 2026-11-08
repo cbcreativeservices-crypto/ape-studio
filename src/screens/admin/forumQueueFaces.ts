@@ -235,3 +235,72 @@ export function askThenDecide<Q>(
 export function visibleQueueItems<T extends { logId: number }>(items: readonly T[], guard: DecisionGuard): T[] {
   return items.filter((i) => !guard.landed(i.logId));
 }
+
+/* ── Two-step decisions (bug pass 3, 2026-11-08) ─────────────────────── */
+
+type Step = () => Promise<{ ok: true } | { ok: false; error: string }>;
+
+/**
+ * PLEASE EDIT, Suspend and Ban are two writes: the member action, then taking
+ * the item off the queue. When only the second failed, a repeat tap used to
+ * send the member action again (a second notice, or a suspension restarted
+ * from now), or was refused at step one and could never clear the item
+ * (CODE-3-05). This memo remembers, per item, the LAST member action that
+ * landed, so a repeat of that same choice sends only the queue step. Choosing
+ * another action forgets the older one: Suspend 7, then 30, then 7 again is a
+ * new 7-day action that asks YES and is sent, never a skipped retry that
+ * leaves the member on 30 days (check P3, follow-up 1).
+ */
+export type MemberStepMemo = {
+  landed(id: number, action: string): boolean;
+  mark(id: number, action: string): void;
+  /** The item left the queue: forget every action it had. */
+  clear(id: number): void;
+};
+
+export function createMemberStepMemo(): MemberStepMemo {
+  const last = new Map<number, string>();
+  return {
+    landed: (id, action) => last.get(id) === action,
+    mark: (id, action) => {
+      last.set(id, action);
+    },
+    clear: (id) => {
+      last.delete(id);
+    },
+  };
+}
+
+/** `step` says which write failed: 'member' (nothing reached the member) or
+ *  'queue' (the member action landed; only the queue step is left). */
+export type TwoStepOutcome = { ok: true } | { ok: false; step: 'member' | 'queue'; error: string };
+
+/** Member step (only if it has not landed yet for this item and action), then
+ *  the queue step. A member step that landed is remembered even when the queue
+ *  step fails, so it is never sent twice. */
+export async function runTwoStep(
+  memo: MemberStepMemo,
+  id: number,
+  action: string,
+  memberStep: Step,
+  queueStep: Step,
+): Promise<TwoStepOutcome> {
+  if (!memo.landed(id, action)) {
+    const r = await memberStep();
+    if (!r.ok) return { ok: false, step: 'member', error: r.error };
+    memo.mark(id, action);
+  }
+  const d = await queueStep();
+  if (!d.ok) return { ok: false, step: 'queue', error: d.error };
+  memo.clear(id);
+  return { ok: true };
+}
+
+/** The words when the member action landed but the item is still listed.
+ *  `again` names what to tap, for example "PLEASE EDIT". */
+export function memberDoneQueueFailed(again: string): { title: string; body: string } {
+  return {
+    title: 'Done for the member',
+    body: `Clearing it from the queue failed; tap ${again} to try that again. Only the queue step is sent again while you stay on this screen.`,
+  };
+}

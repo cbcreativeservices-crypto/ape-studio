@@ -3,7 +3,7 @@
  * screen 3). Everyone signed in may read every thread; the Pro Lounge's notice
  * takes the place of the posting button for anyone who may not post there.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
@@ -97,9 +97,16 @@ export function ForumCategoryScreen() {
   /** The last page read failed: said in words, with a way to try again. */
   const [moreFailed, setMoreFailed] = useState(false);
   const next = nextTopicsPage(topics.value?.length ?? 0, paging, PAGE);
+  /** Which list a page read belongs to: a new sort or a reload starts a new
+   *  list, and a page still out for the old one is dropped when it lands. It
+   *  was appended under the new sort, and its count skipped the new sort's
+   *  own rows (bug pass 3, CODE-3-03). */
+  const listTicket = useRef(0);
   const loadMore = useLatchedPress(async () => {
     if (lounge || next === null) return;
+    const ticket = listTicket.current;
     const r = await fetchTopics(slug ?? null, sort, PAGE, next);
+    if (ticket !== listTicket.current) return;
     if (!r.ok) {
       setMoreFailed(true);
       return;
@@ -116,7 +123,11 @@ export function ForumCategoryScreen() {
   // Back from a thread: the first page again, and the pages after it are
   // dropped, never kept from before (CODE-2-08).
   const reloadTopics = useCallback(async () => {
+    listTicket.current++;
     await topics.reload();
+    // Again once it is in: a page read begun during the reload counted from
+    // the old first page (CODE-3-03).
+    listTicket.current++;
     setMore([]);
     setPaging({ read: 0, full: null });
     setMoreFailed(false);
@@ -125,6 +136,7 @@ export function ForumCategoryScreen() {
 
   const open = useCallback((t: ForumTopic) => navigation.navigate('ForumThread', topicRoute(t)), [navigation]);
   const changeSort = useCallback((s: TopicSort) => {
+    listTicket.current++;
     setMore([]);
     setPaging({ read: 0, full: null });
     setMoreFailed(false);
@@ -140,7 +152,10 @@ export function ForumCategoryScreen() {
 
   const [following, setFollowing] = useState<FollowLevel | null>(null);
   const [menu, setMenu] = useState(false);
-  const followLevel = following ?? category?.followLevel ?? 'replies';
+  // A ✓ only from a read or a write: the category's row, read (no follow row
+  // there reads as 'replies', as before), or the level just saved. While the
+  // category is unread there is no ✓ at all (bug pass 3, UI-3-03).
+  const followLevel: FollowLevel | null = following ?? (category ? (category.followLevel ?? 'replies') : null);
   const choose = useCallback(
     async (level: FollowLevel) => {
       if (!slug) return;

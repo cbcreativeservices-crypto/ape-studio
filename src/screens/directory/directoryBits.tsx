@@ -8,6 +8,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { useGuestWording } from '../../features/commercial/useTier';
+import { failedReadLine } from '../../features/directory/rules';
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
@@ -239,6 +240,22 @@ export function PrimaryButton({
  */
 export function needsSignIn(guest: boolean, message: string | null | undefined): boolean {
   return guest || /\bSign in\b/.test(message ?? '');
+}
+
+/**
+ * The words above a failed directory read (bug pass 2026-11-08, UI-3-04): they
+ * agree with the button RetryOrSignIn draws under them. A KNOWN guest who is
+ * shown SIGN IN reads `signInLine` ("Sign in to see the directory." unless the
+ * screen names its own), not "check your connection". A signed-in member keeps
+ * the read's own message and RETRY.
+ */
+export function useFailedReadLine(): (message: string | null | undefined, fallback?: string, signInLine?: string) => string {
+  const { guest } = useGuestWording();
+  return useCallback(
+    (message: string | null | undefined, fallback = 'Couldn’t load this. Check your connection and try again.', signInLine?: string) =>
+      failedReadLine(guest, message, fallback, signInLine),
+    [guest],
+  );
 }
 
 /**

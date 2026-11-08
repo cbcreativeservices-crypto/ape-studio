@@ -44,6 +44,7 @@ import { useLatchedPress } from '../../lib/latch';
 import { recordVerifierAnswer, useRememberedVerifierKind } from '../../features/profile/verifierKindMemory';
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
+import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
 import { PublicPageRow } from './PublicPageRow';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -137,12 +138,27 @@ export function EmployerSection() {
   const pickedLoaded = useRef(false);
   const load = useCallback(async () => {
     const ticket = ++loadTicket.current;
+    // The account wipe this load started under (bug pass 3, CODE-3-11). A load
+    // that lands after sign-out must not write the OLD account's role into the
+    // feedback identity or its verifier kind back onto the device.
+    const wipe = localStoreWipeCount();
+    /** A wipe ran while this load was out (check P3, R2). By the time the
+     *  count has moved, the wipe's in-memory resets have all run (same tick as
+     *  the bump), so read again for whoever is signed in NOW, and mark the
+     *  load failed so a focus re-reads too. Never leave the section hidden.
+     *  After a sign-out the section unmounts first, and the ticket check
+     *  before each fence stops the load before it gets here. */
+    const readAgain = () => {
+      failedRef.current = true;
+      void load();
+    };
     const [state, who, me] = await Promise.all([
       fetchMyEmployerApplication(),
       myVerifierKind(),
       signedInUid(),
     ]);
     if (ticket !== loadTicket.current) return;
+    if (wipe !== localStoreWipeCount()) return readAgain();
     setUid(me);
     // Only a SERVER answer is remembered on the device: a kind is kept, a
     // clean 'none' forgets, 'unknown' changes nothing (CODE-2-13 follow-up).
@@ -172,6 +188,7 @@ export function EmployerSection() {
     if (isVerified) {
       const [t, mine] = await Promise.all([fetchTaxonomy(), fetchMyEmployerInterests()]);
       if (ticket !== loadTicket.current) return;
+      if (wipe !== localStoreWipeCount()) return readAgain();
       setTax(t);
       if (!t || !mine) failedRef.current = true;
       // A retry that now reads the stored choices clears the earlier failure.
@@ -190,6 +207,8 @@ export function EmployerSection() {
 
   useEffect(() => {
     void load();
+    // Unmount: any load still out lands nowhere (CODE-3-11).
+    return () => void ++loadTicket.current;
   }, [load]);
 
   useFocusEffect(

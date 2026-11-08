@@ -57,7 +57,6 @@ import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import {
   ANNOUNCEMENTS_SLUG,
   ASK_SLUG,
-  BODY_MAX,
   PRO_LOUNGE_REFUSAL,
   appealSent,
   applyMention,
@@ -100,6 +99,7 @@ import {
   withCorrection,
   withQuote,
   type MentionPerson,
+  tooLongText,
 } from '../../../features/forum/rules';
 import type { ReactionKind } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
@@ -614,7 +614,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
 
   const sendNow = useCallback(async () => {
     const body = draft.trim();
-    if (!body) return;
+    if (!body || tooLongText(body.length)) return;
     // What this press sends: words typed while it is out are kept (CODE-2-01).
     const sentRaw = draft;
     const sentQuote = quote?.postId ?? null;
@@ -655,10 +655,13 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       return;
     }
     // Seen land here: every open box holding this reply drops it, then the id
-    // is released, so the same words later are a new reply. Not seen (the
-    // thread was left): kept, for the restored draft (CODE-1-05 d, N1).
+    // is released, so the same words later are a new reply (CODE-1-05 d, N1).
+    // Not seen (the thread was left): released too. The draft that kept it is
+    // cleared below, and a box reopened before this answer holds the id from
+    // that draft already; a kept id only made the same words sent again on
+    // purpose vanish into the old reply (bug pass 3, CODE-3-01).
     if (onScreen.current) replyLandedSeen(fingerprint);
-    else settleClientId(fingerprint, false);
+    else settleClientId(fingerprint, true);
     // Deleting this reply later frees its id: the same words again are a new
     // reply, never the deleted one (CODE-2-07).
     landedAs(fingerprint, r.value.postId);
@@ -679,6 +682,19 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       setCorrecting(restCorrection);
       if (!draftOwnerStale(owner.current)) {
         void saveDraft(draftName, replyDraftText({ body: rest, quote: restQuote, correcting: restCorrection, clientId: null }));
+      }
+    } else if (restQuote || restCorrection) {
+      // No new words, but a quote or a correction picked while it was out:
+      // the box empties and keeps that new target (bug pass 3, CODE-3-14).
+      // The sent reply's draft goes; a target with no words yet is not kept
+      // on disk, as before (replyDraftText writes nothing for it).
+      typed.current = true;
+      setDraft('');
+      setDraftSaved(false);
+      setQuote(restQuote);
+      setCorrecting(restCorrection);
+      if (!draftOwnerStale(owner.current)) {
+        void saveDraft(draftName, replyDraftText({ body: '', quote: restQuote, correcting: restCorrection, clientId: null }));
       }
     } else {
       typed.current = false;
@@ -708,6 +724,10 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       setSendError(null);
     }
   }, [allPeople, correcting, draft, draftName, quote, read, readToEnd, refreshLater, reloadAll, topicId, value]);
+
+  /** Past the server's limit: said under the box, and SEND is off (UI-3-01). */
+  const replyTooLong = tooLongText(draft.trim().length, 'reply');
+  const sendOff = sending || !draft.trim() || !!replyTooLong;
 
   // Asked from the stored agreement once it is read, never from the store's
   // empty start, and once per session when the phone cannot keep it (CODE-2-12).
@@ -903,10 +923,12 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         else notify('Not saved', r.error);
       });
     };
+    // Each choice says it is about alerts, as the category menu's do: "Off ✓"
+    // beside Bookmark said nothing about what was off (bug pass 3, UI-3-07).
     return [
-      { key: 'follow-all', label: `Every reply${level === 'all' ? ' ✓' : ''}`, note: 'Follow this thread', onPress: () => choose('all') },
-      { key: 'follow-replies', label: `Replies to me only${level === 'replies' ? ' ✓' : ''}`, onPress: () => choose('replies') },
-      { key: 'follow-off', label: `Off${level === 'off' ? ' ✓' : ''}`, onPress: () => choose('off') },
+      { key: 'follow-all', label: `Every reply${level === 'all' ? ' ✓' : ''}`, note: 'Follow this thread: an alert for each reply', onPress: () => choose('all') },
+      { key: 'follow-replies', label: `Replies to me only${level === 'replies' ? ' ✓' : ''}`, note: 'An alert only when someone answers you', onPress: () => choose('replies') },
+      { key: 'follow-off', label: `Off${level === 'off' ? ' ✓' : ''}`, note: 'No alerts from this thread', onPress: () => choose('off') },
     ];
   }, [following, topic, topicId]);
 
@@ -1177,23 +1199,25 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
               placeholder={correcting ? 'Write the correction' : 'Write a reply'}
               placeholderTextColor={F.muted}
               multiline
-              maxLength={BODY_MAX}
               style={st.inp}
               accessibilityLabel="Write a reply"
               {...ONE_ROW}
             />
             <Pressable
               onPress={send}
-              disabled={sending || !draft.trim()}
-              style={[st.send, (sending || !draft.trim()) && st.sendOff]}
+              disabled={sendOff}
+              style={[st.send, sendOff && st.sendOff]}
               accessibilityRole="button"
               accessibilityLabel="Send reply"
-              accessibilityState={{ disabled: sending || !draft.trim(), busy: sending }}
-              aria-disabled={sending || !draft.trim()}
+              accessibilityState={{ disabled: sendOff, busy: sending }}
+              aria-disabled={sendOff}
             >
               <Text style={st.sendText}>↑</Text>
             </Pressable>
           </View>
+          {/* No maxLength on the box: a long paste keeps every word, and this
+              says how much to cut before SEND (UI-3-01). */}
+          {replyTooLong ? <Text style={st.tooLong}>{replyTooLong}</Text> : null}
           {draftSaved ? <Text style={st.draftNote}>Draft saved on this phone.</Text> : null}
         </View>
       )}
@@ -1558,6 +1582,7 @@ const st = StyleSheet.create({
   quotingText: { flex: 1, fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 17, color: F.sub },
   quotingClear: { fontFamily: fonts.barlowMedium, fontSize: 14, color: F.sub, padding: 2 },
   draftNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: F.muted, marginTop: 6 },
+  tooLong: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: F.red, marginTop: 6 },
   mentions: { marginBottom: 8, backgroundColor: F.raised, borderWidth: 1, borderColor: F.line2, borderRadius: 12, overflow: 'hidden' },
   mentionRow: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: F.line },
   mentionText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, color: F.amber },

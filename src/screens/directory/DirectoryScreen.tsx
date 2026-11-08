@@ -257,7 +257,7 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
       </Text>
 
       <Text style={styles.body}>
-        Your certificates remain permanently verifiable through the {BRAND_PHRASE}—even if you no longer
+        Your certificates remain permanently verifiable through the {BRAND_PHRASE}, even if you no longer
         maintain an active membership.
       </Text>
 
@@ -288,8 +288,8 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
           <CredentialQr token={qrToken} size={160} />
           <Text style={styles.registryConfirmName}>{registryName ||
               (nameUnread
-                ? 'Couldn’t load your Registry name — check your connection.'
-                : 'Add your Registry name — tap SET UP MY PROFILE below')}</Text>
+                ? 'Couldn’t load your Registry name. Check your connection.'
+                : 'Add your Registry name. Tap SET UP MY PROFILE below.')}</Text>
           {/* Listed as "User" until the first earned certificate/program, then
               "Graduate" (user request 2026-07-22). */}
           {credCount != null ? <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text> : null}
@@ -313,7 +313,7 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
             </Text>
           ) : qrFailed ? (
             <Text style={styles.registryPending}>
-              Couldn’t load your verification QR — check your connection. Your credentials are
+              Couldn’t load your verification QR. Check your connection. Your credentials are
               unaffected.
             </Text>
           ) : (
@@ -347,8 +347,8 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
         <View style={styles.registryBox}>
           <View style={styles.registryLeft}>
             <Text style={styles.registryText}>
-              Ready to be discovered? Set up your public profile and switch on your Registry listing —
-              you get a page you can hand to an employer by link or QR, showing your name, what you
+              Ready to be discovered? Set up your public profile and switch on your Registry listing.
+              You get a page you can hand to an employer by link or QR, showing your name, what you
               work in, and every certificate you have earned.
             </Text>
             {/* M18 (2026-09-07): this branch only renders when !hasAccount, so the
@@ -388,7 +388,7 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
       title="Account required"
       lines={[
         'Only registered users can set up a Registry profile.',
-        'Create a free account to add your information — you don’t need a paid or active membership, just an account. You can then edit it anytime from SET UP MY PROFILE on this screen.',
+        'Create a free account to add your information. You don’t need a paid or active membership, just an account. You can then edit it anytime from SET UP MY PROFILE on this screen.',
       ]}
       // S17: with no onPrimary the component falls back to a single
       // GOT IT, CONTINUE dismiss — so a prompt titled "Account required" told

@@ -30,7 +30,7 @@ import { clientIdFor, forgetClientId, landedAs, postFingerprint } from '../../..
 import { GlossaryLinkProvider, useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import {
   ASK_SLUG,
-  BODY_MAX,
+  CORRECTION_NEEDS_CHANGE,
   EMPTY_ASK,
   acceptEditStep,
   SEARCH_MIN,
@@ -45,6 +45,7 @@ import {
   carryAskValues,
   composeAskBody,
   draftKey,
+  editTakesCorrection,
   glossaryWords,
   hiddenOutcomeNote,
   labKeyOf,
@@ -52,6 +53,7 @@ import {
   refusalNeedsProfile,
   RULES_NOT_SAVED,
   asksForRules,
+  tooLongText,
   topicFrom,
   type AskFormKind,
 } from '../../../features/forum/rules';
@@ -170,6 +172,8 @@ function AskForm({
     if (!edit) return EMPTY_ASK;
     return { ...EMPTY_ASK, title: edit.title ?? '', ...(guided ?? { body: edit.body }) };
   });
+  /** The form as it opened: ACCEPT AND EDIT needs a real change (UI-3-02). */
+  const startValues = useRef(values);
   const touched = useRef(false);
   const clientId = useRef<string | null>(null);
   /** Nothing on the form changes while it is posting: what goes out is what
@@ -292,6 +296,10 @@ function AskForm({
       setDraftSaved(false);
       if (hasStarted(values)) touched.current = true;
       setValues((v) => carryAskValues(form, askFormOf(next), v));
+      // A job post is for the category it was marked in. Only a REAL change
+      // clears it: the same category picked again keeps a restored job post
+      // and its once-only id (bug pass 3, CODE-3-02).
+      setJob(false);
     }
     setCategory(next);
   };
@@ -322,14 +330,20 @@ function AskForm({
   // An edit changes the post's text, whatever form first wrote it.
   const shownForm: AskFormKind = labThread ? 'discussion' : edit ? (guided ? 'question' : 'discussion') : form;
   const replyEdit = !!edit && !edit.isOpening;
+  // The body as it is sent, for an edit (as postNow builds it).
+  const sentBody = (v: AskValues) => (guided ? composeAskBody(v) : v.body.trim());
+  // ACCEPT AND EDIT with nothing changed would mark the correction accepted
+  // under the same wrong text: REPOST stays off and says why (UI-3-02).
+  const sameAsBefore =
+    !!edit?.acceptCorrection && !editTakesCorrection(sentBody(startValues.current), sentBody(values));
   const problem =
-    replyEdit || labThread
+    (replyEdit || labThread
       ? values.body.trim()
-        ? null
+        ? tooLongText(values.body.trim().length)
         : 'Write something first.'
       : !edit && !category
         ? 'Choose a category first.'
-        : askProblem(shownForm, values);
+        : askProblem(shownForm, values)) ?? (sameAsBefore ? CORRECTION_NEEDS_CHANGE : null);
 
   const postNow = useCallback(async () => {
     if (problem || (!edit && !labThread && !category)) return;
@@ -616,7 +630,6 @@ function AskForm({
           rows={open.map((c) => c.name)}
           onPick={(name) => {
             pickCategory(open.find((c) => c.name === name) ?? category);
-            setJob(false);
             setPicking(false);
           }}
         />
@@ -678,7 +691,6 @@ function FormFields({
             onChangeText={(t) => set({ trying: t })}
             placeholder="Get a fuller, warmer lead vocal for a podcast"
             multiline
-            maxLength={BODY_MAX}
           />
         </View>
         <View>
@@ -689,7 +701,6 @@ function FormFields({
             value={values.gear}
             onChangeText={(t) => set({ gear: t })}
             placeholder="Condenser mic → interface → DAW"
-            maxLength={BODY_MAX}
           />
         </View>
         <View>
@@ -701,7 +712,6 @@ function FormFields({
             onChangeText={(t) => set({ tried: t })}
             placeholder="Boosted 200 Hz; it got muddy"
             multiline
-            maxLength={BODY_MAX}
           />
         </View>
       </>
@@ -758,7 +768,9 @@ function LabelledField({
   return (
     <View>
       <FieldLabel>{label}</FieldLabel>
-      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} maxLength={BODY_MAX} editable={editable} />
+      {/* No maxLength: a paste past the limit keeps every word, and the line
+          under POST says how much to cut (UI-3-01). */}
+      <Field label={label} value={value} onChangeText={onChange} multiline={multiline} editable={editable} />
     </View>
   );
 }

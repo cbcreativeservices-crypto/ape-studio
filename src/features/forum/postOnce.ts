@@ -51,11 +51,11 @@ export function forgetClientId(fingerprint: string): void {
 }
 
 /**
- * A reply's answer came back. Seen by the screen that sent it (the member
- * watched it land): its id is released, so the same words sent again on
- * purpose ("Thanks!" to a second person) are a new post. Not seen (the
- * screen had gone): the id is kept, so the restored draft sent again lands
- * once (CODE-1-05 d).
+ * A reply's answer came back: `true` releases its id, so the same words sent
+ * again on purpose ("Thanks!" to a second person) are a new post. The thread
+ * releases it whether or not it was still on screen (bug pass 3, CODE-3-01):
+ * an id is only worth keeping while NO answer has come, and then the draft on
+ * disk carries it. `false` keeps it (kept for tests and callers that need it).
  */
 export function settleClientId(fingerprint: string, seen: boolean): void {
   if (seen) ids.delete(fingerprint);

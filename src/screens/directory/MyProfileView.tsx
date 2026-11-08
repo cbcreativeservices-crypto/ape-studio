@@ -28,6 +28,7 @@ import {
   PrimaryButton,
   RetryOrSignIn,
   SelfReportedNote,
+  useFailedReadLine,
 } from './directoryBits';
 import {
   EMPTY_COMMUNITY_PROFILE,
@@ -218,6 +219,8 @@ export function MyProfileView() {
   // server-side profile. Error + Retry instead — nothing is editable until we
   // actually know what the server holds.
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  // The words over a failed load agree with its button (UI-3-04).
+  const failLine = useFailedReadLine();
   const [reloadKey, setReloadKey] = useState(0);
   const [creds, setCreds] = useState<EarnedCredentialRow[]>([]);
   /**
@@ -590,7 +593,11 @@ export function MyProfileView() {
     return (
       <ScrollView contentContainerStyle={st.body}>
         <Banner tone="warn">
-          {loadErr ?? 'Couldn’t load your community profile. Check your connection and try again.'}
+          {failLine(
+            loadErr,
+            'Couldn’t load your community profile. Check your connection and try again.',
+            'Sign in to see your community profile.',
+          )}
         </Banner>
         {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
         <RetryOrSignIn message={loadErr} onRetry={() => setReloadKey((k) => k + 1)} />

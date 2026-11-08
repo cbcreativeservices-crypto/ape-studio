@@ -77,6 +77,44 @@ export const NO_OPEN_TO_LINE =
 export const CONTACT_NEEDS_OPEN_TO_LINE =
   'Pick at least one thing you are open to, under OPEN TO above, or nobody can send you a request.';
 
+/**
+ * A member CARD's green LED and its "open to contact" screen-reader words
+ * (bug pass 2026-11-08, UI-3-08 / CODE-3-09): the same rule as the sheet's
+ * contactOffer(...) === 'send' wherever the row says what the member is open to.
+ *
+ * The directory_search / directory_graduates rows carry `contact_enabled` but
+ * NO `open_to` (cardOf in kinds.ts, fetchGraduates in kindsApi.ts), so a card
+ * cannot apply the Open To half itself. That half is a SERVER change, held for
+ * Comp A: the search rows' `contact_enabled` becomes true only when the member
+ * lists at least one Open To topic. Until it lands, a card for a member with
+ * contact ON and no Open To still shows green. Pass `openTo` when a row has it.
+ */
+export function acceptsContact(c: { contactEnabled: boolean; openTo?: readonly string[] | null }): boolean {
+  if (!c.contactEnabled) return false;
+  return c.openTo ? c.openTo.length > 0 : true;
+}
+
+/** Said in place of "check your connection" when the only way on is SIGN IN. */
+export const SIGN_IN_TO_SEE_DIRECTORY = 'Sign in to see the directory.';
+
+/**
+ * The words above a failed directory read (bug pass 2026-11-08, UI-3-04). When
+ * the button under them is SIGN IN (a KNOWN guest, or a server answer that
+ * itself says "Sign in"; the same test as needsSignIn in directoryBits.tsx),
+ * the words say sign in too, never "check your connection and try again" over
+ * a SIGN IN button. A signed-in member keeps the read's own message and RETRY.
+ */
+export function failedReadLine(
+  guest: boolean,
+  message: string | null | undefined,
+  fallback: string,
+  signInLine: string = SIGN_IN_TO_SEE_DIRECTORY,
+): string {
+  if (/\bSign in\b/.test(message ?? '')) return message as string;
+  if (guest) return signInLine;
+  return message || fallback;
+}
+
 /** A report's optional detail as sent: trimmed, and null when only spaces. */
 export function reportDetail(detail: string | null | undefined): string | null {
   const t = (detail ?? '').trim();

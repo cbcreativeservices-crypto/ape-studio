@@ -47,6 +47,8 @@ export const PRO_LOUNGE_REFUSAL =
   'Posting here is for academy graduates and verified employers, companies, institutions and instructors.';
 export const FORUM_UNREADABLE = 'We could not reach the forum. Check your connection and try again.';
 export const FORUM_SIGN_IN = 'Sign in to use the forum.';
+/** A failed read shown to a KNOWN guest, over SIGN IN (UI-3-04). */
+export const FORUM_SIGN_IN_TO_SEE = 'Sign in to see the forum.';
 export const FORUM_CLOSED = 'The forum is not open yet.';
 
 const REFUSALS: Record<string, string> = {
@@ -428,16 +430,37 @@ export function askProblem(form: AskFormKind, v: AskValues): string | null {
     if (!v.reason.trim()) return 'Say why it should change.';
     if (!v.source.trim()) return 'Add a source.';
   }
-  // Each box stops at BODY_MAX, but a guided question or a correction is joined
-  // into ONE body, and the server refuses a body past BODY_MAX (bug pass
-  // 2026-11-08, CODE-1-19 / UI-1-04): say so before POST, with how much to cut.
-  if (form === 'question' || form === 'glossary') {
-    const over = topicFrom(form, v).body.length - BODY_MAX;
-    if (over > 0) {
-      return `Your post is too long. Shorten it by ${over.toLocaleString('en-US')} ${over === 1 ? 'character' : 'characters'}.`;
-    }
-  }
-  return null;
+  // The server refuses a body past BODY_MAX, and a guided question or a
+  // glossary change is joined into ONE body (bug pass 2026-11-08, CODE-1-19 /
+  // UI-1-04): say so before POST, with how much to cut. Every form, since the
+  // boxes no longer stop the typing or a paste at BODY_MAX: that cut the end
+  // off with no word (bug pass 3, UI-3-01).
+  return tooLongText(topicFrom(form, v).body.length);
+}
+
+/**
+ * A body past BODY_MAX, said before POST with how much to cut (UI-3-01). The
+ * boxes never cut a paste silently: the words stay, and this says why POST is
+ * off. Null when it fits.
+ */
+export function tooLongText(length: number, what: 'post' | 'reply' = 'post'): string | null {
+  const over = length - BODY_MAX;
+  if (over <= 0) return null;
+  return `Your ${what} is too long. Shorten it by ${over.toLocaleString('en-US')} ${over === 1 ? 'character' : 'characters'}.`;
+}
+
+/** ACCEPT AND EDIT with the text left as it was (UI-3-02). */
+export const CORRECTION_NEEDS_CHANGE =
+  'Your text is the same as before. Change it to take in the correction, then repost.';
+
+/**
+ * ACCEPT AND EDIT: the correction is marked accepted only when the text
+ * really changed (bug pass 3, UI-3-02). A repost of the same words would
+ * show "Correction accepted" under the text that is still wrong. Compared as
+ * it is sent (trimmed), so a space added at the end is not a change.
+ */
+export function editTakesCorrection(sentBefore: string, sentNow: string): boolean {
+  return sentBefore.trim() !== sentNow.trim();
 }
 
 /**

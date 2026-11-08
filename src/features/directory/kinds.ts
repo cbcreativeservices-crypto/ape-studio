@@ -8,6 +8,7 @@
  * a list that stopped early says so rather than reading as everyone.
  */
 import type { VerifierKind } from '../employer/verifierKind.ts';
+import { acceptsContact } from './rules.ts';
 
 export type DirectoryChip = 'all' | 'graduates' | VerifierKind;
 
@@ -90,6 +91,8 @@ export function memberCardA11y(c: {
   roles: string[];
   credentialCount: number;
   contactEnabled: boolean;
+  /** Only when the row carries it (search rows do not yet; see acceptsContact). */
+  openTo?: readonly string[] | null;
 }): string {
   const parts = [
     c.displayName,
@@ -99,7 +102,8 @@ export function memberCardA11y(c: {
     c.credentialCount
       ? `${c.credentialCount} verified ${c.credentialCount === 1 ? 'credential' : 'credentials'}`
       : null,
-    c.contactEnabled ? 'open to contact' : null,
+    // The sheet's rule (UI-3-08): see acceptsContact in rules.ts.
+    acceptsContact(c) ? 'open to contact' : null,
   ]
     .map((s) => (s ?? '').trim())
     .filter(Boolean);

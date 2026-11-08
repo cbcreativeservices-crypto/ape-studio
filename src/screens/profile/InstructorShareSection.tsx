@@ -30,8 +30,10 @@ import {
   codeLooksRight,
   confirmLine,
   SHARE_COPY,
+  shareReadFailedLine,
   sharingSince,
   stopLine,
+  stopOutcomeLine,
 } from '../../features/instructor/shareRules';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { fetchMyRegistryName } from '../../features/profile/api';
@@ -84,11 +86,16 @@ export function InstructorShareSection() {
   // mounted) is focused again — "reopen Profile" has to work.
   const ticket = useRef(0);
   const failed = useRef(false);
+  /** The server ACCEPTED a stop that no read has confirmed yet: the failed-read
+   *  line must not then say "nothing has been changed" (CODE-3-06). Cleared by
+   *  the next read that answers. */
+  const [stopSent, setStopSent] = useState(false);
   const load = useCallback(async () => {
     const mine = ++ticket.current;
     const s = await fetchMyInstructorShare();
     if (mine !== ticket.current) return s;
     failed.current = s.state === 'error';
+    if (s.state !== 'error') setStopSent(false);
     setShare(s);
     return s;
   }, []);
@@ -158,6 +165,7 @@ export function InstructorShareSection() {
         // "On" only from the row the server returned.
         ticket.current++;
         failed.current = false;
+        setStopSent(false);
         setShare({ state: 'on', share: r.share });
         popupTicket.current++;
         setPopupOpen(false);
@@ -173,12 +181,24 @@ export function InstructorShareSection() {
 
   const stop = useLatchedPress(async () => {
     const r = await stopSharingWithInstructor();
+    // `load` takes the next ticket at once: if the ticket has moved on by the
+    // time it answers, a newer read (a share made meanwhile) owns the screen
+    // and this stale answer changes nothing on it (check P3 nit).
+    const before = ticket.current;
     const now = await load();
-    if (!r.ok || now.state !== 'off') {
+    const applied = ticket.current === before + 1;
+    // An ACCEPTED stop whose re-read failed (or still said "on") says the
+    // request was sent, never "nothing has been changed" (CODE-3-06).
+    if (applied && r.ok && now.state === 'error') setStopSent(true);
+    // The notice says "Reopen Profile to check": make that true. A re-read
+    // that still said "on" is not a failed read, so mark it for a re-read on
+    // the next focus of Profile (check P3, pre-existing note).
+    if (applied && r.ok && now.state === 'on') failed.current = true;
+    const body = stopOutcomeLine(r, now.state);
+    if (body) {
       // A stop we could not confirm must be seen, but never over another tab:
       // if Profile is not in front it waits for the next focus (CODE-2-11
       // follow-up).
-      const body = r.ok ? SHARE_COPY.readFailed : r.error;
       gate.nowOrOnFocus(() => notify(SHARE_COPY.notConfirmedTitle, body));
     }
   });
@@ -209,7 +229,8 @@ export function InstructorShareSection() {
     try {
       name = await fetchMyRegistryName();
     } catch {
-      notify(SHARE_COPY.notConfirmedTitle, SHARE_COPY.readFailed);
+      // The NAME read failed, not the share read (CODE-3-06).
+      notify(SHARE_COPY.notConfirmedTitle, SHARE_COPY.nameReadFailed);
       return;
     }
     if (!name) {
@@ -251,7 +272,7 @@ export function InstructorShareSection() {
             />
           </View>
           {share === null ? <Text style={styles.hint}>{SHARE_COPY.checking}</Text> : null}
-          {share?.state === 'error' ? <Text style={styles.warn}>{SHARE_COPY.readFailed}</Text> : null}
+          {share?.state === 'error' ? <Text style={styles.warn}>{shareReadFailedLine(stopSent)}</Text> : null}
           {share?.state === 'on' ? (
             <>
               <Text style={styles.state}>{sharingSince(share.share)}</Text>

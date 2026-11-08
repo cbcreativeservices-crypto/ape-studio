@@ -252,7 +252,8 @@ describe('CODE-2-08: category paging counts what the server answered', () => {
     assert.match(c, /if \(!r\.ok\) \{\s*setMoreFailed\(true\);\s*return;/);
     assert.match(c, /\{MORE_TOPICS_UNREAD\}/);
     assert.match(c, /useReloadOnReturn\(reloadTopics\);/);
-    assert.match(c, /await topics\.reload\(\);\s*setMore\(\[\]\);/);
+    // Pass 3 (CODE-3-03): a new list ticket between the reload and the clear.
+    assert.match(c, /await topics\.reload\(\);\s*(?:listTicket\.current\+\+;\s*)?setMore\(\[\]\);/);
     assert.doesNotMatch(c, /rows\.length % PAGE/);
   });
 });

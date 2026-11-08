@@ -18,8 +18,10 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { popupCard } from '../../../theme/readingColumn';
 import { fonts } from '../../../theme/tokens';
 import { sampleForumOn } from '../../../features/forum/sampleSwitch';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import {
   FORUM_CLOSED,
+  FORUM_SIGN_IN_TO_SEE,
   SORTS,
   SORT_LABELS,
   badgeName,
@@ -314,6 +316,10 @@ export function ForumUnreadable({
   code: string | null;
   onRetry: () => void;
 }) {
+  // A KNOWN guest is offered SIGN IN (RetryOrSignIn), so the words say sign
+  // in too, never "check your connection" over a SIGN IN button (bug pass 3,
+  // UI-3-04). A member whose read failed keeps the reason and RETRY.
+  const { guest } = useGuestWording();
   if (code === 'forum_closed') {
     return (
       <View style={st.face}>
@@ -325,7 +331,7 @@ export function ForumUnreadable({
   return (
     <View style={st.face}>
       <Text style={st.faceHead}>This could not be loaded</Text>
-      <Text style={st.faceText}>{error}</Text>
+      <Text style={st.faceText}>{guest ? FORUM_SIGN_IN_TO_SEE : error}</Text>
       <RetryOrSignIn message={error} onRetry={onRetry} />
     </View>
   );
