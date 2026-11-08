@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 23:34 · ccode · 39dd1d13
+changed: Forum: AC power, not mains power, in the rules line, safety note and safety-flag note (owner 2026-11-07) [MD:D44]
+affects other side: forum wording only (owner: mains power -> AC power).
+needs: nothing
+
+
 ### 2026-11-07 23:30 · ccode · OTA (lab text audit) merged into forum-next-build + check-guide follow-up (this commit and the merge before it)
 changed: [MD:D57] merged origin/ota-after-approval-39-23 at d0ba5b22 (the published lab text audit 66150ef8 + the Tuning check retry change, checkFeedback.ts) into forum-next-build. Only conflict: this file (both sides' LOG entries kept, scripts/merge-handoff-log.py, every body checked present). src/screens/lab/fxLabConfigs.tsx auto-merged: the audit wording plus this branch's D41 MONO CHECK caption line. docs/APE_LAUNCH_MUST_DO.md taken from the OTA side as instructed; this branch's E3, E4, E5 and D20 row text was saved for the coordinator to port onto the OTA branch. Follow-up: the screen guides for the shared tuning UnderstandingCheck (envelope p7; Sound Systems Match the venue, Choose the configuration) now say the first miss asks you to try again and the explanation shows from the second miss on. [MD:D44] forum work on this branch unchanged.
 affects other side: [MD:D44] the OTA must-do list does not yet carry this branch's E3/E4/E5/D20 updates (coordinator ports them). Left as written on purpose: envelope 'check' guide and the Smart Processors menu guide describe LabUnderstandingCheck (end-of-lab check), which still shows the explanation on EVERY wrong pick, so their text is still true.
