@@ -11,6 +11,14 @@ import {
   type StudentRow,
   type TopicProgress,
 } from "@/lib/instructor";
+import {
+  NOT_YET,
+  attemptScoreText,
+  bestScoreText,
+  labsDoneCount,
+  labsDoneText,
+  studentReadouts,
+} from "@/lib/instructorRules";
 
 /**
  * The instructor's class (owner 2026-10-26). Layout follows the preview the
@@ -166,12 +174,9 @@ function StudentButton({ s, on, onPick }: { s: StudentRow; on: boolean; onPick: 
         Shared {fmtDate(s.granted_at)} · last active {fmtDate(s.last_activity)}
       </span>
       <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-sub">
-        <span>
-          Topics <b className="text-foreground">{s.topics_complete}</b> complete of {s.topics_started}
-        </span>
-        <span>
-          Labs <b className="text-foreground">{s.labs_complete}</b> / {s.labs_total}
-        </span>
+        {studentReadouts(s).map((r) => (
+          <span key={r}>{r}</span>
+        ))}
       </span>
     </button>
   );
@@ -245,7 +250,7 @@ function StudentDetail({ shareId }: { shareId: string }) {
       )}
 
       <SectionTitle>
-        Labs for this student&rsquo;s topics · {data.labs.complete} of {data.labs.total} complete
+        Labs for this student&rsquo;s topics · {labsDoneText(labsDoneCount(data.labs.list))}
       </SectionTitle>
       <LabTable rows={data.labs.list} />
 
@@ -306,7 +311,7 @@ function Topic({ t }: { t: TopicProgress }) {
           {done ? `Complete ${fmtDate(t.completed_at)}` : "In progress"}
         </span>
         <span className="ml-auto font-mono text-xs text-text-sub">
-          Study {t.study_pct}%{t.best_score != null ? ` · best quiz ${t.best_score}%` : ""}
+          Study {t.study_pct}% · {bestScoreText(t.best_score, t.quiz_attempts)}
         </span>
       </div>
       {t.methods.length ? (
@@ -328,7 +333,7 @@ function Topic({ t }: { t: TopicProgress }) {
               key={`${a.number}-${a.submitted_at}`}
               className={`rounded border px-2 py-0.5 ${a.practice ? "border-dashed border-border text-text-muted" : "border-border"}`}
             >
-              Quiz #{a.number} · {a.score ?? "—"}%{a.practice ? " · practice" : ""} · {fmtDate(a.submitted_at)}
+              Quiz #{a.number} · {attemptScoreText(a.score)}{a.practice ? " · practice" : ""} · {fmtDate(a.submitted_at)}
             </span>
           ))
         ) : (
@@ -347,7 +352,7 @@ function LabTable({ rows }: { rows: LabRow[] }) {
         <tr key={l.name}>
           <Td>{l.name}</Td>
           <Td className={l.completed_at ? "text-green" : "text-text-muted"}>
-            {l.completed_at ? `✓ ${fmtDate(l.completed_at)}` : "—"}
+            {l.completed_at ? `✓ ${fmtDate(l.completed_at)}` : NOT_YET}
           </Td>
         </tr>
       ))}
