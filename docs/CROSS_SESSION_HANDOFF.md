@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 12:01 · ccode · 59d9d098
+changed: Guided Lessons + screen guides: Comp B return loaded (39 lessons with outcomes/steps, 635 screen intros), intro card, guides ON (D52); miking module lock removed; DJ floor 88 dBA (owner 2026-11-08) [MD:D44]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-08 10:12 · ccode · 5cea0e31
 changed: must-do D44: 14th OTA published (two-profile wording) [MD:D44]
 affects other side: nothing (app wording OTA 14 live: iOS 0c3e7fd5, Android 8b44846b).
