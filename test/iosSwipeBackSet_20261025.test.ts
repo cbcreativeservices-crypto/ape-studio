@@ -29,6 +29,9 @@ const APPROVED_2026_10_25 = [
   // B — guarded by a discard-changes beforeRemove
   'CalcWorkflowEdit', 'CalcWorkflowRun', 'CalcProjects',
 ];
+// One-time addition, owner-approved 2026-11-07 (forum slice 2): text screens with
+// no sliders, knobs, drags or sideways lists.
+const FORUM_2026_11_07 = ['ForumCategory', 'ForumThread', 'ForumAsk', 'ForumIdeas', 'ForumNotices'];
 const GROUP_C_OFF = ['CalcWorkspace', 'ProductionActivity', 'Rt60Live', 'SpectrogramLive'];
 
 function swipeScreens(): string[] {
@@ -40,7 +43,7 @@ function swipeScreens(): string[] {
 }
 
 test('exactly the pilot pages + the 25 approved screens have the iPhone swipe', () => {
-  assert.deepEqual(swipeScreens(), [...PILOT, ...APPROVED_2026_10_25].sort());
+  assert.deepEqual(swipeScreens(), [...PILOT, ...APPROVED_2026_10_25, ...FORUM_2026_11_07].sort());
 });
 
 test('group C stays off', () => {

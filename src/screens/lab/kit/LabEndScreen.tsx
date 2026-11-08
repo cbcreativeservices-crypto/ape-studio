@@ -44,6 +44,7 @@ import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endNote, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
 import { LabNextButton, claimLabLeave } from './LabNavBar';
 import { ProgressUnreadableNote } from './ProgressUnreadableNote';
+import { DiscussLabLink } from '../../directory/forum/DiscussLabLink';
 
 export type { LabEndUnit } from './labEnd';
 
@@ -240,6 +241,7 @@ export function LabEndScreen({
         <GlassButton label="PRACTICE AGAIN FROM THE START" tint="gold" height={46} fontSize={12.5} onPress={onPracticeAgain} />
         <GlassButton label={doneLabel} tint="green" height={46} fontSize={12.5} onPress={done} />
       </View>
+      <DiscussLabLink labTitle={labTitle} />
       <Text style={styles.note}>
         {isGuest
           ? 'Practicing again, reviewing and leaving are always open.'

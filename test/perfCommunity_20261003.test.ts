@@ -61,7 +61,7 @@ describe('Audio Community Directory', () => {
   it('result cards and the filter panel are memoized out of the per-keystroke render', () => {
     assert.match(explore, /const MemberCard = memo\(function MemberCard/);
     assert.match(explore, /const FilterPanel = memo\(function FilterPanel/);
-    assert.match(explore, /<MemberCard key=\{r\.publicToken\} r=\{r\} onOpen=\{onOpenMember\} \/>/);
+    assert.match(explore, /<MemberCard key=\{r\.publicToken\} r=\{r\} badge=\{badges\.get\(r\.publicToken\) \?\? null\} onOpen=\{onOpenMember\} \/>/);
     assert.match(explore, /<FilterPanel tax=\{tax\} f=\{f\} setF=\{setF\} \/>/);
     // The panel's writes are functional updates (no stale `f` once memoized).
     const panel = block(explore, 'const FilterPanel = memo(');

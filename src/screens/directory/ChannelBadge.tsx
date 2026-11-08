@@ -42,12 +42,15 @@ export function ChannelBadge({
   name,
   led,
   steel = false,
+  gold = false,
   size = 46,
 }: {
   name: string;
   led: BadgeLed;
   /** A verified employer or instructor. */
   steel?: boolean;
+  /** The Recent graduates strip. */
+  gold?: boolean;
   size?: number;
 }) {
   const ledColor = led === 'green' ? colors.green : led === 'amber' ? colors.amber : '#3a3d47';
@@ -57,6 +60,7 @@ export function ChannelBadge({
         st.tile,
         { width: size, height: size, borderRadius: Math.round(size * 0.26) },
         steel && st.steel,
+        gold && st.gold,
       ]}
       accessible={false}
       importantForAccessibility="no-hide-descendants"
@@ -65,7 +69,7 @@ export function ChannelBadge({
         // Two initials at most (initialsOf), sized from the tile and not
         // scaled by system text size (the badge is decorative): it always fits.
         maxFontSizeMultiplier={1}
-        style={[st.initials, { fontSize: Math.round(size * 0.35) }, steel && { color: STEEL }]}
+        style={[st.initials, { fontSize: Math.round(size * 0.35) }, steel && { color: STEEL }, gold && { color: colors.amber }]}
       >
         {initialsOf(name)}
       </Text>
@@ -89,6 +93,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
   },
   steel: { borderColor: 'rgba(159,180,200,0.55)' },
+  gold: { borderColor: 'rgba(255,198,77,0.6)' },
   initials: { fontFamily: fonts.oswaldSemiBold, letterSpacing: 0.6, color: colors.textPrimary },
   led: {
     position: 'absolute',

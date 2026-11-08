@@ -274,6 +274,20 @@ export function queueCommunityPath(path: string): void {
   pendingCommunityPath = path;
 }
 
+/** Cold-start park for a tapped FORUM alert, drained by App's onReady. */
+let pendingForumTap: { topicId: string; postId: string | null } | null = null;
+
+export function queueForumTap(tap: { topicId: string; postId: string | null }): void {
+  pendingForumTap = tap;
+}
+
+export function flushForumTapNav(go: (tap: { topicId: string; postId: string | null }) => void): void {
+  if (!pendingForumTap) return;
+  const next = pendingForumTap;
+  pendingForumTap = null;
+  go(next);
+}
+
 export function flushCommunityPathNav(go: (path: string) => void): void {
   if (!pendingCommunityPath) return;
   const next = pendingCommunityPath;
@@ -308,6 +322,9 @@ export function attachWeeklyConceptPush(
     open: (path: string) => void;
     /** A member alert ARRIVED while the app is open: re-read the counts. */
     received?: () => void;
+    /** A FORUM alert was tapped: open its thread (by navigation, never by a
+     *  deep link: the forum has none). */
+    openForum?: (tap: { topicId: string; postId: string | null }) => void;
   },
 ): () => void {
   const Notifications = getNotifications();
@@ -319,8 +336,11 @@ export function attachWeeklyConceptPush(
     const data = response?.notification.request.content.data;
     if (rules().isCommunityData(data)) {
       const tap = rules().communityTapFrom(data);
+      const forum = rules().forumTapFrom(data);
       // Switched off: the tap just opens the app, never the hidden directory.
       if (COMMUNITY_VISIBLE && tap && community) community.open(rules().communityPath(tap));
+      // A forum alert opens its thread (review 2026-11-07: it opened nothing).
+      else if (COMMUNITY_VISIBLE && forum && community?.openForum) community.openForum(forum);
       return true;
     }
     const payload = payloadFromResponse(response);

@@ -113,6 +113,13 @@ const Lazy = {
   About: lazyScreen(() => require('../screens/about/AboutScreen').AboutScreen),
   Awards: lazyScreen(() => require('../screens/awards/AwardsScreen').AwardsScreen),
   AudioCommunityDirectory: lazyScreen(() => require('../screens/directory/AudioCommunityDirectoryScreen').AudioCommunityDirectoryScreen),
+  // The Audio Community Forum. Next store build only, never by OTA.
+  ForumCategory: lazyScreen(() => require('../screens/directory/forum/ForumCategoryScreen').ForumCategoryScreen),
+  ForumThread: lazyScreen(() => require('../screens/directory/forum/ForumThreadScreen').ForumThreadScreen),
+  ForumAsk: lazyScreen(() => require('../screens/directory/forum/ForumAskScreen').ForumAskScreen),
+  ForumIdeas: lazyScreen(() => require('../screens/directory/forum/ForumIdeasScreen').ForumIdeasScreen),
+  ForumNotices: lazyScreen(() => require('../screens/directory/forum/ForumNoticesScreen').ForumNoticesScreen),
+  ForumMine: lazyScreen(() => require('../screens/directory/forum/ForumMineScreen').ForumMineScreen),
   EmployerAdmin: lazyScreen(() => require('../screens/admin/EmployerAdminScreen').EmployerAdminScreen),
   ReportsAdmin: lazyScreen(() => require('../screens/admin/ReportsAdminScreen').ReportsAdminScreen),
   ToolsHub: lazyScreen(() => require('../screens/tools/ToolsHubScreen').ToolsHubScreen),
@@ -434,6 +441,12 @@ export function RootNavigator() {
           top, and a modal-in-modal is the black-screen trap this codebase has
           hit before. */}
       <Stack.Screen name="AudioCommunityDirectory" getComponent={Lazy.AudioCommunityDirectory} options={swipe} />
+      <Stack.Screen name="ForumCategory" getComponent={Lazy.ForumCategory} options={swipe} />
+      <Stack.Screen name="ForumThread" getComponent={Lazy.ForumThread} options={swipe} />
+      <Stack.Screen name="ForumAsk" getComponent={Lazy.ForumAsk} options={swipe} />
+      <Stack.Screen name="ForumIdeas" getComponent={Lazy.ForumIdeas} options={swipe} />
+      <Stack.Screen name="ForumNotices" getComponent={Lazy.ForumNotices} options={swipe} />
+      <Stack.Screen name="ForumMine" getComponent={Lazy.ForumMine} />
       <Stack.Screen name="EmployerAdmin" getComponent={Lazy.EmployerAdmin} />
       <Stack.Screen name="ReportsAdmin" getComponent={Lazy.ReportsAdmin} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.

@@ -35,6 +35,7 @@ import {
   type EmployerApplication,
 } from '../../features/employer/api';
 import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifierKind';
+import { KindSwitchRow } from './KindSwitchRow';
 import { InstructorCodeRow } from './InstructorCodeRow';
 import { setFeedbackIdentity } from '../../lib/feedback';
 import { PublicPageRow } from './PublicPageRow';
@@ -124,7 +125,7 @@ export function EmployerSection() {
     if (ticket !== loadTicket.current) return;
     // 'unknown' = the check FAILED (null here), never "not verified".
     const isVerified = who === 'unknown' ? null : who !== 'none';
-    setVerifierKind(who === 'employer' || who === 'instructor' ? who : null);
+    setVerifierKind(who === 'none' || who === 'unknown' ? null : who);
     // Feedback emails carry the verified kind as `role=` so the inbox can route
     // employers/instructors first (Comp A 2026-11-02). From THIS existing read
     // only — no new query; a failed read ('unknown') leaves it as it was.
@@ -277,6 +278,7 @@ export function EmployerSection() {
       {/* A verified INSTRUCTOR's code for students (instructor_my_code).
           Never drawn for an employer: the server answers null for one anyway. */}
       {verified && verifierKind === 'instructor' ? <InstructorCodeRow /> : null}
+      {verified ? <KindSwitchRow onSwitched={() => void load()} /> : null}
 
       {/* SHARE MY PUBLIC PAGE (must-do H5): the website's /e/<token> page.
           Draws nothing until my_employer_public_token() answers a token. */}

@@ -26,9 +26,11 @@ import { flushScenarioQueue } from './src/features/study/scenarioHomework';
 import {
   attachWeeklyConceptPush,
   flushCommunityPathNav,
+  flushForumTapNav,
   flushLocalDestNav,
   flushWeeklyConceptNav,
   queueCommunityPath,
+  queueForumTap,
   queueLocalDest,
   queueWeeklyConcept,
 } from './src/features/notifications/push';
@@ -162,6 +164,21 @@ function routeLocalDest(dest: string): void {
  * later sign-out → sign-in cannot replay it; during the cold-start Splash it
  * is kept, and Splash itself clears it once it finds a session.
  */
+/** A tapped forum alert: its thread, at the post it was about. The forum has no
+ *  deep link, so this is a plain navigate (review 2026-11-07). */
+function openForumThread(tap: { topicId: string; postId: string | null }): void {
+  let base: string | undefined;
+  try {
+    base = navigationRef.getRootState()?.routes?.[0]?.name;
+  } catch {
+    base = undefined;
+  }
+  // Never above the sign-in screen (forumTapLands), as openCommunityPath.
+  const { forumTapLands } = require('./src/features/notifications/communityRules') as typeof import('./src/features/notifications/communityRules');
+  if (!forumTapLands(base)) return;
+  navigationRef.navigate('ForumThread', tap.postId ? { topicId: tap.topicId, jumpTo: tap.postId } : { topicId: tap.topicId });
+}
+
 function openCommunityPath(path: string): void {
   setPendingLink(pendingLinkUrl(path));
   let base: string | undefined;
@@ -247,9 +264,17 @@ function App() {
       }
       openCommunityPath(path);
     };
+    const openForum = (tap: { topicId: string; postId: string | null }) => {
+      if (!navigationRef.isReady()) {
+        queueForumTap(tap);
+        return;
+      }
+      openForumThread(tap);
+    };
     return attachWeeklyConceptPush(open, openLocal, {
       open: openCommunity,
       received: () => void refreshCommunityInbox(true),
+      openForum,
     });
   }, []);
 
@@ -484,6 +509,8 @@ function App() {
                 flushLocalDestNav(routeLocalDest);
                 // …and a cold-start MEMBER alert tap.
                 flushCommunityPathNav(openCommunityPath);
+                // …and a cold-start FORUM alert tap.
+                flushForumTapNav(openForumThread);
               }}
             >
               <RootNavigator />

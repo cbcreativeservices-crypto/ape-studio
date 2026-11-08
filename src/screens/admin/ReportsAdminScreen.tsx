@@ -28,7 +28,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -43,13 +43,22 @@ import {
 } from '../../features/moderation/api';
 import { safeGoBack } from '../../lib/safeGoBack';
 
+/** The forum's code loads when its tab opens. */
+function ForumQueue() {
+  const { ForumQueueView } = require('./ForumQueueView') as typeof import('./ForumQueueView');
+  return <ForumQueueView />;
+}
+
 /** Suspension lengths offered. A free-text date picker invites typos. */
 const SUSPEND_DAYS = [7, 30] as const;
 
 export function ReportsAdminScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [tab, setTab] = useState<'open' | 'all'>('open');
+  const route = useRoute();
+  const [tab, setTab] = useState<'open' | 'all' | 'forum'>(
+    (route.params as { tab?: string } | undefined)?.tab === 'forum' ? 'forum' : 'open',
+  );
   const [rows, setRows] = useState<ReportRow[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -66,6 +75,8 @@ export function ReportsAdminScreen() {
   const loadReq = useRef(0);
   const load = useCallback(async () => {
     const id = ++loadReq.current;
+    // FORUM has its own reads (ForumQueueView).
+    if (tab === 'forum') return;
     setLoading(true);
     setErr(null);
     const r = await fetchReportQueue(tab);
@@ -201,7 +212,7 @@ export function ReportsAdminScreen() {
       </View>
 
       <View style={s.tabs}>
-        {(['open', 'all'] as const).map((t) => (
+        {(['open', 'all', 'forum'] as const).map((t) => (
           <Pressable
             key={t}
             onPress={() => setTab(t)}
@@ -209,15 +220,16 @@ export function ReportsAdminScreen() {
             style={[s.tab, tab === t && s.tabOn]}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === t }}
-            accessibilityLabel={t === 'open' ? 'Open reports' : 'All reports'}
+            accessibilityLabel={t === 'open' ? 'Open reports' : t === 'all' ? 'All reports' : 'Forum queue'}
           >
             <Text style={[s.tabText, tab === t && s.tabTextOn]}>
-              {t === 'open' ? `OPEN${rows && tab === 'open' ? ` (${rows.length})` : ''}` : 'ALL'}
+              {t === 'open' ? `OPEN${rows && tab === 'open' ? ` (${rows.length})` : ''}` : t === 'all' ? 'ALL' : 'FORUM'}
             </Text>
           </Pressable>
         ))}
       </View>
 
+      {tab === 'forum' ? <ForumQueue /> : (
       <ScrollView contentContainerStyle={[s.body, { paddingBottom: 40 + insets.bottom }]}>
         {err ? (
           <View style={s.warn}>
@@ -304,6 +316,7 @@ export function ReportsAdminScreen() {
             </View>
           ))}
       </ScrollView>
+      )}
     </View>
   );
 }

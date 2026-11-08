@@ -81,6 +81,8 @@ describe('iOS: the interactive pop stays off on lab drag routes', () => {
       // pins the exact set). Ratchet resumes: shrink only, unless the owner rules again.
       'AudioCommunityDirectory', 'CalcLab', 'CalcProjects', 'CalcResults', 'CalcSymbolsKey', 'CalcWorkflowEdit',
       'CalcWorkflowRun', 'CalcWorkflows', 'CareerFinderQuiz', 'DigitalLab', 'EarTrainingLab', 'EqLabHome',
+      // Owner-approved 2026-11-07 (forum slice 2): text screens, no drag controls.
+      'ForumAsk', 'ForumCategory', 'ForumIdeas', 'ForumNotices', 'ForumThread',
       'GainLabHome', 'MeterLab', 'MixingGuide', 'MixingGuides', 'PostProdLab', 'PreProdLab', 'ProductionLab',
       'ProductionPacket', 'ProductionStage', 'SmartProcessorsLab', 'SoundSystemsLab', 'ToolsHub', 'WaveLab',
     ];
