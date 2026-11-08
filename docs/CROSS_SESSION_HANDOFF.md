@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 22:19 · ccode · 82fddf77
+changed: Must-do: twelfth OTA recorded, forum server applied by Comp A [MD:D44] [MD:D57]
+affects other side: must-do D44 + D57 notes only.
+needs: nothing
+
+
 ### 2026-11-07 18:59 · ccode · 3395c151
 changed: Must-do E3: website instructor page published (03209253, owner go) [MD:E3] [MD:D57]
 affects other side: website instructor page live (03209253); must-do E3 note.
