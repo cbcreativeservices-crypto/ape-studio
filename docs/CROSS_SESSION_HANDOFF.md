@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-07 23:45 · ccode · 2ed50c15
+changed: Forum wording, second clarity pass: lead with the action, plain words (owner approved 2026-11-07) [MD:D44]
+affects other side: forum wording only (second clarity pass, owner approved).
+needs: nothing
+
+
 ### 2026-11-07 23:34 · ccode · 39dd1d13
 changed: Forum: AC power, not mains power, in the rules line, safety note and safety-flag note (owner 2026-11-07) [MD:D44]
 affects other side: forum wording only (owner: mains power -> AC power).
