@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 04:16 · ccode · df25303b
+changed: Port forum + profile bug passes 1-3 from the update branch (16dd87d8, e33c3a7e, 7cda2bc0): 120 findings fixed and checked [MD:D44]
+affects other side: bug passes 1-3 ported to the store-build branch; Comp A server package ready (owner sends).
+needs: nothing
+
+
 ### 2026-11-07 23:45 · ccode · 2ed50c15
 changed: Forum wording, second clarity pass: lead with the action, plain words (owner approved 2026-11-07) [MD:D44]
 affects other side: forum wording only (second clarity pass, owner approved).
