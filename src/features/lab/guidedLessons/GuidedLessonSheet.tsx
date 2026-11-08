@@ -1,7 +1,9 @@
 /**
  * GuidedLessonSheet + GuidedLessonBody — the ONE reusable renderer for the
- * Guided-Lesson stack (v4 MASTER §5): Definition · (control ranges) · Formula ·
- * Common mistakes · Pro tips. Every lab and control renders through this, so the
+ * Guided-Lesson stack (v4 MASTER §5): Definition · What you will understand ·
+ * (control ranges) · Guided steps · Common mistakes · Pro tips · Formula.
+ * WHAT YOU WILL UNDERSTAND and GUIDED STEPS ship in every lesson (owner HOLD 1
+ * = YES, 2026-11-08); steps are numbered "1", "2", … never "1 of 5". Every lab and control renders through this, so the
  * content authored once in content.ts lights up everywhere consistently.
  *
  * - GuidedLessonBody: the sections, for inline use (e.g. a lab's Learn mode).
@@ -16,7 +18,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import type { LessonContent } from './types';
+import type { GuidedStep, LessonContent } from './types';
 import { readingColumn } from '../../../theme/readingColumn';
 
 /** A titled block of bullet lines. */
@@ -29,6 +31,33 @@ function BulletBlock({ title, items, accent }: { title: string; items: string[];
         <View key={i} style={styles.bulletRow}>
           <Text style={[styles.bulletDot, accent && styles.bulletDotAccent]}>•</Text>
           <Text style={styles.bulletText}>{line}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** GUIDED STEPS — each step numbered "1", "2", … (never "N of total"): what to
+ *  do, then what to notice and why it matters. */
+function StepsBlock({ steps }: { steps: GuidedStep[] }) {
+  if (!steps.length) return null;
+  return (
+    <View style={styles.block}>
+      <Text style={styles.blockTitle}>GUIDED STEPS</Text>
+      {steps.map((st, i) => (
+        <View key={i} style={styles.stepRow}>
+          <Text style={styles.stepNum}>{i + 1}</Text>
+          <View style={styles.stepBody}>
+            <Text style={styles.stepDo}>{st.do}</Text>
+            <Text style={styles.stepLine}>
+              <Text style={styles.stepLabel}>NOTICE  </Text>
+              {st.notice}
+            </Text>
+            <Text style={styles.stepLine}>
+              <Text style={styles.stepLabel}>WHY  </Text>
+              {st.why}
+            </Text>
+          </View>
         </View>
       ))}
     </View>
@@ -78,22 +107,28 @@ export function GuidedLessonBody({
   return (
     <View style={styles.body}>
       {control ? (
-        // FOCUSED CONTROL — definition + range/default + practical.
-        <View style={styles.block}>
-          <Text style={styles.controlName}>
-            {control.name}
-            {control.advanced ? <Text style={styles.advancedTag}>  ADVANCED</Text> : null}
-          </Text>
-          {control.range ? <Text style={styles.controlRange}>{control.range}</Text> : null}
-          {control.definition ? <Text style={styles.paragraph}>{control.definition}</Text> : null}
-          {control.practical ? <Text style={styles.paragraph}>{control.practical}</Text> : null}
-        </View>
+        // FOCUSED CONTROL — definition + range/default + practical, then the
+        // lab's outcomes and guided steps (they apply across the lab).
+        <>
+          <View style={styles.block}>
+            <Text style={styles.controlName}>
+              {control.name}
+              {control.advanced ? <Text style={styles.advancedTag}>  ADVANCED</Text> : null}
+            </Text>
+            {control.range ? <Text style={styles.controlRange}>{control.range}</Text> : null}
+            {control.definition ? <Text style={styles.paragraph}>{control.definition}</Text> : null}
+            {control.practical ? <Text style={styles.paragraph}>{control.practical}</Text> : null}
+          </View>
+          <BulletBlock title="WHAT YOU WILL UNDERSTAND" items={lesson.outcomes ?? []} />
+          <StepsBlock steps={lesson.steps ?? []} />
+        </>
       ) : (
         // WHOLE LAB — what it is + the control roster.
         <>
           <View style={styles.block}>
             <Text style={styles.paragraph}>{lesson.whatItIs}</Text>
           </View>
+          <BulletBlock title="WHAT YOU WILL UNDERSTAND" items={lesson.outcomes ?? []} />
           {lesson.controls.length ? (
             <View style={styles.block}>
               <Text style={styles.blockTitle}>CONTROLS</Text>
@@ -109,6 +144,7 @@ export function GuidedLessonBody({
               ))}
             </View>
           ) : null}
+          <StepsBlock steps={lesson.steps ?? []} />
         </>
       )}
 
@@ -236,6 +272,14 @@ const styles = StyleSheet.create({
   bulletDot: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSub },
   bulletDotAccent: { color: colors.amber },
   bulletText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
+
+  // Guided steps
+  stepRow: { flexDirection: 'row', gap: 10, paddingVertical: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#20202a' },
+  stepNum: { width: 18, fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 20, color: colors.amber, textAlign: 'center' },
+  stepBody: { flex: 1, gap: 3 },
+  stepDo: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textPrimary },
+  stepLine: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  stepLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.textSub },
 
   formula: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 20, color: colors.textSecondary },
 

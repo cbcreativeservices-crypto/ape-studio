@@ -52,7 +52,12 @@ describe('1. every Bass Guitar Physics screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k]?.length} bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -64,7 +69,8 @@ describe('1. every Bass Guitar Physics screen has a complete guide', () => {
     for (const [id, gd] of allGuides) {
       const t = textOf(gd);
       assert.doesNotMatch(t, /\byou(’|')?ll (master|build|mix|be able)|\bmaster(y|ed)?\b|\byou will learn to\b/i, `${id}: claims a skill`);
-      assert.doesNotMatch(t, /\b\d+\s+of\s+\d+\b|(?<![−-])\b\d+\s*\/\s*1[0-9]\b/i, `${id}: an "N of total"`);
+      // (1/12) inside 2^(1/12) is an exponent, not a count
+      assert.doesNotMatch(t, /\b\d+\s+of\s+\d+\b|(?<![−\-(])\b\d+\s*\/\s*1[0-9]\b/i, `${id}: an "N of total"`);
       assert.doesNotMatch(t, /\brecommend/i, `${id}: "recommend" (house word is "suggest")`);
       assert.doesNotMatch(t, /\b(TODO|FIXME|placeholder|walkthrough|owner 20\d\d|engine build|dev client|dev build)\b/i, `${id}: a build note in learner text`);
       assert.doesNotMatch(t, /\b(Fender|Precision Bass|Jazz Bass|Music Man|Rickenbacker|Ibanez|Gibson|Yamaha|Warwick|Hofner|Höfner)\b/i, `${id}: a gear maker/model name`);
@@ -109,7 +115,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       'NOTE', 'FREQ', 'INTERVAL', 'NODE', 'MODE', 'FRETTED', 'STRING', 'OPEN', 'FULL SCREEN', 'HIDE DISPLAY', '−14¢',
       'OCTAVE (2:1)', 'OCTAVE + 5TH (3:1)', '2 OCTAVES (4:1)', '2 OCT + MAJ 3RD (5:1)', '▶', '■',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Pluck tone', 'Harmonic node', 'f = f₀ · 2^(n/12)', 'f = n·f₀', 'λ = 2L', 'THE EXACT NUMBERS', 'MODE', 'STRING', 'FRET', 'NODE'],
+    // Decision 1 (2026-11-08): LEARN names the controls by their on-screen labels
+    // (STRING, FRET, NODE, ▶), no longer the old lesson names Pluck tone / Harmonic node.
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', '▶','f = f₀ · 2^(n/12)', 'f = n · f₀', 'λ = 2L', 'THE EXACT NUMBERS', 'MODE', 'STRING', 'FRET', 'NODE'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'this lab is complete', 'EXPLORE'],
   };
   it('a name list for every guide', () => {
@@ -127,7 +135,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   it('the CHECK guide names the four questions the check really asks', () => {
     const q = code('src/features/lab/understandingChecks.ts').match(/const BASS: readonly Q\[\] = \[([\s\S]*?)\n\];/)?.[1] ?? '';
     for (const id of ['twelfth-fret', 'seventh-fret', 'fret-spacing', 'node-harmonic']) assert.match(q, new RegExp(`id: '${id}'`));
-    assert.match(G.check.seeing[0], /four questions on this lab — the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓/);
+    assert.match(G.check.seeing[0], /asks four questions: the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓/);
     // D41: CHECK stays mounted across a tab switch (only a pass is banked) —
     // right answers survive a trip to EXPLORE; leaving the lab starts over.
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
@@ -193,7 +201,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.match(t[0], /FREQ goes 41\.2 → 82\.4 Hz, NOTE E1 → E2, LENGTH 50%/);
     assert.match(t[1], /B1, 61\.7 Hz, PERFECT 5TH, LENGTH 67%/);
     assert.match(t[1], /61\.7 ÷ 41\.2 ≈ 1\.50/);
-    assert.match(t[2], /A1, 55\.0 Hz — the same as the open A string/);
+    assert.match(t[2], /A1, 55\.0 Hz, the same as STRING A, OPEN/);
   });
 
   it('FRETTED changes: one fret keeps about 94.4% and multiplies by 1.0595', () => {
@@ -216,7 +224,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     // H5 really is 14 cents flat of the tempered note the bezel names.
     assert.equal(Math.round(2800 - 1200 * Math.log2(5)), 14);
     const t = G.harmonics.tryThis;
-    assert.match(t[0], /NODE ½: E2, 82\.4 Hz — the same as fret 12/);
+    assert.match(t[0], /NODE ½: E2, 82\.4 Hz, the same as fret 12/);
     assert.equal(fretted('E', 12).freq, h[0].freq);
     assert.match(t[1], /82\.4, 123\.6, 164\.8, 206\.0 Hz/);
     // ⅓ of the way from the nut sits on fret 7 (33.3 %), where fretting gives B1.
@@ -224,7 +232,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal((fp7 * 100).toFixed(1), '33.3');
     assert.equal(((1 / 3) * 100).toFixed(1), '33.3');
     assert.match(t[2], /33\.3% from the nut/);
-    assert.match(t[2], /B1 61\.7 Hz, the harmonic B2 123\.6 Hz — an octave higher/);
+    assert.match(t[2], /B1 61\.7 Hz; the harmonic is B2 123\.6 Hz, an octave higher/);
     // "an octave higher": within 3 cents of 2:1
     assert.ok(Math.abs(1200 * Math.log2(Number(h[1].freq) / Number(fretted('E', 7).freq)) - 1200) < 3);
   });
@@ -233,10 +241,19 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal((343 / 41.203).toFixed(2), '8.32');
     assert.match(G.learn.tryThis[0], /open E reads E1 41\.2 Hz; fret 12 and the ½ harmonic both read E2 82\.4 Hz/);
     assert.match(G.learn.tryThis[1], /about 8\.32 m long in air/);
-    assert.match(G.check.tryThis[0], /open E reads 41\.2 Hz, fret 12 reads 82\.4 Hz/);
-    assert.match(G.check.tryThis[1], /fret 7 is B1 61\.7 Hz; the ⅓ harmonic is B2 123\.6 Hz/);
-    // the PRO TIPS line the LEARN step points at is the first one
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /proTips: \[\s*'Play open E, then the 12th-fret octave, then the 12th-fret harmonic/);
+    // Decision 6 (2026-11-08): CHECK never walks the student to a reading that IS an answer.
+    // The 12th-fret answer is the doubling itself, so CHECK points to LEARN's FORMULA / CONCEPT;
+    // the ⅓-touch question gets a DIFFERENT example (NODE ¼ → H4 = 4 × open E).
+    const ci = (G.check as unknown as { intro: { learning: string; start: string } }).intro;
+    const ct = [...G.check.tryThis, ...G.check.teaches, ci.learning, ci.start].join(' ');
+    assert.doesNotMatch(ct, /82\.4|123\.6|61\.7|FRET to 12|octave|doubl|three times|3rd harmonic|\bH3\b|fifth|PERFECT 5TH|same ratio/i);
+    assert.match(G.check.tryThis[0], /On LEARN, reread FORMULA \/ CONCEPT: the fret rule f = f₀ · 2\^\(n\/12\)/);
+    assert.equal(harmonic('E', 4).freq, '164.8');
+    assert.equal(STR.E.hz.toFixed(1), '41.2');
+    assert.match(G.check.tryThis[1], /MODE NATURAL HARMONICS, STRING E, NODE ¼\. Count the lobes, then compare FREQ, 164\.8 Hz, with open E’s 41\.2 Hz/);
+    assert.match(ci.start, /Reread FORMULA \/ CONCEPT on LEARN/);
+    // the PRO TIPS line the LEARN step points at is the first one (old lesson text, or the 2026-11-08 Part A rewrite)
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /proTips: \[\s*["']Play open E, then (the 12th-fret octave|fret 12), then the (12th-fret|½) harmonic/);
   });
 });
 
@@ -267,18 +284,18 @@ describe('6. guide fixes vetted against the screen (2026-10-31 review round)', (
   it('▶ falls back to the string model and says so; ■ stays lit and later picks play', () => {
     assert.match(s, /playing the string model instead\./);
     for (const id of ['fretted', 'harmonics']) {
-      assert.match(G[id].control.join(' '), /the string model plays instead and the screen says so\)\. While ■ shows, every new pick plays; ■ stops\./);
+      assert.match(G[id].control.join(' '), /While ■ shows, every new pick plays; ■ stops\. If the screen says the string model is playing, you hear a modeled string\./);
     }
   });
   it('the swing speed follows the FRET, not the string — the guide says "on one string"', () => {
     assert.match(s, /const visHz = 0\.45 \* \(mode === 'fretted' \? Math\.pow\(2, fret \/ 12\) : harmonicN\);/);
-    assert.match(G.fretted.changes.join(' '), /on one string, a higher fret swings faster/);
+    assert.match(G.fretted.changes.join(' '), /On one string, a higher fret swings faster/);
     assert.doesNotMatch(textOf(G.fretted), /a higher note swings faster/);
   });
   it('the header ▶ stays on LEARN, so LEARN never says "Nothing here plays"', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
     assert.doesNotMatch(textOf(G.learn), /Nothing here plays/);
-    assert.match(G.learn.seeing[0], /▶ in the header still plays the note chosen on EXPLORE/);
+    assert.match(G.learn.seeing[0], /▶ in the header still plays the note you chose on EXPLORE/);
   });
   it('tuned in fourths: fret 5 on E, A, D is the next string open', () => {
     const open = [28, 33, 38, 43];
@@ -326,7 +343,7 @@ describe('D41 #10: a FRETTED tap picks the fret SPACE, not the nearest wire', ()
     assert.equal(fretForTap(1, NUT), 12);
   });
   it('the guide and caption describe the fret space, not the nearest fret', () => {
-    assert.match(G.fretted.control[0], /A fret is the space up to its wire, so an inlay dot picks that fret\. The nut or headstock is OPEN; past fret 12 picks 12/);
+    assert.match(G.fretted.control[0], /A fret is the space up to its wire, so an inlay dot picks that fret\. The nut or headstock gives OPEN; past fret 12 gives 12/);
     assert.doesNotMatch(G.fretted.control[0], /nearest string and fret/);
     assert.match(src, /exploreCaption="Tap the fretboard — between two frets or at a node/);
   });

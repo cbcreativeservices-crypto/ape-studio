@@ -67,7 +67,12 @@ describe('1. every Digital screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -320,8 +325,8 @@ describe('6. chip decision: Digital Audio is a CONCEPT lab — no accuracy chip'
   it('the home guide says which numbers are exact math and which are models (the chip’s honesty line)', () => {
     const t = (DIGITAL_HOME_GUIDE as unknown as Guide).teaches.join(' ');
     assert.match(t, /exact math/i);
-    assert.match(t, /illustrative models, not measurements/);
-    assert.match(MODS.adc.seeing.join(' '), /An illustrative model/);
+    assert.match(t, /scenes are illustrations for comparing settings/);
+    assert.match(MODS.adc.seeing.join(' '), /far louder than a real converter’s, so use SNR to compare settings, not as a real figure/);
   });
   it('the what’s-left guide card is titled WHAT’S LEFT on both hosts, not the module/lab title', () => {
     for (const p of ['src/screens/lab/digital/DigitalModuleScreen.tsx', 'src/screens/lab/digital/DigitalLabHomeScreen.tsx']) {

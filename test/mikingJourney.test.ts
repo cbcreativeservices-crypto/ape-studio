@@ -98,16 +98,20 @@ describe('the journey order (stages and pages)', () => {
 
 describe('NEW path: no mic is operated before MEET IT + STARTING SETUPS', () => {
   const none = new Set<PageId>();
-  it('with nothing met, every mic page shows the Foundations card in place of its activity', () => {
-    for (const p of MIC_PAGES) assert.equal(J.pageGate(p, none, false), 'foundations', p);
+  // Owner 2026-11-08: "do not lock, allow all users to move through, but they
+  // do not get credit without taking all questions." Every activity is open
+  // with nothing met; credit still comes only from each page's requirement.
+  it('with nothing met, every page activity is OPEN (the lock is removed)', () => {
+    for (const p of PAGE_IDS) assert.equal(J.pageGate(p, none, false), 'open', p);
   });
-  it('one of the two foundations is not enough — either way round', () => {
+  it('credit still needs every question on the page answered', () => {
     const F = J.FOUNDATION_PAGES;
     for (let i = 0; i < F.length; i++) {
       const met = new Set<PageId>(F.filter((_, k) => k !== i));
-      for (const p of MIC_PAGES) assert.equal(J.pageGate(p, met, false), 'foundations', `${p} without ${F[i]}`);
       assert.deepEqual(J.foundationsLeft(met), [F[i]]);
     }
+    const credit = read('src/screens/lab/miking/engine/progress/credit.ts');
+    assert.match(credit, /c\.scenarios\.every\(\(id\) => id in answers\)/);
   });
   it('both met opens every activity', () => {
     const met = new Set<PageId>(J.FOUNDATION_PAGES);

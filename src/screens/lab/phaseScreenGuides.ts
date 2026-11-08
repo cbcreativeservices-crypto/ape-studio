@@ -58,90 +58,101 @@ export const PHASE_ACCURACY_CHIP = false;
 export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How a polarity flip differs from a time delay: a flip turns every frequency upside down, a delay shifts each frequency differently, and folding to mono shows what cancels.',
+      start: 'Tap ▶ with SINE 440 Hz. Set POL to INVERTED Ø, then FOLD to MONO (L+R) and hear the tone vanish. Then set POL back to NORMAL and drag DLY R.',
+    },
     seeing: [
-      'The same tone in both channels (“SAME TONE IN L AND R”) enters at IN ▸, passes the green “R: Ø · DLY” stage (R only) and leaves at ▸ OUT as L (amber) and R (blue). Matching channels draw as one line.',
-      'With PINK NOISE: “PART OF THE NOISE · L = R”. Readouts: POL, DLY R, FOLD.',
-      'LAB NOTES, DESIGNED RESPONSE: a 440 Hz phase scope (M = mid, L+R, up; S = side, L−R, across) and its CORRELATION, +1 to −1.',
+      'Your tone enters at IN ▸ as SAME TONE IN L AND R. Only R passes the green R: Ø · DLY stage. At ▸ OUT, L is amber and R is blue; matching channels draw as one line.',
+      'With PINK NOISE the label reads PART OF THE NOISE · L = R. POL, DLY R and FOLD show your settings.',
+      'In LAB NOTES, DESIGNED RESPONSE holds a 440 Hz phase scope: M (mid, L+R) up, S (side, L−R) across. Its CORRELATION reads +1 to −1.',
     ],
     control: [
-      '▶ in the header, or a tap on the display, plays the source; ■ stops it. It plays at −20 dBFS, uncalibrated.',
-      'DLY R fader (0 to 10 ms, in 0.1 ms steps): delays the right channel. Double-tap the lane to return to 0 ms.',
-      'POL key: NORMAL or INVERTED Ø — flips the right channel upside down. FOLD key: STEREO or MONO (L+R), the two channels added into one.',
-      'SOURCE key: SINE 440 Hz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ at the end of the readouts opens the lesson’s display entry: this moving display, then the scope in LAB NOTES.',
-      'LAB NOTES holds two CHECK YOURSELF questions. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
+      'Tap ▶ in the header, or the display, to play; ■ stops. It plays at −20 dBFS, a digital level: how loud you hear it depends on your volume.',
+      'Drag the DLY R fader (0 to 10 ms, in 0.1 ms steps) to make the right channel arrive later. Double-tap the lane for 0 ms.',
+      'POL: INVERTED Ø flips the right channel upside down; NORMAL leaves it. FOLD: MONO (L+R) adds the two channels into one, as a mono speaker would; STEREO keeps them apart.',
+      'SOURCE picks SINE 440 Hz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains this display.',
+      'LAB NOTES also holds two CHECK YOURSELF questions. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
-      'INVERTED Ø multiplies R by −1: every frequency flips at once. Against an identical L the scope lies flat at −1.00, and MONO (L+R) adds up to silence.',
-      'DLY R is a time shift. One delay is a different share of each frequency’s cycle, so the phase shift grows with frequency.',
-      'In MONO a delay combs: some frequencies cancel, others add. The scope shows the channels before FOLD.',
+      'INVERTED Ø multiplies R by −1: every frequency flips at once. Against an identical L, the scope lies flat at −1.00, and MONO (L+R) sums to silence.',
+      'DLY R shifts R in time. One delay is a bigger share of a short high-frequency cycle than of a long low one, so phase shift grows with frequency.',
+      'In MONO, a delay forms a comb filter: some frequencies cancel, others add. The scope shows the channels before FOLD.',
     ],
     teaches: [
-      'Polarity and phase are not the same: a flip is 180° at every frequency; a delay shifts each frequency by a different angle.',
-      'Correlation +1 = safe in mono; −1 = cancels in mono; near 0 = unrelated.',
+      'Polarity and phase are not the same. A flip turns the whole wave upside down; a delay shifts each frequency by a different amount.',
+      'Correlation +1 means L and R move together, safe in mono; −1 means they cancel in mono; near 0 means they are unrelated.',
       'A mono listener hears only L+R, so a mono check catches cancellation.',
-      'Stereo Imaging reads the same correlation.',
-      'In the Advanced Training Labs list, Phase sits after Modulation.',
+      'A flip fixes an inverted channel; a time offset needs the channels lined up in time.',
     ],
     tryThis: [
-      'Play SINE 440 Hz and set POL to INVERTED Ø: CORRELATION (LAB NOTES, under DESIGNED RESPONSE) reads −1.00, ANTI-PHASE. Now FOLD to MONO (L+R): silence, and the OUT trace goes flat.',
-      'POL NORMAL, FOLD MONO, DLY R at 1.1 ms: CORRELATION reads −0.99; the tone and the OUT trace nearly vanish. POL to INVERTED Ø: +0.99, the tone is back — for this one frequency.',
-      'Keep MONO and 1.1 ms, pick PINK NOISE: hollow and combed. Flip POL: the notches move but stay — no flip fixes a delay at every frequency. With POL on NORMAL, DLY R to 0 ms clears it.',
+      'Play SINE 440 Hz and set POL to INVERTED Ø. CORRELATION (LAB NOTES, under DESIGNED RESPONSE) reads −1.00, ANTI-PHASE. Now set FOLD to MONO (L+R): silence, and the OUT trace goes flat.',
+      'With POL NORMAL and FOLD MONO, set DLY R to 1.1 ms. CORRELATION reads −0.99; the tone and the OUT trace nearly vanish. Set POL to INVERTED Ø: +0.99, the tone is back, for this one frequency.',
+      'Keep MONO and 1.1 ms and pick PINK NOISE: it sounds hollow. Flip POL: the notches move but stay, because no flip fixes a delay at every frequency. With POL on NORMAL, DLY R back to 0 ms clears them.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The ideas behind EXPLORE, in words: polarity versus phase, why one delay shifts each frequency differently, why that combs in mono, and how to read correlation.',
+      start: 'Read the polarity-versus-phase part first. Then find φ(f) = −2πfτ under FORMULA / CONCEPT and test it on EXPLORE with DLY R.',
+    },
     seeing: [
-      'The LEARN tab: the guided lesson for this lab, as one page to read. Nothing here plays.',
-      'First, polarity versus phase. Then CONTROLS: What the display shows, Polarity (invert), Delay one channel (0 – 10 ms), Mono-fold.',
+      'The LEARN tab: this lab’s lesson as one page. Nothing on it moves; the header ▶ still plays or stops the sound.',
+      'It starts with polarity versus phase. Then CONTROLS: What the display shows, POL (polarity), DLY R (0–10 ms), FOLD (mono-fold).',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: ×(−1) for a flip, φ(f) = −2πfτ for a delay, and correlation.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch to EXPLORE (the live display) and CHECK (the questions).',
-      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press a dock key or a readout to open just its entry; long-press a SOURCE choice for that test signal’s own note.',
+      'Scroll to read. The tabs under the title switch to EXPLORE, where you hear each idea, and CHECK, where you answer the questions.',
+      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack, so you can read without leaving it.',
+      'On EXPLORE, long-press a dock key or a readout to open just its entry. Long-press a SOURCE choice for that test signal’s own note.',
     ],
     changes: [
-      'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'The CONTROLS entries match the dock keys: POL, DLY R, FOLD.',
-      'The display entry describes the moving L and R display, then the phase scope; on EXPLORE the scope sits in LAB NOTES under DESIGNED RESPONSE.',
-      'COMMON MISTAKES says how to read it: upright line = in phase (+1), flat line = anti-phase (−1), a ball = wide.',
+      'The page is your reference for EXPLORE.',
+      'Each CONTROLS entry is named for its dock key: POL, DLY R and FOLD.',
+      'The display entry explains the moving L and R picture. The phase scope sits on EXPLORE in LAB NOTES, under DESIGNED RESPONSE.',
+      'COMMON MISTAKES shows how to read the scope: upright line = in phase (+1), flat line = anti-phase (−1), round ball = wide.',
     ],
     teaches: [
-      'The words: polarity, phase, comb filtering, correlation, mono compatibility, goniometer.',
+      'What polarity, phase, comb filtering, correlation, mono compatibility and a goniometer (a stereo phase scope) mean.',
       'Why a polarity flip fixes a miswired cable but not a timing offset.',
-      'The ideas the CHECK tab asks about.',
+      'Why one delay shifts high frequencies by more degrees than low ones: the size of φ(f) = −2πfτ grows with f.',
     ],
     tryThis: [
-      'Read the formula φ(f) = −2πfτ, then on EXPLORE set DLY R to 2.3 ms with SINE 440 Hz: the scope is upright again, +1.00 — one whole 440 Hz cycle late lines back up.',
-      'Read the mistake about a flip fixing cancellation, then on EXPLORE play PINK NOISE in MONO with DLY R at 1.1 ms: combed with POL NORMAL and with INVERTED Ø.',
+      'Read the formula φ(f) = −2πfτ. Then on EXPLORE, set DLY R to 2.3 ms with SINE 440 Hz: the scope stands upright again at +1.00. One whole 440 Hz cycle late lines back up.',
+      'Read the mistake about a flip fixing cancellation. Then on EXPLORE, play PINK NOISE in MONO with DLY R at 1.1 ms: it stays combed with POL on NORMAL and on INVERTED Ø.',
     ],
   },
 
   // ── CHECK — CHECK YOUR UNDERSTANDING ──────────────────────────────────────
   check: {
+    intro: {
+      learning: 'Review: what an inverted copy does in mono, whether a flip can fix a delay, how phase shift depends on frequency, and what +1 correlation means.',
+      start: 'Tap the answer you think is right on the first card. Unsure about a question? Reread its part of the lesson on LEARN, then come back.',
+    },
     seeing: [
       'CHECK YOUR UNDERSTANDING for the Phase lab: four questions, each with its answer choices.',
-      'One numbered card per question; a ✓ replaces the number once it is answered right.',
-      'When every answer is right, a note says the lab is complete.',
+      'Each question has a numbered card. A ✓ replaces the number once you answer it right.',
+      'When every answer is right, a note tells you the lab is complete.',
     ],
     control: [
-      'Tap an answer. Right: CORRECT and a short explanation, and the card locks. Wrong: NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
+      'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
       'There is no score and no limit on tries.',
-      'The tabs under the title go to LEARN or EXPLORE to look something up; answers already right stay right. Leaving the lab before the last one starts the check over.',
+      'Use the tabs under the title to look something up on LEARN or EXPLORE, such as the scope; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [
       'Each right answer stays right while you are in this lab.',
-      'Every answer right: the lab is marked complete, and it counts toward each certificate and program that needs it.',
-      'Each explanation ties back to something on EXPLORE you can see or hear.',
+      'Get all four right and the lab is complete.',
+      'Each explanation ties back to something on EXPLORE you can see or hear: the flat −1.00 scope, a silent MONO or a combed PINK NOISE.',
     ],
     teaches: [
-      'Why an inverted copy cancels in mono, why a flip cannot fix a 2 ms delay, why phase shift grows with frequency, and what +1 on the correlation meter means.',
-      'Passing it completes the Phase lab.',
+      'What an inverted copy does in mono, whether a flip can fix a 2 ms delay, how a delay’s phase shift depends on frequency, and what +1 on the correlation meter means.',
+      'Together they make the mono check: what cancels when channels are added, and which fix suits which problem.',
     ],
     tryThis: [
-      'Stuck on the 2 ms question? On EXPLORE, play PINK NOISE in MONO with DLY R at 2 ms and flip POL — the comb stays.',
-      'Unsure what +1 means? On EXPLORE, with DLY R at 0 ms and POL NORMAL, the scope is an upright line reading +1.00.',
+      'Stuck on the 2 ms question? On LEARN, reread the COMMON MISTAKES line on what the Ø button can and cannot fix, then come back.',
+      'Unsure how to read CORRELATION? On LEARN, COMMON MISTAKES and FORMULA / CONCEPT explain what each end of its scale means.',
     ],
   },
 };

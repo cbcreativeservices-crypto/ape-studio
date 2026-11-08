@@ -99,7 +99,12 @@ describe('1. every Speech page has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -290,7 +295,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
     const t = GUIDES.p8.tryThis.join('\n');
     assert.ok(t.includes('Tap 12": Direct voice and Plosive air read 0 dB, Room -14 dB, Proximity bass +2 dB, Voice over noise +36 dB.'));
     assert.ok(t.includes('Tap 6": Direct voice +6 dB, Plosive air +15 dB, Proximity bass +4 dB. Room stays at -14 dB.'));
-    assert.ok(t.includes('Tap 1": Direct voice +22 dB, but Plosive air +54 dB and Proximity bass +12 dB. Voice over noise reads +58 dB.'));
+    assert.ok(t.includes('Tap 1": Direct voice +22 dB, but Plosive air +54 dB and Proximity bass +12 dB. Voice over noise reads +58 dB'));
     // the ruler's marks
     assert.match(code(`${SP}/distanceViz.tsx`), /\{\[0, 1, 6, 12\]\.map\(\(i\) => \(/);
   });
@@ -334,7 +339,7 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
     assert.match(B, /const FINAL_CHECKS = SPEECH_CHECKS\.filter\(\(c\) => c\.where === 'final'\);/);
     assert.match(B, /\{FINAL_CHECKS\.map\(\(c\) => <SpeechCheckCard key=\{c\.id\}/);
     assert.match(A, /const \[shuffled\] = useState\(\(\) => shuffleCheck\(c\)\);/);
-    assert.ok(g('p11', 'seeing').includes('the answers come in a fresh order each visit'));
+    assert.ok(g('p11', 'seeing').includes('answers come in a fresh order each visit'));
     assert.doesNotMatch(g('p11', 'seeing'), /card, in a fresh order/);
   });
   it('p11: NEXT advances at any time (the page is manualDone, never blocks)', () => {
@@ -362,7 +367,7 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
     assert.equal(d12.plosiveDb, 0);
     assert.equal(d12.proximityDb.toFixed(0), '2');
     assert.doesNotMatch(g('p8', 'changes'), /Every bar is relative/);
-    assert.ok(g('p8', 'changes').includes('Plosive air against the puff at 12"') && g('p8', 'changes').includes('Proximity bass is the lift itself'));
+    assert.ok(g('p8', 'changes').includes('Plosive air against the 12" puff') && g('p8', 'changes').includes('Proximity bass is the lift'));
     // the full-screen readout may wrap to two lines
     assert.match(B, /<Text style=\{styles\.readout\} numberOfLines=\{2\}>\n\s*\{inches\}"/);
     assert.doesNotMatch(g('p8', 'control'), /one-line/);
@@ -371,7 +376,9 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
     const inPlace = M.ANATOMY.filter((a: { x: number; y: number; ax: number; ay: number }) => a.ax === a.x && a.ay === a.y).map((a: { id: string }) => a.id);
     assert.deepEqual(inPlace, ['tongue']);
     assert.match(code(SP + '/headSection.tsx'), /\{!inPlace \? \(/);
-    assert.ok(g('p1', 'seeing').includes('ten on leader lines (the tongue, 8, sits in place)'));
+    // the guide counts the discs and never claims every one sits on a leader line
+    assert.ok(g('p1', 'seeing').includes('Eleven numbered discs'));
+    assert.doesNotMatch(g('p1', 'seeing'), /all on leader lines|each on a leader line/);
   });
   it('p2: "3 · RESONANCE" on the page is the card’s eyebrow (the readout rides only in full screen)', () => {
     assert.match(A, /<Eyebrow>\{step \+ 1\} · \{st\.name\.toUpperCase\(\)\}<\/Eyebrow>/);
@@ -388,7 +395,10 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
   it('p7: the De-Esser lab is found by its real names (Dynamics → Smart Processors Lab → De-Esser & Sibilance Control)', () => {
     assert.match(code('src/screens/lab/labCatalog.ts'), /name: 'Dynamics',[\s\S]*?\{ name: 'Smart Processors Lab',/);
     assert.match(code('src/screens/lab/deesser/DeEsserLabScreen.tsx'), /title="De-Esser & Sibilance Control"/);
-    assert.ok(g('p7', 'teaches').includes('The De-Esser & Sibilance Control lab (Dynamics → Smart Processors Lab)'));
+    // course navigation left WHAT THIS TEACHES (owner 2026-11-08); a guide that names the lab uses its real name
+    const t7 = textOf(GUIDES.p7);
+    if (/De-Esser/.test(t7)) assert.ok(t7.includes('De-Esser & Sibilance Control'));
+    assert.doesNotMatch(g('p7', 'teaches'), /Smart Processors Lab/);
   });
   it('terms defined where the guide uses them: de-esser (p5, p7), presence boost (p7), the capsule’s membrane (p6)', () => {
     assert.match(g('p5', 'teaches'), /de-esser \(a compressor that acts only while it hears hiss\)/);
@@ -434,7 +444,12 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
   const endBlock = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)![0];
 
   it('all five sections, 1–5 bullets, TRY THIS 2–3; fits the no-scroll budget', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+    // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+    const intro = (END as unknown as { intro?: { learning: string; start: string } }).intro;
+    assert.ok(intro, 'no intro');
+    assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+    assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
     for (const sec of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
       const b = END[sec.key];
       assert.ok(b.length >= 1 && b.length <= 5, `end.${sec.key}: ${b.length} bullets`);
@@ -527,7 +542,7 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'SpeechLab', key: 'tr_speech', completion: 'understanding' \}/);
     assert.ok(END.changes.join(' ').includes('a passed check stays done'));
-    assert.ok(END.teaches.join(' ').includes('The check is what completes the lab'));
+    assert.ok(GUIDES.check.changes.join(' ').includes('Get all four right and the lab is complete'));
   });
 
   it('review fixes (2026-10-31): big title vs header, YOUR PROGRESS, check row name, REVIEW only lists done rows, every page in teaches', () => {
@@ -536,7 +551,7 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.ok(END.seeing[0].startsWith('The big title reads WHAT’S LEFT'));
     // the unreadable face
     assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
-    assert.ok(END.seeing.join(' ').includes('YOUR PROGRESS if saved progress cannot be read'));
+    assert.ok(END.seeing.join(' ').includes('If saved progress can’t be read, the title reads YOUR PROGRESS'));
     // the check's row by its on-screen name; a passed check joins ✓ DONE
     assert.match(PAGED, /label: 'Check your understanding', kind: 'check'/);
     assert.ok(END.seeing.join(' ').includes('Check your understanding, is marked CHECK'));
@@ -544,12 +559,12 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     // REVIEW ▾ exists only when something is done, and lists only done rows
     assert.match(LES, /\{w\.credited\.length > 0 \? \(/);
     assert.match(LES, /w\.credited\.map\(\(r\) => row\(r, true\)\)/);
-    assert.ok(END.tryThis.some((t) => t.includes('from its row or from REVIEW ▾ once it is done')));
+    assert.ok(END.tryThis.some((t) => t.includes('from its row or from REVIEW ▾')));
     assert.doesNotMatch(END.tryThis.join('\n'), /^Tap REVIEW ▾/m);
     // the first-row experiment holds for Check Yourself / the check / LAB COMPLETE
     assert.ok(END.tryThis[0].startsWith('If any row is still listed') && END.tryThis[0].includes('on any page before Check Yourself, NEXT › then counts it'));
     // every content page's idea is named (page 2 included)
     assert.equal(PAGE_TITLES[1], 'How a Voice Is Made');
-    assert.ok(END.teaches[0].includes('anatomy, how a voice is made, voicing'));
+    assert.ok(END.teaches[0].includes('the parts of the voice, how a voice is made, voicing'));
   });
 });

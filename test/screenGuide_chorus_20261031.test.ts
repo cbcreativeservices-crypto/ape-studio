@@ -61,7 +61,12 @@ describe('1. every Chorus screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -110,8 +115,12 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the header transport, the rack's own controls, the well
       '▶', '■', 'HIDE DISPLAY', 'FULL SCREEN', 'LAB NOTES', 'DESIGNED RESPONSE',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Voice delay', 'Rate/Depth', '100% = VIBRATO', 'DEEP'],
-    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', '100% = VIBRATO', 'DELAY'],
+    // 2026-11-08: lesson names Voice delay / Rate/Depth became the on-screen DELAY / RATE / DEPTH
+    // (decision 1); the rewrite no longer names the LEARN tab itself.
+    learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'RATE', 'DEPTH', 'DELAY', 'MIX', '100% = VIBRATO', 'DEEP', '▶'],
+    // '100% = VIBRATO' / 'DELAY' dropped: the on-screen label IS the full-wet answer, so the CHECK no
+    // longer walks to it (decision 6) — see the negative check in section 6.
+    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'MIX', 'CONTROLS', 'RATE'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(CHORUS_SCREEN_GUIDES).sort());
@@ -207,15 +216,26 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
   it('LEARN does not say "nothing plays": the header ▶ shows on every tab and the rack stays mounted', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
     assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
-    assert.ok(GUIDES.learn.seeing[0].includes('the ▶ in the header still plays or stops the sound'));
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the sound'));
   });
   it('TRY THIS step 3 sets MIX back to 50% first: at MIX 100% the caption shows no spacing numbers', () => {
     assert.match(CFG, /v\[P\.modMix\] >= 1\s*\? '100% wet removes the dry voice/);
     assert.ok(GUIDES.explore.tryThis[0].includes('100% = VIBRATO'));
     assert.ok(GUIDES.explore.tryThis[2].startsWith('With MIX back on 50%'));
   });
-  it('CHECK points to DELAY on EXPLORE (the CHECK tab has no DELAY key)', () => {
+  it('CHECK points to where the delay is taught (the CHECK tab has no DELAY key)', () => {
     assert.doesNotMatch(textOf(GUIDES.check), /DELAY here/);
-    assert.ok(textOf(GUIDES.check).includes('DELAY on EXPLORE'));
+    assert.ok(textOf(GUIDES.check).includes('on LEARN reread the CONTROLS entry on the copy’s delay'));
+  });
+  it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
+    const ck = CHORUS_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
+    const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
+    // full-wet: the on-screen label "100% = VIBRATO" is the answer, so the CHECK neither names it nor walks to it
+    assert.doesNotMatch(all, /VIBRATO|vibrato|turns into/);
+    // vs-flanger: the 15–35 ms answer and "a few milliseconds" are not stated
+    assert.doesNotMatch(all, /15, 20 or 35|15–35|few milliseconds|longer delay/i);
+    // mechanism / rate-high: not stated
+    assert.doesNotMatch(all, /wobbl|seasick|out of tune/i);
+    assert.match(ck.tryThis[0], /reread the MIX entry on LEARN/);
   });
 });

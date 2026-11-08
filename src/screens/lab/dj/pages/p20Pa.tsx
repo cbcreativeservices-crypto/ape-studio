@@ -366,6 +366,10 @@ function SetupTray({ setView, map, setMap }: { setView: (v: View3) => void; map:
 const FLOOR_WORD: Box = { x: -170, y: 300, w: 340, h: 46 };
 
 const fmtDba = (v: number | null) => (v == null ? '—' : v.toFixed(0));
+/** The suggested busy-floor level (owner safety fix 2026-11-08; it was 95, then 90 on ON YOUR OWN): the
+ *  loudest level a 4-hour night stays within Screen 1's NIOSH allowance (85 dBA for 8 h, 3 dB exchange →
+ *  88 dBA = 4 h = 100 %), so the lab never rewards a floor that breaks the crowd's 4-hour dose. */
+const FLOOR_TARGET_DBA = 88;
 const PLACE_SHORT: Record<Placement, string> = { CORNERS: 'AIM IN', STRAIGHT: 'DOWN', BEHIND: 'BEHIND' };
 
 function PagePa({ ctx }: { ctx: PageCtx }) {
@@ -407,10 +411,10 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
   const fresh = useFreshReading(booth, last);
   const hits = [
     venueHandoffOk(v),
-    fresh && venueHandoffOk(v) && playing && floor != null && floor >= 95 && !masterClip && booth.mixer.master <= 0.8 && v.gainDb > VENUE_GAIN_MIN_DB,
+    fresh && venueHandoffOk(v) && playing && floor != null && floor >= FLOOR_TARGET_DBA && !masterClip && booth.mixer.master <= 0.8 && v.gainDb > VENUE_GAIN_MIN_DB,
     v.xover && v.subs && flatAt100,
     placedOk,
-    fresh && playing && dose != null && dose <= 100 && floor != null && floor >= 90,
+    fresh && playing && dose != null && dose <= 100 && floor != null && floor >= FLOOR_TARGET_DBA,
     own,
     faultFixed,
     check,
@@ -525,7 +529,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={2}>
         <Do>Open VENUE and play deck A. Put MASTER L into DJ L and MASTER R into DJ R on XLR — read DJ L · DJ R on the strip.</Do>
-        <P>The room is quiet: ask the engineer for more (“UP 3 dB”) until the FLOOR reads about 95 dBA (a suggested level for a busy floor in this model; a real venue’s limit and its engineer decide), with your MASTER at its unity mark. Pushing your MASTER into the red instead just sends them distortion.</P>
+        <P>The room is quiet: ask the engineer for more (“UP 3 dB”) until the FLOOR reads about 88 dBA (a suggested level for a busy floor in this model: the loudest a 4-hour night stays within the NIOSH allowance from Screen 1; a real venue’s limit and its engineer decide), with your MASTER at its unity mark. Pushing your MASTER into the red instead just sends them distortion.</P>
         {engineer ? <Note tone="try">{engineer}</Note> : null}
         {swapped ? <Note>L and R are swapped against the venue’s labels: swap the two inputs.</Note> : null}
       </Step>
@@ -538,13 +542,13 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
         <Note tone="safety">At the decks you hear the PA’s spill AND the booth monitors, for hours. This dose counts the room at the decks only — your headphones add to it, often more than the room. A 4-hour set at more than about 88 dBA is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA with a 5 dB rule). Turn the BOOTH down before you turn the headphones up; take breaks; wear musicians’ earplugs. This is a modeled level — a phone’s volume is not your ears’ level.</Note>
       </Step>
       <Step n={4}>
-        <Do>Hand off DJ L and DJ R on XLR, get the room to about 95 dBA through the engineer, turn the crossover on, place the tops, and bring your 4-hour dose at the decks to 100 % or less.</Do>
+        <Do>Hand off DJ L and DJ R on XLR, get the room to about 88 dBA through the engineer, turn the crossover on, place the tops, and bring your 4-hour dose at the decks to 100 % or less.</Do>
         <GoalChips goals={goals.slice(0, 5)} latched={latched.slice(0, 5)} />
       </Step>
       <Step n={5}>
         <EvidenceCheck
           eyebrow="ON YOUR OWN"
-          task="the tops now stand BEHIND THE DJ. Bring your 4-hour dose back to 100 % or less without moving them — only the booth level and the engineer’s gain — with the floor still at 90 dBA or more."
+          task="the tops now stand BEHIND THE DJ. Bring your 4-hour dose back to 100 % or less without moving them — only the booth level and the engineer’s gain — with the floor still at 88 dBA or more."
           start={() => {
             void audio.requestSound();
             updateBooth((b, t) => {
@@ -553,7 +557,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
             });
             setView('ROOM');
           }}
-          met={fresh && v.place === 'BEHIND' && playing && dose != null && dose <= 100 && floor != null && floor >= 90}
+          met={fresh && v.place === 'BEHIND' && playing && dose != null && dose <= 100 && floor != null && floor >= FLOOR_TARGET_DBA}
           progress={v.place === 'BEHIND' && dose != null ? `4-HOUR DOSE ${dose} % · FLOOR ${fmtDba(floor)} dBA` : null}
           explain="Behind the DJ, the tops’ beam passes the decks: the booth monitors and the engineer’s gain are all you have, and the margin is thin. That is why tops belong in front of the DJ line."
           onMet={() => setOwn(true)}

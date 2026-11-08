@@ -29,7 +29,7 @@ describe('Multimeter owner pass 2026-10-23', () => {
     assert.match(src, /fmtDb\(applyRef\(rms3sDb\)\)/);
     assert.match(src, /<Text style=\{styles\.statusSub\}>3 sec avg<\/Text>/);
     assert.match(src, /rmsDb: rms3sDb \?\? m\.zFastDb/);
-    assert.match(help, /averaged over the last 3 seconds/);
+    assert.match(help, /The average level over the last 3 seconds \(3 sec avg\)/);
   });
   it('SPL / RMS / PK HOLD frames are level-coloured; hold tick matches PK HOLD', () => {
     assert.match(src, /borderColor: levelColorForDb\(modeLevel\(meter\) as number\)/);

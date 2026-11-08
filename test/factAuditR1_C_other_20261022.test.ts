@@ -47,24 +47,24 @@ describe('F000572: louder = FARTHER; the wrong option is a higher RATE, not "fas
 
 describe('F002090 / F002107 / F002113: cymatics glossary physics', () => {
   it('more surface tension makes the waves longer', () => {
-    assert.ok(CONTENT.includes('more surface tension makes the waves longer at the same drive frequency'));
+    assert.ok(CONTENT.includes('More surface tension makes the waves longer at the same drive frequency'));
     assert.ok(!CONTENT.includes('surface tension shortens the wavelength'));
   });
   it('below f_s the cone keeps moving; its output falls', () => {
-    assert.ok(CONTENT.includes('it moves about the same amount, but its sound output falls fast; near f_s the motion peaks if damping is low'));
+    assert.ok(CONTENT.includes('Below f_s the cone moves about the same amount but its output falls fast; near f_s it swings hardest if damping is low'));
     assert.ok(!CONTENT.includes('stiffness-controlled and barely moves'));
   });
   it('cork dust marks where the air does not move, not pressure nodes', () => {
-    assert.ok(CONTENT.includes('a pipe’s still air (cork dust gathers where the air does not move)'));
+    // 2026-11-08: the owner-approved Comp B rewrite no longer states this; the old wording stays banned.
     assert.ok(!CONTENT.includes('a pipe’s pressure nodes (cork dust, a flame)'));
   });
 });
 
 describe('F002193 / F002200: spectrogram dB range (top anchored at the observed max)', () => {
   it('a WIDE range reaches the faint detail; too NARROW hides it', () => {
-    assert.ok(HELP.includes('A wide range reaches down to faint detail (and more noise); a narrow range shows only the strongest content.'));
+    assert.ok(HELP.includes('A wider range shows faint detail, and more background noise; a narrower one shows only the strongest sound.'));
     assert.ok(!HELP.includes('A narrow range shows faint detail'));
-    assert.ok(HELP.includes('Too narrow a dB range hides the interesting quiet detail (reflections, tails); widen it to reveal them.'));
+    assert.ok(HELP.includes('It hides quiet detail like reflections and reverb tails. Widen it to reveal them'));
     assert.ok(!HELP.includes('Too wide a dB range hides'));
   });
 });

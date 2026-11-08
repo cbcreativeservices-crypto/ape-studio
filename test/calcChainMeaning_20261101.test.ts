@@ -293,15 +293,15 @@ describe('every entry point uses the meaning rule; projects keep kind + unit', (
 describe('the guide says what the screen does', () => {
   const text = src('calcScreenGuides.ts');
   it('workflow lines promise a meaning match, and no longer ask the learner to police the kind rule', () => {
-    assert.ok(text.includes('an answer is offered to a later step only where it means the same thing: an RT60 fills an RT60, but a voltage drop never fills a supply voltage.'));
-    assert.ok(text.includes('A step offers only answers that mean the same thing as its input — a power fills a power, but an RT60 never fills a target RT60'));
+    assert.ok(text.includes('a later step is offered an earlier answer only when it means the same thing: an RT60 fills an RT60, but a voltage drop never fills a supply voltage.'));
+    assert.ok(text.includes('A step is offered only answers that mean the same thing as its input: a power fills a power, but a calculated RT60 never fills a target RT60'));
     assert.ok(text.includes('fills an input with an earlier step’s answer that means the same thing.'));
     assert.ok(text.includes('An answer is offered only where it means the same thing: a distance never fills a time, and a voltage drop never fills a supply voltage.'));
     assert.doesNotMatch(text, /Same kind is not always the same thing/);
     assert.doesNotMatch(text, /the same kind is not always the same thing/);
   });
   it('project values: still offered by kind, so the guide still says to check the name', () => {
-    assert.ok(text.includes('A project value is offered only to an input of the same kind — a power never fills a voltage. Check it is the same thing before you tap ⤵ USE.'));
+    assert.ok(text.includes('A project value is offered only to an input of the same kind: a power never fills a voltage. Check it’s the same thing before you tap ⤵ USE.'));
     assert.ok(text.includes('so its values offer ⤵ USE … (PROJECT) on inputs of the same kind.'));
   });
 });
@@ -427,7 +427,7 @@ describe('J5c — a saved import that no longer fits says so, and is never resto
     assert.match(run, /if \(was\.kind === 'prior-step' && liveImport\(computed, was, f\)\?\.fits === false\) return;/);
   });
   it('the guide says what the field does', () => {
-    assert.ok(src('calcScreenGuides.ts').includes('A saved import that no longer fits says so: type a value.'));
+    assert.ok(src('calcScreenGuides.ts').includes('If a saved import no longer fits, it says so: type a value.'));
   });
 });
 

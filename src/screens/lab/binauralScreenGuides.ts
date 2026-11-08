@@ -37,91 +37,103 @@ export type BinauralScreenId = 'explore' | 'learn' | 'check';
 export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
   // ── EXPLORE — the stage ───────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How two ears place a sound left or right: the far ear hears it later (ITD) and quieter and darker (the head shadow), and why front and back stay vague.',
+      start: 'Put on headphones and tap ▶. Slide AZ from 0° to +90° and watch ITD climb to 656 µs. Then drag object 1 toward your head and hear it get louder.',
+    },
     seeing: [
-      'Your head from above, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left; rings mark each meter out to 4 m.',
+      'You’re looking down on your head, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left. Rings mark each meter out to 4 m.',
       'Up to three speaker objects: 1 amber, 2 green, 3 blue. A dim one is OFF; the selected one has the thicker ring. At first only 1 is ON: pink noise at −60°, 1.5 m.',
-      'Readouts for the selected object: OBJ, AZ (angle and direction), DIST and ITD (far-ear delay, µs).',
+      'OBJ, AZ, DIST and ITD describe the selected object. ITD is how much later the far ear hears it, in µs.',
     ],
     control: [
       'Drag an object on the stage: its angle sets AZ, its distance from your head sets DIST. Grabbing one selects it.',
-      'AZ fader (−180° to +180°, 0° = front) and DIST fader (0.5–4.0 m) move the selected object.',
-      'OBJ key: SOUND OBJECTS — pick 1, 2 or 3; the ON/OFF chip switches the selected one. SRC key: SOURCE TYPE TONE, PINK or WHITE; TONE adds TONE FREQUENCY (Hz): 250, 440, 880 or 2000.',
+      'The AZ fader (−180° to +180°, 0° = front) and the DIST fader (0.5–4.0 m) move the selected object.',
+      'OBJ opens SOUND OBJECTS: pick 1, 2 or 3; the ON/OFF chip switches the selected one. SRC opens SOURCE TYPE: TONE, PINK or WHITE; TONE adds TONE FREQUENCY (Hz): 250, 440, 880 or 2000.',
       '▶ (top right) plays every object that is ON. Long-press a key or readout for its lesson entry; ⤢ FULL SCREEN enlarges the stage.',
       'LAB NOTES: 🎧 HEADPHONES REQUIRED, THE TWO CUES, THE MIX, HONESTLY, then two CHECK YOURSELF questions.',
     ],
     changes: [
       'The far ear hears the sound later (ITD): up to 656 µs at ±90°, for a head 17.5 cm across.',
-      'Also quieter (a simple full-range drop, to −8 dB at the side) and darker: the head blocks highs (head shadow). THE TWO CUES shows both.',
-      'A sphere is the same front and back: 30° and 150° read the same; behind only darkens a little.',
+      'It also hears it quieter (the same at all frequencies, to −8 dB at the side) and darker: the head blocks highs. THE TWO CUES shows both.',
+      'A round head is the same front and back: 30° and 150° read alike; behind only darkens a little.',
       'DIST sets level: half the distance, 6 dB louder, unless the cap turns the mix down.',
     ],
     teaches: [
       'How two ears place a sound: a time difference (ITD) and a level-and-tone difference (ILD, the head shadow).',
       'Why binaural needs headphones: on speakers each ear hears both channels and the cues mix in the air.',
-      'Why front/back and up/down stay vague: those cues come from the outer ear (pinna), which this model leaves out.',
-      'It follows Stereo Imaging, whose PAN changes level only; binaural adds time and shadow.',
+      'Why front/back and up/down stay vague: those cues come from the outer ear (pinna), which time and level alone can’t give.',
+      'A stereo PAN changes level only; binaural adds time and shadow.',
     ],
     tryThis: [
-      'Slide AZ to +90°: AZ reads +90° right and ITD 656 µs — the most a head this size gives. Back to 0°: ITD 0 µs, both ears at once.',
-      'Set AZ to +30° (ITD 261 µs), then to +150°: ITD reads 261 µs again — the same cues front and back.',
-      'With only object 1 on and ▶ playing, slide DIST to 0.5 m: THE MIX, HONESTLY shows Bus norm 0.79 — closer is louder, so the sum is turned down to stay under the cap.',
+      'Slide AZ to +90°: AZ reads +90° right and ITD 656 µs, the most a head this size gives. Back to 0°: ITD 0 µs, both ears at once.',
+      'Set AZ to +30° (ITD 261 µs), then to +150°: ITD reads 261 µs again. The time cue is the same in front and behind.',
+      'With only object 1 on and ▶ playing, slide DIST to 0.5 m: THE MIX, HONESTLY shows Bus norm 0.79. Closer is louder, so the sum is turned down to stay under the cap.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The ideas behind EXPLORE: ITD and ILD ear cues, why time and level alone leave front and back vague, and why noise is easier to place than a low tone.',
+      start: 'Read the two ear cues first. Then find the ITD line under FORMULA / CONCEPT, and on EXPLORE set AZ to +45° to see ITD read 381 µs.',
+    },
     seeing: [
-      'The LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
-      'First the two ear cues and the simplified head model. Then CONTROLS: the display, Azimuth, Distance, Source type, Sound objects and Tone frequency.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT — the ITD formula, the ILD and the distance law.',
+      'This is the LEARN tab: this lab’s lesson on one page to read. ▶ in the header still plays the objects set on EXPLORE.',
+      'First the two ear cues and the simple head model behind them. Then CONTROLS: the display, AZ, DIST, SRC, OBJ and TONE FREQUENCY (Hz).',
+      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the ITD formula, the ILD and the distance law.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; EXPLORE is the live stage.',
+      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; on EXPLORE you hear each idea on the live stage.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the stage.',
       'On EXPLORE, long-press OBJ, SRC, AZ or DIST (key or readout) for its own entry; the ITD readout opens the display entry.',
     ],
     changes: [
-      'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'The FORMULA’s ITD line is the math behind the ITD readout: (r ÷ c)·(θ + sin θ), with r = 8.75 cm and θ in radians (45° = 0.785).',
-      'Most COMMON MISTAKES are listening traps — speakers, a low sine, front/back — and why each one happens.',
+      'Nothing on this page moves: it’s your reference for what EXPLORE shows.',
+      'The FORMULA’s ITD line is the math behind the ITD readout: (r ÷ c)·(θ + sin θ), with r = 8.75 cm, c = 343 m/s and θ in radians (45° = 0.785).',
+      'Most COMMON MISTAKES are listening traps (speakers, a low sine, front/back) and say why each one happens.',
     ],
     teaches: [
-      'The words: ITD, ILD, head shadow, HRTF, crosstalk.',
-      'The limits of a time-and-level model, so a vague front/back image is expected, not a fault.',
+      'What ITD, ILD, head shadow, HRTF (how head and outer ear filter sound) and crosstalk (each ear hearing both speakers) mean.',
+      'The limits of a time-and-level model: a vague front/back image is expected, not a fault.',
       'Why broadband noise is easier to place than a low, steady tone.',
     ],
     tryThis: [
-      'Read the FORMULA line, then on EXPLORE set AZ to +45°: ITD reads 381 µs — (0.0875 ÷ 343) × (0.785 + 0.707) seconds.',
-      'Read the PRO TIP about −90°, then on EXPLORE park object 1 at −90°, set SRC to TONE, pick 250 under TONE FREQUENCY (Hz), then switch to PINK: same readouts, but the noise is easier to place.',
+      'Read the FORMULA line. Then on EXPLORE, set AZ to +45°: ITD reads 381 µs, which is (0.0875 ÷ 343) × (0.785 + 0.707) seconds.',
+      'Read the PRO TIP about −90°. On EXPLORE, park object 1 at −90°, set SRC to TONE and pick 250 under TONE FREQUENCY (Hz). Then switch to PINK: same readouts, but the noise is easier to place.',
     ],
   },
 
   // ── CHECK — the understanding check ───────────────────────────────────────
   check: {
+    intro: {
+      learning: 'Review: what ITD is, what the head shadow does to the far ear, why binaural needs headphones, and why this lab can’t place sounds above or below you.',
+      start: 'Tap the choice you think is right on each card. Want to test an idea first? Reread the two ear cues at the top of LEARN, then come back.',
+    },
     seeing: [
       'CHECK YOUR UNDERSTANDING and the lab’s title, then four questions: what ITD is, the head shadow, why headphones, and why no up or down.',
-      'Each card: a question and its choices. A right answer turns green and its number becomes ✓; CORRECT or NOT QUITE — TRY ANOTHER heads the explanation.',
+      'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT or NOT QUITE — TRY ANOTHER heads the explanation.',
       'When all are right: Every question answered correctly — this lab is complete.',
     ],
     control: [
-      'Tap a choice. A wrong one shows its explanation in amber — pick another straight away; nothing is lost and there is no score.',
+      'Tap a choice. A wrong one shows its explanation in amber; pick another straight away. Nothing is lost and there is no score.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
-      'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
+      'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before the last one, the check starts over.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what’s left in this lab, and the way back to labs.',
     ],
     changes: [
-      'Every answer shows its explanation, right or wrong, so each question teaches.',
-      'When the last one is right, the lab is marked complete. It counts toward any certificate or program that needs it — once.',
-      'Come back later and the check shows as already cleared.',
+      'Every answer shows its explanation, right or wrong, so each question teaches you something.',
+      'Get all four right and the lab is complete.',
+      'A pass is kept: come back later and the check shows as already cleared.',
     ],
     teaches: [
-      'ITD: the far ear hears a sound slightly later.',
-      'The head shadow: the far ear hears it quieter and darker.',
-      'Why speakers scramble binaural cues, and why height needs the outer ear.',
+      'What ITD is, and how large the time gap between your ears can get.',
+      'What the head shadow does to the sound that reaches your far ear.',
+      'Why speakers scramble binaural cues, and where up-and-down cues come from.',
     ],
     tryThis: [
-      'Before starting, on EXPLORE slide AZ to +90°: ITD reads 656 µs — well under a thousandth of a second.',
-      'Also before starting: watch THE TWO CUES in LAB NOTES while AZ goes from 0° to +60°: far-ear level 0.0 → −6.9 dB — the level half of the head-shadow cue.',
+      'Unsure about ITD? On EXPLORE, set AZ to +30° and read ITD: 261 µs. Long-press the ITD readout for its entry.',
+      'Unsure about the head shadow? On LEARN, reread the two ear cues at the top of the lesson, then come back to this card.',
     ],
   },
 };
@@ -133,27 +145,31 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
  *  with the lab's one unit, the understanding check: the row and PRACTICE
  *  AGAIN close the layer (nothing is cleared), DONE · BACK TO LABS leaves. */
 export const BINAURAL_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'Where you stand in the Binaural Panner lab: whether the check is passed, what is left, and how to get back to the stage to keep listening.',
+    start: 'Read WHAT’S LEFT. If the check’s row is still there, tap it to go back to CHECK. Otherwise tap ‹ BACK TO THE LAB and keep exploring.',
+  },
   seeing: [
-    'Under Where you are, the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once the check is passed; YOUR PROGRESS if your saved progress could not be read.',
-    'One row, CHECK · Understanding check, while it is still to do. Once passed it folds into a ✓ CREDITED line (✓ DONE when you are not signed in); REVIEW ▾ shows it.',
-    'The line under the title says what is left and whether your work is saved.',
+    'Under Where you are: the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once you pass the check. If your saved progress can’t be read, it says YOUR PROGRESS.',
+    'While the check is still to do, one row shows: CHECK · Understanding check. Once passed, it folds into a ✓ CREDITED line (✓ DONE when you’re not signed in); REVIEW ▾ shows it.',
+    'The line under the title says what’s left and whether your work is saved.',
   ],
   control: [
-    '‹ BACK TO THE LAB, or the check’s row, closes this screen and returns to the lab exactly as you left it.',
+    '‹ BACK TO THE LAB, or the check’s row, closes this screen and takes you back to the lab exactly as you left it.',
     'PRACTICE AGAIN FROM THE START also returns to the lab; it clears nothing.',
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'The check counts once every answer is right. Signed in, it is credited to your account once and never has to be taken twice.',
-    'Signed out, the line under the title says whether signing in can still keep it. Practicing again never removes credit.',
+    'The check counts once every answer is right. If you’re signed in, it’s saved to your account once, and you never take it twice.',
+    'If you’re signed out, the line under the title says whether signing in can still keep it. Practicing again never takes it away.',
   ],
   teaches: [
-    'Whether this lab is complete, and what is still left to finish it.',
-    'The lab can always be opened again for practice; nothing earned is taken away.',
+    'Two ear cues place a sound left or right. On EXPLORE, the ITD readout and THE TWO CUES in LAB NOTES show both.',
+    'Why this lab needs headphones, and what a time-and-level head model leaves out. Test both on EXPLORE at any time.',
   ],
   tryThis: [
-    'If the check is still listed, tap its row: you are back on the CHECK tab. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
-    'Once it is passed, tap ‹ BACK TO THE LAB and on EXPLORE slide AZ to +90° again: practice never removes the credit.',
+    'If the check is still listed, tap its row to go back to CHECK. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
+    'Once it’s passed, tap ‹ BACK TO THE LAB and slide AZ to +90° on EXPLORE again: ITD reads 656 µs.',
   ],
 };
 

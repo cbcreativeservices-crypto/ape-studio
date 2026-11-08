@@ -58,8 +58,8 @@ describe('S1', () => {
     assert.doesNotMatch(QUANT, /THEORETICAL dynamic range/);
     assert.match(DAC, /noise floor and theoretical SNR \(≈ 6\.02·N \+ 1\.76 dB, undithered\)/);
     assert.match(DAC, /theoretical SNR for an UNDITHERED full-scale sine/);
-    assert.match(CONTENT, /amplitude resolution and theoretical SNR \(≈ 6\.02·N \+ 1\.76 dB, undithered\)/);
-    assert.match(CONTENT, /SNR ≈ 6\.02·N \+ 1\.76 dB \(theoretical, undithered\)/);
+    assert.match(CONTENT, /SNR ≈ 6\.02·N \+ 1\.76 dB \(theory\)/);
+    assert.match(CONTENT, /TH\. SNR from ≈25\.8 dB to ≈98\.1 dB/);
     assert.doesNotMatch(CONTENT, /DR ≈ 6\.02·N/);
   });
 
@@ -130,14 +130,14 @@ describe('S3 — meter', () => {
   });
 
   it('R7-MTR-07: analog clipping OFTEN rounds', () => {
-    assert.match(CONTENT, /Analog clipping often rounds; digital clipping shears\./);
+    assert.match(CONTENT, /Analog clipping often rounds the tops, while digital clipping shears them off\./);
   });
 });
 
 describe('S3 — digital', () => {
   it('R7-DIG-02: reclocking is hedged — the converter clock still jitters', () => {
     assert.doesNotMatch(CONTENT, /can remove it entirely/);
-    assert.match(CONTENT, /converter’s own clock still has a little/);
+    assert.match(CONTENT, /Buffering and reclocking at the converter remove most incoming link jitter\./);
     assert.doesNotMatch(DAC, /'HARMLESS AT'/);
     assert.match(DAC, /\{ k: 'REDUCED BY', v: 'buffered · reclocked playback' \}/);
   });
@@ -149,7 +149,7 @@ describe('S3 — digital', () => {
 
   it('R7-DIG-04: transients are hedged, not "never"', () => {
     assert.doesNotMatch(CONTENT, /no transient ever reaches the cliff/);
-    assert.match(CONTENT, /most transients stay well clear of the cliff/);
+    // 2026-11-08: the owner-approved Comp B rewrite no longer states this; the old wording stays banned.
   });
 });
 
@@ -191,12 +191,12 @@ describe('S3 — amplifier', () => {
 describe('S3 — signal chain', () => {
   it('R7-SC-01: a hot EQ boost (not the compressor) makes the limiter work harder', () => {
     assert.doesNotMatch(CONTENT, /a hot compressor makes the limiter work harder/);
-    assert.match(CONTENT, /a hot EQ boost makes the limiter work harder/);
+    assert.match(CONTENT, /A hotter signal makes the next unit work harder: with DIST’s \+12 dB drive before it, LIMIT turns down far more\./);
   });
 
   it('R7-SC-02: one patch cable per hop', () => {
     assert.doesNotMatch(CONTENT, /nine rack units on one patch cable/);
-    assert.match(CONTENT, /one patch cable for each hop from unit to unit/);
+    // 2026-11-08: the owner-approved Comp B rewrite no longer states this; the old wording stays banned.
   });
 
   it('R7-SC-03: the catalog order lists every rack unit, STEREO included', () => {
@@ -310,6 +310,6 @@ describe('S3 — FX', () => {
 describe('S3 — modular', () => {
   it('R7-MOD-01: without retrigger, steps run legato (no slew = no glide)', () => {
     assert.doesNotMatch(CONTENT, /smear into a glide/);
-    assert.match(CONTENT, /run together legato, with no new attack/);
+    assert.match(CONTENT, /Without the retrigger, the steps would slur together with no new attack\./);
   });
 });

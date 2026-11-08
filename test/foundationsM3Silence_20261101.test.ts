@@ -53,7 +53,7 @@ describe('Foundations M3: STRENGTH 0 % is silent', () => {
   });
 
   it('the guide says plain "no sound" and drops the never-mutes note', () => {
-    assert.ok(GUIDE.includes('no vibration, no wave — and no sound.'));
+    assert.ok(GUIDE.includes('No vibration means no wave, and no sound.'));
     assert.doesNotMatch(GUIDE, /PLAY never fully mutes/);
     assert.doesNotMatch(GUIDE, /still plays a faint tone/);
   });

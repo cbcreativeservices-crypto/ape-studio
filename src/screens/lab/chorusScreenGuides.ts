@@ -41,84 +41,96 @@ export type ChorusScreenId = 'explore' | 'learn' | 'check';
 export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How chorus works: a copy of your sound, 15–35 ms late and slowly wobbling in time, beats against the dry sound, and your ear hears that as thick and wide.',
+      start: 'Set SOURCE to SINE 440 Hz and tap ▶. Watch the bold line swell and thin. Then set MIX to 100% = VIBRATO and see the swelling stop.',
+    },
     seeing: [
-      'A scope. Left of the green CHORUS bar (IN ▸): your sound, in gray. Right of it, to ▸ OUT: your sound again (faint gray), the delayed copy (blue) and what you hear — the two mixed (the bold glowing line).',
-      'The note at the bottom left names the tone drawn: SCOPE · 440 Hz TONE, or 440 Hz PART OF THE NOISE with PINK NOISE.',
-      'Readouts on the frame: RATE, DEPTH and MIX.',
+      'Left of the green CHORUS bar (IN ▸) is your sound, in gray. Right of it, to ▸ OUT: your sound again (faint gray), the delayed copy (blue) and what you hear: the two mixed (bold glowing line).',
+      'The note at bottom left names the tone drawn: SCOPE · 440 Hz TONE, or 440 Hz PART OF THE NOISE with PINK NOISE.',
+      'RATE, DEPTH and MIX on the frame show your settings. The scope draws the idea; it is not a measurement.',
     ],
     control: [
-      '▶ at the top right (or a tap on the display) plays the source through the chorus; ■ stops it.',
-      'RATE fader (0.10–3.00 Hz, starts at 0.25 Hz): how fast the copy’s delay wobbles — the LFO.',
-      'DEPTH: SUBTLE, CLASSIC or DEEP — how far the delay swings. DELAY (VOICE DELAY): 15, 20 or 35 ms — how far behind the copy sits.',
-      'MIX: 30%, 50% or 100% = VIBRATO — how much copy is mixed in. SOURCE: SINE 440 Hz or PINK NOISE. Compare DELAY on PINK NOISE: on a sine, each setting should sound the same.',
+      'Tap ▶ at the top right, or tap the display, to play the source through the chorus; ■ stops it.',
+      'Drag the RATE fader (0.10–3.00 Hz, starts at 0.25 Hz) to set how fast the LFO, a low-frequency oscillator, wobbles the copy’s delay.',
+      'DEPTH (SUBTLE, CLASSIC or DEEP) sets how far that delay swings. DELAY (VOICE DELAY: 15, 20 or 35 ms) sets how far behind your sound the copy sits.',
+      'MIX (30%, 50% or 100% = VIBRATO) sets how much copy you hear. SOURCE picks SINE 440 Hz or PINK NOISE. Compare DELAY on PINK NOISE: on a sine, each setting should sound the same.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
     ],
     changes: [
       'The copy plays your sound a little late. As the delay drifts, the copy slides against your sound: where they line up the mix swells, where they oppose it thins. That beating is the shimmer.',
-      'A delay that keeps changing also bends the copy’s pitch slightly up and down — the detune.',
-      'At MIX 100% your dry sound is gone: only the wobbling copy is left — vibrato, not chorus.',
+      'A delay that keeps changing also bends the copy’s pitch slightly up and down. That small detune is why it sounds like two players.',
+      'At MIX 100% your dry sound is gone. Only the wobbling copy is left: vibrato, not chorus.',
     ],
     teaches: [
-      'Chorus is a short, slowly moving delay mixed with the dry sound; the beating between the two reads as thick and wide.',
-      'Its delay (15–35 ms here) is long, so the cancellation notches it makes sit close together — every 50 Hz at 20 ms — too close to hear as a sweep.',
-      'First Modulation lab, after Delay and Reverb; Flanger and Phaser follow. Each picture is a teaching model, not a measurement.',
+      'Chorus is a short, slowly moving delay mixed with the dry sound. The beating between the two reads as thick and wide.',
+      'Its delay (15–35 ms here) is long, so the cancellation notches it makes sit close together: every 50 Hz at 20 ms. That is too close to hear as a sweep.',
+      'Chorus needs the dry sound: the effect is the difference between a steady voice and a wavering copy.',
     ],
     tryThis: [
       'Play SINE 440 Hz at the start settings: the bold line swells and thins as the blue copy slides. Set MIX to 100% = VIBRATO: the bold line follows the copy alone and stops swelling.',
-      'Drag RATE up: the copy slides faster. From 0.87 Hz (DEPTH on CLASSIC) the note reads 440 Hz · LFO SLOWED — the drawing is held back to stay readable; the sound is not.',
+      'Drag RATE up: the copy slides faster. From 0.87 Hz (DEPTH on CLASSIC) the note reads 440 Hz · LFO SLOWED. The picture slows so you can follow it; the sound keeps the full rate.',
       'With MIX back on 50%, open LAB NOTES and step DELAY 15 → 20 → 35 ms: the caption under DESIGNED RESPONSE gives notches every 67, 50, then 29 Hz — a longer delay packs them closer.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The vocabulary of chorus (LFO, rate, depth, voice delay, wet/dry mix, vibrato) and why too much movement, or no dry sound, stops it sounding like chorus.',
+      start: 'Scroll to the MIX entry and read it. Then switch to EXPLORE, play SINE 440 Hz and set MIX to 100% = VIBRATO to hear what it describes.',
+    },
     seeing: [
-      'The LEARN tab: the Chorus guided lesson as one page to read. Nothing on it moves; the ▶ in the header still plays or stops the sound.',
-      'First what chorus is, then CONTROLS: one entry each for the display, Rate, Depth, Voice delay and Mix.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
+      'This is the Chorus guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
+      'It starts with what chorus is, then CONTROLS: one entry each for the display, RATE, DEPTH, DELAY and MIX.',
+      'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch to EXPLORE (the live rack) and CHECK (the questions that complete the lab).',
-      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet; long-press a key or readout there to open just its entry.',
+      'Scroll to read. Use the tabs under the title to switch to EXPLORE, the live rack, or CHECK, four questions on chorus.',
+      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'This page is the reference for what EXPLORE shows.',
-      'Each CONTROLS entry names a key on EXPLORE: Rate is RATE, Depth is DEPTH, Voice delay is DELAY, Mix is MIX.',
-      'The ranges match the rack: Rate about 0.1–3 Hz, Voice delay 15–35 ms.',
+      'Read this page beside EXPLORE: each idea here is something you can hear or see on the rack.',
+      'Each CONTROLS entry is named for its key on EXPLORE: RATE, DEPTH, DELAY and MIX.',
+      'The ranges match the rack: RATE about 0.1–3 Hz, DELAY 15–35 ms.',
     ],
     teaches: [
-      'The words for chorus: LFO, rate, depth, voice delay, wet/dry mix, vibrato.',
+      'The words for chorus: LFO (the slow wobble that moves the delay), rate, depth, voice delay, wet/dry mix, vibrato.',
       'Why too much rate or depth sounds out of tune, and why 100% wet stops being chorus.',
       'Why a wide chorus can thin out when the mix is summed to mono, so a mono check is worth doing.',
     ],
     tryThis: [
-      'Read the Mix entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
-      'Read the COMMON MISTAKES line on Rate/Depth, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
+      'Read the MIX entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
+      'Read the COMMON MISTAKES line on RATE and DEPTH, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
     ],
   },
 
   // ── CHECK — the questions that complete the lab ───────────────────────────
   check: {
+    intro: {
+      learning: 'A review of the core of chorus: what creates the effect, what MIX does, and how delay length and RATE change what you hear.',
+      start: 'Read each question and tap an answer. If one stumps you, reread its part of the lesson on LEARN, then come back. Right answers stay right.',
+    },
     seeing: [
-      'The CHECK tab: CHECK YOUR UNDERSTANDING for the Chorus lab — four questions, four answers each.',
+      'This is CHECK YOUR UNDERSTANDING for the Chorus lab: four questions, four answers each.',
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
       'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
-      'The tabs under the title go to LEARN or EXPLORE at any time; answers already right stay right. Leaving the lab before the last one starts the check over.',
+      'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [
-      'Each question is about something EXPLORE shows: what makes the shimmer, why 100% wet turns into vibrato, how chorus’s delay compares with a flanger’s, and what a fast RATE sounds like.',
-      'When all four are right the card reads Lab complete, and the tab opens already complete next time.',
+      'Each question is about something you heard or saw on EXPLORE: what makes the shimmer, what is left at 100% wet, how chorus’s delay compares with a flanger’s, and what a fast RATE sounds like.',
+      'Get all four right and the lab is complete; the card reads Lab complete. A pass is kept: the tab opens already complete next time.',
     ],
     teaches: [
-      'It checks the ideas: a moving delayed copy beating against the dry sound, the job of MIX, and how chorus differs from flanger.',
-      'Completing it finishes the Chorus lab; Flanger is next in Modulation.',
+      'What creates the chorus effect, and what MIX changes about it.',
+      'How the length of the delay, and the RATE of its movement, change what you hear.',
     ],
     tryThis: [
-      'Before you start, on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: watch what the bold line does, then come here.',
-      'For the delay question, compare DELAY on EXPLORE (15, 20 or 35 ms) with the few milliseconds a flanger uses.',
+      'For the 100% wet question, reread the MIX entry on LEARN, then come back.',
+      'For the flanger question, on LEARN reread the CONTROLS entry on the copy’s delay, then come back.',
     ],
   },
 };

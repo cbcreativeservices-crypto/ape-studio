@@ -44,30 +44,34 @@ export type PhaserScreenId = 'explore' | 'learn' | 'check';
 export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How a phaser makes its swirl: all-pass stages shift phase without any delay, and mixing that with the dry sound cancels a few unevenly spaced dips.',
+      start: 'Tap ▶ and watch the amber dips sweep across OUT. Then open SWEEP, set DEPTH (SWEEP) to STATIC, and drag CENTER to move the dips by hand.',
+    },
     seeing: [
-      'Two spectrum analyzers. Left (IN ▸): the source — PINK NOISE draws flat, WHITE NOISE rises to the right. Right, past the green PHASER bar (SPECTRUM (dB), to ▸ OUT): the same noise after the phaser.',
-      'On OUT the amber trace shows a few dips, unevenly spaced, sweeping; the dotted line is the input. Ticks mark 100, 1k and 10k Hz.',
-      'Readouts on the frame: STAGES, CENTER and RES.',
+      'Left (IN ▸) is your source on a spectrum analyzer: PINK NOISE draws flat, WHITE NOISE rises to the right. Right, past the green PHASER bar (SPECTRUM (dB), to ▸ OUT), is the same noise after the phaser.',
+      'On OUT, look for a few dips in the amber trace, unevenly spaced and sweeping. The dotted line is the input. Marks show 100, 1k and 10k Hz.',
+      'STAGES, CENTER and RES on the frame show your settings.',
     ],
     control: [
-      '▶ at the top right (or a tap on the display) plays the noise through the phaser; ■ stops it.',
-      'CENTER fader (400–2000 Hz, starts at 1000 Hz): where the dips sit. Set DEPTH (SWEEP) to STATIC to move them only by hand.',
-      'STAGES: 2, 4, 6 or 8 all-pass stages. SWEEP: RATE (0.1, 0.3, 1 or 3 Hz) and DEPTH (SWEEP): STATIC, 50% or 100%.',
-      'RES (RESONANCE): 0%, 30% or 60% of the output fed back in. SOURCE: PINK NOISE or WHITE NOISE. There is no MIX key: this lab always mixes half and half.',
+      'Tap ▶ at the top right, or tap the display, to play the noise through the phaser; ■ stops it.',
+      'Drag the CENTER fader (400–2000 Hz, starts at 1000 Hz) to set where the dips sit. Set DEPTH (SWEEP) to STATIC to move them only by hand.',
+      'STAGES sets 2, 4, 6 or 8 all-pass stages (filters that shift phase). SWEEP holds RATE (0.1, 0.3, 1 or 3 Hz) and DEPTH (SWEEP): STATIC, 50% or 100%.',
+      'RES (RESONANCE) feeds 0%, 30% or 60% of the output back in. SOURCE picks PINK NOISE or WHITE NOISE. There is no MIX key: this lab always mixes half and half.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
     ],
     changes: [
-      'Each all-pass stage keeps every frequency’s level but shifts its phase, more at higher frequencies. Where the copy lands half a cycle from the dry sound, the two cancel: a dip.',
-      'Every two stages add one dip, placed by phase, not by a fixed spacing — uneven, unlike a flanger’s comb.',
-      'The LFO slides the stages’ corner up and down (two octaves each way at 100%), carrying the dips. RES lifts peaks between them.',
+      'Each all-pass stage keeps every frequency’s level but shifts its phase, more at higher frequencies. Where the copy lands half a cycle from the dry sound, they cancel: a dip.',
+      'Every two stages add one dip, placed by phase, so the dips sit unevenly, unlike a flanger’s comb.',
+      'The LFO (a slow wobble) slides the stages’ corner two octaves each way at 100%, and the dips move with it. RES lifts the peaks in between.',
     ],
     teaches: [
       'A phaser shifts phase, not time: no delay, no echo, and only a few unevenly spaced dips.',
       'More stages, more dips: about stages ÷ 2.',
-      'It is the third Modulation lab, after Chorus and Flanger, and contrasts phase with time. A good next step: Distortion & Saturation. Each picture is a teaching model.',
+      'Feedback (RES) raises peaks between the dips, so the sweep starts to ring rather than just whoosh.',
     ],
     tryThis: [
-      'Open SWEEP and set DEPTH (SWEEP) to STATIC. Then drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one on either side of CENTER.',
+      'Open SWEEP and set DEPTH (SWEEP) to STATIC. Drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one on either side of CENTER.',
       'Tap STAGES through 2, 4, 6 and 8: the caption under DESIGNED RESPONSE says 1, 2, 3, then 4 notches, and OUT shows that many dips.',
       'Step RES from 0% to 60%: the peaks between the dips rise above the dotted input line — listen for the sweep starting to ring.',
     ],
@@ -75,53 +79,61 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The vocabulary of the phaser (all-pass filter, stage, notch, resonance, LFO) and why two stages make one notch without any delay.',
+      start: 'Scroll to the STAGES entry and read how many notches each stage count gives. Then switch to EXPLORE, step STAGES to 8 and count the dips on OUT.',
+    },
     seeing: [
-      'The LEARN tab: the Phaser guided lesson as one page to read. Nothing on it moves; the ▶ in the header still plays or stops the sound.',
-      'What a phaser is, then CONTROLS: the display, Rate, Depth, Stages / Poles, Feedback / Resonance, Center Frequency / Manual, Mix, LFO Waveform and Stereo spread.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
+      'This is the Phaser guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
+      'It starts with what a phaser is, then CONTROLS: the display, RATE, DEPTH (SWEEP), STAGES, RES, CENTER, Mix, LFO Waveform and Stereo spread.',
+      'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch to EXPLORE (the live rack) and CHECK (the questions that complete the lab).',
-      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet; long-press a key or readout there to open just its entry.',
+      'Scroll to read. Use the tabs under the title to switch to EXPLORE, the live rack, or CHECK, four questions on the phaser.',
+      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'This page is the reference for what EXPLORE shows.',
-      'On EXPLORE, Center Frequency is the CENTER fader, Stages is STAGES, Rate and Depth share the SWEEP key, Feedback / Resonance is RES.',
-      'Mix, LFO Waveform and Stereo spread are found on many phasers but are not in this dock — the lab holds the mix at 50%, near where the notches are deepest. The ranges listed are wider than the rack’s.',
+      'Read this beside EXPLORE: each entry is something you can hear or see on OUT.',
+      'On EXPLORE, CENTER is the CENTER fader, STAGES and RES are keys of their own, and RATE and DEPTH share the SWEEP key.',
+      'Mix, LFO Waveform and Stereo spread are on many phasers but not in this dock. The lab holds the mix at 50%, near where the notches are deepest. Their entries give the ranges found on many phasers.',
     ],
     teaches: [
       'The words for a phaser: all-pass filter, stage (pole), notch, resonance, LFO.',
-      'The formula: an all-pass keeps every level and turns the phase from 0° toward −180°; two stages make one notch.',
+      'FORMULA / CONCEPT: an all-pass keeps every level and turns the phase from 0° toward −180°; two stages make one notch.',
       'Why too many stages or too much resonance can smear or whistle on a busy mix.',
     ],
     tryThis: [
-      'Read the PRO TIP on sweeping Manual with the LFO off, then on EXPLORE set DEPTH (SWEEP) to STATIC and drag CENTER: the dips hold still until you move them.',
-      'Read Stages / Poles (notch count ≈ stages ÷ 2), then on EXPLORE step STAGES to 8 and count the dips on OUT: four.',
+      'Read the PRO TIP on setting DEPTH (SWEEP) to STATIC first. Then on EXPLORE set DEPTH (SWEEP) to STATIC and drag CENTER: the dips hold still until you move them.',
+      'Read the STAGES entry (one notch for every two stages), then on EXPLORE step STAGES to 8 and count the dips on OUT: four.',
     ],
   },
 
   // ── CHECK — the questions that complete the lab ───────────────────────────
   check: {
+    intro: {
+      learning: 'A review of what makes a phaser: what its all-pass stages change, how the stage count sets the notches, whether it is a kind of delay, and what resonance adds.',
+      start: 'Read each question and tap an answer. If one stumps you, switch to EXPLORE, try the setting it describes, then come back. Right answers stay right.',
+    },
     seeing: [
-      'The CHECK tab: CHECK YOUR UNDERSTANDING for the Phaser lab — four questions, four answers each.',
+      'This is CHECK YOUR UNDERSTANDING for the Phaser lab: four questions, four answers each.',
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
       'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
-      'The tabs under the title go to LEARN or EXPLORE at any time; answers already right stay right. Leaving the lab before the last one starts the check over.',
+      'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [
-      'Each question is about something EXPLORE shows: how many notches 8 stages make, what an all-pass stage changes, whether a phaser is a delay, and what RES does.',
-      'When all four are right the card reads Lab complete, and the tab opens already complete next time.',
+      'Each question is about something you saw on EXPLORE: how many notches 8 stages make, what an all-pass stage changes, whether a phaser is a delay, and what RES does.',
+      'Get all four right and the lab is complete; the card reads Lab complete. A pass is kept: the tab opens already complete next time.',
     ],
     teaches: [
-      'It checks the ideas: phase not time, notches ≈ stages ÷ 2, uneven spacing, and resonance’s peaks.',
-      'Completing it finishes the Phaser lab, the last in Modulation. A good next step: Distortion & Saturation.',
+      'How a phaser’s stages treat each frequency sets how many dips there are and where they fall.',
+      'Feeding a phaser’s output back into it (RES) changes the character of the sweep.',
     ],
     tryThis: [
-      'Before you start, on EXPLORE set STAGES to 8 and count the dips on OUT.',
-      'For the RES question, first step RES from 0% to 60% on EXPLORE and watch what rises between the dips.',
+      'Unsure how stages set the dips? On EXPLORE, set STAGES to 4 and count the dips on OUT.',
+      'For the RES question, long-press the RES key on EXPLORE to open its lesson entry, or find it under CONTROLS on LEARN.',
     ],
   },
 };

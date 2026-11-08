@@ -53,7 +53,12 @@ describe('1. every Autotune tab has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: 1–5 bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -95,7 +100,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   const SRC = [SCREEN, 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/features/lab/guidedLessons/content.ts', 'src/components/LabUnderstandingCheck.tsx'].map(code).join('\n');
   const NAMES: Record<string, string[]> = {
     explore: ['AMOUNT', 'SPEED', 'NOTE', 'ENDS', 'OFF', 'FAST — SNAP', 'MEDIUM', 'SLOW — GLIDE', 'PLAY', 'LAB NOTES'],
-    learn: ['CONTROLS', 'Correction amount', 'Retune speed', 'Cents grid', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'EXPLORE', 'CHECK'],
+    learn: ['CONTROLS', 'AMOUNT', 'SPEED', 'CENTS GRID', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'EXPLORE', 'CHECK'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'LEARN', 'EXPLORE'],
   };
   for (const [id, names] of Object.entries(NAMES)) {
@@ -176,13 +181,25 @@ describe('review fixes 2026-10-31 (each vetted against the code)', () => {
   });
   it('the dock lane travels left–right, so the guide says "all the way left", never "the bottom"', () => {
     assert.match(code('src/screens/lab/rack/ParamLane.tsx'), /const capStyle = useAnimatedStyle\(\(\) => \(\{ left: capV\.value \*/);
-    assert.ok(GUIDES.explore.tryThis[0].startsWith('Slide AMOUNT all the way left: it reads OFF'));
+    assert.ok(GUIDES.explore.tryThis[0].startsWith('Slide AMOUNT all the way left until it reads OFF'));
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /to the (bottom|top)\b/, id);
   });
   it('LEARN: only two CONTROLS carry a range; only some COMMON MISTAKES are a setting and its result', () => {
     const lesson = read('src/features/lab/guidedLessons/content.ts');
-    assert.match(lesson, /\{ key: 'cents_grid', name: 'Cents grid', definition: '[^']*' \}/);
-    assert.ok(GUIDES.learn.seeing[1].includes('Correction amount and Retune speed with their ranges, and Cents grid'));
+    assert.match(lesson, /\{ key: ["']cents_grid["'], name: ["']CENTS GRID["'], definition: "[^"]*", practical: "[^"]*" \}/);
+    assert.ok(GUIDES.learn.seeing[1].includes('AMOUNT and SPEED with their ranges, and CENTS GRID'));
     assert.ok(GUIDES.learn.changes.some((l) => l.startsWith('Several COMMON MISTAKES pair a setting')));
+  });
+  it('LEARN: the header ▶ shows on every tab (LabShell headerAction), so the page never says nothing plays', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(code(SCREEN), /headerAction=\{\s*<HeaderPlayButton/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing plays here|Nothing here plays/);
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the melody'));
+  });
+  it('CHECK (decision 6, 2026-11-08): the 50% line works the 45¢ row, never the card’s 40¢ → 20¢, and does not state the share', () => {
+    assert.match(code('src/features/lab/understandingChecks.ts'), /sung 40 cents flat and CORRECTION AMOUNT is 50%[\s\S]*?correct: '20 cents flat'/);
+    const checkText = [textOf(GUIDES.check), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
+    assert.doesNotMatch(checkText, /20 cents|20¢|half of the|100 cents|snaps instantly|before the correction has time/);
+    assert.ok(GUIDES.check.tryThis[0].includes('ENDS reads about 22–23¢'));
   });
 });

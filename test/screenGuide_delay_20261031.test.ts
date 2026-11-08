@@ -80,7 +80,12 @@ describe('1. every Delay screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -131,7 +136,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the caption the TRY THIS quotes
       'a quarter-note at',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Delay time', 'Feedback', 'Wet / Dry', 'Ping-pong', 'Repeat damping', 'slapback', 'MIX', 'TIME', 'FDBK', 'DESIGNED RESPONSE'],
+    // LEARN control names = the on-screen labels (decision 1, 2026-11-08): the old lesson names
+    // (Delay time, Feedback, Wet / Dry, Ping-pong, Repeat damping) became TIME, FEEDBACK, MIX, PING-PONG, REPEAT DAMPING.
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'FEEDBACK', 'PING-PONG', 'REPEAT DAMPING', 'slapback', 'MIX', 'TIME', 'FDBK', 'DESIGNED RESPONSE', '▶'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'FEEDBACK', 'REPEAT DAMPING', '✓', 'EXPLORE', 'LEARN', 'TIME', 'FDBK', 'DESIGNED RESPONSE'],
   };
   it('a name list for every screen', () => {
@@ -155,7 +162,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(DELAY, /fader: \{ min: 80, max: 500, log: true, snap: Math\.round, format: \(v\) => `\$\{Math\.round\(v\)\} ms` \}/);
     assert.match(DELAY, /\{ label: '25%', value: 0\.25 \},\s*\{ label: '50%', value: 0\.5 \},/);
     const ex = DELAY_SCREEN_GUIDES.explore.control.join(' ');
-    assert.match(ex, /TIME, 80 to 500 ms/);
+    assert.match(ex, /TIME fader, 80 to 500 ms/);
     assert.match(ex, /FDBK \(FEEDBACK: 0%, 25%, 50% or 75%\)/); // the dock abbreviation spelled out once, with its four choices
     assert.match(ex, /MIX \(25%, 50%, 100% WET\)/);
     assert.match(ex, /SOURCE \(CLICK 90, PINK NOISE, SINE 220 Hz\)/);
@@ -206,7 +213,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(DELAY, /\(v\[P\.delayFeedback\] >= 0\.75 \? 'High feedback — a long trail; runaway starts near 100%\.'\s*: v\[P\.timeMs\] <= 150 \? 'Slapback range[^']*not tied to the tempo\.'\s*: v\[P\.timeMs\] < 250 \? 'A short echo[^']*'\s*: `That spacing = a quarter-note at \$\{Math\.round\(60000 \/ v\[P\.timeMs\]\)\} BPM/);
     assert.ok(60000 / 250 <= 240 && 60000 / 249 > 240, 'the 250 ms cut keeps every named BPM at 240 or under');
     assert.equal(Math.round(60000 / 500), 120);
-    assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[0], /readout says 500 ms[\s\S]*quarter-note at 120 BPM \(60,000 ÷ 500\)/);
+    assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[0], /slide TIME to the top: 500 ms[\s\S]*quarter-note at 120 BPM \(60,000 ÷ 500\)/);
     assert.match(DELAY_SCREEN_GUIDES.learn.tryThis[0], /slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM/);
     // At FDBK 75% the caption swaps the BPM for "a long trail", and the
     // rack stays mounted across tabs (LabShell), so FDBK 75% from EXPLORE
@@ -217,7 +224,22 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
       assert.doesNotMatch(t, /for any TIME/);
     }
     // the formula the guide quotes is the lesson's own
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /Quarter-note ms = 60000 \/ BPM\./);
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /Delay \(ms\) = \(60,000 ÷ BPM\) × beats, where a quarter note = 1 beat/);
+  });
+  it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
+    const ck = DELAY_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
+    const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
+    // tempo-math (120 BPM → 500 ms): no 500 ms / 120 BPM, no formula on the check screen
+    assert.doesNotMatch(all, /500 ms|120 BPM|60,000 ÷ BPM/);
+    // feedback: the "spacing stays, trail changes" reading is not walked to
+    assert.doesNotMatch(all, /keep their spacing|how long the trail lasts/i);
+    // damping: the answer ("sit back behind the source") is not stated
+    assert.doesNotMatch(all, /sit (back )?behind|where they sit/i);
+    // the new line tests the same law on a different note: 375 ms → 160 BPM (the TIME default, in range)
+    assert.equal(Math.round(60000 / 375), 160);
+    assert.ok(375 >= 80 && 375 <= 500 && 375 >= 250, '375 ms is on the fader and gets a BPM caption');
+    assert.match(ck.tryThis[0], /set TIME to 375 ms\. The caption under DESIGNED RESPONSE names 160 BPM/);
+    assert.match(ck.tryThis[1], /On LEARN, each CONTROLS entry says what that control does/);
   });
   it('LEARN: slapback — TIME 80 ms, FDBK 0% → one stem after the dry one', () => {
     assert.equal(stems(80, 0, 0.5).n, 1);
@@ -248,8 +270,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(ENGINE, /bufL_\[w_\] = static_cast<float>\(inL \+ lpL_ \* fb\);/);
     const ch = DELAY_SCREEN_GUIDES.explore.changes.join(' ');
     assert.match(ch, /at 100% WET the gray dry click leaves OUT/);
-    assert.match(ch, /REPEAT DAMPING dulls every pass after the first/);
-    assert.match(ch, /At 50% each repeat is half as tall \(6 dB down\)/);
+    assert.match(ch, /REPEAT DAMPING darkens each pass after the first/);
+    assert.match(ch, /at 50% each is half the one before \(6 dB down\)/);
     // steady sources: the glass note
     assert.match(ANIM, /'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK'/);
   });

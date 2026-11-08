@@ -113,5 +113,6 @@ test('#22/#23 Intro strip: the screen draws responseBands; the guide says the ta
   assert.match(src, /const vals = useMemo\(\(\) => responseBands\(modes, Q, fMin, fMax, bars\), \[modes, Q, fMin, fMax\]\);/);
   assert.match(src, /RESPONSE vs FREQUENCY · CALCULATED/);
   const seeing = CYMATICS_SCREEN_GUIDES.intro.seeing.join(' ');
-  assert.match(seeing, /RESPONSE vs FREQUENCY · CALCULATED strip — each tall bar is a resonance; the white line marks the drive\./);
+  // Wording from the Guided Lessons return (2026-11-08).
+  assert.match(seeing, /RESPONSE vs FREQUENCY · CALCULATED strip, each tall bar is a resonance and the white line is your drive\./);
 });

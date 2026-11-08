@@ -34,6 +34,6 @@ describe('SS line check: output readings carry output names', () => {
     assert.match(art, /title === 'STAGEBOX INPUT LEDs' \? `stagebox LED/);
   });
   it('the guide names the output keys', () => {
-    assert.match(guide, /PROC OUT \(SIGNAL or NONE\) and RIGHT FEED \(YES or NO\) on an output/);
+    assert.match(guide, /On an output, PROC OUT \(SIGNAL or NONE\) and RIGHT FEED \(YES or NO\)/);
   });
 });

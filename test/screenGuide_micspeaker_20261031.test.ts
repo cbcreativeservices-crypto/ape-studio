@@ -60,7 +60,9 @@ describe('1. every screen of both labs has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim().length > 10 && intro.start.trim().length > 10, `${id}: the intro card (learning + start)`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k]?.length} bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -185,7 +187,7 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     const z = at(48);
     assert.ok(t.includes(`DIST 48 in, LEVEL ${z.lvl} dB, ROOM ${z.room}%`), JSON.stringify(z));
     assert.equal(Math.round(4 + 0.3 * 44), 17);
-    assert.ok(MIC.distance.control.join(' ').includes('starts at 17 in'));
+    assert.ok(MIC.distance.control.join(' ').includes('You start at 17 in'));
   });
   it('POLAR: the nulls quoted are the patterns’ own (|A + B·cos θ| = 0)', () => {
     assert.match(M, /\{ key: 'super', label: 'SUPER', a: 0\.37, b: 0\.63,/);
@@ -256,9 +258,9 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     assert.match(S, /const \[fillSpread, setFillSpread\] = useState\(0\.125\);/); // "fills tight"
     assert.match(S, /const spreadWord = \(v: number\) => \(v < 0\.33 \? 'tight'/);
     const top = SPK.top.control.join(' ');
-    assert.ok(top.includes('−60° to +60°') && top.includes('90°×60° (the start)'));
+    assert.ok(top.includes('−60° to +60°') && top.includes('90°×60° (where you start)'));
     const side = SPK.side.control.join(' ');
-    assert.ok(side.includes('−5° to 35°') && side.includes('starts at 12°') && side.includes('mid (the start)'));
+    assert.ok(side.includes('−5° to 35°') && side.includes('You start at 12°') && side.includes('mid (where you start)'));
     assert.ok(SPK.top.tryThis.join('\n').includes('POS reads fills tight'));
   });
 });

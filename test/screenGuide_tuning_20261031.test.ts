@@ -62,7 +62,12 @@ describe('1. every Tuning & Temperament screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: 1–5 bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -157,7 +162,7 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
   it('ch0: ROOT 261.63 Hz, OCTAVE 523.25 Hz', () => {
     assert.equal(f2(C4), '261.63');
     assert.equal(f2(C4 * 2), '523.25');
-    for (const s of ['ROOT 261.63 Hz', 'OCTAVE 523.25 Hz']) assert.ok(all(0).includes(s), s);
+    for (const s of ['ROOT reads 261.63 Hz', 'OCTAVE 523.25 Hz']) assert.ok(all(0).includes(s), s);
   });
   it('ch1: fifth at 701.96 ¢; C3→C4 130.81 Hz, C4→C5 261.63 Hz', () => {
     assert.equal(f2(M.PURE_FIFTH.cents), '701.96');
@@ -302,7 +307,7 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     const g = all(13);
     assert.ok(g.includes('with DONE on FOLD and THIRD; E MOVES shows the three E’s and SOUND'));
     assert.ok(g.includes('challenge 2 (match the rule) and the questions for 3, 5 and 6'));
-    assert.ok(g.includes('is checked once you get it right'));
+    assert.ok(g.includes('gets a check mark once you get it right'));
     assert.doesNotMatch(g, /perfect answers are not needed/);
   });
 });
@@ -311,14 +316,14 @@ describe('4b. BASIC / MATH: only some chapters read the flag — the guide must 
   it('at least one chapter ignores mathView, and ch0 says "in the chapters that have it"', () => {
     const reading = CH_FILES.filter((f) => code(`${DIR}/chapters/${f}.tsx`).includes('ctx.mathView'));
     assert.ok(reading.length > 0 && reading.length < CH_FILES.length, reading.join(','));
-    assert.ok(all(0).includes('MATH adds the working-out under the display in the chapters that have it'));
+    assert.ok(all(0).includes('to MATH to see the working-out under the display, in the chapters that have it'));
     assert.doesNotMatch(all(0), /in every chapter/);
   });
   it('ch3: Your turn starts on 9/4; 27/8 arrives from the LAB NOTES NEXT button', () => {
     const s3 = code(`${DIR}/chapters/ch3Octave.tsx`);
     assert.ok(s3.includes('const [value, setValue] = useState<Frac>(CHALLENGES[0]);'));
     assert.ok(s3.includes('`NEXT: ${fracLabel(CHALLENGES[ci + 1])} ›`'));
-    assert.ok(t(3).includes('Your turn starts on 9/4. Fold it, press NEXT: 27/8 › in LAB NOTES'));
+    assert.ok(t(3).includes('Your turn starts on 9/4. Fold it, then press NEXT: 27/8 › in LAB NOTES'));
   });
 });
 
@@ -337,7 +342,7 @@ describe('5. wiring: LabHeader takes the guide, ScreenGuideHost wraps the conten
     const reg = code(`${DIR}/chapters/index.ts`);
     assert.match(reg, /\{ index: 12, title: CHAPTER_TITLES\[12\], short: 'Tradeoffs', objective: '[^']*', Component: Ch12Tradeoffs \}/);
     assert.equal((reg.match(/rack: true/g) ?? []).length, 13);
-    assert.ok(GUIDES[12].seeing[0].startsWith('A reading page, no display.'));
+    assert.ok(GUIDES[12].seeing[0].startsWith('This chapter is a reading page, with no display.'));
   });
 });
 
@@ -346,6 +351,6 @@ describe('6. chip decision: concept lab — no AccuracyNote anywhere in the lab'
     assert.doesNotMatch(code(`${DIR}/TuningLabScreen.tsx`), /AccuracyNote/);
     assert.doesNotMatch(code(`${DIR}/rackLayout.tsx`), /AccuracyNote/);
     assert.match(code(`${DIR}/rackLayout.tsx`), /export const BADGE_EXACT = 'CALCULATED — exact ratios, nothing measured';/);
-    assert.ok(all(0).includes('calculated, nothing measured'));
+    assert.ok(all(0).includes('The tones here are exact, so any difference you hear comes from the tuning.'));
   });
 });

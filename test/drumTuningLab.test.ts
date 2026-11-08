@@ -154,7 +154,7 @@ describe('wording rules', () => {
     // the header AccuracyNote; its honesty line moved into the ⓘ screen guide
     // (drumScreenGuides.ts) — test/screenGuide_drumtuning_20261031.test.ts.
     assert.doesNotMatch(strip(read(`${DIR}/DrumTuningLabScreen.tsx`)), /<AccuracyNote\b/);
-    assert.match(read(`${DIR}/drumScreenGuides.ts`), /learn the method here, then trust your ears on a real drum/);
+    assert.match(read(`${DIR}/drumScreenGuides.ts`), /The method carries over to a real drum, where your ears have the final say/);
   });
   it('members see no upsell; nothing promised for later', () => {
     assert.doesNotMatch(all, /coming soon|upgrade to|go premium|for free\b/i);

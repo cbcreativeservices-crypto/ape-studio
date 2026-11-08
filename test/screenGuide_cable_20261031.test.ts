@@ -129,7 +129,12 @@ describe('1. every screen of both labs has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -426,7 +431,7 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.match(CS, /creditLabKey=\{CONNECTOR_SELECT_LAB_KEY\}/);
     assert.match(PL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(LE, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.ok(T.includes('✓ CREDITED') && T.includes('✓ DONE when you are not signed in or are in a preview'));
+    assert.ok(T.includes('✓ CREDITED') && T.includes('✓ DONE if you’re signed out or in a preview'));
     // isGuest comes from useGuestWording, which is true for a preview too (this
     // lab is members-only with a preview), so a preview's rows read DONE.
     assert.match(LE, /const isGuest = guest \?\? wording\.guest;/);
@@ -443,11 +448,11 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.doesNotMatch(T, /check row|optional/i, 'no check row and no optional pages: the guide names neither');
     // Rows are page titles, not stations (the misconceptions page and the Final carry no STATION tag).
     assert.doesNotMatch(T, /station/i);
-    assert.ok(T.includes('Which pages of the lab, from “Connector, cable, signal” to the Final'));
+    assert.ok(T.includes('lists, by name, every page you haven’t finished'));
     assert.match(code(`${CONN_DIR}/pagesA.tsx`), /title: 'Connector, cable, signal'/);
     // The line under the title: how much is left + whether the work is saved (every endLead branch).
     assert.match(LE, /<Text style=\{styles\.lead\}>\{endLead\(w, \{ mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen\(\), account \}\)\}<\/Text>/);
-    assert.ok(T.includes('The line under the title says how much is left and whether your work is saved'));
+    assert.ok(T.includes('The line under the title says how much is left and if your work is saved'));
     // Unreadable: the note replaces the lead; rows still split by what could be read, so the guide says "still opens", not "listed".
     assert.match(LE, /\{unreadable \? \(\s*<ProgressUnreadableNote \/>/);
     assert.ok(T.includes('a note says why, and every page still opens'));
@@ -464,8 +469,8 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.match(PL, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
     for (const s of [
       'PRACTICE AGAIN FROM THE START opens page 1 and clears nothing',
-      'DONE · BACK TO LABS leaves the lab, back to the screen you opened it from',
-      '‹ PREV returns to the page you were on',
+      'DONE · BACK TO LABS leaves the lab and takes you back to where you opened it',
+      '‹ PREV returns you to the page you were on',
       'START OVER (PRACTICE)',
     ])
       assert.ok(T.includes(s), s);
@@ -496,20 +501,20 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     // page component on every jump, so a half-done page restarts at ○ next visit.
     assert.match(BITS, /const seen = useRef<boolean\[\]>\(goals\.map\(\(\) => ctx\.isDone\)\);/);
     assert.match(PL, /const Page = def\.Component;/);
-    assert.ok(T.includes('all its goal chips read ✓ in one visit; leave early and they reset to ○. NEXT and FINISH never mark it.'));
+    assert.ok(T.includes('all its goal chips read ✓ in one visit. Leave early and they reset to ○. NEXT or FINISH alone doesn’t finish it.'));
     assert.ok(T.includes('The Final counts only after a pass: 80% and every safety call right'));
   });
   it('credit: a done page banks p<n> to the lab key; START OVER clears page marks only, banked credit still counts', () => {
     assert.match(CS, /markLabUnit\(CONNECTOR_SELECT_LAB_KEY, `p\$\{index \+ 1\}`\)/);
     assert.match(PL, /\(!!creditLabKey && bankedPages\.has\(`p\$\{i \+ 1\}`\)\)/);
     assert.match(PL, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
-    assert.ok(T.includes('START OVER (PRACTICE) in the contents resets goal chips, never credit'));
+    assert.ok(T.includes('START OVER (PRACTICE) in the contents resets goal chips only'));
     // A guest's units are HELD and replayed into the first account signed into this
     // session (when the carry is open — the lead line says which); only a preview earns nothing.
     const LC = code('src/features/lab/labCompletion.ts');
     assert.match(LC, /if \(getLabPreview\(\)\.active\) return;\s*(\/\/[^\n]*\n\s*)*holdSessionWork<HeldUnits>\(CARRY_KEY, [^\n]*\{ guestOnly: true \}\);/);
     assert.match(LJ, /sign in before you close the app to keep your progress/);
-    assert.ok(T.includes('Signed out, the line under the title says if signing in can still keep them; a preview earns nothing'));
+    assert.ok(T.includes('Signed out, the line under the title says if signing in can still keep them. A preview saves nothing'));
     assert.doesNotMatch(T, /not when signed out/);
   });
   it("the way in: FINISH on the last page, or WHAT'S LEFT in the contents", () => {

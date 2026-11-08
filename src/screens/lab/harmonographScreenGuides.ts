@@ -36,77 +36,90 @@ export type HarmonographScreenId = 'explore' | 'learn' | 'check';
 export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuide> = {
   // ── EXPLORE — the machine ─────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'Musical intervals are frequency ratios. A simple ratio such as 3:2 draws a figure that closes; a ratio slightly off slowly turns, which is beating made visible.',
+      start: 'Watch the pen draw at the opening 3:2. Open TUNE and tap LOCKED RATIO to see the figure close. Then tap 2:1 OCTAVE, and press ▶ to hear the interval.',
+    },
     seeing: [
-      'A harmonograph machine: two pendulums move the pen (OSC 1 cyan, OSC 2 violet); in ROTARY the paper platform swings too (PLAT, the amber ring).',
-      'THE DRAWING inset shows the figure drawn so far; tap it to share, save or print it.',
+      'This is a harmonograph: two pendulums move the pen (OSC 1 cyan, OSC 2 violet). In ROTARY the paper platform swings too (PLAT, the amber ring).',
+      'It opens at OSC 1 1.5 Hz, OSC 2 1.0 Hz, PLAT 1.0 Hz, ROTARY, detuned +1%.',
+      'THE DRAWING inset shows the figure so far; tap it to share, save or print it.',
       'Readouts: RATIO (e.g. 3:2), INTERVAL (e.g. PERFECT 5TH, or CUSTOM RATIO) and PEN (DRAWING or FROZEN).',
     ],
     control: [
-      'OSC 1 and OSC 2 faders: 0.5–10 Hz each, the real swing speed. PLAT fader (ROTARY only): far left is OFF, the platform still.',
-      'TUNE: RATIO chips (1:1 UNISON to 5:4 MAJOR 3RD) keep OSC 1 and set OSC 2; DETUNE: LOCKED RATIO, +1% or +3%.',
-      'SHAPE: PHASE φ 0° / 45° / 90°, DAMPING LIGHT / MEDIUM / HEAVY, ROTARY or LATERAL, then FREEZE, ⟲ NEW SHEET and ⟲ RESET ALL.',
-      '▶ in the header (or a tap on the machine) plays OSC 1 and OSC 2 as two tones, both raised by the same factor into hearing (the lower at 220 Hz), so the ratio stays exact. The platform is silent, so DETUNE is heard in LATERAL only. It opens at OSC 1 1.5 Hz, OSC 2 1.0 Hz, PLAT 1.0 Hz, ROTARY, detuned +1%.',
+      'Slide OSC 1 and OSC 2 to set each pendulum’s real swing speed, 0.5–10 Hz. The PLAT fader works in ROTARY only; far left is OFF, the platform still.',
+      'In TUNE, a RATIO chip (1:1 UNISON to 5:4 MAJOR 3RD) keeps OSC 1 and sets OSC 2 to match. DETUNE offers LOCKED RATIO, +1% or +3%.',
+      'In SHAPE: PHASE φ 0° / 45° / 90°, DAMPING LIGHT / MEDIUM / HEAVY, ROTARY or LATERAL, then FREEZE, ⟲ NEW SHEET and ⟲ RESET ALL.',
+      'Tap ▶ in the header, or the machine, to hear OSC 1 and OSC 2 as two tones, raised by the same factor until the lower is 220 Hz, so the ratio stays exact. The platform is silent, so you hear DETUNE in LATERAL only.',
     ],
     changes: [
-      'The figure closes on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio.',
-      'Detuned, or off an exact ratio, it slowly turns (precesses), never closing: the picture of beating. DETUNE acts on OSC 2 in LATERAL, on the platform in ROTARY (so PLAT must be on).',
+      'The figure closes only on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio too.',
+      'Detuned or off an exact ratio, it slowly turns (precesses), never closing: beating, drawn. DETUNE moves OSC 2 in LATERAL, the platform in ROTARY (so PLAT must be on).',
       'More DAMPING spirals the figure in faster and ends the drawing sooner. PHASE changes the shape only.',
     ],
     teaches: [
       'Musical intervals are frequency ratios: 2:1 octave, 3:2 fifth, 4:3 fourth, 5:4 major third.',
-      'Why simple ratios draw stable figures, and why a near-miss ratio slowly drifts — the picture of beating.',
-      'The ratio sets the pattern; damping and phase only shape it. The lab sits beside the Cymatics Lab in Sound Visualization.',
+      'Why simple ratios draw stable figures, and why a near-miss ratio slowly drifts: the picture of beating.',
+      'The ratio sets the pattern. Damping and phase only change its shape and how long it lasts.',
     ],
     tryThis: [
-      'Open TUNE and tap LOCKED RATIO: the 3:2 figure stops turning and closes.',
-      'Tap 2:1 OCTAVE: OSC 1 stays at 1.5 Hz, OSC 2 moves to 0.75 Hz and INTERVAL reads OCTAVE.',
-      'Back at 3:2, press ▶ to hear the fifth: THE INTERVAL, AS SOUND reads 330 Hz on LEFT, 220 Hz on RIGHT — use headphones.',
+      'Open TUNE and tap LOCKED RATIO. The 3:2 figure stops turning and closes.',
+      'Tap 2:1 OCTAVE. OSC 1 stays at 1.5 Hz, OSC 2 moves to 0.75 Hz and INTERVAL reads OCTAVE.',
+      'Back at 3:2, put on headphones and press ▶ to hear the fifth. THE INTERVAL, AS SOUND reads 330 Hz on LEFT and 220 Hz on RIGHT.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The ideas behind the drawings in words: ratio, interval, phase, damping, precession and beating, and the mix-ups people make between them.',
+      start: 'Scroll from the top and read CONTROLS and COMMON MISTAKES. Then switch to EXPLORE and change DETUNE or DAMPING to see what you just read.',
+    },
     seeing: [
-      'The LEARN tab: the Harmonograph guided lesson as one page to read. Nothing here plays or draws.',
-      'First what a harmonograph is, then CONTROLS: the display, ratio-lock, OSC 1 / OSC 2, amplitude, phase, damping, lateral / rotary and drive from oscillators.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT — the pen’s equation.',
+      'This is the Harmonograph guided lesson as one page to read. Nothing plays or draws here.',
+      'It opens with what a harmonograph is, then CONTROLS: the display, TUNE, OSC 1 / OSC 2, Amplitude, PHASE, DAMPING, ROTARY / LATERAL and ▶ (play).',
+      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT, which gives the equation for the pen’s path.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; EXPLORE is the live machine.',
-      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this lesson as a sheet; long-press a dock key or a readout for just its entry.',
+      'Scroll to read. Use the tabs under the title to switch to EXPLORE, the live machine, or to CHECK.',
+      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this lesson as a sheet. Long-press a dock key or a readout for just its entry.',
     ],
     changes: [
-      'Nothing on this page moves — it is the reference for what EXPLORE shows.',
+      'Nothing on this page moves. It explains what the pen does on EXPLORE, and why.',
       'Amplitude is an idea here, not a key: the machine on EXPLORE keeps its swing size fixed.',
     ],
     teaches: [
-      'The words: ratio, interval, phase, damping, precession, beating.',
-      'The common mix-ups — amplitude versus frequency, phase versus ratio — and why each happens.',
+      'These drawings have their own words: ratio, interval, phase, damping, precession and beating.',
+      'The common mix-ups, amplitude versus frequency and phase versus ratio, and why each one happens.',
     ],
     tryThis: [
-      'Read the PRO TIPS line on detuning, then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
-      'Read the COMMON MISTAKES line on damping extremes, then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
+      'Read the PRO TIPS line on detuning. Then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
+      'Read the COMMON MISTAKES line on damping extremes. Then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
     ],
   },
 
   // ── CHECK — the understanding check ───────────────────────────────────────
   check: {
+    intro: {
+      learning: 'A review of the lab’s four ideas: the ratio behind a fifth, what a locked ratio does to the figure, what detuning does, and what damping does.',
+      start: 'Read each question and tap the answer you think is right. Unsure? Switch to LEARN and reread that idea under CONTROLS, then come back.',
+    },
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on the fifth’s ratio, locked figures, detune and damping.',
       'Each question turns to ✓ once you get it right.',
     ],
     control: [
-      'Tap an answer. Wrong: NOT QUITE — TRY ANOTHER, with the explanation — read it, then pick again. Right: CORRECT, with the same explanation.',
+      'Tap an answer. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
     ],
     changes: [
-      'Answer every question correctly and the lab is complete; it counts toward every certificate that needs it. A wrong answer costs nothing and there is no score.',
+      'Get all four right and the lab is complete. A wrong answer costs nothing, and there is no score.',
     ],
     teaches: [
-      'Whether the core ideas stuck: ratios as intervals, closing figures, beating, damping.',
+      'How a frequency ratio, a locked or detuned ratio, and damping each show up in a harmonograph figure.',
     ],
     tryThis: [
-      'Unsure? Try it on EXPLORE first, then come back and answer.',
-      'A wrong pick shows the explanation — read it before you try again.',
+      'Unsure? Switch to LEARN and reread the CONTROLS entry on the idea the question is about. Then come back and answer.',
+      'A wrong pick shows the explanation. Read it before you try again.',
     ],
   },
 };

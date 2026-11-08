@@ -103,3 +103,39 @@ export function placeGuideStep(place: GuidePlacement, L: GuideLayout): GuideStep
     blocking: true,
   };
 }
+
+// ────────────────────────────────────────────────────────── the intro card ──
+/**
+ * Where the INTRO CARD sits (owner 2026-11-08, D52). Its "where to start" line
+ * names the dock's controls, so on a Rack Unit the dock stays bright and LIVE
+ * (taps reach it) and the card is centred in the space above it, over the
+ * display. Every other area is dimmed; a tap there closes the card (one tap,
+ * the house intro rule). When the space above the dock is too short for a
+ * readable card — or the screen has no dock (a menu, the lab home) — the card
+ * is centred on the whole screen over the dim, and `coversDock` says so: its
+ * close is then still one tap (✕, GOT IT, the dim, BACK).
+ */
+export type IntroCardPlacement = {
+  /** The band left bright, outlined and live; null = everything dimmed. */
+  keep: GuideRect | null;
+  /** The box the card is centred in. */
+  slot: { top: number; height: number };
+  /** The card may sit over the dock (no dock measured, or no room above it). */
+  coversDock: boolean;
+};
+
+/** Below this the card is centred on the whole screen instead. */
+export const INTRO_MIN_SLOT = 210;
+
+export function placeIntroCard(L: GuideLayout): IntroCardPlacement {
+  const top = L.insetTop + GUIDE_GAP;
+  const whole: IntroCardPlacement = {
+    keep: null,
+    slot: { top, height: Math.max(0, Math.round(L.rootH - top - L.insetBottom - GUIDE_GAP)) },
+    coversDock: L.dock != null,
+  };
+  if (!L.dock) return whole;
+  const height = Math.round(L.dock.y - GUIDE_GAP - top);
+  if (height < INTRO_MIN_SLOT) return whole;
+  return { keep: L.dock, slot: { top, height }, coversDock: false };
+}

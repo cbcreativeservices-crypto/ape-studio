@@ -88,7 +88,12 @@ describe('1. every Vacuum Tube screen has a complete guide', () => {
   });
   for (const [id, gd] of ALL) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -107,14 +112,11 @@ describe('1. every Vacuum Tube screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(Mullard|Telefunken|Sylvania|RCA|JJ|Tung-Sol|Svetlana|Fender|Marshall|Vox|Mesa|Shure|Neumann|Yamaha)\b/, `${id}: a maker/brand name`);
     }
   });
-  it('every module says where it sits in the lesson sequence', () => {
-    const order = Object.keys(MODULES);
-    order.forEach((id, i) => {
+  it('WHAT THIS TEACHES is audio knowledge, never course navigation (owner 2026-11-08)', () => {
+    for (const id of Object.keys(MODULES)) {
       const t = MODULES[id].teaches.join(' ');
-      if (i === 0) assert.match(t, /first module[\s\S]*first lab in Audio Electronics/);
-      else if (i === order.length - 1) assert.match(t, /last module[\s\S]*Amplifier Principles Lab/);
-      else assert.match(t, /(It follows|comes next)/, `${id}: no place in the sequence`);
-    });
+      assert.doesNotMatch(t, /(It follows|comes next|first module|last module|first lab in)/, `${id}: course navigation in WHAT THIS TEACHES`);
+    }
   });
 });
 
@@ -279,12 +281,12 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.match(t, /Tap GLASS: VACUUM goes dark with it\. EMISSION stays ON, but CURRENT reads NONE/);
     // After those two taps the toggle reads SHOW ALL (it reads HIDE ALL only with every part showing).
     assert.match(body, /const allOn = visible\.length === ALL_PART_KEYS\.length;/);
-    assert.match(t, /Tap SHOW ALL if it shows, then HIDE ALL/);
+    assert.match(t, /If SHOW ALL is showing, tap it, then tap HIDE ALL/);
     // Electrons are drawn only in ⚡ E-VIEW (off at the start), so the guide says so.
     const viz = read('src/screens/lab/tube/viz.tsx');
     assert.match(viz, /if \(!electronView \|\| !emitting\) return p;/);
     assert.match(LAB_SRC, /const \[electron, setElectron\] = useState\(false\);/);
-    assert.match(MODULES.inside.changes.join(' '), /the readouts — and, in ⚡ E-VIEW, the electrons — show what it was for/);
+    assert.match(MODULES.inside.changes.join(' '), /the readouts \(in ⚡ E-VIEW, the electrons too\) show its job/);
   });
   it('BIAS: below 22% CUTOFF, above 80% SATURATION, 50% LINEAR', () => {
     const body = fnBlock(LAB_SRC, 'BiasSection');
@@ -299,7 +301,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.match(body, /const \[drive, setDrive\] = useState\(0\.2\);/);
     assert.match(body, /const state = drive < 0\.3 \? 'CLEAN' : drive < 0\.7 \? 'WARMING' : 'SATURATED';/);
     const t = MODULES.sat.tryThis.join(' ');
-    assert.match(t, /start \(20%\) STATE reads CLEAN/);
+    assert.match(t, /At the start \(20%\), STATE reads CLEAN/);
     assert.match(t, /Slide past 30%: STATE reads WARMING/);
     assert.match(t, /Push past 70%: STATE reads SATURATED/);
     assert.doesNotMatch(t, /or more/, 'a displayed 30% can still be 0.295 = CLEAN');
@@ -354,19 +356,19 @@ describe('4b. review round 2026-10-31 — what the screen really shows', () => {
     const t = MODULES.types.tryThis;
     assert.match(t[0], /^Turn on ⚡ E-VIEW, then step from TRIODE to TETRODE: red dots appear/);
     assert.match(t[2], /Turn ⚡ E-VIEW off/);
-    assert.match(MODULES.types.seeing.join(' '), /in ⚡ E-VIEW, red dots are secondary electrons/);
+    assert.match(MODULES.types.seeing.join(' '), /In ⚡ E-VIEW, red dots are secondary electrons/);
     // The newest-grid glow (hl) is not gated on the view.
     assert.doesNotMatch(viz, /electronView && hl\(|hl\([^)]*\) && electronView/);
   });
   it('SAT: harmonics defined where first used, as multiples of the note’s frequency', () => {
-    assert.match(MODULES.sat.changes.join(' '), /harmonics — extra tones at whole-number multiples of the note’s frequency/);
+    assert.match(MODULES.sat.changes.join(' '), /harmonics: extra tones at whole-number multiples of the note’s frequency/);
     assert.doesNotMatch(textOf(MODULES.sat), /note’s pitch/);
   });
   it('REFERENCE: “family” alternates are not called the same tube; no membership line for members', () => {
     const refs = read('src/screens/lab/tube/tubeRefs.ts');
     for (const f of ["['12AX7 family']", "['EL34 upgrade']", "['6L6 family']", "['5687 family']"]) assert.ok(refs.includes(f), f);
     const g = textOf(G.TUBE_REFERENCE_GUIDE as unknown as Guide);
-    assert.match(g, /a “family” tube is a close relative, not always a direct swap/);
+    assert.match(g, /a “family” tube is a close relative, not always a direct swap/i);
     assert.doesNotMatch(g, /equivalents \(other names for the same tube\)/);
     assert.match(g, /by job or construction/);
     assert.doesNotMatch(g, /ACADEMY|membership/i);
@@ -389,7 +391,7 @@ describe('5. wiring and the accuracy-chip decisions', () => {
     assert.match(LAB_SRC, /it is enough to kill/);
     assert.match(LAB_SRC, /inside an energized chassis at lethal voltage, by a qualified technician/);
     assert.match(MODULES.highv.teaches.join(' '), /can kill, even after the amp is unplugged/);
-    assert.match(MODULES.bias.teaches.join(' '), /lethal voltage, by a qualified technician/);
+    assert.match(MODULES.bias.teaches.join(' '), /at lethal voltage\. It’s work for a qualified technician/);
     assert.doesNotMatch(LAB_SRC, /useMic|getUserMedia|startFenced|expo-audio/, 'a live input would earn the chip back');
   });
   it('chip decision — Tube Reference list and card: real data-sheet ratings, so the chip STAYS and the ⓘ sits beside it', () => {

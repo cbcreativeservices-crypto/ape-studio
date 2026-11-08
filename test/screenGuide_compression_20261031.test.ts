@@ -76,7 +76,12 @@ describe('1. every Compression screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -131,7 +136,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the CLICK is drawn as the real 5 ms ping since D41 J4 (was 'DRUM-HIT MODEL')
       'TEACHING MODEL', '5 ms CLICK',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Threshold', 'Ratio', 'Attack', 'Release', 'Makeup gain', 'CLICK 120', '0.5 ms FAST', '25 ms PUNCH'],
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'RATIO', 'ATTACK', 'RELEASE', 'MAKEUP', 'CLICK 120', '0.5 ms FAST', '25 ms PUNCH'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'THRESH'],
   };
   it('a name list for every screen', () => {
@@ -150,7 +155,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   it('the dock is exactly what the guide lists: THRESH fader −50…−10, RATIO, ATK/REL, MAKEUP, SOURCE', () => {
     assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'/);
     assert.match(COMP, /fader: \{ min: -50, max: -10,/);
-    assert.match(GUIDES.explore.control.join(' '), /THRESH fader runs from −50 to −10 dB/);
+    assert.match(GUIDES.explore.control.join(' '), /THRESH fader from −50 to −10 dB/);
     assert.match(COMP, /label: 'RELEASE', paramId: P\.releaseMs[\s\S]*?\[\s*\{ label: '30 ms', value: 30 \},\s*\{ label: '120 ms', value: 120 \},\s*\{ label: '500 ms', value: 500 \},/);
     assert.match(COMP, /id: 'env', label: 'ATK\/REL', paramIds: \[P\.attackMs, P\.releaseMs\]/);
     assert.match(COMP, /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
@@ -160,6 +165,11 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.equal((COMP.match(/^\s{6}question: '/gm) ?? []).length, 2);
     assert.match(GUIDES.explore.control.join(' '), /two CHECK YOURSELF questions/);
     assert.match(read('src/screens/lab/foundations/bits.tsx'), />CHECK YOURSELF\{/);
+  });
+  it('LEARN: the header ▶ shows on every tab (LabShell headerAction), so the page says it still plays', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the sound'));
   });
 });
 
@@ -251,25 +261,30 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
       assert.equal(+run(click(120), -30, 4, 5, 120, speaker).mx.toFixed(1), 0);
     });
   }
-  it('CHECK TRY THIS: SINE 440 at THRESH −10 dB reads 0.0', () => {
+  // the below-threshold reading: true per the engine, but it IS the below-threshold answer,
+  // so the CHECK guide no longer walks there (decision 6, 2026-11-08; pinned below)
+  it('SINE 440 at THRESH −10 dB reads 0.0', () => {
     assert.equal(+run(sine(440), -10, 4, 5, 120, false).mx.toFixed(1), 0);
   });
   it('the guide states exactly those readings', () => {
     const t = GUIDES.explore.tryThis;
     assert.match(t[0], /THRESH at −30 dB: GR holds at about 7 dB\. Ride THRESH up to −20 dB: GR falls to 0\.0/);
     assert.match(t[1], /2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9/);
-    assert.match(t[2], /CLICK 120, THRESH −40 dB \(the start\): GR kicks on each hit, then falls to 0\.0\. ATTACK 25 ms PUNCH: GR stays 0\.0/);
-    assert.match(GUIDES.learn.tryThis[0], /12 × \(1 − 1\/4\) = 9 dB of gain reduction, so the output rises 3 dB/);
+    assert.match(t[2], /On CLICK 120 at THRESH −40 dB, GR kicks on each hit, then falls to 0\.0\. Pick ATTACK 25 ms PUNCH: GR stays 0\.0/);
+    assert.match(GUIDES.learn.tryThis[0], /12 × \(1 − 1\/4\) = 9 dB of gain reduction, so the output sits 3 dB over the threshold/);
     // …the same kind of sum as the check's first question (8 dB over at 4:1 →
     // '2 dB'), with other numbers, so no guide step hands over that answer
     assert.match(CHECKS, /input rises 8 dB above the threshold[\s\S]*?correct: '2 dB'/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /8 ÷ 4|8 dB over at 4:1|8 dB over leaves 2/);
-    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB, step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB/);
+    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB/);
     assert.match(GUIDES.explore.changes.join(' '), /At the start \(CLICK 120, THRESH −40 dB, ATTACK 5 ms\) GR kicks about 3–5 dB on each hit, then falls back to 0\.0/);
     assert.doesNotMatch(textOf(GUIDES.explore), /at the start GR reads 0\.0/);
     assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -40,/);
     assert.match(COMP, /sources: \[srcClick\(120\)/);
-    assert.match(GUIDES.check.tryThis[1], /SINE 440 Hz at THRESH −10 dB: GR reads 0\.0/);
+    assert.match(GUIDES.check.tryThis[1], /Read FORMULA \/ CONCEPT on LEARN, or long-press THRESH on EXPLORE/);
+    assert.match(COMP, /short: 'THRESH', paramId: P\.thresholdDb, lessonKey: 'threshold',/);
+    const checkText = [...SECTION_KEYS.map((k: string) => GUIDES.check[k].join(' ')), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
+    assert.doesNotMatch(checkText, /THRESH −10 dB|GR reads 0\.0|only acts above|nothing changes|2 dB over|slower attack|25 ms PUNCH|brings? the (whole )?(signal|level) back/);
   });
 });
 
@@ -413,9 +428,9 @@ describe('6. the compressor drawing and the GR meter run the same click (D41 J4)
     assert.ok(drawn(-40, 5, true).drop < 2, 'the opening spike drops about 1 dB');
     assert.ok(drawn(-40, 0.5, true).drop > 8, '0.5 ms FAST squeezes it');
     assert.equal(+drawn(-40, 25, true).drop.toFixed(1), 0, '25 ms PUNCH leaves it untouched');
-    assert.match(GUIDES.explore.tryThis[2], /the drawn spike passes untouched/);
+    assert.match(GUIDES.explore.tryThis[2], /so the spike passes untouched/);
     assert.match(GUIDES.learn.tryThis[1], /0\.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0\.0/);
-    assert.match(GUIDES.explore.seeing.join(' '), /Its 5 ms CLICK is the real click\. At ATTACK 5 ms the spike passes almost whole \(about 1 dB lower\): GR peaks as the click ends/);
+    assert.match(GUIDES.explore.seeing.join(' '), /the 5 ms CLICK is the real click\. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /DRUM-HIT|drawn hit still clamps|longer drawn hit/);
     assert.doesNotMatch(COMP, /its tail trails behind/);
   });

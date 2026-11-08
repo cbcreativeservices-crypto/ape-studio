@@ -62,7 +62,12 @@ describe('#11 the guide host resets when the guide on screen changes, not only t
     assert.match(SHELL, /const guideIds = new WeakMap<ScreenGuide, number>\(\);/);
     assert.match(SHELL, /export function guideIdOf\(g: ScreenGuide \| undefined\): number \{\s*if \(!g\) return 0;\s*let id = guideIds\.get\(g\);\s*if \(id === undefined\) \{\s*id = nextGuideId\+\+;\s*guideIds\.set\(g, id\);\s*\}\s*return id;\s*\}/);
     // The host closes an open guide on any resetKey change.
-    assert.match(code('src/features/lab/screenGuide/ScreenGuide.tsx'), /useEffect\(\(\) => setShown\(null\), \[resetKey\]\);/);
+    // Closes on a REAL change of resetKey only (2026-11-08: a bare effect also
+    // fired on Fast Refresh / StrictMode re-runs and closed the intro card unread).
+    assert.match(
+      code('src/features/lab/screenGuide/ScreenGuide.tsx'),
+      /const lastReset = useRef\(resetKey\);\s*useEffect\(\(\) => \{\s*if \(lastReset\.current === resetKey\) return;\s*lastReset\.current = resetKey;\s*setShown\(null\);\s*\}, \[resetKey\]\);/,
+    );
   });
   it('Harmonic: MODE swaps the EXPLORE guide object (so the key changes); each is a fixed object (so a re-render never does)', () => {
     const model = harmonicScreenGuide('explore', 'model');
@@ -109,7 +114,10 @@ describe('#3 / #12 / #14 Binaural, Stereo Imaging and FM end on a what’s-left 
   ];
   for (const [id, gd] of ENDS) {
     it(`${id} END guide: five sections, the budgets, the copy rules, the screen’s names`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      // The intro card (owner 2026-11-08, HOLD 2) rides beside the five sections.
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim() && intro.start.trim(), `${id} END guide has its intro`);
       for (const k of SECTION_KEYS) assert.ok(gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}`);
       assert.ok(gd.tryThis.length >= 2 && gd.tryThis.length <= 3);
       for (const s of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {

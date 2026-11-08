@@ -129,13 +129,13 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   const n = ws.functions.length;
   const picker =
     n > 1
-      ? `WHAT ARE YOU CALCULATING? (below the inputs) picks one of its ${n} calculations, each with its own inputs and formula.`
-      : 'WHAT ARE YOU CALCULATING? (below the inputs) shows its one calculation.';
+      ? `WHAT ARE YOU CALCULATING? (below the inputs) picks one of this page’s ${n} calculations, each with its own inputs and formula.`
+      : 'WHAT ARE YOU CALCULATING? (below the inputs) shows this page’s one calculation.';
 
   const tryThis: string[] = [];
   if (ex) {
-    const stepsLine = 'Open ▸ WORKED STEPS under the answer: the example numbers go into the formula, one line at a time.';
-    const unitLine = (shown: string, next: string) => `Tap ${shown} itself: it reads ${next} — the same quantity in another unit.`;
+    const stepsLine = 'Open ▸ WORKED STEPS under the answer and follow the example numbers through the formula, one line at a time.';
+    const unitLine = (shown: string, next: string) => `Tap ${shown} itself: it now reads ${next}, the same quantity in another unit.`;
     tryThis.push(`Type the gray example value into each box (then CALCULATE, if it shows): ${ex.label} reads ${ex.at4}.`);
     let usedSig = false;
     let usedUnit = false;
@@ -148,8 +148,8 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
       const oneMore = sigCount(ex.at5) === sigCount(ex.at4) + 1 && numPart(ex.at5).startsWith(numPart(ex.at4));
       tryThis.push(
         oneMore
-          ? `Tap SIG FIGS to 5: ${ex.label} now reads ${ex.at5} — the same answer, one more figure.`
-          : `Tap SIG FIGS to 5: ${ex.label} now reads ${ex.at5} — the same answer to 5 figures; 4 figures round it to ${ex.at4}.`,
+          ? `Tap SIG FIGS to 5: ${ex.label} now reads ${ex.at5}, the same answer with one more figure.`
+          : `Tap SIG FIGS to 5: ${ex.label} now reads ${ex.at5}. It’s the same answer: at 4 figures it rounds to ${ex.at4}.`,
       );
     } else if (ex.next && plainShown(ex.next)) {
       usedUnit = true;
@@ -169,64 +169,90 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
     if (ex.sendable && ex.sendTo === 'other') {
       tryThis.push(`Tap SEND → beside ${ex.label}, then open another calculator: a matching input offers ⤵ USE ${ex.label}.`);
     } else if (ex.sendable && ex.sendTo === 'here') {
-      tryThis.push(`Tap SEND → beside ${ex.label}, then pick another calculation under WHAT ARE YOU CALCULATING?: an input offers ⤵ USE ${ex.label}.`);
+      tryThis.push(`Tap SEND → beside ${ex.label}, then pick another calculation under WHAT ARE YOU CALCULATING? An input there offers ⤵ USE ${ex.label}.`);
     } else if (!usedUnit && unitAfter && plainShown(unitAfter[1])) {
       tryThis.push(unitLine(unitAfter[0], unitAfter[1]));
     } else if (ex.steps && !usedSteps) {
       tryThis.push(stepsLine);
     }
-    if (tryThis.length < 2) tryThis.push('Change one input and watch which results move — then open π KEY to see why the formula moves them.');
+    if (tryThis.length < 2) tryThis.push('Change one input and watch which results move. Then open π KEY to see why the formula moves them.');
   } else {
     tryThis.push('Type the gray example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER.');
-    tryThis.push('Change one input and watch which results move — then open π KEY to see why the formula moves them.');
+    tryThis.push('Change one input and watch which results move. Then open π KEY to see why the formula moves them.');
   }
 
-  const control = [
+  // The INPUTS line names this calculation's inputs; a list long enough to push
+  // the step past its budget drops the names (they are on the screen anyway).
+  const inputsAt = fields.length ? `Under INPUTS (${names}), ` : 'Under INPUTS, ';
+  const inputsLine = (at: string) =>
     fields.some((f) => f.quantity === 'list')
-      ? `INPUTS: ${names}. A list box takes several numbers, separated by commas; gray text in an empty box is an example.`
+      ? `${at}a list box takes several numbers separated by commas. Gray text in an empty box is an example.`
       : fields.length === 1
-        ? `INPUTS: ${names}. Type a number; a gray number in an empty box is an example value.`
-        : `INPUTS: ${names}. Type a number in each; a gray number in an empty box is an example value.`,
-    '⇄ switches a box’s unit; ⓘ says what an input means; a ⚠ under a box flags a value worth a second look.',
+        ? `${at}type a number. A gray number in an empty box is an example value.`
+        : `${at}type a number in each box. A gray number in an empty box is an example value.`;
+  const controlRest = [
+    'Tap ⇄ to switch a box’s unit and ⓘ to see what an input means. A ⚠ under a box flags a value worth a second look.',
     picker,
-    'In the answer: tap a number for another unit; SEND → (if an input takes it) passes it on; SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
+    'In the answer, tap a number to see another unit. SEND → (if an input takes it) passes it on. SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
   ];
-  if (capped) control.push('On this account, CALCULATE reveals each new answer and uses one of this week’s calculations; an error costs nothing.');
+  if (capped) controlRest.push('On this account, CALCULATE shows each new answer and uses one of this week’s calculations; an input error costs nothing.');
+  const named = inputsLine(inputsAt);
+  const control = [
+    [named, ...controlRest].join(' ').length <= SCREEN_GUIDE_BUDGET.high ? named : inputsLine('Under INPUTS, '),
+    ...controlRest,
+  ];
 
   // WHY the answer moves: the calculation's formula in words (its π KEY
   // text) — in WHAT CHANGES while that step still fits, else in WHAT THIS
-  // TEACHES in place of the π KEY pointer, else the formula alone.
-  const rest = [
-    capped
-      ? 'New inputs wait for CALCULATE (one more of this week’s calculations); ▸ WORKED STEPS shows your numbers in the formula.'
-      : 'Change any input and every result re-solves at once; ▸ WORKED STEPS puts your numbers into the formula.',
-    'Inputs with no answer (a zero, a reversed pair) get words saying what is wrong — never a made-up number.',
-  ];
-  const formulaLine = `The answer is computed exactly from the formula shown: ${fn.formula}`;
-  const withWords = fn.plainFormula ? `${formulaLine} — ${fn.plainFormula}` : formulaLine;
-  const wordsInChanges = !!fn.plainFormula && [withWords, ...rest].join(' ').length <= SCREEN_GUIDE_BUDGET.low;
-  const changes = [wordsInChanges ? withWords : formulaLine, ...rest];
-  const teachRest = [
-    'WHY THIS MATTERS, PRACTICAL EXAMPLE and COMMON MISTAKES (scroll down) tie the result to real work.',
-  ];
+  // TEACHES in place of the π KEY pointer, else the formula alone. Each step
+  // takes the first wording that fits its budget; the shorter fallbacks keep
+  // a long formula or name on one screen.
+  const fits = (lines: string[]) => lines.join(' ').length <= SCREEN_GUIDE_BUDGET.low;
+  const firstFit = (options: string[][]) => options.find(fits) ?? options[options.length - 1];
+  const moves = capped
+    ? 'New inputs wait until you tap CALCULATE (one more of this week’s calculations); ▸ WORKED STEPS shows your numbers in the formula.'
+    : 'Change any input and every result updates at once; ▸ WORKED STEPS puts your numbers into the formula.';
+  const noAnswer = 'If your inputs have no answer (a zero, or a pair in the wrong order), you see words saying what is wrong instead of a number.';
+  const noAnswerShort = 'If your inputs have no answer, you see words saying what is wrong instead of a number.';
+  const formulaLine = `Your answer comes from this formula: ${fn.formula}`;
+  // A formula that already ends in a full stop takes no second one.
+  const withWords = fn.plainFormula ? `${formulaLine.replace(/\.$/, '')}. In words: ${fn.plainFormula}` : formulaLine;
+  const changes = firstFit([
+    ...(fn.plainFormula ? [[withWords, moves, noAnswer], [withWords, moves, noAnswerShort]] : []),
+    [formulaLine, moves, noAnswer],
+    [formulaLine, moves, noAnswerShort],
+  ]);
+  const wordsInChanges = !!fn.plainFormula && changes[0] === withWords;
+  const scroll = 'Scroll down: WHY THIS MATTERS, PRACTICAL EXAMPLE and COMMON MISTAKES show where this number turns up in real work and where people get it wrong.';
+  const scrollShort = 'Scroll down: WHY THIS MATTERS, PRACTICAL EXAMPLE and COMMON MISTAKES tie this number to real work.';
   // The SEND line only where a SEND → can show (audit K4, D42): the chain line
   // when an answer reaches another calculator, a this-page line when only
   // another calculation here takes it, and nothing when no SEND → appears.
-  if (ex?.sendAny === 'other') teachRest.push('SEND → chains answers from one calculator into the next, the way a real system design flows.');
-  else if (ex?.sendAny === 'here') teachRest.push('SEND → passes an answer to another calculation on this page, where an input takes that kind of value.');
-  const teachWords = `What “${fn.name}” works out, and how each input moves it: ${fn.plainFormula ?? ''}`;
-  const teaches = [
-    !wordsInChanges && fn.plainFormula && [teachWords, ...teachRest].join(' ').length <= SCREEN_GUIDE_BUDGET.low
-      ? teachWords
-      : `What “${fn.name}” works out, and how each input moves it. π KEY reads the formula in plain English.`,
-    ...teachRest,
-  ];
+  const send: string[] = [];
+  if (ex?.sendAny === 'other') send.push('Real system design is a chain: one answer feeds the next calculation, and SEND → carries it into another calculator.');
+  else if (ex?.sendAny === 'here') send.push('One answer can feed another: SEND → passes it to another calculation on this page, but only to an input of the same kind.');
+  const teachWords = `How each input moves “${fn.name}”: ${fn.plainFormula ?? ''}`;
+  // The π KEY pointer, with its reason while the step still fits, else without.
+  const piWhy = `What “${fn.name}” works out, and how each input moves it. π KEY reads the formula in plain English, so you can see which input matters most.`;
+  const piPlain = `What “${fn.name}” works out, and how each input moves it. π KEY reads the formula in plain English.`;
+  const teaches = firstFit([
+    ...(!wordsInChanges && fn.plainFormula ? [[teachWords, scroll, ...send], [teachWords, scrollShort, ...send]] : []),
+    [piWhy, scroll, ...send],
+    [piPlain, scroll, ...send],
+    [piPlain, scrollShort, ...send],
+  ]);
 
   return {
+    intro: {
+      learning: `What “${fn.name}” works out, and how each input moves the answer through its formula.`,
+      start: ex
+        ? `Type the gray example value into each box (then CALCULATE, if it shows): ${ex.label} reads ${ex.at4}. Then change one input and watch which results move.`
+        : 'Type the gray example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER.',
+    },
     seeing: [
-      'YOUR ANSWER (top): pinned while you type below, it fills in once every input has a value.',
-      `Just under YOUR ANSWER: FUNCTION (“${fn.name}”), SIG FIGS (how many figures show) and FORMULA π KEY.`,
-      'Below the inputs: WHAT ARE YOU CALCULATING?, the FORMULA line, WHY THIS MATTERS, PRACTICAL EXAMPLE, COMMON MISTAKES, IN THE GLOSSARY.',
+      'YOUR ANSWER sits at the top and stays in view while you type below. It fills in once every input has a value.',
+      `Just under it: FUNCTION (“${fn.name}”), SIG FIGS (how many figures show) and FORMULA π KEY.`,
+      'Below the inputs: WHAT ARE YOU CALCULATING?, the FORMULA line, WHY THIS MATTERS, PRACTICAL EXAMPLE, COMMON MISTAKES and IN THE GLOSSARY.',
     ],
     control,
     changes,
@@ -249,163 +275,191 @@ export type CalcScreenId =
 export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   // ── CalcLabScreen ─────────────────────────────────────────────────────────
   home: {
+    intro: {
+      learning: 'How the everyday numbers of audio work — level, distance and time, power, rooms, digital — come from short formulas, and how one answer can feed the next.',
+      start: 'Tap WAVES & TIME, open Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms. Then tap π KEY and find λ (lambda).',
+    },
     seeing: [
-      'AUDIO CALCULATOR LABORATORY: every calculator in the app, sorted into ten category tiles, from WAVES & TIME to ELECTRONICS.',
-      'Each tile shows how many CALCULATORS it holds.',
-      '▸ CUSTOM CALCULATOR WORKFLOWS (top) and ▾ ABOUT THIS LAB. ⛓ CHAIN ACTIVE appears while a result you sent is waiting.',
-      'π KEY (top right) opens the SYMBOL KEY; the ✓ opens VERIFIED CALCULATION — how each result is computed.',
+      'Every calculator sits in one of ten category tiles, from WAVES & TIME to ELECTRONICS; each tile shows how many CALCULATORS it holds.',
+      'Up top: ▸ CUSTOM CALCULATOR WORKFLOWS and ▾ ABOUT THIS LAB. ⛓ CHAIN ACTIVE shows while a result you sent waits to be used.',
+      'π KEY opens the SYMBOL KEY; ✓ opens VERIFIED CALCULATION, how each result is computed. OPEN CALCULATORS on Home brings you back here.',
     ],
     control: [
-      'Tap a category tile: its calculators open in a popup, grouped by job. Tap one to open it; ✕ or a tap outside closes the popup.',
-      '▸ CUSTOM CALCULATOR WORKFLOWS opens ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your recent workflow (RECENT · TAP TO RUN).',
-      '⛓ CHAIN ACTIVE: ✕ CLEAR drops the result you sent.',
-      'π KEY: the Greek letters and math symbols the calculators use.',
+      'Tap a category tile to see its calculators in a popup, grouped by job. Tap one to open it; tap ✕ or outside the popup to close it.',
+      'Tap ▸ CUSTOM CALCULATOR WORKFLOWS for ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your last workflow under RECENT · TAP TO RUN.',
+      'When ⛓ CHAIN ACTIVE shows, tap ✕ CLEAR to drop the result you sent.',
+      'Tap π KEY to look up the Greek letters and math symbols the calculators use.',
     ],
     changes: [
-      'Calculators that solve one job several ways share a page: WHAT ARE YOU CALCULATING? picks the one you need, and the inputs change to match.',
-      'A result can be SENT into another calculator — sensitivity → voltage → gain → headroom — so one answer feeds the next.',
-      'A workflow runs several calculators in order and carries the answers forward for you.',
+      'When one job can be worked out several ways, those calculators share a page. Pick yours under WHAT ARE YOU CALCULATING? and the inputs change to match.',
+      'You can SEND a result into another calculator, so one answer feeds the next: sensitivity → voltage → gain → headroom.',
+      'A workflow runs several calculators in order and carries each answer forward for you.',
     ],
     teaches: [
-      'The math behind everyday audio work — levels, distance, power, rooms, digital — with the reasoning shown, not just the result.',
-      'Every calculator shows its FORMULA, WORKED STEPS, WHY THIS MATTERS, a PRACTICAL EXAMPLE and COMMON MISTAKES.',
-      'It has its own card on Home (OPEN CALCULATORS): a reference for whenever a lab, a course or a job needs the numbers.',
+      'The math behind everyday audio work (levels, distance, power, rooms, digital) comes from a few short formulas.',
+      'The reasoning matters as much as the result: each calculator’s FORMULA, WORKED STEPS, WHY THIS MATTERS, PRACTICAL EXAMPLE and COMMON MISTAKES show why a number is right.',
+      'Real system design is a chain: one answer feeds the next, from sensitivity to voltage, then gain, then headroom.',
     ],
     tryThis: [
-      'Open WAVES & TIME › Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows): PERIOD reads 10 ms — one cycle of a 100 Hz tone.',
-      'Open LEVELS & DECIBELS › Audio Level Converter and type 4 in LEVEL (dBu) (then CALCULATE, if it shows): VOLTAGE (RMS) reads 1.228 V.',
-      'Tap π KEY and find λ (lambda): wavelength, the length of one cycle — λ = c / f.',
+      'Open WAVES & TIME › Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms: one cycle of a 100 Hz tone.',
+      'Open LEVELS & DECIBELS › Audio Level Converter and type 4 in LEVEL (dBu) (then CALCULATE, if it shows). VOLTAGE (RMS) reads 1.228 V: +4 dBu pro line level.',
+      'Tap π KEY and find λ (lambda): wavelength, the length of one cycle. λ = c / f, so the higher the frequency, the shorter the wave.',
     ],
   },
 
   // ── CalcSymbolsKeyScreen ──────────────────────────────────────────────────
   symbols: {
+    intro: {
+      learning: 'How to read the formulas behind audio math: what each Greek letter and symbol stands for, and how prefixes like µ, m and k scale a unit.',
+      start: 'Find λ under GREEK LETTERS and tap it to read Wavelength in the glossary. Then find µ and see what it does to a unit as a prefix.',
+    },
     seeing: [
-      'SYMBOL KEY: the Greek letters and math symbols used in the calculators, in groups.',
-      'GREEK LETTERS, OPERATORS & RELATIONS, CALCULUS & LOGARITHMS, POWERS, SUBSCRIPTS & PREFIXES, COMMON VARIABLES, VALUES THAT KEEP TURNING UP.',
-      'Each row: the symbol, its name, what it means in audio math, and often a formula where it appears.',
+      'This is the SYMBOL KEY: every Greek letter and math symbol the calculators use, sorted into groups.',
+      'The groups: GREEK LETTERS, OPERATORS & RELATIONS, CALCULUS & LOGARITHMS, POWERS, SUBSCRIPTS & PREFIXES, COMMON VARIABLES, VALUES THAT KEEP TURNING UP.',
+      'Each row gives the symbol, its name and what it means in audio math, often with a formula where you’ll meet it.',
     ],
     control: [
-      'Scroll to browse.',
-      'A row marked ⓘ TAP FOR GLOSSARY DEFINITION opens that term right here; close it to come back.',
-      '‹ returns to where you came from — the lab home, or the calculator whose FORMULA KEY you opened it from (π OPEN THE FULL SYMBOL KEY ›).',
+      'Scroll to browse the groups.',
+      'Tap a row marked ⓘ TAP FOR GLOSSARY DEFINITION to read that term right here; close it to come back to the key.',
+      'Tap ‹ to go back where you came from: the lab home, or the calculator whose FORMULA KEY you left through π OPEN THE FULL SYMBOL KEY ›.',
     ],
     changes: [
-      'Nothing here calculates: it is the dictionary for the formulas.',
-      'Letters keep a formula short: λ = c / f reads “wavelength equals the speed of sound divided by the frequency”.',
-      'Where one glyph has two jobs, its row names both — ρ is resistivity for cable, or the density of air.',
+      'Nothing here calculates. This is the dictionary for the formulas.',
+      'Letters keep a formula short: λ = c / f reads “wavelength equals the speed of sound divided by the frequency.”',
+      'Some symbols have two jobs, and their row names both: ρ is resistivity for a cable, or the density of air.',
       'A calculator’s own π KEY lists only the symbols in its formula; this screen holds them all.',
     ],
     teaches: [
-      'How to read the formulas: what each letter stands for, and the prefixes (µ, m, k…) that scale a unit.',
-      'The few that come up everywhere: π, Δ (a change), λ (wavelength), Ω (ohms).',
+      'A formula is a sentence in short form: once you know each letter, you can read it aloud and see what moves the answer.',
+      'Prefixes scale a unit: µ is one-millionth, m one-thousandth, k a thousand.',
+      'A few symbols turn up everywhere: π, Δ (a change), λ (wavelength) and Ω (ohms).',
     ],
     tryThis: [
       'Find λ under GREEK LETTERS and tap it: the glossary entry for Wavelength opens right here.',
-      'Find Δ — a change, or the difference between two values — then spot TIME OFFSET Δt in Phase & Time Offset.',
-      'Find µ: as a prefix it means one-millionth, so 10 µF is 0.00001 F.',
+      'Find Δ: a change, or the difference between two values. Then open the Phase & Time Offset calculator and spot it in TIME OFFSET Δt.',
+      'Find µ. As a prefix it means one-millionth, so 10 µF is 0.00001 F.',
     ],
   },
 
   // ── CalcWorkflowsScreen ───────────────────────────────────────────────────
   workflows: {
+    intro: {
+      learning: 'How a real audio design job chains calculations in order: in a room survey, RT60 comes first, then critical distance, then the direct-to-reverberant ratio.',
+      start: 'Tap ▶ RUN on the Room Acoustics Survey template and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1).',
+    },
     seeing: [
-      'CALCULATOR WORKFLOWS: guided sequences that run several calculators in order.',
-      'MY WORKFLOWS: the ones you saved, each card listing its numbered steps.',
-      'WORKFLOW TEMPLATES: built-in sequences, such as Delay Speaker Setup and Room Acoustics Survey. A gold ★ marks a favorite.',
+      'CALCULATOR WORKFLOWS are guided sequences that run several calculators in order.',
+      'Under MY WORKFLOWS are the ones you saved; each card lists its numbered steps.',
+      'Under WORKFLOW TEMPLATES are built-in sequences, such as Delay Speaker Setup and Room Acoustics Survey. A gold ★ marks a favorite.',
     ],
     control: [
-      '▶ RUN starts a workflow, one calculator per step.',
-      'On a template: DUPLICATE & CUSTOMIZE makes your own copy and opens it in the builder.',
-      'On your own: EDIT, DUPLICATE, DELETE (it asks first; saved results are kept), and ▲ ▼ to reorder the list.',
-      '＋ NEW (top right) opens an empty builder. ★ adds or removes a favorite.',
+      'Tap ▶ RUN to start a workflow; each step is one calculator.',
+      'On a template, tap DUPLICATE & CUSTOMIZE to make your own copy and open it in the builder.',
+      'On your own workflows: EDIT, DUPLICATE, DELETE (it asks first, and your saved results are kept), and ▲ ▼ to reorder the list.',
+      'Tap ＋ NEW (top right) for an empty builder, and ★ to add or remove a favorite.',
     ],
     changes: [
-      'Each step is one of the lab’s own calculators — the same formula as on its own page, never a copy.',
-      'While running, an answer is offered to a later step only where it means the same thing: an RT60 fills an RT60, but a voltage drop never fills a supply voltage.',
-      'Templates are read-only, so changes always happen on your own copy.',
+      'Each step uses one of the lab’s own calculators, with the same formula as on its own page.',
+      'During a run, a later step is offered an earlier answer only when it means the same thing: an RT60 fills an RT60, but a voltage drop never fills a supply voltage.',
+      'Templates can’t be changed, so your edits always go into your own copy.',
     ],
     teaches: [
-      'How real design jobs chain calculations: RT60, then critical distance and the direct-to-reverberant ratio (Room Acoustics Survey) is one job, not three.',
-      'A template’s steps show one sensible order to work in.',
+      'A design job is a chain of calculations: in a room survey, RT60 comes first, then critical distance, then the direct-to-reverberant ratio. It’s one job, not three.',
+      'Order matters: you can’t work out a value before you have the numbers it depends on.',
+      'Same unit isn’t same meaning: the voltage lost along a cable is not the voltage your supply delivers.',
     ],
     tryThis: [
-      'Tap ▶ RUN on Room Acoustics Survey: once step 1 has its numbers, step 2 offers ⤵ USE RT60 (STEP 1).',
+      'Tap ▶ RUN on Room Acoustics Survey and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1): the RT60 you just worked out, ready to use.',
       'Tap DUPLICATE & CUSTOMIZE on a template: your copy opens in the builder with “copy” added to its name.',
     ],
   },
 
   // ── CalcWorkflowEditScreen ────────────────────────────────────────────────
   workflowEdit: {
+    intro: {
+      learning: 'How to break an audio job into a chain of calculations, and why each step must come after the steps that produce the values it needs.',
+      start: 'Type a WORKFLOW NAME, tap ＋ ADD CALCULATOR and add Power from voltage & impedance, then Current from power & voltage. Tap SAVE.',
+    },
     seeing: [
-      'NEW WORKFLOW (or EDIT WORKFLOW): the builder for a guided calculator sequence.',
-      'WORKFLOW NAME and DESCRIPTION (OPTIONAL) at the top.',
-      'STEPS: the calculators in run order — each with its number, its calculation and its calculator’s name, plus a box for a short instruction shown while it runs.',
+      'This is the builder: NEW WORKFLOW, or EDIT WORKFLOW when you change one you saved.',
+      'At the top: WORKFLOW NAME and DESCRIPTION (OPTIONAL).',
+      'Under STEPS, the calculators in run order. Each shows its number, its calculation and its calculator’s name, plus a box for a short instruction you’ll see while it runs.',
     ],
     control: [
-      '＋ ADD CALCULATOR lists every calculation; type in Search calculators to narrow it, then tap one to add it as the last step.',
-      '▲ ▼ move a step up or down; ✕ removes it.',
-      'SAVE (top right) stores the workflow. Leaving with unsaved changes asks “Discard changes?” first.',
+      'Tap ＋ ADD CALCULATOR to list every calculation. Type in Search calculators to narrow the list, then tap one to add it as the last step.',
+      'Tap ▲ or ▼ to move a step up or down, and ✕ to remove it.',
+      'Tap SAVE (top right) to store the workflow. If you leave with unsaved changes, you’re asked “Discard changes?” first.',
     ],
     changes: [
-      'Step order is run order: a step can use the answers of the steps before it, so put the step that produces a value before the one that needs it.',
-      'A step offers only answers that mean the same thing as its input — a power fills a power, but an RT60 never fills a target RT60 — so some inputs offer nothing and you type them.',
+      'Step order is run order. A step can use answers only from the steps before it, so put the step that produces a value first.',
+      'A step is offered only answers that mean the same thing as its input: a power fills a power, but a calculated RT60 never fills a target RT60. Where nothing fits, type it.',
+      'A saved workflow runs again with new numbers any time.',
     ],
     teaches: [
-      'How to break a job into a sequence of calculations, each feeding the next.',
-      'A saved workflow runs again with new numbers any time; the formulas stay the calculators’ own.',
+      'A bigger audio question breaks into small calculations, each feeding the next: voltage and impedance give you power, and power and voltage give you current.',
+      'The right unit can still be the wrong quantity: a target RT60 is the decay time you’re aiming for, not one the room already has.',
     ],
     tryThis: [
-      'Name it, add Power from voltage & impedance, then Current from power & voltage, and SAVE: run it, fill in step 1, and step 2 offers ⤵ USE POWER (STEP 1).',
+      'Name it, add Power from voltage & impedance, then Current from power & voltage, and SAVE. Run it, fill in step 1, and step 2 offers ⤵ USE POWER (STEP 1).',
       'Tap ▲ on the last step: it moves up, and the step numbers follow the new order.',
     ],
   },
 
   // ── CalcWorkflowRunScreen — a step ────────────────────────────────────────
   workflowRun: {
+    intro: {
+      learning: 'How one calculation’s answer becomes the next one’s input, and why an answer may only fill an input that means the same thing.',
+      start: 'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1. Read POWER and CURRENT, then tap CONTINUE ›.',
+    },
     seeing: [
-      'The workflow’s name, with the current step’s calculation under it.',
-      'The step buttons, from Step 1 to RESULTS: the current one is lit; finished steps are marked done.',
-      'The step’s inputs (any instruction above them), then YOUR ANSWER and the FORMULA it uses.',
+      'At the top: the workflow’s name, with this step’s calculation under it.',
+      'The step buttons run from Step 1 to RESULTS. The current one is lit; finished steps are marked done.',
+      'Below: this step’s inputs (with any instruction above them), then YOUR ANSWER and the FORMULA it uses.',
     ],
     control: [
-      'Type values as in any calculator: ⇄ switches a unit, ⓘ explains an input, a tap on an answer number changes its unit.',
-      '⤵ USE … (STEP n) fills an input with an earlier step’s answer that means the same thing. Typing over it marks it Manually overridden; ⟲ RESTORE IMPORT brings it back. A saved import that no longer fits says so: type a value.',
+      'Type values as in any calculator: ⇄ switches a unit, ⓘ explains an input, and tapping an answer number changes its unit.',
+      '⤵ USE … (STEP n) fills an input with an earlier step’s answer that means the same thing. Type over it and it’s marked Manually overridden; ⟲ RESTORE IMPORT brings it back. If a saved import no longer fits, it says so: type a value.',
       '⛭ USE A SAVED PROJECT (when you have one) attaches a project, so its values offer ⤵ USE … (PROJECT) on inputs of the same kind.',
-      '‹ PREVIOUS and CONTINUE › move between steps (FINISH ✓ on the last); tap a step button to jump. SAVE, where shown, keeps your progress.',
+      '‹ PREVIOUS and CONTINUE › move between steps (FINISH ✓ on the last). Tap a step button to jump. SAVE, where it shows, keeps your progress.',
     ],
     changes: [
-      'Each step computes exactly as its calculator does on its own page.',
+      'Each step works exactly as its calculator does on its own page.',
       'Change a value a later step used, and that later result recalculates; a ↻ note says how many changed.',
-      'An answer is offered only where it means the same thing: a distance never fills a time, and a voltage drop never fills a supply voltage. Where nothing earlier fits, type the value.',
+      'An answer is offered only where it means the same thing: a distance never fills a time, and a voltage drop never fills a supply voltage. If nothing earlier fits, type the value.',
     ],
     teaches: [
-      'How one answer becomes the next calculation’s input — the way a real system is designed, step by step.',
-      'Where every number came from: an imported input shows its source, such as “From … (step 1)”.',
+      'In system design, one answer becomes the next input: the power from step 1 is what step 2 turns into current.',
+      'Two routes to the same quantity must agree: 40 V across 8 Ω and 200 W at 40 V both give 5 A.',
+      'Knowing where each number came from lets you trace a mistake: an imported input shows its source, such as “From … (step 1)”.',
     ],
     tryThis: [
       'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A.',
-      'Then CONTINUE ›: on step 2, tap ⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS) — CURRENT reads 5 A, the same current worked out from the power.',
+      'Then CONTINUE ›. On step 2, tap ⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads 5 A, the same current worked out from the power.',
     ],
   },
 
   // ── CalcWorkflowRunScreen — the finished report ───────────────────────────
   workflowResults: {
+    intro: {
+      learning: 'How a calculation is documented on the job: what went in, where each number came from, what came out, and which warnings apply.',
+      start: 'Read PRIMARY RESULT, then INPUTS and RESULTS, and any WARNINGS. Type a line in YOUR NOTES and tap SAVE RESULT.',
+    },
     seeing: [
-      'The finished report: PRIMARY RESULT, INPUTS, RESULTS, then any NOTES and WARNINGS, ending with its Report ID.',
-      'YOUR NOTES: a box for your own notes, added to the saved and shared report.',
+      'This is the finished report: PRIMARY RESULT, INPUTS, RESULTS, then any NOTES and WARNINGS, ending with its Report ID.',
+      'YOUR NOTES is a box for your own words. They go into the report when you save or share it.',
     ],
     control: [
-      'SAVE RESULT stores the report in SAVED RESULTS; it reads SAVED ✓ once stored.',
-      'SHARE AS TEXT sends it as plain text; SHARE AS IMAGE, where it shows, sends a picture of the report.',
-      'START AGAIN clears the inputs for a fresh run of the same workflow. Tap a step button above to go back to a step.',
+      'Tap SAVE RESULT to store the report in SAVED RESULTS; it reads SAVED ✓ once stored.',
+      'Tap SHARE AS TEXT to send it as plain text, or SHARE AS IMAGE, where it shows, to send a picture of the report.',
+      'Tap START AGAIN to clear the inputs for a fresh run of the same workflow, or tap a step button above to go back to a step.',
     ],
     changes: [
-      'The report is built from each step’s answer as it stood when you tapped FINISH ✓.',
-      'Typing in YOUR NOTES re-arms SAVE RESULT, so SAVED ✓ never covers words that were not stored.',
+      'The report uses each step’s answer as it stood when you tapped FINISH ✓.',
+      'Type in YOUR NOTES and SAVED ✓ turns back into SAVE RESULT, so you always know whether your latest words are stored.',
     ],
     teaches: [
-      'How a calculation is documented on the job: what went in, where it came from, what came out, and the warnings that apply.',
+      'On the job, a figure is only useful if someone can check it: a calculation is documented by what went in, where it came from and what came out.',
+      'The warnings travel with the result, so whoever uses the number also knows its limits.',
     ],
     tryThis: [
       'Type a line in YOUR NOTES: SAVED ✓ turns back into SAVE RESULT until you save again.',
@@ -415,20 +469,25 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
 
   // ── CalcProjectsScreen — the list ─────────────────────────────────────────
   projects: {
+    intro: {
+      learning: 'Why a venue’s fixed numbers — room size, temperature, distances — are worth storing once, with their units, and reusing for every calculation in that room or rig.',
+      start: 'Tap ＋ NEW, name the project, add a value labeled Listener distance as Length / distance, type 12, and SAVE.',
+    },
     seeing: [
-      'SAVED PROJECTS: reusable values for one venue or rig — room dimensions, temperature, listener distance, impedance, target SPL.',
-      'Each card: the project’s name, its notes, and the labels of the values it holds.',
+      'SAVED PROJECTS holds reusable values for one venue or rig: room dimensions, temperature, listener distance, impedance, target SPL.',
+      'Each card shows the project’s name, its notes and the labels of the values it holds.',
     ],
     control: [
-      '＋ NEW (top right) starts a project; EDIT opens one; DELETE removes it (it asks first).',
-      'While running a workflow, ⛭ USE A SAVED PROJECT attaches one.',
+      'Tap ＋ NEW (top right) to start a project, EDIT to open one, or DELETE to remove it (it asks first).',
+      'To use a project, run a workflow and tap ⛭ USE A SAVED PROJECT to attach it.',
     ],
     changes: [
-      'A project changes only when you edit it here: running a workflow never writes back into it.',
-      'A project value is offered only to an input of the same kind — a power never fills a voltage. Check it is the same thing before you tap ⤵ USE.',
+      'A project changes only when you edit it here. Running a workflow never writes back into it.',
+      'A project value is offered only to an input of the same kind: a power never fills a voltage. Check it’s the same thing before you tap ⤵ USE.',
     ],
     teaches: [
-      'That a venue’s fixed numbers — room size, temperature, distances — can be stored once with their units and reused for every plan in that room or rig.',
+      'A venue’s fixed numbers (room size, temperature, distances) can be stored once with their units and reused for every plan in that room or rig.',
+      'Temperature belongs with them: sound travels faster in warm air, so delay times and wavelengths shift with it.',
     ],
     tryThis: [
       'Tap ＋ NEW, name it, add a value labeled Listener distance as Length / distance, type 12, and SAVE.',
@@ -438,47 +497,57 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
 
   // ── CalcProjectsScreen — the editor ───────────────────────────────────────
   projectEdit: {
+    intro: {
+      learning: 'Why every number in audio needs its kind and its unit: 10 alone means nothing, but 10 m and 10 Ω are different things.',
+      start: 'Type a PROJECT NAME and tap ＋ ADD VALUE. Give the value a label, tap its type button (marked ⇄) until it reads Length / distance, type a number, and SAVE.',
+    },
     seeing: [
-      'NEW PROJECT (or EDIT PROJECT): PROJECT NAME, NOTES (OPTIONAL) and VALUES.',
-      'Each value: a label, its type (such as Length / distance), a number and a unit.',
+      'This is NEW PROJECT, or EDIT PROJECT for one you saved: PROJECT NAME, NOTES (OPTIONAL) and VALUES.',
+      'Each value row holds a label, its type (such as Length / distance), a number and a unit.',
     ],
     control: [
-      'Type a label; tap the type button (marked ⇄) to step through Length / distance, Temperature, SPL, Power, Impedance and the rest; tap the unit button to switch units.',
-      '＋ ADD VALUE adds a row; ✕ removes one.',
-      'SAVE (top right) stores the project; ‹ with unsaved changes asks “Discard changes?” first.',
+      'Type a label. Tap the type button (marked ⇄) to step through Length / distance, Temperature, SPL, Power, Impedance and the rest. Tap the unit button to switch units.',
+      'Tap ＋ ADD VALUE to add a row and ✕ to remove one.',
+      'Tap SAVE (top right) to store the project. Tapping ‹ with unsaved changes asks “Discard changes?” first.',
     ],
     changes: [
-      'Changing a value’s type clears its number: a number only means something with its kind and unit.',
+      'Change a value’s type and its number clears: a number only means something with its kind and unit.',
       'Rows without a label or a valid number are skipped on save.',
       'Each value is stored once, so a workflow can show it in whatever unit its input uses.',
     ],
     teaches: [
-      'Every number in audio needs its kind and its unit: 10 alone means nothing — 10 m and 10 Ω are different things.',
+      'Every number in audio needs its kind and its unit: 10 alone means nothing, and 10 m and 10 Ω are different things.',
+      'Changing a unit label is not converting: 20 m and 20 ft are very different distances, so the unit must match how the number was measured.',
     ],
     tryThis: [
       'Add a value, type 20, then tap its type button: the type moves on and the number clears.',
-      'Give a Length / distance value 20, then tap its unit button: m becomes ft and the number stays, so 20 m is now 20 ft — a different length. Pick the unit your number is in.',
+      'Give a Length / distance value 20, then tap its unit button: m becomes ft and the number stays, so 20 m is now 20 ft, a different length. Pick the unit your number is in.',
     ],
   },
 
   // ── CalcResultsScreen ─────────────────────────────────────────────────────
   results: {
+    intro: {
+      learning: 'Why a saved record of a calculation matters: it shows how a figure was reached, long after the job is done.',
+      start: 'Tap a result to open it and read its INPUTS and RESULTS. Nothing here yet? Finish any workflow and tap SAVE RESULT on its report.',
+    },
     seeing: [
-      'SAVED RESULTS: your completed workflow runs, each with its name and date (and its project, if one was attached).',
-      'An open result shows its report: PRIMARY RESULT, INPUTS, RESULTS, NOTES, WARNINGS and a Report ID.',
+      'SAVED RESULTS lists your completed workflow runs, each with its name and date, and its project if one was attached.',
+      'Open one to see its report: PRIMARY RESULT, INPUTS, RESULTS, NOTES, WARNINGS and a Report ID.',
     ],
     control: [
       'Tap a result to open or close it (▸ / ▾).',
-      'Open: SHARE AS TEXT, SHARE AS IMAGE where it shows, and DELETE (it asks first).',
+      'In an open result: SHARE AS TEXT, SHARE AS IMAGE (where it shows) and DELETE (it asks first).',
     ],
     changes: [
-      'Nothing recalculates here: every number is exactly what was saved when the run finished.',
+      'Nothing recalculates here. Every number is exactly what was saved when the run finished, so the record stays as it was on the day.',
     ],
     teaches: [
-      'Keeping a record: a saved report shows how a figure was reached, long after the job.',
+      'A saved report shows how a figure was reached, long after the job: anyone can check the inputs behind it.',
+      'The date and project tie each number to one venue or rig; a figure worked out for another room may not apply to this one.',
     ],
     tryThis: [
-      'Finish any workflow and tap SAVE RESULT on its report — it appears here.',
+      'Finish any workflow and tap SAVE RESULT on its report: it appears here.',
       'Open a result and read its INPUTS: each one says what was entered for that run.',
     ],
   },

@@ -129,7 +129,9 @@ describe('S3 Calculator — pointers, names, the limiter example, whole bits', (
 describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog text', () => {
   it('MET-02: sample-peak in microseconds; quasi-peak (PPM) integrates ~5–10 ms', () => {
     const d = def('meter', 'ballistics');
-    assert.match(d, /Sample-peak meters: microseconds up; quasi-peak meters \(PPM\) integrate over about 5–10 ms/);
+    assert.match(d, /A sample-peak meter jumps up at once/);
+    const p = LAB_LESSONS.meter!.controls.find((c) => c.key === 'ballistics')!.practical ?? '';
+    assert.match(p, /Quasi-peak meters \(PPM\) average over about 5–10 ms/);
     assert.doesNotMatch(d, /Peak meters: microseconds up, slow fall/);
   });
   it('MET-03: the pink tilt is tied to this FFT display', () => {
@@ -138,7 +140,7 @@ describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog t
   it('SC-01: Comp → Gate is this rack’s fixed order', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
     assert.match(cat, /blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate/);
-    assert.match(LAB_LESSONS.chain!.whatItIs, /a full processing chain in this rack’s fixed order — Source → EQ → Compressor → Gate/);
+    assert.match(LAB_LESSONS.chain!.whatItIs, /nine units sit in this rack’s fixed order: SRC, then EQ, COMP, GATE/);
   });
   it('FX-01: the Equalizer blurb matches the one-band lab', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
@@ -147,12 +149,12 @@ describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog t
   });
   it('FX-02: mono-fold says inverted polarity cancels and delay combs', () => {
     const d = Object.values(LAB_LESSONS).flatMap((l) => l.controls).filter((c) => c.key === 'mono_fold').map((c) => c.definition).join(' ');
-    assert.match(d, /Anything flipped in one channel but not the other cancels, and anything delayed between channels combs here/);
+    assert.match(d, /What is opposite in L and R cancels; what is delayed between them combs/);
     assert.doesNotMatch(d, /out of phase cancels or combs/);
   });
   it('MOD-01: the Raw Drone names the envelope on the VCA', () => {
     const d = Object.values(LAB_LESSONS).flatMap((l) => l.controls).find((c) => c.key === 'patch_drone')!.definition;
-    assert.match(d, /nothing modulating anything except the envelope on the VCA\./);
+    assert.match(d, /VCO → wide-open VCF → VCA, with only the envelope on the VCA\./);
   });
 });
 

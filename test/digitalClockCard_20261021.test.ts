@@ -39,7 +39,7 @@ describe('the clocking card lives in the jitter module (Errors & Limits)', () =>
   it('its ⓘ opens a real glossary entry', () => {
     assert.equal(CLOCKING_CARD.helpKey, 'clocking');
     const c = read('src/features/lab/guidedLessons/content.ts');
-    assert.match(c, /\{ key: 'clocking', name: 'Clocking', definition: 'A digital system has one clock master\./);
+    assert.match(c, /\{ key: ["']clocking["'], name: ["']CLOCKING["'], definition: ["']One device is the clock master and every other device follows it, at the same sample rate\./);
   });
 });
 

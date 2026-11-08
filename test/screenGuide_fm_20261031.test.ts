@@ -60,11 +60,16 @@ describe('1. every FM screen has a complete guide', () => {
     assert.match(FM_SCREEN_GUIDES.check.seeing[0], /four questions/);
     // LAB NOTES on EXPLORE carries two CHECK YOURSELF questions — the guide says two.
     assert.equal((code(SCREEN).match(/<CheckQuestion/g) ?? []).length, 2);
-    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /LAB NOTES, with two quick questions/);
+    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /LAB NOTES below hold two quick questions/);
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -89,6 +94,20 @@ describe('1. every FM screen has a complete guide', () => {
       assert.ok(!t.includes(answer), `the CHECK guide quotes the answer "${answer}"`);
     }
     assert.doesNotMatch(t, /\b100 Hz\b|\b300 Hz\b|pure sine/i);
+    // Decision 6 (2026-11-08): no TRY THIS walks to a reading that IS an answer.
+    // Index 0 → the answer is the reading itself, so CHECK points to LEARN's INDEX entry;
+    // the sideband question gets a DIFFERENT pair (FC 440 · RATIO 0.5), not 200 / 100.
+    const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
+    const ct = [...GUIDES.check.tryThis, ci.learning, ci.start].join(' ');
+    assert.doesNotMatch(ct, /INDEX to 0|carrier alone|one green stick|step RATIO and watch|\b200 Hz\b/i);
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, read the INDEX entry under CONTROLS/);
+    assert.match(GUIDES.check.tryThis[0], /FC 440 and RATIO 0\.5, so FM reads 220 Hz/);
+  });
+  it('the header ▶ stays on LEARN, so LEARN never says "Nothing here plays"', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(code(SCREEN), /headerAction=\{\s*<HeaderPlayButton/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays|moves or plays/);
+    assert.match(GUIDES.learn.seeing[0], /▶ in the header still strikes the voice you set on EXPLORE/);
   });
 });
 
@@ -120,7 +139,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       // dock + header + rack
       'INDEX', 'RATIO', 'ENV', 'STRIKE', 'SUSTAIN', 'PLUCK', 'BELL', '110', '220', '440 Hz', '1.41 ✳', '3.5', 'LAB NOTES', 'HIDE DISPLAY', '▶', '■',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'INDEX', 'FC', 'RATIO', 'ENV', 'Bessel amplitudes', 'Nyquist', '1.41 ✳', '440 Hz'],
+    // 'Bessel' (not 'Bessel amplitudes'): the 2026-11-08 lesson rewrite says "Bessel math / heights".
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'INDEX', 'FC', 'RATIO', 'ENV', 'Bessel', 'Nyquist', '1.41 ✳', '440 Hz', '▶'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'RATIO', 'INDEX', 'FM'],
   };
   it('a name list for every screen', () => {
@@ -131,7 +151,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       const gt = textOf(GUIDES[id]);
       for (const n of names) {
         assert.ok(SRC.includes(n), `${id}: "${n}" is no longer in the lab source — update the guide`);
-        assert.ok(gt.includes(n), `${id}: the guide never names "${n}"`);
+        // the legend says "red dashed"; the guide starts a sentence with it ("Red dashed:")
+        const inGuide = n === 'red dashed' ? gt.toLowerCase().includes(n) : gt.includes(n);
+        assert.ok(inGuide, `${id}: the guide never names "${n}"`);
       }
     });
   }
@@ -140,14 +162,14 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(s, /const CARRIERS = \[110, 220, 440\] as const;/);
     const ratios = [...s.matchAll(/\{ v: [\d.]+, label: '([^']+)', blurb:/g)].map((m) => m[1]);
     assert.deepEqual(ratios, ['0.5', '1', '1.41 ✳', '2', '3.5', '7']);
-    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /carrier 110, 220 or 440 Hz\. RATIO key: modulator = carrier × 0\.5, 1, 1\.41 ✳, 2, 3\.5 or 7/);
+    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /FC picks the carrier: 110, 220 or 440 Hz\. RATIO sets the modulator as carrier × 0\.5, 1, 1\.41 ✳, 2, 3\.5 or 7/);
     const envs = [...s.matchAll(/\{ key: '[a-z]+', label: '([A-Z]+)', decaySec:/g)].map((m) => m[1]);
     assert.deepEqual(envs, ['SUSTAIN', 'PLUCK', 'BELL']);
     assert.match(s, /const INDEX_MAX = 8;/);
     assert.match(s, /\{ kind: 'action', id: 'strike', label: 'STRIKE'/);
     // the LEARN guide's CONTROLS list = the lesson's five control entries
     const lesson = code('src/features/lab/guidedLessons/content.ts').match(/\n  fm: \{([\s\S]*?)\n  \},/)?.[1] ?? '';
-    const keys = [...lesson.matchAll(/\{ key: '([a-z_]+)', name:/g)].map((m) => m[1]);
+    const keys = [...lesson.matchAll(/\{ key: ["']([a-z_]+)["'], name:/g)].map((m) => m[1]);
     assert.deepEqual(keys, ['display', 'carrier', 'ratio', 'index', 'index_env']);
   });
 });
@@ -220,6 +242,11 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.ok(off.length >= 4, 'at 1.41 most sticks fall between the multiples of 220 Hz');
     assert.match(FM_SCREEN_GUIDES.explore.tryThis[1], /FM reads 220 Hz, then 310 Hz/);
   });
+  it('CHECK 1: FC 440 · RATIO 0.5 → FM 220 Hz; the amber pair nearest the carrier is drawn at 220 and 660 Hz (I 2.0)', () => {
+    assert.equal((440 * 0.5).toFixed(0), '220');
+    const st = sticks(440, 220, 2).filter((x) => x.fold === 'none');
+    for (const f of [220, 660]) assert.ok(st.some((x) => x.f === f && x.a > 0.5), `${f} Hz drawn as a strong amber stick`);
+  });
   it('EXPLORE 3 + LEARN 1: RATIO 1.41 ✳ at I 2.4 → no green carrier stick (|J₀| < 0.004, nothing reflected onto fc)', () => {
     assert.ok(Math.abs(besselJ(0, 2.4)) < 0.004, `J0(2.4) = ${besselJ(0, 2.4)}`);
     const st = sticks(220, 220 * 1.41, 2.4);
@@ -229,7 +256,7 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.match(FM_SCREEN_GUIDES.explore.tryThis[2], /RATIO 1\.41 ✳ and INDEX to I = 2\.4: the green carrier stick vanishes/);
     assert.match(FM_SCREEN_GUIDES.learn.tryThis[0], /RATIO 1\.41 ✳ and INDEX to I = 2\.4: the carrier stick disappears/);
     // …and the lesson line it points at says J₀ = 0 near 2.4
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /J₀=0 near I≈2\.4/);
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /J₀=0 near I≈2\.4|the carrier almost disappears near I = 2\.4/); // old lesson line, or the 2026-11-08 rewrite
   });
   it('LEARN 2: FC 440, RATIO 7, INDEX 8 → BW 55.4 kHz in red, with red dashed (aliased) sticks', () => {
     assert.equal(bw(440, 7, 8), '55.4 kHz');
@@ -240,10 +267,10 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.match(FM_SCREEN_GUIDES.learn.tryThis[1], /FC 440 Hz, RATIO 7 and INDEX 8: BW reads 55\.4 kHz in red, and red dashed sticks/);
   });
   it('the guide’s 24 kHz is the screen’s NYQUIST and its BW formula is the screen’s', () => {
-    assert.match(FM_SCREEN_GUIDES.explore.changes.join(' '), /BW = 2 × FM × \(I \+ 1\) estimates where most energy sits\. Weaker sticks reach past it, and any past 24 kHz folds back: aliasing\./);
-    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /red when its top passes 24 kHz/);
+    assert.match(FM_SCREEN_GUIDES.explore.changes.join(' '), /BW = 2 × FM × \(I \+ 1\) estimates where most energy sits\. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing\./);
+    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /red once its top passes 24 kHz/);
     // 24 kHz = half the engine's 48 kHz rate (ApeDspJni.cpp configures 48000)
-    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /24 kHz, half a 48 kHz sample rate/);
+    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /Nyquist, 24 kHz \(half of 48 kHz\)/);
     assert.match(code('modules/ape-dsp/android/src/main/cpp/ApeDspJni.cpp'), /gen_\.configure\(48000\.0\)/);
   });
   // Review 2026-10-31 (vetted): BW is Carson's ESTIMATE — weaker sticks alias
@@ -267,21 +294,21 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.ok(Math.abs(besselJ(0, 2) + besselJ(1, 2) - 0.801) < 0.001);
     assert.ok(Math.abs(besselJ(1, 2) - besselJ(2, 2) - 0.224) < 0.001);
     assert.match(code('modules/ape-dsp/ios/core/Generator.hpp'), /std::sin\(2\.0 \* kPi \* fmPhC_ \+ I \* std::sin\(2\.0 \* kPi \* fmPhM_\)\)/);
-    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /if it lands on a stick, the two combine/);
+    assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /reflected below 0 Hz, folded up; on a stick, they combine/);
     assert.doesNotMatch(FM_SCREEN_GUIDES.explore.seeing.join(' '), /adds to/);
   });
   // Review 2026-10-31 (vetted): STRIKE has no helpKey, so the long-press line
   // names only the keys that open a lesson entry.
   it('long-press names only keys with a lesson entry', () => {
     assert.doesNotMatch(s, /\{ kind: 'action', id: 'strike'[^}]*helpKey/);
-    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /Long-press INDEX, FC, RATIO, ENV or a readout for its lesson entry/);
+    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /Long-press INDEX, FC, RATIO, ENV or a readout to read about it/);
   });
   // Review 2026-10-31 (vetted): the graph is drawn from the static index; the
   // PLUCK / BELL decay reaches only the native voice.
   it('PLUCK / BELL: the graph shows the strike, the sound dulls', () => {
     assert.match(s, /<SidebandGraph fc=\{carrier\} fm=\{fm\} index=\{index\}/);
     assert.match(s, /fm: \{ ratio, index, decaySec: env\.decaySec \}/);
-    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /the graph keeps the strike’s bright start while the sound dulls toward the carrier/);
+    assert.match(FM_SCREEN_GUIDES.explore.control.join(' '), /The graph keeps the strike’s bright start while the sound dulls toward the carrier/);
   });
 });
 
@@ -315,7 +342,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(s, /exact spectrum|THE MATH THE VOICE PLAYS|EXACT BESSEL/);
     const lessons = read('src/features/lab/guidedLessons/content.ts');
     assert.doesNotMatch(lessons, /actual spectrum the voice plays/);
-    assert.match(lessons, /A dashed stick merges with any stick it lands on/);
+    assert.match(lessons, /Where a dim dashed stick lands on another stick, the two combine in the sound/);
     assert.match(s, /Output \{GEN_LEVEL_DB\} dBFS · uncalibrated\./);
   });
 });

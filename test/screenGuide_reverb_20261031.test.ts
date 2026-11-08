@@ -86,7 +86,12 @@ describe('1. every Reverb screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -135,8 +140,11 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the rack, the header and LAB NOTES
       '▶', '■', 'ⓘ', 'HIDE DISPLAY', 'FULL SCREEN', 'LAB NOTES', 'DESIGNED RESPONSE', 'THE AUDIO PATH', 'CHECK YOURSELF', 'GUIDED LESSON',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'RT60 (decay time)', 'Pre-delay', 'HF damping', 'Mix', 'Sabine', 'PRE-DLY', 'DESIGNED RESPONSE', 'No pre-delay: the wash starts with the dry hit'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'HF DAMPING', 'RT60', 'PRE-DELAY', 'MIX', '✓', 'EXPLORE', 'LEARN', 'DESIGNED RESPONSE', 'OUT'],
+    // CONTROLS names = the on-screen labels (decision 1, 2026-11-08): RT60 (decay time) / Pre-delay /
+    // HF damping / Mix became RT60 / PRE-DLY (PRE-DELAY) / DAMP (HF DAMPING) / MIX.
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'RT60', 'PRE-DELAY', 'HF DAMPING', 'DAMP', 'MIX', 'Sabine', 'PRE-DLY', 'DESIGNED RESPONSE', 'No pre-delay: the wash starts with the dry hit', '▶'],
+    // 'DESIGNED RESPONSE' dropped: the CHECK no longer walks to the RT60 marker on the −60 line (decision 6).
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'HF DAMPING', 'RT60', 'PRE-DELAY', 'MIX', '✓', 'EXPLORE', 'LEARN', 'OUT', 'FORMULA / CONCEPT'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(REVERB_SCREEN_GUIDES).sort());
@@ -158,12 +166,13 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.equal(`${fmt2sig(0.4)} s`, '0.40 s');
     assert.equal(`${fmt2sig(6)} s`, '6.0 s');
     const ex = REVERB_SCREEN_GUIDES.explore.control.join(' ');
-    assert.match(ex, /RT60, 0\.40 s to 6\.0 s/);
+    assert.match(ex, /RT60 fader, 0\.40 s to 6\.0 s/);
     // the dock abbreviations spelled out once
     assert.match(ex, /PRE-DLY \(PRE-DELAY: 0, 20, 60 ms\)/);
     assert.match(ex, /DAMP \(HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5\.5k, BRIGHT 12k\)/);
     assert.match(ex, /MIX \(35%, 70%, 100% WET\)/);
-    assert.match(ex, /SOURCE \(CLICK 60, BURST 1 kHz, PINK NOISE\)/);
+    assert.match(ex, /SOURCE picks CLICK 60 \(a short click once a second\), BURST 1 kHz or PINK NOISE/);
+    assert.match(REVERB, /sources: \[srcClick\(60\),/); // CLICK 60 = 60 per minute: once a second
     assert.match(REVERB, /label: 'RT60 \(DECAY TIME\)', short: 'RT60'/);
     assert.match(REVERB, /label: 'PRE-DELAY', short: 'PRE-DLY'/);
     assert.match(REVERB, /label: 'HF DAMPING', short: 'DAMP'/);
@@ -254,7 +263,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const g0 = onsetAt(0);
     assert.ok(g60 >= 88 && g60 <= 95, `60 ms gap = ${g60}`);
     assert.ok(g0 >= 28 && g0 <= 36, `0 ms gap = ${g0}`);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick mark after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
   });
   it('EXPLORE 3: RT60 ≈ 1.5 s with DARK 2k → nearly at the floor by the 1 s mark (NATURAL stays well up); DESIGNED RESPONSE ignores damping', () => {
     for (const rt of [1.4, 1.5, 1.6]) {
@@ -264,7 +273,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
       assert.ok(nat > -RANGE + 18, `RT60 ${rt} NATURAL at 990 ms: ${nat.toFixed(1)} dB`);
     }
     assert.match(REVERB, /Hero: \(v\) => <DecayCurveGraph rt60=\{v\[P\.rt60\]\} preDelayMs=\{v\[P\.preDelayMs\]\} spanS=\{DECAY_SPAN_S\} \/>/);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[2], /DARK 2k: the wash now nearly reaches the bottom by the 1 s mark\. DESIGNED RESPONSE stays put: it draws RT60 alone/);
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[2], /DARK 2k: the wash nearly reaches the bottom by the 1 s mark\. DESIGNED RESPONSE stays put, because it draws RT60 alone/);
   });
   it('LEARN 1: RT60 3.0 s → the marker reads "RT60 3.0 s" on the dashed −60 line (and the fader can land on 3.0)', () => {
     assert.match(VIZ, /`RT60 \$\{fmt2sig\(rt60\)\} s`/);
@@ -304,8 +313,14 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     for (let k = 1; k < xs.length; k++) assert.ok(xs[k] - xs[k - 1] > 10, 'the marker moves at every RT60 choice ' + xs.map((v) => v.toFixed(0)).join(','));
     // the label stays on the card at both ends (≈ 6 px a glyph at 9 pt mono)
     assert.ok(x(0.4) - ('RT60 0.40 s'.length * 6) / 2 > 0 && x(6) + ('RT60 6.0 s'.length * 6) / 2 < 320);
-    assert.match(REVERB_SCREEN_GUIDES.check.tryThis[1], /On its fixed time axis the marker slides along the dashed −60 line, near the left at 0\.40 s and near the right at 6\.0 s/);
+    // 2026-11-08 (decision 6): the CHECK no longer walks to this marker — RT60 on the −60 line IS the
+    // rt60 question's answer — so the fixed-axis maths above stays pinned for the screen, and the CHECK
+    // guide points to where RT60 is taught instead.
     assert.doesNotMatch(textOf(GUIDES.check), /barely moves|axis stretches/);
+    const ck = REVERB_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
+    const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
+    assert.doesNotMatch(all, /−60|60 dB|fall(s)? by|soft surfaces|darker|lower the (reverb )?MIX|opens a (short )?gap/i);
+    assert.match(ck.tryThis[1], /For the RT60 question, reread FORMULA \/ CONCEPT on LEARN/);
   });
   it('LEARN 2: PRE-DLY 0 ms → the caption opens "No pre-delay: the wash starts with the dry hit…" (no "0 ms … separates")', () => {
     assert.match(REVERB, /v\[P\.preDelayMs\] === 0\s*\? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail\. Then the tail falls 60 dB in \$\{v\[P\.rt60\]\} s\.`\s*: `\$\{v\[P\.preDelayMs\]\} ms pre-delay separates the dry hit from the wash/);
@@ -315,7 +330,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
   it('EXPLORE changes: MIX 100% WET leaves only the wash (no dry stub on OUT)', () => {
     assert.match(ANIM, /const ldry = mix >= 0\.999 \? -200 : 20 \* Math\.log10\(1 - mix\);/);
     assert.equal(lib.revCol(50000, COL, 0, 1000, 20, decay(1.5, 5500), 1)[0], -200);
-    assert.match(REVERB_SCREEN_GUIDES.explore.changes.join(' '), /MIX: at 100% WET only the wash is left/);
+    assert.match(REVERB_SCREEN_GUIDES.explore.changes.join(' '), /At MIX 100% WET, only the wash is left/);
     assert.match(REVERB_SCREEN_GUIDES.explore.changes.join(' '), /about 31 ms the reverb needs for its first echo/);
   });
 });

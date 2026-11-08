@@ -61,7 +61,12 @@ describe('1. every Phaser screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -110,7 +115,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the header transport, the rack's own controls, the well
       '▶', '■', 'HIDE DISPLAY', 'FULL SCREEN', 'LAB NOTES', 'DESIGNED RESPONSE',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Stages / Poles', 'Feedback / Resonance', 'Center Frequency / Manual', 'LFO Waveform', 'Stereo spread', 'DEPTH (SWEEP)', 'STATIC', 'SWEEP', 'RES'],
+    // 'LEARN' dropped: the 2026-11-08 rewrite names only the tabs to switch TO from this page.
+    // Lesson names follow the on-screen labels (decision 1): STAGES / RES / CENTER / RATE, not the old long names.
+    learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'STAGES', 'CENTER', 'RATE', 'Mix', 'LFO Waveform', 'Stereo spread', 'DEPTH (SWEEP)', 'STATIC', 'SWEEP', 'RES'],
     check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'STAGES', 'RES'],
   };
   it('a name list for every screen', () => {
@@ -143,8 +150,8 @@ describe('3. each guide quotes its screen’s real names', () => {
   it('the LEARN page lists the controls the guide says are not in this dock', () => {
     const c = code('src/features/lab/guidedLessons/content.ts');
     const block = c.slice(c.indexOf('  phaser: {'), c.indexOf('  compression: {'));
-    for (const k of ['mix', 'lfo_wave', 'stereo_offset']) assert.match(block, new RegExp(`key: '${k}'`));
-    assert.match(block, /Notches deepest near 50%\./);
+    for (const k of ['mix', 'lfo_wave', 'stereo_offset']) assert.match(block, new RegExp(`key: ["']${k}["']`));
+    assert.match(block, /fixed at 50% here[\s\S]*?always mixes half and half, near where the dips are deepest\./);
     assert.doesNotMatch(CFG, /lessonKey: '(mix|lfo_wave|stereo_offset)'/, 'one of them is on the dock now — update the LEARN guide');
   });
   it('the CHECK tab has the four questions the guide counts', () => {
@@ -264,7 +271,7 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
   it('LEARN does not say "nothing plays": the header ▶ shows on every tab and the rack stays mounted', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
     assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
-    assert.ok(GUIDES.learn.seeing[0].includes('the ▶ in the header still plays or stops the sound'));
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the sound'));
   });
   it('MIX 50% is only NEAR the deepest notch once RES is up (true null at m = (1+RES)/(2+RES))', () => {
     // At A = −1 the wet copy is −1/(1+RES): RES 30% → null at 1.3/2.3 ≈ 56% mix; at 50% the dip is ≈ −18.8 dB.
@@ -279,14 +286,26 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
     const k = code('src/features/lab/trainingLabKeys.ts');
     for (const r of ['Chorus', 'Flanger', 'Phaser']) assert.match(k, new RegExp(`route: '${r}Lab', key: 'tr_${r.toLowerCase()}', completion: 'understanding'`));
     assert.doesNotMatch(textOf(GUIDES.check), /Modulation set/);
-    assert.ok(textOf(GUIDES.check).includes('the Phaser lab, the last in Modulation'));
+    // course order left student text (decision 4, 2026-11-08): the CHECK guide no longer places the lab in a set
+    assert.doesNotMatch(textOf(GUIDES.check), /last in Modulation|in the Modulation/);
   });
-  it('lab order (D42 2026-11-01): the Advanced Training menu sorts categories A→Z, so Distortion & Saturation is suggested, never "next"', () => {
+  // Course-navigation lines left WHAT THIS TEACHES (decision 4, 2026-11-08): no guide names a next lab.
+  // (The menu still sorts categories A→Z, D42, so a "next" claim would also be false.)
+  it('lab order: no guide suggests or names a next lab (decision 4; the menu sorts A→Z, D42)', () => {
     assert.match(code('src/screens/lab/labCatalog.ts'), /section === 'training' \? \[\.\.\.cats\]\.sort\(\(a, b\) => a\.name\.localeCompare\(b\.name\)\)/);
-    for (const id of ['explore', 'check']) {
+    for (const id of ['explore', 'learn', 'check']) {
       const t = textOf(GUIDES[id]);
-      assert.ok(t.includes('A good next step: Distortion & Saturation.'), id);
-      assert.doesNotMatch(t, /Saturation (comes|is) next/, id);
+      assert.doesNotMatch(t, /next step|Distortion & Saturation|Saturation (comes|is) next/, id);
     }
+  });
+  it('CHECK (decision 6, 2026-11-08): no TRY THIS walks to a tested reading (8 stages → 4; RES lifts the peaks)', () => {
+    const PH = code('src/features/lab/understandingChecks.ts');
+    assert.match(PH, /An 8-stage phaser produces roughly how many notches\?[\s\S]*?correct: '4'/);
+    assert.match(PH, /correct: 'Sharpens the peaks between the notches, so the sweep rings'/);
+    const t = GUIDES.check.tryThis.join(' ') + ' ' + JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro);
+    assert.doesNotMatch(t, /STAGES to 8|STAGES 8|four|watch what rises|peaks (rise|between)|0% to 60%/);
+    assert.match(GUIDES.check.tryThis[0], /set STAGES to 4 and count the dips on OUT/);
+    assert.match(CFG, /label: 'RESONANCE', short: 'RES', paramId: P\.modFeedback, lessonKey: 'feedback',/);
+    assert.match(GUIDES.check.tryThis[1], /long-press the RES key on EXPLORE to open its lesson entry/);
   });
 });

@@ -73,7 +73,12 @@ describe('1. every Advanced Mixing page has a complete guide', () => {
   });
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -148,7 +153,7 @@ describe('2. each guide quotes its page’s real names', () => {
     p16: ['THE DELIVERABLES VOCABULARY', 'Tracks vs multitracks vs stems', 'Alternate mixes', 'Standard stem sets', 'Identical starts & lengths', 'Names & versions'],
     p17: ['RUN IT — REAL MATH ON THE REAL SESSION', 'RUN THE NULL TEST', 'CLEAN BUS', 'BUS COMP ON FULL MIX', 'NULLS ✓', 'BROKEN ✗'],
     p18: ['THE PRACTICES', 'Version control', 'Metadata & documentation', 'Archive & recall', 'THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED', '☐', '☑'],
-    p19: ['CASE 1 — “IT’S MUDDY”', 'CASE 2 — “IT’S HARSH”', 'CASE 3 — “THE VOCAL IS BURIED”', 'What is actually wrong?', 'Solve all three cases', 'FLAWED', 'REPAIRED'],
+    p19: ['CASE 1 — “IT’S MUDDY”', 'CASE 2 — “IT’S HARSH”', 'CASE 3 — “THE VOCAL IS BURIED”', 'What is actually wrong?', 'FLAWED', 'REPAIRED'], // goal chip 'Solve all three cases' dropped from the guide (return 2026-11-08: bookkeeping)
     p20: ['THE MIXER’S MANTRA', 'STEP 1 — DIAGNOSE THE HANDOFF', 'THE HANDOFF', 'THE HANDOFF — YOUR DIAGNOSIS', 'THE REPAIR CONSOLE', 'HIGH-PASS THE KEYS (220 Hz)', 'BACK TO THE FLAWED HANDOFF', 'LISTEN — HANDOFF VS YOUR REPAIR', 'YOUR REPAIR', 'REPAIR, MONO', 'THE STEPS — VERIFIED AS YOU WORK', '7 · Deliver', '2 · Rebuild the balance', '3 · Clear the mud', '6 · Translation check', 'DELIVERED'],
   };
   it('a name list for every page', () => {
@@ -190,7 +195,7 @@ describe('3. the numbers TRY THIS quotes are what the page draws', () => {
     const lane = (id: keyof typeof base) => [base[id] + ride[id][0], base[id] + ride[id][1]];
     const t = textOf(GUIDES.p13);
     const [lv, lc] = lane('lead');
-    assert.ok(t.includes(`LEAD ${fmtRide(lv).replace(' dB', '')} to ${fmtRide(lc)} (${delta(lv, lc)})`));
+    assert.ok(t.includes(`LEAD goes ${fmtRide(lv).replace(' dB', '')} to ${fmtRide(lc)} (${delta(lv, lc)})`));
     const [bv, bc] = lane('bgv');
     assert.ok(t.includes(`BGV PAD ${fmtRide(bv)} to ${fmtRide(bc)} (${delta(bv, bc)})`));
     const [pv, pc] = lane('perc');
@@ -200,7 +205,7 @@ describe('3. the numbers TRY THIS quotes are what the page draws', () => {
     const [kv, kc] = lane('keys');
     assert.ok(t.includes(`${fmtRide(kv).replace(' dB', '')} to ${fmtRide(kc)} (${delta(kv, kc)})`));
     assert.ok(t.includes(`KEYS, ${delta(kv, kc)}`));
-    assert.ok(t.includes(`LEAD ${fmtRide(base.lead)}, KEYS ${fmtRide(base.keys)}`), 'STATIC lane values');
+    assert.ok(t.includes(`LEAD at ${fmtRide(base.lead)}, KEYS at ${fmtRide(base.keys)}`), 'STATIC lane values');
   });
   it('the final’s step thresholds (p20): LEAD ≥ −2, GTR ≤ +1, four channels changed, keys high-pass', () => {
     const d = code(`${MX}/pagesAdvD.tsx`);
@@ -208,8 +213,9 @@ describe('3. the numbers TRY THIS quotes are what the page draws', () => {
     assert.match(d, /const gtrTamed = \(mix\.gtr\?\.faderDb \?\? 5\) <= 1;/);
     assert.match(d, /return leadUp && gtrTamed && changed >= 4;/);
     assert.match(d, /const mudCleared = !!\(mix\.keys\?\.hpHz/);
-    // TRY THIS changes four channels: LEAD, GTR, BGV and KEYS (the high-pass).
-    assert.match(GUIDES.p20.tryThis[0], /LEAD[\s\S]*GTR[\s\S]*BGV[\s\S]*HIGH-PASS THE KEYS[\s\S]*four channels/);
+    // TRY THIS changes four channels: LEAD, GTR, BGV and KEYS (the high-pass sets keys.hpHz,
+    // so KEYS counts as changed) — steps 2 and 3 both turn ✓.
+    assert.match(GUIDES.p20.tryThis[0], /LEAD[\s\S]*GTR[\s\S]*BGV[\s\S]*HIGH-PASS THE KEYS[\s\S]*Steps 2 and 3 turn ✓/);
     assert.match(d, /gtr: \{ faderDb: 5 \},[\s\S]*lead: \{ faderDb: -6, verbSendDb: 0 \}/);
   });
   it('the bus chains (p14) and the sidechain (p8) and parallel crush (p6) are quoted at their real settings', () => {
@@ -272,7 +278,12 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
   const endCall = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
 
   it('all five sections, 1–5 bullets each, 2–3 TRY THIS, inside the no-scroll budget', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+    // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+    const intro = (END as unknown as { intro?: { learning: string; start: string } }).intro;
+    assert.ok(intro, 'no intro');
+    assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+    assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
     for (const k of SECTION_KEYS) {
       assert.ok(END[k].length >= 1 && END[k].length <= 5, `END.${k}: ${END[k].length} bullets`);
       for (const line of END[k]) assert.ok(line.trim().length > 10, `END.${k}: a blank bullet`);
@@ -301,14 +312,14 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(ENDSCREEN, /const title = unreadable \? 'YOUR PROGRESS'/);
     assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \([^;]*pageCreditKeys\.length > 0\) && creditUnreadable\);/);
     assert.match(endCall, /unreadable=\{(unreadable|endUnreadable)\}/);
-    assert.match(ET, /YOUR PROGRESS if saved pages could not be read/);
+    assert.match(ET, /If your saved progress can’t be read, it says YOUR PROGRESS/);
   });
   it('credit mode: the lab passes pageCreditKeys, so rows read ✓ CREDITED (✓ DONE for a guest)', () => {
     assert.match(SCREEN, /<PagedLab[^>]*pageCreditKeys=\{PAGE_KEYS\}[^>]*\/>/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(endCall, /mode=\{creditMode\}/);
     assert.match(ENDSCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE when you are not signed in'));
+    assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE if you’re not signed in'));
   });
   it('the buttons it names, with their exact labels and where they go', () => {
     // PagedLab passes no doneLabel → the default; PRACTICE AGAIN → page 1; DONE → back one screen.
@@ -321,8 +332,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     for (const n of ['REVIEW ▾', 'HIDE ▴']) assert.ok(ENDSCREEN.includes(n), n);
     for (const n of ['DONE · BACK TO LABS', 'PRACTICE AGAIN FROM THE START', 'REVIEW ▾', 'HIDE ▴', 'Before You Begin']) assert.ok(ET.includes(n), `the guide never names "${n}"`);
     assert.equal(ADVANCED_MIXING_GUIDE_PAGE_TITLES.p1, 'Before You Begin');
-    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1, Before You Begin, and clears nothing/);
-    assert.match(ET, /DONE · BACK TO LABS leaves the lab, back to the screen you opened it from/);
+    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1, Before You Begin\. It clears nothing/);
+    assert.match(ET, /DONE · BACK TO LABS takes you out of the lab, back to the screen you opened it from/);
   });
   it('the strip on the end screen: ‹ PREV leaves the end screen, the readout reads WHAT’S LEFT, START OVER is in its list', () => {
     const NAVS = code('src/screens/lab/kit/labNav.ts');
@@ -340,8 +351,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
-    assert.ok(ET.includes('a line saying it counts once the goals at the foot of the page are done'));
-    assert.match(ET, /NEXT and FINISH move on without counting it/);
+    assert.ok(ET.includes('It counts once the goal chips at the foot of that page are done'));
+    assert.match(ET, /NEXT and FINISH move you on, but they don’t mark the page done/);
   });
   it('page 1 counts when opened with Beginning Mixing complete on this device, or once its three checks are passed', () => {
     const A = code(`${MX}/pagesAdvA.tsx`);
@@ -349,22 +360,22 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     // read once, while page 1 is open; only useVisitGoals on that page marks it
     assert.match(A, /void loadPagedProgress\('mixing-beg'\)[\s\S]*?\}, \[\]\);/);
     assert.match(A, /const latched = useVisitGoals\(ctx, goals\);/);
-    assert.match(ET, /Before You Begin counts when you open it with Beginning Mixing complete on this device, or once its three checks are passed/);
+    assert.match(ET, /Before You Begin counts as soon as you open it with Beginning Mixing finished on this device, or once you pass its three checks/);
   });
   it('credit per page (signed in), kept after START OVER: onPageDone reports each page’s key; banked keys stay cleared', () => {
     assert.match(SCREEN, /const onPageDone = \(index: number\) => reportTrainingComplete\(mixingPageKeyAt\('adv', index\)\);/);
     assert.match(PAGED, /\(!!pageCreditKeys\[i\] && bankedPageKeys\.has\(pageCreditKeys\[i\]\)\)/);
     assert.match(LABEND, /'Practicing again or reviewing never removes credit you have already earned\./); // endNote (D41 K2)
-    assert.match(ET, /never removes credit you have already earned/);
+    assert.match(ET, /Practicing never takes away its ✓/);
   });
   it('no check row and no optional pages, so the guide says the pages are the whole list', () => {
     assert.doesNotMatch(SCREEN, /optionalPage=/);
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts'), /mixing-adv/);
-    assert.match(ET, /No CHECK row: the pages are the whole list\./);
+    assert.doesNotMatch(ET, /CHECK YOUR UNDERSTANDING|CHECK row/); // no check row to name (return 2026-11-08 dropped the build-side sentence)
     assert.doesNotMatch(ET, /OPTIONAL/);
     // several pages (Before You Begin, planning, session management, stems…) have no player
     assert.doesNotMatch(ET, /comparison/);
     assert.match(ET, /reopen a finished page to practice it again/);
-    assert.match(ET, /START OVER \(PRACTICE\) at the foot of the strip’s page list/);
+    assert.match(ET, /START OVER \(PRACTICE\) in the strip’s page list/);
   });
 });

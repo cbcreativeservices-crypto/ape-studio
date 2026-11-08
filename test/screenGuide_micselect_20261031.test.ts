@@ -55,11 +55,16 @@ describe('1. every Microphone Selection screen has a complete guide', () => {
     assert.match(s, /extra=\{<LabUnderstandingBlock labId="micselect" labTitle="Microphone Selection Lab" \/>\}/);
     const q = code('src/features/lab/understandingChecks.ts').match(/const MIC_SELECT: readonly Q\[\] = \[([\s\S]*?)\n\];/)?.[1] ?? '';
     assert.deepEqual([...q.matchAll(/^\s{4}id: '([^']+)'/gm)].map((m) => m[1]), ['categories', 'lectern-rumble', 'self-noise', 'label-vs-spec']);
-    assert.match(END.seeing.join(' '), /four questions on the whole lab — categories, lectern rumble, self-noise, and a label versus the specs/);
+    assert.match(END.seeing.join(' '), /four questions on the whole lab: mic categories, rumble at a lectern, self-noise, and a label versus the specs/);
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k]?.length} bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -153,7 +158,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     assert.match(s, /label=\{variantsDone\.has\(v\.key\) \? `✓ \$\{v\.prompt\.split\('\.'\)\[0\]\}` : v\.prompt\.split\('\.'\)\[0\]\}/);
     const chips = D.CHALLENGE_VARIANTS.map((v: { prompt: string }) => v.prompt.split('.')[0]);
     assert.deepEqual(chips, ['The boom operator is no longer available', 'The interview is now inside a quiet studio', 'The interviewee must walk around freely']);
-    for (const c of chips) assert.ok(G.challenge.control.join(' ').includes(`"${c}"`), `challenge guide lacks "${c}"`);
+    for (const c of chips) assert.ok(G.challenge.control.join(' ').includes(`“${c}`), `challenge guide lacks "${c}"`);
   });
   it('the defaults the guides call "shown first" are the screen’s initial state', () => {
     assert.match(s, /useState<string \| null>\('dynamic'\)/);
@@ -174,7 +179,7 @@ describe('3. every verdict and count a TRY THIS quotes is what the screen comput
     assert.equal(D.MIC_TYPES.filter((m: { klass: string }) => m.klass === 'transducer').length, 4);
     assert.equal(D.MIC_TYPES.filter((m: { klass: string }) => m.klass === 'form').length, 8);
     assert.equal(D.CHARACTERISTICS.length, 16);
-    assert.match(G.types.seeing[0], /^Twelve microphone types/);
+    assert.match(G.types.seeing[0], /^Twelve mic types/);
     assert.match(G.chars.seeing[0], /^Sixteen characteristic chips/);
     const shotgun = D.MIC_TYPES.find((m: { key: string }) => m.key === 'shotgun');
     assert.equal(shotgun.klass, 'form');
@@ -208,9 +213,9 @@ describe('3. every verdict and count a TRY THIS quotes is what the screen comput
     const reason = D.PATTERN_REASONS.find((r: { text: string }) => r.text === 'Need equal pickup in all directions');
     assert.deepEqual(reason.goodFor, ['omni']);
     const t = G.patterns.tryThis;
-    assert.match(t[0], /Cardioid the Wedge monitor, straight behind, reads ✓ rejected\. Hypercardioid: △ partial — its rear lobe\. Figure-8: ⚠ picked up\./);
+    assert.match(t[0], /On Cardioid, the Wedge monitor straight behind reads ✓ rejected\. On Hypercardioid it reads △ partial: that’s its rear lobe\. On Figure-8: ⚠ picked up\./);
     assert.match(t[1], /△ partial on Cardioid but ✓ rejected on Hypercardioid/);
-    assert.match(t[2], /every unwanted neighbor reads ⚠ picked up \(only the Singer stays ✓\)/);
+    assert.match(t[2], /every unwanted neighbor reads ⚠ picked up, and only the Singer stays ✓/);
     // the wedge really is straight behind, the drums really off to the side
     assert.equal(D.STAGE_SOURCES.find((x: { key: string }) => x.key === 'monitor').angleDeg, 180);
     assert.equal(D.STAGE_SOURCES.find((x: { key: string }) => x.key === 'drums').angleDeg, 96);
@@ -252,7 +257,7 @@ describe('3. every verdict and count a TRY THIS quotes is what the screen comput
     assert.equal(M.loud.cond.v, 'watch');
     assert.match(s, /m\.v === 'good' \? '✓ good match' : m\.v === 'watch' \? '△ depends' : '⚠ caution'/);
     const t = G.spl.tryThis;
-    assert.match(t[0], /Very quiet reads ✓ good match, Extremely loud ⚠ caution\. Switch to Moving-coil dynamic and the two swap/);
+    assert.match(t[0], /On Studio condenser, Very quiet reads ✓ good match and Extremely loud ⚠ caution\. Switch to Moving-coil dynamic and the two swap/);
     assert.match(t[1], /Quiet: ✓ good match/);
     assert.match(t[2], /Loud reads △ depends/);
   });
@@ -363,7 +368,7 @@ describe('5. the accuracy-chip decision', () => {
 describe('guide fixes vetted against the screen (2026-10-31 review round)', () => {
   it('the reasoning line shows only on the original brief after a defensible pick', () => {
     assert.match(s, /\{!variant && \(correctPick \|\| acceptedPick\) \? \(/);
-    assert.match(G.challenge.changes.join(' '), /On the original brief, once the pick is defensible, a reasoning line/);
+    assert.match(G.challenge.changes.join(' '), /On the original brief, a defensible pick also gets a line that checks your factors/);
   });
   it('LAB COMPLETE = every page opened AND the check passed (D41 #8/#9: the check is a CHECK unit)', () => {
     assert.match(s, /cleared=\{endCleared\}/);
@@ -373,8 +378,8 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     // The CHECK row stays on the end screen (the check is drawn there), never back to Lesson 1.
     assert.match(s, /onJump=\{\(id\) => \{ if \(id !== UNDERSTANDING_UNIT\) goTo\(/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'MicSelectLab', key: 'tr_mic_select', completion: 'understanding'/);
-    assert.match(END.seeing[0], /The title reads WHAT’S LEFT, listing what is still to do, until every step is opened \(the mic locker too, though marked Optional\) and the check is passed; then it reads LAB COMPLETE/);
-    assert.match(END.seeing[0], /CHECK row/);
+    assert.match(END.seeing[0], /The title reads WHAT’S LEFT until every step is opened \(the optional mic locker too\) and the check is passed; then it reads LAB COMPLETE/);
+    assert.match(END.control.join(' '), /CHECK row/);
   });
   it('the shared kit never shows LAB COMPLETE above an unpassed check (re-derived with labEnd)', async () => {
     const { whatsLeft, endTitle, endLead } = await import('../src/screens/lab/kit/labEnd.ts');
@@ -401,7 +406,8 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     for (const t of END.tryThis) assert.match(t, /under REVIEW ▾ once opened/);
   });
   it('Microphone Principles is an Audio Fundamentals lab; this lab is not', () => {
-    assert.match(END.teaches.join(' '), /one of the Audio Fundamentals labs/);
+    // course navigation left WHAT THIS TEACHES (owner 2026-11-08), so it never mislabels this lab's place
+    assert.doesNotMatch(END.teaches.join(' '), /Audio Fundamentals/);
   });
 });
 

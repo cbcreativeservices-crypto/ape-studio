@@ -96,28 +96,28 @@ describe('weekly notification facts', () => {
 
 describe('guided lessons and tool help', () => {
   it('F001355: delay formula multiplies by beats, not the written note fraction', () => {
-    assert.ok(CONTENT.includes('(60000 / BPM) × beats, where a quarter note = 1, an eighth = 0.5'));
+    assert.ok(CONTENT.includes('(60,000 ÷ BPM) × beats, where a quarter note = 1 beat, an eighth = 0.5'));
     assert.ok(!CONTENT.includes('× note-fraction'));
   });
   it('F001374: Sabine with 0.161 uses absorption in m² (metric sabins)', () => {
-    assert.ok(CONTENT.includes('A = total absorption in m², i.e. metric sabins'));
+    assert.ok(CONTENT.includes('A is its total absorption in m² (metric sabins)'));
     assert.ok(!CONTENT.includes('A = total absorption in sabins)'));
   });
   it('F001536 / F001542: asymmetric shaping adds even AND odd harmonics', () => {
-    assert.ok(CONTENT.includes('asymmetric (tube) → even plus odd (warm)'));
-    assert.ok(CONTENT.includes('asymmetric f → even + odd'));
+    assert.ok(CONTENT.includes('An uneven bend adds even harmonics (440, 880 Hz…) to the odd ones'));
+    assert.ok(CONTENT.includes('if g(−x) = −g(x) (symmetric), a sine at f comes out with odd harmonics only (3f, 5f…); if not, even ones join (2f, 4f…)'));
     assert.ok(!CONTENT.includes('asymmetric f → even. Any harmonic'));
   });
   it('F001533: no builder note in learner text', () => {
     assert.ok(!CONTENT.includes('so make oversampling a toggle'));
   });
   it('F001672: Lissajous formula carries 2π', () => {
-    assert.ok(CONTENT.includes('A₁sin(2πf₁t+φ₁)'));
+    assert.ok(CONTENT.includes('A·sin(2πf₁t + φ₁)'));
     assert.ok(!CONTENT.includes('A₁sin(f₁t+φ₁)'));
   });
   it('F002270 / F002271 / F002280: T20 needs ~35 dB, T30 ~45 dB above the noise floor', () => {
-    assert.ok(HELP.includes('about 35 dB above the noise floor'));
-    assert.ok(HELP.includes('about 45 dB from the peak down to the noise floor'));
+    assert.ok(HELP.includes('T20 needs the sound to start about 35 dB above the background noise'));
+    assert.ok(HELP.includes('T30 needs about 45 dB between the peak and the background noise'));
     assert.ok(!HELP.includes('you only need 20 clean dB'));
     assert.ok(!HELP.includes('to see 30 clean dB'));
   });

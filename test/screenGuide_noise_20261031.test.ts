@@ -62,7 +62,12 @@ describe('1. every Noise screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -110,14 +115,17 @@ describe('3. each guide quotes its screen’s real names', () => {
       'SPKR', 'WHITE', 'PINK', 'BROWN', 'BLUE', 'VIOLET',
       // the well and the rack's own controls
       'LAB NOTES', 'WHAT YOU’RE SEEING', 'OUTPUT LEVEL', 'CHECK YOURSELF', 'GUIDED LESSON', 'HIDE DISPLAY', 'FULL SCREEN',
-      // catalog placement
-      'Oscillators', 'Harmonics', 'FM Synthesis',
+      // catalog placement (Oscillators / Harmonics / FM Synthesis) dropped: course-order lines left the guide (decision 4, 2026-11-08)
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Gray', 'HVAC', 'WHITE', 'PINK', 'BROWN', 'BLUE', 'VIOLET', 'SLOPE', 'SPKR'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'COLOR', 'SLOPE', 'PINK', 'BROWN', 'WHITE'],
+    // BROWN dropped: the CHECK guide no longer pairs it with its slope (decision 6, the rumble/−6 question)
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'COLOR', 'SLOPE', 'PINK', 'WHITE', 'VIOLET'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(NOISE_SCREEN_GUIDES).sort());
+  });
+  it('no guide states the course order any more (decision 4: course-navigation lines removed)', () => {
+    for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /Comes after|follow(s)? (this|next)|Harmonics and FM Synthesis/, `${id}: a course-order line`);
   });
   for (const [id, names] of Object.entries(NAMES)) {
     it(`${id}: every pinned name is on the screen AND in the guide`, () => {
@@ -209,23 +217,33 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
   it('SPKR dims ALL five straight lines; the bright line is the filtered curve', () => {
     assert.match(s, /active=\{!speakerView && l\.key === selectedKey\}\s*dim=\{speakerView\}/);
     assert.match(s, /\{filteredPath \? <Path d=\{filteredPath\} stroke=\{tint\} strokeWidth=\{2\.4\}/);
-    assert.match(g.explore.control[2], /The five straight lines dim; a bright curve is the filtered color\./);
+    assert.match(g.explore.control[2], /The five lines dim; a bright curve is the filtered color\./);
   });
   it('the high-pass reduces the rumble, it does not remove it (50 Hz: brown still ≈ +6.8 dB over the 1 kHz dot)', () => {
     const hpf = (f: number) => { const r4 = (f / 150) ** 4; return 10 * Math.log10(r4 / (1 + r4)); };
     const drawn = -6 * Math.log2(50 / 1000) + hpf(50);
     assert.equal(drawn.toFixed(1), '6.8');
-    assert.doesNotMatch(textOf(GUIDES.explore), /never gets that rumble/);
-    assert.match(g.explore.tryThis[2], /the phone speaker gets far less of that rumble/);
+    assert.doesNotMatch(textOf(GUIDES.explore), /never gets that rumble|can(’|')t reproduce deep bass/);
+    assert.match(g.explore.tryThis[2], /[Tt]he phone speaker gets far less of that rumble/);
   });
   it('the chart is level PER HERTZ (white flat, pink −3), so pink’s octave-analyzer flatness is reconciled', () => {
     assert.match(g.explore.seeing[0], /^Level per hertz against frequency/);
     assert.match(g.explore.teaches[2], /reads flat on an octave-band analyzer \(this per-hertz chart shows it at −3\)/);
   });
   it('LEARN: the lesson mentions a spectrogram; this lab has none, and the guide says so', () => {
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /Use the spectrogram to identify a mystery noise/);
+    // the lesson mentions a spectrogram both before and after the Part A lesson load
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /spectrogram/);
     assert.doesNotMatch(s, /spectrogram/i);
-    assert.match(g.learn.changes[1], /this lab has no spectrogram/);
+    assert.match(g.learn.changes[1], /a line mentions a spectrogram, that display is in other tools, not this lab/);
+  });
+  it('decision 6: the CHECK guide never gives an answer away; its slope example is VIOLET (+6), a color the check does not ask', () => {
+    const t = [textOf(GUIDES.check), g.check.intro!.learning, g.check.intro!.start].join('\n');
+    // Q2 pink −3, Q3 brown −6, Q4 "equal energy per octave matches how we hear", Q1 "twice the hertz / twice the energy"
+    assert.doesNotMatch(t, /−3 for PINK|−6 for BROWN|PINK[^.]*−3|BROWN[^.]*−6|ears follow octaves|matches how we hear|twice (as many )?(the )?hertz|twice the energy/);
+    assert.doesNotMatch(t, /tap each COLOR chip (and|to) read SLOPE/);
+    assert.match(g.check.tryThis[0], /tap COLOR, then VIOLET: SLOPE reads \+6 dB\/OCT/);
+    assert.match(code(SCREEN), /label: 'VIOLET', mode: GEN_MODES\.\w+, slope: 6 \}/);
+    assert.doesNotMatch(CHECKS.match(/const NOISE: readonly Q\[\] = \[([\s\S]*?)\n\];/)![1], /options: \[[^\]]*\+6 dB/, 'the check now asks +6; pick another example');
   });
   it('D41 CHECK: right answers survive a tab switch (the check stays mounted), and the guide says so', () => {
     assert.match(code('src/components/LabUnderstandingCheck.tsx'), /const \[correct, setCorrect\] = useState<Set<string>>/);

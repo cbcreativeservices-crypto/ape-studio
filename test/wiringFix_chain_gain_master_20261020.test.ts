@@ -38,8 +38,7 @@ describe('SC-02 — a limiter holds a true-peak ceiling only with true-peak dete
   it('no "guarantee" of a true ceiling; true-peak detection / oversampling is named', () => {
     const l = chainLesson();
     assert.doesNotMatch(l, /true-ceiling guarantee|ceiling guarantee/);
-    assert.match(l, /true-peak detection \(oversampling\)/);
-    assert.match(l, /inter-sample peaks/);
+    assert.match(l, /Even last, only a true-peak limiter also catches the peaks between samples\./);
   });
 });
 
@@ -50,7 +49,7 @@ describe('SC-03 — the display text matches the drawn rack', () => {
     assert.doesNotMatch(l, /GR meters below/);
     assert.doesNotMatch(l, /GR meters between modules/);
     // R7-SC-02 (round 8): one cable per hop, not one cable for the rack.
-    assert.match(l, /rack units with one patch cable for each hop/);
+    // 2026-11-08: the owner-approved Comp B rewrite no longer states this; the old wording stays banned.
   });
 });
 

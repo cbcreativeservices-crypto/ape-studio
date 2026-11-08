@@ -81,7 +81,12 @@ describe('1. every Cymatics screen has a complete guide', () => {
   });
   for (const [id, gd] of ALL) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -101,14 +106,13 @@ describe('1. every Cymatics screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(Pro Tools|Logic|Ableton|iZotope|Waves|Shure|Neumann|Sennheiser|Yamaha|Avid|Smaart|Dante|Kevlar|Mylar|Rossing)\b/, `${id}: a brand or a name`);
     }
   });
-  it('the module guides place each module in the sequence the registry teaches', () => {
+  // Owner decision 4 (Guided Lessons return, 2026-11-08): course-navigation lines
+  // ("Module 1; … is next.") are out of WHAT THIS TEACHES, which holds knowledge only.
+  it('WHAT THIS TEACHES holds knowledge, never the course sequence', () => {
     CYMATICS_MODULES.forEach((m: { id: string; title: string }, i: number) => {
       const t = MODS[m.id].teaches.join(' ');
-      if (i < CYMATICS_MODULES.length - 1) {
-        assert.ok(t.includes(`Module ${i + 1}; ${CYMATICS_MODULES[i + 1].title} is next.`), `${m.id}: "Module ${i + 1}; ${CYMATICS_MODULES[i + 1].title} is next."`);
-      } else {
-        assert.match(t, /The last module/);
-      }
+      assert.doesNotMatch(t, /\bis next\b|comes next|The last module|Module \d+;/, `${m.id}: a course-navigation line in WHAT THIS TEACHES`);
+      if (i < CYMATICS_MODULES.length - 1) assert.ok(!t.includes(`${CYMATICS_MODULES[i + 1].title} is next`), m.id);
     });
   });
   it('Evidence vs Myth is commit-first: its guide gives no verdict away', () => {
@@ -197,19 +201,19 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     'studio.membrane': {
       files: [`${D}MembraneStudioScreen.tsx`, 'src/features/cymatics/membrane.ts', 'src/screens/lab/LabShell.tsx'],
-      names: ['DRIVE', 'FUNDAMENTAL', 'MODE', 'RESPONSE', 'f_s', 'ka', 'STAGE', 'FREQ', 'JUMP TO A MODE', 'JUMP TO A CONE STAGE', 'HEAD', 'STRIKE', 'WHERE THE MALLET LANDS', 'Drag on drum', 'Open shell', 'Timpani kettle', 'CONE', 'Show the loudspeaker', 'The drum', 'Heat map', 'Phase', 'Node lines', '3D head', 'Cross-section', 'Loudspeaker', 'LEVEL', 'TUNING', 'TENSION', 'PISTON BAND — THE CONE MOVES AS ONE', 'SAVE', 'LAB NOTES', ['14" snare', '14" snare']],
+      names: ['DRIVE', 'FUNDAMENTAL', 'MODE', 'RESPONSE', 'f_s', 'ka', 'STAGE', 'FREQ', 'JUMP TO A MODE', 'JUMP TO A CONE STAGE', 'HEAD', 'STRIKE', 'WHERE THE MALLET LANDS', 'Drag on drum', 'Open shell', 'Timpani kettle', 'CONE', 'Show the loudspeaker', 'The drum', 'Heat map', 'Phase', 'Node lines', '3D head', 'Cross-section', 'Loudspeaker', 'LEVEL', 'TUNING', 'TENSION', 'PISTON BAND — THE CONE MOVES AS ONE', 'SAVE', 'LAB NOTES', ['14-inch snare', '14" snare']],
     },
     learn: {
       files: ['src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/content.ts', `${D}PlateStudioScreen.tsx`],
-      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'LEARN', 'EXPLORE', 'CHECK', 'GUIDED LESSON', 'LAB NOTES', 'Drive level', 'Material', 'LEVEL', 'PLATE', 'MATERIAL'],
+      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'LEARN', 'EXPLORE', 'CHECK', 'GUIDED LESSON', 'LAB NOTES', 'LEVEL', /* 2026-11-08: the lesson's old "Drive level" and "Material" entries are now LEVEL and MATERIAL */ 'PLATE', 'MATERIAL'],
     },
     'learn.liquid': {
       files: ['src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/content.ts', `${D}LiquidStudioScreen.tsx`, 'src/features/cymatics/faraday.ts', 'src/features/cymatics/liquids.ts'],
-      names: ['CONTROLS', 'LEARN', 'EXPLORE', 'Faraday waves', 'SHAKE', 'SMALL RIPPLES', 'Liquid', 'LIQUID', 'Glycerin–water 50/50'],
+      names: ['CONTROLS', 'LEARN', 'EXPLORE', 'Faraday waves', 'SHAKE', 'SMALL RIPPLES', 'LIQUID' /* 2026-11-08: the lesson entry is LIQUID */, 'Glycerin–water 50/50'],
     },
     'learn.membrane': {
       files: ['src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/content.ts', `${D}MembraneStudioScreen.tsx`],
-      names: ['CONTROLS', 'LEARN', 'EXPLORE', 'Drive level', 'LEVEL', 'Tension and size', 'HEAD', 'TENSION', 'FUNDAMENTAL'],
+      names: ['CONTROLS', 'LEARN', 'EXPLORE', 'LEVEL', 'Tension and size', 'HEAD', 'TENSION', 'FUNDAMENTAL'],
     },
     check: {
       files: ['src/components/LabUnderstandingCheck.tsx'],
@@ -250,7 +254,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(code('src/features/cymatics/plateModes.ts'), /const next = excitable\.find\(\(m\) => m\.hz > f \* 1\.02\) \?\? null;/);
     for (const id of ['module.nodes', 'studio.plate']) {
       const t = textOf(guideOf(id));
-      assert.match(t, /LAND ON jumps to the next mode up/);
+      assert.match(t, /LAND ON jumps to the next (mode|one) up/);
       assert.doesNotMatch(t, /nearest mode/i);
     }
   });
@@ -277,7 +281,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.equal(by('liquid'), 4);
     assert.equal(by('membrane'), 3);
     assert.equal(EXPERIMENTS[0].title, 'Find the first visible resonance');
-    assert.match(textOf(MODS.experiments), /seventeen experiments: ten on the Chladni plate, four in the liquid dish, three on the drumhead and loudspeaker/);
+    assert.match(textOf(MODS.experiments), /Seventeen experiments: ten on the Chladni plate, four in the liquid dish and three on the drumhead and loudspeaker/);
   });
   it('What Is Cymatics?: the chips sit ABOVE the sand plate, the strip under it', () => {
     const I = code('src/screens/lab/cymatics/modules/modIntro.tsx');
@@ -285,12 +289,12 @@ describe('3. each guide quotes its screen’s real names', () => {
     const plate = I.indexOf('title="SAND ON THE PLATE"');
     const strip = I.indexOf('<ResponseStrip');
     assert.ok(chips > 0 && chips < plate && plate < strip);
-    assert.match(textOf(MODS.intro), /Above the sand plate: two chips[\s\S]*Under it: a RESPONSE vs FREQUENCY/);
+    assert.match(textOf(MODS.intro), /Above the sand plate: At resonance · 104 Hz and Off resonance · 80\.9 Hz\.[\s\S]*RESPONSE vs FREQUENCY/);
   });
   it('Change One Thing: Solid wood is orthotropic, so the guide does not call every material an exact scaling', () => {
     assert.match(code('src/screens/lab/cymatics/modules/modChange.tsx'), /\{ label: 'Solid wood', short: 'Wood', patch: \{ material: 'wood' \} \}/);
     assert.match(code('src/features/cymatics/materials.ts'), /id: 'wood', label: 'Solid wood', E: 12, Eperp: 0\.9/);
-    assert.match(textOf(MODS.change), /Size and thickness shift every mode by an exact scaling law; a new material moves them too \(Solid wood also re-orders them\)/);
+    assert.match(textOf(MODS.change), /Double the size and every mode drops to a quarter; double the thickness and every mode doubles\. A new material moves them too \(Solid wood also re-orders them\)/);
   });
   it('CHECK: a wrong pick shows the same explanation as a right one — never called a "hint"', () => {
     assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{got \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>\s*<Text style=\{s\.explainBody\}>\{q\.explanation\}<\/Text>/);
@@ -343,7 +347,7 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.equal(PM.plateModes({ ...P0, exciter: { x: 0.5, y: 0.5 } }, 24).filter((m: { drive: number }) => m.drive > 0.05).length, 7);
     assert.ok(disc.length >= 8);
     const t = textOf(MODS.nodes);
-    assert.match(t, /lists the plate’s lowest modes \(up to eight\)/);
+    assert.match(t, /lists the plate’s lowest modes, up to eight/);
     assert.doesNotMatch(t, /first eight modes/);
     assert.match(t, /DRIVE 104 Hz, MODE \(2,0\)\+\(0,2\), LINES 2, RES AT/);
     assert.match(t, /LINES goes from 2 to 4/);
@@ -376,7 +380,7 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.match(t, /191 Hz to start/);
     assert.match(t, /A reads AT, B reads BETWEEN/);
     assert.match(t, /B stays AT/);
-    assert.match(t, /LOCKED reads 95\.6 Hz; B at 1 mm reads BETWEEN/);
+    assert.match(t, /LOCKED reads 95\.6 Hz\. B at 1 mm reads BETWEEN/);
     // REVEAL bullet (verified 2026-10-31): steel is the NEAR MISS — its matching mode sits
     // about 1 % below the locked tone, yet the sharp resonance is missed and B goes dark.
     // It is never called an "exception" beside damping (which really does keep B AT).
@@ -426,9 +430,9 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.match(H, /const beatWindow = tone\.detuned \? 2\.5 \/ Math\.max\(0\.2, beatHz\) : 0;/);
     const t = textOf(MODS.harmony);
     assert.match(t, /A 220 Hz, B 330 Hz/);
-    assert.match(t, /A reads 440 Hz, B 660 Hz, INTERVAL still P5/);
-    assert.match(t, /Set VIEW to Lissajous figure, then ride DETUNE to about \+1\.00 %: at BASE 220 Hz, BEAT reads about 13\.2 Hz/);
-    assert.match(t, /Ride DETUNE back to locked, then RATIO 1 : 2/);
+    assert.match(t, /A reads 440 Hz, B 660 Hz, and INTERVAL is still P5/);
+    assert.match(t, /Set VIEW to Lissajous figure, then ride DETUNE to about \+1\.00 %\. At BASE 220 Hz, BEAT reads about 13\.2 Hz/);
+    assert.match(t, /Ride DETUNE back to locked, then pick RATIO 1 : 2/);
     assert.match(t, /about two and a half beats/);
     // Two pure sines: no partials to line up — the guide never says they do.
     assert.doesNotMatch(t, /partials|figure-eight|slowly changes shape/);
@@ -524,7 +528,7 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     // After TRY #1 lands on (0,1), DRIVE reads 199.6 Hz (TENSION does not move DRIVE).
     assert.equal(MU.formatHzPrecise(Math.round(m01.hz * 10) / 10), '199.6 Hz');
     assert.equal(MB.CONE_STAGE_LABEL[MB.readCone(MB.DRIVER_BY_ID.woofer200, 199.6).stage], 'PISTON BAND — THE CONE MOVES AS ONE');
-    assert.match(t, /with DRIVE still at 199\.6 Hz the ladder reads PISTON BAND — THE CONE MOVES AS ONE/);
+    assert.match(t, /With DRIVE still at 199\.6 Hz, the ladder reads PISTON BAND — THE CONE MOVES AS ONE/);
     assert.doesNotMatch(t, /at 180 Hz the ladder/);
   });
 });
@@ -566,7 +570,9 @@ describe('5. wiring and the accuracy-chip decision', () => {
     assert.equal(g('explore'), G.CYMATICS_STUDIO_GUIDES.liquid);
     assert.equal(g('learn'), G.CYMATICS_LEARN_GUIDES.liquid);
     assert.equal(g('check'), G.CYMATICS_CHECK_GUIDE);
-    assert.equal(G.cymaticsStudioGuide('plate')('learn'), G.CYMATICS_LEARN_GUIDE);
+    // Plate's LEARN tab is the shared lesson with its own intro (Guided Lessons return 2026-11-08).
+    assert.equal(G.cymaticsStudioGuide('plate')('learn'), G.CYMATICS_LEARN_GUIDES.plate);
+    for (const k of SECTION_KEYS) assert.equal(G.CYMATICS_LEARN_GUIDES.plate[k], G.CYMATICS_LEARN_GUIDE[k], `plate learn.${k} is the shared lesson`);
     assert.equal(G.cymaticsStudioGuide('membrane')('learn'), G.CYMATICS_LEARN_GUIDES.membrane);
     // Each studio's LEARN TRY THIS uses only that studio's own keys.
     assert.doesNotMatch(code(`${D}LiquidStudioScreen.tsx`), /label: 'LEVEL'/);

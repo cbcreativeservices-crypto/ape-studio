@@ -58,89 +58,101 @@ export type ReverbScreenId = 'explore' | 'learn' | 'check';
 export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'What reverb’s main controls do: RT60 sets how long the tail takes to fall 60 dB, PRE-DELAY when it starts, damping how dark it gets, MIX how loud.',
+      start: 'Tap ▶ with SOURCE on CLICK 60 and watch the amber wash fall on OUT. Then drag RT60 from 0.40 s to 6.0 s and watch the slope change.',
+    },
     seeing: [
-      'The glass, in a dB VIEW (level in decibels): gray clicks come in on IN ▸ and pass the green REVERB stage. ▸ OUT redraws from the left at each click; its ruler counts seconds since then.',
-      'On OUT: the gray dry click, then the amber wash falling as a straight slope. Dashed guides sit 30 dB apart; the dimmer line is the sweep before.',
-      'Readouts: RT60, PRE, MIX. The strip under them says this is a TEACHING MODEL.',
+      'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
+      'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dimmer line is the last sweep.',
+      'RT60, PRE, MIX: your settings. TEACHING MODEL: a drawing of the idea, not a measurement.',
     ],
     control: [
-      '▶ in the header, or a tap on the glass, plays the source through the reverb; ■ stops it. Every control works while it plays.',
-      'The fader is RT60, 0.40 s to 6.0 s. Tap a key for its choices: PRE-DLY (PRE-DELAY: 0, 20, 60 ms), DAMP (HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5.5k, BRIGHT 12k), MIX (35%, 70%, 100% WET), SOURCE (CLICK 60, BURST 1 kHz, PINK NOISE).',
-      'Long-press a key or a readout for its lesson entry. The ⓘ at the end of the readouts explains the display.',
-      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES below: DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions, ⓘ GUIDED LESSON.',
+      'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',
+      'Drag the RT60 fader, 0.40 s to 6.0 s. Tap a key for its choices: PRE-DLY (PRE-DELAY: 0, 20, 60 ms), DAMP (HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5.5k, BRIGHT 12k), MIX (35%, 70%, 100% WET).',
+      'SOURCE picks CLICK 60 (a short click once a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains the display.',
+      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES holds DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
     changes: [
-      'RT60 is the time the wash takes to fall 60 dB, two guide gaps. More RT60, a gentler slope, so tails overlap.',
+      'RT60 is how long the wash takes to fall 60 dB: two guide gaps. A longer RT60 means a gentler slope, so tails overlap.',
       'PRE-DELAY holds the wash back after the dry click, on top of about 31 ms the reverb needs for its first echo.',
       'HF DAMPING dulls the wash on every trip around the reverb, so highs fade sooner than RT60 says: DARK is a soft room, BRIGHT a hard one.',
-      'MIX: at 100% WET only the wash is left.',
+      'At MIX 100% WET, only the wash is left.',
     ],
     teaches: [
-      'RT60 is a time, not an amount: how loud the reverb is belongs to MIX, when it starts to PRE-DELAY.',
+      'RT60 is a time, not an amount. How loud the reverb is belongs to MIX; when it starts belongs to PRE-DELAY.',
       'Pre-delay keeps a voice clear; damping tells a soft room from a hard one; mix sets how far back a source sits.',
-      'It follows Delay (separate echoes) and builds on the Absorption and Reverberation Laboratories in Wave Physics, where RT60 comes from a room. Modulation is next.',
+      'In a real room, size and absorption set RT60, as in the Wave Physics labs; a reverb lets you set it directly.',
     ],
     tryThis: [
       'With SOURCE on CLICK 60, slide RT60 down to 0.40 s: on OUT the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.',
-      'Open PRE-DLY and pick 60 ms: on OUT the wash now jumps up nearly one 100 ms tick after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
-      'Bring RT60 back to about 1.5 s, open DAMP and pick DARK 2k: the wash now nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put: it draws RT60 alone.',
+      'Open PRE-DLY and pick 60 ms: the wash now jumps up nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
+      'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The ideas behind EXPLORE, in words: early reflections and the tail, what RT60 measures, why room size and decay time differ, and how Sabine’s formula ties RT60 to a room.',
+      start: 'Read what reverb is first. Then find the Sabine formula under FORMULA / CONCEPT, and on EXPLORE slide RT60 to 3.0 s to see that time drawn.',
+    },
     seeing: [
-      'The LEARN tab: the guided lesson for this lab as one page to read. Nothing here plays.',
-      'First, what reverb is: early reflections, then the tail. Then CONTROLS: the display, RT60 (decay time), Pre-delay, HF damping and Mix.',
+      'The LEARN tab: this lab’s lesson as one page. Nothing on it moves; the header ▶ still plays or stops the sound.',
+      'First, what reverb is: early reflections, then the tail. Then CONTROLS: the display, RT60 (decay time), PRE-DLY (PRE-DELAY), DAMP (HF DAMPING) and MIX.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: RT60, and the Sabine formula that links it to a room.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; EXPLORE is the live rack.',
+      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; on EXPLORE you see and hear each idea on the live rack.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press a dock key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
+      'On EXPLORE, long-press a dock key or a readout to open just its entry. Long-press a SOURCE choice for that test signal’s own note.',
     ],
     changes: [
-      'Nothing on this page moves: it is the reference for what EXPLORE shows.',
+      'This page is your reference for what EXPLORE shows.',
       'Each CONTROLS entry names a part of the EXPLORE screen and says what it does to the wash.',
-      'Most COMMON MISTAKES lines pair a choice with its cost: too much reverb blurs clarity, no pre-delay glues the voice to the tail, bass sent to the reverb makes it rumble.',
+      'Most COMMON MISTAKES pair a choice with its cost: too much reverb blurs clarity, no pre-delay glues the voice to the tail, bass sent to the reverb makes it rumble.',
     ],
     teaches: [
-      'The words for reverb: RT60, pre-delay, damping, mix, early reflections and tail.',
+      'What RT60, pre-delay, damping, mix, early reflections and the tail are.',
       'Why room size and decay time are separate ideas.',
-      'How RT60 links to a real room through Sabine’s formula — volume over absorption.',
-      'The reference behind EXPLORE and the CHECK tab.',
+      'How RT60 links to a real room through Sabine’s formula: more volume lengthens it, more absorption shortens it.',
+      'Why reverb has two parts: early reflections first, then the denser tail.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT. Then on EXPLORE slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
-      'Read the COMMON MISTAKES line on pre-delay. Then on EXPLORE pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
+      'Read FORMULA / CONCEPT. Then on EXPLORE, slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
+      'Read the COMMON MISTAKES line on pre-delay. Then on EXPLORE, pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
     ],
   },
 
   // ── CHECK — the understanding check ───────────────────────────────────────
   check: {
+    intro: {
+      learning: 'Review: what RT60 measures, and what PRE-DELAY, HF DAMPING and MIX each change in how a reverb sounds.',
+      start: 'Read each card and tap the option you think is right. Not sure? Go to EXPLORE, try the controls the card offers with SOURCE on CLICK 60, then come back.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING, over the lab’s name. Get every question right to complete the lab; a line under the lead counts the ones still to get right.',
+      'CHECK YOUR UNDERSTANDING, over the lab’s name. Get every question right to complete the lab; a line under the intro tells you how many are still to get right.',
       'Four question cards: what RT60 means, a vocal lost in its reverb, HF DAMPING, and a source that sounds far away.',
-      'The options come in a mixed order, so the first one is not always the answer.',
+      'The options come in a mixed order, so the first one isn’t always the answer.',
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
       'A wrong answer costs nothing: pick again straight away. There is no score.',
-      'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. Leaving the lab before the last right answer clears them.',
+      'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so the answer can be worked out.',
-      'When the last card is right, a green card says the lab is complete. It counts once, for every certificate that needs it.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work the answer out.',
+      'Get all four right and the lab is complete: a green card says so.',
     ],
     teaches: [
-      'Each question asks about an idea EXPLORE showed: RT60 is a time, PRE-DELAY is a gap, MIX is how much.',
-      'This is the last step of the lab, and what marks it complete.',
+      'Each question asks about an idea EXPLORE showed: what RT60, PRE-DELAY, HF DAMPING and MIX each change in the sound.',
+      'Telling them apart is how you fix a reverb problem with the right control, not the nearest one.',
       'The same ideas carry into mixing: placing a sound near or far.',
     ],
     tryThis: [
       'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the gray click and the amber wash on OUT.',
-      'Also on EXPLORE: slide RT60 and watch DESIGNED RESPONSE. On its fixed time axis the marker slides along the dashed −60 line, near the left at 0.40 s and near the right at 6.0 s.',
+      'For the RT60 question, reread FORMULA / CONCEPT on LEARN, then come back.',
     ],
   },
 };

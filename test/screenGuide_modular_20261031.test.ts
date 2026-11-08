@@ -67,7 +67,12 @@ describe('1. every Modular screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -126,7 +131,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       'THE VOICE, AS SOUND',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'VCO', 'VCF', 'VCA', 'LFO', 'SINE', 'CUTOFF', 'ACID BASS', 'MAX', 'ENV'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'FINISH · SEE WHAT’S LEFT ›', 'Where you are', 'LEARN', 'EXPLORE', 'AUDIO PATH → OUT', 'WOBBLE', 'MOD'],
+    // decision 6 (2026-11-08): CHECK TRY THIS points to LEARN (FORMULA / CONCEPT, the LFO entry) instead of the
+    // EXPLORE readings that answer the audio-order and LFO questions, so AUDIO PATH → OUT / WOBBLE / MOD left this list.
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'FINISH · SEE WHAT’S LEFT ›', 'Where you are', 'LEARN', 'EXPLORE', 'FORMULA / CONCEPT', 'CONTROLS', 'LFO'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(MODULAR_SCREEN_GUIDES).sort());
@@ -140,6 +147,16 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
+  it('decision 6: the CHECK guide never walks the student to a tested reading', () => {
+    const c = MODULAR_SCREEN_GUIDES.check;
+    const t = [textOf(GUIDES.check), c.intro!.learning, c.intro!.start].join('\n');
+    // answers: no harmonics on a sine; vibrato; envelope → cutoff; VCO → VCF → VCA → OUT
+    assert.doesNotMatch(t, /vibrato|VCO → VCF|VCO, VCF, VCA|ENV→VCF|envelope → (filter|cutoff)|no harmonics/i);
+    assert.doesNotMatch(t, /follow the (amber )?cables|switch the LFO destination|PATCH → WOBBLE/);
+    assert.match(c.tryThis[0], /Switch to LEARN and reread FORMULA \/ CONCEPT/);
+    assert.match(c.tryThis[1], /Switch to LEARN and reread the LFO entry under CONTROLS/);
+    assert.match(c.intro!.start, /switch to LEARN and reread that idea/);
+  });
   it('the dock options the guide lists are exactly the screen’s', () => {
     const s = code(SCREEN);
     const patches = [...s.matchAll(/key: '[a-z]+',\s*label: '([A-Z ]+)',\s*why:/g)].map((m) => m[1]);
@@ -210,7 +227,7 @@ describe('4. the TRY THIS numbers and states are what the screen draws', () => {
     assert.match(s, /\(patchPatch: Partial<Patch>, fromPreset: string \| null = null\)/);
     assert.match(s, /onPress=\{\(\) => update\(\{ lfoDest: d\.v \}\)\}/);
     assert.match(s, /k: 'PATCH',\s*v: patchIdea\?\.label \?\? 'CUSTOM',/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[2], /LFO reads →CUT and a blue cable runs to the VCF\. In MOD tap →PITCH: the cable moves to the VCO, LFO reads →PIT, PATCH reads CUSTOM\./);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[2], /LFO reads →CUT and a blue cable runs to the VCF\. In MOD tap →PITCH: the cable moves to the VCO, LFO reads →PIT and PATCH reads CUSTOM\./);
   });
   it('LEARN 2: ACID BASS → RES MAX, SEQ 8/s and a green ENV → VCF cable', () => {
     assert.match(s, /key: 'bass',[\s\S]*?patch: \{ \.\.\.DEFAULT_PATCH, cutoff: 800, res: 1, envKey: 'pluck', envToCut: 1, seqOn: true, seqRate: 8 \}/);
@@ -219,9 +236,10 @@ describe('4. the TRY THIS numbers and states are what the screen draws', () => {
     assert.match(s, /if \(patch\.envToCut > 0\) add\('env-vcf', \['env', 'outF'\], \['vcf', 'cv1'\], ENV_COLOR\);/);
     assert.match(MODULAR_SCREEN_GUIDES.learn.tryThis[1], /RES reads MAX, SEQ 8\/s, and a green cable runs from ENV to the VCF/);
   });
-  it('the LFO rule the guide states: live only with DEPTH above 0 and a destination', () => {
+  it('the LFO rule the guide states: works only with DEPTH above 0 and a destination, and its cable shows it', () => {
     assert.match(s, /const lfoLive = patch\.lfoDepth > 0 && patch\.lfoDest > 0;/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.changes.join(' '), /live only with DEPTH above 0 and a destination/);
+    assert.match(s, /if \(patch\.lfoDepth > 0 && patch\.lfoDest === 2\) add\('lfo-vcf'/);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.changes.join(' '), /works only with DEPTH above 0 and a destination; look for its cable/);
   });
   // Review 2026-10-31 — each claim vetted against the code before the fix.
   it('vetted: THE VOICE, AS SOUND is introduced in WHAT YOU’RE SEEING, and TRY THIS says where it is', () => {
@@ -230,9 +248,10 @@ describe('4. the TRY THIS numbers and states are what the screen draws', () => {
     const sp = code('src/screens/lab/modular/ModularSpectrum.tsx');
     assert.match(sp, /gray = removed by the filter/);
     assert.match(sp, /strokeDasharray="4 3"/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.seeing.join(' '), /LAB NOTES › THE VOICE, AS SOUND: harmonics of the 110 Hz note as bars \(gray = filtered out\) under the filter’s dashed curve/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[0], /THE VOICE, AS SOUND \(LAB NOTES; ▴ HIDE DISPLAY gives room\)/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[1], /THE VOICE, AS SOUND \(LAB NOTES\)/);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.seeing.join(' '), /LAB NOTES › THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve\. Gray bars: filtered out\./);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[0], /THE VOICE, AS SOUND \(LAB NOTES\)/);
+    // tryThis[1] names the inset; WHAT YOU'RE SEEING already says it is in LAB NOTES
+    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[1], /in THE VOICE, AS SOUND the dashed filter curve/);
     assert.match(code('src/screens/lab/rack/RackUnit.tsx'), /'▴  HIDE DISPLAY'/);
   });
   it('vetted: the live lights (ENV glow, lit SEQ step) are named', () => {
@@ -248,7 +267,9 @@ describe('4. the TRY THIS numbers and states are what the screen draws', () => {
   it('vetted: only some COMMON MISTAKES lines are signal mix-ups (3 of 7) — "Several", not "Most"', () => {
     const lesson = code('src/features/lab/guidedLessons/content.ts').match(/\n  modular: \{([\s\S]*?)\n  \},/)?.[1] ?? '';
     const cm = lesson.match(/commonMistakes: \[([\s\S]*?)\n    \],/)?.[1] ?? '';
-    assert.equal((cm.match(/^      '/gm) ?? []).length, 7);
+    // 7 in the current lesson, 6 in the Part A rewrite (another worker loads it); either way only some are signal mix-ups
+    const nMistakes = (cm.match(/^      ['"]/gm) ?? []).length;
+    assert.ok(nMistakes === 7 || nMistakes === 6, `COMMON MISTAKES has ${nMistakes} lines`);
     assert.match(MODULAR_SCREEN_GUIDES.learn.changes.join(' '), /Several COMMON MISTAKES lines mix up what a signal does/);
     assert.doesNotMatch(MODULAR_SCREEN_GUIDES.learn.changes.join(' '), /Most COMMON MISTAKES/);
   });

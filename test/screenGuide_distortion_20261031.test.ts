@@ -73,7 +73,12 @@ describe('1. every Distortion screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -120,26 +125,31 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['IN ▸', ANIM], ['▸ OUT', ANIM], ['IN = −20 dBFS sine', ANIM], ['DRIVEN (before clip)', ANIM], ['0 dBFS', ANIM],
       // the stage name, the readouts, the dock keys and their choices
       ["case 'distortion': return 'DRIVE';", ANIM, 'green DRIVE stage'], ["k: 'TYPE'", DIST, 'TYPE'], ["k: 'DRIVE'", DIST, 'DRIVE'], ["k: 'MIX'", DIST, 'MIX'],
-      ['HARD CLIP', DIST], ['SOFT (TANH)', DIST], ['TUBE (ASYM)', DIST], ["short: 'OS'", DIST, 'OS key'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
-      ["label: '100%'", DIST, '100%'], ['50% PARALLEL', DIST], ["label: 'SOURCE'", FXSCREEN, 'SOURCE key'], ['PINK NOISE', CONFIGS], ['SINE ${hz} Hz', CONFIGS, 'SINE 220 Hz'],
+      ['HARD CLIP', DIST], ['SOFT (TANH)', DIST], ['TUBE (ASYM)', DIST], ["short: 'OS'", DIST, 'OS picks'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
+      ["label: '100%'", DIST, '100%'], ['50% PARALLEL', DIST], ["label: 'SOURCE'", FXSCREEN, 'SOURCE picks'], ['PINK NOISE', CONFIGS], ['SINE ${hz} Hz', CONFIGS, 'SINE 220 Hz'],
       // the fader range and the caption's −8 dBFS
       ['min: 6, max: 36', DIST, '+6 to +36 dB'], ['lifts the −20 dBFS sine to', DIST, '−8 dBFS'],
       // the well and the rack's own controls
-      ['DESIGNED RESPONSE', FXSCREEN], ['dBFS · uncalibrated', FXSCREEN, '−20 dBFS, uncalibrated'], ['LAB NOTES', SHELL], ['CHECK YOURSELF', BITS],
+      ['DESIGNED RESPONSE', FXSCREEN], ['dBFS · uncalibrated', FXSCREEN, '−20 dBFS, a digital level'], ['LAB NOTES', SHELL], ['CHECK YOURSELF', BITS],
       ['HIDE DISPLAY', RACK], ['FULL SCREEN', RACK], ['ⓘ', RACK], ["'■'", SHELL, '■'], ["'▶'", SHELL, '▶'],
     ],
     learn: [
       ['LEARN', SHELL], ['EXPLORE', SHELL], ['CHECK', SHELL], ['CONTROLS', SHEET], ['COMMON MISTAKES', SHEET], ['PRO TIPS', SHEET], ['FORMULA / CONCEPT', SHEET],
       ['GUIDED LESSON', SHELL], ['LAB NOTES', SHELL],
-      ["'What the display shows'", LESSON_DIST, 'What the display shows'], ["'Type (clip shape)'", LESSON_DIST, 'Type (clip shape)'], ["name: 'Drive'", LESSON_DIST, 'Drive'],
-      ["'Oversampling'", LESSON_DIST, 'Oversampling'], ["name: 'Mix'", LESSON_DIST, 'Mix'], ["'+6 … +36 dB'", LESSON_DIST, '+6 … +36 dB'],
-      ['THD', LESSON_DIST], ['DC offset', LESSON_DIST], ['level-match', LESSON_DIST, 'match levels'], ['Bitcrush', LESSON_DIST + DIST],
+      // CONTROLS names = the on-screen labels (decision 1, 2026-11-08): Type (clip shape) / Drive /
+      // Oversampling / Mix became TYPE / DRIVE / OS / MIX — pinned from the dock config, so the
+      // check holds before and after the Part A lesson load. 'level-match' is checked below.
+      ['"What the display shows"', LESSON_DIST, 'What the display shows'], ["k: 'TYPE'", DIST, 'TYPE (clip shape)'], ["k: 'DRIVE'", DIST, 'DRIVE (+6 … +36 dB)'],
+      ["short: 'OS'", DIST, 'OS (oversampling)'], ["k: 'MIX'", DIST, 'MIX'], ['"+6 … +36 dB"', LESSON_DIST, '+6 … +36 dB'],
+      ['THD', LESSON_DIST], ['DC offset', LESSON_DIST], ['Bitcrush', LESSON_DIST + DIST], ["'▶'", SHELL, '▶'],
       ['HARD CLIP', DIST], ['TUBE (ASYM)', DIST], ["k: 'DRIVE'", DIST, 'DRIVE'],
     ],
     check: [
       ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['no score', UNDERSTAND], ['✓', UNDERSTAND],
-      ['this lab is complete', UNDERSTAND, 'the lab is complete'], ['certificate and program', UNDERSTAND],
-      ['HARD CLIP', DIST], ['TUBE (ASYM)', DIST], ['50% PARALLEL', DIST],
+      // 'certificate and program' dropped: credit bookkeeping left student text (decision 5, 2026-11-08);
+      // HARD CLIP / TUBE (ASYM) dropped: the CHECK no longer walks to that comparison (decision 6) — see section 4.
+      ['this lab is complete', UNDERSTAND, 'the lab is complete'],
+      ['50% PARALLEL', DIST], ['MIX', DIST], ['COMMON MISTAKES', SHEET],
     ],
   };
   it('a name list for every screen', () => {
@@ -154,6 +164,26 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
+  it('LEARN: the lesson’s level-matching line (old or Part A wording) and the guide’s "match levels"', () => {
+    assert.match(LESSON_DIST, /level-match|Match levels/);
+    assert.ok(textOf(GUIDES.learn).includes('match levels'));
+  });
+  it('CHECK: no credit bookkeeping in student text (decision 5)', () => {
+    assert.doesNotMatch(textOf(GUIDES.check), /certificate|program credit/i);
+  });
+  it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
+    const ck = DISTORTION_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
+    const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
+    // symmetric-odd: no "odd harmonics", and no walk to the HARD CLIP / TUBE comparison
+    assert.doesNotMatch(all, /odd harmonics|even harmonics|compare HARD CLIP/i);
+    // parallel: the answer ("grit … clean keeps its body") is not stated
+    assert.doesNotMatch(all, /grit stays|keeps its body|clean body/i);
+    // oversampling: aliasing / fold back not stated; what-is-added: "harmonics created" not stated
+    assert.doesNotMatch(all, /aliasing|fold(s)? back|new frequencies/i);
+    // the new lines send the student to where it is taught
+    assert.match(ck.tryThis[0], /On LEARN, reread the COMMON MISTAKES line on how the top and bottom of the wave bend/);
+    assert.match(ck.tryThis[1], /Read the MIX entry on LEARN, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen/);
+  });
   it('the sources, keys and readouts are exactly the ones the guide lists', () => {
     assert.match(DIST, /sources: \[srcSine\(220\), SRC_SINE_5K, SRC_PINK\],/);
     assert.deepEqual([...DIST.matchAll(/^\s{6}label: '([^']+)', (?:short: '[^']+', )?paramId:/gm)].map((m) => m[1]), ['DRIVE', 'TYPE', 'OVERSAMPLING', 'MIX']);
@@ -170,17 +200,18 @@ describe('3. each guide quotes its screen’s real names', () => {
     // the noise note must clear the legend: no longer than the sine note
     assert.ok('NOISE · SINE DRAWN'.length <= 'IN = −20 dBFS sine'.length);
     assert.match(ANIM, /srcIsNoise=\{model\.srcIsNoise\} \/>;/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /With PINK NOISE: “NOISE · SINE DRAWN”./);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /With PINK NOISE: NOISE · SINE DRAWN, a sine drawn in its place\./);
     // OVERSAMPLING reaches neither drawing — the guide says it changes the sound only
     assert.doesNotMatch(DIST.slice(DIST.indexOf('Hero:'), DIST.indexOf('heroBadge')), /oversample/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /OS changes the sound only/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /OS picks ON \(CLEAN\) or OFF \(ALIASING\); you hear it on SINE 5 kHz; it isn’t drawn/);
   });
   it('the OS copy promises only what a 220 Hz sine can show (verified 2026-10-31: aliasing is faint, HARD CLIP only; no FFT, no high sine)', () => {
     // 24000 / 220 = 109.1 and 22050 / 220 = 100.2: the first folded harmonic is past the 100th
     assert.ok(24000 / 220 > 100 && 22050 / 220 > 100 && 22050 / 220 < 101);
     assert.doesNotMatch(DIST, /HEAR ALIASING/);
     assert.doesNotMatch(LESSON_DIST, /read the FFT|Push a high sine|lets you HEAR|so you can hear the aliasing/);
-    assert.match(LESSON_DIST, /only matters on HARD CLIP/);
+    // the old lesson line or the Part A rewrite (2026-11-08): either way the 220 Hz aliasing is faint
+    assert.match(LESSON_DIST, /only matters on HARD CLIP|reaches Nyquist only near its 10[09]th harmonic, so its aliasing is faint/);
     assert.doesNotMatch(CHECK_DIST, /What do you hear when OVERSAMPLING/);
     // SOFT / TUBE are smooth (tanh): their harmonic at n = 101 is negligible
     const N = 4096, g = 0.1 * 10 ** (36 / 20);
@@ -277,13 +308,13 @@ describe('4. the numbers follow from the lab’s own math', () => {
     // the dry is the UN-driven −20 dBFS input (Effects.hpp: inL * (1 - mix)): under 8 % of the output fundamental
     assert.ok(0.05 / harm(half, 1) < 0.08);
     assert.match(DISTORTION_SCREEN_GUIDES.explore.tryThis[2], /About 5 dB quieter, yet nearly as gritty/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /MIX 50% at \+24 dB: the clean wave is 20 dB below the driven one, so grit stays\. Real parallel lowers the driven copy/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /At MIX 50%, \+24 dB, the clean wave is 20 dB under the driven one, so grit stays; real parallel turns the driven copy down/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /clean tone|half clean/i, `${id}: promises a clean tone the lab cannot play`);
     // 2026-10-31 (two verifiers): the lab's own copy no longer promises the clean body at 50% —
     // the check, the lesson's Mix entry and the CHECK guide all state the ~20 dB gap at +24 dB.
     assert.doesNotMatch(CHECK_DIST + LESSON, /without losing the dry body|keeps clarity while adding grit/);
     assert.match(CHECK_DIST, /about 20 dB under the clipped one at DRIVE \+24 dB, so 50% PARALLEL sounds about 5 dB quieter/);
-    assert.match(LESSON, /In this lab the dry is about 20 dB below the clipped signal at \+24 dB/);
+    assert.match(LESSON, /In this lab the dry is about 20 dB below the clipped signal at \+24 dB|at DRIVE \+24 dB the clean copy is about 20 dB quieter than the distorted one/);
     assert.doesNotMatch(textOf(DISTORTION_SCREEN_GUIDES.check), /keeps the clean body/);
     // the OUT wave's crisp stroke is the level gradient (red at ±full scale), not amber
     assert.match(ANIM, /<FlowGlow path=\{outPath\} width=\{2\} gradH=\{h\} gradY=\{\[h \/ 2 - A, h \/ 2 \+ A\]\} \/>/);
@@ -296,20 +327,30 @@ describe('4. the numbers follow from the lab’s own math', () => {
     assert.ok(thd(cycle('tube', 12)) > 0.05, 'TUBE +12: clearly bent');
     assert.ok(Math.max(...cycle('soft', 20)) < 0.8, 'SOFT +20: bending without reaching 0 dBFS');
     assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /^On HARD CLIP, DRIVE \+12 dB/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /SOFT and TUBE bend gently long before that/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /SOFT and TUBE bend gently long before\./);
   });
   it('the readouts ⓘ opens the lesson display entry (the moving display first, then the LAB NOTES waveshape); SOURCE notes open on a long-press', () => {
     assert.match(FXSCREEN, /onGuide: \(\) => openLesson\('display'\)/);
     // Fix 2026-10-31 (two verifiers): the ⓘ sits beside the animated DistFlow, so the entry
     // leads with it and names its on-screen labels; the still drawing is one closing line.
-    const entry = LESSON_DIST.match(/key: 'display', name: 'What the display shows', definition: "([^"]*)"/)![1];
-    assert.match(entry, /^The moving display is the signal path: a sine enters at IN ▸ \(“IN = −20 dBFS sine”\), passes the green DRIVE stage and leaves at ▸ OUT\./);
+    // 2026-11-08: the entry is read up to the next control so it holds for the old lesson and the
+    // Part A rewrite alike; both name the flow's labels in order.
+    const d0 = LESSON_DIST.search(/key: ["']display["']/);
+    assert.ok(d0 >= 0, 'no display entry');
+    const next = LESSON_DIST.slice(d0 + 5).search(/key: ["']/);
+    const entry = LESSON_DIST.slice(d0, next < 0 ? undefined : d0 + 5 + next);
+    assert.match(entry, /name: ["']What the display shows["']/);
+    assert.match(entry, /IN ▸[\s\S]*passes the green DRIVE stage and leaves at ▸ OUT/);
     for (const name of ['IN ▸', '▸ OUT', "'IN = −20 dBFS sine'", "label: 'DRIVEN (before clip)'", "label: '0 dBFS'", "case 'distortion': return 'DRIVE';"]) assert.ok(ANIM.includes(name), `fxAnim: ${name}`);
     assert.match(entry, /DRIVEN \(before clip\)/);
-    assert.match(entry, /LAB NOTES, under DESIGNED RESPONSE, draws one still cycle of the same waves; where the moving display cannot run, that still drawing takes its place\.$/);
     assert.doesNotMatch(entry, /curve|amber/i, 'not a transfer curve; the OUT wave is the level gradient, not amber');
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /opens the lesson’s display entry: this moving display, then the drawing in LAB NOTES/);
-    assert.match(DISTORTION_SCREEN_GUIDES.learn.changes.join(' '), /The display entry covers the moving display, then the still drawing in LAB NOTES./);
+    // The guide no longer says the ⓘ entry covers the LAB NOTES drawing (the Part A entry does not):
+    // the ⓘ explains the moving display; DESIGNED RESPONSE is named as its own LAB NOTES item.
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /the ⓘ after the readouts explains this display\. DESIGNED RESPONSE in LAB NOTES draws one still, captioned cycle/);
+    assert.match(DISTORTION_SCREEN_GUIDES.learn.changes.join(' '), /The display entry explains the moving display on EXPLORE\./);
+    assert.doesNotMatch(DISTORTION_SCREEN_GUIDES.learn.seeing.join(' '), /Nothing plays/, 'the header ▶ plays on every tab');
+    assert.match(SHELL, /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.ok(DISTORTION_SCREEN_GUIDES.learn.seeing[0].includes('the header ▶ still plays or stops the sound'));
     assert.match(FXSCREEN, /onLongPress: \(\) => openSourceHelp\(s\.gen\)/);
     assert.match(DISTORTION_SCREEN_GUIDES.learn.control.join(' '), /long-press a SOURCE choice/);
     assert.doesNotMatch(textOf(GUIDES.check), /points back to something the EXPLORE/);

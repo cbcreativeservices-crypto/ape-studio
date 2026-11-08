@@ -69,7 +69,9 @@ describe('1. every EQ Lab screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim().length > 10 && intro.start.trim().length > 10, `${id}: the intro card (learning + start)`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -89,17 +91,10 @@ describe('1. every EQ Lab screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(Pro Tools|Logic|Ableton|Cubase|FabFilter|Waves|API|SSL|Neve|Pultec|Klark|dbx|Behringer|Yamaha)\b/, `${id}: a gear/software brand`);
     }
   });
-  it('each module guide names the module before and after it by their real titles (the lesson order)', () => {
-    const titles = EQ_MODULES.map((m: { title: string }) => m.title);
-    EQ_MODULES.forEach((m: { id: string }, i: number) => {
-      const t = MODS[m.id].teaches.join(' ');
-      if (i > 0) assert.ok(t.includes(titles[i - 1]), `${m.id}: teaches never names the previous module "${titles[i - 1]}"`);
-      if (i < titles.length - 1) assert.ok(t.includes(titles[i + 1]), `${m.id}: teaches never names the next module "${titles[i + 1]}"`);
-    });
-    // The Advanced Training menu lists categories A→Z (Dynamics sits BEFORE Equalization), so Dynamics is suggested, never 'next'.
-    assert.match(MODS.challenges.teaches.join(' '), /A good next step: the Dynamics labs/);
-    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /try Dynamics next/);
-    for (const gd of [MODS.challenges, EQ_HOME_GUIDE as unknown as Guide]) assert.doesNotMatch(gd.teaches.join(' '), /Dynamics comes next/);
+  it('decision 4 (2026-11-08): WHAT THIS TEACHES carries audio knowledge, never course navigation', () => {
+    for (const [id, gd] of allGuides) {
+      assert.doesNotMatch(gd.teaches.join(' '), /comes next|next step|try \w+ next|Builds on|follows (Lesson|Module)/i, `${id}: course navigation in WHAT THIS TEACHES`);
+    }
   });
   it('the home guide’s module ranges match the registry’s sections (LEARN 1–8, EXPLORE 9–11, TRAIN 12–14, CHALLENGE 15)', () => {
     const sec = EQ_MODULES.map((m: { section: string }) => m.section);
@@ -346,7 +341,7 @@ describe('4. TRY THIS (and quoted) numbers are what the modules print', () => {
     assert.equal(M.graphicActualDb(M.OCT_CENTERS, gains, M.Q_1OCT, 2000).toFixed(1), '2.5');
     assert.equal(M.fmtHz(1000), '1.00 kHz');
     assert.match(code(`${D}modules/eqBits.tsx`), /range = 12/);
-    for (const s of ['BAND 1.00 kHz', 'LEVEL +12.0 dB', 'about +2.5 dB']) assert.ok(t('gvp').includes(s), s);
+    for (const s of ['BAND reads 1.00 kHz', 'LEVEL +12.0 dB', 'about +2.5 dB']) assert.ok(t('gvp').includes(s), s);
     for (const s of ['Q about 1.4', 'Q about 4.3']) assert.ok(all('gvp').includes(s), s);
   });
   it('Multi-Band: four bells on at 0 dB, filters off (4 ACTIVE); two +6 dB bells together reach +12 dB', () => {
@@ -517,10 +512,10 @@ describe('6. chip decision: the accuracy chip stays only on the live-microphone 
     assert.doesNotMatch(HOME, /right=\{/);
   });
   it('the guides carry the honesty line the chip used to: which modules use the uncalibrated mic, and designed vs synthetic', () => {
-    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /Modules 1 and 11 read your phone’s uncalibrated microphone/);
+    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /uncalibrated phone mic gives Modules 1 and 11 relative levels/);
     assert.equal(EQ_MODULES[0].id, 'spectrum');
     assert.equal(EQ_MODULES[10].id, 'liveEq');
     for (const id of ['spectrum', 'liveEq']) assert.match(MODS[id].teaches.join(' '), /uncalibrated/i, id);
-    for (const id of ['findFreq', 'fixSignal', 'challenges']) assert.match(MODS[id].seeing.join(' '), /synthetic/i, id);
+    for (const id of ['findFreq', 'fixSignal', 'challenges']) assert.match(MODS[id].seeing.join(' '), /synthetic|made-up/i, id);
   });
 });

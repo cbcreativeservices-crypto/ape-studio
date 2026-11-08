@@ -110,7 +110,12 @@ describe('1. every Amplifier Principles screen has a complete guide', () => {
   });
   for (const [id, gd] of ALL) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -129,11 +134,13 @@ describe('1. every Amplifier Principles screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(Crown|QSC|Lab\.gruppen|Powersoft|Crest|Yamaha|Behringer|Fender|Marshall|Texas Instruments|Infineon)\b/, `${id}: a maker/brand name`);
     }
   });
-  it('the first step of every module says where it sits in the lab, and the home says where the lab sits', () => {
-    assert.match(G.AMP_HOME_GUIDE.teaches.join(' '), /follows Vacuum Tube Fundamentals in Audio Electronics/);
+  // Owner decision 4 (Guided Lessons return, 2026-11-08): course-navigation lines are
+  // out of WHAT THIS TEACHES; the home still names the lab it builds on, as knowledge.
+  it('WHAT THIS TEACHES holds knowledge, not course navigation; the home names the lab it builds on', () => {
+    assert.match(G.AMP_HOME_GUIDE.teaches.join(' '), /Vacuum Tube Fundamentals showed one way to amplify/);
     for (const [id, steps] of Object.entries(STEPS)) {
       const t = steps.map((s) => s.guide.teaches.join(' ')).join(' ');
-      assert.match(t, /(comes next|The first module|draws on|last step|Module \d)/, `${id}: no place in the sequence`);
+      assert.doesNotMatch(t, /(comes next|is next|The first module|Module \d+ (looks|covers))/, `${id}: a course-navigation line in WHAT THIS TEACHES`);
     }
   });
 });
@@ -161,10 +168,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     'what.rig': ["'OUTPUT'", "'CLEAN'", "'CLIP'", "label: 'LEVEL'", 'PREDICT, THEN TRY', 'SIGNAL PATH', 'APPLIED COMPARISON', 'Line out → speaker'],
     'devices.device': ["label: 'CONTROL'", "label: 'DEVICE'", "k: 'REGION'", "short: 'OFF'", "short: 'CONTROL'", "short: 'FULL'", "k: 'CURRENT'", 'CONTROLLED CURRENT', 'SUPPLY', 'LOAD', "generic: 'Generic'", "bjt: 'BJT'", "mosfet: 'MOSFET'", "tube: 'Tube'"],
     'devices.xfmr': ["label: 'Np'", "label: 'Ns'", "k: 'KIND'", "k: 'RATIO'", "k: 'Vs'", "k: 'Is'", 'PRIMARY · Np', 'SECONDARY · Ns', 'CORE', "'STEP-UP'", "'STEP-DOWN'", "'1:1 ISOLATION'"],
-    'bias.bias': ["label: 'BIAS'", "k: 'REGION'", "'CUTOFF'", "'SATUR.'", "'LINEAR'", "k: 'IDLE'", 'DEVICE CURRENT (gold) — 0 to full conduction only', 'TOO LITTLE BIAS', 'APPROPRIATE LINEAR BIAS', 'EXCESSIVE BIAS'],
+    'bias.bias': ["label: 'BIAS'", "k: 'REGION'", "'CUTOFF'", "'SATUR.'", "'LINEAR'", "k: 'IDLE'", 'DEVICE CURRENT (gold)', 'TOO LITTLE BIAS', 'APPROPRIATE LINEAR BIAS', 'EXCESSIVE BIAS'],
     'bias.angle': ["label: 'ANGLE'", "k: 'CLASS'", "label: '90° · C'", "label: '180° · B'", "label: '270° · AB'", "label: '360° · A'"],
     'bias.pushpull': ["k: 'HANDOFF'", "'NOTCH'", "'OVERBIAS'", "'CLEAN'", 'YOUR TASK', 'ZERO CROSS', '×3.2'],
-    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", "k: 'IDLE'", "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'dashed = after the tuned circuit'],
+    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", "k: 'IDLE'", "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'after the tuned circuit'],
     'classd.pwm': ["label: 'LEVEL'", "label: 'VIEW'", "k: 'AT TROUGH'", "k: 'AT PEAK'", "label: 'Raw switching'", "label: 'Filter action'", "label: 'Recovered audio'", 'CLASS D'],
     'classd.bridge': ["k: 'AT PEAK'", "k: 'TO LOAD'", "k: 'AS HEAT'", '+RAIL', '−RAIL', 'HIGH SIDE', 'LOW SIDE', 'LOAD', '0 V', 'DEAD TIME', 'WHERE THE ENERGY GOES'],
     'supply.rails': ["k: 'STATE'", "k: 'RAILS'", "k: 'OUTPUT'", "k: 'CURRENT'", "k: 'POWER'", "'V-CLIP'", "'I-LIMIT'", "'PROTECT'", "label: 'RAIL'", "label: 'LOAD'", "label: 'SUPPLY'", "label: 'Linear supply'", "label: 'Switch-mode supply'"],
@@ -261,8 +268,8 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(M.resistivePower(lineVrms, 8)!.toFixed(2), '0.19');
     assert.equal(M.resistivePower(M.sineVrms(20)!, 8)!.toFixed(0), '25');
     const t = guideOf('what', 'rig').tryThis.join(' ');
-    assert.match(t, /past 67%: OUTPUT flips to CLIP/);
-    assert.match(t, /At 40% SUPPLY reads 57%; at 60% it reads 82%/);
+    assert.match(t, /past 67%\. OUTPUT flips to CLIP/);
+    assert.match(t, /LEVEL to 40%: SUPPLY reads 57%\. At 60% it reads 82%/);
     assert.match(t, /about 0\.19 W, against 25 W/);
   });
   it('Module 2: CONTROL 50% → 50%; 90% → 100% FULL; below 15% OFF; transformer 400:200 and 400:800', () => {
@@ -273,7 +280,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     const cur = (c: number) => (c < 0.15 ? 0 : Math.min(1, (c - 0.15) / 0.7));
     assert.equal(pct(cur(0.5)), '50%');
     assert.equal(pct(cur(0.9)), '100%');
-    assert.match(guideOf('devices', 'device').tryThis.join(' '), /CONTROL to 50%: CURRENT reads 50%\. At 90% it reads 100% and REGION reads FULL/);
+    assert.match(guideOf('devices', 'device').tryThis.join(' '), /CONTROL to 50%: CURRENT reads 50%\. At 90% it reads 100%, and REGION reads FULL/);
     assert.match(src, /const \[np, setNp\] = useState\(400\);\s*const \[ns, setNs\] = useState\(200\);\s*const VP = 120;[^\n]*\n\s*const IP = 1;/);
     const a = M.transformer(400, 200, 120, 8)!;
     assert.equal(a.kind, 'step-down');
@@ -290,7 +297,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(c.vs.toFixed(1), '120.0');
     const t = guideOf('devices', 'xfmr').tryThis.join(' ');
     assert.match(t, /STEP-DOWN, RATIO 2\.00:1, Vs 60\.0 V and Is 2\.00 A/);
-    assert.match(t, /Ns to 800: KIND flips to STEP-UP, Vs reads 240\.0 V and Is 0\.50 A — still 120 W/);
+    assert.match(t, /Ns to 800: KIND flips to STEP-UP, Vs reads 240\.0 V and Is 0\.50 A\. That’s still 120 W/);
     assert.match(t, /1:1 ISOLATION and Vs 120\.0 V/);
     assert.match(src, /min: 100, max: 1000, step: 50/);
   });
@@ -322,10 +329,10 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.ok(pp(0.83).idleCurrent <= 0.08 && pp(0.84).idleCurrent > 0.08, 'OVERBIAS from 84%');
     assert.ok(pp(0.9).idleCurrent > 0.08 && !pp(0.9).crossoverNotch);
     const t = guideOf('bias', 'pushpull');
-    assert.match(t.changes.join(' '), /from 44% the notch is gone[\s\S]*From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8\.1%, just past the 8% ceiling that YOUR TASK sets\./);
+    assert.match(t.changes.join(' '), /From 44%, the notch is gone[\s\S]*From 84% HANDOFF reads OVERBIAS and IDLE turns gold at 8\.1%, just past YOUR TASK’s 8% ceiling\./);
     // ...and YOUR TASK really states that 8% ceiling (D42 P3: the guide names where the limit comes from).
     assert.match(read('src/screens/lab/amp/modules/mod3Bias.tsx'), /YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region \(idle current ≤ 8% relative\)\./);
-    assert.match(t.tryThis.join(' '), /start \(10%\) HANDOFF reads NOTCH[\s\S]*44%: HANDOFF reads CLEAN, with IDLE at 4\.2%[\s\S]*90%: HANDOFF reads OVERBIAS[\s\S]*SUPPLY climbs from 63% to 76%/);
+    assert.match(t.tryThis.join(' '), /start \(10%\), HANDOFF reads NOTCH[\s\S]*44%: HANDOFF reads CLEAN, with IDLE at 4\.2%[\s\S]*90%: HANDOFF reads OVERBIAS[\s\S]*SUPPLY climbs from 63% to 76%/);
     // Review round 2026-10-31: a whole-number IDLE printed 8% on BOTH sides of
     // the 8% limit (84%–88% read OVERBIAS beside "8%"), so IDLE now shows one
     // decimal and agrees with the 0.08 test at every 1% BIAS step. The HEAT
@@ -365,7 +372,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.ok(M.simulateClassC(0.8, 1).resonanceGain >= 0.9 && M.simulateClassC(0.8, 1).conductionDeg > 0);
     // B: ideally 180° (the ANGLE key's 180° · B); the model's dead zone makes CONDUCT. read 165°.
     assert.equal(Math.round(M.simulateLinearClass('B', 0.8, 0).conductionDeg), 165);
-    assert.match(guideOf('classes', 'explorer').changes.join(' '), /B: each device ideally conducts half the cycle \(180°\); CONDUCT\. reads 165°/);
+    assert.match(guideOf('classes', 'explorer').changes.join(' '), /B: each device ideally conducts half the cycle \(180°\)\. CONDUCT\. reads 165°/);
     const t = guideOf('classes', 'explorer').tryThis.join(' ');
     assert.match(t, /LEVEL 80%\): EFFIC\. reads 16%\. Switch CLASS to B: 48%, and DISTORT\. reads NOTCH/);
     assert.match(t, /0% to 50%: DISTORT\. turns CLEAN and CONDUCT\. rises from 165° to 190°/);
@@ -387,8 +394,8 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(at(0).trough, '50%');
     assert.match(src, /min: 0, max: 0\.95/);
     assert.match(src, /speaker: view === 'recovered',/);
-    assert.match(guideOf('classd', 'pwm').tryThis.join(' '), /\(70%\) AT TROUGH reads 15% and AT PEAK 85%\. Drop LEVEL to 10%: 45% and 55%/);
-    assert.match(guideOf('classd', 'bridge').tryThis.join(' '), /At 70% TO LOAD reads 83% and AS HEAT 17%\. Drop LEVEL to 10%: 56% and 44%[\s\S]*high part of the drawn period widen as AT PEAK climbs to 98%/);
+    assert.match(guideOf('classd', 'pwm').tryThis.join(' '), /\(70%\), AT TROUGH reads 15% and AT PEAK 85%\. Drop LEVEL to 10%: 45% and 55%/);
+    assert.match(guideOf('classd', 'bridge').tryThis.join(' '), /At 70%, TO LOAD reads 83% and AS HEAT 17%\. Drop LEVEL to 10%: 56% and 44%[\s\S]*high part of the drawn period widen as AT PEAK climbs to 98%/);
     // The drawn period has a FIXED width; only its high part follows the duty.
     assert.match(src, /const px0 = 92, pw = 52, pyHi = 52, pyLo = 64;/);
     assert.match(src, /short: 'AUDIO'/);
@@ -414,7 +421,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(Math.round(0.3 * 40), 12);
     const t = guideOf('supply', 'rails').tryThis.join(' ');
     assert.match(t, /V-CLIP at 75%, with RAILS sagged to ±37 V/);
-    assert.match(t, /I-LIMIT from 51%, with CURRENT held at 9\.0 A, and PROTECT from 74%/);
+    assert.match(t, /I-LIMIT from 51%, with CURRENT held at 9\.0 A, then PROTECT from 74%/);
     assert.match(t, /clipping now starts at 79%/);
   });
   it('Module 7: 80/64/51% of clip HEALTHY; SOURCE 63% → CLIP:SRC; AMP IN 98% → CLIP:OUT; load builder and power numbers', () => {
@@ -431,7 +438,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(M.evaluateGainStructure(0.5, 0.5, 0.98).firstClip, 'amp');
     assert.match(src, /`CLIP:\$\{gs\.firstClip === 'source' \? 'SRC' : gs\.firstClip === 'mixer' \? 'MIX' : 'OUT'\}`/);
     const t = guideOf('realworld', 'gain').tryThis.join(' ');
-    assert.match(t, /80%, 64% and 51% of clip — VERDICT HEALTHY/);
+    assert.match(t, /80%, 64% and 51% of clip, and VERDICT reads HEALTHY/);
     assert.match(t, /SOURCE to 63%: VERDICT reads CLIP:SRC/);
     assert.match(t, /AMP IN to 98%: VERDICT reads CLIP:OUT/);
     // Practice page.
@@ -480,7 +487,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     // Blocked vents only fail the thermal check at 4 Ω (review round 2026-10-31).
     const at4 = M.evaluateRig({ sourceLevel: 0.6, mixerLevel: 0.5, ampInput: 0.5, railLimit: 1, loadZ: 4, minLoadZ: 4, bridged: false, bridgeSupported: true, ventBlocked: 1, instrumentCable: false, shorted: false });
     assert.equal(at4.primary, 'thermal-limiting');
-    assert.match(guideOf('apply', 'challenge').changes.join(' '), /blocked vents, which add heat — enough to trip thermal limiting at 4 Ω/);
+    assert.match(guideOf('apply', 'challenge').changes.join(' '), /blocked vents\. The vents add heat, enough to trip thermal limiting at 4 Ω/);
     assert.match(src, /'load-below-min': 'LOAD'/);
     assert.match(src, /'upstream-clipping': 'UP-CLIP'/);
     const t = guideOf('apply', 'challenge').tryThis.join(' ');

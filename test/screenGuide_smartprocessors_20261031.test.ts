@@ -76,7 +76,12 @@ describe('1. every Smart Processors screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k].length} bullets`);
         for (const line of gd[k]) assert.ok(line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -126,7 +131,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     mode: ['BROADBAND', 'SPLIT-BAND', 'THIS FRAME · BEFORE (GHOST) AND AFTER', 'AUTO-STEP', 'JUMP TO AN S', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
     over: ['OUTPUT', 'THE PROGRESSION', 'How hard', 'RESET RACK TO DEFAULTS', 'Transparent', 'Controlled', 'Lisping', 'Dull and lifeless', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
     connections: ['EQ Lab', 'Compression', 'Gate / Expander', 'Visual Audio Analysis', 'Speech & Voice Lab', 'OPEN ›', 'FINISH · SEE WHAT’S LEFT'],
-    end: ["WHAT'S LEFT", 'LAB COMPLETE', 'YOUR PROGRESS', '✓', 'DONE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV', '▾', 'What Sibilance Is', 'Connections & Check', 'De-Esser & Sibilance Control', 'Smart Processors', 'NEXT', 'FINISH'],
+    end: ["WHAT'S LEFT", 'LAB COMPLETE', 'YOUR PROGRESS', '✓', 'DONE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV', '▾', 'What Sibilance Is', 'Connections & Check', 'Smart Processors', 'NEXT', 'FINISH'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), allGuides.map(([id]) => id).sort()));
   for (const [id, names] of Object.entries(NAMES)) {
@@ -155,7 +160,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(pageSrc('PageFrequency'), /label=\{`“\$\{PHRASE\[i\]\.label\}” · \$\{\(PHRASE\[i\]\.hissHz \/ 1000\)\.toFixed\(1\)\}k`\}/);
     assert.match(PAGES.frequency.control.join(' '), new RegExp(labels.join(', ')));
     assert.equal(M.FREQ_HINTS.length, 5);
-    assert.match(PAGES.frequency.seeing.join(' '), /STARTING POINTS: five suggested frequencies/);
+    assert.match(PAGES.frequency.seeing.join(' '), /STARTING POINTS offers five suggested frequencies/);
   });
 });
 
@@ -187,7 +192,7 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, eq).toFixed(1), '8.0');
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, de).toFixed(1), '0.0');
     assert.equal(M.meanSibilantGr(de).toFixed(1), '7.0');
-    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Pick DE-ESSER: 0\.0 dB[\s\S]*about 7\.0 dB/);
+    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Tap DE-ESSER: 0\.0 dB[\s\S]*about 7\.0 dB/);
   });
   it('page 4: −10 all sibilants + nothing else (About right); −19 the TH; −21 the P joins; 0 nothing (Too high)', () => {
     const crossing = (t: number) => out({ ...RACK, thresholdDb: t }).filter((p: { grDb: number }) => p.grDb > 0);
@@ -215,7 +220,7 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageFrequency'), /min=\{0\.7\} max=\{4\} step=\{0\.1\}/);
     const t = PAGES.frequency.tryThis.join('\n');
     assert.match(t, /“s” · 7\.0k is heard 98%\. Slide Band width to Q 4\.0 · narrow: 86%/);
-    assert.match(t, /pick “sh” · 4\.0k: 24%, Missing it\. Under STARTING POINTS, tap the button that reads "SH" rather than "S" · 4\.0k: the detector moves to 4\.0 kHz and hears 100%/);
+    assert.match(t, /pick “sh” · 4\.0k: 24%, Missing it\. Under STARTING POINTS, tap "SH" rather than "S" · 4\.0k: the detector moves to 4\.0 kHz and hears 100%/);
     // the page leaves the shared rack at 4.0 kHz / Q 4.0 — so it hands it back
     assert.match(t, /set the detector back to 6\.5 kHz and Q 1\.4, where the lab starts/);
     assert.match(pageSrc('PageFrequency'), /set\(\{ freqHz: h\.hz \}\)/);
@@ -247,9 +252,9 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageMode'), /const \[step, setStep\] = useState\(0\);/);
     assert.match(pageSrc('PageMode'), /'no reduction on this frame — both modes pass it untouched'/);
     const t = PAGES.mode.tryThis.join('\n');
-    assert.match(t, /Detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB: JUMP TO AN S lands on frame 3, “s”, at −7\.2 dB/);
+    assert.match(t, /detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB\. JUMP TO AN S lands on frame 3, “s”, at −7\.2 dB/);
     assert.equal(out({ ...RACK, freqHz: 4000, q: 4 })[2].grDb, 0, 'at 4.0 kHz / Q 4.0 frame 3 has none');
-    assert.match(t, /frame 8, “a”: no reduction — both modes pass it untouched/);
+    assert.match(t, /frame 8, “a”: no reduction, so both modes pass it untouched/);
   });
   it('page 8: 25% Transparent (threshold −6), 45% Controlled, 75% Lisping, 100% Dull and lifeless (~16 dB)', () => {
     const at = (a: number) => {
@@ -265,12 +270,12 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.equal(M.meanSibilantGr(out(M.overSettings(1, 'broadband'))).toFixed(0), '16');
     assert.match(pageSrc('PageOver'), /threshold \$\{-Math\.round\(v \* OVER_THRESHOLD_SPAN_DB\)\} dB/);
     const t = PAGES.over.tryThis.join('\n');
-    assert.match(t, /25% \(threshold −6 dB\): Transparent\. 45%: Controlled\. 75%: Lisping/);
-    assert.match(t, /100% \(threshold −24 dB\) it reads Dull and lifeless — about 16 dB/);
+    assert.match(t, /25% \(threshold −6 dB\): Transparent\. Then 45%: Controlled\. Then 75%: Lisping/);
+    assert.match(t, /100% \(threshold −24 dB\) the card reads Dull and lifeless, about 16 dB/);
   });
   it('page 9 + hub: the five connections, in order', () => {
     assert.deepEqual(M.CONNECTIONS.map((c: { name: string }) => c.name), ['EQ Lab', 'Compression', 'Gate / Expander', 'Visual Audio Analysis', 'Speech & Voice Lab']);
-    assert.match(PAGES.connections.seeing[0], /EQ Lab, Compression, Gate \/ Expander, Visual Audio Analysis, Speech & Voice Lab/);
+    assert.match(PAGES.connections.seeing[0], /EQ Lab, Compression, Gate \/ Expander, Visual Audio Analysis and Speech & Voice Lab/);
   });
 });
 
@@ -303,19 +308,21 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(LAB_END, /return w\.complete \? 'LAB COMPLETE' : "WHAT'S LEFT";/);
     assert.match(END_SCREEN, /const title = unreadable \? 'YOUR PROGRESS' : w\.complete && completeTitle \? completeTitle : endTitle\(w\);/);
     assert.doesNotMatch(PAGED, /completeTitle/);
-    assert.match(END.seeing.join(' '), /WHAT'S LEFT lists, by name, each page[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
+    assert.match(END.seeing.join(' '), /WHAT'S LEFT lists each page you haven’t done[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
   });
   it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED; the credit check is listed and drawn (D41 K8)', () => {
     for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail', 'pageDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
     assert.match(SHELL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.match(END.seeing.join(' '), /then a CHECK row: the five-question Smart Processors check\. LAB COMPLETE once every page is done and the check passed/);
+    assert.match(END.seeing.join(' '), /then a CHECK row: the five Smart Processors questions\. LAB COMPLETE shows once every page is done and the check is passed/);
     assert.match(END.seeing.join(' '), /Done pages and a passed check fold into one ✓ DONE row/);
     assert.match(PAGED, /creditCheckLabId="smart-processors"/);
     assert.doesNotMatch(endText, /CREDITED/);
     // the lab's credit is the hub's check (labId smart-processors), not these pages
     assert.match(HUB, /<LabUnderstandingBlock labId="smart-processors"/);
-    assert.match(END.changes.join(' '), /Certificates count only the five-question check, here or on the Smart Processors Lab page/);
+    // certificate bookkeeping left student text (owner 2026-11-08); where the check counts stays
+    assert.match(END.changes.join(' '), /You can pass the five-question check here or on the Smart Processors Lab page; either one counts/);
+    assert.doesNotMatch(endText, /certificate/i);
   });
   it('every button by its exact label, and what each does', () => {
     assert.match(END_SCREEN, /<GlassButton label="PRACTICE AGAIN FROM THE START"[^>]*onPress=\{onPracticeAgain\} \/>/);
@@ -336,7 +343,7 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(nav, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/);
     assert.match(code('src/screens/lab/kit/labNav.ts'), /pos: "What's left\. Opens the contents"/);
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
-    assert.match(END.control.join(' '), /‹ PREV returns to the page you came from; WHAT'S LEFT ▾ drops down a list of every page, with START OVER \(PRACTICE\) at its foot, which clears the page ✓ marks after asking; a passed check stays/);
+    assert.match(END.control.join(' '), /‹ PREV returns to the page you came from\. WHAT'S LEFT ▾ lists every page, with START OVER \(PRACTICE\) at its foot\. START OVER asks first, then clears the page ✓ marks; a passed check stays/);
   });
   it('what makes a page count: any control or its check (touch / markDone), or NEXT / FINISH (no manualDone page); a CONTENTS jump never', () => {
     assert.doesNotMatch(LAB, /manualDone/);
@@ -349,8 +356,8 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     const goTo = SHELL.slice(SHELL.indexOf('const goTo = useCallback'), SHELL.indexOf('const markDone = useCallback'));
     assert.doesNotMatch(goTo, /markDone|completed/);
     const t = END.changes.join(' ');
-    assert.match(t, /use one of its controls \(not FULL SCREEN or RESET RACK TO DEFAULTS\), get a check on it right, or press NEXT\. Connections & Check counts on a right answer to its closing question, or on FINISH/);
-    assert.match(t, /Opening a page from the WHAT'S LEFT ▾ list or from a row here does not count it/);
+    assert.match(t, /use one of its controls \(not FULL SCREEN or RESET RACK TO DEFAULTS\), answer its check right, or press NEXT\. Connections & Check counts when you answer its closing question right, or tap FINISH/);
+    assert.match(t, /Opening a page from a list doesn’t count it/);
     // the two controls that do NOT count a page: FULL SCREEN (ExpandableFigure only opens) and RESET RACK TO DEFAULTS
     const fig = code('src/screens/lab/kit/ExpandableFigure.tsx');
     assert.match(fig, /onPress=\{\(\) => setFull\(true\)\}/);
@@ -362,11 +369,12 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(SHELL, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\)/);
     assert.match(SHELL, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{nav\.reset \? \(/);
-    assert.match(END.teaches.join(' '), /Reopening a page for practice takes nothing away; only START OVER \(PRACTICE\) clears the page ✓ marks, and it asks first/);
+    assert.match(END.control.join(' '), /START OVER asks first, then clears the page ✓ marks/);
+    assert.match(END.tryThis.join(' '), /reopen a finished page you found hard\. Its ✓ stays/);
     assert.doesNotMatch(endText, /Nothing is taken away/);
   });
   it('unreadable: YOUR PROGRESS, yet a page done on this visit still folds under ✓ DONE (endCleared reads progress.completed)', () => {
     assert.match(SHELL, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
-    assert.match(END.seeing.join(' '), /YOUR PROGRESS and every page stays open; only pages done on this visit fold under ✓ DONE/);
+    assert.match(END.seeing.join(' '), /YOUR PROGRESS, your saved pages couldn’t be read: every page stays listed, and only pages done on this visit fold under ✓ DONE/);
   });
 });

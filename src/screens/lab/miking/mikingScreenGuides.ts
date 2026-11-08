@@ -23,7 +23,8 @@
  *      LESSON_JOURNEY.md), worded so they hold for an instrument, a voice, a
  *      venue or a measurement — with the sharper physics lines kept for the
  *      modules that carry the engine's default title ("Studio or live",
- *      "Two microphones", "Choose the microphone(s)").
+ *      "Two microphones"); the microphones module adds a pointer to
+ *      Microphone Principles instead.
  *
  * Plus three fixed guides: the family hub, the Foundations card (shown in
  * place of a module's activity until the first two modules are met) and the
@@ -37,7 +38,7 @@
  * "N of total"; no build notes in learner text; no numbers in TRY THIS (a
  * number would have to be what every lesson's screen prints).
  */
-import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
+import type { ScreenGuide, ScreenIntro } from '../../../features/lab/screenGuide/types';
 import { SCREEN_GUIDE_BUDGET } from '../../../features/lab/screenGuide/types.ts';
 import type { PageId } from './engine/model/types.ts';
 import { stageOf } from './engine/journey.ts';
@@ -101,6 +102,8 @@ type StepNote = {
   /** Only when the module is drawn by the engine's OWN page (not a lesson
    *  family's page that reuses the step title with other controls). */
   engineOnly?: boolean;
+  /** The intro card for this step (Guided Lessons return 2026-11-08). */
+  intro?: ScreenIntro;
   seeing?: Words;
   control?: Words;
   changes?: Words;
@@ -122,41 +125,64 @@ const isOmni = (o: string) => /omni/i.test(o);
 export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   // MEET IT (pages/PInstrument.tsx; the same START in every family's page)
   'READ|Start here': {
-    seeing: 'THE JOURNEY map lists the lesson’s stages; “How would you like to start?” offers two paths.',
-    control: 'Tap New to miking … to go in order, or I already mic … for the six-question quick check, shown on this step.',
-    changes: 'The path only changes what is suggested next. A passed quick check opens every activity now, but credits nothing: the first two modules still earn their own credit.',
+    intro: {
+      learning: 'Every miking lesson follows one journey, from where the sound leaves to a mic placed and checked; the map shows that order before you begin.',
+      start: 'Look over THE JOURNEY map. Then choose New to miking … to go in order, or I already mic … to take the six-question quick check.',
+    },
+    seeing: 'THE JOURNEY map lists every stage of this lesson in order. Below it, “How would you like to start?” offers you two paths.',
+    control: 'Tap New to miking … to work through the lesson in order, or I already mic … to take the six-question quick check, right here on this step.',
+    changes: 'Your path only changes what is suggested next. Passing the quick check opens every activity now, but it finishes nothing: you still complete the first two modules yourself.',
     tryThis: [
-      'Choose New to miking …: NEXT › then walks through the lesson in order. The choice can be changed here at any time.',
+      'Choose New to miking …, then use NEXT › to walk through the lesson in order. You can come back here and change your choice at any time.',
       'Choose I already mic … and read the QUICK CHECK line before answering: your first try is the one that counts.',
     ],
   },
   'LEARN|What it is': {
-    seeing: 'A drawing and short facts, one card each: what it is, before any mic appears.',
+    // "what you are miking": some lessons' subject is a site or a scene (F10, F12), not an instrument.
+    intro: {
+      learning: 'What you are miking and where its sound comes from, before any microphone comes near it.',
+      start: 'Start with the drawing, then read each card and find on the drawing the part it names.',
+    },
+    seeing: 'Here you meet what you are miking: a drawing and short fact cards, one idea per card, before any mic appears.',
     tryThis: ['Read each card’s title, then find what it names on the drawing.'],
   },
   'TRY|The parts': {
     engineOnly: true,
-    seeing: 'The drawing lights the part you pick; its card says what it does and, where it applies, WHERE SOUND COMES FROM.',
-    control: 'Tap any part on the drawing, or step through PART in the dock. There is nothing to answer on this step.',
-    changes: 'A part’s card names the places its sound leaves: those are where a mic can hear it best.',
+    intro: {
+      learning: 'Which parts of the source make the sound and where the sound leaves them: those places are where a mic hears it most directly.',
+      start: 'Tap a part on the drawing, or step through PART in the dock. On each card, look for the WHERE SOUND COMES FROM line.',
+    },
+    seeing: 'The part you pick lights up on the drawing. Its card says what that part does and, where it applies, WHERE SOUND COMES FROM.',
+    control: 'Tap any part on the drawing, or step through PART in the dock. There’s nothing to answer here: just explore.',
+    changes: 'Each part’s card names the places its sound leaves from. Those are the places a mic can hear it best.',
     tryThis: [
       'Tap the part the sound leaves from and read its WHERE SOUND COMES FROM line.',
-      'Go through every part with PART: the bezel names each one as you reach it.',
+      'Step through every part with PART and watch the bezel name each one as you reach it.',
     ],
   },
   // STARTING SETUPS (pages/PSetups.tsx)
   'WATCH|Starting setups': {
     engineOnly: true,
+    intro: {
+      learning: 'How a real miking setup is described: the mic type and pattern, its distance and aim, and what it tends to do to the sound.',
+      start: 'Pick each setup in SETUPS, or step through SETUP when it’s there. For each one, read the START line and what it TENDS TO do.',
+    },
     seeing: 'One real setup at a time, drawn where the mic goes: the mic and its mount, where it points (amber, dashed) and its distance (white).',
-    control: (s) => `${has(s, 'SETUP') ? 'Step through SETUP, or pick one by name in SETUPS' : 'Pick each setup by name in SETUPS'}. The mics are placed for you here; nothing is dragged.`,
-    changes: 'Each card gives the mic type and pattern, a START line (distance and aim) and what it TENDS TO do — a suggested starting point, not a rule.',
+    control: (s) => `${has(s, 'SETUP') ? 'Step through SETUP, or pick one by name in SETUPS' : 'Pick each setup by name in SETUPS'}. The mics are placed for you here, so there’s nothing to drag.`,
+    changes: 'Each card gives the mic type and pattern, a START line (distance and aim) and what it TENDS TO do. Read it as a suggested starting point, not a rule.',
     tryThis: [
-      (s) => `Go through every setup${has(s, 'SETUP') ? ' with SETUP' : ' in SETUPS'}: looking at the main setups is part of this module’s credit.`,
-      'End on the setup you would try first: the Placement Studio starts from the last one you look at.',
+      (s) => `Go through every setup${has(s, 'SETUP') ? ' with SETUP' : ' in SETUPS'} and compare them: looking at the main setups is part of finishing this module.`,
+      'End on the setup you’d try first: the Placement Studio starts from the last one you look at.',
     ],
   },
   'LEARN|What else the mic hears': {
-    seeing: 'What reaches the mic besides the source, what the mic and its stand keep clear of, and what changes ON A STAGE (LIVE) or IN A STUDIO.',
+    // "can bring": the ON A STAGE (LIVE) note is each lesson's own, and not
+    // every family's stage holds loud sources (return question 2026-11-08).
+    intro: {
+      learning: 'A mic hears more than its source: neighbors and the room reach it too, and a stage can bring loud sources close that a studio keeps away.',
+      start: 'Read what reaches the mic besides the source. Then compare the ON A STAGE (LIVE) and IN A STUDIO notes.',
+    },
+    seeing: 'Here you see what else reaches the mic besides the source, what the mic and its stand keep clear of, and what changes ON A STAGE (LIVE) or IN A STUDIO.',
     tryThis: [
       'Pick one neighbor named here and decide which way the mic’s quiet side would face to hear less of it.',
       'Go back one step to Starting setups and compare two: what does each one gain, and what does it give up?',
@@ -165,9 +191,13 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   // MICROPHONES (pages/PMicOnIt.tsx — every lesson; pages/PMicrophone.tsx and
   // shared/journeyPages.tsx draw the same two steps)
   'LEARN|On the instrument': {
+    intro: {
+      learning: 'A mic’s type decides where it starts on the source, how it is held, what power it needs and which pickup patterns it offers.',
+      start: 'Choose a TYPE and watch the drawing move the mic to where that type starts. Then read POWER and MOUNT, and see which choices PATTERN offers.',
+    },
     seeing: 'The chosen mic type drawn where this lesson starts it: its mount, its pickup shape (dashed lobe) and its distance (white).',
-    control: 'Choose a TYPE: each is redrawn where this lesson starts it. PATTERN lists the patterns that type has.',
-    changes: 'POWER is read from each type’s own power needs: PHANTOM (from the desk), NONE (a dynamic or passive ribbon), BATTERY or OWN SUPPLY (a meter or measurement mic), VARIES (more than one way: the card says which).',
+    control: 'Choose a TYPE: the drawing moves the mic to where this lesson starts it. PATTERN lists only that type’s patterns.',
+    changes: 'POWER shows what each type needs: PHANTOM (sent from the desk), NONE (a dynamic or passive ribbon), BATTERY or OWN SUPPLY (a meter or measurement mic), or VARIES (more than one way: the card says which).',
     tryThis: [
       (s) =>
         optsOf(s, 'TYPE').length >= 2
@@ -180,9 +210,13 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     ],
   },
   'COMPARE|Patterns': {
-    seeing: 'A pickup pattern from above with a test source around it — a simplified shape, the same at every pitch.',
+    intro: {
+      learning: 'How a pickup pattern hears less from some directions than others, and where its null sits: the direction it rejects most.',
+      start: 'Make your prediction, then sweep SOURCE ANGLE slowly from the front (0°) to directly behind (180°). Watch PICKUP and the NULL readout.',
+    },
+    seeing: 'A pickup pattern seen from above, with a test source you move around it. Real mics change shape with pitch; this drawing keeps one shape at every pitch.',
     control: 'SOURCE ANGLE swings the test source from the mic’s front (0°) around to directly behind (180°). TYPE and PATTERN change the mic.',
-    changes: 'PICKUP is the pattern’s level at that angle compared with straight ahead. Where the pattern hears nothing, a null appears (DEEP NULL): sound from there cancels at the capsule. Real mics still hear a little from there.',
+    changes: 'PICKUP is the pattern’s level at that angle against straight ahead. Where the pattern hears nothing, a null appears (DEEP NULL): sound from there cancels at the capsule, the part that turns sound into signal. Real mics still hear a little there.',
     tryThis: [
       'Make the prediction, then sweep SOURCE ANGLE slowly, front to back: the NULL readout shows where this pattern rejects most.',
       (s) =>
@@ -192,16 +226,24 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     ],
   },
   'LEARN|By property, not brand': {
+    intro: {
+      learning: 'Why mics are chosen by property — pattern, power, size and mount — rather than by brand name.',
+      start: 'Read one card per mic type. Then tap SPEC DETAILS ▾ on two cards and compare the power each needs and its size.',
+    },
     seeing: 'One card per mic type this lesson uses: what it is, the power it needs, how it mounts and its pattern — no brands.',
     control: 'Tap SPEC DETAILS ▾ on a card for its full power line and its size.',
-    tryThis: ['Open SPEC DETAILS on two cards: what power does each one really need, and which mounts the way this job needs?'],
+    tryThis: ['Open SPEC DETAILS ▾ on two cards. What power does each one really need, and which one mounts the way this job needs?'],
   },
   // PLACEMENT STUDIO (pages/PPlacement.tsx)
   'WATCH|Worked example': {
     engineOnly: true,
-    seeing: 'A worked example: the mic placed for you at one suggested starting point (blue). The lit bezel cell (▸) is the piece being read.',
-    control: 'STEP reads the example piece by piece, from WHERE TO BEGIN to CLEARANCE; the drawing marks the part a piece is about.',
-    changes: 'Distances read to the mic’s FRONT from a named surface: the same number from another surface would put the mic somewhere else.',
+    intro: {
+      learning: 'How a suggested starting point is read: where to begin, the distance from a named surface, the aim, and the clearance that comes first.',
+      start: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit bezel cell (▸) and the part the drawing marks.',
+    },
+    seeing: 'A worked example: the mic is placed for you at one suggested starting point (blue). The lit bezel cell (▸) is the piece you’re reading.',
+    control: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
+    changes: 'Each distance runs from a named surface to the mic’s FRONT. The same number measured from another surface would put the mic somewhere else.',
     tryThis: [
       'Step to THE DISTANCE: the lit bezel cell reads inside the suggested range written in the card.',
       'Step to CLEARANCE and read why clearance comes before any sound.',
@@ -209,18 +251,27 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   },
   'PLACE|Place the mic': {
     engineOnly: true,
-    seeing: (s) => `Your mic${has(s, 'START') ? ', starting from the setup in START' : ''}. Blue = suggested starting points; keep-clear areas show as the mic comes near.`,
+    intro: {
+      learning: 'How distance, height and aim each change what a mic hears, and why the blue zones are places to start, not fixed answers.',
+      start: 'Open ZONE and pick a suggested starting point, then try another. From a zone, change only POSITION or only AIM, and read what the words say changes.',
+    },
+    seeing: (s) => `This is your mic${has(s, 'START') ? ', starting from the setup in START' : ''}. Blue areas are suggested starting points; keep-clear areas appear as the mic comes near them.`,
+    // The middle row's heading is each lesson's own (C.variantKey), so it is not quoted.
     control: 'ZONE jumps the mic to a suggested starting point. SETUP opens MIC TYPE, a row of versions of the source (under its own heading) and MEASURE FROM.',
-    changes: 'Inside a blue zone its card says what it tends to do; outside, the words list the zones in reach. A part in the way stops the mic where it would touch.',
+    changes: 'Inside a blue zone, its card says what that spot tends to do to the sound. Outside, the words list the zones in reach. A part in the way stops the mic where it would touch.',
     tryThis: [
-      'Open ZONE and pick a starting point, then a different one: two zones rested in, clear of every part, is this module’s activity.',
+      'Open ZONE and pick a starting point, then a different one. Resting the mic in two zones, clear of every part, finishes this module’s activity.',
       'From a zone, change only POSITION or only AIM, and read how the bezel and the card under the drawing change.',
     ],
   },
   // ADVANCED (pages/PContext.tsx, pages/PTwoMic.tsx, pages/PReadPages.tsx)
   'LIVE|Aim the rejection': {
     engineOnly: true,
-    seeing: 'The mic and the loud source picked in MONITOR, placed where this situation often puts it (LIVE); STUDIO has none.',
+    intro: {
+      learning: 'Aiming a mic’s null at a loud nearby source, such as a stage monitor, keeps that source quieter in the mic.',
+      start: 'Pick the loud source in MONITOR and make your prediction. Then turn AIM until REJECTION reads IN NULL.',
+    },
+    seeing: 'The mic and the loud source you picked in MONITOR, placed where this situation often puts it (LIVE). STUDIO shows no such source.',
     control: 'AIM turns the mic; PATTERN, MONITOR and the LIVE / STUDIO key set the scene.',
     changes: 'PICKUP is what the pattern hears from that source’s direction; when the source sits close to a null, REJECTION reads IN NULL.',
     tryThis: [
@@ -233,34 +284,56 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
   },
   'PAIR|Pair and polarity': {
     engineOnly: true,
-    seeing: 'Two mics, A and B, with dashed straight paths from one source; the comb panel under the display draws their sum.',
-    control: 'EDIT MIC B / EDIT MIC A switches which mic POSITION and AIM move; MIC B POLARITY flips mic B; SOURCE picks where the paths start.',
-    changes: 'The longer path arrives later (Δt). Summed, that delay cancels some frequencies — the comb’s notches. Polarity swaps notches and peaks; Δt stays.',
+    intro: {
+      learning: 'Why two mics on one source can cancel some frequencies: the farther mic hears it later, and adding the two signals makes a comb of notches.',
+      start: 'Move a mic so the two paths differ more, and watch DELAY Δt B−A grow and 1ST NOTCH drop. Then flip MIC B POLARITY and compare.',
+    },
+    seeing: 'Two mics, A and B, each with a dashed straight path from one source. The comb panel under the display shows what you get when their signals are added.',
+    control: 'EDIT MIC B / EDIT MIC A switches which mic POSITION and AIM move. MIC B POLARITY flips mic B’s signal upside down. SOURCE picks where the paths start.',
+    changes: 'The longer path arrives later (Δt). Added together, that delay cancels some frequencies: the comb’s notches. Flipping polarity swaps notches and peaks, but Δt stays.',
     tryThis: [
       'Flip MIC B POLARITY to − and back: DELAY Δt B−A does not change.',
-      'Move a mic so the paths differ more: Δt grows and 1ST NOTCH drops; nearly equal, it reads OVER 20 kHz. If POLARITY’s lower line leaves “switch”, the sum has flipped and the notch jumps.',
+      // POLARITY's lower line reads 'switch', or 'heads: −' / 'rear lobe: −' when the
+      // mic's own lobe flips the sum (PTwoMic bezel), so the words are quoted.
+      'Make the paths differ more: Δt grows and 1ST NOTCH drops; nearly equal, it reads OVER 20 kHz. If POLARITY’s lower line reads heads: − or rear lobe: −, the sum has flipped and the notch jumps.',
     ],
   },
   'READ|Symptoms': {
-    seeing: 'Symptom cards, each an OBSERVATION: choose what to check first.',
-    control: 'Tap the first thing you would check on each card; a wrong pick says why — choose again. Answering every card is this module’s activity.',
-    tryThis: ['Choose an option you doubt on purpose: its reason appears, and a retry is explained, never penalized.'],
+    intro: {
+      learning: 'How to work back from a symptom you hear to the first thing worth checking, and why one check comes before the others.',
+      start: 'Read each OBSERVATION card and tap what you would check first. If your pick is wrong, read why, then choose again.',
+    },
+    seeing: 'Each card describes a symptom, headed OBSERVATION. Your job is to choose what to check first.',
+    control: 'On each card, tap the first thing you would check. A wrong pick tells you why, and you choose again. Answering every card finishes this module’s activity.',
+    tryThis: ['Choose an option you doubt, on purpose, and read its reason. Choosing again is never held against you.'],
   },
   // PRACTICE (pages/PReadPages.tsx; shared/journeyPages.tsx draws the same)
   'PRACTICE|Set up in order': {
-    seeing: 'Setup steps, shuffled, to put in order, then one more check card.',
-    control: 'Tap the step that comes next; a step tapped too early is answered with why it cannot come yet.',
-    tryThis: ['Read every step before tapping: a step tapped too early is answered with what has to happen first — and your first try is noted.'],
+    intro: {
+      learning: 'Setting up a mic follows an order: some steps only make sense once others are done, and the reason tells you which comes first.',
+      start: 'Read all the shuffled steps first. Then tap the step that comes next, one at a time. If one can’t come yet, read why.',
+    },
+    seeing: 'The steps of a setup, shuffled for you to put in order, then one more check card.',
+    control: 'Tap the step that comes next. If you tap one too early, you’re told why it can’t come yet.',
+    tryThis: ['Read every step before you tap. A step tapped too early tells you what has to happen first, and your first try is noted.'],
   },
   'PRACTICE|Your setup': {
-    seeing: 'Setup briefs: each accepts more than one setup, and the check reads your reasons.',
+    intro: {
+      learning: 'A brief can be met by more than one setup; what makes a setup right is the reasons behind it.',
+      start: 'Read the brief and choose a setup. Then check every reason that justifies it, and only those.',
+    },
+    seeing: 'Each setup brief accepts more than one setup, and the check reads your reasons, not a single position.',
     control: 'Choose a setup, then check every reason that justifies it.',
     tryThis: ['On a brief, choose a setup and check only the reasons you could defend to the people you are working with.'],
   },
   'PRACTICE|Mixed review': {
-    seeing: 'Questions reaching back across the lesson, and an optional OBSERVATION SHEET for a real session.',
-    control: 'Answer each card; a wrong pick says why — choose again. The OBSERVATION SHEET below is optional.',
-    tryThis: ['Answer the review first, then fill the OBSERVATION SHEET the next time you place a real mic.'],
+    intro: {
+      learning: 'How the whole lesson fits together, from where the sound leaves to the setup, the mic and its placement.',
+      start: 'Answer each review card; a wrong pick tells you why. Then look at the optional OBSERVATION SHEET to use at your next real session.',
+    },
+    seeing: 'Questions that reach back across the whole lesson, plus an optional OBSERVATION SHEET to use at a real session.',
+    control: 'Answer each card. A wrong pick tells you why, and you choose again. The OBSERVATION SHEET below is optional.',
+    tryThis: ['Answer the review first, then fill in the OBSERVATION SHEET the next time you place a real mic.'],
   },
 };
 
@@ -301,45 +374,45 @@ const STAGE_WORDS: Record<PageId, StageWords> = {
   setups: {
     changes: [
       'A distance is measured from a named surface to the mic’s front, so a number only means something with its surface.',
-      'Closer: more source, less room; a directional mic gains bass up close (proximity effect). Farther: more of the whole.',
+      'Move closer for more source and less room; a directional mic also gains bass up close (proximity effect). Move farther to hear more of the whole source and the room.',
     ],
-    teaches: 'Several setups can each do the job; seeing them first makes the mic choice and the placement make sense.',
+    teaches: 'Several setups can each do the job; each trades something, such as more source for less room.',
     tryThis: 'Think back to two starting setups: what does each one gain, and what does it give up?',
   },
   microphone: {
     changes: [
       'A pickup pattern is a map of where a mic listens. Its quiet direction, a null, is a tool: aim it at what you do not want.',
-      'Power, size and mount decide where a mic can go: many condensers take phantom power, some their own battery or supply; a clip moves with the source.',
+      'Power, size and mount decide where a mic can go. Many condensers take phantom power, some their own battery or supply; a clip-on mic moves with the source.',
     ],
-    teaches: 'Choosing by property — pattern, power, size and mount — not by brand.',
+    teaches: 'A mic is chosen by its properties — pattern, power, size and mount — not by its brand.',
     tryThis: 'For this job, decide which matters most — pattern, power, size or mount — then check it against this module.',
   },
   placement: {
     changes: [
-      'Distance, height and aim each change what the mic hears: closer gives more source, less room; aiming away hears less source, its top end first.',
+      'Distance, height and aim each change what the mic hears: closer gives more source, less room; aim away and it hears less source, losing the top end first.',
       'Clearance comes first: the mic stops where it would touch a part, and moving parts and the player keep their space.',
     ],
     teaches: 'A starting point is read from a named surface, aimed and kept clear — then moved by ear.',
     tryThis: 'From a starting point, change one thing only — distance, height or aim — and read what the words say changes.',
   },
   context: {
-    changes: ['The Advanced stage: the help fades — the module sets out a situation, and you work out the decision.'],
-    teaches: 'Applying the foundations to a real situation.',
+    changes: ['From here the help steps back: the module sets out a real situation, and you decide where the mic goes and why.'],
+    teaches: 'The foundations — where the sound leaves, distance, the pattern’s null and clearance — decide what works in a real situation.',
     tryThis: 'Read the goal at the top again, then find on this step the thing it asks you to judge.',
   },
   twoMic: {
-    changes: ['The Advanced stage: the help fades — the module sets out a situation, and you work out the decision.'],
-    teaches: 'What changes when more than one pickup hears the same sound.',
+    changes: ['From here the help steps back: the module sets out a real situation, and you decide where the mic goes and why.'],
+    teaches: 'When more than one pickup hears the same sound, the difference in their timing changes what you hear when they are combined.',
     tryThis: 'Read the goal at the top again, then find on this step the thing it asks you to judge.',
   },
   troubleshoot: {
     changes: ['Each symptom has likely first checks; each option’s explanation says why one comes before the others.'],
-    teaches: 'Working back from what you hear to the first thing worth checking.',
+    teaches: 'What you hear points back to the first thing worth checking.',
     tryThis: 'Choose a wrong option on purpose and read the reason: each one says why it is not the first check.',
   },
   practice: {
     changes: ['A brief can accept more than one setup: the check reads your reasons, not a single “right” position.'],
-    teaches: 'Putting the whole lesson together, with reasons.',
+    teaches: 'A setup is right for reasons you can name — the source, the room, the pattern, clearance — and more than one can meet a brief.',
     tryThis: 'On a setup brief, choose a setup and check only the reasons you could defend.',
   },
 };
@@ -349,7 +422,7 @@ const DEFAULT_TITLE_WORDS: Partial<Record<PageId, { titles: readonly string[]; c
   context: {
     titles: ['Studio or live'],
     changes: [
-      'On a stage, loud sources such as monitors sit near the mic. A directional pattern hears less from its null, so a monitor in the null leaves more level before feedback.',
+      'On a stage, loud sources such as monitors sit near the mic. A directional pattern hears less from its null, so a monitor in the null leaves more level before feedback, the howl of a mic hearing its own speaker.',
       'A pattern only helps from its quiet side: sound reaching the mic from the front is heard in full.',
     ],
     tryThis: 'Find the loudest unwanted source on this step and decide which way the mic’s quiet side must face.',
@@ -357,7 +430,7 @@ const DEFAULT_TITLE_WORDS: Partial<Record<PageId, { titles: readonly string[]; c
   twoMic: {
     titles: ['Two microphones'],
     changes: [
-      'When two mics hear one source, the farther one hears it later. Summed, that delay cancels some frequencies — a comb of notches.',
+      'When two mics hear one source, the farther one hears it later. Added together, that delay cancels some frequencies — a comb of notches.',
       'Polarity turns one signal upside down: the notches and peaks swap, but the delay stays.',
     ],
     tryThis: 'Picture the two mics’ distances from the source: their difference is PATH Δd, and the time sound takes to cross it is DELAY Δt.',
@@ -404,12 +477,12 @@ function fit(lines: readonly (Line | null | false | undefined)[], cap: number): 
 const KIND_WORDS: Readonly<Record<string, string>> = {
   WATCH: 'shown for you: step through it and look',
   LEARN: 'one idea, explained',
-  TRY: 'hands-on: tap or move something and see it answer',
+  TRY: 'hands-on: tap or move something and watch what it changes',
   COMPARE: 'switch between choices and compare',
   PLACE: 'you move the mic yourself',
   LIVE: 'a live-sound situation to work through',
-  PAIR: 'two pickups at once',
-  POLARITY: 'two mics and polarity',
+  PAIR: 'two pickups hearing the same source',
+  POLARITY: 'two mics, and what flipping one’s polarity does',
   CHECK: 'questions on what this module showed',
   PRACTICE: 'practice that pulls the lesson together',
   READ: 'words and still drawings to read',
@@ -434,15 +507,15 @@ function keyPhrase(k: MikingDockKey, level: 0 | 1 | 2): string {
   }
 }
 
-const STRIP_LINE = 'The strip under the title: ‹ PREV and NEXT › move one step, on into the next module (FINISH › at the very end); ⏮ returns to module 1. Tap the middle readout (MODULE, plus STEP when there are several) for the contents. Every module stays open.';
+const STRIP_LINE = 'In the strip under the title, ‹ PREV and NEXT › move one step, on into the next module (FINISH › at the very end); ⏮ returns to module 1. Tap the middle readout (MODULE, plus STEP when there are several) for the contents. Every module stays open.';
 /** The header's other ⓘ: the lesson's starting-points note (AccuracyNote). */
-const CHIP_LINE = 'The other ⓘ beside this key opens the lesson’s ABOUT THESE STARTING POINTS note.';
-const FULL_LINE = '⤢ FULL SCREEN shows the drawing at full size with zoom; ▴ HIDE DISPLAY gives the words the whole screen.';
+const CHIP_LINE = 'The other ⓘ, beside the one you tapped, opens the lesson’s ABOUT THESE STARTING POINTS note.';
+const FULL_LINE = '⤢ FULL SCREEN shows the drawing at full size, with zoom. ▴ HIDE DISPLAY gives the words the whole screen.';
 
 function sequenceLine(prev: string | null, next: string | null): string {
-  if (!prev && next) return `The first module; next comes “${next}”.`;
-  if (prev && !next) return `After “${prev}” — the last module; FINISH › then shows what is left.`;
-  return `After “${prev ?? ''}”; next comes “${next ?? ''}”.`;
+  if (!prev && next) return `The first module: “${next}” builds on it.`;
+  if (prev && !next) return `The last module: it builds on “${prev}” and every module before it.`;
+  return `It builds on “${prev ?? ''}” and comes before “${next ?? ''}”.`;
 }
 
 /** The guide for the step on screen. */
@@ -462,45 +535,45 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
   const seeing = fit(
     [
       req(`MODULE ${x.pageNum} · ${x.pageTitle.toUpperCase()}.`),
-      s ? req(`This step is ${s.label} — ${KIND_WORDS[s.kind] ?? 'one part of this module'}.`) : null,
+      s ? req(`This step is ${s.label}: ${KIND_WORDS[s.kind] ?? 'one part of this module'}.`) : null,
       note?.seeing ? req(say(note.seeing, s)) : null,
       rack
-        ? req('Above, the drawing; the line under it says how to read it and what it simplifies.')
+        ? req('Look at the drawing, then read the line under it: it says how to read the drawing and what it leaves out.')
         : s && s.kind !== 'READ'
           ? opt('A reading step: words and still drawings, no live display.')
           : null,
-      rack && s && s.bezel.length ? opt(`Bezel readouts: ${s.bezel.join(', ')}.`) : null,
-      sameAsStage ? null : opt(`It belongs to the journey’s ${stage.title.toUpperCase()} stage.`),
+      rack && s && s.bezel.length ? opt(`The bezel, the readout cells framing the display, shows ${s.bezel.join(', ')}.`) : null,
+      sameAsStage ? null : opt(`It is part of the journey’s ${stage.title.toUpperCase()} stage.`),
       x.first ? opt(`At the top, “Page ${x.pageNum} goal:” says what this module asks.`) : null,
-      x.last ? opt(x.credited ? 'At the end, the takeaway card, then “This page is credited.”' : 'At the end, the takeaway card and the TO EARN CREDIT line.') : null,
+      x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This page is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
 
   // ── WHAT YOU CONTROL ──
-  const dockLine = (level: 0 | 1 | 2) => (s && s.dock.length ? `The dock: ${s.dock.map((k) => keyPhrase(k, level)).join('; ')}.` : '');
+  const dockLine = (level: 0 | 1 | 2) => (s && s.dock.length ? `In the dock: ${s.dock.map((k) => keyPhrase(k, level)).join('; ')}.` : '');
   const hasPos = !!s && s.dock.some((k) => k.label === 'POSITION' && k.kind === 'fader');
   // "Nothing to set" only for a known read step whose every copy holds no
   // card to answer (the notes without a control line); a family's unknown
   // read step, or any PRACTICE step, may hold answer cards.
   const readControl = s && !rack
     ? s.kind === 'CHECK'
-      ? 'Tap an answer. A wrong pick says why — choose again; the end screen notes your first try.'
+      ? 'Tap an answer. A wrong pick tells you why, and you choose again. The end screen notes your first try.'
       : note?.control
         ? ''
         : note && s.kind !== 'PRACTICE'
           ? 'Nothing to set on this step: read it, then NEXT ›.'
           : s.kind === 'PRACTICE'
-            ? 'Answer each card on this step; a wrong pick says why — choose again.'
+            ? 'Answer each card on this step. A wrong pick tells you why, and you choose again.'
             : 'Read it, answer any card it holds, then NEXT ›.'
     : '';
   const controlFor = (level: 0 | 1 | 2) =>
     fit(
       [
-        rack ? req(dockLine(level) || 'No dock keys on this step: the drawing is for looking.') : null,
+        rack ? req(dockLine(level) || 'No dock keys on this step: just look at the drawing.') : null,
         note?.control ? req(say(note.control, s)) : null,
         readControl ? req(readControl) : null,
-        hasPos ? opt('Drag the mic on the display, or use POSITION and AIM to do the same with no drag; a part in the way stops it, named with ✕.') : null,
+        hasPos ? opt('Drag the mic on the display, or use POSITION and AIM instead. A part in the way stops the mic, and ✕ names that part.') : null,
         rack ? opt(FULL_LINE) : null,
         opt(CHIP_LINE),
         req(STRIP_LINE),
@@ -516,14 +589,18 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
   const changes = fit(
     [
       note?.changes ? req(say(note.changes, s)) : null,
-      req(stageChanges[0]),
+      // With a step note's own line, the stage's first line is optional: both
+      // required ran past the no-scroll budget (Guided Lessons return 2026-11-08).
+      note?.changes ? opt(stageChanges[0]) : req(stageChanges[0]),
       ...stageChanges.slice(1).map(opt),
-      rack ? opt('A dock change shows on the drawing, the bezel or the words under it — silently: the lab plays no sound.') : null,
+      rack ? opt('Each dock change shows on the drawing, the bezel or the words under it. The lab plays no sound, so you read the change rather than hear it.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
 
   // ── WHAT THIS TEACHES ──
+  // The sequence line is told as progression ("builds on", "comes before"),
+  // not navigation (Guided Lessons return 2026-11-08).
   const seq = sequenceLine(x.prevTitle, x.nextTitle);
   const goalLine = `This module’s goal: ${x.goal}`;
   const teaches = fit(
@@ -544,16 +621,16 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
     const choice = s.dock.find((k) => k.kind === 'options' && k.options.length >= 2);
     const toggle = s.dock.find((k) => k.kind === 'toggle');
     if (fader) tries.push(`Slide ${fader.label} from one end to the other and watch what changes on the drawing and the bezel.`);
-    if (choice && tries.length < 3) tries.push(`Open ${choice.label} and try each choice in turn, watching what changes.`);
-    if (toggle && tries.length < 3) tries.push(`Tap ${toggle.label} and compare the two states.`);
+    if (choice && tries.length < 3) tries.push(`Open ${choice.label} and try each choice in turn: what changes on the drawing and in the words under it?`);
+    if (toggle && tries.length < 3) tries.push(`Tap ${toggle.label} and compare the drawing in both settings.`);
     if (tries.length < 2) tries.push('Open ⤢ FULL SCREEN and zoom in on the part this step is about.');
   }
   if (s && !rack && s.kind === 'CHECK' && tries.length < 2) tries.push('Answer the card you are least sure of first: a wrong pick shows its reason, and you choose again.');
   if (tries.length < 2) tries.push(isDefault ? sharp!.tryThis : words.tryThis);
-  if (tries.length < 2) tries.push('Use the middle readout in the strip to see every step of this module, and jump to one.');
+  if (tries.length < 2) tries.push('Before you move on, say in one sentence what this step showed you about the sound.');
   const tryThis = tries.slice(0, 3);
 
-  return { seeing, control, changes, teaches, tryThis };
+  return { ...(note?.intro ? { intro: note.intro } : {}), seeing, control, changes, teaches, tryThis };
 }
 
 // ═══ THE FOUNDATIONS CARD (journeyKit.FoundationsCard) ═══════════════════
@@ -562,18 +639,18 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
 export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; prevTitle: string | null; nextTitle: string | null }): ScreenGuide {
   return {
     seeing: [
-      `MODULE ${x.pageNum} · ${x.pageTitle.toUpperCase()}, showing BUILT ON THE FIRST TWO PAGES in place of its activity.`,
+      `MODULE ${x.pageNum} · ${x.pageTitle.toUpperCase()} shows BUILT ON THE FIRST TWO PAGES in place of its activity: it needs what the first two modules show.`,
       'The first two modules are listed: ✓ when done, or ○ with an OPEN button.',
     ],
     control: [
       'OPEN jumps to that module.',
-      'The QUICK CHECK button (I ALREADY MIC …) sets the quick-check path and opens the first module, where the check is.',
+      'The QUICK CHECK button (I ALREADY MIC …) switches you to the quick check and opens module 1, where the check is.',
       STRIP_LINE,
       CHIP_LINE,
     ],
     changes: [
-      'Finishing one of the first two modules counts at once on screen, so this activity opens even before anything is saved.',
-      'A passed quick check opens every activity but credits nothing: the first two modules still earn their own credit.',
+      'Each of the first two modules counts the moment you finish it, so this activity opens straight away.',
+      'Passing the quick check opens every activity, but it finishes nothing: you still complete the first two modules yourself.',
     ],
     teaches: [
       `“${x.pageTitle}” puts a microphone to work: it builds on where the sound leaves and the starting setups.`,
@@ -589,27 +666,34 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
 // ═══ THE WHAT'S-LEFT SCREEN (kit/LabEndScreen, mode "progress") ══════════
 
 export const MIKING_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'How a miking lesson fits together: find where the sound leaves, compare setups, choose the mic, place it clear of everything, then test it in real situations.',
+    start: 'Read LAB COMPLETE, or the WHAT’S LEFT rows and what each module still needs. Tap a row to jump to that module, or open REVIEW ▾ to look back at the ones you’ve done.',
+  },
   seeing: [
-    'The end of the lesson: LAB COMPLETE when every module is done, else WHAT’S LEFT with a row for each module still to do — its requirement and any first-try note.',
-    'REVIEW ▾ opens the modules already done.',
+    'You’ve reached the end of this lesson. LAB COMPLETE means every module is done. Otherwise WHAT’S LEFT lists each module still to do, what it needs, and any note on your first try.',
+    'Open REVIEW ▾ to look back at the modules you’ve finished.',
   ],
   control: [
     'Tap a row to jump straight to that module.',
-    'PRACTICE AGAIN FROM THE START begins a fresh practice run at the first module; DONE · BACK TO LABS leaves the lesson.',
+    // DONE is safeGoBack (MikingLessonScreen): back one screen, which is the
+    // family's lesson list when the lesson was opened from the hub.
+    'PRACTICE AGAIN FROM THE START begins a fresh practice run at module 1. DONE · BACK TO LABS leaves the lesson and goes back one screen, usually to this family’s list of lessons.',
     '‹ PREV returns to the module you came from, just as you left it.',
     CHIP_LINE,
   ],
   changes: [
-    'A module is done when its own requirement is met — its checks answered right, its activity finished; one with neither is done when you move on.',
-    'A fresh practice run clears answers and activities; modules already done stay done.',
+    'A module is done when its own requirement is met: its checks answered right, or its activity finished. A module with neither is done once you move past it.',
+    'A fresh practice run clears your answers and activities; modules you’ve finished stay done.',
   ],
   teaches: [
-    'The lesson’s journey, in order: where the sound leaves, starting setups, the microphones, the Placement Studio, the advanced modules and practice.',
-    'Next: another lesson in this family, from its list of lessons.',
+    'Miking follows the same order of decisions every time: find where the sound leaves, compare starting setups, choose the mic by its properties, then place it and keep it clear.',
+    // "such as": a family's own pages can replace an advanced module (M11's routing matrix).
+    'The advanced modules test those foundations in real situations, such as a stage, a second pickup or a fault to trace. The practice briefs show that more than one setup can work, for reasons you can name.',
   ],
   tryThis: [
-    'Jump to a module whose row has a first-try note and re-read its checks: each right answer and its reason stay shown. A fresh practice run lets you answer them again.',
-    'Start a fresh practice run and choose the quick-check path on the first module: see whether the foundations hold.',
+    'Jump to a module whose row has a first-try note and reread its checks: each right answer stays shown with its reason. A fresh practice run lets you answer them again.',
+    'Start a fresh practice run and choose I already mic … in the first module. The quick check shows whether the foundations have stuck.',
   ],
 };
 
@@ -618,27 +702,27 @@ export const MIKING_END_GUIDE: ScreenGuide = {
 /** The hub's guide: one family's lessons (the Labs menu tile), or every
  *  family in turn when no family is named. */
 export function mikingHubGuide(family?: { family: string }): ScreenGuide {
-  const where = family ? `${family.family.toUpperCase()}: one tile per lesson in this family` : 'MIKING LABS: every family’s lessons, a heading for each family';
+  const where = family ? `${family.family.toUpperCase()}: one tile per lesson in this family` : 'MIKING LABS: every family’s lessons, under a heading for each family';
   return {
     seeing: [
-      `${where}, under a line on what the lessons cover.`,
-      'Each tile: the lesson’s name, what it covers, and how many of its modules are done (the tile calls them pages); ✓ marks a finished lesson.',
+      `${where}. The line at the top says what the lessons cover.`,
+      'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done (the tile calls them pages). ✓ marks a finished lesson.',
       'At the bottom, a reminder: these lessons suggest where to begin — starting points, not rules.',
     ],
     control: [
-      'Tap a tile to open that lesson (where you left off, when your progress is saved).',
+      'Tap a tile to open that lesson. When your progress is saved, it opens where you left off.',
       '‹ goes back to the Labs menu.',
     ],
     changes: [
       'A tile’s count grows as that lesson’s modules are done; practicing again never lowers it.',
-      'If progress cannot be read, the count shows “—” and a note says so; every lesson still opens.',
+      'If your progress can’t be loaded, the count shows “—” and a note says so. Every lesson still opens.',
     ],
     teaches: [
-      'Every lesson follows one journey: where the sound leaves, real starting setups, the microphones, the Placement Studio, advanced situations and practice — silent, in drawings.',
-      'In Instruments & Recording these follow the Microphone Selection Lab; Microphone Principles, in Audio Fundamentals, covers patterns and distance.',
+      'Miking follows one order whatever the source: where the sound leaves, real starting setups, the mic’s properties, placement, advanced situations and practice. Here it is all silent and drawn.',
+      'Microphone Principles, in Audio Fundamentals, covers pickup patterns and distance; these lessons put them to work on real sources.',
     ],
     tryThis: [
-      'Open a lesson and look at its first step’s journey map: the same stages run through every lesson here.',
+      'Open a lesson and look at THE JOURNEY map on its first step: the same stages run through every lesson here.',
       'Finish a module, come back, and find that tile’s count has grown (when your progress is saved).',
     ],
   };

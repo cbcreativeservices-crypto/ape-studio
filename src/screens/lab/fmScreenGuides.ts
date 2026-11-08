@@ -47,89 +47,101 @@ export type FmScreenId = 'explore' | 'learn' | 'check';
 export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How one sine wobbling another creates sidebands: the ratio sets where they land, pitched or bell-like, and the index sets how many are strong.',
+      start: 'Tap ▶, then ride INDEX from 0 to 8 and watch amber sideband pairs spread out from the green carrier. Then switch RATIO between 1 and 1.41 ✳ and listen.',
+    },
     seeing: [
-      'The SIDEBAND SPECTRUM: a stick per frequency. Height = strength (Bessel math): |J| 1 is full, 0.5 is half.',
-      'Green = carrier (fc); amber = sidebands. Dim dashed = a sideband reflected below 0 Hz, folded up; if it lands on a stick, the two combine; red dashed = ALIASED past Nyquist (24 kHz, half a 48 kHz sample rate).',
-      'FC, FM, I: carrier, modulator, index. BW: estimated spread, red when its top passes 24 kHz.',
+      'The SIDEBAND SPECTRUM: a stick per frequency. Height is strength, from Bessel math (the curves FM follows): |J| 1 is full, 0.5 half.',
+      'Green: the carrier (fc). Amber: sidebands. Dim dashed: a sideband reflected below 0 Hz, folded up; on a stick, they combine. Red dashed: ALIASED past Nyquist, 24 kHz (half of 48 kHz).',
+      'FC: carrier. FM: modulator. I: index. BW: estimated spread, red once its top passes 24 kHz.',
     ],
     control: [
-      '▶ in the header, or a tap on the display, strikes the voice; ■ stops it. STRIKE in the dock strikes it again.',
-      'INDEX fader (0 to 8): how hard the modulator pushes the carrier. It sits on the lane from the start.',
-      'FC key: carrier 110, 220 or 440 Hz. RATIO key: modulator = carrier × 0.5, 1, 1.41 ✳, 2, 3.5 or 7 — ✳ marks the bell-like ratio.',
-      'ENV key: SUSTAIN holds the index; PLUCK and BELL let it fall after each strike — the graph keeps the strike’s bright start while the sound dulls toward the carrier. While it plays, a change strikes again.',
-      'Long-press INDEX, FC, RATIO, ENV or a readout for its lesson entry. Below: LAB NOTES, with two quick questions; ▴ HIDE DISPLAY gives them room.',
+      'Tap ▶ in the header, or tap the display, to strike the voice; ■ stops it. STRIKE in the dock strikes it again.',
+      'Slide INDEX (0 to 8) to set how hard the modulator pushes the carrier. It’s on the lane from the start.',
+      'FC picks the carrier: 110, 220 or 440 Hz. RATIO sets the modulator as carrier × 0.5, 1, 1.41 ✳, 2, 3.5 or 7; ✳ marks the bell-like ratio.',
+      'ENV: SUSTAIN holds the index; PLUCK and BELL let it fall after each strike. The graph keeps the strike’s bright start while the sound dulls toward the carrier. While it plays, a change strikes again.',
+      'Long-press INDEX, FC, RATIO, ENV or a readout to read about it. LAB NOTES below hold two quick questions; ▴ HIDE DISPLAY gives them room.',
     ],
     changes: [
-      'Sidebands sit at FC ± 1, 2, 3… × FM, so FM sets their spacing. Simple ratios put them on a harmonic series (a clear pitch); 1.41 ✳ puts them between (a bell).',
-      'More INDEX spreads energy into more pairs; Bessel heights rise and fall, so one stick can shrink as I grows.',
-      'BW = 2 × FM × (I + 1) estimates where most energy sits. Weaker sticks reach past it, and any past 24 kHz folds back: aliasing.',
+      'Sidebands sit at FC ± 1, 2, 3… × FM, so FM sets their spacing. Simple ratios put them on a harmonic series, a clear pitch; 1.41 ✳ puts them in between, a bell.',
+      'Raise INDEX and energy spreads into more pairs. Bessel heights rise and fall, so one stick can shrink as I grows.',
+      'BW = 2 × FM × (I + 1) estimates where most energy sits. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing.',
     ],
     teaches: [
-      'FM: one sine (the modulator) wobbling the phase of another (the carrier) makes a whole family of new frequencies.',
-      'Ratio decides where they land — pitched or bell-like. Index decides how many are strong — the brightness.',
+      'In FM, one sine (the modulator) wobbles the phase of another (the carrier) and creates a whole family of new frequencies.',
+      'The ratio decides where they land: pitched or bell-like. The index decides how many are strong: the brightness.',
       'An index that falls after each strike is how FM makes plucks and bells.',
-      'It follows Harmonics (a tone built from its harmonics) and comes before Modular Synth (a tone carved by a filter).',
+      'Two sines are enough for a rich tone; additive synthesis builds richness one harmonic at a time.',
     ],
     tryThis: [
-      'Tap ▶ (FC 220, RATIO 2, I 2.0: BW 2.6 kHz). Ride INDEX to 0: one green stick, the carrier alone. Then ride up to 8: amber pairs spread outward and BW reaches 7.9 kHz.',
-      'At I 2.0, A/B RATIO 1 and 1.41 ✳: FM reads 220 Hz, then 310 Hz. At 1 the sticks land on multiples of 220 Hz; at 1.41 ✳ they fall between — the tone turns to a clang.',
-      'Set RATIO 1.41 ✳ and INDEX to I = 2.4: the green carrier stick vanishes — its Bessel height is almost zero there. More index is not more of every part.',
+      'Tap ▶ (FC 220, RATIO 2, I 2.0: BW 2.6 kHz). Ride INDEX to 0: one green stick, the carrier alone. Then ride up to 8: amber pairs spread out and BW reaches 7.9 kHz.',
+      'At I 2.0, switch RATIO between 1 and 1.41 ✳: FM reads 220 Hz, then 310 Hz. At 1 the sticks land on multiples of 220 Hz; at 1.41 ✳ they fall between, and the tone turns to a clang.',
+      'Set RATIO 1.41 ✳ and INDEX to I = 2.4: the green carrier stick vanishes, because its Bessel height is almost zero there. More index is not more of every part.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The words and math of FM in one place: carrier, modulator, ratio, index, sidebands, Bessel amplitudes, Carson’s bandwidth and aliasing.',
+      start: 'Read COMMON MISTAKES and FORMULA / CONCEPT. Then switch to EXPLORE, set RATIO 1.41 ✳ and INDEX to I = 2.4, and watch the carrier stick disappear.',
+    },
     seeing: [
-      'The LEARN tab: the guided lesson for this lab, as one page to read. Nothing here plays.',
-      'First, what FM is. Then CONTROLS: one entry each for the display, the carrier, the ratio, the index and the index envelope.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT — the FM equation, the sideband rule and Carson’s bandwidth.',
+      'This is the FM lab’s guided lesson as one page to read. ▶ in the header still strikes the voice you set on EXPLORE.',
+      'It starts with what FM is. Then CONTROLS: one entry each for the display, FC (the carrier), RATIO, INDEX and ENV (the index envelope).',
+      'Then come COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the FM equation, the sideband rule and Carson’s bandwidth.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK.',
+      'Scroll to read. Use the tabs under the title to switch between LEARN, EXPLORE and CHECK.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press INDEX, FC, RATIO or ENV, or a readout, for just its entry; the ⓘ on the readout strip opens the display’s entry.',
+      'On EXPLORE, long-press INDEX, FC, RATIO, ENV or a readout to read just its entry. The ⓘ on the readout strip explains the display.',
     ],
     changes: [
-      'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'Each CONTROLS entry names a part of the EXPLORE screen and says what it does.',
-      'Each COMMON MISTAKES line pairs a wrong idea with the reason — for example, that more index always makes every sideband louder.',
+      'Nothing on this page moves. Use it to explain what the SIDEBAND SPECTRUM shows you on EXPLORE.',
+      'Each CONTROLS entry takes one part of the rack, such as FC or ENV, and says what it does to the sound.',
+      'Each COMMON MISTAKES line pairs a wrong idea with the reason: for example, that more index always makes every sideband louder.',
     ],
     teaches: [
       'The words of FM: carrier, modulator, ratio, index, sideband, Bessel amplitude, Carson bandwidth, aliasing.',
       'Why FM is neither distortion nor vibrato.',
-      'The reference behind EXPLORE; after FM, the Synthesis & Sound Design list goes on to Modular Synth.',
+      'Carson’s rule, BW = 2 × FM × (I + 1), estimates how far most of an FM tone’s energy spreads.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on Bessel amplitudes, then on EXPLORE set RATIO 1.41 ✳ and INDEX to I = 2.4: the carrier stick disappears, as the line says.',
-      'Read the line on Nyquist, then on EXPLORE pick FC 440 Hz, RATIO 7 and INDEX 8: BW reads 55.4 kHz in red, and red dashed sticks show sidebands folding back.',
+      'Read the COMMON MISTAKES line on more index and louder sidebands. Then on EXPLORE set RATIO 1.41 ✳ and INDEX to I = 2.4: the carrier stick disappears, as the line says.',
+      'Read the line on Nyquist. Then on EXPLORE pick FC 440 Hz, RATIO 7 and INDEX 8: BW reads 55.4 kHz in red, and red dashed sticks show sidebands folding back.',
     ],
   },
 
   // ── CHECK — LabShell's understanding check ────────────────────────────────
   check: {
+    intro: {
+      learning: 'A review of FM’s core ideas: where sidebands sit, what the index changes, what an uneven ratio does to the tone, and what is left at index 0.',
+      start: 'Read each question and tap an answer. Unsure? Switch to EXPLORE, try the idea on the SIDEBAND SPECTRUM, then come back to CHECK.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING for this lab: four questions — where sidebands sit, what the index changes, what a not-whole-number ratio (1.41 ✳) does, and what index 0 leaves.',
-      'Above them, how many are still to get right. A ✓ replaces a question’s number once it is right.',
+      'CHECK YOUR UNDERSTANDING asks four questions: where sidebands sit, what the index changes, what a ratio that isn’t a whole number (1.41 ✳) does, and what index 0 leaves.',
+      'Above them you see how many are still to get right. A ✓ replaces a question’s number once it’s right.',
       'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
-      'A right answer locks in, and its explanation stays to read.',
-      'The tabs under the title go back to LEARN or EXPLORE to look something up; answers already right stay right when you come back. Leaving the lab before the last one starts the check over.',
+      'Tap an answer. If it’s wrong, pick again straight away. Nothing is lost and there is no score.',
+      'A right answer locks in, and its explanation stays open to read.',
+      'Use the tabs under the title to look something up on LEARN or EXPLORE; answers already right stay right when you return. Leave the lab before the last one and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong — the teaching moment either way.',
-      'All four right completes the lab. It counts toward every certificate and program that needs it.',
-      'Passed before? The questions show as done; it never has to be taken twice.',
+      'Every explanation gives the reason, right or wrong, so a wrong pick still shows you how FM behaves.',
+      'Get all four right and the lab is complete.',
+      'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],
     teaches: [
-      'Whether the FM ideas stuck: sideband spacing, the index, inharmonic ratios and index 0.',
-      'Each question ties to something EXPLORE shows on the display.',
+      'Any FM tone comes down to where its sidebands sit, how strong they are, whether they line up on a harmonic series, and what is left at index 0.',
+      'On the SIDEBAND SPECTRUM, each of these shows directly: stick spacing, stick height, and how many sticks stand.',
     ],
     tryThis: [
-      'Unsure where sidebands sit? On EXPLORE, step RATIO and watch the FM readout and the stick spacing change together.',
-      'Unsure about index 0? On EXPLORE, drag INDEX to 0 and look at what is left on the display.',
+      'Unsure where sidebands sit? Try a different pair on EXPLORE: FC 440 and RATIO 0.5, so FM reads 220 Hz. Find the amber pair nearest the green carrier and read where it sits.',
+      'Unsure about index 0? On LEARN, read the INDEX entry under CONTROLS, then come back.',
     ],
   },
 };
@@ -141,27 +153,31 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
  *  with the lab's one unit, the understanding check: the row and PRACTICE
  *  AGAIN close the layer (nothing is cleared), DONE · BACK TO LABS leaves. */
 export const FM_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'Where you stand in the FM lab: whether the check is passed, what is left, and how to get back to the rack to keep exploring sidebands.',
+    start: 'Read WHAT’S LEFT. If the check’s row is still there, tap it to go back to CHECK. Otherwise tap ‹ BACK TO THE LAB to keep exploring.',
+  },
   seeing: [
-    'Under Where you are, the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once the check is passed; YOUR PROGRESS if your saved progress could not be read.',
-    'One row, CHECK · Understanding check, while it is still to do. Once passed it folds into a ✓ CREDITED line (✓ DONE when you are not signed in); REVIEW ▾ shows it.',
-    'The line under the title says what is left and whether your work is saved.',
+    'Under Where you are: the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once you’ve passed the check. If saved progress can’t be read, it says YOUR PROGRESS.',
+    'While the check is still to do, one row shows CHECK · Understanding check. Once passed, it folds into a ✓ CREDITED line (✓ DONE when you’re not signed in); REVIEW ▾ opens it.',
+    'The line under the title says what’s left and whether your work is saved.',
   ],
   control: [
-    '‹ BACK TO THE LAB, or the check’s row, closes this screen and returns to the lab exactly as you left it.',
-    'PRACTICE AGAIN FROM THE START also returns to the lab; it clears nothing.',
+    'Tap ‹ BACK TO THE LAB, or the check’s row, to return to the lab exactly as you left it.',
+    'PRACTICE AGAIN FROM THE START also takes you back to the lab; it clears nothing.',
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'The check counts once every answer is right. Signed in, it is credited to your account once and never has to be taken twice.',
-    'Signed out, the line under the title says whether signing in can still keep it. Practicing again never removes credit.',
+    'The check counts once every answer is right. If you’re signed in, it’s saved to your account once, and you never take it twice.',
+    'If you’re signed out, the line under the title says whether signing in can still keep it. Practicing again never takes it away.',
   ],
   teaches: [
-    'Whether this lab is complete, and what is still left to finish it.',
-    'The lab can always be opened again for practice; nothing earned is taken away.',
+    'An FM tone is built from a carrier, a modulator and the sidebands they make. The SIDEBAND SPECTRUM on EXPLORE shows each one as a stick.',
+    'Two numbers, the ratio and the index, shape what you hear, and you can test both on EXPLORE at any time. Sidebands pushed past 24 kHz fold back as aliasing.',
   ],
   tryThis: [
-    'If the check is still listed, tap its row: you are back on the CHECK tab. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
-    'Once it is passed, tap ‹ BACK TO THE LAB and on EXPLORE set RATIO 1.41 ✳ and strike: practice never removes the credit.',
+    'If the check is still listed, tap its row to go back to CHECK. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
+    'Once it’s passed, tap ‹ BACK TO THE LAB. On EXPLORE, set RATIO 1.41 ✳ and strike: listen to how the tone changes.',
   ],
 };
 

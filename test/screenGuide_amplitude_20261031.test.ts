@@ -69,7 +69,12 @@ describe('1. both Level & Amplitude screens have a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -158,7 +163,7 @@ describe('3. each guide quotes the page’s real names', () => {
     assert.match(SRC, /label=\{alsoReviewLab \? 'UNDERSTOOD — MARK REVIEWED' : 'UNDERSTOOD — CONTINUE'\}/);
     const lab = textOf(GUIDES.lab);
     assert.match(lab, /once passed: ✓ ORIENTATION COMPLETE/);
-    assert.match(lab, /Passed the color check before[\s\S]*MARK REVIEWED marks the lab[\s\S]*TEST YOURSELF AGAIN ›/);
+    assert.match(lab, /Passed the color check before[\s\S]*MARK REVIEWED if the lab isn’t marked yet[\s\S]*TEST YOURSELF AGAIN ›/);
     // The primer never shows the done branch: the gate swaps to the chosen screen once the flag is set.
     assert.match(SRC, /if \(done \|\| overlaysSuppressed \|\| sampling\) return <Screen \{\.\.\.props\} \/>;/);
   });
@@ -174,13 +179,13 @@ describe('3. each guide quotes the page’s real names', () => {
     assert.doesNotMatch(textOf(GUIDES.primer), /draws sound levels in color/);
   });
   it('first-use terms are glossed: pp…fff, RMS, dB, harmonic, amplitude and level', () => {
-    assert.match(textOf(GUIDES.lab), /pp, mp, f, fff \(music marks: very soft to very loud\)/);
+    assert.match(textOf(GUIDES.lab), /pp, mp, f, fff \(music marks, very soft to very loud\)/);
     for (const [, gd] of allGuides) {
       const t = textOf(gd);
-      assert.match(t, /RMS averages strength over time/);
+      assert.match(t, /RMS averages over time/);
       assert.match(t, /dB \(decibels\)/);
-      assert.match(t, /harmonic \(a weaker tone at 3× the frequency\)/);
-      assert.match(t, /Amplitude is how big the swings are; level is that size read as a number/);
+      assert.match(t, /harmonic, a weaker tone at 3× its frequency/);
+      assert.match(t, /Amplitude is how big the swings are\. Level is that size read as a number/);
     }
     // The page's harmonic is the 3rd (trace(): 2 and 6 cycles across the card).
     assert.match(SRC, /0\.62 \* Math\.sin\(2 \* Math\.PI \* 2 \* x01\) \+ 0\.3 \* Math\.sin\(2 \* Math\.PI \* 6 \* x01\)/);
@@ -217,7 +222,7 @@ describe('4. the numbers in the guide are the numbers the page draws', () => {
     assert.ok(splFrac < peakLevel, 'SPL sits lower on its own scale than PEAK on its own');
     assert.notEqual(levelColor(splFrac), levelColor(peakLevel));
     for (const [, gd] of allGuides) {
-      assert.ok(gd.tryThis.some((x) => /SPL METER 78 dB SPL[\s\S]*PEAK −3[\s\S]*cooler color/.test(x)));
+      assert.ok(gd.tryThis.some((x) => /SPL METER’s 78 dB SPL[\s\S]*PEAK −3[\s\S]*cooler color/.test(x)));
       assert.ok(gd.changes.some((x) => /own scale/.test(x)));
     }
   });

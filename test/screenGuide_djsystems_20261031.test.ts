@@ -79,7 +79,12 @@ describe('1. every DJ Systems screen has a complete guide', () => {
   });
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 experiments`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -114,11 +119,12 @@ describe('1. every DJ Systems screen has a complete guide', () => {
     }
     assert.deepEqual(over, [], 'tighten the wording (keep it accurate) — a step must not need scrolling');
   });
-  it('every guide names the dock’s ■ STOP and places its screen in the sequence', () => {
-    for (const [n, title] of TITLES.entries()) {
+  it('every guide names the dock’s ■ STOP; WHAT THIS TEACHES carries no course-navigation line', () => {
+    for (const title of TITLES) {
       const t = textOf(GUIDES[title]);
       assert.ok(t.includes('■ STOP'), `${title}: ■ STOP`);
-      assert.ok(t.includes(`Screen ${n + 1}`), `${title}: says which screen it is`);
+      // owner decision 4 (2026-11-08): course navigation left WHAT THIS TEACHES
+      assert.doesNotMatch(GUIDES[title].teaches.join(' '), /\bScreen \d+ (of|comes|follows|is the)\b|\bnext screen\b/i, `${title}: navigation line`);
     }
   });
 });
@@ -187,7 +193,7 @@ describe('3. every TRY THIS number is the screen’s own', () => {
     const at = (db: number) => Math.round(nioshDose([db], [240]));
     assert.equal(at(88), 100);
     assert.equal(at(91), 200);
-    assert.ok(tryOf(G(1)).includes(`pick 4 h set and 88 dBA: ${at(88)} % of a day’s allowance. Step up to 91 dBA: ${at(91)} %.`));
+    assert.ok(tryOf(G(1)).includes(`pick a 4 h set at 88 dBA: that’s ${at(88)} % of a day’s allowance. Step up to 91 dBA and it reads ${at(91)} %.`));
   });
   it('Screen 14: MATCH TEMPO TO A — deck B slows 3.2 % to 122 BPM, B PITCH −0.56', () => {
     assert.equal(TRACKS.glassHarbour.bpm, 126);
@@ -210,9 +216,19 @@ describe('3. every TRY THIS number is the screen’s own', () => {
     goal('p19Mic.tsx', "'Mic live: speech peaks −18 … −8 dBFS'");
     assert.ok(tryOf(G(19)).includes('speech peaks sit at −18 to −8 dBFS'));
     goal('p19Mic.tsx', "'Make it ring, then win back 6 dB'");
-    goal('p20Pa.tsx', 'until the FLOOR reads about 95 dBA');
+    goal('p20Pa.tsx', 'until the FLOOR reads about 88 dBA');
+    goal('p20Pa.tsx', 'get the room to about 88 dBA through the engineer');
+    goal('p20Pa.tsx', 'with the floor still at 88 dBA or more.');
+    goal('p20Pa.tsx', 'const FLOOR_TARGET_DBA = 88;');
+    // the suggested floor level is inside Screen 1's 4-hour dose: 88 dBA for 4 h is 100 % (NIOSH, 3 dB exchange)
+    assert.ok(Math.round(nioshDose([88], [240])) <= 100);
+    // every floor goal on the page uses that one number; no 95 or 90 floor target is left
+    const p20 = code(`${DJ}/pages/p20Pa.tsx`);
+    assert.equal((p20.match(/floor >= FLOOR_TARGET_DBA/g) ?? []).length, 3);
+    assert.doesNotMatch(p20, /floor >= \d|about 9[05] dBA|9[05] dBA or more/);
     goal('p20Pa.tsx', "'4-hour dose at the decks ≤ 100 %'");
-    assert.ok(tryOf(G(20)).includes('about 95 dBA') && tryOf(G(20)).includes('100 % or less'));
+    assert.ok(tryOf(G(20)).includes('about 88 dBA') && tryOf(G(20)).includes('100 % or less'));
+    assert.ok(!textOf(G(20)).includes('95 dBA'));
     goal('p21Rec.tsx', "'Capture level: peaks −12 … −3 dBFS, no clip'");
     assert.ok(tryOf(G(21)).includes('between −12 and −3 dBFS'));
     goal('p23Changeover.tsx', 'within 2 dB of CH 1 AVG');
@@ -227,7 +243,7 @@ describe('3. every TRY THIS number is the screen’s own', () => {
     assert.ok(code(`${DJ}/pages/p14Key.tsx`).includes('about one semitone for every 6 % of tempo'));
     // 12·log2(1.06) ≈ 1.009 semitones: the rule of thumb holds.
     assert.ok(Math.abs(12 * Math.log2(1.06) - 1) < 0.02);
-    assert.ok(textOf(G(14)).includes('about one semitone for every 6 % of tempo'));
+    assert.ok(textOf(G(14)).includes('About 6 % of tempo moves it one semitone.'));
   });
 });
 
@@ -274,7 +290,12 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
   const endEl = pl.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
 
   it('shape, budgets and house copy rules', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+    // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+    const intro = (END as unknown as { intro?: { learning: string; start: string } }).intro;
+    assert.ok(intro, `end: no intro`);
+    assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `end: intro.learning over 30 words`);
+    assert.ok(intro.start.trim().split(/\s+/).length <= 40, `end: intro.start over 40 words`);
     for (const k of SECTION_KEYS) {
       assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: 1–5 bullets`);
       for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
@@ -358,10 +379,10 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     const gs = code(`${DJ}/booth/goalStore.ts`);
     assert.match(gs, /return Array\.from\(\{ length: Math\.max\(0, count\) \}, \(\) => false\);/);
     assert.match(gs, /return allMet && !isDone;/);
-    assert.ok(et.includes('every goal chip on it is ✓ in one visit'));
-    assert.ok(et.includes('It marks itself; NEXT never counts it.'));
+    assert.ok(et.includes('every goal chip on it is ✓ in a single visit'));
+    assert.ok(et.includes('Tapping NEXT doesn’t finish a screen.'));
     // the first TRY THIS asks for EVERY chip in one visit, not just the Left: ones
-    assert.ok(et.includes('check every goal chip on it in that one visit'));
+    assert.ok(et.includes('finish every goal on it in that one visit'));
     // Effects has two fault cards (and two fault goals); every other screen one
     const fx = code(`${DJ}/pages/p13Effects.tsx`);
     assert.equal((fx.match(/<FaultCard/g) ?? []).length, 2);
@@ -369,7 +390,7 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     // one exercise per screen: Effects' exercise has two fault cards, so never "its fault" (singular)
     assert.ok(et.includes('its troubleshooting exercise'));
     assert.ok(!et.includes('its fault to fix'));
-    assert.ok(et.includes('its goal chips start empty for practice, and it stays ✓ DONE here'));
+    assert.ok(et.toLowerCase().includes('its goal chips start empty for practice, and it stays ✓ done here'));
     // "on most screens, Pass the check": most goal lists carry it, not all
     const lists = PAGE_FILES.map((f) => code(`${DJ}/pages/${f}`).match(/export const GOALS_\w+ = \[([^\]]*)\]/)?.[1] ?? '');
     assert.ok(lists.every((l) => l.length > 0), 'every screen has a goal list');
@@ -394,8 +415,8 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     const counts = PAGE_FILES.map((f) => (code(`${DJ}/pages/${f}`).match(/export const GOALS_\w+ = \[([^\]]*)\]/)?.[1].match(/'[^']*'/g) ?? []).length);
     assert.ok(Math.min(...counts) > LEFT_SHOWN, `fewest goals ${Math.min(...counts)}`);
     assert.ok(et.includes('usually with Left: and up to three goals your last visit missed, then + n more'));
-    assert.ok(et.includes('Left: is what your last visit this session missed (every goal, if not opened yet).'));
-    assert.ok(et.includes('Chips start empty each visit, so a screen counts only when all are ✓ in one visit.'));
+    assert.ok(et.includes('Left: shows what your last visit this session missed (every goal if unopened).'));
+    assert.ok(et.includes('Chips start empty each visit.') && et.includes('every goal chip on it is ✓ in a single visit'));
     assert.ok(!/still needs\.|lists all its goals|goals it still needs/.test(et));
     assert.match(code(`${DJ}/bits.tsx`), /const seen = useRef<boolean\[\]>\(visitStart\(goals\.length\)\);/);
     const { DJ_OPTIONAL_NUMBERS } = await import('../src/screens/lab/dj/pages/registry.ts');
@@ -412,7 +433,8 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     assert.match(scr, /labDoneKey=\{trainingKeyFor\('DJSystemsLab'\)\}/);
     assert.match(pl, /if \(labDoneKey && labComplete\) reportTrainingComplete\(labDoneKey\);/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'DJSystemsLab', key: 'tr_dj', completion: 'all-modules' \}/);
-    assert.ok(et.includes('With every required screen done, the lab counts toward the DJ credentials that list it.'));
+    // owner decision 5 (2026-11-08): credential bookkeeping left the student text
+    assert.ok(!/credential/i.test(et));
   });
 
   it('START OVER (PRACTICE) stays reachable on the end screen and clears every ✓ DONE (no banked page credit in this lab)', () => {
@@ -424,7 +446,7 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     // doReset empties progress.completed; endCleared then has only banked units, and this lab banks none
     assert.match(pl, /const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(pl, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
-    assert.ok(et.includes('Reopening a screen to practice never clears its ✓ DONE.'));
-    assert.ok(et.includes('WHAT’S LEFT ▾ at the top opens the list of screens; START OVER (PRACTICE), at its foot, asks first, then clears every ✓ DONE mark and reopens Screen 1 for a fresh run'));
+    assert.ok(et.includes('Reopening a finished screen to practice never clears its ✓ DONE.'));
+    assert.ok(et.includes('WHAT’S LEFT ▾ at the top opens the list of screens. START OVER (PRACTICE), at its foot, clears every ✓ DONE mark and reopens Screen 1 for a fresh run. It asks you first.'));
   });
 });

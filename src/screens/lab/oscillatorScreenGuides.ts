@@ -37,29 +37,33 @@ export type OscillatorScreenId = 'explore' | 'learn' | 'check';
 export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'Every classic wave is a recipe of harmonics: which multiples of the fundamental are present, and how strong, sets the timbre, while F0 alone sets the pitch.',
+      start: 'Tap ▶, then open WAVE and switch between SINE, SQUARE and SAW while it plays. Watch the bars change and listen: the tone color shifts, but the pitch stays put.',
+    },
     seeing: [
-      'Top: the wave itself, two cycles traveling left to right, colored by level — redder toward full scale.',
+      'On top, the wave: two cycles traveling left to right, colored by level — redder toward full scale.',
       'Below: its recipe. Bars 1 to 12 are the first twelve harmonics; a bar’s height is how strong that harmonic is next to bar 1, the fundamental.',
       'Readouts: WAVE, F0 (the fundamental), VIEW (IDEAL or SPEAKER). Badge: ANALYTIC MODEL — NOT A MEASUREMENT; with SPKR on, PHONE SPEAKER OUTPUT — 150 Hz HPF APPLIED.',
     ],
     control: [
       '▶ in the header plays the wave you see; ■ stops it. A tap on the display does the same.',
-      'WAVE key: SINE, SQUARE, TRIANGLE, SAW or PULSE 25%, each with a one-line description. The tray stays open, so you can switch while it plays. Long-press a choice for its lesson entry.',
-      'F0 key: 110, 220, 440 or 880 Hz — each step one octave higher.',
-      'SPKR key: shows the signal after the phone speaker’s 150 Hz high-pass; an amber line marks the filter’s effect on each bar. Its light shows it is on.',
+      'Tap WAVE for SINE, SQUARE, TRIANGLE, SAW or PULSE 25%, each with a one-line description. The tray stays open, so you can switch while it plays. Long-press a choice for its lesson entry.',
+      'Tap F0 for 110, 220, 440 or 880 Hz — each step one octave higher.',
+      'Tap SPKR to see the signal after the phone speaker’s 150 Hz high-pass, which cuts deep lows; an amber line marks the filter’s effect on each bar. Its light shows it’s on.',
       'Below the rack, LAB NOTES: what you’re seeing, THE SOUND, two CHECK YOURSELF questions and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
       'Each bar is a sine at a whole-number multiple of F0; added up, they make the shape.',
       'Change WAVE: the bars change, so the shape and the sound (timbre) change; the pitch stays.',
-      'Change F0 (IDEAL view): only the pitch moves; the wave always shows two cycles, slowed.',
-      'SPKR: a phone speaker plays deep notes poorly, so the filter shrinks the lowest bars, most at 110 Hz. On the speaker you hear it in either view.',
+      'Change F0 (IDEAL view): only the pitch moves; the picture stays two cycles, slowed.',
+      'SPKR: a phone speaker can’t reproduce deep bass, so the filter shrinks the lowest bars, most at 110 Hz. You hear it on a phone speaker either way.',
     ],
     teaches: [
       'Every repeating sound is a stack of sines (Fourier). The classic waves differ only in which ones, and how strong.',
       'Sine: one. Square: odd at 1/n. Triangle: odd at 1/n², far softer. Saw: all at 1/n. Pulse 25%: every 4th gone.',
       'Digital waves must leave out harmonics above half the sample rate (Nyquist), or they fold back as aliasing.',
-      'First in Synthesis & Sound Design; Noise, Harmonics and FM Synthesis follow.',
+      'Even with a weak fundamental, you still hear the pitch, from the harmonics.',
     ],
     tryThis: [
       'Pick SQUARE: bars 2, 4, 6, 8, 10 and 12 go empty — odd harmonics only. Then TRIANGLE: the same bars are empty, and bar 3 drops to 1/9 of bar 1.',
@@ -70,9 +74,13 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The words for oscillators — fundamental, harmonic, duty cycle, band-limiting, Nyquist and aliasing — and how FM and AM differ.',
+      start: 'Read the PULSE 25% and TRIANGLE entries. Then open EXPLORE, pick PULSE 25% and see bars 4, 8 and 12 go empty while F0 stays put.',
+    },
     seeing: [
-      'The LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
-      'First, what the lab is. Then CONTROLS: the display, each wave (sine, square, saw, triangle, pulse), frequency, noise, FM and AM.',
+      'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the wave.',
+      'First, what the lab is. Then CONTROLS: the display, each wave (SINE, SQUARE, SAW, TRIANGLE, PULSE 25%), F0, Noise, FM and AM.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -82,24 +90,28 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
     ],
     changes: [
       'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'FM, AM, noise and the band-limiting ON/OFF tip are reading only: EXPLORE has only WAVE, F0 and SPKR (LAB NOTES says so for FM and AM). The Noise lab covers noise.',
+      'FM, AM, noise and the band-limiting ON/OFF tip are here to read only. EXPLORE has just WAVE, F0 and SPKR, and LAB NOTES says so for FM and AM. The Noise lab covers noise.',
       'The FORMULA / CONCEPT line gathers AM, FM and aliasing into one place.',
     ],
     teaches: [
       'The words for oscillators: fundamental, harmonic, duty cycle, band-limiting, Nyquist, aliasing.',
       'The common mix-ups, such as FM against AM, and what duty cycle does and does not change.',
-      'The reference behind EXPLORE and CHECK.',
+      'FM sweeps a wave’s frequency; AM sweeps its level. They are two different kinds of modulation.',
     ],
     tryThis: [
-      'Read the Pulse entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
-      'Read the Triangle entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
+      'Read the PULSE 25% entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
+      'Read the TRIANGLE entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
     ],
   },
 
   // ── CHECK — CHECK YOUR UNDERSTANDING ──────────────────────────────────────
   check: {
+    intro: {
+      learning: 'A review of harmonic recipes: which wave holds every harmonic, why a triangle sounds softer than a square, what duty cycle changes, and why harmonics above Nyquist are left out.',
+      start: 'Read each question and tap an answer. Unsure? Use the tabs to look the idea up on LEARN or to try the waves on EXPLORE, then come back.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING: four questions on this lab. Answer every one correctly to complete it.',
+      'CHECK YOUR UNDERSTANDING: four questions on this lab. Get every one right to complete the lab.',
       'They ask which wave holds every harmonic, why a triangle sounds softer than a square, what a pulse’s duty cycle changes, and why harmonics above Nyquist are left out.',
     ],
     control: [
@@ -108,15 +120,15 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'When every answer is right the page reads that the lab is complete, and it counts wherever this lab is required — it never needs to be taken twice.',
+      'Get all four right and the lab is complete; the page says so. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
-      'It checks the core ideas: harmonic recipes, how fast harmonics fall off, duty cycle and aliasing.',
-      'Each explanation repeats the reason, so a wrong pick still teaches.',
+      'A wave’s tone depends on which harmonics it holds and on how strong each one is.',
+      'Why a wave can be missing some harmonics, and why a digital oscillator leaves the highest ones out.',
     ],
     tryThis: [
-      'Before you start, for the triangle: on EXPLORE switch between TRIANGLE and SQUARE in the WAVE tray and compare how fast the bars shrink.',
-      'Before you start, for the duty-cycle question: pick PULSE 25% on EXPLORE — three bars go empty while F0 stays the same.',
+      'For the triangle question, read the TRIANGLE and SQUARE entries under CONTROLS on LEARN. On EXPLORE, long-press a choice in the WAVE tray for its entry.',
+      'For the duty-cycle question, read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray on EXPLORE.',
     ],
   },
 };

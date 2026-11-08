@@ -83,7 +83,7 @@ describe('1. every step of every module has a complete guide', () => {
   for (const [id, s] of ALL) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
       const gd = s.guide;
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -151,7 +151,7 @@ describe('2. each guide quotes its step’s real names', () => {
     'what:listen': ['INPUT', 'CEILING', 'RELEASE', 'GR', 'BYP', 'PEAK', 'TRUE PK', 'LUFS', 'PLR', 'MATCH dB', '▶ MIX', '▶ LOUDER', '■ STOP', 'MATCH LEVEL', 'THE MIX', 'LOUDER'],
     'what:practice': ['Mastering adjustment', 'Mix revision', 'More information from the client', 'Your FIRST answer on each card is the one recorded', '‹ PREV CARD', 'NEXT CARD ›'],
     'what:review': ['KEY IDEAS', 'KEY TERMS', 'Mastering', 'Stereo master', 'Mix revision', 'TAKEAWAY', 'START OVER (PRACTICE)'],
-    'roles:table': ['IN THIS MODULE', 'MIXING ENGINEER', 'MASTERING ENGINEER', 'The roles can overlap', 'Mastering is not simply "making it louder"'],
+    'roles:table': ['IN THIS MODULE', 'MIXING ENGINEER', 'MASTERING ENGINEER', 'The roles can overlap', 'Mastering is not simply'],
     'roles:control': ['REQUEST', 'ADDRESSED BY', 'A CLIENT REQUEST', 'VOCAL', 'SNARE', 'FORMAT', 'WIDTH', 'BUS COMP', 'FADES', 'MIXING', 'MASTERING', 'EITHER'],
     'roles:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'roles:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
@@ -170,13 +170,13 @@ describe('2. each guide quotes its step’s real names', () => {
     'workflow:listen': ['TILT', 'OUTPUT', 'SAFETY', 'BYPASS', 'BYP', 'PEAK', 'TRUE PK', 'LUFS', 'PLR', 'MATCH dB', 'MATCH LEVEL', '▶ BYPASS', '▶ WITH EQ', '■ STOP', 'WITH EQ'],
     'workflow:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'workflow:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
-    'loudness:numbers': ['IN THIS MODULE', 'PEAK', 'TRUE PK', 'LUFS', 'GAIN', 'FACE', 'SIGNAL', 'Sample peak meter', 'Loudness meter (BS.1770-style)', 'Music mix', 'Speech', 'Kick drum', 'Organ'],
+    'loudness:numbers': ['IN THIS MODULE', 'PEAK', 'TRUE PK', 'LUFS', 'GAIN', 'FACE', 'SIGNAL', 'Sample peak meter', 'Loudness meter (BS.1770-style', 'Music mix', 'Speech', 'Kick drum', 'Organ'],
     'loudness:listen': ['INPUT', 'CEILING', 'RELEASE', 'GR', 'ESTIMATE · RENDERS WHEN YOU LET GO', 'PEAK', 'TRUE PK', 'LUFS', 'PLR', 'MATCH dB', 'DRIVE', 'MATCH LEVEL', '▶ QUIETER', '▶ LOUDER', '■ STOP', 'QUIETER', 'LOUDER'],
     'loudness:normal': ['PLAYBACK LOUDNESS NORMALIZATION', 'TRANSLATION CHECKS'],
     'loudness:translate': ['SYSTEM', 'FOLD', 'STEREO', 'MONO', 'MODEL', 'Main monitors (treated room)', 'Headphones', 'Small speaker', 'Phone speaker (mono)', 'Car', '▶ DRAW MIX'],
     'loudness:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'loudness:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
-    'release:contexts': ['IN THIS MODULE', 'Streaming / digital distribution', 'CD preparation', 'Vinyl preparation', 'Broadcast or picture-related delivery', 'Alternate versions', 'The one constant'],
+    'release:contexts': ['IN THIS MODULE', 'Streaming / digital distribution', 'CD preparation', 'Vinyl preparation', 'Broadcast or picture-related delivery', 'Alternate versions'],
     'release:checklist': ['DESTINATION', 'CONFIRMED', 'CONFIRM', 'FACT', 'EXAMPLE', 'CD preparation', 'Vinyl preparation'],
     'release:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'release:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
@@ -237,7 +237,7 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
     assert.match(m, /advice\.tone === 'sensible' \? 'GOOD' : advice\.tone === 'low' \? 'QUIET' : advice\.tone\.toUpperCase\(\)/);
     const t = textOf(guideOf('room', 'level'));
     assert.match(t, /BASS reads −5\.3 dB and TREBLE −1\.1 dB/);
-    assert.match(t, /88 dB: PER DAY reads 4 h, READING HOT\. At 91 dB: 2 h, UNSAFE/);
+    assert.match(t, /88 dB: PER DAY reads 4 h and READING HOT\. At 91 dB it’s 2 h and UNSAFE/);
   });
   it('Module 3 path: five presses of + CONNECT walk DAW → DAC → MON CTL → AMP → PASSIVE and grade COMPLETE; an AMP before ACTIVE grades CHECK', () => {
     const m = code(`${MA}/modules/mod3Room.tsx`);
@@ -287,7 +287,7 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
     assert.equal(corr(2).toFixed(2), '0.00');
     const t = textOf(guideOf('tools', 'shelf'));
     assert.match(t, /×1\.00 up to ×2\.00: CORRELATION falls from 0\.60 to 0\.00/);
-    assert.match(t, /RATIO 10\.5 : 1 turns a 0 dB input into −10\.9 dB\. Ride RATIO down to 2\.1 : 1, nearer the gentle ratios mastering often uses: OUT AT 0 IN reads −6\.4 dB/);
+    assert.match(t, /RATIO 10\.5 : 1 a 0 dB input comes out at −10\.9 dB\. Ride RATIO down to 2\.1 : 1, nearer the gentle ratios suggested as a starting point in mastering: OUT AT 0 IN reads −6\.4 dB/);
   });
   it('Module 5: TILT −4…+4 in 0.5 steps from +1.5; +4.0 reads “+4.0 dB end to end (±2.0)”; the trim is +2 dB, the SAFETY ceiling −0.3 dBFS', () => {
     const m = code(`${MA}/modules/mod5Workflow.tsx`);
@@ -320,7 +320,7 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
     assert.equal((E.wavBytes(secs, E.CD_RED_BOOK.sampleRateHz, E.CD_RED_BOOK.bitDepth, E.CD_RED_BOOK.channels) / 1e6).toFixed(0), '177');
     assert.deepEqual(C.PROJECT_TRACKS.map((t: { seconds: number }) => t.seconds).sort(), [214, 232, 258, 301]);
     assert.equal(E.CD_PLAY_MINUTES, 74);
-    assert.match(textOf(guideOf('release', 'contexts')), /16\.8 minutes, 177 MB/);
+    assert.match(textOf(guideOf('release', 'contexts')), /16\.8 minutes and takes 177 MB/);
   });
   it('Module 8 brief: Tide Table −19.8 vs Night Signal −12.6 LUFS (7.2 LU); Night Signal peaks at −0.4 dBTP, the closest to 0', () => {
     const by = (title: string) => C.PROJECT_TRACKS.find((t: { title: string }) => t.title === title);
@@ -389,7 +389,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
   const NAVK = code('src/screens/lab/kit/useLabNav.ts');
   const IDX = code(`${MA}/modules/index.ts`);
   it('complete: all five sections, 1–5 bullets, 2–3 TRY THIS; inside the no-scroll budget', () => {
-    assert.deepEqual(Object.keys(G).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(G).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
     for (const k of SECTION_KEYS) assert.ok(G[k].length >= 1 && G[k].length <= 5, k);
     assert.ok(G.tryThis.length >= 2 && G.tryThis.length <= 3);
     for (const sec of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
@@ -426,7 +426,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
   it('one row per module, each with what finishes it; Module 8 = four track decisions + the QC checklist', () => {
     assert.match(END, /units=\{MASTERING_MODULES\.map\(\(x\) => \(\{ id: x\.id, label: x\.title, detail: x\.id === 'project' \? 'Four track decisions \+ the QC checklist' : `\$\{scenariosForModule\(x\.id\)\.length\} decisions on the PRACTICE step` \}\)\)\}/);
     assert.equal(C.scenariosForModule('project').length, 4);
-    assert.match(T, /decisions on its PRACTICE step, or for Module 8 the four track decisions and the QC checklist/);
+    assert.match(T, /the decisions on its PRACTICE step, or for Module 8, the four track decisions and the QC checklist/);
   });
   it('a row opens the step that finishes it (PRACTICE deck; Module 8 decisions, then QC once all four are in); a finished module opens at step 1', () => {
     assert.match(END, /if \(cleared\.has\(id\)\) return 0;/);
@@ -442,7 +442,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(code(`${MA}/modules/mod8Project.tsx`), /key: 'problems', title: '[^']*', kind: 'PRACTICE'/);
     assert.match(IDX, /export const MASTERING_PROJECT_QC_STEP = 4;/);
     assert.equal(declared('project')[4]?.key, 'qc');
-    assert.ok(T.includes('open it on the step that finishes it: its PRACTICE deck, or Module 8’s track decisions — its QC checklist once those four are saved. A finished module opens at its first step.'));
+    assert.ok(T.includes('open the step that finishes it: its PRACTICE deck, or Module 8’s track decisions (its QC checklist once those four are saved). A finished module opens at its first step.'));
   });
   it('the buttons: PRACTICE AGAIN FROM THE START → Module 1 step 1 (clears nothing); DONE · BACK TO LABS (the default label) → leaves', () => {
     assert.match(LES, /label="PRACTICE AGAIN FROM THE START"/);
@@ -451,7 +451,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(END, /onPracticeAgain=\{\(\) => openModule\('what', 0\)\}/);
     assert.doesNotMatch(S.slice(S.indexOf('const openModule'), S.indexOf('const onAnswered')), /resetMasteringPractice|done: false/);
     assert.match(END, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
-    assert.ok(T.includes('PRACTICE AGAIN FROM THE START opens Module 1 at its first step; saved answers stay, and it never undoes a finished module.'));
+    assert.ok(T.includes('PRACTICE AGAIN FROM THE START opens Module 1 at its first step. Your saved answers stay, and no finished module is undone.'));
     assert.ok(T.includes('DONE · BACK TO LABS leaves the lab.'));
   });
   it('the strip on the end screen: ‹ PREV leaves the end screen for the step underneath; ⏮ goes to Module 1; the readout opens the list', () => {
@@ -462,7 +462,7 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(S, /\{end \?\? \(\n\s*<View style=\{styles\.body\}>/);
     assert.match(S, /<RecordedAnswersContext\.Provider value=\{answers\}>/);
     assert.match(S, /savedChecks=\{project\.checks\} savedQc=\{project\.qc\}/);
-    assert.match(T, /‹ PREV returns to the step you came from — your answers and check marks are kept, its other settings start fresh — and ⏮ opens Module 1/);
+    assert.match(T, /‹ PREV takes you back to the step you came from: your answers and check marks are kept, its other settings start fresh\. ⏮ opens Module 1/);
     assert.doesNotMatch(T, /as you left it/);
   });
   it('what makes a module done: every decision answered (right or wrong); Module 8 also every QC line — and START OVER (PRACTICE) keeps done', () => {
@@ -470,10 +470,10 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
     assert.match(S, /if \(loaded && complete && !done\) bank\(\);/);
     assert.match(S, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
     assert.match(code(`${MA}/masteringProgress.ts`), /s\.modules\[id\] = \{ \.\.\.emptyMasteringModule\(\), done: !!s\.modules\[id\]\?\.done \};/);
-    assert.match(T, /the moment every one of its decisions has an answer, right or wrong\. Module 8 also needs every QC line checked\./);
+    assert.match(T, /once each of its decisions has an answer, right or wrong\. Module 8 also needs every QC line checked\./);
     assert.match(S, /confirmDialog\('Start a fresh practice run\?', message, 'Start over', doReset\);/);
     assert.match(S.slice(S.indexOf('const doReset'), S.indexOf('const confirmReset')), /openModule\('what', 0\);/);
-    assert.match(T, /START OVER \(PRACTICE\)[^.]*asks first, then clears your answers and Module 8 check marks and opens Module 1; finished modules stay done\./);
+    assert.match(T, /START OVER \(PRACTICE\)[^.]*asks first\. Then it clears your answers and Module 8 check marks and opens Module 1\. Finished modules stay done\./);
   });
   it('"kept on this device" is true: the store is AsyncStorage and the end screen is in progress mode', () => {
     assert.match(code(`${MA}/masteringProgress.ts`), /await AsyncStorage\.setItem\(KEY, JSON\.stringify\(s\)\);/);
@@ -483,6 +483,6 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
   it('the module path names every module, in order', () => {
     const titles = C.MASTERING_MODULES.map((m: { title: string }) => m.title.toLowerCase());
     assert.deepEqual(titles, ['what mastering is', 'two roles', 'room and monitoring', 'mastering equipment and tools', 'the mastering workflow', 'loudness and translation', 'mastering for release', 'putting it all together']);
-    assert.match(G.teaches[0], /^Which modules are done and which are still to do — from what mastering is through to a full project\.$/);
+    assert.match(G.intro.learning, /what a master can and can’t change, the two roles, room, tools, workflow, loudness and delivery/);
   });
 });

@@ -37,6 +37,20 @@
  *   (useLabTermIntroOwed), any open DimModal (useModalHostOpen) and a closing
  *   fade (rootModalHoldMs), then a short settle. Tap it, or use the key, and
  *   it retires (`ape:intro:screenGuideHint`, screenGuideHintStore.ts).
+ * • The INTRO CARD (owner 2026-11-08, D52: "no real intro to what is going on
+ *   or being learned … no instruction or guidance"). Any guide with `intro`
+ *   gets it, with no per-screen wiring: the ScreenGuideKey OFFERS the intro to
+ *   its host, and the host presents it ONCE per device per intro
+ *   (`ape:intro:screenIntroCards`, screenIntroCardStore.ts; a failed read
+ *   shows nothing and writes nothing). Two labelled parts — WHAT YOU'RE
+ *   LEARNING / WHERE TO START — a GOT IT, a ✕ and EXPLAIN THIS SCREEN into
+ *   the stepped guide, whose first step leads back with ‹ INTRO. Placement
+ *   (placement.ts placeIntroCard): on a Rack Unit the dock — the controls the
+ *   "start" line names — stays bright and live and the card is centred above
+ *   it; otherwise it is centred over the dim, and one tap anywhere on the dim
+ *   closes it. Gates, as the hint's: Low-Light / kill switch, focus, the lab
+ *   term popup, any open DimModal and its closing fade (rootModalHoldMs), the
+ *   host's `hold`, then a settle. The ⓘ hint waits while a card is owed or up.
  */
 import {
   createContext,
@@ -55,24 +69,39 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal, rootModalHoldMs, useModalHostOpen } from '../../../components/DimModal';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
-import { useOverlaysSuppressed } from '../../dev/popupSuppressStore';
+import { areOverlaysSuppressed, useOverlaysSuppressed } from '../../dev/popupSuppressStore';
 import { useLabTermIntroOwed } from '../../intro/screenIntros';
+import { devBypass } from '../../../config/devMode';
 import { markScreenGuideHintSeen, useScreenGuideHintSeen } from './screenGuideHintStore';
+import {
+  markScreenIntroSeen,
+  screenIntroBusyId,
+  setScreenIntroCardBusy,
+  useScreenIntroCardBusy,
+  useScreenIntroSeen,
+} from './screenIntroCardStore';
 import { measureGuideRegion, measureView } from './guideRegions';
-import { onScreen, placeGuideStep, unionRect, type GuideLayout } from './placement';
+import { onScreen, placeGuideStep, placeIntroCard, unionRect, type GuideLayout } from './placement';
 import {
   SCREEN_GUIDE_HINT_TEXT,
   SCREEN_GUIDE_KEY_LABEL,
   SCREEN_GUIDE_SECTIONS,
   SCREEN_GUIDES_ON,
+  SCREEN_INTRO_TEXT,
   screenGuideStepLabel,
+  screenIntroId,
   type ScreenGuide,
+  type ScreenIntro,
 } from './types';
 
 /** How long the screen must sit quiet (focused, no popup) before the hint
  *  shows: past GuestStartReminder's 1.2 s fallback, so a guest's reminder
  *  presents first instead of popping over a freshly drawn callout. */
 export const SCREEN_GUIDE_HINT_SETTLE_MS = 1500;
+
+/** The same quiet wait before the INTRO CARD presents (past the guest
+ *  reminder's fallback and the lab term popup's hand-off). */
+export const SCREEN_INTRO_SETTLE_MS = 1500;
 
 const LAST = SCREEN_GUIDE_SECTIONS.length - 1;
 const DIM = 'rgba(0,0,0,0.62)';
@@ -104,6 +133,7 @@ function GuideCard({
   onClose,
   strip,
   maxHeight,
+  onIntro,
 }: {
   title: string;
   guide: ScreenGuide;
@@ -114,6 +144,9 @@ function GuideCard({
   onClose: () => void;
   strip: boolean;
   maxHeight?: number;
+  /** The screen has an intro card: the first step's left button goes back
+   *  to it (‹ INTRO) instead of a dead ‹ BACK. */
+  onIntro?: () => void;
 }) {
   const section = SCREEN_GUIDE_SECTIONS[step];
   const lines = guide[section.key];
@@ -177,16 +210,22 @@ function GuideCard({
       )}
 
       <View style={styles.navRow}>
-        <Pressable
-          onPress={() => onStep(step - 1)}
-          disabled={step === 0}
-          style={[styles.navBtn, step === 0 && styles.navOff]}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          accessibilityState={{ disabled: step === 0 }}
-        >
-          <Text style={styles.navText}>‹ BACK</Text>
-        </Pressable>
+        {step === 0 && onIntro ? (
+          <Pressable onPress={onIntro} style={styles.navBtn} accessibilityRole="button" accessibilityLabel="Back to the intro">
+            <Text style={styles.navText}>{SCREEN_INTRO_TEXT.reopen}</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => onStep(step - 1)}
+            disabled={step === 0}
+            style={[styles.navBtn, step === 0 && styles.navOff]}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            accessibilityState={{ disabled: step === 0 }}
+          >
+            <Text style={styles.navText}>‹ BACK</Text>
+          </Pressable>
+        )}
         {last ? (
           <Pressable onPress={onClose} style={[styles.navBtn, styles.navPrimary]} accessibilityRole="button" accessibilityLabel="Got it">
             <Text style={[styles.navText, styles.navPrimaryText]}>GOT IT</Text>
@@ -201,9 +240,136 @@ function GuideCard({
   );
 }
 
+// ────────────────────────────────────────────────────────── the intro card ──
+
+/**
+ * The intro card: what this screen teaches and the first thing to do. Two
+ * labelled parts (types.ts SCREEN_INTRO_TEXT), ✕ + GOT IT to close, and
+ * EXPLAIN THIS SCREEN into the stepped guide. Written to fit without
+ * scrolling (SCREEN_INTRO_WORDS); the ScrollView is a safety net for a very
+ * short screen or a large accessibility text size.
+ */
+function IntroCard({
+  title,
+  intro,
+  onClose,
+  onExplain,
+  maxHeight,
+}: {
+  title: string;
+  intro: ScreenIntro;
+  onClose: () => void;
+  onExplain: () => void;
+  maxHeight?: number;
+}) {
+  return (
+    <View style={[styles.card, styles.introCard, maxHeight ? { maxHeight } : null]}>
+      <View style={styles.cardHead}>
+        <Text style={styles.stepLabel} accessibilityRole="header" numberOfLines={2}>
+          {title}
+        </Text>
+        <Pressable onPress={onClose} hitSlop={10} style={styles.closeX} accessibilityRole="button" accessibilityLabel="Close the intro">
+          <Text style={styles.closeXText}>✕</Text>
+        </Pressable>
+      </View>
+      <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.introBody} showsVerticalScrollIndicator={false}>
+        <View style={styles.introPart}>
+          <Text style={styles.introLabel}>{SCREEN_INTRO_TEXT.learning}</Text>
+          <Text style={styles.introLearning}>{intro.learning}</Text>
+        </View>
+        <View style={styles.introPart}>
+          <Text style={styles.introLabel}>{SCREEN_INTRO_TEXT.start}</Text>
+          <Text style={styles.introStart}>{intro.start}</Text>
+        </View>
+      </ScrollView>
+      <View style={styles.navRow}>
+        <Pressable
+          onPress={onExplain}
+          style={[styles.navBtn, styles.introExplain]}
+          accessibilityRole="button"
+          accessibilityLabel={SCREEN_GUIDE_KEY_LABEL}
+        >
+          <Text style={styles.navText}>ⓘ {SCREEN_INTRO_TEXT.explain}</Text>
+        </Pressable>
+        <Pressable onPress={onClose} style={[styles.navBtn, styles.navPrimary]} accessibilityRole="button" accessibilityLabel="Got it">
+          <Text style={[styles.navText, styles.navPrimaryText]}>{SCREEN_INTRO_TEXT.dismiss}</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+/** Hold the one-time ⓘ hint back while `on` (a card owed or on screen). */
+function useIntroBusy(on: boolean): void {
+  const [me] = useState(screenIntroBusyId);
+  useEffect(() => {
+    setScreenIntroCardBusy(me, on);
+    return () => setScreenIntroCardBusy(me, false);
+  }, [me, on]);
+}
+
+type IntroOffer = { owner: number; id: string; title: string; guide: ScreenGuide; intro: ScreenIntro };
+
+/**
+ * Decides WHEN an offered intro card presents; draws nothing itself. Once per
+ * device per intro (the dev bypass `alwaysShowIntros` shows it on every visit
+ * and writes nothing, as useScreenIntro does). A read still out keeps it owed;
+ * a failed read (UNREADABLE) shows nothing and writes nothing. The seen list
+ * is written when the student CLOSES the card (✕, GOT IT, the dim, BACK, or
+ * EXPLAIN THIS SCREEN) — not when it presents — so a card that never got
+ * read (the screen left or rebuilt under it) comes back next time.
+ */
+function IntroCardController({
+  offer,
+  hold,
+  inModal,
+  onPresent,
+}: {
+  offer: IntroOffer;
+  hold: boolean;
+  /** The host is inside a native Modal (LabCheckEnd's end layer): that Modal
+   *  is the open DimModal, so it does not count as "another popup". */
+  inModal: boolean;
+  onPresent: () => void;
+}) {
+  const bypass = devBypass('alwaysShowIntros');
+  const stored = useScreenIntroSeen(offer.id);
+  const seen = bypass ? false : stored;
+  const focused = useIsFocused();
+  const suppressed = useOverlaysSuppressed();
+  const labTermFirst = useLabTermIntroOwed();
+  const modalUp = useModalHostOpen();
+  const owed = seen === 'loading' || seen === false;
+  useIntroBusy(owed && focused);
+  const clear = seen === false && focused && !suppressed && !labTermFirst && !hold && (inModal || !modalUp);
+  const presentRef = useRef(onPresent);
+  presentRef.current = onPresent;
+  useEffect(() => {
+    if (!clear) return;
+    const t = setTimeout(() => {
+      // Re-checked at the moment it would show: Low-Light may have come on.
+      if (areOverlaysSuppressed()) return;
+      presentRef.current();
+    }, SCREEN_INTRO_SETTLE_MS + rootModalHoldMs());
+    return () => clearTimeout(t);
+  }, [clear]);
+  return null;
+}
+
+/** The student closed an auto-presented card: never auto-show it again on
+ *  this device (the dev bypass writes nothing). */
+function claimIntro(id: string | undefined): void {
+  if (id && !devBypass('alwaysShowIntros')) void markScreenIntroSeen(id);
+}
+
 // ─────────────────────────────────────────────── the in-screen overlay host ──
 
-type HostApi = { open: (title: string, guide: ScreenGuide) => void };
+type HostApi = {
+  open: (title: string, guide: ScreenGuide) => void;
+  /** A ScreenGuideKey whose guide has an intro offers it; the newest wins. */
+  offerIntro: (offer: IntroOffer) => void;
+  withdrawIntro: (owner: number) => void;
+};
 const HostContext = createContext<HostApi | null>(null);
 
 /**
@@ -224,20 +390,42 @@ export function ScreenGuideHost({
   resetKey,
   regions = true,
   backRef,
+  hold = false,
 }: {
   children: ReactNode;
   resetKey?: string;
   regions?: boolean;
   backRef?: MutableRefObject<(() => boolean) | null>;
+  /** ADDITIVE (2026-11-08): the screen's own first-open popup is up or owed
+   *  (a ProNote intro, a topic welcome) — the intro card waits, still owed,
+   *  until it lifts (the house `hold` rule, K10). Omitted = no extra wait. */
+  hold?: boolean;
 }) {
-  const [shown, setShown] = useState<{ title: string; guide: ScreenGuide } | null>(null);
+  // `claim`: the auto-presented intro's id, written to the seen list when the
+  // student closes the card (claimIntro), never before.
+  const [shown, setShown] = useState<{ title: string; guide: ScreenGuide; mode: 'guide' | 'intro'; claim?: string } | null>(
+    null,
+  );
+  const [offers, setOffers] = useState<readonly IntroOffer[]>([]);
+  // Intros already presented (or made moot by the ⓘ key) on this visit: the
+  // controller is not mounted for them again, even under the dev bypass.
+  const [handled, setHandled] = useState<ReadonlySet<string>>(() => new Set());
+  const offer = offers.length ? offers[offers.length - 1] : null;
+  const offerRef = useRef<IntroOffer | null>(null);
+  offerRef.current = offer;
+  const handle = useCallback((id: string) => {
+    setHandled((h) => (h.has(id) ? h : new Set(h).add(id)));
+  }, []);
   const shownRef = useRef(false);
   shownRef.current = shown != null;
+  const claimRef = useRef<string | undefined>(undefined);
+  claimRef.current = shown?.claim;
   useEffect(() => {
     if (!backRef) return;
     backRef.current = () => {
       if (!shownRef.current) return false;
       shownRef.current = false;
+      claimIntro(claimRef.current);
       setShown(null);
       return true;
     };
@@ -245,14 +433,169 @@ export function ScreenGuideHost({
       backRef.current = null;
     };
   }, [backRef]);
-  const open = useCallback((title: string, guide: ScreenGuide) => setShown({ title, guide }), []);
-  const api = useMemo(() => ({ open }), [open]);
-  useEffect(() => setShown(null), [resetKey]);
+  const open = useCallback(
+    (title: string, guide: ScreenGuide) => {
+      // The student asked for the full guide before the card came up: the
+      // card is moot on this visit and counts as shown (‹ INTRO reaches it).
+      const o = offerRef.current;
+      if (o) {
+        claimIntro(o.id);
+        handle(o.id);
+      }
+      setShown({ title, guide, mode: 'guide' });
+    },
+    [handle],
+  );
+  const offerIntro = useCallback((o: IntroOffer) => {
+    setOffers((list) => [...list.filter((x) => x.owner !== o.owner), o]);
+  }, []);
+  const withdrawIntro = useCallback((owner: number) => {
+    setOffers((list) => (list.some((x) => x.owner === owner) ? list.filter((x) => x.owner !== owner) : list));
+  }, []);
+  const api = useMemo(() => ({ open, offerIntro, withdrawIntro }), [open, offerIntro, withdrawIntro]);
+  // Close on a REAL content swap only. A bare `[resetKey]` effect also fires
+  // when React re-runs effects with nothing changed (Fast Refresh in the web
+  // preview, StrictMode), which closed a just-presented intro card unread.
+  const lastReset = useRef(resetKey);
+  useEffect(() => {
+    if (lastReset.current === resetKey) return;
+    lastReset.current = resetKey;
+    setShown(null);
+  }, [resetKey]);
+  const close = useCallback(() => {
+    claimIntro(claimRef.current);
+    setShown(null);
+  }, []);
+  const introOf = shown?.mode === 'intro' ? shown.guide.intro : undefined;
   return (
     <HostContext.Provider value={api}>
       {children}
-      {shown ? <ScreenGuideOverlay title={shown.title} guide={shown.guide} regions={regions} onClose={() => setShown(null)} /> : null}
+      {offer && !handled.has(offer.id) ? (
+        <IntroCardController
+          key={offer.id}
+          offer={offer}
+          hold={hold || shown != null}
+          inModal={backRef != null}
+          onPresent={() => {
+            handle(offer.id);
+            setShown({ title: offer.title, guide: offer.guide, mode: 'intro', claim: offer.id });
+          }}
+        />
+      ) : null}
+      {shown && introOf ? (
+        <ScreenIntroOverlay
+          title={shown.title}
+          intro={introOf}
+          regions={regions}
+          onClose={close}
+          onExplain={() => {
+            claimIntro(shown.claim);
+            setShown({ title: shown.title, guide: shown.guide, mode: 'guide' });
+          }}
+        />
+      ) : shown ? (
+        <ScreenGuideOverlay
+          title={shown.title}
+          guide={shown.guide}
+          regions={regions}
+          onClose={close}
+          onIntro={shown.guide.intro ? () => setShown({ title: shown.title, guide: shown.guide, mode: 'intro' }) : undefined}
+        />
+      ) : null}
     </HostContext.Provider>
+  );
+}
+
+/**
+ * The intro card in the screen's own tree (the guide overlay's reasons: the
+ * dock it keeps live is measured in the same window, the Low-Light wash
+ * reaches it, never Modal-on-Modal). Dim everywhere but the dock; a tap on
+ * the dim, ✕, GOT IT or Android BACK closes it — one tap, the house intro
+ * rule, so it never stands between the student and the header's ‹ back.
+ */
+function ScreenIntroOverlay({
+  title,
+  intro,
+  regions,
+  onClose,
+  onExplain,
+}: {
+  title: string;
+  intro: ScreenIntro;
+  regions: boolean;
+  onClose: () => void;
+  onExplain: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+  const rootRef = useRef<View>(null);
+  const alive = useRef(true);
+  useEffect(
+    () => () => {
+      alive.current = false;
+    },
+    [],
+  );
+  useIntroBusy(true);
+  const [layout, setLayout] = useState<GuideLayout | null>(null);
+  const measure = useCallback(async () => {
+    const root = await measureView(rootRef);
+    if (!alive.current || !root) return;
+    const k = regions ? await measureGuideRegion('dock') : null;
+    if (!alive.current) return;
+    setLayout({
+      rootW: root.w,
+      rootH: root.h,
+      insetTop: insets.top,
+      insetBottom: insets.bottom,
+      display: null,
+      dock: onScreen(k ? { x: k.x - root.x, y: k.y - root.y, w: k.w, h: k.h } : null, root.w, root.h),
+    });
+  }, [regions, insets.top, insets.bottom]);
+  useEffect(() => {
+    void measure();
+  }, [measure]);
+  const back = useCallback(() => {
+    onClose();
+    return true;
+  }, [onClose]);
+  useBackWhileFocused(true, back);
+
+  const place = layout ? placeIntroCard(layout) : null;
+  const keep = place?.keep ?? null;
+  const W = layout?.rootW ?? 0;
+  // The dim panes close the card; hidden from screen readers (the card's ✕
+  // and GOT IT say it in words).
+  const pane = (style: object, k: string) => (
+    <Pressable
+      key={k}
+      style={[styles.pane, style]}
+      onPress={onClose}
+      accessible={false}
+    />
+  );
+  return (
+    <View ref={rootRef} collapsable={false} style={styles.overlay} pointerEvents="box-none" onLayout={() => void measure()} accessibilityViewIsModal={!keep}>
+      {place
+        ? keep
+          ? [
+              pane({ top: 0, left: 0, right: 0, height: Math.max(0, keep.y) }, 't'),
+              pane({ top: keep.y + keep.h, left: 0, right: 0, bottom: 0 }, 'b'),
+              pane({ top: keep.y, left: 0, width: Math.max(0, keep.x), height: keep.h }, 'l'),
+              pane({ top: keep.y, left: keep.x + keep.w, width: Math.max(0, W - keep.x - keep.w), height: keep.h }, 'r'),
+              <View
+                key="o"
+                pointerEvents="none"
+                style={[styles.keepOutline, { top: keep.y - 3, left: keep.x - 3, width: keep.w + 6, height: keep.h + 6 }]}
+              />,
+            ]
+          : pane(StyleSheet.absoluteFill, 'all')
+        : null}
+      {place ? (
+        <View pointerEvents="box-none" style={[styles.introSlot, { top: place.slot.top, height: place.slot.height }]}>
+          <IntroCard title={title} intro={intro} onClose={onClose} onExplain={onExplain} maxHeight={place.slot.height} />
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -261,11 +604,13 @@ function ScreenGuideOverlay({
   guide,
   regions,
   onClose,
+  onIntro,
 }: {
   title: string;
   guide: ScreenGuide;
   regions: boolean;
   onClose: () => void;
+  onIntro?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const rootRef = useRef<View>(null);
@@ -361,6 +706,7 @@ function ScreenGuideOverlay({
             onClose={onClose}
             strip={section.place === 'strip'}
             maxHeight={place.card.maxHeight}
+            onIntro={onIntro}
           />
         </View>
       ) : null}
@@ -370,40 +716,72 @@ function ScreenGuideOverlay({
 
 // ────────────────────────────────────────── fallback: a centred DimModal card ──
 
-/** The stepped guide centred in a DimModal — for a screen with no host. */
+/** The stepped guide centred in a DimModal — for a screen with no host. With
+ *  `startWith="intro"` (and a guide that has one) it opens on the intro card;
+ *  intro and guide share ONE Modal, so EXPLAIN THIS SCREEN / ‹ INTRO never
+ *  close one popup and present another mid-dismiss (K10). */
 export function ScreenGuidePopup({
   visible,
   title,
   guide,
   onClose,
+  startWith = 'guide',
 }: {
   visible: boolean;
   title: string;
   guide: ScreenGuide;
   onClose: () => void;
+  startWith?: 'guide' | 'intro';
 }) {
   const [step, setStep] = useState(0);
   const [exp, setExp] = useState(0);
-  useEffect(() => {
+  const [mode, setMode] = useState<'guide' | 'intro'>(startWith);
+  // Reset on each open DURING render (React's "adjust state when a prop
+  // changes" pattern), so the first frame of the fade-in is already the right
+  // card — never one frame of the guide before the intro.
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
     if (visible) {
       setStep(0);
       setExp(0);
+      setMode(startWith);
     }
-  }, [visible]);
+  }
+  const intro = mode === 'intro' ? guide.intro : undefined;
+  useIntroBusy(visible && intro != null);
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
+        {intro ? (
+          // The intro closes on one tap anywhere off the card (house intro rule).
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessible={false} />
+        ) : null}
         <View style={styles.modalSlot}>
-          <GuideCard
-            title={title}
-            guide={guide}
-            step={step}
-            onStep={(i) => setStep(Math.max(0, Math.min(LAST, i)))}
-            exp={exp}
-            onExp={setExp}
-            onClose={onClose}
-            strip={false}
-          />
+          {intro ? (
+            <IntroCard
+              title={title}
+              intro={intro}
+              onClose={onClose}
+              onExplain={() => {
+                setStep(0);
+                setExp(0);
+                setMode('guide');
+              }}
+            />
+          ) : (
+            <GuideCard
+              title={title}
+              guide={guide}
+              step={step}
+              onStep={(i) => setStep(Math.max(0, Math.min(LAST, i)))}
+              exp={exp}
+              onExp={setExp}
+              onClose={onClose}
+              strip={false}
+              onIntro={guide.intro ? () => setMode('intro') : undefined}
+            />
+          )}
         </View>
       </View>
     </Modal>
@@ -412,13 +790,21 @@ export function ScreenGuidePopup({
 
 // ──────────────────────────────────────────────────────────── the header key ──
 
-export function ScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuide }) {
-  return SCREEN_GUIDES_ON ? <LiveScreenGuideKey title={title} guide={guide} /> : null;
+/**
+ * The header ⓘ. `introId` (optional) overrides the intro card's seen id —
+ * by default a hash of the intro's own words (types.ts screenIntroId), so no
+ * screen has to pass one.
+ */
+export function ScreenGuideKey({ title, guide, introId }: { title: string; guide: ScreenGuide; introId?: string }) {
+  return SCREEN_GUIDES_ON ? <LiveScreenGuideKey title={title} guide={guide} introId={introId} /> : null;
 }
 
-function LiveScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuide }) {
+let keySeq = 0;
+
+function LiveScreenGuideKey({ title, guide, introId }: { title: string; guide: ScreenGuide; introId?: string }) {
   const host = useContext(HostContext);
   const [open, setOpen] = useState(false);
+  const [startWith, setStartWith] = useState<'guide' | 'intro'>('guide');
   // Fallback path only — AccuracyNote's lesson (bug hunt 2026-09-29): if iOS
   // refused to present the Modal, `open` is stuck true and a plain
   // setOpen(true) is a no-op forever. A tap while "open" closes it and
@@ -435,6 +821,22 @@ function LiveScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuid
     }, 16);
     return () => clearTimeout(t);
   }, [open, reopen]);
+
+  // The intro card: offered to the host, which presents it (no per-screen
+  // wiring). With no host the key presents it itself, in its fallback popup.
+  const intro = guide.intro;
+  const id = intro ? introId ?? screenIntroId(intro) : null;
+  const [owner] = useState(() => ++keySeq);
+  useEffect(() => {
+    if (!host || !intro || !id) return;
+    host.offerIntro({ owner, id, title, guide, intro });
+    return () => host.withdrawIntro(owner);
+  }, [host, owner, id, title, guide, intro]);
+  const [fallbackHandled, setFallbackHandled] = useState<string | null>(null);
+  // The presented card's id, claimed when the popup closes.
+  const pendingClaim = useRef<string | undefined>(undefined);
+  const fallbackOffer = !host && intro && id && fallbackHandled !== id ? { owner, id, title, guide, intro } : null;
+
   return (
     <>
       <Pressable
@@ -446,6 +848,12 @@ function LiveScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuid
             host.open(title, guide);
             return;
           }
+          if (id) {
+            // The full guide asked for first: the card is moot on this visit.
+            claimIntro(id);
+            setFallbackHandled(id);
+          }
+          setStartWith('guide');
           if (open) {
             setOpen(false);
             setReopen(true);
@@ -459,7 +867,33 @@ function LiveScreenGuideKey({ title, guide }: { title: string; guide: ScreenGuid
       >
         <Text style={styles.chipGlyph}>ⓘ</Text>
       </Pressable>
-      {host ? null : <ScreenGuidePopup visible={open} title={title} guide={guide} onClose={() => setOpen(false)} />}
+      {fallbackOffer ? (
+        <IntroCardController
+          key={fallbackOffer.id}
+          offer={fallbackOffer}
+          hold={open}
+          inModal={false}
+          onPresent={() => {
+            setFallbackHandled(fallbackOffer.id);
+            pendingClaim.current = fallbackOffer.id;
+            setStartWith('intro');
+            setOpen(true);
+          }}
+        />
+      ) : null}
+      {host ? null : (
+        <ScreenGuidePopup
+          visible={open}
+          title={title}
+          guide={guide}
+          startWith={startWith}
+          onClose={() => {
+            claimIntro(pendingClaim.current);
+            pendingClaim.current = undefined;
+            setOpen(false);
+          }}
+        />
+      )}
     </>
   );
 }
@@ -474,7 +908,10 @@ export function useScreenGuideHintVisible(): boolean {
   const suppressed = useOverlaysSuppressed();
   const labTermFirst = useLabTermIntroOwed();
   const modalUp = useModalHostOpen();
-  const owed = seen === false;
+  // A focused screen's intro card goes first (owed or on screen): the hint
+  // waits for it, then points at the ⓘ that brings the card back.
+  const introFirst = useScreenIntroCardBusy();
+  const owed = seen === false && !introFirst;
   const clear = owed && focused && !suppressed && !labTermFirst && !modalUp;
   const [settled, setSettled] = useState(false);
   useEffect(() => {
@@ -608,6 +1045,18 @@ const styles = StyleSheet.create({
   navOff: { opacity: 0.35 },
   navText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.textSecondary },
   navPrimaryText: { color: colors.amber },
+
+  // ── intro card ──
+  // Centred in its slot (placement.ts placeIntroCard): above a live dock on a
+  // Rack Unit, else on the whole screen.
+  introSlot: { position: 'absolute', left: 8, right: 8, alignItems: 'center', justifyContent: 'center' },
+  introCard: { paddingTop: 12, paddingBottom: 12, gap: 10 },
+  introBody: { gap: 12 },
+  introPart: { gap: 4 },
+  introLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber },
+  introLearning: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textPrimary },
+  introStart: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 20, color: colors.textSecondary },
+  introExplain: { flex: 1.45 },
 
   // ── fallback modal ──
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.66)', alignItems: 'center', justifyContent: 'center', padding: 12 },

@@ -81,7 +81,7 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
     <View style={{ gap: 8 }}>
       <Text style={styles.q}>How would you like to start?</Text>
       {opt('new', `New to miking ${/^[aeiou]/i.test(noun.one) ? 'an' : 'a'} ${noun.one}`,'Start at the beginning: where the sound leaves, the starting setups, then the microphones.')}
-      {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. Pass it and every activity opens now; the first two pages stay here to earn their credit whenever you like.')}
+      {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. It shows where you stand; every page is open either way. Each page earns its credit when you answer all of its questions.')}
     </View>
   );
 }
@@ -211,7 +211,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
       </Text>
       {res.pass ? (
         <>
-          <Text style={styles.resultText}>Every activity is open. The first two pages are not credited by the check — open them any time to earn their credit.</Text>
+          <Text style={styles.resultText}>Go to any page. The check earns no credit on its own: each page earns its credit when you answer all of its questions.</Text>
           <View style={styles.row}>
             <Go label={`GO TO ${journey.titleOf('microphone').toUpperCase()}`} onPress={() => journey.goPage('microphone')} />
             <Go label={`GO TO ${journey.titleOf('placement').toUpperCase()}`} onPress={() => journey.goPage('placement')} />
@@ -219,7 +219,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
         </>
       ) : (
         <>
-          <Text style={styles.resultText}>{`The activities open once the first two pages are done — they will be quick if you know this. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
+          <Text style={styles.resultText}>{`Every page is open. Worth a look first:${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
           <View style={styles.row}>
             {(res.misses.length ? res.misses : FOUNDATION_PAGES).map((p) => (
               <Go key={p} label={`OPEN ${journey.titleOf(p).toUpperCase()}`} onPress={() => journey.goPage(p, p === 'meet' ? 1 : 0)} />

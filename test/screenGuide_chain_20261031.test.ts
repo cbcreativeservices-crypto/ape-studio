@@ -52,11 +52,16 @@ describe('1. every Signal Chain screen has a complete guide', () => {
     const s = code(SCREEN);
     assert.equal((s.match(/^\s{4}question: '/gm) ?? []).length, 3);
     assert.match(s, /CHAIN_CHECKS\.map\(\(c, i\) => \(\s*<CheckQuestion/);
-    assert.match(CHAIN_SCREEN_GUIDES.explore.control.join(' '), /LAB NOTES: the lesson, three quick questions/);
+    assert.match(CHAIN_SCREEN_GUIDES.explore.control.join(' '), /LAB NOTES below the rack hold the lesson, three quick questions/);
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -111,7 +116,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the SCENE short name the guide quotes, and LAB NOTES' contents
       'SQUASH', 'LAB NOTES', 'MARK AS REVIEWED', 'FINISH · SEE WHAT’S LEFT',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'EQ BOOST → COMP', 'HOT INTO LIMITER', 'MODULES', 'Gain-staging into the limiter', 'EQ→comp', 'SINE 220'],
+    // 'LEARN' (the tab's own name) and the old lesson's mistake titles ('Gain-staging into the limiter', 'EQ→comp') dropped:
+    // the approved rewrite (2026-11-08) refers to the COMMON MISTAKES lines by topic, and the Part A lesson rewrite retitles them.
+    learn: ['EXPLORE', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'EQ BOOST → COMP', 'HOT INTO LIMITER', 'MODULES', 'SINE 220', 'SRC', 'OUT'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(CHAIN_SCREEN_GUIDES).sort());
@@ -125,6 +132,17 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
+  it('SCENE shows the scenario’s short name: SQUASH is HOT INTO LIMITER’s, and the guide says so', () => {
+    assert.match(code(SCREEN), /key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH',/);
+    assert.match(code(SCREEN), /\{ k: 'SCENE', v: scenario\?\.short \?\? \(anyOn \? 'CUSTOM' : '—'\)/);
+    assert.match(CHAIN_SCREEN_GUIDES.explore.seeing.join(' '), /SCENE \(short name, e\.g\. SQUASH for HOT INTO LIMITER; else CUSTOM\)/);
+  });
+  it('the LEARN TRY THIS topics are COMMON MISTAKES lines in the chain lesson (EQ before the compressor; hot stages into the limiter)', () => {
+    // holds before and after the Part A lesson load (old titles, or the rewrite's wording)
+    const lesson = code('src/features/lab/guidedLessons/content.ts');
+    assert.match(lesson, /EQ (BEFORE compression|before it changes what the compressor reacts to)/);
+    assert.match(lesson, /Gain-staging into the limiter|LIMIT overworks/);
+  });
   it('the five scenarios and three sources are exactly the ones the guide lists', () => {
     const s = code(SCREEN);
     const scen = [...s.matchAll(/key: '[a-z_]+', label: '([^']+)'/g)].map((m) => m[1]);
@@ -264,10 +282,13 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
   }
   it('the guide states exactly those readings', () => {
     const ex = CHAIN_SCREEN_GUIDES.explore.tryThis.join('\n');
-    assert.match(ex, /set SOURCE to SINE 220, play: COMP reads about −8 dB\. Bypass EQ in MODULES: about −7 \(about −6 on the phone speaker\)/);
+    assert.match(ex, /set SOURCE to SINE 220 and play: COMP reads about −8 dB\. Bypass EQ: about −7 \(−6 on the phone speaker\)/);
     const le = CHAIN_SCREEN_GUIDES.learn.tryThis;
-    assert.match(le[0], /EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES — COMP’s GR falls by over 1 dB/);
-    assert.match(le[1], /Gain-staging into the limiter[\s\S]*HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0\.0/);
+    assert.match(le[0], /COMMON MISTAKES line about EQ before the compressor[\s\S]*EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB/);
+    assert.match(le[1], /running stages hot into the limiter[\s\S]*HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0\.0/);
+    // HOT INTO LIMITER lights exactly EQ, COMP and LIMIT, the units the re-run uses; a SOURCE change keeps them
+    assert.match(s, /key: 'squash',[^\n]*enable: \[FX\.eq, FX\.comp, FX\.limiter\]/);
+    assert.match(s, /sticky: true, \/\/ hear the SAME chain/);
     // no step leans on PINK NOISE for a GR number (it reads ~0 on the speaker)
     for (const t of [...CHAIN_SCREEN_GUIDES.explore.tryThis, ...le]) assert.doesNotMatch(t, /PINK NOISE/);
   });

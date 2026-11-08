@@ -56,7 +56,9 @@ describe('1. every Foundations screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim().length > 10 && intro.start.trim().length > 10, `${id}: the intro card (learning + start)`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -118,7 +120,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     m6: ['FREQ', 'λ', 'FITS', '7 m'],
     m7: ['THE ROOM — CAMERA FLASH', 'MIC INPUT', 'NOW', 'PROBE', 'SAME SPOT', 'FREEZE', 'MODE', 'FROZEN', 'RUN', '1 · WATCH', '2 · FREEZE', '3 · DRAG THE PROBE'],
     m8: ['PITCH', 'OCTAVES', 'ABOVE 110', '8ve'],
-    m9: ['SEND', 'HEARD', 'YOU SEND — same at every Hz', 'YOU HEAR', 'EAR', 'WHAT YOU HEAR — LEVEL × EAR CURVE'],
+    m9: ['SEND', 'HEARD', 'YOU SEND', 'YOU HEAR', 'EAR', 'WHAT YOU HEAR — LEVEL × EAR CURVE'],
     m10: ['PHASE', 'PRESET', 'HEAR', 'ALIGNED', 'PARTIAL', 'CANCELED', 'OUT', 'INPUTS', 'SUM = A + B', 'HEAR ALIGNED — 220 / 220 Hz', 'HEAR DRIFTING — 220 / 222 Hz', 'STOP'],
     m11: ['HARMONICS', 'F0', 'SEL', 'LEVEL', 'SUM'],
     m12: ['UNMIX', 'RECIPE', 'PURE', 'HOLLOW (odd)', 'BRIGHT (all)', 'F0', 'separated'],
@@ -192,7 +194,7 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
   const rd = (v: number) => (Number(v.toFixed(0)) === 0 ? 0 : Number(v.toFixed(0)));
   const neg = (n: number) => (n < 0 ? `−${Math.abs(n)}` : String(n));
   it('M1: MODEL at LOW and HIGH', () => {
-    assert.ok(t('m1').includes(`MODEL goes ${vis(110).toFixed(2)} → ${vis(880).toFixed(2)} Hz`));
+    assert.ok(t('m1').includes(`MODEL goes from ${vis(110).toFixed(2)} to ${vis(880).toFixed(2)} Hz`));
   });
   it('M6: λ and FITS at 55 / 110 / 220 / 880 Hz', () => {
     for (const f of [55, 110, 220, 880]) {
@@ -221,7 +223,7 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
         assert.equal(`${((343 * tMs) / 1000).toFixed(2)} m · ${tMs.toFixed(1)} ms`, lane(c, f), `display = lane at w=${w}, c=${c}, ${f} Hz`);
       }
     }
-    assert.match(t('m7'), /the PROBE lane reads 1\.56 m/);
+    assert.match(t('m7'), /The PROBE lane reads 1\.56 m/);
     assert.doesNotMatch(t('m7'), /one wavelength, one period/);
   });
   it('M12: BRIGHT bars — the 6 px floor makes H5 and H6 the same height, and the guide says so', () => {
@@ -236,7 +238,7 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
   it('M9: SEND / EAR / HEARD at 1 kHz, 80 Hz and 3.5 kHz; LEVEL top', () => {
     const send = rd(-44 + 0.3 * 24);
     assert.ok(t('m9').includes(`both read ${neg(send)} dB`));
-    assert.ok(t('m9').includes(`EAR reads ${neg(rd(ear(80)))} dB, HEARD ${neg(send + rd(ear(80)))} dB`));
+    assert.ok(t('m9').includes(`EAR reads ${neg(rd(ear(80)))} dB, and HEARD drops to ${neg(send + rd(ear(80)))} dB`));
     assert.ok(t('m9').includes(`EAR reads +${rd(ear(3500))} dB and HEARD ${neg(send + rd(ear(3500)))} dB`));
     assert.equal(rd(ear(1000)), 0);
     assert.ok(t('m9').includes(`SEND reads ${neg(-44 + 1 * 24)} dB`));
@@ -244,8 +246,8 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
   it('Playground: the defaults and the λ halving', () => {
     const f = Math.round(55 * Math.pow(3520 / 55, 0.4));
     assert.equal(f, 290);
-    assert.ok(t('playground').includes(`starts at ${f} Hz`));
-    assert.ok(t('playground').includes(`starts at ${neg(Math.round(-48 + 0.3 * 32))})`));
+    assert.ok(t('playground').includes(`starting at ${f} Hz`));
+    assert.ok(t('playground').includes(`starting at ${neg(Math.round(-48 + 0.3 * 32))}.`));
     assert.ok(t('playground').includes(`λ at ${f} Hz (${(343 / f).toFixed(2)} m)`));
     assert.ok(t('playground').includes(`${(343 / 580).toFixed(2)} m`));
   });

@@ -37,42 +37,50 @@ export type EqualizerScreenId = 'explore' | 'learn' | 'check';
 export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How one EQ band reshapes a sound: TYPE picks the shape, FREQ where it acts, GAIN how far it lifts or cuts, and Q how wide it reaches.',
+      start: 'Set SOURCE to PINK NOISE and tap ▶. Sweep the FREQ fader from bottom to top and listen to the boost travel. Then switch Q between 0.7 WIDE and 8 NARROW.',
+    },
     seeing: [
-      'A moving model, not the SOURCE you play: a test wave of three tones goes IN ▸, through the green EQ stage, and comes ▸ OUT reshaped.',
-      'Under it, the EQ CURVE strip, 20 Hz → 20 kHz. Its dots are the wave’s 150 Hz · 1k · 6k tones; each grows or shrinks in OUT by the curve’s gain there.',
-      'Readouts on the frame: TYPE, FREQ, GAIN and Q.',
+      'The moving picture is a model, not the SOURCE you hear: a test wave of three tones goes IN ▸, through the green EQ stage, and comes ▸ OUT reshaped. Compare IN with OUT.',
+      'Under it, the EQ CURVE strip runs 20 Hz → 20 kHz, lows left, highs right. Its dots are the wave’s 150 Hz · 1k · 6k tones; each grows or shrinks in OUT by the curve’s gain there.',
+      'TYPE, FREQ, GAIN and Q on the frame show your band’s settings.',
     ],
     control: [
-      'FREQ fader: where the band sits, 100 Hz to 8 kHz.',
-      'TYPE key: PEAK (BELL), LOW SHELF, HIGH SHELF, HIGH-PASS or LOW-PASS, each with a one-line description.',
-      'GAIN key: −12, −6, 0, +6 or +12 dB. Q key: 0.7 WIDE, 1.4, 4 or 8 NARROW.',
-      'SOURCE key: PINK NOISE, SINE 440 Hz or WHITE NOISE. ▶ at the top right (or a tap on the display) plays it through the EQ; change any control while it plays.',
+      'Slide the FREQ fader to place the band anywhere from 100 Hz to 8 kHz.',
+      'Tap TYPE to pick the shape: PEAK (BELL), LOW SHELF, HIGH SHELF, HIGH-PASS or LOW-PASS. Each comes with a one-line description.',
+      'Tap GAIN for −12, −6, 0, +6 or +12 dB, and Q for 0.7 WIDE, 1.4, 4 or 8 NARROW.',
+      'Tap SOURCE for PINK NOISE, SINE 440 Hz or WHITE NOISE, then ▶ at the top right (or tap the display) to hear it through the EQ. Change any control while it plays.',
       'Long-press a control for its GUIDED LESSON entry. Below the dock, LAB NOTES holds DESIGNED RESPONSE, THE AUDIO PATH and two CHECK YOURSELF cards.',
     ],
     changes: [
-      'FREQ moves the filter; the dots show which tones it lifts or lowers in OUT.',
+      'FREQ moves the filter; the dots show which tones it lifts or lowers.',
       'GAIN sets how far a bell or shelf rises or falls. HIGH-PASS and LOW-PASS ignore it — they cut on a fixed slope.',
-      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff; this HIGH-PASS ignores Q.',
-      'The pictures come from the same math the audio runs — a designed response, not a measurement.',
+      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff (where the cut starts); this HIGH-PASS ignores Q.',
+      'The curve shows what the band is set to do, not what your speaker plays.',
     ],
     teaches: [
-      'What one EQ band does — shape, frequency, gain and Q — seen and heard together.',
+      'What one EQ band does — shape, frequency, gain and Q — seen and heard together. This band is parametric; a graphic band fixes frequency and width and moves only gain.',
       'Pass filters have no gain: they remove one end on a fixed slope.',
-      'Narrow Q is surgical; wide Q is a broad, musical move.',
-      'The first lab in Equalization; the EQ Lab follows with many bands, your room’s live spectrum and trainers.',
+      'A shelf lifts or lowers everything below or above FREQ; a bell touches only the region around it.',
+      'Narrow Q is surgical, for one problem tone; wide Q is a broad, musical move.',
     ],
     tryThis: [
       'Set Q to 8 NARROW: the bell turns thin and the caption under DESIGNED RESPONSE reads +6 dB at 1 kHz, Q 8.',
       'Switch TYPE to HIGH-PASS, then tap through GAIN: the curve does not move — a pass filter has no gain.',
-      'Pick PINK NOISE, tap ▶ and sweep FREQ from bottom to top: you hear the boost travel from low to high.',
+      'Pick PINK NOISE, tap ▶ and sweep FREQ from bottom to top: you hear the boost travel from low to high. For the low end use headphones or full-range speakers: a phone speaker can’t reproduce deep bass.',
     ],
   },
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The words of EQ — filter type, frequency, gain, Q, bandwidth and slope — and which key on the EXPLORE rack each one names.',
+      start: 'Read the Q entry first. Then open EXPLORE, play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW to hear what you just read.',
+    },
     seeing: [
-      'The LEARN tab: the Equalizer guided lesson as one page to read. Nothing here plays.',
-      'First what an equalizer is, then CONTROLS: the display, Filter type, Frequency, Gain and Q (bandwidth).',
+      'You’re on the LEARN tab: the Equalizer guided lesson as one page to read. Nothing here plays.',
+      'First what an equalizer is, then CONTROLS: the display, TYPE, FREQ, GAIN and Q.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -81,24 +89,28 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     changes: [
       'Nothing on this page moves; it is the reference for what EXPLORE shows.',
-      'Each CONTROLS entry names a key on EXPLORE: Filter type is TYPE, Frequency is FREQ, Gain is GAIN, Q (bandwidth) is Q.',
-      'The ranges are the rack’s: Frequency 100 Hz to 8 kHz here (EQs reach about 20 Hz to 20 kHz), Gain −12 to +12 dB, Q 0.7 wide to 8 narrow.',
+      'Each CONTROLS entry is named for its key on EXPLORE: TYPE, FREQ, GAIN and Q.',
+      'The ranges are the rack’s: FREQ 100 Hz to 8 kHz here (EQs reach about 20 Hz to 20 kHz), GAIN −12 to +12 dB, Q 0.7 WIDE to 8 NARROW.',
     ],
     teaches: [
       'The words for EQ: filter type, frequency, gain, Q, bandwidth, slope.',
       'Why a narrow-boost sweep finds a problem but the fix is usually a cut, and why a flat analyzer is not the goal.',
-      'Q ≈ center frequency ÷ bandwidth; slopes of 6, 12, 18 or 24 dB per octave are 1 to 4 poles.',
+      'Q = center frequency ÷ bandwidth. Slopes of 6, 12, 18 or 24 dB per octave come from 1 to 4 poles (filter stages).',
     ],
     tryThis: [
-      'Read the Q (bandwidth) entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: tone against ring.',
+      'Read the Q entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: tone against ring.',
       'Read the COMMON MISTAKES line on boosting, then on EXPLORE compare GAIN at +6 dB and −6 dB at the same FREQ.',
     ],
   },
 
   // ── CHECK — the questions that complete the lab ───────────────────────────
   check: {
+    intro: {
+      learning: 'The five ideas behind one EQ band, reviewed as questions: Q and width, clearing low rumble, graphic against parametric, slope, and cutting before boosting.',
+      start: 'Answer each question in turn. Unsure? Switch to LEARN first and reread that idea under CONTROLS or FORMULA / CONCEPT, then come back.',
+    },
     seeing: [
-      'The CHECK tab: CHECK YOUR UNDERSTANDING for the Equalizer — five questions, four answers each.',
+      'You’re on the CHECK tab: CHECK YOUR UNDERSTANDING for the Equalizer — five questions, four answers each.',
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
@@ -107,16 +119,17 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'The tabs under the title go to LEARN or EXPLORE at any time.',
     ],
     changes: [
-      'The questions cover Q and width, the high-pass, graphic against parametric, slope, and cutting before boosting.',
-      'When all five are right the card reads Lab complete. They are the same questions as on the EQ Lab menu, so both places show it complete.',
+      'The questions cover Q and width, clearing low rumble, graphic against parametric, slope, and cutting before boosting.',
+      'Get all five right and the lab is complete; the card reads Lab complete. The EQ Lab menu asks the same five, so passing here completes the EQ Lab too.',
     ],
     teaches: [
-      'It checks the ideas, not the knob positions: width, shape, slope and headroom.',
-      'Passing it completes the EQ Lab too — they share this check. A good next step: the Dynamics labs.',
+      'How the Q number relates to how wide a band reaches, and which filter shape clears low rumble.',
+      'What sets a graphic EQ band apart from a parametric one.',
+      'What a dB-per-octave slope measures, and why engineers often cut before they boost.',
     ],
     tryThis: [
-      'Before the Q question, on EXPLORE switch Q from 0.7 WIDE to 8 NARROW and watch the bell.',
-      'For the slope question, on EXPLORE tap TYPE and read HIGH-PASS: a steady 12 dB-per-octave fall below FREQ — slope is a rate, not a set amount of cut.',
+      'Before the Q question, switch to LEARN and reread the Q entry under CONTROLS.',
+      'For the slope question, switch to LEARN and reread FORMULA / CONCEPT, where filter slopes are given in dB per octave.',
     ],
   },
 };
