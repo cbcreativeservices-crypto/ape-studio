@@ -23,6 +23,9 @@ export type ForumAuthor = {
   graduate: boolean;
   trust: TrustLevel | null;
   former: boolean;
+  /** The Academy's own account: members cannot report or block it (owner rule
+   *  2026-11-08). False when the server does not say. */
+  academy: boolean;
 };
 
 export type ForumCategory = {

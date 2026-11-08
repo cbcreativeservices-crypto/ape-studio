@@ -501,14 +501,14 @@ describe('second review: a forum tap never opens above the sign-in screen', () =
     assert.equal(typeof lands, 'function');
     assert.equal(lands('Auth'), false);
     assert.equal(lands('Main'), true);
-    assert.equal(lands('Splash'), true);
+    assert.equal(lands('Splash'), false); // bug pass 2026-11-08: parked until signed in
     assert.equal(lands(undefined), true);
   });
 
   it('App asks it before navigating', () => {
     const app = code('App.tsx');
     const fn = app.slice(app.indexOf('function openForumThread'), app.indexOf('function openCommunityPath'));
-    assert.match(fn, /if \(!forumTapLands\(base\)\) return;/);
+    assert.match(fn, /if \(!forumTapLands\(base\)\) \{\s*parkForumTap\(tap\);\s*return;/);
   });
 });
 

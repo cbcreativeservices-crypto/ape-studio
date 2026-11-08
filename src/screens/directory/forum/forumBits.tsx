@@ -377,17 +377,46 @@ export function AmberButton({
   );
 }
 
-export function QuietButton({ label, onPress, style }: { label: string; onPress: () => void; style?: StyleProp<ViewStyle> }) {
+export function QuietButton({
+  label,
+  onPress,
+  style,
+  disabled,
+}: {
+  label: string;
+  onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  /** Off while the write beside it is out (a CANCEL that cannot cancel it). */
+  disabled?: boolean;
+}) {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [st.sbtn, pressed && st.pressed, style]}
+      disabled={disabled}
+      style={({ pressed }) => [st.sbtn, disabled && st.sbtnOff, pressed && !disabled && st.pressed, style]}
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
     >
       <Text style={st.sbtnText}>{label}</Text>
     </Pressable>
   );
+}
+
+/**
+ * MY PROFILE from a forum notice: back to the Audio Community screen already
+ * under this one, on its profile tab. `navigate` pushed a SECOND copy, so BACK
+ * returned to the stale notice and each trip grew the stack (bug pass
+ * 2026-11-08, CODE-1-09). popTo adds it only when it is not in the stack.
+ */
+export function openMyProfile(navigation: unknown): void {
+  const nav = navigation as {
+    popTo?: (route: string, params?: object) => void;
+    navigate: (route: string, params?: object) => void;
+  };
+  if (nav.popTo) nav.popTo('AudioCommunityDirectory', { tab: 'profile' });
+  else nav.navigate('AudioCommunityDirectory', { tab: 'profile' });
 }
 
 /** `.locked`: the notice that takes the reply box's place. */
@@ -869,6 +898,7 @@ const st = StyleSheet.create({
     borderWidth: 1,
     borderColor: F.line2,
   },
+  sbtnOff: { opacity: 0.45 },
   sbtnText: { fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 1.3, color: F.sub },
   locked: {
     marginHorizontal: 14,

@@ -53,7 +53,11 @@ export function useForumRead<T>(load: () => Promise<ForumResult<T>>, deps: Depen
 
   useEffect(() => {
     alive.current = true;
-    setState((s) => (s.value === null ? { ...s, face: 'loading', error: null, code: null } : s));
+    // New deps are a DIFFERENT read (another sort, another topic): the last
+    // read's list is not this one's, so it is never kept under the new label,
+    // and a failure here is "could not load", not a stale copy of the old list
+    // (bug pass 2026-11-08, CODE-1-07). Only reload() keeps what is on screen.
+    setState({ face: 'loading', value: null, error: null, code: null, stale: false });
     void read();
     return () => {
       alive.current = false;

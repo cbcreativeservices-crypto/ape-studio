@@ -21,6 +21,7 @@ import {
   PRO_LOUNGE_GROUP,
   PRO_LOUNGE_REFUSAL,
   SORT_LABELS,
+  emptyTopicsWords,
   postingDock,
   refusalNeedsProfile,
   refusalText,
@@ -42,6 +43,7 @@ import {
   ThreadHeader,
   TopicRow,
   forumStyles,
+  openMyProfile,
   topicRoute,
 } from './forumBits';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -138,7 +140,7 @@ export function ForumCategoryScreen() {
       {`${PRO_LOUNGE_REFUSAL} You can read every thread. Earn a credential to post here.`}
     </LockedNotice>
   ) : posting.kind === 'refusal' && refusalNeedsProfile(posting.code) ? (
-    <LockedNotice action={{ label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }}>
+    <LockedNotice action={{ label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }}>
       {refusalText(posting.code)}
     </LockedNotice>
   ) : posting.kind === 'refusal' ? (
@@ -171,10 +173,8 @@ export function ForumCategoryScreen() {
             <ForumLoading label="Loading topics…" />
           ) : topics.face === 'unreadable' ? (
             <ForumUnreadable error={topics.error} code={topics.code} onRetry={() => void topics.reload()} />
-          ) : sort === 'unanswered' ? (
-            <ForumEmpty title="Nothing is waiting" text="No question here is waiting for an answer." />
           ) : (
-            <ForumEmpty title="Nothing posted here yet" text="Start the first topic." />
+            <ForumEmpty {...emptyTopicsWords(sort, true)} />
           )
         }
       />

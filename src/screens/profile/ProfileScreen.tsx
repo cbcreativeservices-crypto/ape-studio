@@ -202,7 +202,7 @@ function PagedList({ count, children }: { count: number; children: (limit: numbe
           accessibilityLabel={`Show more. Showing ${limit} of ${count}.`}
         >
           <Text style={styles.showMore}>
-            Show more — {limit} of {count} shown
+            Show more ({limit} of {count} shown)
           </Text>
         </Pressable>
       ) : null}
@@ -382,10 +382,12 @@ export function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    // The load awaits a network round-trip for the server-backed fields. If the
-    // user starts typing before it resolves, applying it would overwrite their
-    // keystrokes — so a profile the user has already touched keeps what they
-    // typed (design review 2026-08-30).
+    // The load awaits a network round-trip for the server-backed fields. NO
+    // EDIT IS TAKEN BEFORE IT LANDS (bug pass 1, CODE-1-02): one chip tap on
+    // the empty first frame used to drop the whole loaded profile, and the
+    // save then laid that one-chip list over the stored interests. The fields
+    // are read-only until `hydratedRef` is set below, so the load is always
+    // applied; the dirty check stays as a belt for any later caller.
     // The screen's copy is the stored record only once a load that READ the
     // device copy has been applied; until then a save lays only the changed
     // fields over the stored record (evening hunt 1, 2026-10-02 — see
@@ -396,6 +398,7 @@ export function ProfileScreen() {
         unreadRef.current = deviceReadFailed ? unreadBaseline(loaded) : null;
       }
       setRegistryVerified(isRegistryStateKnown());
+      hydratedRef.current = true;
       setHydrated(true);
     });
   }, []);
@@ -556,6 +559,10 @@ export function ProfileScreen() {
    * updater now only computes; a single effect persists whatever it settles on.
    */
   const dirtyRef = useRef(false);
+  /** TRUE once the stored profile has been applied. Until then every edit is
+   *  refused: the screen holds EMPTY placeholders, not the member's record
+   *  (CODE-1-02). */
+  const hydratedRef = useRef(false);
   /** Non-null while `pub` is not the stored record (before the load is
    *  applied, or after it could not read the device copy). */
   const unreadRef = useRef<UnreadBaseline | null>(unreadBaseline());
@@ -565,11 +572,13 @@ export function ProfileScreen() {
   }, [pub]);
 
   const setPubKey = useCallback(<K extends keyof PublicProfile>(key: K, value: PublicProfile[K]) => {
+    if (!hydratedRef.current) return;
     dirtyRef.current = true;
     setPub((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const toggleInterest = useCallback((topic: string) => {
+    if (!hydratedRef.current) return;
     dirtyRef.current = true;
     setPub((prev) => {
       const has = prev.interests.includes(topic);
@@ -583,6 +592,7 @@ export function ProfileScreen() {
   /** Star an interest to make it PRIMARY (adds it if not already selected);
    *  starring the current primary clears it. */
   const promotePrimary = useCallback((topic: string) => {
+    if (!hydratedRef.current) return;
     dirtyRef.current = true;
     setPub((prev) => {
       if (prev.primaryInterest === topic) return { ...prev, primaryInterest: '' };
@@ -626,7 +636,14 @@ export function ProfileScreen() {
   }, [pub.name, pub.registryName, registryNameFits]);
   const missing = gaps.filter((g) => !g.done);
   const profileComplete = missing.length === 0;
-  const registryActive = pub.showInRegistry && profileComplete;
+  /** LISTED is what the listing says, not whether this phone holds every
+   *  detail (bug pass 1, CODE-1-01). The user name is device-only, so a
+   *  listed member on a new phone has an incomplete form and a live page;
+   *  that page has to read LISTED and its switch has to turn OFF. */
+  const registryActive = pub.showInRegistry;
+  /** "Details needed to get listed" is said, and the switch held, only while
+   *  NOT listed. */
+  const needsInfo = !profileComplete && !pub.showInRegistry;
   /** A confirmed guest: publishing needs an account (see onRegistryToggle).
    *  `tierKnown` first, as the guest note in PUBLIC PROFILE does, so a member
    *  whose tier is still loading is never told they are a guest. */
@@ -750,7 +767,7 @@ export function ProfileScreen() {
       }
       askYesNo(
         'Are you 18 or older?',
-        'The public Registry listing is for adults only. Everything else in the app — your studies, your certificates and QR verification — works at any age.',
+        'The public Registry listing is for adults only. Everything else in the app works at any age: your studies, your certificates and QR verification.',
         'Yes, I am 18+',
         () => consent(true),
       );
@@ -928,9 +945,9 @@ export function ProfileScreen() {
             style={styles.profileErrorRow}
             onPress={loadProfile}
             accessibilityRole="button"
-            accessibilityLabel="Couldn’t load your ID — retry"
+            accessibilityLabel="Couldn’t load your ID. Retry"
           >
-            <Text style={styles.profileErrorText}>Couldn’t load your ID — check your connection.</Text>
+            <Text style={styles.profileErrorText}>Couldn’t load your ID. Check your connection.</Text>
             <Text style={styles.profileErrorRetry}>RETRY</Text>
           </Pressable>
         ) : null}
@@ -941,9 +958,9 @@ export function ProfileScreen() {
         <Pressable
           style={[
             styles.strip,
-            registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
+            registryActive ? styles.stripOn : needsInfo ? styles.stripTodo : styles.stripOff,
           ]}
-          disabled={profileComplete}
+          disabled={!needsInfo}
           // Same jump the gap checklist's "ADD ›" rows make: open PUBLIC
           // PROFILE and put the cursor in the first detail still missing.
           onPress={() => {
@@ -953,12 +970,12 @@ export function ProfileScreen() {
           // `accessible` false + role text would still announce the Pressable's
           // auto-merged disabled state. When there is nothing to fix this is a
           // READOUT, so it carries no role and no hint — just its own words.
-          accessibilityRole={profileComplete ? undefined : 'button'}
-          accessibilityHint={profileComplete ? undefined : 'Opens the details you still need'}
+          accessibilityRole={needsInfo ? 'button' : undefined}
+          accessibilityHint={needsInfo ? 'Opens the details you still need' : undefined}
           accessibilityLabel={
             registryActive
               ? 'Listed. Your public page is live.'
-              : !profileComplete
+              : needsInfo
                 ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed before you can be listed. Opens the form.`
                 : 'Private. You have no public page.'
           }
@@ -969,7 +986,7 @@ export function ProfileScreen() {
               {
                 backgroundColor: registryActive
                   ? colors.green
-                  : !profileComplete
+                  : needsInfo
                     ? colors.amber
                     : '#3a3a3a',
               },
@@ -981,17 +998,17 @@ export function ProfileScreen() {
               {
                 color: registryActive
                   ? colors.green
-                  : !profileComplete
+                  : needsInfo
                     ? colors.amber
                     : colors.textSubAlt,
               },
             ]}
           >
             {registryActive
-              ? 'LISTED — your public page is live'
-              : !profileComplete
+              ? 'LISTED: your public page is live'
+              : needsInfo
                 ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
-                : 'PRIVATE — no public page'}
+                : 'PRIVATE: no public page'}
           </Text>
         </Pressable>
 
@@ -1122,7 +1139,7 @@ export function ProfileScreen() {
             <Text style={styles.rowHint}>Your certificates haven’t loaded yet.</Text>
           ) : (
             <Text style={styles.rowHint}>
-              No certificates started yet — enroll from Study, and your progress appears here.
+              No certificates started yet. Enroll from Study, and your progress appears here.
             </Text>
           )}
 
@@ -1150,7 +1167,7 @@ export function ProfileScreen() {
             <Text style={styles.rowHint}>Your programs haven’t loaded yet.</Text>
           ) : (
             <Text style={styles.rowHint}>
-              No programs started yet — enroll from Study, and your progress appears here.
+              No programs started yet. Enroll from Study, and your progress appears here.
             </Text>
           )}
 
@@ -1164,7 +1181,7 @@ export function ProfileScreen() {
           ) : catalog.state === 'unavailable' ? (
             /* Not "there are none". A failed read is not an empty academy. */
             <Text style={styles.rowHint}>
-              Couldn’t load the catalog — check your connection and try again.
+              Couldn’t load the catalog. Check your connection and try again.
             </Text>
           ) : (
             <>
@@ -1272,7 +1289,7 @@ export function ProfileScreen() {
           <Text style={styles.rowHint}>
             {showBigPicture
               ? 'Whole-curriculum, certificate and program totals are shown below. My own certificates and programs stay either way.'
-              : 'Totals across all 166 topics, 124 certificates and 36 programs. They move slowly — most people find their own goals more useful.'}
+              : 'Totals across all 166 topics, 124 certificates and 36 programs. They move slowly, and most people find their own goals more useful.'}
           </Text>
 
           <Text style={styles.groupLabel}>MY NUMBERS</Text>
@@ -1334,6 +1351,7 @@ export function ProfileScreen() {
             ref={nameRef}
             style={styles.input}
             value={pub.name}
+            editable={hydrated}
             onChangeText={(t) => setPubKey('name', t)}
             placeholder="Your user name"
             placeholderTextColor={colors.textMuted}
@@ -1356,7 +1374,7 @@ export function ProfileScreen() {
         >
           <Text style={styles.sectionIntro}>
             {tierKnown && entitlement === 'anonymous'
-              ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
+              ? 'Guest changes stay on this device only until the app closes. Create an account to keep them.'
               : 'Changes save as you type.'}
           </Text>
 
@@ -1365,6 +1383,7 @@ export function ProfileScreen() {
             ref={registryNameRef}
             style={styles.input}
             value={pub.registryName}
+            editable={hydrated}
             onChangeText={(t) => {
               setNameRefused(false);
               setPubKey('registryName', t);
@@ -1394,6 +1413,7 @@ export function ProfileScreen() {
             ref={emailRef}
             style={styles.input}
             value={pub.email}
+            editable={hydrated}
             onChangeText={(t) => setPubKey('email', t)}
             onBlur={() => setEmailTouched(true)}
             placeholder="you@example.com"
@@ -1408,7 +1428,7 @@ export function ProfileScreen() {
             <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
           ) : (
             <Text style={styles.rowHint}>
-              Optional, and kept on this device only — never sent to us, never shown on
+              Optional, and kept on this device only. It is never sent to us and never shown on
               your public page.
               {SHOW_COMMUNITY_ON_PROFILE
                 ? ' Members who find you in the directory reach you through in-app contact requests, which never reveal your address.'
@@ -1420,6 +1440,7 @@ export function ProfileScreen() {
           <TextInput
             style={[styles.input, styles.bioInput]}
             value={pub.bio}
+            editable={hydrated}
             onChangeText={(t) => setPubKey('bio', t)}
             placeholder="e.g. FOH engineer, 6 years, clubs and worship"
             placeholderTextColor={colors.textMuted}
@@ -1472,13 +1493,13 @@ export function ProfileScreen() {
             being listed. —— */}
         <Section
           title="WHO CAN SEE ME"
-          summary={!profileComplete ? 'needs info' : registryActive ? 'LISTED' : 'private'}
+          summary={registryActive ? 'LISTED' : needsInfo ? 'needs info' : 'private'}
         >
           <Text style={styles.sectionIntro}>
             Everything here is private unless you switch it on.
           </Text>
 
-          {!profileComplete ? (
+          {needsInfo ? (
             <View style={styles.gapBox}>
               <Text style={styles.groupLabel}>BEFORE I CAN BE LISTED</Text>
               {gaps.map((g) => (
@@ -1508,7 +1529,8 @@ export function ProfileScreen() {
             <Toggle
               on={pub.showInRegistry}
               label="List me in the Pro Registry"
-              disabled={!profileComplete}
+              // Held only on the way ON: a listed page can always be taken down.
+              disabled={needsInfo}
               onChange={onRegistryToggle}
             />
           </View>
@@ -1525,7 +1547,7 @@ export function ProfileScreen() {
             </Text>
           ) : null}
           <Text style={styles.rowHint}>
-            Publishes a page anyone with the link — or who scans your code — can open.
+            Publishes a page anyone with the link, or anyone who scans your code, can open.
           </Text>
 
           <View style={styles.manifest}>
@@ -1542,10 +1564,10 @@ export function ProfileScreen() {
               ·{' '}
               {pub.interests.length
                 ? `What you work in (${pub.interests.length})`
-                : 'What you work in — none selected yet'}
+                : 'What you work in (none selected yet)'}
             </Text>
             <Text style={styles.manifestOn}>
-              · {pub.bio.trim() ? 'Your About you line' : 'Your About you line — empty'}
+              · {pub.bio.trim() ? 'Your About you line' : 'Your About you line (empty)'}
             </Text>
             <Text style={[styles.groupLabel, { marginTop: 12 }]}>NEVER PUBLISHED</Text>
             <Text style={styles.manifestOff}>· Your email address</Text>
@@ -1565,7 +1587,7 @@ export function ProfileScreen() {
             />
           </View>
           <Text style={styles.rowHint}>
-            Saved as a preference for now. There is no message button yet — nobody can contact
+            Saved as a preference for now. There is no message button yet, so nobody can contact
             you through the Academy, and your email address is never published either way.
           </Text>
 

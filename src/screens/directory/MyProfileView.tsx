@@ -39,12 +39,23 @@ import {
   saveCommunityProfile,
   setContactEnabled,
   setDiscoverable,
-  setFeaturedCredentials,
+  setFeaturedCredentials as sendFeaturedCredentials,
   type CommunityProfile,
   type Taxonomy,
   type WorkPref,
 } from '../../features/directory/api';
 import { alreadyMigrated, buildLegacyDraft, markMigrated, type LegacyDraft } from '../../features/directory/legacyMigration';
+import {
+  leaveDecision,
+  keyStale,
+  mergeUnsaved,
+  noteLeaveSave,
+  profileSaveChain,
+  stashUnsaved,
+  takeUnsaved,
+  type LeaveKey,
+} from '../../features/directory/profileLeave';
+import { sampleDirectoryOn, sampleGen } from '../../features/directory/sampleThreads';
 import { ProfileSetupFlow } from './ProfileSetupFlow';
 import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
@@ -73,6 +84,21 @@ const WORK_PREFS: { key: WorkPref; label: string }[] = [
  * uppercase character. Past that the name starts shoving the ✕ off the row.
  */
 const DISPLAY_NAME_MAX = 30;
+
+/**
+ * What the member agrees to publish. EVERY field the public page and the
+ * member sheet show is named (bug pass 2026-11-08, CODE-1-12): country,
+ * region, languages, how you work, Open To and the chosen credentials were
+ * published but left out of this list, so the consent was narrower than the
+ * page.
+ */
+export const PUBLISH_CONSENT =
+  'Your display name, areas, specialties, How I’m Involved, Open To, About My Work, the credentials you chose to show, and any country, region, languages and way of working you added become visible to anyone with your link. Your private account name, email address, learning progress, quiz scores, notes and unselected credentials are never published.';
+
+/** "Remote", "Local / in person"…: the label for a stored work preference. */
+function workPrefLabel(w: WorkPref | null): string | null {
+  return WORK_PREFS.find((x) => x.key === w)?.label ?? null;
+}
 
 /** ISO 3166-1 alpha-2. Two letters is the whole definition of the format. */
 export const COUNTRY_CODE_LENGTH = 2;
@@ -129,8 +155,11 @@ export function MyProfileView() {
    * save rolled the screen back over taps made after it. `saveChain`
    * serialises them; `saveSeq` lets only the LATEST save touch the error line
    * and the rollback (a later successful save already carries the earlier edit).
+   * ONE QUEUE FOR THE APP, not per instance (bug pass 2026-11-08, CODE-1-04):
+   * this view mounts fresh on every tab visit, and a per-instance queue let
+   * the new visit's first read race the last visit's flush (profileLeave.ts).
    */
-  const saveChain = useRef<Promise<unknown>>(Promise.resolve());
+  const saveChain = profileSaveChain;
   const saveSeq = useRef(0);
   /** Same idea for the featured-credential picker, which has its own RPC. */
   const featuredSeq = useRef(0);
@@ -141,8 +170,11 @@ export function MyProfileView() {
    * screen showed the newer one. `featuredOk` is the last list the server
    * accepted — what a refused write rolls back to (the tap before it may
    * itself have been refused, so "the list before this tap" is not it).
+   * The SAME app-wide queue as the profile saves (bug pass 2026-11-08, P1
+   * check): a per-visit queue let the next visit's first read race a write
+   * still out, as CODE-1-04 did for the profile.
    */
-  const featuredChain = useRef<Promise<unknown>>(Promise.resolve());
+  const featuredChain = profileSaveChain;
   const featuredOk = useRef<string[] | null>(null);
   /** The last profile handed to the server (or read from it) — the unmount
    *  flush below compares against it. */
@@ -159,7 +191,19 @@ export function MyProfileView() {
    * queued server write checks the wipe count captured when this view mounted.
    */
   const wipeAtMount = useRef(localStoreWipeCount());
-  const stale = () => wipeAtMount.current !== localStoreWipeCount();
+  /**
+   * …AND WHICH WORLD (bug pass 2026-11-08, P1 check): the dev sample or the
+   * live server. Leaving the directory switches the sample off in the same
+   * commit, and the save-on-leave is sent a microtask later, so a check at
+   * SEND time sent the sample's profile to the live server. The world is
+   * fixed at mount; a queued write from another world is dropped.
+   */
+  const sampleGenAtMount = useRef(sampleGen());
+  const mountKey = (): LeaveKey => ({ wipe: wipeAtMount.current, gen: sampleGenAtMount.current });
+  const stale = () => keyStale(mountKey());
+  /** The featured write, fenced like every other queued write here. */
+  const setFeaturedCredentials = (ids: string[]) =>
+    stale() ? Promise.resolve(null) : sendFeaturedCredentials(ids);
   /** Newest re-read wins — see refresh(). */
   const refreshTicket = useRef(0);
   const [loading, setLoading] = useState(true);
@@ -226,7 +270,9 @@ export function MyProfileView() {
         // same conditions below.
         const [t, mine, c, migrated, legacyDraft] = await Promise.all([
           fetchTaxonomy(),
-          fetchMyCommunityProfile(),
+          // Behind any save still out, the last visit's flush included
+          // (CODE-1-04): read first and the editor shows the older profile.
+          saveChain.current.then(() => fetchMyCommunityProfile()),
           fetchMyCredentials().then(
             (rows) => ({ rows, failed: false }),
             () => ({ rows: [] as EarnedCredentialRow[], failed: true }),
@@ -252,6 +298,15 @@ export function MyProfileView() {
         }
         lastSent.current = pRef.current;
         hydrated.current = true;
+        // Words the last visit could not save come back, with the reason
+        // (CODE-1-11). `lastSent` stays the server's copy, so they are unsent.
+        const left = takeUnsaved(mountKey());
+        if (left) {
+          const kept = mergeUnsaved(pRef.current, left.profile);
+          pRef.current = kept;
+          setP(kept);
+          setErr(left.error);
+        }
         // Only offer to carry the old profile over when there is genuinely no new
         // one yet — never overwrite something the member has already built here,
         // and never on the strength of a request that failed (handled above).
@@ -319,8 +374,19 @@ export function MyProfileView() {
     () => () => {
       if (hydrated.current && pRef.current !== lastSent.current) {
         const latest = pRef.current;
+        const key = mountKey();
+        // A REFUSED SAVE IS NOT LOST SILENTLY (bug pass 2026-11-08,
+        // CODE-1-11). An About the rules already refuse is never sent, and a
+        // refused or failed flush keeps the words for the next visit, which
+        // puts them back with the reason (profileLeave.ts).
+        const go = leaveDecision(latest);
+        if (!go.send) {
+          stashUnsaved(latest, go.error, key);
+          return;
+        }
         saveChain.current = saveChain.current
           .then(() => (stale() ? undefined : saveCommunityProfile(latest)))
+          .then((r) => noteLeaveSave(latest, r, key))
           .catch(() => {});
       }
     },
@@ -416,7 +482,7 @@ export function MyProfileView() {
     const go = (adult: boolean) =>
       confirmThen(
         'Publish your community profile?',
-        'Your display name, areas, specialties, How I’m Involved and About My Work become visible to anyone with your link. Your private account name, email address, learning progress, quiz scores, notes and unselected credentials are never published.',
+        PUBLISH_CONSENT,
         'Publish',
         () => sendPublish(true, adult),
       );
@@ -594,6 +660,9 @@ export function MyProfileView() {
         </View>
       ) : null}
 
+      {sampleDirectoryOn() ? (
+        <Banner tone="info">SAMPLE DATA · development preview. Nothing here is saved to an account.</Banner>
+      ) : null}
       {err ? <Banner tone="warn">{err}</Banner> : null}
       {p.needsIdentityReview ? (
         <Banner tone="warn">
@@ -810,6 +879,7 @@ export function MyProfileView() {
                     const run = featuredChain.current
                       .then(() => setFeaturedCredentials(ids))
                       .then((r) => {
+                        if (!r) return; // the account or the sample changed: not sent
                         if (r.ok) featuredOk.current = ids;
                         if (seq !== featuredSeq.current) return;
                         if (r.ok) return setErr(null);
@@ -1010,6 +1080,23 @@ function SpecialtyPicker({
   );
 }
 
+/** How I'm Involved, country, region, languages and how you work, in the
+ *  order the member sheet draws them. '' when none is set. */
+export function previewMeta(
+  p: Pick<CommunityProfile, 'roles' | 'countryCode' | 'region' | 'languages' | 'workPref'>,
+  label: (k: keyof Taxonomy, s: string) => string,
+): string {
+  return [
+    p.roles.map((r) => label('roles', r)).join(' · ') || null,
+    p.countryCode || null,
+    p.region.trim() || null,
+    p.languages.join(', ') || null,
+    workPrefLabel(p.workPref),
+  ]
+    .filter(Boolean)
+    .join('  ·  ');
+}
+
 /** §8.1 requires an exact preview before final confirmation. */
 function PreviewSheet({
   open,
@@ -1056,8 +1143,18 @@ function PreviewSheet({
                 ))}
               </ChipWrap>
             ) : null}
-            {p.roles.length ? (
-              <Text style={st.pvMeta}>{p.roles.map((r) => label('roles', r)).join(' · ')}</Text>
+            {/* The member sheet's own meta line, plus how you work (the card
+                shows it): every published field is previewed (CODE-1-12). */}
+            {previewMeta(p, label) ? <Text style={st.pvMeta}>{previewMeta(p, label)}</Text> : null}
+            {p.openTo.length ? (
+              <>
+                <Eyebrow>OPEN TO</Eyebrow>
+                <ChipWrap>
+                  {p.openTo.map((o) => (
+                    <Chip key={o} label={label('openTo', o)} />
+                  ))}
+                </ChipWrap>
+              </>
             ) : null}
             {p.featuredCredentialIds.length ? (
               <>

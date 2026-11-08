@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { fetchMyModeration, fetchNoticeEdit, markNoticeRead, type MyModeration } from '../../../features/forum/api';
-import { EXCERPT_MAX, noticeFace } from '../../../features/forum/rules';
+import { EXCERPT_MAX, noticeExcerptEdit, noticeFace } from '../../../features/forum/rules';
 import type { ForumNotice } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { useReloadOnReturn } from '../../../features/forum/useReloadOnReturn';
@@ -32,6 +32,8 @@ import {
 import { AppealPopup } from './forumPopups';
 
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
+
+const NOTICE_EDIT_UNREAD = 'Your post could not be loaded. Check your connection and try again.';
 
 export function ForumNoticesScreen() {
   const navigation = useNavigation() as unknown as Nav;
@@ -51,16 +53,25 @@ export function ForumNoticesScreen() {
   /** The whole post when the thread is known and readable, else the excerpt. */
   const editFrom = useLatchedPress(async (n: ForumNotice, postId: string) => {
     const full = await fetchNoticeEdit(n.topicId, postId);
+    if (full === 'failed') {
+      // The thread is known but did not answer: never guess from the excerpt,
+      // which would treat a topic as a reply (CODE-1-17).
+      notify('Could not open your post', NOTICE_EDIT_UNREAD);
+      return;
+    }
     if (full) {
       navigation.navigate('ForumAsk', { slug: full.slug, edit: full.edit });
       return;
     }
+    // At the limit, or cut by the server ("…" at an end): only part of the
+    // post either way, and the form says so (UI-1-06).
+    const cut = noticeExcerptEdit(n.excerpt);
     navigation.navigate('ForumAsk', {
       edit: {
         postId,
         isOpening: false,
-        body: (n.excerpt ?? '').replace(/^…|…$/g, ''),
-        partial: (n.excerpt ?? '').length >= EXCERPT_MAX,
+        body: cut.body,
+        partial: (n.excerpt ?? '').length >= EXCERPT_MAX || cut.partial,
       },
     });
   });
@@ -92,11 +103,22 @@ export function ForumNoticesScreen() {
             ...(face.canAppeal && postId
               ? [{ label: appealed ? 'APPEAL SENT' : 'APPEAL', disabled: appealed, onPress: () => setAppealId(postId) }]
               : []),
+            // Which post this is about: its thread, once the server says which
+            // (SERVER_GAPS row 2; bug pass 2026-11-08, UI-1-15).
+            ...(item.topicId
+              ? [
+                  {
+                    label: 'OPEN THE THREAD',
+                    onPress: () =>
+                      navigation.navigate('ForumThread', postId ? { topicId: item.topicId, jumpTo: postId } : { topicId: item.topicId }),
+                  },
+                ]
+              : []),
           ]}
         />
       );
     },
-    [editFrom, sent, value],
+    [editFrom, navigation, sent, value],
   );
 
   return (

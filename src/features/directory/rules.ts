@@ -41,6 +41,22 @@ export function aboutIsSafe(text: string | null | undefined): boolean {
   return true;
 }
 
+/**
+ * The contact composer's allowance line. The server's window is ROLLING (the
+ * last 7 days, see readableError), so "left this week" described a weekly
+ * reset that never happens (bug pass 2026-11-08, CODE-1-29).
+ */
+export function requestsLeftLine(left: number): string {
+  if (left <= 0) return 'No contact requests left for now. Each one frees up 7 days after you sent it.';
+  return `${left} contact ${left === 1 ? 'request' : 'requests'} left for now. Each one frees up 7 days after you send it.`;
+}
+
+/** A report's optional detail as sent: trimmed, and null when only spaces. */
+export function reportDetail(detail: string | null | undefined): string | null {
+  const t = (detail ?? '').trim();
+  return t ? t : null;
+}
+
 /** Why an About value was refused — so the UI can say something specific. */
 export function aboutProblem(text: string): string | null {
   if (aboutIsSafe(text)) return null;
@@ -168,6 +184,9 @@ export const COMMUNITY_RULES_MESSAGE =
  * can actually provoke; pass anything else through rather than inventing a
  * friendly lie about a failure we did not anticipate.
  */
+/** The Academy account cannot be blocked or reported (owner 2026-11-08). */
+export const ACADEMY_ACCOUNT_PROTECTED = 'The Academy account can’t be blocked or reported.';
+
 export function readableError(message: string | undefined): string {
   // An EMPTY message is as useless to a member as a missing one (edge-case QA
   // 2026-09-11): `message ?? fallback` let '' through, so a driver that
@@ -178,6 +197,9 @@ export function readableError(message: string | undefined): string {
   // that no other branch may swallow. Retrying the same text fails the same
   // way, so the copy asks for a rephrase, not a retry.
   if (m.includes('community_rules')) return COMMUNITY_RULES_MESSAGE;
+  // The Academy account cannot be blocked or reported (owner 2026-11-08):
+  // contact_block, contact_report and contact_block_thread refuse it with this code.
+  if (m.includes('academy account')) return ACADEMY_ACCOUNT_PROTECTED;
   // PostgREST rejects an anon caller at the GRANT before the function body
   // runs, so the friendly "sign in to browse" guard inside directory_search is
   // unreachable for a signed-out visitor — they got the raw

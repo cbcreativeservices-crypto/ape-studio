@@ -18,6 +18,7 @@ import {
   editPost,
   fetchForumHome,
   glossaryMatches,
+  resolveCorrection,
   searchTopics,
   submitPost,
   type ForumCategory,
@@ -25,6 +26,7 @@ import {
 } from '../../../features/forum/api';
 import { clearDraft, readDraft, saveDraft } from '../../../features/forum/drafts';
 import { useForumFlags } from '../../../features/forum/forumFlags';
+import { clientIdFor, forgetClientId, postFingerprint } from '../../../features/forum/postOnce';
 import {
   ASK_SLUG,
   BODY_MAX,
@@ -32,8 +34,11 @@ import {
   SEARCH_MIN,
   TITLE_MAX,
   askChoices,
+  askDraftRead,
+  askDraftText,
   askFormOf,
   askProblem,
+  carryAskValues,
   composeAskBody,
   draftKey,
   glossaryWords,
@@ -63,10 +68,21 @@ import {
   QuietButton,
   SampleStamp,
   forumStyles,
+  openMyProfile,
 } from './forumBits';
 import { AI_DISCLOSURE, RulesPopup } from './forumPopups';
 
-type EditTarget = { postId: string; isOpening: boolean; body: string; title?: string; partial?: boolean; suggestion?: string };
+type EditTarget = {
+  postId: string;
+  isOpening: boolean;
+  body: string;
+  title?: string;
+  partial?: boolean;
+  suggestion?: string;
+  /** ACCEPT AND EDIT: this correction is marked accepted once the edit is
+   *  posted, never before, so CANCEL leaves it open (UI-1-01). */
+  acceptCorrection?: string;
+};
 type LabThread = { key: string; title: string };
 type Params = { slug?: string; edit?: EditTarget; labThread?: LabThread };
 type Nav = {
@@ -169,29 +185,68 @@ function AskForm({
     let live = true;
     void readDraft(draftName).then((stored) => {
       if (!live || !stored || touched.current) return;
-      try {
-        setValues({ ...EMPTY_ASK, ...(JSON.parse(stored) as Partial<AskValues>) });
-      } catch {
-        // Not ours to read: leave the form blank.
-      }
+      // Not ours to read: leave the form blank.
+      const got = askDraftRead(stored);
+      if (!got) return;
+      setValues({ ...EMPTY_ASK, ...got.values });
+      // A draft that was being posted keeps its once-only id: posting it again
+      // lands once (CODE-1-05).
+      clientId.current = got.clientId;
     });
     return () => {
       live = false;
     };
   }, [draftName, edit]);
+  /** Typed but not yet written: kept on the way out (CODE-1-22). */
+  const unsaved = useRef<{ name: string; text: string } | null>(null);
+  /** The pending write: cleared by POST, which writes the draft (with the id)
+   *  itself. Left running, it overwrote that draft without the id 800 ms
+   *  later, so a post cut off by an app restart went out twice (CODE-1-05 c). */
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (edit || !touched.current) return undefined;
     let live = true;
+    const text = askDraftText(values, null);
+    unsaved.current = { name: draftName, text };
     const t = setTimeout(() => {
-      void saveDraft(draftName, hasStarted(values) ? JSON.stringify(values) : '').then((ok) => {
+      saveTimer.current = null;
+      unsaved.current = null;
+      void saveDraft(draftName, text).then((ok) => {
         if (live) setDraftSaved(ok && hasStarted(values));
       });
     }, 800);
+    saveTimer.current = t;
     return () => {
       live = false;
       clearTimeout(t);
     };
   }, [draftName, edit, values]);
+  // An immediate BACK keeps the last words typed: the timer above dies with
+  // the screen, so the write happens here.
+  useEffect(
+    () => () => {
+      const last = unsaved.current;
+      if (last) void saveDraft(last.name, last.text);
+    },
+    [],
+  );
+
+  /** A new category may be a new form: the draft MOVES (the old key is
+   *  cleared, so a posted question never comes back under the first category),
+   *  and the words typed move into the new form's box (CODE-1-06, UI-1-02). */
+  const pickCategory = (next: ForumCategory | null) => {
+    if (next && next.slug !== category?.slug) {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+      void clearDraft(draftName);
+      unsaved.current = null;
+      clientId.current = null;
+      setDraftSaved(false);
+      if (hasStarted(values)) touched.current = true;
+      setValues((v) => carryAskValues(form, askFormOf(next), v));
+    }
+    setCategory(next);
+  };
 
   /* ── Similar topics while typing the title ───────────────────────── */
   const [similar, setSimilar] = useState<{ topics: ForumSearchHit[]; terms: string[] }>({ topics: [], terms: [] });
@@ -241,22 +296,38 @@ function AskForm({
     if (edit) {
       const body = guided ? composeAskBody(values) : values.body.trim();
       const r = await editPost(edit.postId, body, edit.isOpening ? values.title.trim() : undefined);
+      if (r.ok && edit.acceptCorrection) {
+        // The edit is in: now the correction is accepted (UI-1-01).
+        const a = await resolveCorrection(edit.acceptCorrection, true);
+        if (!a.ok) notify('Correction still open', CORRECTION_NOT_MARKED);
+      }
       setPosting(false);
       if (!r.ok) refused(r);
       else safeGoBack(navigation as never);
       return;
     }
+    // The same post sent again (a restored draft, a second Ask form on the
+    // stack) reuses its once-only id, and the draft keeps it until the post
+    // has landed (CODE-1-05).
+    const fingerprint = postFingerprint(labThread ? `lab:${labThread.key}` : `ask:${category?.slug ?? ''}`, values);
+    const cid = clientIdFor(fingerprint, clientId.current, () => Crypto.randomUUID());
+    clientId.current = cid;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = null;
+    unsaved.current = null;
+    await saveDraft(draftName, askDraftText(values, cid));
     if (labThread) {
-      clientId.current = clientId.current ?? Crypto.randomUUID();
-      const r = await submitPost({ body: values.body.trim(), clientId: clientId.current, labThread });
+      const r = await submitPost({ body: values.body.trim(), clientId: cid, labThread });
       setPosting(false);
       if (!r.ok) {
         refused(r);
         return;
       }
+      unsaved.current = null;
       void clearDraft(draftName);
       const hidden = hiddenOutcomeNote(r.value);
       if (hidden) {
+        forgetClientId(fingerprint);
         clientId.current = null;
         setValues(EMPTY_ASK);
         setError(hidden);
@@ -270,11 +341,10 @@ function AskForm({
       appVersion: Constants.expoConfig?.version ?? 'unknown',
       device: `${Platform.OS} ${String(Platform.Version)}`,
     });
-    clientId.current = clientId.current ?? Crypto.randomUUID();
     const r = await submitPost({
       ...draft,
       topicKind: job ? ('job' as TopicKind) : draft.topicKind,
-      clientId: clientId.current,
+      clientId: cid,
       category: category?.slug,
       labKey: lab ? labKeyOf(lab) : null,
     });
@@ -283,11 +353,13 @@ function AskForm({
       refused(r);
       return;
     }
+    unsaved.current = null;
     void clearDraft(draftName);
     // A post the child-safety screen stopped is in no list, so the thread would
     // open empty: say so here instead.
     const hidden = hiddenOutcomeNote(r.value);
     if (hidden) {
+      forgetClientId(fingerprint);
       clientId.current = null;
       setValues(EMPTY_ASK);
       setError(hidden);
@@ -329,7 +401,7 @@ function AskForm({
           solid
           action={
             refusalNeedsProfile(choices.refusalCode)
-              ? { label: 'MY PROFILE', onPress: () => navigation.navigate('AudioCommunityDirectory', { tab: 'profile' }) }
+              ? { label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }
               : undefined
           }
         >
@@ -405,7 +477,7 @@ function AskForm({
 
         {edit?.suggestion ? (
           <View style={st.sim}>
-            <Text style={st.simHead}>THE CORRECTION YOU ACCEPTED</Text>
+            <Text style={st.simHead}>THE SUGGESTED CORRECTION</Text>
             <Text style={st.simText}>{edit.suggestion}</Text>
           </View>
         ) : null}
@@ -426,7 +498,8 @@ function AskForm({
 
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.btnrow}>
-          <QuietButton label="CANCEL" onPress={() => safeGoBack(navigation as never)} />
+          {/* Off while posting: leaving cannot stop a post that is out (CODE-1-05). */}
+          <QuietButton label="CANCEL" onPress={() => safeGoBack(navigation as never)} disabled={posting} />
           <AmberButton
             label={edit ? 'REPOST' : labThread ? 'POST' : POST_LABEL[form]}
             onPress={post}
@@ -445,7 +518,7 @@ function AskForm({
           title="Choose a category"
           rows={open.map((c) => c.name)}
           onPick={(name) => {
-            setCategory(open.find((c) => c.name === name) ?? category);
+            pickCategory(open.find((c) => c.name === name) ?? category);
             setJob(false);
             setPicking(false);
           }}
@@ -474,6 +547,9 @@ function AskForm({
 }
 
 const hasStarted = (v: AskValues) => Object.values(v).some((x) => x.trim().length > 0);
+
+const CORRECTION_NOT_MARKED =
+  'Your edit was sent, but the correction could not be marked as accepted. It is still open in the thread.';
 
 /** Required on the tap: the lab catalog is not in the start graph. */
 function labNames(): string[] {

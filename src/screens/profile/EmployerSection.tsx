@@ -53,7 +53,7 @@ const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
  */
 const QUEUE_REASON_LABEL: Record<string, string> = {
   'work email not confirmed':
-    'Your work email has not been confirmed yet — open your application on the website and enter the code we emailed you.',
+    'Your work email has not been confirmed yet. Open your application on the website and enter the code we emailed you.',
   'work email is not at the company domain':
     'The work email you gave is not at your company’s own domain.',
   'consumer mailbox provider':
@@ -248,7 +248,7 @@ export function EmployerSection() {
               sent — this screen is the only place the answer appears. */}
           <Text style={styles.body}>
             We could not confirm everything automatically, so a person is looking at your
-            application. Nothing more is needed from you — check back on this screen for the
+            application. Nothing more is needed from you. Check back on this screen for the
             decision.
           </Text>
           {app.queueReasons.length ? (
@@ -313,7 +313,7 @@ export function EmployerSection() {
           // an unhandled promise rejection (2026-09-30 bug pass). Say where to go.
           onPress={() =>
             void Linking.openURL(APPLY_URL).catch(() =>
-              setNote('Couldn’t open the website — visit proaudiotrainingacademy.com/employers/apply in your browser.'),
+              setNote('Couldn’t open the website. Visit proaudiotrainingacademy.com/employers/apply in your browser.'),
             )
           }
           accessibilityRole="link"

@@ -175,6 +175,35 @@ export async function fetchTopics(
   );
 }
 
+/** Most ideas Ideas & Requests reads, so the vote order is over (nearly) all. */
+export const IDEAS_MAX = 500;
+const IDEAS_PAGE = 100;
+
+/**
+ * Every idea, for "sorted by votes": the list is read newest first, so one page
+ * of 100 dropped the most-voted older ideas (bug pass 2026-11-08, CODE-1-21).
+ * Pages until the last one comes back short, up to IDEAS_MAX; one failed page
+ * fails the read (never a list quietly missing ideas). `capped` says the list
+ * stopped at IDEAS_MAX.
+ */
+export async function fetchIdeas(slug: string): Promise<ForumResult<{ topics: ForumTopic[]; capped: boolean }>> {
+  if (sampleForumOn()) return sampleRead(() => ({ topics: data().sampleTopics(slug, 'latest'), capped: false }));
+  const all: ForumTopic[] = [];
+  const seen = new Set<string>();
+  for (let offset = 0; offset < IDEAS_MAX; offset += IDEAS_PAGE) {
+    const r = await fetchTopics(slug, 'latest', IDEAS_PAGE, offset);
+    if (!r.ok) return r;
+    for (const t of r.value) {
+      if (!seen.has(t.id)) {
+        seen.add(t.id);
+        all.push(t);
+      }
+    }
+    if (r.value.length < IDEAS_PAGE) return done({ topics: all, capped: false });
+  }
+  return done({ topics: all, capped: true });
+}
+
 /**
  * The Pro Lounge reads as one feed: one `forum_topics_list(p_group)` call once
  * the server has it, so Top this week ranks across the lounge; before that,
@@ -182,7 +211,7 @@ export async function fetchTopics(
  * feed with a category quietly missing (serverShapes.loungeTopics).
  */
 export async function fetchLoungeTopics(sort: TopicSort): Promise<ForumResult<ForumTopic[]>> {
-  if (sampleForumOn()) return sampleRead(() => data().sampleLounge());
+  if (sampleForumOn()) return sampleRead(() => data().sampleLounge(sort));
   return resultOf(await loungeTopics(call, sort));
 }
 
@@ -258,18 +287,20 @@ export type MyModeration = { notices: ForumNotice[]; appeals: ForumAppeal[] };
 
 /**
  * Edit and Repost from a notice: the whole post, read from its thread, once the
- * notice says which thread (SERVER_GAPS row 2). Null when that is not known or
- * the read failed: the notice's excerpt is used, and the screen says it is
- * only the start.
+ * notice says which thread (SERVER_GAPS row 2). Null when that is not known:
+ * the notice's excerpt is used, and the screen says it is only the start.
+ * 'failed' when the thread is known but could not be read: the screen says so
+ * and nothing opens, because an excerpt edit would treat a topic as a reply
+ * and could not fix its title (bug pass 2026-11-08, CODE-1-17).
  */
 export async function fetchNoticeEdit(
   topicId: string | null,
   postId: string,
-): Promise<{ slug: string; edit: EditTarget } | null> {
+): Promise<{ slug: string; edit: EditTarget } | null | 'failed'> {
   if (!topicId) return null;
   if (sampleForumOn()) return noticeEditFrom(data().sampleThread(topicId), postId);
   const thread = await fetchThread(topicId);
-  return thread.ok ? noticeEditFrom(thread.value, postId) : null;
+  return thread.ok ? noticeEditFrom(thread.value, postId) : 'failed';
 }
 
 export async function fetchMyModeration(): Promise<ForumResult<MyModeration>> {

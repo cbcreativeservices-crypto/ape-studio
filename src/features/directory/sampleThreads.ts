@@ -11,8 +11,17 @@
  *
  * Off in any release build: `sampleDirectoryOn()` needs __DEV__.
  */
-import type { ContactAllowance, ContactThread, ListResult, ReportReason, ThreadMessage } from './api.ts';
+import type {
+  CommunityProfile,
+  ContactAllowance,
+  ContactThread,
+  ListResult,
+  MyProfileLoad,
+  ReportReason,
+  ThreadMessage,
+} from './api.ts';
 import type { InboxRead } from './inboxCounts.ts';
+import { sampleForumOn, subscribeSample } from '../forum/sampleSwitch.ts';
 
 declare const __DEV__: boolean | undefined;
 
@@ -20,11 +29,52 @@ let enabled = false;
 
 export function setSampleDirectory(on: boolean): void {
   enabled = on;
-  if (on) resetSample();
+  // Fresh each time it opens, and nothing kept once the directory closes.
+  resetSample();
+  noteMode();
 }
 
+/**
+ * WHICH WORLD A WRITE WAS QUEUED IN (bug pass 2026-11-08, P1 check). A save
+ * is often SENT a microtask after it is queued: MY PROFILE's save-on-leave
+ * runs after the directory's unmount has already switched the samples off,
+ * so `sampleDirectoryOn()` at send time said "live" and the sample's profile
+ * went to the real `community_profile_save`. `sampleGen()` changes every time
+ * the sample turns on or off; a writer captures it when it QUEUES and drops
+ * the write if it has changed by the time it runs (profileLeave.ts).
+ *
+ * Read lazily as well as on each switch, so a sample state lost any other way
+ * (a dev Fast Refresh re-running the forum switch) still counts as a change.
+ */
+let gen = 0;
+let lastOn = false;
+function noteMode(): void {
+  const on = sampleDirectoryOn();
+  if (on !== lastOn) {
+    lastOn = on;
+    gen += 1;
+  }
+}
+
+export function sampleGen(): number {
+  noteMode();
+  return gen;
+}
+
+// The forum's switch announces each change; flag-only changes (welcome seen,
+// rules accepted) leave on/off alone and so do not count.
+subscribeSample(noteMode);
+
+/**
+ * On while either dev sample is (bug pass 2026-11-08, P1). The forum's
+ * preview (sampleSwitch.ts) opens this same screen, and its MY PROFILE and
+ * REQUESTS tabs and the member sheet then wrote to the LIVE database: a chip
+ * tap saved over the signed-in account's real community profile, and SEND A
+ * CONTACT REQUEST / BLOCK sent the sample's made-up tokens to the server.
+ * One switch for the whole directory, so a sample can never write live.
+ */
 export function sampleDirectoryOn(): boolean {
-  return typeof __DEV__ !== 'undefined' && __DEV__ === true && enabled;
+  return typeof __DEV__ !== 'undefined' && __DEV__ === true && (enabled || sampleForumOn());
 }
 
 const ago = (hours: number) => new Date(Date.now() - hours * 3600_000).toISOString();
@@ -127,6 +177,7 @@ function resetSample(): void {
   threads = seedThreads();
   messages = seedMessages();
   nextMsg = 100;
+  profile = null;
 }
 
 const ok = { ok: true as const };
@@ -157,6 +208,110 @@ export function sampleBlock(requestId: string): { ok: true } {
 }
 
 export function sampleReport(_input: { reason: ReportReason }): { ok: true } {
+  return ok;
+}
+
+/** The member sheet's SEND A CONTACT REQUEST: nothing leaves the phone. */
+export function sampleContactRequest(_toToken: string, _purpose: string, _message: string): { ok: true } {
+  return ok;
+}
+
+/** The member sheet's BLOCK (a token, not a thread). */
+export function sampleBlockMember(_token: string, _on: boolean): { ok: true } {
+  return ok;
+}
+
+/* ── SAMPLE "MY PROFILE" (bug pass 2026-11-08, P1) ─────────────────────────
+ * The editor and the setup guide save every chip tap. In the sample they save
+ * HERE, in memory, so the guide can be walked end to end without touching the
+ * signed-in account's real community profile. Starts empty (the guide shows),
+ * and is dropped whenever the sample opens or closes. */
+let profile: CommunityProfile | null = null;
+
+const EMPTY: CommunityProfile = {
+  displayName: '',
+  about: '',
+  countryCode: '',
+  region: '',
+  workPref: null,
+  published: false,
+  discoverable: false,
+  contactEnabled: false,
+  adultConfirmed: false,
+  needsIdentityReview: false,
+  publicToken: null,
+  primaryArea: null,
+  areas: [],
+  specialties: [],
+  roles: [],
+  openTo: [],
+  languages: [],
+  featuredCredentialIds: [],
+};
+
+const copy = (p: CommunityProfile): CommunityProfile => ({
+  ...p,
+  areas: [...p.areas],
+  specialties: [...p.specialties],
+  roles: [...p.roles],
+  openTo: [...p.openTo],
+  languages: [...p.languages],
+  featuredCredentialIds: [...p.featuredCredentialIds],
+});
+
+export function sampleMyProfile(): MyProfileLoad {
+  return profile ? { status: 'ok', profile: copy(profile) } : { status: 'none' };
+}
+
+/** The fields `community_profile_save` writes; the switches are not among them. */
+export function sampleSaveProfile(p: CommunityProfile): { ok: true } {
+  const cur = profile ?? EMPTY;
+  profile = copy({
+    ...cur,
+    displayName: p.displayName.trim(),
+    about: p.about,
+    countryCode: p.countryCode,
+    region: p.region,
+    workPref: p.workPref,
+    primaryArea: p.primaryArea,
+    areas: p.areas,
+    specialties: p.specialties,
+    roles: p.roles,
+    openTo: p.openTo,
+    languages: p.languages,
+    needsIdentityReview: false,
+  });
+  return ok;
+}
+
+export function sampleSetFeatured(ids: string[]): { ok: true } {
+  profile = copy({ ...(profile ?? EMPTY), featuredCredentialIds: ids });
+  return ok;
+}
+
+export function samplePublish(on: boolean, adult: boolean): { ok: true } | { ok: false; error: string } {
+  const cur = profile ?? EMPTY;
+  if (on && (!cur.displayName.trim() || !cur.primaryArea || !cur.roles.length)) {
+    return { ok: false, error: 'Add a public display name, one primary area and How I’m Involved before publishing.' };
+  }
+  profile = copy({
+    ...cur,
+    published: on,
+    adultConfirmed: cur.adultConfirmed || adult,
+    publicToken: on ? 'sample-me' : cur.publicToken,
+    discoverable: on ? cur.discoverable : false,
+    contactEnabled: on ? cur.contactEnabled : false,
+  });
+  return ok;
+}
+
+export function sampleSetSwitch(key: 'discoverable' | 'contactEnabled', on: boolean): { ok: true } {
+  profile = copy({ ...(profile ?? EMPTY), [key]: on });
+  return ok;
+}
+
+export function sampleDeleteProfile(): { ok: true } {
+  profile = null;
   return ok;
 }
 

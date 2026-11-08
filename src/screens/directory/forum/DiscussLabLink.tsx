@@ -27,7 +27,10 @@ export function DiscussLabLink(props: Props) {
 }
 
 function DiscussKey({ labTitle, lab }: Props) {
-  const navigation = useNavigation() as unknown as { navigate: (route: string, params?: object) => void };
+  const navigation = useNavigation() as unknown as {
+    navigate: (route: string, params?: object) => void;
+    isFocused?: () => boolean;
+  };
   const route = useRoute();
   const [busy, setBusy] = useState(false);
 
@@ -40,6 +43,9 @@ function DiscussKey({ labTitle, lab }: Props) {
     setBusy(true);
     const r = await fetchLabThread(which.key);
     setBusy(false);
+    // Left the lab while the read was out: never pull the person into the
+    // forum from wherever they went (bug pass 2026-11-08, CODE-1-32).
+    if (navigation.isFocused && !navigation.isFocused()) return;
     if (!r.ok) {
       notify('Discuss this lab', r.error);
       return;

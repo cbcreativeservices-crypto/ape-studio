@@ -519,6 +519,8 @@ export function RequestsView({
   // hiding real pending requests behind what read as an empty inbox. Loading /
   // error+Retry / empty are now three distinct states.
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  /** Counts failed reads, so a link waiting on one can tell it failed. */
+  const [loadFails, setLoadFails] = useState(0);
   const [open, setOpen] = useState<ContactThread | null>(null);
 
   // NEWEST LOAD WINS (hunt 6, 2026-10-03; pattern P2). Reloads overlap: a
@@ -534,6 +536,7 @@ export function RequestsView({
     if (ticket !== loadTicket.current) return;
     if (!r.ok) {
       setLoadErr(r.error);
+      setLoadFails((n) => n + 1);
       return;
     }
     setLoadErr(null);
@@ -575,6 +578,20 @@ export function RequestsView({
     freshFor.current = null;
     onOpenedRef.current?.();
   }, [openThreadId, threads, load]);
+
+  // THE RE-READ FOR A LINK FAILED (bug pass 2026-11-08, CODE-1-27). `threads`
+  // did not change, so the effect above never ran again: the link was never
+  // handed back, and tapping the same alert again set the same id, which is
+  // no change, so nothing happened at all. Hand it back now: the stale-list
+  // banner says the read failed, and the next tap re-reads.
+  const seenFails = useRef(0);
+  useEffect(() => {
+    if (loadFails === seenFails.current) return;
+    seenFails.current = loadFails;
+    if (threads === null || !openThreadId || freshFor.current !== openThreadId) return;
+    freshFor.current = null;
+    onOpenedRef.current?.();
+  }, [loadFails, threads, openThreadId]);
 
   // One answer at a time, until the list has reloaded (bug hunt 2026-09-29):
   // the buttons stayed live while the answer was out, so a double-tap sent
@@ -703,7 +720,11 @@ export function RequestsView({
             {/* A REFRESH that failed after a good first load: the list below is
                 stale, so say so rather than letting it look current. */}
             {loadErr ? (
-              <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner>
+              <>
+                <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner>
+                {/* A way to try again from here (CODE-1-27). */}
+                <RetryOrSignIn message={loadErr} onRetry={() => void load()} />
+              </>
             ) : null}
             {threads.length === 0 ? (
               <EmptyState

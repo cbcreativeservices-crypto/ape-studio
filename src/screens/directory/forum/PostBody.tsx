@@ -20,14 +20,17 @@ export const PostBody = memo(function PostBody({
   text,
   names,
   style,
+  terms = true,
 }: {
   text: string;
   /** People in this thread, whose @mentions are drawn. */
   names: string[];
   style: StyleProp<TextStyle>;
+  /** False: no glossary links (the Academy's announcements, UI-1-03). */
+  terms?: boolean;
 }) {
   const open = useGlossaryOpener();
-  const segs = useMemo(() => linkifyGlossary(text), [text]);
+  const segs = useMemo(() => (terms ? linkifyGlossary(text) : [{ text }]), [terms, text]);
   return (
     <Text style={style}>
       {segs.map((s, i) =>

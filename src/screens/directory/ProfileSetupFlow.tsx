@@ -271,10 +271,12 @@ export function ProfileSetupFlow({
 
         {step === 'review' ? (
           <View style={{ gap: 12 }}>
-            <Summary title="Areas" values={p.areas.map((s) => label('areas', s))} />
-            <Summary title="How you’re involved" values={p.roles.map((s) => label('roles', s))} />
+            {/* `required` = in `gaps`, so publishing waits for it (CODE-1-13):
+                these three said "optional" over a banner saying they are needed. */}
+            <Summary title="Areas" required values={p.areas.map((s) => label('areas', s))} />
+            <Summary title="How you’re involved" required values={p.roles.map((s) => label('roles', s))} />
             <Summary title="Open to" values={p.openTo.map((s) => label('openTo', s))} />
-            <Summary title="Shown as" values={p.displayName ? [p.displayName] : []} />
+            <Summary title="Shown as" required values={p.displayName.trim() ? [p.displayName.trim()] : []} />
             {p.about.trim() ? <Summary title="About" values={[p.about.trim()]} /> : null}
 
             {gaps.length ? (
@@ -356,12 +358,17 @@ function ProgressDots({ index, total }: { index: number; total: number }) {
   );
 }
 
-function Summary({ title, values }: { title: string; values: string[] }) {
+/** What an empty review row says: a field publishing needs says so. */
+export function summaryEmpty(required: boolean): string {
+  return required ? 'Not set yet. Needed to publish.' : 'Not set yet. Optional.';
+}
+
+function Summary({ title, values, required = false }: { title: string; values: string[]; required?: boolean }) {
   return (
     <View style={st.sum}>
       <Text style={st.sumTitle}>{title.toUpperCase()}</Text>
       <Text style={[st.sumBody, !values.length && st.sumEmpty]}>
-        {values.length ? values.join(' · ') : 'Not set — optional'}
+        {values.length ? values.join(' · ') : summaryEmpty(required)}
       </Text>
     </View>
   );

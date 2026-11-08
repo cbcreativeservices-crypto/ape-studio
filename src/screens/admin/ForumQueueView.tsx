@@ -10,7 +10,7 @@
  * the same account_set_standing as the rest of this screen, each behind a
  * question, and only the owner's hand: the AI never confirms a ban.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -70,6 +70,7 @@ import {
   StatusStamp,
   type MenuItem,
 } from '../directory/forum/forumBits';
+import { createPopupTurns, offersRetry, trackedCapNote } from './forumQueueFaces';
 
 type Section = 'queue' | 'appeals' | 'tracked';
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
@@ -83,6 +84,16 @@ const SECTIONS: { key: Section; label: string }[] = [
 export function ForumQueueView() {
   const [section, setSection] = useState<Section>('queue');
   const usage = useForumRead<AiUsage | null>(fetchAiUsage, []);
+  // Not the owner: the refusal is the whole page. No AI line that "could not
+  // be read", no tabs, no RETRY (UI-1-14).
+  if (usage.face === 'unreadable' && !offersRetry(usage.code)) {
+    return (
+      <ScrollView contentContainerStyle={st.body}>
+        <SampleStamp />
+        <Failed error={usage.error} code={usage.code} onRetry={() => void usage.reload()} />
+      </ScrollView>
+    );
+  }
   return (
     <ScrollView contentContainerStyle={st.body} keyboardShouldPersistTaps="handled">
       <SampleStamp />
@@ -110,14 +121,17 @@ export function ForumQueueView() {
   );
 }
 
-/** A read that failed or was refused: never "nothing waiting". */
-function Failed({ error, onRetry }: { error: string | null; onRetry: () => void }) {
+/** A read that failed or was refused: never "nothing waiting". A refusal
+ *  offers no RETRY: it can never succeed for this account (UI-1-14). */
+function Failed({ error, code, onRetry }: { error: string | null; code: string | null; onRetry: () => void }) {
   return (
     <View style={st.warn}>
       <Text style={st.warnText}>{error}</Text>
-      <Pressable onPress={onRetry} hitSlop={8} accessibilityRole="button" accessibilityLabel="Retry">
-        <Text style={st.retry}>RETRY</Text>
-      </Pressable>
+      {offersRetry(code) ? (
+        <Pressable onPress={onRetry} hitSlop={8} accessibilityRole="button" accessibilityLabel="Retry">
+          <Text style={st.retry}>RETRY</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -258,7 +272,7 @@ function QueueList() {
     : [];
 
   if (read.face === 'loading') return <ForumLoading label="Loading the queue…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   if (read.value.length === 0) return <Text style={st.muted}>Nothing is waiting for you.</Text>;
 
   return (
@@ -348,28 +362,48 @@ function AppealList() {
   // it (SERVER_GAPS row 33). A failed read leaves it unknown: OVERTURN waits.
   const queue = useForumRead<QueueItem[]>(fetchQueue, []);
   const stateOf = (postId: string) => queue.value?.find((q) => q.postId === postId && q.postState)?.postState ?? null;
+  // `deciding` stays set while the popup fades out, so its title never flips
+  // to the other outcome (UI-1-13); `visible` is what opens and closes it.
   const [deciding, setDeciding] = useState<{ appeal: AdminAppeal; outcome: 'upheld' | 'overturned' } | null>(null);
+  const [visible, setVisible] = useState(false);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  // A save's answer lands only on the popup that sent it (CODE-1-15).
+  const turns = useRef(createPopupTurns()).current;
 
   const open = (appeal: AdminAppeal, outcome: 'upheld' | 'overturned') => {
+    turns.open();
     setNote('');
     setError(null);
     setDeciding({ appeal, outcome });
+    setVisible(true);
+  };
+  const close = () => {
+    turns.close();
+    setVisible(false);
   };
   const save = useLatchedPress(async () => {
-    if (!deciding) return;
-    const r = await decideAppeal(deciding.appeal.appealId, deciding.outcome, note.trim() || undefined);
-    if (!r.ok) {
-      setError(r.error);
-      return;
+    const turn = turns.current();
+    if (turn === null || !deciding) return;
+    const { appeal, outcome } = deciding;
+    setSaving(true);
+    try {
+      const r = await decideAppeal(appeal.appealId, outcome, note.trim() || undefined);
+      if (r.ok) read.patch((rows) => rows.filter((a) => a.appealId !== appeal.appealId));
+      if (!turns.isOpen(turn)) return;
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      close();
+    } finally {
+      setSaving(false);
     }
-    read.patch((rows) => rows.filter((a) => a.appealId !== deciding.appeal.appealId));
-    setDeciding(null);
   });
 
   if (read.face === 'loading') return <ForumLoading label="Loading appeals…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   if (read.value.length === 0) return <Text style={st.muted}>No appeals are waiting.</Text>;
 
   return (
@@ -415,7 +449,7 @@ function AppealList() {
         </View>
         );
       })}
-      <Popup visible={!!deciding} onClose={() => setDeciding(null)} label="Decide this appeal">
+      <Popup visible={visible} onClose={close} label="Decide this appeal">
         <View style={st.popup}>
           <PopupScroll>
             <Text accessibilityRole="header" style={st.popupTitle}>
@@ -435,8 +469,8 @@ function AppealList() {
             />
             {error ? <Text style={st.error}>{error}</Text> : null}
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={() => setDeciding(null)} />
-              <AmberButton label="SAVE" onPress={save} style={st.grow} />
+              <QuietButton label="CANCEL" onPress={close} />
+              <AmberButton label="SAVE" onPress={save} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
         </View>
@@ -458,45 +492,76 @@ const STATUS_WORD: Record<TrackedStatus, string> = {
 
 function TrackedList() {
   const read = useForumRead<ForumTopic[]>(fetchTracked, []);
+  // `topic` stays set while the popup fades out; `visible` opens and closes it.
   const [topic, setTopic] = useState<ForumTopic | null>(null);
+  const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState<TrackedStatus>('under_review');
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  // An answer lands only on the popup that sent it: topic A's PIN never shows
+  // on topic B, and A's save never closes B (CODE-1-26).
+  const turns = useRef(createPopupTurns()).current;
 
   const open = (t: ForumTopic) => {
+    turns.open();
     setTopic(t);
     setStatus(t.trackedStatus ?? 'under_review');
     setReason('');
     setError(null);
+    setVisible(true);
+  };
+  const close = () => {
+    turns.close();
+    setVisible(false);
   };
   const problem = trackedProblem(status, reason, topic?.trackedStatus ?? null);
   const save = useLatchedPress(async () => {
-    if (!topic || problem) return;
-    const r = await setTrackedStatus(topic.id, status, reason.trim() || undefined);
-    if (!r.ok) {
-      setError(r.error);
-      return;
+    const turn = turns.current();
+    if (turn === null || !topic || problem) return;
+    const id = topic.id;
+    // SAVE, PIN and LOCK share one error line: each try starts it clean, so an
+    // older failure never sits under a success (CODE-1-26).
+    setError(null);
+    setSaving(true);
+    try {
+      const r = await setTrackedStatus(id, status, reason.trim() || undefined);
+      if (r.ok) read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, trackedStatus: status } : t)));
+      if (!turns.isOpen(turn)) return;
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      close();
+    } finally {
+      setSaving(false);
     }
-    read.patch((rows) => rows.map((t) => (t.id === topic.id ? { ...t, trackedStatus: status } : t)));
-    setTopic(null);
   });
   const flag = useLatchedPress(async (flags: { pinned?: boolean; locked?: boolean }) => {
-    if (!topic) return;
-    const r = await setTopicFlags(topic.id, flags);
-    if (!r.ok) {
-      setError(r.error);
+    const turn = turns.current();
+    if (turn === null || !topic) return;
+    const id = topic.id;
+    setError(null);
+    const r = await setTopicFlags(id, flags);
+    if (r.ok) {
+      read.patch((rows) => rows.map((t) => (t.id === id ? { ...t, ...flags } : t)));
+      // Whatever popup shows THIS topic now (even one reopened while the PIN
+      // was in flight) shows the answer; another topic's popup never does.
+      setTopic((t) => (t && t.id === id ? { ...t, ...flags } : t));
       return;
     }
-    read.patch((rows) => rows.map((t) => (t.id === topic.id ? { ...t, ...flags } : t)));
-    setTopic((t) => (t ? { ...t, ...flags } : t));
+    // Only the error line is the sending popup's alone.
+    if (turns.isOpen(turn)) setError(r.error);
   });
 
   if (read.face === 'loading') return <ForumLoading label="Loading tracked topics…" />;
-  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} onRetry={() => void read.reload()} />;
+  if (read.face === 'unreadable' || !read.value) return <Failed error={read.error} code={read.code} onRetry={() => void read.reload()} />;
   if (read.value.length === 0) return <Text style={st.muted}>No ideas, corrections or bug reports yet.</Text>;
+  const capNote = trackedCapNote(read.value);
 
   return (
     <>
+      {capNote ? <Text style={st.meta}>{capNote}</Text> : null}
       {read.value.map((t) => {
         const face = trackedFace(t.trackedStatus);
         return (
@@ -517,7 +582,7 @@ function TrackedList() {
           </Pressable>
         );
       })}
-      <Popup visible={!!topic} onClose={() => setTopic(null)} label="Set the status">
+      <Popup visible={visible} onClose={close} label="Set the status">
         <View style={st.popup}>
           <PopupScroll>
             <Text accessibilityRole="header" style={st.popupTitle}>
@@ -557,8 +622,8 @@ function TrackedList() {
               <Act label={topic?.locked ? 'UNLOCK' : 'LOCK'} onPress={() => flag({ locked: !topic?.locked })} />
             </View>
             <View style={st.popupButtons}>
-              <QuietButton label="CANCEL" onPress={() => setTopic(null)} />
-              <AmberButton label="SAVE" onPress={save} disabled={!!problem} style={st.grow} />
+              <QuietButton label="CANCEL" onPress={close} />
+              <AmberButton label="SAVE" onPress={save} disabled={!!problem} busy={saving} style={st.grow} />
             </View>
           </PopupScroll>
         </View>

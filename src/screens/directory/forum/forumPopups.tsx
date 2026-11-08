@@ -2,7 +2,7 @@
  * The forum's three popups that write: accept the community rules, report a
  * post, and appeal a decision. Centred over the dim, never in the page flow.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLatchedPress } from '../../../lib/latch';
 import { fonts } from '../../../theme/tokens';
@@ -80,16 +80,32 @@ export function ReportPopup(props: ReportProps) {
   );
 }
 
+/** True while the card is on screen: an answer that lands after the popup
+ *  closed (or another post's report opened) does nothing (CODE-1-20). */
+function useMounted() {
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  return mounted;
+}
+
 function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportProps & { postId: string }) {
   const [reason, setReason] = useState<string | null>(null);
-  const [alsoBlock, setAlsoBlock] = useState(false);
+  // On by default, as the shared chip's rule says (UI-1-11).
+  const [alsoBlock, setAlsoBlock] = useState(canBlock);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const mounted = useMounted();
 
   const send = useLatchedPress(async () => {
     if (!reason) return;
     setBusy(true);
     const r = await reportPost(postId, reason);
+    if (!mounted.current) return;
     setBusy(false);
     if (r.ok) onDone({ alsoBlock });
     else setError(r.error);
@@ -110,7 +126,7 @@ function ReportCard({ postId, authorName, canBlock, onClose, onDone }: ReportPro
         {canBlock ? <AlsoBlockChip on={alsoBlock} onToggle={() => setAlsoBlock((b) => !b)} /> : null}
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.buttons}>
-          <QuietButton label="CANCEL" onPress={onClose} />
+          <QuietButton label="CANCEL" onPress={onClose} disabled={busy} />
           <AmberButton label="SEND REPORT" onPress={send} busy={busy} disabled={!reason} style={st.grow} />
         </View>
       </PopupScroll>
@@ -132,11 +148,13 @@ function AppealCard({ postId, onClose, onDone }: AppealProps & { postId: string 
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const mounted = useMounted();
 
   const send = useLatchedPress(async () => {
     if (!text.trim()) return;
     setBusy(true);
     const r = await appealPost(postId, text.trim());
+    if (!mounted.current) return;
     setBusy(false);
     if (r.ok) onDone();
     else setError(r.error);
@@ -163,7 +181,7 @@ function AppealCard({ postId, onClose, onDone }: AppealProps & { postId: string 
         />
         {error ? <Text style={st.error}>{error}</Text> : null}
         <View style={st.buttons}>
-          <QuietButton label="CANCEL" onPress={onClose} />
+          <QuietButton label="CANCEL" onPress={onClose} disabled={busy} />
           <AmberButton label="SEND APPEAL" onPress={send} busy={busy} disabled={!text.trim()} style={st.grow} />
         </View>
       </PopupScroll>

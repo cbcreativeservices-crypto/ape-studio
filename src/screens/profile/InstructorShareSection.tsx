@@ -35,10 +35,19 @@ import {
 } from '../../features/instructor/shareRules';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { fetchMyRegistryName } from '../../features/profile/api';
-import { useLatchedPress } from '../../lib/latch';
+import { createInFlightLatch, useLatchedPress } from '../../lib/latch';
 import { colors, fonts } from '../../theme/tokens';
 
-type Found = { instructorName: string; school: string | null };
+/** `code` is the code that was LOOKED UP: the share goes to the instructor
+ *  whose name the popup showed, never to whatever the field says by the time
+ *  SHARE MY PROGRESS is tapped (bug pass 1, CODE-1-03). */
+type Found = { code: string; instructorName: string; school: string | null };
+
+/** Shown on the button while the share write is out; CANCEL is held until the
+ *  server has answered, because a cancel then could not stop it (CODE-1-25). */
+const SHARING_LABEL = 'SHARING…';
+/** Shown on FIND while the lookup is out. */
+const FINDING_LABEL = 'FINDING…';
 
 export function InstructorShareSection() {
   /** null = the first read is still out. */
@@ -47,6 +56,18 @@ export function InstructorShareSection() {
   const [code, setCode] = useState('');
   const [found, setFound] = useState<Found | null>(null);
   const [popupError, setPopupError] = useState<string | null>(null);
+  /** A lookup is out: the code field is locked so it cannot drift from the
+   *  code being looked up. */
+  const [finding, setFinding] = useState(false);
+  /** The share write is out: nothing in the popup can be tapped but the wait. */
+  const [sharing, setSharing] = useState(false);
+  /** Bumped each time the popup opens or closes, so a lookup that lands after
+   *  CANCEL (or in a later popup) shows nothing. */
+  const popupTicket = useRef(0);
+  /** One FIND latch per popup: a lookup still out from a cancelled popup must
+   *  not hold FIND (or the field) in the next one. Its answer is dropped by
+   *  `popupTicket`. */
+  const [findLatch, setFindLatch] = useState(createInFlightLatch);
 
   // Newest read wins; a failed read re-asks when Profile (a tab, so it stays
   // mounted) is focused again — "reopen Profile" has to work.
@@ -72,12 +93,21 @@ export function InstructorShareSection() {
   );
 
   const openPopup = () => {
+    popupTicket.current++;
+    // A new popup is usable at once, even while an old lookup is still out.
+    setFinding(false);
+    setFindLatch(createInFlightLatch());
     setCode('');
     setFound(null);
     setPopupError(null);
     setPopupOpen(true);
   };
-  const closePopup = () => setPopupOpen(false);
+  const closePopup = () => {
+    // A share already sent cannot be called back, so CANCEL waits for it.
+    if (sharing) return;
+    popupTicket.current++;
+    setPopupOpen(false);
+  };
 
   const onFind = useLatchedPress(async () => {
     setPopupError(null);
@@ -85,25 +115,43 @@ export function InstructorShareSection() {
       setPopupError(SHARE_COPY.codeShape);
       return;
     }
-    const r = await lookupInstructor(code);
-    if (r.ok) setFound({ instructorName: r.instructorName, school: r.school });
-    else setPopupError(r.error);
-  });
+    const asked = code;
+    const mine = popupTicket.current;
+    setFinding(true);
+    try {
+      const r = await lookupInstructor(code);
+      if (mine !== popupTicket.current) return; // cancelled, or a newer popup
+      if (r.ok) setFound({ code: asked, instructorName: r.instructorName, school: r.school });
+      else setPopupError(r.error);
+    } finally {
+      // Only this popup's own lookup clears its busy state.
+      if (mine === popupTicket.current) setFinding(false);
+    }
+  }, findLatch);
 
   const onShare = useLatchedPress(async () => {
+    if (!found) return;
+    // The code that was looked up and confirmed, not the field's text now.
+    const code = found.code;
     setPopupError(null);
-    const r = await shareWithInstructor(code);
-    if (r.ok) {
-      // "On" only from the row the server returned.
-      ticket.current++;
-      failed.current = false;
-      setShare({ state: 'on', share: r.share });
-      setPopupOpen(false);
-      return;
+    setSharing(true);
+    try {
+      const r = await shareWithInstructor(code);
+      if (r.ok) {
+        // "On" only from the row the server returned.
+        ticket.current++;
+        failed.current = false;
+        setShare({ state: 'on', share: r.share });
+        popupTicket.current++;
+        setPopupOpen(false);
+        return;
+      }
+      setPopupError(r.error);
+      // A write we could not confirm: show what the server now says.
+      void load();
+    } finally {
+      setSharing(false);
     }
-    setPopupError(r.error);
-    // A write we could not confirm: show what the server now says.
-    void load();
   });
 
   const stop = useLatchedPress(async () => {
@@ -232,22 +280,28 @@ export function InstructorShareSection() {
                 {popupError ? <Text style={styles.popupError}>{popupError}</Text> : null}
                 <Pressable
                   onPress={onShare}
+                  disabled={sharing}
                   style={styles.cta}
                   accessibilityRole="button"
-                  accessibilityLabel={`Share my progress with ${found.instructorName}`}
+                  accessibilityState={{ busy: sharing, disabled: sharing }}
+                  accessibilityLabel={
+                    sharing ? 'Sharing your progress' : `Share my progress with ${found.instructorName}`
+                  }
                 >
-                  <Text style={styles.ctaText}>{SHARE_COPY.share}</Text>
+                  <Text style={styles.ctaText}>{sharing ? SHARING_LABEL : SHARE_COPY.share}</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => {
                     setFound(null);
                     setPopupError(null);
                   }}
+                  disabled={sharing}
                   hitSlop={8}
                   accessibilityRole="button"
+                  accessibilityState={{ disabled: sharing }}
                   accessibilityLabel="Use a different code"
                 >
-                  <Text style={styles.dismiss}>{SHARE_COPY.differentCode}</Text>
+                  <Text style={[styles.dismiss, sharing && styles.held]}>{SHARE_COPY.differentCode}</Text>
                 </Pressable>
               </>
             ) : (
@@ -259,6 +313,7 @@ export function InstructorShareSection() {
                 <TextInput
                   style={styles.input}
                   value={code}
+                  editable={!finding}
                   onChangeText={(t) => {
                     setCode(t);
                     setPopupError(null);
@@ -273,13 +328,27 @@ export function InstructorShareSection() {
                   accessibilityLabel="Instructor code"
                 />
                 {popupError ? <Text style={styles.popupError}>{popupError}</Text> : null}
-                <Pressable onPress={onFind} style={styles.cta} accessibilityRole="button" accessibilityLabel="Find my instructor">
-                  <Text style={styles.ctaText}>{SHARE_COPY.lookUp}</Text>
+                <Pressable
+                  onPress={onFind}
+                  disabled={finding}
+                  style={styles.cta}
+                  accessibilityRole="button"
+                  accessibilityState={{ busy: finding, disabled: finding }}
+                  accessibilityLabel={finding ? 'Finding your instructor' : 'Find my instructor'}
+                >
+                  <Text style={styles.ctaText}>{finding ? FINDING_LABEL : SHARE_COPY.lookUp}</Text>
                 </Pressable>
               </>
             )}
-            <Pressable onPress={closePopup} hitSlop={8} accessibilityRole="button" accessibilityLabel="Cancel">
-              <Text style={styles.dismiss}>{SHARE_COPY.cancel}</Text>
+            <Pressable
+              onPress={closePopup}
+              disabled={sharing}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: sharing }}
+              accessibilityLabel="Cancel"
+            >
+              <Text style={[styles.dismiss, sharing && styles.held]}>{SHARE_COPY.cancel}</Text>
             </Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -348,4 +417,5 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
+  held: { opacity: 0.4 },
 });

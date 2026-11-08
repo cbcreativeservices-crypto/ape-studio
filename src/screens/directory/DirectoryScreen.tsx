@@ -323,19 +323,18 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
           )}
           {/* M18 (2026-09-07): registered users had NO way into the community
               directory (the only CTA was dead in the guest branch). Give them a
-              working button here. While the community is switched off it opens
-              Profile, where the Registry name and the listing switch live, so
-              the words on this screen stay true (report item 7). popTo, not
-              navigate: navigate('Main') would push a second tab shell. */}
+              working button here. It opens Profile, where the Registry name and
+              the listing switch live, so the words on this screen stay true
+              (report item 7). With the community switched ON it opened the
+              community's DIRECTORY search instead, where neither lives and the
+              hint above ("Add your Registry name") could not be done (bug pass
+              2026-11-08, CODE-1-10). The community is reached from Profile.
+              popTo, not navigate: navigate('Main') would push a second tab shell. */}
           <Pressable
             style={styles.registryBtn}
-            onPress={() =>
-              COMMUNITY_VISIBLE
-                ? (navigation as any).navigate('AudioCommunityDirectory')
-                : (navigation as any).popTo('Main', { screen: 'Profile' })
-            }
+            onPress={() => (navigation as any).popTo('Main', { screen: 'Profile' })}
             accessibilityRole="button"
-            accessibilityLabel={COMMUNITY_VISIBLE ? 'Set up my community directory profile' : 'Set up my profile'}
+            accessibilityLabel="Set up my profile"
           >
             <Text style={styles.registryBtnText}>SET UP MY PROFILE ›</Text>
             {/* The directory's REQUESTS waiting behind this button (owner

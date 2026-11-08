@@ -428,7 +428,127 @@ export function askProblem(form: AskFormKind, v: AskValues): string | null {
     if (!v.reason.trim()) return 'Say why it should change.';
     if (!v.source.trim()) return 'Add a source.';
   }
+  // Each box stops at BODY_MAX, but a guided question or a correction is joined
+  // into ONE body, and the server refuses a body past BODY_MAX (bug pass
+  // 2026-11-08, CODE-1-19 / UI-1-04): say so before POST, with how much to cut.
+  if (form === 'question' || form === 'glossary') {
+    const over = topicFrom(form, v).body.length - BODY_MAX;
+    if (over > 0) {
+      return `Your post is too long. Shorten it by ${over.toLocaleString('en-US')} ${over === 1 ? 'character' : 'characters'}.`;
+    }
+  }
   return null;
+}
+
+/**
+ * Switching category can change the form (a question to a bug report). The
+ * text already typed moves into the new form's main box, so nothing is dropped
+ * where the member cannot see it (bug pass 2026-11-08, UI-1-02).
+ */
+export function carryAskValues(from: AskFormKind, to: AskFormKind, v: AskValues): AskValues {
+  if (from === to) return v;
+  // The boxes each form has, and the one its words move into.
+  const boxes: Record<AskFormKind, (keyof AskValues)[]> = {
+    question: ['trying', 'gear', 'tried'],
+    discussion: ['body'],
+    idea: ['body'],
+    bug: ['body'],
+    glossary: ['term', 'current', 'proposed', 'reason', 'source'],
+  };
+  const main: Record<AskFormKind, keyof AskValues> = {
+    question: 'trying',
+    discussion: 'body',
+    idea: 'body',
+    bug: 'body',
+    // A correction's free-text box: the words typed elsewhere say why.
+    glossary: 'reason',
+  };
+  const shared = (k: keyof AskValues) => boxes[to].includes(k);
+  const moving = boxes[from].filter((k) => !shared(k));
+  const text = moving.map((k) => v[k].trim()).filter(Boolean).join('\n\n');
+  const target = main[to];
+  if (!text || v[target].trim()) return v;
+  const next = { ...v, [target]: text };
+  for (const k of moving) next[k] = '';
+  return next;
+}
+
+/**
+ * An Ask draft as kept on the phone. A post that was sent but may not have
+ * answered yet keeps its once-only id with it, so the same draft posted again
+ * (after leaving mid-post, or from a second Ask form) lands once (bug pass
+ * 2026-11-08, CODE-1-05).
+ */
+export function askDraftText(v: AskValues, clientId: string | null): string {
+  if (!Object.values(v).some((x) => x.trim())) return '';
+  return JSON.stringify(clientId ? { ...v, clientId } : v);
+}
+
+/**
+ * A reply draft as kept on the phone: the words, what they quote or correct,
+ * and, while it is being sent, its once-only id. A reply resent after leaving
+ * (or after the app restarted) is then the SAME reply, quote and all, and
+ * lands once (bug pass 2026-11-08, CODE-1-05 a/b). A draft with nothing but
+ * words is kept as plain text, as before, and plain text reads back as words.
+ */
+export type ReplyDraft = {
+  body: string;
+  quote: { postId: string; excerpt: string; name: string } | null;
+  correcting: { postId: string; name: string } | null;
+  clientId: string | null;
+};
+
+export function replyDraftText(d: ReplyDraft): string {
+  if (!d.body.trim()) return '';
+  if (!d.quote && !d.correcting && !d.clientId) return d.body;
+  return JSON.stringify({ reply: 1, body: d.body, quote: d.quote, correcting: d.correcting, clientId: d.clientId });
+}
+
+export function replyDraftRead(stored: string): ReplyDraft {
+  const plain: ReplyDraft = { body: stored, quote: null, correcting: null, clientId: null };
+  if (!stored.startsWith('{')) return plain;
+  try {
+    const raw = JSON.parse(stored) as Record<string, unknown>;
+    if (!raw || raw.reply !== 1 || typeof raw.body !== 'string') return plain;
+    const q = raw.quote as Record<string, unknown> | null;
+    const c = raw.correcting as Record<string, unknown> | null;
+    const s = (x: unknown) => (typeof x === 'string' ? x : '');
+    return {
+      body: raw.body,
+      quote: q && typeof q.postId === 'string' ? { postId: q.postId, excerpt: s(q.excerpt), name: s(q.name) } : null,
+      correcting: c && typeof c.postId === 'string' ? { postId: c.postId, name: s(c.name) } : null,
+      clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null,
+    };
+  } catch {
+    return plain;
+  }
+}
+
+/**
+ * The Academy's own account (the founder, who reads appeals and posts every
+ * announcement) cannot be reported or blocked by members (owner rule
+ * 2026-11-08). `academy: true` in the author JSON arrives once the Comp A
+ * package 2026-11-08_FOR_COMP_A_FOUNDER_PROTECT is applied (SERVER_GAPS row
+ * 35, NOT applied yet). Until then nobody is marked and the options still
+ * show; after it, the server is the guard too (forum_report and
+ * forum_block_author refuse with not_allowed).
+ */
+export function canReportOrBlock(author: Pick<ForumAuthor, 'academy'>): boolean {
+  return !author.academy;
+}
+
+export function askDraftRead(stored: string): { values: Partial<AskValues>; clientId: string | null } | null {
+  try {
+    const raw = JSON.parse(stored) as Record<string, unknown>;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const values: Partial<AskValues> = {};
+    for (const k of Object.keys(EMPTY_ASK) as (keyof AskValues)[]) {
+      if (typeof raw[k] === 'string') values[k] = raw[k] as string;
+    }
+    return { values, clientId: typeof raw.clientId === 'string' && raw.clientId ? raw.clientId : null };
+  } catch {
+    return null;
+  }
 }
 
 export type TopicDraft = { title: string; body: string; topicKind: TopicKind; fields: Record<string, unknown> };
@@ -753,13 +873,16 @@ export function noticeFace(n: ForumNotice): NoticeFace {
         canAppeal: true,
       };
     case 'blocked':
+      // Never an appeal or a repost under the child-safety rule, as the hidden
+      // case and moderationFace (bug pass 2026-11-08, CODE-1-16).
       return {
         ...base,
         tone: 'removed',
         head: rule ? `REMOVED · ${rule}` : 'REMOVED',
         text: n.message ?? 'This post was removed.',
-        canEdit: true,
-        canAppeal: true,
+        canEdit: n.rule !== 'child_safety',
+        canAppeal: n.rule !== 'child_safety',
+        how: n.rule === 'child_safety' ? null : how,
       };
     case 'hidden':
       // Hidden by member reports, waiting for a review: not a removal yet, and
@@ -924,6 +1047,37 @@ export function splitMentions(text: string, names: string[]): BodyPart[] {
 export function tomorrowMorning(now: Date = new Date()): string {
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0, 0);
   return d.toISOString();
+}
+
+/**
+ * The next step for a thread opened at a post (a tapped alert, a bookmark):
+ * wait, read the later pages, or decide. A post past the first page is only
+ * decided once it is in the list ON SCREEN: in the render where the later
+ * pages arrive, the drawn list is still the old one, and deciding then sent
+ * the member to the top for good (bug pass 2026-11-08, CODE-1-08 / J1).
+ *  - shown: the list as drawn; read: every post read so far (any order).
+ */
+export type JumpStep = { kind: 'wait' } | { kind: 'read' } | { kind: 'top' } | { kind: 'jump'; index: number };
+
+export function jumpStep(input: {
+  jumpTo: string | null | undefined;
+  shown: Pick<ForumPost, 'id'>[];
+  read: Pick<ForumPost, 'id'>[];
+  hasMore: boolean;
+  triedRead: boolean;
+  reading: boolean;
+}): JumpStep {
+  const { jumpTo, shown, read } = input;
+  if (shown.length === 0 || input.reading) return { kind: 'wait' };
+  if (!jumpTo) return { kind: 'top' };
+  if (shown.some((p) => p.id === jumpTo)) {
+    const index = jumpIndex(shown, jumpTo);
+    return index === null ? { kind: 'top' } : { kind: 'jump', index };
+  }
+  // Read, but not drawn yet: the next render has it.
+  if (read.some((p) => p.id === jumpTo)) return { kind: 'wait' };
+  if (input.hasMore && !input.triedRead) return { kind: 'read' };
+  return { kind: 'top' };
 }
 
 /** Where a thread opens, or null to start at the top. */
@@ -1193,7 +1347,8 @@ export function trackedProblem(status: TrackedStatus, reason: string, current?: 
 
 /** "$3.20 of the $50.00 cap, 412 checks" for the AI usage line. */
 export function aiUsageLine(u: { calls: number; costUsd: number; capUsd: number } | null): string {
-  if (!u) return 'No AI use recorded this month.';
+  // Shown after "AI this month:", so it does not say "this month" again (UI-1-19).
+  if (!u) return 'No AI use recorded yet.';
   const calls = u.calls === 1 ? '1 check' : `${u.calls} checks`;
   return `$${u.costUsd.toFixed(2)} of the $${u.capUsd.toFixed(2)} cap · ${calls}`;
 }
@@ -1338,6 +1493,54 @@ export function solutionMarker(
   askerName: string | null,
 ): string | null {
   return topic?.solutionMarkedByName || askerName || null;
+}
+
+/**
+ * The words after "MARKED BY": YOU when the marker is the member reading, else
+ * the marker's first name (bug pass 2026-11-08, UI-1-12).
+ */
+export function solutionMarkedBy(marker: string | null, myName: string | null): string | null {
+  if (!marker) return null;
+  if (myName && marker === myName) return 'YOU';
+  return firstName(marker).toUpperCase();
+}
+
+/**
+ * Edit and Repost from a notice's excerpt: the text without the cut marks, and
+ * whether it is only part of the post. An excerpt is partial when it is at the
+ * limit OR the server cut it ("…" at either end) (bug pass 2026-11-08, UI-1-06).
+ */
+export function noticeExcerptEdit(excerpt: string | null | undefined): { body: string; partial: boolean } {
+  const raw = excerpt ?? '';
+  return {
+    body: raw.replace(/^…|…$/g, ''),
+    partial: raw.length >= EXCERPT_MAX || /^…|…$/.test(raw),
+  };
+}
+
+/**
+ * What an empty topic list says, by the sort that is on. "Nothing posted yet"
+ * is only true for Latest: an empty Top this week means nothing was busy this
+ * week (bug pass 2026-11-08, UI-1-05).
+ */
+export function emptyTopicsWords(sort: TopicSort, inCategory: boolean): { title: string; text: string } {
+  if (sort === 'unanswered') {
+    return {
+      title: 'Nothing is waiting',
+      text: inCategory ? 'No question here is waiting for an answer.' : 'No question is waiting for an answer.',
+    };
+  }
+  if (sort === 'top_week') {
+    return { title: 'Nothing this week', text: `Nothing in ${SORT_LABELS.top_week} yet. Try ${SORT_LABELS.latest}.` };
+  }
+  return inCategory
+    ? { title: 'Nothing posted here yet', text: 'Start the first topic.' }
+    : { title: 'Nothing posted yet', text: 'Be the first. Ask a question, or share what you know.' };
+}
+
+/** "1 reply" / "3 replies", for a search result's line (CODE-1-23). */
+export function replyCountText(n: number): string {
+  return n === 1 ? '1 reply' : `${n} replies`;
 }
 
 /**

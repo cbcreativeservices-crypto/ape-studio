@@ -320,7 +320,8 @@ describe('block by post: forum_block_author when present, else the token block',
     assert.doesNotMatch(t, /blockAuthor\(/);
     assert.match(t, /blockPostAuthor\(post\.id, post\.author\.token\)/);
     assert.match(t, /blockPostAuthor\(p\.id, p\.author\.token\)/);
-    assert.match(t, /canBlock=\{!!reportOf && !reportOf\.isMine\}/);
+    // Never the Academy's own account (owner rule 2026-11-08).
+    assert.match(t, /canBlock=\{!!reportOf && !reportOf\.isMine && canReportOrBlock\(reportOf\.author\)\}/);
   });
 });
 

@@ -297,10 +297,26 @@ export async function setRegistryVisible(
   // savePublicProfile only re-queues while listed — so switching OFF inside
   // the debounce left it armed, and 1.5 s later it put the page back up,
   // public, under a switch reading off.
-  if (!on && listingSyncTimer) {
-    clearTimeout(listingSyncTimer);
-    listingSyncTimer = null;
+  if (!on) cancelListingSync();
+  // A FAILED "LIST ME" LEAVES NOTHING ARMED (bug pass 1, CODE-1-14). The
+  // switch's own save queues the debounced `on: true` sync as it flips ON; if
+  // this write then fails the screen reads OFF, and that sync must not put
+  // the page up a moment later when the network is back. While this write is
+  // out the debounced sync waits for its answer instead of racing it.
+  listingSwitchWritesOut++;
+  let ok: boolean;
+  try {
+    ok = await writeListing(on, p, opts);
+  } finally {
+    listingSwitchWritesOut--;
   }
+  if (!ok) cancelListingSync();
+  else if (on) lastSyncedListing = listingSig(p);
+  return ok;
+}
+
+/** The listing RPC itself, shared by the switch and the debounced edit sync. */
+async function writeListing(on: boolean, p: PublicProfile, opts?: { adult?: boolean }): Promise<boolean> {
   const ok = await setRegistryListing({
     on,
     adult: opts?.adult ?? adultConfirmed,
@@ -319,13 +335,22 @@ export async function setRegistryVisible(
  *  nothing about an unlisted account is ever stored on the server. */
 export async function syncRegistryListing(p: PublicProfile): Promise<boolean> {
   if (!p.showInRegistry) return true;
-  return setRegistryVisible(true, p);
+  return writeListing(true, p);
 }
 
 /* --- published-content sync (debounced, same shape as the name sync) ------ */
 const LISTING_SYNC_IDLE_MS = 1500;
 let listingSyncTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSyncedListing = '';
+/** Switch writes (setRegistryVisible) still out; the debounced sync waits. */
+let listingSwitchWritesOut = 0;
+
+function cancelListingSync(): void {
+  if (listingSyncTimer) {
+    clearTimeout(listingSyncTimer);
+    listingSyncTimer = null;
+  }
+}
 
 /** The PUBLISHED fields only — what a listing sync would send. */
 function listingSig(p: PublicProfile): string {
@@ -338,12 +363,20 @@ function queueListingSync(p: PublicProfile): void {
   const sig = listingSig(p);
   if (sig === lastSyncedListing) return;
   if (listingSyncTimer) clearTimeout(listingSyncTimer);
-  listingSyncTimer = setTimeout(() => {
+  const fire = () => {
     listingSyncTimer = null;
+    // The switch's own write already sent these fields.
+    if (sig === lastSyncedListing) return;
+    // A switch write is out: wait for its answer. A failure there cancels this.
+    if (listingSwitchWritesOut > 0) {
+      listingSyncTimer = setTimeout(fire, LISTING_SYNC_IDLE_MS);
+      return;
+    }
     void syncRegistryListing(p).then((ok) => {
       if (ok) lastSyncedListing = sig;
     });
-  }, LISTING_SYNC_IDLE_MS);
+  };
+  listingSyncTimer = setTimeout(fire, LISTING_SYNC_IDLE_MS);
 }
 
 /**
@@ -362,10 +395,7 @@ export function resetLocal(): void {
     clearTimeout(registrySyncTimer);
     registrySyncTimer = null;
   }
-  if (listingSyncTimer) {
-    clearTimeout(listingSyncTimer);
-    listingSyncTimer = null;
-  }
+  cancelListingSync();
 }
 
 export async function savePublicProfile(input: PublicProfile, unread?: UnreadBaseline | null): Promise<void> {
@@ -402,7 +432,10 @@ export async function savePublicProfile(input: PublicProfile, unread?: UnreadBas
   // A LISTED profile's bio/interests are published content, so edits have to
   // reach the public page — debounced the same way, and only while listed.
   // An unlisted profile pushes nothing: the server never holds a draft.
+  // A save that reads NOT listed (the switch turned off, or reverted after a
+  // failed "list me") leaves no publish armed behind it (CODE-1-14).
   if (p.showInRegistry) queueListingSync(p);
+  else cancelListingSync();
   // Best-effort, debounced server sync of registryName only. Never awaited into
   // the caller's failure path: a guest or offline user must still be able to
   // edit their profile.
