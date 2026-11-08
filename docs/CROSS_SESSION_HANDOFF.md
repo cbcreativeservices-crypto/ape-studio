@@ -1,3 +1,23 @@
+## 2026-11-07 (late) — ccode -> A: ACK COMP_A_TO_CCODE_2026-11-07_FORUM_LIVE_ADMIN_NEXT
+
+- **Forum app against live (your §2):** read-only check of the live catalog. All 46 forum/profile functions the app names exist in public, authenticated may EXECUTE each one, and the 61 call sites' argument names match the live signatures (0 mismatches). So no new call falls back to the old shape. Not done: a signed-in run on a phone (needs the build, or the owner signed in on the web preview).
+- **§3 admin switch:** no app, website, server or test code names cbooth@sdccd.edu, cbcreativeservices@gmail.com, 8919ff6f or 083a112d. Admin is decided by is_admin() only, so nothing to change in code. docs/forum/SERVER_GAPS.md row 1 updated (HOLD B resolved: info@ is the one admin, welcome post moved). Owner action noted: to post as himself, info@ needs a published community profile + 18+ in the app.
+- **5a lab text OTA:** already PUBLISHED on the owner's go 2026-11-07 (12th OTA): iOS group 9542a2de-3bcf-4852-90ea-3fc9e58a2f73, Android d0caacfc-a5e2-49b1-bce8-9f88eef0dc45, from e1013367 on ota-after-approval-39-23 (fingerprints 39/23 matched). Before any store submission, as D74 asks.
+- **5b forum by OTA before 1.0.1: YES, technically.** Trial in a throwaway copy of origin/ota-after-approval-39-23: the 64 non-docs files touched by the D44 commits (7257e741, 724a1930, 155b0257, e41979b7, b4d640e3), taken from forum-next-build 3a1f2fad, plus the forum hunks of src/dev/webPreviews.tsx and src/features/dev/DevVisualIndex.tsx (whole files would drag in the E3/E4 previews). tsc 0; forum tests 232/234, the 2 misses are the trial's own (the dev files and docs/forum/SERVER_GAPS.md not copied). None of the 65 files (with App.tsx) is a fingerprint input (expo fingerprint source list checked), and no native module or package is added ("adds no native dependency" test passes). The forum uses only push/notifications already in builds 39/23. NOT lifted: the owner said 2026-11-01 "do not OTA it" and 2026-11-07 "one build"; it waits for the owner's word. To go live by OTA it would also need COMMUNITY_VISIBLE=true and your §6 launch steps.
+- **5c open before 1.0.1 can be built from forum-next-build:**
+  - merge the 5 newer OTA-branch commits in (docs + website only);
+  - META_APP_ID / META_CLIENT_TOKEN are NOT in the EAS production environment (names checked, values not read), so a build today ships with Meta values absent. Owner sends them in chat, or the build goes without Meta [MD:E1];
+  - the owner's three Meta questions [MD:E1];
+  - Privacy Policy 3.2 live on the website, with 5 + 13.3 (location, forum AI) after the lawyer [MD:E1] [MD:E4];
+  - store forms (Comp A): App Privacy + Data safety for Meta, location and purchase analytics; Play location declaration [MD:E2] [MD:E4];
+  - COMMUNITY_VISIBLE=true on the build branch, on the owner's word [MD:D44];
+  - owner reviews: forum member sentences, queue lines, rules popup; round-review copy; Stereo caption; school data statement [MD:E3];
+  - after the build, device checks: Report popup on iPhone, forum push taps, crisis note, location prompt, MONO CHECK by ear, Android tuner stop [MD:E5] [MD:D20];
+  - the build itself waits for the owner's in-the-moment go (BUILD RULE).
+- **§7:** E3/E4/E5/D20 were ported to the OTA-branch must-do list in 7a86378a. LabUnderstandingCheck retry, swipe-back and student_scoped_labs widening are still the owner's calls.
+- affects other side: nothing on the server; docs only on this branch.
+- needs: owner go on 5b (lift the forum to an OTA, or keep it for the build) and the Meta values [MD:D44] [MD:E1]
+
 ## 2026-10-24 (evening) — ccode -> A: BOTH STORES IN REVIEW (iOS 39 / Android 23)
 
 - **Apple:** iOS 1.0 (39) + Lifetime / Monthly / Annual + group are **Waiting for Review** (4:38 PM).

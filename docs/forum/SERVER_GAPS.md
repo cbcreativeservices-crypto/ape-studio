@@ -10,7 +10,7 @@ The package `Downloads/2026-11-07_FOR_COMP_A_FORUM_GAPS.zip` (F00 to F90, VERIFY
 
 | Row | Closed by | The app, once it lands | Still waits on |
 |---|---|---|---|
-| 1 | F90 (welcome post, pinned) | Nothing to change: the popup reads the pinned post's `unread`, which F40 leaves as it was. | **HOLD B**: F90 makes the "Admin" account the author. If the owner keeps "Admin CB" instead, the author moves. |
+| 1 | F90 (welcome post, pinned) | Nothing to change: the popup reads the pinned post's `unread`, which F40 leaves as it was. | HOLD B RESOLVED 2026-11-07 (owner): info@proaudiotrainingacademy.com is the one admin; Comp A moved the welcome post to that account (name still "Prof. Channing Booth"). APPLIED to live 2026-11-07. |
 | 2 | F40 (`topic_id`) | Edit and Repost from a notice reads the thread and starts from the whole post; the excerpt path stays as the fallback. | Nothing. |
 | 3 | F40 (`tracked_reason`, `area`) | Ideas takes every row's line from the list; no `forum_topic_get` per row. | Nothing. |
 | 4 | Not built (convention `v1.1: text` kept) | Unchanged. | Nothing. |
