@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 15:10 · ccode · c80b2557
+changed: must-do D52: Guided Lessons OTA published (c871cf7a) [MD:D52]
+affects other side: nothing (OTA record only).
+needs: port to forum-next-build [MD:D52].
+
+
 ### 2026-11-08 14:59 · ccode · afc37afe
 changed: Miking page 2 titled per lesson group: Mic it / Cover it / Measure it / Set it up — where the mics go (owner 2026-11-08) [MD:D44]
 affects other side: nothing (app wording only; next OTA).
