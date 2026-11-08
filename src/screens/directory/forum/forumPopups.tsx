@@ -25,7 +25,7 @@ const COMMUNITY_RULES = [
   'Respect people. Criticize the mix, not the person.',
   'Beginners are welcome here, so no "just Google it".',
   'Stay on audio. Promote your business in Careers & Business only, and say who you work for.',
-  'Share advice you can stand behind, and point to a qualified professional on mains power, rigging and hearing.',
+  'Share advice you can stand behind, and point to a qualified professional on AC power, rigging and hearing.',
   'No pirated software or samples, and no one else’s private details.',
 ];
 

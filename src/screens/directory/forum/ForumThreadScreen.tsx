@@ -124,7 +124,7 @@ const REACTIONS: { kind: ReactionKind; label: string; count: (p: ForumPost) => n
 /** The mockup's ANNOUNCEMENTS strip, with the amber pin. */
 const ANNOUNCEMENTS_LABEL = '📌 ANNOUNCEMENTS';
 const SAFETY_NOTE =
-  'Safety note: this reply touches on mains power, rigging or hearing. Check with a qualified professional before you act on it.';
+  'Safety note: this reply touches on AC power, rigging or hearing. Check with a qualified professional before you act on it.';
 
 export function ForumThreadScreen() {
   const route = useRoute();
@@ -613,7 +613,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         items.push({
           key: 'safety',
           label: 'Flag a safety concern',
-          note: 'Mains power, rigging or hearing: reviewed straight away',
+          note: 'AC power, rigging or hearing: reviewed straight away',
           onPress: () => void flag(p),
         });
       }
