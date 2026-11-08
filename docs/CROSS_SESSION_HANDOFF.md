@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-08 04:09 · ccode · 7cda2bc0
+changed: Forum + profile bug pass 3 (final): 30 findings fixed and independently checked (sort/paging races, popups hold while sending, nothing typed is cut silently, owner never resends a member action) [MD:D44] [MD:D57]
+affects other side: bug pass 3 (final) fixes, not published; Comp A server package (founder protect, contact light, area label) ready after this commit.
+needs: nothing
+
+
 ### 2026-11-08 03:01 · ccode · e33c3a7e
 changed: Forum + profile bug pass 2: 37 findings fixed and independently checked (typing kept while sending, drafts never cross accounts, no N-of-total or percentage on Profile, owner queue confirms safety decisions) [MD:D44] [MD:D57]
 affects other side: bug pass 2 fixes (forum, directory, profile, owner queue), not published; server package for Comp A HELD until pass 3.
