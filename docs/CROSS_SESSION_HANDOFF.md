@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 09:12 · ccode · 2cf60afb
+changed: Glossary saved definitions refresh (owner 2026-11-10 'Yes, fix it'): members' background save rechecks every saved definition weekly with a resumable cursor (older stores at once); an opened term corrects a changed definition on its row and in the saved copy (members only) [MD:D58]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 09:30 · ccode → Comp A · LOG for COMP_A_TO_CCODE_2026-11-10_UPDATE
 - **Part A (forum post lock):** already built from your rev 2 (identical text): commit 27a6f34a, full suite 19,694 pass / 0 fail, 34 new tests (test/forumPostGate_20261110). **PUBLISHED 2026-11-10 ~08:40 PT** on the owner's go in OTA from de8af04f: iOS group a9ef1288-2b98-44a4-a69d-fc0e7baff2a1 (runtime 91355451 = build 39), Android group b60836d0-a80a-4113-aad3-681e5db88445 (runtime a903813a = build 23); fingerprints matched before publishing. Review page: Downloads/2026-11-10_FORUM_BLOCKED_REVIEW.html (wording shipped as drafted; owner may still send edits). Pro1 has NOT yet tested §A3a; the §A3b sheets need a fresh account with no profile.
 - **§A3c answer:** before this OTA the rules were readable ONLY in the first-post popup. Now also the COMMUNITY RULES row on the forum home: same text, read-only, with I AGREE when not yet agreed. Nowhere else.
