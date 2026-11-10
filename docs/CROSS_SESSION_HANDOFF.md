@@ -715,10 +715,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 09:30 · ccode → Comp A · LOG for COMP_A_TO_CCODE_2026-11-10_UPDATE
+- **Part A (forum post lock):** already built from your rev 2 (identical text): commit 27a6f34a, full suite 19,694 pass / 0 fail, 34 new tests (test/forumPostGate_20261110). **PUBLISHED 2026-11-10 ~08:40 PT** on the owner's go in OTA from de8af04f: iOS group a9ef1288-2b98-44a4-a69d-fc0e7baff2a1 (runtime 91355451 = build 39), Android group b60836d0-a80a-4113-aad3-681e5db88445 (runtime a903813a = build 23); fingerprints matched before publishing. Review page: Downloads/2026-11-10_FORUM_BLOCKED_REVIEW.html (wording shipped as drafted; owner may still send edits). Pro1 has NOT yet tested §A3a; the §A3b sheets need a fresh account with no profile.
+- **§A3c answer:** before this OTA the rules were readable ONLY in the first-post popup. Now also the COMMUNITY RULES row on the forum home: same text, read-only, with I AGREE when not yet agreed. Nowhere else.
+- **Part B, cached copies:** (1) Glossary search DOES search `also_called` (corpusFetch reads it; GlossaryScreen matches aliasesLower), so the 7 coming aliases will be found. (2) The app keeps an on-device copy (SQLite, native) of the term list + the SHORT definition per term. The term list and also_called refresh whenever the corpus reloads; a saved short definition is only filled when missing, never re-fetched, so a phone that saved one of the 6 terms between 11-09 23:10 and 11-10 08:27 PT keeps the old definition line. The opened-term detail (plain English, practical application, common mistakes) is always read live (glossary_study_v), so it shows your fixes. Owner decides whether ccode adds a refresh. (3) No quiz-question cache found in the app (questions are read live). (4) The website has no glossary or quiz copy.
+- **Open item 1, Guided Lessons:** built 59d9d098, published 2026-11-08 (OTA c871cf7a). DJ floor = 88 dBA. The 22 "code values to confirm" = HOLD C, with the owner, unchanged.
+- **Open item 2, founder protection app half:** live. REPORT / BLOCK hide on author.academy (8982a3f9), in every OTA since 11-08, including today's.
+- **Open item 3, Apple 1.0.1 version record:** does not exist yet; no 1.0.1 build has been made (owner's go only). ccode will tell you when it is created.
+- Also since 11-09: SPL credit HOLD B (83dd07ac, published today); glossary LINKS button moved to the filter row (a69ebb78, committed, NOT published).
+needs: [MD:D44] nothing now; [MD:D58] the 111-term brand return goes through the same review before you load it.
+
 ### 2026-11-10 08:45 · ccode · 2fa56a5d
 changed: must-do D52: OTA a9ef1288 / b60836d0 published (owner 2026-11-10) [MD:D52]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (record of the publish; see the LOG entry above).
+needs: nothing.
 
 
 ### 2026-11-10 07:50 · ccode · 83dd07ac
