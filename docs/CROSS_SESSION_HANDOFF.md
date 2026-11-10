@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 09:49 · ccode · ddb634cd
+changed: Calculators: ONE shared intro card for every calculator, shown once per device (owner 2026-11-10: 'it would show 166 times'); each calculation's example stays in the ⓘ steps [MD:D52]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 09:42 · ccode · 7f0cb96d
 changed: Guard test: the dev VISUAL INDEX renders only under __DEV__ (owner 2026-11-10: not on any phones); the published production bundle has no dev React [MD:D52]
 affects other side: nothing (app wording only; next OTA).
