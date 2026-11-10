@@ -716,9 +716,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ## LOG (newest first)
 
 ### 2026-11-10 00:52 · ccode · 27a6f34a
-changed: Forum post gate (Comp A 11-09 rev 2): rules_not_accepted opens the rules popup from every post control, I AGREE continues to the composer; one why-you-can't-post popup per reason with one fix button; COMMUNITY RULES row on forum home [MD:D44]
-affects other side: nothing (app wording only; next OTA).
-needs: nothing.
+changed: Forum post gate, Comp A 11-09 FORUM_BLOCKED_GUIDANCE rev 2 [MD:D44]
+- §4a: rules_not_accepted now opens the rules popup from ASK, START A TOPIC / ASK A QUESTION, reply and Discuss this lab. I AGREE records the acceptance, re-reads forum_me and opens the composer.
+- §4b: one popup per reason from one wording table, each with one button to the fix. The next blocker shows on return. Codes from the post call are mapped to the same popups.
+- §4c: the rules could be read nowhere else in the app. A COMMUNITY RULES row is now on the forum home (read-only, with I AGREE until agreed).
+- tsc 0; full suite 19,694 pass / 0 fail; fingerprints match iOS 39 (91355451) and Android 23 (a903813a).
+- Owner review page: C:\Users\profe\Downloads\2026-11-10_FORUM_BLOCKED_REVIEW.html.
+- I checked live, read-only: forum_me and forum_category_rights both take their reason from private.forum_eligibility, so the codes match.
+affects other side: nothing on the server (app-only). Pro1 can test §4a once, after the OTA. Use a fresh no-profile account for the other popups.
+needs: owner wording approval + publish go [MD:D44].
 
 
 ### 2026-11-10 00:06 · ccode · 41ef9a9d
