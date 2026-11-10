@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 09:42 · ccode · 7f0cb96d
+changed: Guard test: the dev VISUAL INDEX renders only under __DEV__ (owner 2026-11-10: not on any phones); the published production bundle has no dev React [MD:D52]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 09:12 · ccode · 2cf60afb
 changed: Glossary saved definitions refresh (owner 2026-11-10 'Yes, fix it'): members' background save rechecks every saved definition weekly with a resumable cursor (older stores at once); an opened term corrects a changed definition on its row and in the saved copy (members only) [MD:D58]
 affects other side: nothing (app wording only; next OTA).
