@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 09:59 · ccode · 68acd483
+changed: must-do D52: second OTA of 11-10 published (c685fee1 / 8987c39f) [MD:D52]
+affects other side: nothing (record of the publish).
+needs: nothing.
+
+
 ### 2026-11-10 09:49 · ccode · ddb634cd
 changed: Calculators: ONE shared intro card for every calculator, shown once per device (owner 2026-11-10: 'it would show 166 times'); each calculation's example stays in the ⓘ steps [MD:D52]
 affects other side: nothing (app wording only; next OTA).
