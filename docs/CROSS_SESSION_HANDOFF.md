@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 00:06 · ccode · 41ef9a9d
+changed: must-do D52: 11-09 work committed, publish held by owner [MD:D52]
+affects other side: nothing (app art/wording + must-do record).
+needs: owner publish go [MD:D52].
+
+
 ### 2026-11-09 23:20 · ccode · 900b1813
 changed: Cable Install cutaways: drains touch the foil (line, multipair, snake; two-tone foil); control cable redrawn to Belden 8723 datasheet (2 pr 22 AWG, foil-out per pair, drain outside, no overall shield) (owner 2026-11-09) [MD:D44]
 affects other side: nothing (app wording only; next OTA).
