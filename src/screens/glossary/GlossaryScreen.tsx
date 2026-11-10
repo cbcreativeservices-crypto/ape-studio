@@ -3990,7 +3990,7 @@ ${COPY.glossaryFreeAllowance}`,
       { heading: 'SEARCH', body: 'Type any term in the search box. Results rank by the closest match, and the letters you typed are highlighted.' },
       { heading: 'BEG / ADV', body: 'Tap BEG/ADV above the list to switch between plain English (BEG) and the official, technical wording (ADV).' },
       { heading: 'CARD VIEW', body: 'The green full-screen button opens card view, one term at a time; the inward-arrows button takes you back to the full list. Tap a term in the list to open its definition and learning levels.' },
-      { heading: 'GLOSSARY LINKS', body: 'Inside a definition, words that have their own entry show in blue — tap one to jump straight to that term. Use the “Glossary Links” button above the list to turn those links on or off everywhere; it glows blue when they’re on.' },
+      { heading: 'GLOSSARY LINKS', body: 'Inside a definition, words that have their own entry show in blue — tap one to jump straight to that term. Use the LINKS button beside BEG/ADV to turn those links on or off everywhere; it glows blue when they’re on.' },
       { heading: 'CALCULATOR (Σ)', body: 'A blue word followed by a small purple Σ can also be calculated: tap the word for its definition, or tap the Σ to open that term’s calculator in the Audio Calculator Laboratory.' },
       { heading: 'SAVE & FILTER', body: 'Bookmark a term, or tap the three-card icon to add it to My Custom List. Then use the All, Topic, Bookmarks, CUSTOM STUDY LIST and Recent buttons to show just those terms. Press and hold Bookmarks or CUSTOM STUDY LIST to see the whole list.' },
     ],
@@ -4116,6 +4116,23 @@ ${COPY.glossaryFreeAllowance}`,
           )}
           </Pressable>
     </>
+  );
+  /** SHOW / HIDE LINKS in the filter row (owner 2026-11-10: "clear but not
+   *  take up too much space"). ONE control for the whole glossary (2026-09-14);
+   *  beside BEG/ADV: both change how the definition text reads, and the first line has room for it at phone width. On: blue border, fill and
+   *  word, the blue of the linked words. Off: grey outline, slashed icon. The
+   *  colour still sweeps across the word (2026-09-29). */
+  const linksToggle = (
+    <Pressable
+      onPress={() => setLinksOn(!linksOn)}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityState={{ selected: linksOn }}
+      accessibilityLabel={linksOn ? 'Turn glossary definition links off' : 'Turn glossary definition links on'}
+      style={[styles.headerToggle, styles.rowToggle, linksOn ? styles.linksRowOn : styles.linksRowOff]}
+    >
+      <LinksToggleLabel on={linksOn} onColor={LINK_BLUE} label="LINKS" fontSize={13} />
+    </Pressable>
   );
   const begToggle = (inRow: boolean) => (
     <>
@@ -4245,6 +4262,7 @@ ${COPY.glossaryFreeAllowance}`,
         <>
       <View style={styles.chipRow}>
         {begToggle(true)}
+        {linksToggle}
         <Chip
           label="All"
           accent="#37e05f"
@@ -4377,22 +4395,8 @@ ${COPY.glossaryFreeAllowance}`,
                     : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
                       `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
                 </Text>
-                {/* Global definition-links toggle (owner 2026-09-14): moved here as
-                    ONE control for the whole glossary — replaces the per-term link
-                    icon that used to sit in every term's title bar. Lit light-blue
-                    when on (matching the linked words), dimmed grey when off. */}
-                <Pressable
-                  onPress={() => setLinksOn(!linksOn)}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: linksOn }}
-                  accessibilityLabel={linksOn ? 'Turn glossary definition links off' : 'Turn glossary definition links on'}
-                  style={styles.linksToggle}
-                >
-                  {/* Blue sweeps in left→right on, grey sweeps back right→left
-                      off (owner 2026-09-29). */}
-                  <LinksToggleLabel on={linksOn} onColor={LINK_BLUE} />
-                </Pressable>
+                {/* The definition-links toggle moved to the filter row (owner
+                    2026-11-10): see linksToggle below. */}
               </View>
             )
           }
@@ -5256,7 +5260,8 @@ const styles = StyleSheet.create({
   // "Glossary Links" text button (owner 2026-09-14) — the single global toggle for
   // definition cross-links, sitting where SELECT used to. Icon + label share the
   // light-blue link colour when lit, grey when dimmed (colour set inline).
-  linksToggle: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingBottom: 8, paddingRight: 2 },
+  linksRowOn: { borderColor: '#9fbede', backgroundColor: 'rgba(159,190,222,0.12)', paddingHorizontal: 8 },
+  linksRowOff: { borderColor: colors.textMuted, backgroundColor: 'transparent', paddingHorizontal: 8 },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
   // Expanded rows get a BORDER around the whole term+definition (like the card
   // popup), persisting on scroll; several can be open at once (user request
