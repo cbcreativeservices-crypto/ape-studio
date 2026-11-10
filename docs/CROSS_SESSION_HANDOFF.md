@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 07:50 · ccode · 83dd07ac
+changed: SPL credit HOLD B (owner 2026-11-10): 85 dB = SMPTE / THX large-room reference; 79 and 82 dB = common small-room practice (legend + help); must-do D52 HOLD B done, new row D58 (THX/brand glossary + brand quiz questions) [MD:D52]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 03:40 · ccode · 227d2db3
 changed: nightly: live server snapshot 2026-11-10
 affects other side: none (snapshot only)
