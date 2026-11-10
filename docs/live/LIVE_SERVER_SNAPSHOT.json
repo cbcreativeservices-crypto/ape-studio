@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-11-07T09:38:00-08:00",
-  "taken_by": "nightly reconciliation 2026-11-07, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 0 added, 0 removed since 2026-11-05",
+  "taken_at": "2026-11-09T21:55:00-08:00",
+  "taken_by": "nightly reconciliation 2026-11-09, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 3 functions added (directory_verified, forum_block_author, forum_rules_accept), 0 removed since 2026-11-07",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
@@ -66,6 +66,7 @@
     "directory_search",
     "directory_slugify",
     "directory_specialty_needs_area",
+    "directory_verified",
     "discard_unreleased_credentials",
     "dispatch_community_push",
     "dispatch_weekly_concept",
@@ -101,6 +102,7 @@
     "forum_admin_user_action",
     "forum_appeal_submit",
     "forum_appeals_mine",
+    "forum_block_author",
     "forum_bookmark_set",
     "forum_bookmarks_mine",
     "forum_categories_list",
@@ -126,6 +128,7 @@
     "forum_react",
     "forum_report",
     "forum_report_context",
+    "forum_rules_accept",
     "forum_safety_flag",
     "forum_search",
     "forum_svc_ai_alerted",
