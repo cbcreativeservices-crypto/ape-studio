@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 13:42 · ccode · 556905c5
+changed: Port a69ebb78: Glossary LINKS show/hide button in the filter row beside BEG/ADV (owner 2026-11-10 'Yes, keep it'): on = link blue border/fill/word, off = grey outline + slashed icon, colour sweep kept; result-count switch removed; help reworded [MD:D52]
+affects other side: nothing (port of OTA-branch app commits 59d9d098..ddb634cd for the 1.0.1 build; tsc clean, 19,894/0).
+needs: nothing.
+
+
 ### 2026-11-08 09:57 · ccode · ccd24afa
 changed: Port a0374c8c: forum post gate names the Audio Community profile; Profile strip names the Pro Registry (owner 2026-11-08) [MD:D44]
 affects other side: nothing (app wording; same as OTA branch a0374c8c).
