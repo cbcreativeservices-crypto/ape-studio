@@ -41,7 +41,7 @@
 import type { ScreenGuide, ScreenIntro } from '../../../features/lab/screenGuide/types';
 import { SCREEN_GUIDE_BUDGET } from '../../../features/lab/screenGuide/types.ts';
 import type { PageId } from './engine/model/types.ts';
-import { stageOf } from './engine/journey.ts';
+import { SETUPS_STEP_NAME, SETUPS_TITLES, stageOf } from './engine/journey.ts';
 
 // ═══ WHAT THE STEP ENGINE REPORTS ════════════════════════════════════════
 
@@ -185,7 +185,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     seeing: 'Here you see what else reaches the mic besides the source, what the mic and its stand keep clear of, and what changes ON A STAGE (LIVE) or IN A STUDIO.',
     tryThis: [
       'Pick one neighbor named here and decide which way the mic’s quiet side would face to hear less of it.',
-      'Go back one step to Starting setups and compare two: what does each one gain, and what does it give up?',
+      'Go back one step to the setups and compare two: what does each one gain, and what does it give up?',
     ],
   },
   // MICROPHONES (pages/PMicOnIt.tsx — every lesson; pages/PMicrophone.tsx and
@@ -352,7 +352,8 @@ export function enginePageOf(page: PageId, ownPageIds: readonly string[]): boole
 /** The note for the step on screen, if one applies. */
 export function stepNoteFor(s: MikingStepInfo | null, enginePage: boolean): StepNote | undefined {
   if (!s) return undefined;
-  const n = STEP_NOTES[`${s.kind}|${s.title}`];
+  const title = SETUPS_TITLES.includes(s.title) ? SETUPS_STEP_NAME : s.title;
+  const n = STEP_NOTES[`${s.kind}|${title}`];
   return n && (!n.engineOnly || enginePage) ? n : undefined;
 }
 

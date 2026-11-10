@@ -44,9 +44,11 @@ export type JourneyProps = {
   here: PageId;
 };
 
-export function JourneyMap({ met, here }: { met: ReadonlySet<PageId>; here?: PageId }) {
+export function JourneyMap({ met, here, titleOf }: { met: ReadonlySet<PageId>; here?: PageId; titleOf?: (id: PageId) => string }) {
+  // Page 2's title is the lesson group's own (journey.setupsTitle).
+  const stageTitle = (s: (typeof STAGES)[number]) => (s.id === 'setups' && titleOf ? titleOf('setups') : s.title);
   return (
-    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's ${STAGES.length} stages: ${STAGES.map((s) => s.title).join(', ')}.`}>
+    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's ${STAGES.length} stages: ${STAGES.map(stageTitle).join(', ')}.`}>
       <Text style={styles.mapHead}>{`THE JOURNEY · ${STAGES.length} STAGES`}</Text>
       {STAGES.map((s, i) => {
         const done = s.pages.every((p) => met.has(p));
@@ -56,7 +58,7 @@ export function JourneyMap({ met, here }: { met: ReadonlySet<PageId>; here?: Pag
           <View key={s.id} style={styles.mapRow}>
             <Text style={[styles.mapNum, on && { color: colors.amber }, done && { color: colors.green }]}>{done ? '✓' : `${i + 1}`}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.mapTitle, on && { color: colors.amber }]}>{`${s.title}${foundation ? ' · FOUNDATION' : ''}`}</Text>
+              <Text style={[styles.mapTitle, on && { color: colors.amber }]}>{`${stageTitle(s)}${foundation ? ' · FOUNDATION' : ''}`}</Text>
               <Text style={styles.mapLine}>{s.line}</Text>
             </View>
           </View>
@@ -219,7 +221,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
         </>
       ) : (
         <>
-          <Text style={styles.resultText}>{`Every page is open. Worth a look first:${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
+          <Text style={styles.resultText}>{`Every page is open. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
           <View style={styles.row}>
             {(res.misses.length ? res.misses : FOUNDATION_PAGES).map((p) => (
               <Go key={p} label={`OPEN ${journey.titleOf(p).toUpperCase()}`} onPress={() => journey.goPage(p, p === 'meet' ? 1 : 0)} />

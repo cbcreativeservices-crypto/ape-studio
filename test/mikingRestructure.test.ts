@@ -27,7 +27,7 @@ import { LESSONS } from '../src/screens/lab/miking/data/registry.ts';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { MIC_TYPES } from '../src/screens/lab/miking/data/micTypes.ts';
 import { PAGE_IDS, viewsOf, type Lesson, type SourcePageId } from '../src/screens/lab/miking/engine/model/types.ts';
-import { FOUNDATION_PAGES, journeyPageOf, STANDARD_LINE, STANDARD_LINE_PAGES, validateQuickCheck, journeyIntro } from '../src/screens/lab/miking/engine/journey.ts';
+import { FOUNDATION_PAGES, journeyPageOf, STANDARD_LINE, STANDARD_LINE_PAGES, validateQuickCheck, journeyIntro, setupsTitle } from '../src/screens/lab/miking/engine/journey.ts';
 import { isRetired, pageOf, quickCheckOf, restructureLesson, RETIRED, scenariosOnPage } from '../src/screens/lab/miking/engine/restructure.ts';
 import { coreSetups, SETUP_PICKS, startingSetups, zoneInVariant } from '../src/screens/lab/miking/engine/setups.ts';
 import { creditedCount, creditedPages, isStoredPage } from '../src/screens/lab/miking/engine/progress/creditMap.ts';
@@ -57,7 +57,9 @@ describe('the eight-page journey', () => {
       const meet = pageOf(lesson, 'meet');
       const setups = pageOf(lesson, 'setups');
       assert.equal(meet.title, 'Meet it — where the sound comes from');
-      assert.equal(setups.title, 'Starting setups');
+      // Page 2's title is the lesson group's (owner 2026-11-08).
+      assert.equal(setups.title, setupsTitle(lesson.id));
+      assert.notEqual(setups.title, 'Starting setups');
       assert.equal(setups.credit.interactive, 'setupsSeen');
       // Each foundation credits only live checks written for it.
       for (const p of FOUNDATION_PAGES) {

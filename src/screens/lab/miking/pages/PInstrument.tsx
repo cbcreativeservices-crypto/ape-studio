@@ -120,7 +120,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       body: (
         <>
           <Body>{journeyIntro(lesson.noun, ownInstrumentWord(lesson))}</Body>
-          <JourneyMap met={journey.met} here="meet" />
+          <JourneyMap met={journey.met} here="meet" titleOf={journey.titleOf} />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
           {journey.path === 'new' ? <Note tone="ok">{C.terms?.startNew ?? C.words.newNote ?? `Good — NEXT takes you through the ${C.words.instrument} first. You can change how you started here at any time.`}</Note> : null}
