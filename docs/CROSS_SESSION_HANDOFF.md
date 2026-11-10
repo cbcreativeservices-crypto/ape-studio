@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 00:52 · ccode · 27a6f34a
+changed: Forum post gate (Comp A 11-09 rev 2): rules_not_accepted opens the rules popup from every post control, I AGREE continues to the composer; one why-you-can't-post popup per reason with one fix button; COMMUNITY RULES row on forum home [MD:D44]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 00:06 · ccode · 41ef9a9d
 changed: must-do D52: 11-09 work committed, publish held by owner [MD:D52]
 affects other side: nothing (app art/wording + must-do record).
