@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 13:50 · ccode · 09b6c35f
+changed: Envelope + Sound Systems check guides: first miss asks to try again, explanation from the second miss (matches checkFeedback.ts; the 11-08 guide rewrite had lost it); must-do D52: 1.0.1 port recorded [MD:D52]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-10 09:59 · ccode · 68acd483
 changed: must-do D52: second OTA of 11-10 published (c685fee1 / 8987c39f) [MD:D52]
 affects other side: nothing (record of the publish).
