@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-09 23:00 · ccode · d24fa0bf
+changed: Cable Lab lesson 2: drain-wire definition (bare, full length, pressed on the foil's metal side, terminated to pin 1 / sleeve); cutaways verified correct as drawn per Belden (owner 2026-11-09) [MD:D44]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-09 22:19 · ccode · 9e6a3e02
 changed: Report decisions applied (owner 2026-11-09): HOLD 2 check-passed wording + done card; HOLD 3 wording (Drum Tuning ride/lug, Ear menu, Post-Prod PROJECT, curly quotes, Mic Selection intro, Adv Mixing end, Wave modes, Signal Chain subtitle, Tube class gloss, Digital mix bus, Foundations DELAY 30 ms); THX kept [MD:D44]
 affects other side: nothing (app wording only; next OTA).
