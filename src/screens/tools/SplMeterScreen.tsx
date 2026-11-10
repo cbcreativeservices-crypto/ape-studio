@@ -2157,8 +2157,8 @@ export function SplMeterScreen({ navigation }: Props) {
                     glowing GOLD sweet-spot band at 79–85 dB(C) — the monitor calibration levels (pink noise at −20 dBFS, one
                     speaker, C-weighted slow), not a target for the music itself. The
                     room-size ticks sit at 79 (small rooms, under ~1,500 ft³ / 42 m³, and most critical
-                    balance / music mixing), 82 (medium) and 85 (large) — the Holman / SMPTE-THX
-                    references. Lower levels are common too: 70–75 for general editing and long
+                    balance / music mixing), 82 (medium) and 85 (large). 85 is the SMPTE / THX
+                    reference for large rooms; 79 and 82 are common small-room practice. Lower levels are common too: 70–75 for general editing and long
                     sessions, 60–65 for detailed or background work, with brief 85–95 checks for
                     impact, punch and low-frequency energy.
                   </Text>
