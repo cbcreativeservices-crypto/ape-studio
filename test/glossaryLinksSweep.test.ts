@@ -10,7 +10,7 @@ const label = readFileSync('src/screens/glossary/LinksToggleLabel.tsx', 'utf8');
 const screen = readFileSync('src/screens/glossary/GlossaryScreen.tsx', 'utf8');
 
 test('the toggle renders the sweeping label, not a static coloured one', () => {
-  assert.match(screen, /<LinksToggleLabel on=\{linksOn\} onColor=\{LINK_BLUE\} \/>/);
+  assert.match(screen, /<LinksToggleLabel on=\{linksOn\} onColor=\{LINK_BLUE\} label="LINKS" fontSize=\{13\} \/>/);
 });
 
 test('each letter is its own span coloured by the lit count', () => {

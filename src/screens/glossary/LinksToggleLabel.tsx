@@ -11,13 +11,15 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinkIcon } from '../../components/LinkIcon';
 import { colors, fonts } from '../../theme/tokens';
 
-const LABEL = 'Glossary Links';
-/** Icon + every character. */
-const STEPS = LABEL.length + 1;
 /** Per-letter step — the whole word takes ~0.6 s. */
 const STEP_MS = 40;
 
-export function LinksToggleLabel({ on, onColor }: { on: boolean; onColor: string }) {
+/** `label`: the filter-row button reads LINKS (owner 2026-11-10); `fontSize`
+ *  matches the row's other buttons there. */
+export function LinksToggleLabel({ on, onColor, label = 'Glossary Links', fontSize }: { on: boolean; onColor: string; label?: string; fontSize?: number }) {
+  const LABEL = label;
+  /** Icon + every character. */
+  const STEPS = LABEL.length + 1;
   // How many positions (icon = 0, then each letter) are lit.
   const [lit, setLit] = useState(on ? STEPS : 0);
   const litRef = useRef(lit);
@@ -32,13 +34,13 @@ export function LinksToggleLabel({ on, onColor }: { on: boolean; onColor: string
       if (next === target) clearInterval(id);
     }, STEP_MS);
     return () => clearInterval(id);
-  }, [on]);
+  }, [on, STEPS]);
 
   const colorAt = (pos: number) => (pos < lit ? onColor : colors.textMuted);
   return (
     <View style={styles.row}>
       <LinkIcon size={15} color={colorAt(0)} off={lit === 0} />
-      <Text style={styles.text}>
+      <Text style={[styles.text, fontSize ? { fontSize } : null]}>
         {LABEL.split('').map((ch, i) => (
           <Text key={i} style={{ color: colorAt(i + 1) }}>
             {ch}
