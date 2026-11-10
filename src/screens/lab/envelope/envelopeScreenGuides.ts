@@ -56,84 +56,97 @@ export type EnvelopeScreenId = keyof typeof ENVELOPE_GUIDE_PAGE_TITLES;
 export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 1 · The Envelope Explorer ─────────────────────────────────────────────
   p1: {
+    intro: {
+      learning: 'A sound’s envelope is its level over time: attack, decay and release are times; sustain is a level. Rise time, from 10 to 90 %, measures how fast it starts.',
+      start: 'Tap RESET and read the rise time in the tag at top left. Drag the Attack slider and watch the gold dots move apart. Then drag Sustain level to 0 %.',
+    },
     seeing: [
-      'One chart: the envelope line over the 220 Hz wave it shapes. Regions A, D, S, R run along the bottom; the total length sits top right.',
-      'Gold dots on the dashed 10% and 90% lines mark the rise time; the tag at top left prints it.',
-      'Under it: ▶ SWEEP THE SHAPE, the sliders, two curve buttons and RESET, then the READOUT card and THE WORDS.',
+      'One chart: the envelope line (the ADSR you met in Modular Synth) over the 220 Hz wave it shapes. Regions A, D, S, R run along the bottom; the total length sits top right.',
+      'Gold dots on the dashed 10% and 90% lines mark the rise time: how long the climb takes between them. The tag at top left prints it.',
+      'Below: ▶ SWEEP THE SHAPE, the sliders, two curve buttons and RESET, then the READOUT card and THE WORDS.',
     ],
     control: [
-      'Attack, Decay and Release sliders: from 0 ms up to about 2 s (Attack) or 3 s, on a log scale. Sustain level: 0 to 100 %.',
-      'Hold (energy still supplied): 0 to 2000 ms spent at the sustain level, after attack and decay, before release.',
-      'ATTACK: LINEAR / SNAP and DECAY: LINEAR / NATURAL switch the curve shapes; RESET returns to the starting shape.',
+      'Attack, Decay and Release sliders: 0 ms up to about 2 s (Attack) or 3 s, on a log scale, so short times get more room. Sustain level: 0 to 100 %.',
+      'Hold (energy still supplied): 0 to 2000 ms at the sustain level, after attack and decay, before release.',
+      'ATTACK: LINEAR / SNAP and DECAY: LINEAR / NATURAL switch the curve shapes. RESET brings back the starting shape.',
       '▶ SWEEP THE SHAPE runs a slowed playhead along the shape (the slow-down is printed). ⤢ FULL SCREEN enlarges the chart with the four sliders under it.',
-      'The strip under the title: ⏮ goes to the first page, ‹ PREV and NEXT › step one page, and the MODULE ▾ readout opens the list of pages.',
+      'In the strip under the title: ⏮ goes to the first page, ‹ PREV and NEXT › step one page, and MODULE ▾ opens the list of pages.',
     ],
     changes: [
-      'A longer attack stretches the climb, and the rise time grows with it — always shorter, since it skips the first and last 10 %.',
-      'Sustain is the level held during Hold; at 0 the sound can only decay.',
-      'Attack, Decay, Hold and Release set the total length; Sustain does not. Under 15 ms the attack reads as a transient; from 120 ms the sound swells in.',
+      'Lengthen the attack and the climb stretches. The rise time grows with it but stays shorter, because it skips the first and last 10 %.',
+      'Sustain is the level held during Hold. At 0 % there’s nothing to hold, so the sound can only decay.',
+      'Attack, Decay, Hold and Release set the total length; Sustain doesn’t. An attack under 15 ms reads as a transient; from 120 ms the sound swells in.',
     ],
     teaches: [
-      'The envelope: a sound’s level over time, from silence back to silence, in four stages (Hold here sets how long the sustain lasts).',
+      'An envelope is a sound’s level over time, from silence back to silence, in four stages. Here Hold sets how long the sustain lasts.',
       'Attack, decay and release are times; sustain is a level.',
-      'Rise time (10→90 %) measures an onset, and is shorter than the attack.',
-      'The lab’s first page; the Gallery next shows real sound shapes. It follows Modular Synth, where an ADSR shaped a synth note.',
+      'Rise time (10 → 90 %) measures an onset, and it’s shorter than the attack.',
+      'No real source jumps to full level instantly; even the sharpest hit takes some time to rise.',
     ],
     tryThis: [
-      'Drag Attack all the way left: the readout says attack 0 ms → rise time 0.0 ms, an instant step no real source makes. All the way right: attack 2.0 s → rise time 1596.0 ms.',
-      'Tap RESET (attack 40 ms): rise time 32.0 ms. Tap ATTACK: LINEAR to switch to SNAP: 20.5 ms — a snap does most of its climbing early.',
-      'Drag Sustain level to 0 %: the READOUT card says the sound is percussive — it can only decay. Through S, the envelope line and the wave flatten onto the center (zero) line.',
+      'Drag Attack all the way left: the READOUT card says attack 0 ms → rise time 0.0 ms, an instant step no real source makes. All the way right: attack 2.0 s → rise time 1596.0 ms.',
+      'Tap RESET (attack 40 ms): rise time 32.0 ms. Tap ATTACK: LINEAR to switch to SNAP: 20.5 ms. A snap does most of its climbing early.',
+      'Drag Sustain level to 0 %: the READOUT card calls the sound percussive, since it can only decay. Through S, the envelope line and the wave flatten onto the center (zero) line.',
     ],
   },
 
   // ── 2 · Common Sound Shapes ───────────────────────────────────────────────
   p2: {
+    intro: {
+      learning: 'Sounds fall into families: struck sounds can only decay, while bowed and blown sounds can sustain. Also why a piano has no true sustain and speech needs its onsets.',
+      start: 'Tap Snare drum, then Trumpet, and run ▶ SWEEP THE SHAPE on each. Then tap Piano and look for a flat S region.',
+    },
     seeing: [
-      'Teaching shapes for six sounds, plus Speech. The chart draws the chosen one over its own source — a snare’s shell tone plus its wires’ noise, for example.',
-      'The card below: what to notice, its traits, and its four times — attack, decay, sustain, release.',
+      'Typical shapes for six sounds, plus Speech. The chart draws the chosen shape over its own source: a snare’s shell tone plus its wires’ noise, for example.',
+      'The card below: what to notice, the sound’s traits, and its four stage values: attack, decay, sustain, release.',
       'Speech swaps in a chart of seven syllable envelopes: PRO-FES-SION-AL AU-DI-O.',
     ],
     control: [
       'Tap Snare drum, Kick drum, Piano, Violin, Trumpet, Cymbal or Speech.',
-      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape; ⤢ FULL SCREEN enlarges it with the six sound buttons under it.',
-      'LOAD INTO THE EXPLORER › opens The Envelope Explorer with this shape on its sliders, to change it yourself.',
+      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape. ⤢ FULL SCREEN enlarges it with the six sound buttons under it.',
+      'LOAD INTO THE EXPLORER › opens The Envelope Explorer with this shape on its sliders, so you can change it yourself.',
     ],
     changes: [
-      'Percussive shapes fall from the moment they peak; sustained ones (Violin, Trumpet) sit on a flat S region while energy keeps coming.',
+      'Percussive shapes fall from the moment they peak. Sustained ones (Violin, Trumpet) sit on a flat S region while the bow or breath keeps supplying energy.',
       'The drums show no S or R region at all: nothing is held, so nothing is left to release.',
       'Speech alternates short bursts (many consonants) and held vowels, with near-silences between.',
     ],
     teaches: [
-      'Sounds fall into families: struck sounds can only decay; bowed and blown sounds can sustain.',
-      'Why a piano has no true sustain, and why speech needs its onsets.',
-      'These are simplified shapes — real instruments vary with technique, register and room. Next: the transient itself.',
+      'Sounds fall into families: struck sounds can only decay; bowed and blown sounds can sustain while energy keeps coming.',
+      'A piano has no true sustain: once the hammer strikes, the string only loses energy.',
+      'Speech needs its onsets: many consonants are short bursts.',
+      'These are typical shapes; real instruments vary with technique, register and room.',
     ],
     tryThis: [
-      'Tap Snare drum, then Trumpet, and run ▶ SWEEP THE SHAPE on each: the snare is all falling, over in 122 ms; the trumpet holds near its peak.',
-      'Tap Piano: no flat S region — decay 1400 ms runs straight into release 500 ms. A struck string can only lose energy.',
-      'Pick Snare drum and tap LOAD INTO THE EXPLORER ›: the Explorer reads attack 2 ms → rise time 1.0 ms, with ATTACK: SNAP. Stretch Attack past 15 ms: the READOUT card stops calling it a transient.',
+      'Tap Snare drum, then Trumpet, and run ▶ SWEEP THE SHAPE on each. The snare is all falling, over in 122 ms; the trumpet holds near its peak.',
+      'Tap Piano: no flat S region. Decay 1400 ms runs straight into release 500 ms, because a struck string can only lose energy.',
+      'Pick Snare drum and tap LOAD INTO THE EXPLORER ›: attack 2 ms → rise time 1.0 ms, with ATTACK: SNAP. Stretch Attack past 15 ms and the READOUT card stops calling it a transient.',
     ],
   },
 
   // ── 3 · Transient Explorer ────────────────────────────────────────────────
   p3: {
+    intro: {
+      learning: 'The transient is the brief, fast-changing start of a sound. Your ear uses it to place a sound in time and to tell one source from another.',
+      start: 'Tap Sharp transient, then Soft transient, then No transient, and read the rise time on the card each time. Then run ▶ SWEEP THE SHAPE on No transient.',
+    },
     seeing: [
       'Three onsets drawn to the same peak: Sharp transient, Soft transient, No transient. Gold dots on the 10% and 90% lines mark the rise time.',
       'The card under the chart describes the onset and prints its rise time and attack.',
-      'Below: THE WORDS · ONSETS (transient, rise time) and WHY TRANSIENTS MATTER — six places they count.',
+      'Below: THE WORDS · ONSETS (transient, rise time) and WHY TRANSIENTS MATTER, with six places they count.',
     ],
     control: [
       'Tap Sharp transient, Soft transient or No transient.',
-      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape; ⤢ FULL SCREEN enlarges it with the three buttons under it.',
+      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape. ⤢ FULL SCREEN enlarges it with the three buttons under it.',
     ],
     changes: [
-      'Same peak; the onset is the big change: the attack goes from 2 ms to 60 ms to 400 ms, so the rise time jumps from about a millisecond to hundreds. The level each settles to differs too: 35, 60 and 100 % of the peak.',
-      'A sharp onset gives the ear a clear moment to lock onto; a slow swell gives none, so it is hard to place in time.',
+      'Same peak, but the attack goes from 2 ms to 60 ms to 400 ms, so the rise time jumps from about a millisecond to hundreds. Each also settles to a different level: 35, 60 and 100 % of the peak.',
+      'A sharp onset gives your ear a clear moment to lock onto. A slow swell gives none, so it’s hard to place in time.',
     ],
     teaches: [
-      'The transient is the brief, fast-changing onset — the part the ear uses to place and identify a sound.',
-      'Why it matters for drums, speech, telling instruments apart, compressors, limiters and loudspeakers.',
-      'Next: how long a sound lasts, from an impulse to a held tone.',
+      'The transient is the brief, fast-changing onset: the part your ear uses to place and identify a sound.',
+      'Transients matter for drums, speech and telling instruments apart, and for compressors, limiters and loudspeakers, which all have to react to them.',
+      'Rise time puts a number on a transient: about 1 ms is sharp; hundreds of milliseconds is a swell.',
     ],
     tryThis: [
       'Step Sharp → Soft → No transient: the card reads rise time 1.0 ms, then 48.0 ms, then 320.0 ms. Same peak; the onset is the big change.',
@@ -143,6 +156,10 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 
   // ── 4 · How Long Does a Sound Last? ───────────────────────────────────────
   p4: {
+    intro: {
+      learning: 'Sounds last from about a millisecond to many seconds, so durations are drawn on a log scale. Also why short sounds give compressors and limiters little time to react.',
+      start: 'Tap 1 · Finger snap, then 7 · Pink noise, and compare their times. Then tap 5 · Piano note and read which band it falls in.',
+    },
     seeing: [
       'A log-time line from 1 ms to 20 s in five bands: IMPULSE, SHORT, MEDIUM, LONG, CONTINUOUS. Seven numbered markers are typical sounds.',
       'The chosen marker shows its name and time on the line; the card below names its band.',
@@ -157,21 +174,25 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Short sounds are nearly all onset; long ones are mostly body. A processor has less time to react to a short sound; a meter reads a long one by its body.',
     ],
     teaches: [
-      'Sound durations span about four orders of magnitude, so they are drawn on a log scale.',
-      'The duration bands, from an impulse to a continuous tone.',
-      'Why short sounds challenge compressors and limiters. Next: peak against average level.',
+      'Sound durations span about four orders of magnitude (factors of ten), so they’re drawn on a log scale.',
+      'Durations fall into bands, from an impulse to a continuous tone.',
+      'Short sounds challenge compressors and limiters: the sound can be nearly over before the processor reacts.',
     ],
     tryThis: [
-      'Tap 1 · Finger snap, then 7 · Pink noise: About 12 ms against About 12 s — a thousand times longer, three steps apart on the axis.',
+      'Tap 1 · Finger snap, then 7 · Pink noise: About 12 ms against About 12 s. That’s a thousand times longer, three steps apart on the axis.',
       'Tap 5 · Piano note: About 2.5 s, in the LONG band — long enough to have a clear onset, body and tail.',
     ],
   },
 
   // ── 5 · Peak vs Average Level ─────────────────────────────────────────────
   p5: {
+    intro: {
+      learning: 'Peak level follows a sound’s transient; average (RMS) level follows its body. The gap between them, the crest factor, is large for a snare and small for a trumpet.',
+      start: 'Tap Percussive (snare) and read peak, average (RMS) and crest factor. Then tap Sustained (trumpet) and watch the two lines move closer together.',
+    },
     seeing: [
-      'One sound’s waveform with two lines: peak (solid white) and average (RMS) (dashed purple).',
-      'The readout: peak, average (RMS) and crest factor, in dB relative to the chart’s full scale (the top of the envelope) — so a peak just under the top reads a little below 0 dB.',
+      'One sound’s waveform with two lines: peak (solid white) and average (RMS) (dashed purple). RMS (root mean square) is a kind of average level over time.',
+      'The readout: peak, average (RMS) and crest factor, in dB below the top of the envelope (0 dB). So a peak just under the top reads a little below 0 dB.',
       'Below: a WORKED EXAMPLE of crest factor against dynamic range, and WHY IT MATTERS.',
     ],
     control: [
@@ -186,7 +207,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     teaches: [
       'Peak meters follow the transient; average meters follow the body. Both are right — they measure different things.',
       'Crest factor = peak − average, in dB.',
-      'Why gain staging needs both. Next: what an envelope is not.',
+      'Gain staging needs both: peaks decide the headroom you need, and the average is closer to how loud it sounds.',
     ],
     tryThis: [
       'Tap Percussive (snare): peak −0.4 dB, average −15.7 dB, crest factor 15.3 dB. Now Sustained (trumpet): peak 0.0, average −4.3, crest factor 4.3 dB.',
@@ -196,22 +217,26 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 
   // ── 6 · Envelope vs Propagation ───────────────────────────────────────────
   p6: {
+    intro: {
+      learning: 'A sound’s envelope belongs to its source; propagation is how the sound travels and meets the room. A long reverb tail comes from the room, not from a long release.',
+      start: 'Read SOUND ENVELOPE · THIS LAB, then WAVE PROPAGATION · THE WAVE PHYSICS LAB. Then read the two lines on the classic mix-up and tap GOT IT ›.',
+    },
     seeing: [
-      'Two cards: SOUND ENVELOPE · THIS LAB, and WAVE PROPAGATION · THE WAVE PHYSICS LAB. No chart on this page.',
-      'Under them, two lines on the classic mix-up, and GOT IT › until the page is done.',
+      'Two cards: SOUND ENVELOPE · THIS LAB, and WAVE PROPAGATION · THE WAVE PHYSICS LAB, from Audio Fundamentals. No chart on this page.',
+      'Under them, two lines on the classic mix-up, and GOT IT › to finish the page.',
     ],
     control: [
-      'GOT IT › marks this page done; NEXT › also marks it as it moves on.',
-      'The MODULE ▾ readout in the strip opens the list of pages, to jump back to any of them.',
+      'Tap GOT IT › to mark this page done; NEXT › also marks it as it moves on.',
+      'MODULE ▾ in the strip opens the list of pages, so you can jump back to any of them.',
     ],
     changes: [
-      'Nothing moves here: the page draws a line between two subjects that are easy to blur.',
+      'Nothing moves here. The page separates two subjects that are easy to blur.',
       'Envelope: how the source changes over time. Propagation: how sound travels and meets the room.',
     ],
     teaches: [
-      'ADSR describes the source, not the room: a snare’s envelope at the source is the same whether you stand at one meter or twenty. Farther away, the room adds more of its own tail on top.',
+      'ADSR describes the source, not the room. A snare’s envelope at the source is the same whether you stand 1 meter away or 20; farther away, the room adds more of its own tail.',
       'A long reverb tail is not a long release. Release is the source stopping; the tail is the room still returning energy.',
-      'Propagation is the subject of the Wave Physics Laboratory, in Audio Fundamentals.',
+      'Moving away changes the mix of direct and room sound, not the source’s envelope.',
     ],
     tryThis: [
       'Go back to Common Sound Shapes and pick Cymbal: release 1400 ms. In a big hall that release stays the same; the room only adds its own tail.',
@@ -221,21 +246,25 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 
   // ── 7 · Check Yourself ────────────────────────────────────────────────────
   p7: {
+    intro: {
+      learning: 'A review of six ideas that are easy to confuse: the transient, piano sustain, rise time, peak versus average, crest factor versus dynamic range, and envelope versus propagation.',
+      start: 'Read the first UNDERSTANDING CHECK card and tap the answer you think is right. If it’s wrong, read the explanation and try again.',
+    },
     seeing: [
       'Six questions, one for each idea in this lab, each in an UNDERSTANDING CHECK card.',
-      'The card at the top counts how many are correct so far and says whether the page is complete.',
+      'The card at the top shows how many you’ve got right so far and whether the page is complete.',
     ],
     control: [
       'Tap an answer. A wrong pick stays open: the first miss asks you to try again; from the second miss on, the explanation shows as a hint.',
       'All six right completes this page. NEXT › then moves on to the lab’s final check.',
     ],
     changes: [
-      'A right pick turns green with a ✓ and its explanation; the card locks.',
+      'A right pick turns green with a ✓ and its explanation, and the card locks.',
       'Each question targets a common mix-up, and its explanation names it.',
     ],
     teaches: [
-      'Whether each idea stuck: the transient, piano sustain, rise time, peak vs average, crest factor vs dynamic range, envelope vs propagation.',
-      'Wrong picks are part of it: from the second miss on, the explanation says why.',
+      'Six ideas in this lab are easy to confuse: the transient, piano sustain, rise time, peak vs average, crest factor vs dynamic range, envelope vs propagation.',
+      'Each mix-up has a reason: the first miss asks you to try again, and from the second miss on, the explanation shows exactly where the thinking slips.',
     ],
     tryThis: [
       'Unsure about rise time? Go back to The Envelope Explorer, tap RESET and read where the two gold dots sit on the climb.',
@@ -245,23 +274,27 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 
   // ── The understanding check (appended by PagedLab) ────────────────────────
   check: {
+    intro: {
+      learning: 'A last look at four of the lab’s ideas: what sustain is, where rise time is measured, what crest factor is, and what a big hall does to a snare.',
+      start: 'Read each question and tap your answer. Read the explanation either way. Unsure? Go back to the page the question comes from, then return.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING for this lab: four questions — what sustain is, where rise time is measured, what crest factor is, and a snare in a big hall.',
-      'Above them, how many are still to get right; a ✓ replaces a question’s number once it is right.',
+      'CHECK YOUR UNDERSTANDING: four questions on what sustain is, where rise time is measured, what crest factor is, and a snare in a big hall.',
+      'Above them you see how many are still to get right; a ✓ replaces a question’s number once it’s right.',
       'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
     ],
     control: [
       'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
       'FINISH · SEE WHAT’S LEFT › at the foot of the page (FINISH › in the strip) shows what is left in the lab, at any time.',
-      'Leaving this page before all four are right starts the questions fresh.',
+      'If you leave this page before all four are right, the questions start fresh.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong — the teaching moment either way.',
-      'All four right completes the lab. It counts toward every certificate and program that needs it, and never has to be taken twice.',
+      'Each explanation gives the reason, right or wrong, so every answer teaches something.',
+      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
-      'Whether the lab’s core ideas stuck: stages as times and a level, the rise-time points, crest factor, and source versus room.',
-      'Each question reaches back to a page: the Explorer, Transients, Peak vs Average, Envelope vs Propagation.',
+      'A sound is described by stages, measured by its onset and its levels, and heard through a room.',
+      'A sound’s shape at the source, its onset, its level readings and the room around it are separate things, each described in its own way.',
     ],
     tryThis: [
       'Unsure where rise time is measured? Go back to The Envelope Explorer: the gold dots mark it.',
@@ -285,30 +318,34 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 // the lab's certificate unit (trainingLabKeys tr_envelope, 'understanding').
 // Quoted labels use the straight ' the screen draws (labEnd.ts, NAV.whatsLeft).
 export const ENVELOPE_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'The lab’s path at a glance: a sound’s envelope, its transient, how long it lasts, peak versus average level, and how the envelope differs from what the room adds.',
+    start: 'Tap any page still listed to open it. If only Check your understanding is left, open it and get all four questions right.',
+  },
   seeing: [
-    "The title reads WHAT'S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what is left and whether it is saved.",
-    'Each page not done yet is listed by name; Check your understanding sits last, marked CHECK. Pages done fold into one ✓ DONE line.',
-    'If saved progress could not be read, the title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens.',
+    'The title reads WHAT\'S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what’s left and whether it’s saved.',
+    'Each page not done yet is listed by name; Check your understanding sits last, marked CHECK. Pages you’ve done fold into one ✓ DONE line.',
+    'If saved progress can’t be read, the title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens.',
   ],
   control: [
     'Tap any listed row to jump straight to that page.',
     'REVIEW ▾ on the ✓ DONE line unfolds the finished pages; tap one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing. DONE · BACK TO LABS leaves the lab.',
-    "In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page check marks.",
+    'In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and WHAT\'S LEFT ▾ opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page check marks.',
   ],
   changes: [
-    'Pages 1–5 count as done once you move a slider or tap a choice button or numbered marker, or with NEXT ›. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
-    'Check Yourself counts once all six are right, Check your understanding once all four are. A jump never marks a page.',
-    'Rows read ✓ DONE: a page ✓ is progress, not credit. Passing the check completes the lab, for any certificate that needs it.',
+    'Pages 1–5 count as done once you move a slider, tap a choice button or numbered marker, or tap NEXT ›. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
+    'Check Yourself counts once all six are right, Check your understanding once all four are. Jumping to a page never marks it.',
+    'START OVER (PRACTICE) clears the page check marks; reviewing clears nothing. A passed check stays.',
   ],
   teaches: [
-    'Which of the lab’s ideas you have worked through, and which are still ahead.',
-    'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the page check marks for a fresh run; a passed check stays.',
+    'A sound’s envelope is its level over time, in stages, and rise time puts a number on how fast it starts.',
+    'Peak and average level measure different parts of a sound, and the source and the room each shape what you hear.',
   ],
   tryThis: [
-    "The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT'S LEFT ›, just under the page list: it has joined the ✓ DONE line.",
+    'The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT\'S LEFT ›, just under the page list: it has joined the ✓ DONE line.',
     'Only Check your understanding left? Open it, get all four questions right, then tap FINISH ›: the title reads LAB COMPLETE.',
-    'Some pages done? Tap REVIEW ▾, open one and use it again, then tap MODULE ▾: its ✓ is still there.',
+    'Done Peak vs Average Level? Tap REVIEW ▾, reopen it and switch between snare and trumpet again. Then tap MODULE ▾: its ✓ is still there.',
   ],
 };
 

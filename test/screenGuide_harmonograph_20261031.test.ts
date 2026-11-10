@@ -57,7 +57,12 @@ describe('1. every Harmonograph tab has a complete guide', () => {
   });
   for (const [id, gd] of ALL) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -105,7 +110,10 @@ describe('3. each guide quotes the screen’s real names', () => {
     },
     learn: {
       files: ['src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/content.ts', SCREEN],
-      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'LEARN', 'EXPLORE', 'CHECK', 'GUIDED LESSON', 'LAB NOTES', 'DETUNE', '+1%', '+3%', 'LIGHT', 'HEAVY', ['ratio-lock', 'Ratio-lock'], ['amplitude', 'Amplitude'], ['lateral / rotary', 'Lateral / Rotary'], ['drive from oscillators', 'Drive from oscillators']],
+      // Decision 1 (2026-11-08): the LEARN guide lists the lesson's CONTROLS by their on-screen labels (TUNE, PHASE, DAMPING,
+      // ROTARY / LATERAL, ▶) or by names in both the current and the Part A lesson (OSC 1 / OSC 2, Amplitude). The old lesson
+      // titles (Ratio-lock, Lateral / Rotary, Drive from oscillators) and the tab's own name LEARN left the approved rewrite.
+      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'EXPLORE', 'CHECK', 'GUIDED LESSON', 'LAB NOTES', 'DETUNE', '+1%', '+3%', 'LIGHT', 'HEAVY', 'TUNE', 'OSC 1 / OSC 2', 'Amplitude', 'PHASE', 'DAMPING', 'ROTARY', 'LATERAL', '▶'],
     },
     check: {
       files: ['src/components/LabUnderstandingCheck.tsx'],
@@ -135,14 +143,24 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(block, /DAMPING/);
     assert.match(textOf(GUIDES.check), /four questions on the fifth’s ratio, locked figures, detune and damping/);
   });
+  it('decision 6: the CHECK guide never walks the student to a tested reading; it points to LEARN instead', () => {
+    const c = HARMONOGRAPH_SCREEN_GUIDES.check;
+    const t = [textOf(GUIDES.check), c.intro!.learning, c.intro!.start].join('\n');
+    // the four answers: 3:2, "closes into a stable, repeating shape", "slowly rotates (precesses)", "spirals inward"
+    assert.doesNotMatch(t, /3:2|closes (into|its)|stable,? repeating|precess|rotates|spirals? in/i);
+    // no line sends the student to set the asked-about control on EXPLORE and watch the result
+    assert.doesNotMatch(t, /tap the RATIO chip, DETUNE or DAMPING|try it on the machine/);
+    assert.match(c.tryThis[0], /Switch to LEARN and reread the CONTROLS entry on the idea the question is about/);
+    assert.match(c.intro!.start, /Switch to LEARN and reread that idea under CONTROLS/);
+  });
   it('the lesson describes THIS machine: OSC 1 / OSC 2, amplitude as an idea (no key), ROTARY = arms + an orbiting paper platform', () => {
     const lesson = read('src/features/lab/guidedLessons/content.ts');
     const at = lesson.indexOf('  harmonograph: {');
     const block = lesson.slice(at, lesson.indexOf('\n  },', at));
-    assert.match(block, /name: 'OSC 1 \/ OSC 2'/);
+    assert.match(block, /name: ["']OSC 1 \/ OSC 2["']/);
     assert.doesNotMatch(block, /f₁–f₄|sums two circular motions|petal count/);
-    assert.match(block, /name: 'Amplitude', definition: 'An idea, not a key here: this machine keeps the swing size fixed\./);
-    assert.match(block, /PLAT moves the paper around a small circle at its own speed \(it never spins\)/);
+    assert.match(block, /name: ["']Amplitude["'], definition: ["'](An idea, not a key here: this machine keeps the swing size fixed\.|There is no amplitude key here: each arm always swings the same size\.)/);
+    assert.match(block, /PLAT moves the paper around a small circle at its own speed \(it never spins\)|PLAT, a third pendulum that moves the paper in a small circle/);
     // the screen really has no amplitude key, and the swing is a fixed constant
     assert.doesNotMatch(SRC, /label: 'AMP|id: 'amp/);
     assert.match(read('src/screens/lab/HarmonographMachine.tsx'), /const AMP = 0\.26 \* TOP;/);
@@ -158,7 +176,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.match(SRC, /const OSC_F_MIN = 0\.5;\nconst OSC_F_MAX = 10;/);
     assert.match(SRC, /v <= PLAT_OFF_ZONE \? 0 :/);
     assert.match(SRC, /format: \(\) => \(hz3 > 0 \? fmtHz\(hz3\) : 'OFF — platform stationary'\)/);
-    assert.match(textOf(GUIDES.explore), /0\.5–10 Hz each[\s\S]*far left is OFF/);
+    assert.match(textOf(GUIDES.explore), /0\.5–10 Hz\.[\s\S]*far left is OFF/);
   });
   it('opening state: OSC 1 1.5 Hz, OSC 2 1.0 Hz, PLAT 1.0 Hz, φ 90°, MEDIUM, ROTARY, +1 %', () => {
     assert.match(SRC, /const BASE_F0 = 110;/);
@@ -179,7 +197,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.equal(match(1.5, 1.0)?.[3], 'PERFECT 5TH');
     assert.match(SRC, /const detuneActs = detune !== 0 && \(!rotary \|\| n3 > 0\);/);
     assert.match(SRC, /const isExact = ratioExact && platSimple && !detuneActs;/);
-    assert.match(textOf(GUIDES.explore), /tap LOCKED RATIO: the 3:2 figure stops turning and closes/);
+    assert.match(textOf(GUIDES.explore), /tap LOCKED RATIO\. The 3:2 figure stops turning and closes/);
   });
   it('2:1 OCTAVE keeps OSC 1 at 1.5 Hz and sets OSC 2 = 1.5 × 1/2 = 0.75 Hz', () => {
     assert.match(SRC, /const nn2 = n1 \* \(r\.n2 \/ r\.n1\);/);
@@ -201,7 +219,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.match(SRC, /\$\{pairHz\(soundNow\.fL\)\} Hz on LEFT, \$\{pairHz\(soundNow\.fR\)\} Hz on RIGHT/);
     // whole hertz except for a beating pair (D42), so a locked 3:2 still reads 330 / 220
     assert.match(SRC, /const pairHz = \(hz: number\) => \(beatNear \? hz\.toFixed\(1\) : String\(Math\.round\(hz\)\)\);/);
-    assert.match(textOf(GUIDES.explore), /330 Hz on LEFT, 220 Hz on RIGHT/);
+    assert.match(textOf(GUIDES.explore), /330 Hz on LEFT and 220 Hz on RIGHT/);
     // ROTARY drops the detune from the sound (rot ? 1 : 1 + d) and the platform
     // (n3) never reaches soundPair, so the default ROTARY +1 % plays an exact
     // 330 : 220 (2·330 − 3·220 = 0, no beat). LATERAL +1 %: k = 220/1.01 →
@@ -209,7 +227,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     const lat = 1.5 * (220 / 1.01);
     assert.ok(Math.abs(lat - 326.73) < 0.01 && Math.abs(2 * 330 - 3 * 220) === 0);
     assert.match(SRC, /const soundPair = useCallback\(\(a: number, b: number, d: number, rot: boolean\) => \{\s*const f1 = a \* BASE_F0;/);
-    assert.match(textOf(GUIDES.explore), /plays OSC 1 and OSC 2 as two tones, both raised by the same factor into hearing \(the lower at 220 Hz\), so the ratio stays exact\. The platform is silent, so DETUNE is heard in LATERAL only\./);
+    assert.match(textOf(GUIDES.explore), /to hear OSC 1 and OSC 2 as two tones, raised by the same factor until the lower is 220 Hz, so the ratio stays exact\. The platform is silent, so you hear DETUNE in LATERAL only\./);
     assert.match(read('src/features/lab/understandingChecks.ts'), /▶ sounds the detune in LATERAL only — in ROTARY it moves the silent platform\./);
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts'), /slowly turning figure and hear it as beating/);
   });
@@ -217,7 +235,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     const M = code('src/screens/lab/HarmonographMachine.tsx');
     assert.match(M, /if \(m\.azr > 0\) \{\s*const g = m\.azr \* phi \* \(1 \+ m\.det\);/);
     assert.match(M, /sB = AMP \* Math\.sin\(m\.ayr \* phi \* \(1 \+ m\.det\) \+ Math\.PI \/ 2\) \* env;/);
-    assert.match(textOf(GUIDES.explore), /DETUNE acts on OSC 2 in LATERAL, on the platform in ROTARY \(so PLAT must be on\)/);
+    assert.match(textOf(GUIDES.explore), /DETUNE moves OSC 2 in LATERAL, the platform in ROTARY \(so PLAT must be on\)/);
     // A wrong pick shows the same q.explanation as a right one — never called a "hint".
     assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{got \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>\s*<Text style=\{s\.explainBody\}>\{q\.explanation\}<\/Text>/);
     assert.doesNotMatch(textOf(GUIDES.check), /\bhint\b/);
@@ -253,7 +271,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.equal(platOk(false, 1.07, 1.0), true, 'LATERAL ignores PLAT');
     assert.match(SRC, /: ratioExact && !platSimple\s*\? `A clean \$\{ratio\.label\} ratio between the arms, but PLAT is only in a complex ratio with OSC 2 — the figure takes many swings to repeat/);
     assert.match(SRC, /: matched\s*\? `Near \$\{ratio\.label\} \(\$\{ratio\.interval\.toLowerCase\(\)\}\) but not exact — the figure slowly precesses/);
-    assert.match(textOf(GUIDES.explore), /The figure closes on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio\.[\s\S]*Detuned, or off an exact ratio, it slowly turns \(precesses\), never closing/);
+    assert.match(textOf(GUIDES.explore), /The figure closes only on an exact simple ratio: a RATIO chip, DETUNE on LOCKED RATIO and, in ROTARY, PLAT OFF or on a simple ratio too\.[\s\S]*Detuned or off an exact ratio, it slowly turns \(precesses\), never closing/);
   });
   it('heavier DAMPING ends the drawing sooner (fewer turns at a smaller end amplitude)', () => {
     assert.match(SRC, /\{ key: 'light', label: 'LIGHT', endAmp: 0\.55 \},\s*\{ key: 'medium', label: 'MEDIUM', endAmp: 0\.25 \},\s*\{ key: 'heavy', label: 'HEAVY', endAmp: 0\.06 \}/);

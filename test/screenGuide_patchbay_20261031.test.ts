@@ -76,7 +76,12 @@ describe('1. every Patchbay page has a complete guide', () => {
   });
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -308,7 +313,12 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
   const endEl = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
 
   it('all five sections, 1–5 bullets, 2–3 TRY THIS, inside the no-scroll budgets', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+    // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+    const intro = (END as unknown as { intro?: { learning: string; start: string } }).intro;
+    assert.ok(intro, `end: no intro`);
+    assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `end: intro.learning over 30 words`);
+    assert.ok(intro.start.trim().split(/\s+/).length <= 40, `end: intro.start over 40 words`);
     for (const k of SECTION_KEYS) {
       assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: ${END[k].length} bullets`);
       for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
@@ -344,7 +354,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(endEl, /mode=\{creditMode\}/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(LES, /✓ \{w\.credited\.length\} \{tag\}/); // D41 K1: what is done, no total
-    assert.match(ET, /✓ CREDITED line \(✓ DONE when you are not signed in\)/);
+    assert.match(ET, /✓ CREDITED line \(✓ DONE if you’re not signed in\)/);
   });
   it('the unit is a page; no understanding check, no optional page, no per-page detail line', () => {
     assert.match(endEl, /noun="page"/);
@@ -362,7 +372,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(NAVPURE, /prev: '‹ PREV'/);
     assert.match(NAVPURE, /whatsLeft: "WHAT'S LEFT"/);
     assert.match(PAGED, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
-    for (const label of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'HIDE ▴', '‹ PREV', 'START OVER (PRACTICE)', 'WHAT’S LEFT readout opens CONTENTS']) {
+    for (const label of ['PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'REVIEW ▾', 'HIDE ▴', '‹ PREV', 'START OVER (PRACTICE)', 'WHAT’S LEFT readout to open CONTENTS']) {
       assert.ok(ET.includes(label), `the end guide never names "${label}"`);
     }
   });
@@ -373,8 +383,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(NAV, /if \(ending\) \{\s*unEnd\(\);\s*return;\s*\}/, '‹ PREV on the end screen leaves it back to the page');
     assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/, 'page index untouched');
     assert.match(NAVBAR, /onPress=\{nav\.prev\}/);
-    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1 and clears nothing/);
-    assert.match(ET, /DONE · BACK TO LABS leaves the lab, back to the screen you opened it from/);
+    assert.match(ET, /PRACTICE AGAIN FROM THE START opens page 1\. It clears nothing\./);
+    assert.match(ET, /DONE · BACK TO LABS takes you out of the lab, back to the screen you opened it from/);
   });
   it('the credit rule: NEXT / FINISH tick only the three pages without manualDone; every other page ticks itself', () => {
     const defs = PAGE_FILES.flatMap((f) =>
@@ -391,10 +401,10 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.deepEqual(idx, [1, 2, 13]);
     assert.ok(defs[defs.length - 1].manual, 'the last page (FINISH) marks itself');
     assert.match(NAV, /if \(index >= last\) \{\s*finish\(\);/);
-    assert.match(ET, /Three pages count as soon as you leave them with NEXT: page 1, page 2 and page 13\./);
+    assert.match(ET, /Pages 1, 2 and 13 are reading pages: each one is finished as soon as you leave it with NEXT\./);
     assert.doesNotMatch(ET, /leave them with NEXT or FINISH/);
     assert.match(ET, /NEXT \(FINISH on the last page\) still moves on, but the page stays listed/);
-    assert.match(ET, /pages 1, 2 and 13 count once you leave them with NEXT/);
+    assert.match(ET, /Pages 1, 2 and 13 are finished once you leave them with NEXT/);
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     // A page counts by its device tick OR its banked p<n> credit unit.
     assert.match(PAGED, /\(!!creditLabKey && bankedPages\.has\(`p\$\{i \+ 1\}`\)\)/);
@@ -405,18 +415,18 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
     assert.match(PAGED, /setEnding\(false\);\s*setPage\(0\);/);
     assert.match(NAVBAR, /\{NAV\.whatsLeft\} ›<\/Text>[\s\S]*?\{nav\.reset \?/, 'the reset row is the last row of CONTENTS');
-    assert.match(ET, /START OVER \(PRACTICE\), last in CONTENTS, asks first, then starts again from page 1\. Pages already credited keep their ✓\./);
+    assert.match(ET, /START OVER \(PRACTICE\), last in CONTENTS, asks first, then takes you back to page 1\./);
   });
   it('YOUR PROGRESS when saved progress cannot be read; every row still opens', () => {
     assert.match(LES, /const title = unreadable \? 'YOUR PROGRESS'/);
     assert.match(endEl, /unreadable=\{(unreadable|endUnreadable)\}/);
-    assert.match(ET, /the title reads YOUR PROGRESS and every page can still be opened/);
+    assert.match(ET, /the title reads YOUR PROGRESS, and you can still open every page/);
   });
   it('TRY THIS holds on every face: LAB COMPLETE lists nothing; REVIEW ▾ only once a page is done', () => {
     assert.match(LES, /\{w\.left\.length > 0 \?/);
     assert.match(LES, /\{w\.credited\.length > 0 \?/);
     assert.match(END.tryThis[0], /^A page still listed\?/);
-    assert.match(END.tryThis[1], /^Something on the ✓ line\?/);
+    assert.match(END.tryThis[1], /^Finished a page\? Tap REVIEW ▾/);
     assert.doesNotMatch(ET, /keeps its credit/);
   });
 });

@@ -98,6 +98,6 @@ describe('Mastering room copy and guide match the drawing', () => {
   });
   it('the room guide bullet matches, and nothing in the guides says "three quarters"', () => {
     assert.doesNotMatch(guides, /three quarters/i);
-    assert.match(guides, /third corner of an equilateral triangle with the monitors, away from the walls\. A common start is about 38% of the way back from the front wall, refined by measuring\./);
+    assert.match(guides, /third corner of an equilateral triangle with the monitors, away from the walls\.',\n\s*'A suggested starting point is about 38% of the way back from the front wall, then refined by measuring\./);
   });
 });

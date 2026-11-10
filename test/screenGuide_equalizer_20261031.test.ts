@@ -63,7 +63,12 @@ describe('1. every Equalizer screen has a complete guide', () => {
   });
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k].length} bullets`);
         for (const line of gd[k]) assert.ok(line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -81,14 +86,10 @@ describe('1. every Equalizer screen has a complete guide', () => {
       assert.doesNotMatch(t, /\b(FabFilter|Waves|SSL|Neve|Pultec|API|Pro Tools|Ableton|Logic)\b/, id);
     }
   });
-  it('places itself in the sequence: first in Equalization, the EQ Lab follows; Dynamics after', () => {
-    const cat = code('src/screens/lab/labCatalog.ts');
-    const eqCat = cat.slice(cat.indexOf("id: 'equalization'"), cat.indexOf("id: 'dynamics'"));
-    assert.ok(eqCat.indexOf("route: 'EqLab'") < eqCat.indexOf("route: 'EqLabHome'"));
-    assert.ok(cat.indexOf("id: 'equalization'") < cat.indexOf("id: 'dynamics'"));
-    assert.match(GUIDES.explore.teaches.join(' '), /The first lab in Equalization; the EQ Lab follows/);
-    // The Advanced Training menu lists categories A→Z (Dynamics sits BEFORE Equalization): suggest it, never "next".
-    assert.match(GUIDES.check.teaches.join(' '), /A good next step: the Dynamics labs/);
+  it('no guide places itself in the course any more (decision 4, 2026-11-08: course-navigation lines removed)', () => {
+    for (const [id, gd] of Object.entries(GUIDES)) {
+      assert.doesNotMatch(textOf(gd), /first lab in Equalization|the EQ Lab follows|next step: the Dynamics|Dynamics labs/, `${id}: a course-order line`);
+    }
   });
 });
 
@@ -138,7 +139,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['COMMON MISTAKES', LESSON_UI],
       ['PRO TIPS', LESSON_UI],
       ['FORMULA / CONCEPT', LESSON_UI],
-      ...["Filter type", 'Frequency', 'Gain', 'Q (bandwidth)'].map((n): [string, string] => [n, EQ_LESSON]),
+      // decision 1 (owner, 2026-11-08): the lesson's CONTROLS are named by the on-screen labels TYPE / FREQ / GAIN / Q
+      ...['TYPE', 'FREQ', 'GAIN', 'Q'].map((n): [string, string] => [n, EQ_CFG]),
     ],
     check: [
       ['CHECK YOUR UNDERSTANDING', CHECK_UI],
@@ -147,10 +149,10 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['Lab complete', CHECK_UI],
       ['LEARN', SHELL],
       ['EXPLORE', SHELL],
-      // The slope step stays inside this lab (finding 2026-10-31: the EQ Lab
-      // comes after the Equalizer) — the HIGH-PASS TYPE note states the rate.
-      ['HIGH-PASS', EQ_CFG],
-      ['12 dB-per-octave', EQ_CFG],
+      // decision 6 (2026-11-08): the slope and Q steps point to where LEARN teaches them; the HIGH-PASS TYPE
+      // note ('the rumble-and-mud eraser', 'not a set amount of cut') answers two questions, so the CHECK guide no longer sends you to it.
+      ['CONTROLS', LESSON_UI],
+      ['FORMULA / CONCEPT', LESSON_UI],
     ],
   };
   for (const [id, pairs] of Object.entries(NAMES)) {
@@ -170,7 +172,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.ok(GUIDES.explore.seeing.join(' ').includes('20 Hz → 20 kHz'));
     // The hero is a fixed three-tone teaching wave — SOURCE never reaches it (anim: bands only).
     assert.match(EQ_CFG, /anim: \(v\) => \(\{ kind: 'eq', bands: \[eqBandOf\(v\)\] \}\)/);
-    assert.ok(GUIDES.explore.seeing[0].includes('not the SOURCE you play'));
+    assert.ok(GUIDES.explore.seeing[0].includes('not the SOURCE you hear'));
   });
   it('explore: the dock — FREQ fader 100 Hz–8 kHz; GAIN −12…+12; Q 0.7…8; three sources; the display toggles play', () => {
     assert.match(EQ_CFG, /min: 100, max: 8000, log: true/);
@@ -183,11 +185,12 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.equal((EQ_CFG.match(/question: '/g) ?? []).length, 2);
   });
   it('learn: the lesson’s Frequency, Gain and Q ranges are the rack’s (100 Hz–8 kHz, −12…+12, 0.7…8), and the guide says so', () => {
-    assert.match(EQ_LESSON, /range: '0\.7 wide … 8 narrow'/);
-    assert.match(EQ_LESSON, /range: '−12 … \+12 dB'/);
-    assert.match(EQ_LESSON, /range: '100 Hz – 8 kHz here \(EQs reach ~20 Hz – 20 kHz\)'/);
-    assert.match(EQ_LESSON, /Q ≈ Fc \/ bandwidth\. Filter slope = 6\/12\/18\/24 dB per octave \(1\/2\/3\/4-pole\)/);
-    assert.ok(GUIDES.learn.changes.join(' ').includes('Frequency 100 Hz to 8 kHz here (EQs reach about 20 Hz to 20 kHz), Gain −12 to +12 dB, Q 0.7 wide to 8 narrow'));
+    // the current lesson or the Part A rewrite (another worker loads it): same ranges, either wording
+    assert.match(EQ_LESSON, /range: ['"](0\.7 wide … 8 narrow|0\.7 WIDE · 1\.4 · 4 · 8 NARROW)['"]/);
+    assert.match(EQ_LESSON, /range: ['"](−12 … \+12 dB|−12 · −6 · 0 · \+6 · \+12 dB)['"]/);
+    assert.match(EQ_LESSON, /range: ['"]100 Hz – 8 kHz here \(EQs reach (~|about )20 Hz – 20 kHz\)['"]/);
+    assert.match(EQ_LESSON, /Filter slope = 6\/12\/18\/24 dB per octave \(1\/2\/3\/4-pole\)|give 6, 12, 18 or 24 dB per octave/);
+    assert.ok(GUIDES.learn.changes.join(' ').includes('FREQ 100 Hz to 8 kHz here (EQs reach about 20 Hz to 20 kHz), GAIN −12 to +12 dB, Q 0.7 WIDE to 8 NARROW'));
   });
   it('check: five questions, four answers each, and the topics the guide lists', () => {
     const ids = [...EQ_QS.matchAll(/id: '([\w-]+)'/g)].map((m) => m[1]);
@@ -204,8 +207,18 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(KEYS, /\{ route: 'EqLabHome', key: 'tr_eq', completion: 'understanding' \}/);
     assert.match(code('src/screens/lab/eq/EqLabHomeScreen.tsx'), /<LabUnderstandingBlock labId="eq"/);
     assert.match(SHELL, /const alreadyPassed = useLabClearedUnits\(labId\)\.has\(UNDERSTANDING_UNIT\);/);
-    assert.match(GUIDES.check.changes.join(' '), /same questions as on the EQ Lab menu/);
-    assert.match(GUIDES.check.teaches.join(' '), /completes the EQ Lab too/);
+    assert.match(GUIDES.check.changes.join(' '), /The EQ Lab menu asks the same five, so passing here completes the EQ Lab too/);
+  });
+  it('decision 6: the CHECK guide never walks the student to a tested reading; Q and slope point to LEARN', () => {
+    const c = EQUALIZER_SCREEN_GUIDES.check;
+    const t = [textOf(GUIDES.check), c.intro!.learning, c.intro!.start].join('\n');
+    // answers: narrower; high-pass; graphic fixes freq + width; another 24 dB per octave (a rate); headroom
+    assert.doesNotMatch(t, /narrower|HIGH-PASS|rumble-and-mud|a rate|not a set amount|fixed frequency|headroom/i);
+    assert.doesNotMatch(t, /switch Q from 0\.7 WIDE to 8 NARROW|read (HIGH-PASS|its slope)/);
+    assert.match(c.tryThis[0], /switch to LEARN and reread the Q entry under CONTROLS/);
+    assert.match(c.tryThis[1], /switch to LEARN and reread FORMULA \/ CONCEPT/);
+    // the HIGH-PASS note it no longer points to does give two answers away
+    assert.match(EQ_CFG, /label: 'HIGH-PASS',[^\n]*not a set amount of cut\. The rumble-and-mud eraser\./);
   });
 });
 

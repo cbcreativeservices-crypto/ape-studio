@@ -48,30 +48,34 @@ export type DelayScreenId = 'explore' | 'learn' | 'check';
 export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How a delay works: TIME sets the gap between repeats, FEEDBACK sets how long the trail lasts, and a delay time can match the song’s tempo.',
+      start: 'Set SOURCE to CLICK 90 and tap ▶. Watch the repeats leave on ▸ OUT. Then step FDBK from 25% to 75% and see the trail grow while the spacing stays the same.',
+    },
     seeing: [
-      'The glass: the source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. The ruler under OUT counts seconds since the stage.',
-      'Readouts: TIME, FDBK, MIX. The strip under them says this is a TEACHING MODEL, drawn from the same math as the audio.',
+      'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. The ruler under OUT counts seconds since the stage.',
+      'TIME, FDBK and MIX show your settings. The strip under them says TEACHING MODEL: the picture comes from the same math as the sound you hear.',
       'A steady SINE or PINK source draws a band and says TRY CLICK: repeats of a steady sound blur into it.',
     ],
     control: [
-      '▶ in the header, or a tap on the glass, plays the source through the delay; ■ stops it. Every control works while it plays.',
-      'The fader is TIME, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
+      'Tap ▶ in the header, or tap the glass, to play the source through the delay; ■ stops it. Every control works while it plays.',
+      'Drag the TIME fader, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
       'Long-press a key or a readout for its lesson entry. The ⓘ at the end of the readouts explains the display.',
-      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES below: DESIGNED RESPONSE (the echo pattern as stems), THE AUDIO PATH, two CHECK YOURSELF questions, ⓘ GUIDED LESSON.',
+      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES below: DESIGNED RESPONSE (each repeat drawn as a stem, a line whose height is its level), THE AUDIO PATH, two CHECK YOURSELF questions, ⓘ GUIDED LESSON.',
     ],
     changes: [
       'TIME is the gap from a sound to its first repeat, and between repeats: more TIME, wider spacing.',
-      'FDBK feeds each repeat back in. At 50% each repeat is half as tall (6 dB down), so FDBK sets how long the trail lasts, never the spacing.',
-      'MIX blends dry and repeats: at 100% WET the gray dry click leaves OUT.',
-      'REPEAT DAMPING dulls every pass after the first; PING-PONG sends repeats left, right, left.',
+      'FDBK feeds each repeat back in; at 50% each is half the one before (6 dB down). It sets how long the trail lasts, never the spacing.',
+      'MIX blends dry sound and repeats: at 100% WET the gray dry click leaves OUT.',
+      'REPEAT DAMPING darkens each pass after the first. PING-PONG sends repeats left, right, left.',
     ],
     teaches: [
       'A delay hands back separate copies of a sound in time. Reverb, the next lab, blurs thousands of them into a wash.',
       'A delay time can match the song: a quarter note lasts 60,000 ÷ BPM ms. Slapback is one quick repeat, about 60–150 ms.',
-      'It builds on the Echo Laboratory in Wave Physics. Chorus and flanger, in Modulation, are very short delays that move.',
+      'A delay repeat is an echo you place on purpose, like those in the Echo Laboratory in Wave Physics. Chorus and flanger, later in Modulation, use very short delays that move.',
     ],
     tryThis: [
-      'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: the readout says 500 ms; the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
+      'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: 500 ms. In LAB NOTES, the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
       'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the gray dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
       'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE letters one click’s repeats L, R, L.',
     ],
@@ -79,26 +83,30 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The words of delay (time, feedback, wet / dry, slapback, ping-pong, damping) and how a song’s tempo turns into a delay time in milliseconds.',
+      start: 'Scroll to FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then switch to EXPLORE, slide TIME to 500 ms, and check your answer in LAB NOTES.',
+    },
     seeing: [
-      'The LEARN tab: the guided lesson for this lab as one page to read. Nothing here plays.',
-      'First, what a delay is. Then CONTROLS: the display, Delay time, Feedback, Wet / Dry (the dock’s MIX), Ping-pong and Repeat damping, each with what it does.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the delay time for a note at any tempo.',
+      'This is the Delay lab’s guided lesson as one page to read. Nothing on it moves, but the ▶ in the header still plays or stops the sound.',
+      'It starts with what a delay is. Then CONTROLS: the display, TIME, FDBK (FEEDBACK), MIX, PING-PONG and REPEAT DAMPING, each with what it does to the repeats.',
+      'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the delay time for a note at any tempo.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; EXPLORE is the live rack.',
+      'Scroll to read. Use the tabs under the title to switch between LEARN, EXPLORE (the live rack) and CHECK.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
       'On EXPLORE, long-press a dock key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
     ],
     changes: [
-      'Nothing on this page moves: it is the reference for what EXPLORE shows.',
-      'Each CONTROLS entry names a part of the EXPLORE screen and says what it does to the repeats.',
+      'Read this page beside EXPLORE: each CONTROLS entry names a part of the rack and says what it does to the repeats.',
       'Most COMMON MISTAKES lines pair a setting with what goes wrong: too much feedback runs away, a delay off the tempo smears the groove, full-range repeats pile up.',
+      'FORMULA / CONCEPT turns BPM into milliseconds. On EXPLORE, the caption under DESIGNED RESPONSE names the BPM for your TIME.',
     ],
     teaches: [
-      'The words for a delay: delay time, feedback, wet / dry, slapback, ping-pong, damping.',
+      'The words for a delay: delay time, feedback, wet / dry, slapback (one quick repeat), ping-pong (repeats alternating left and right), damping (darker repeats).',
       'How to turn a tempo into a delay time, for a quarter, an eighth or a dotted eighth note.',
       'Why repeats are usually kept quieter than the dry sound, and darker than it.',
-      'The reference behind EXPLORE and the CHECK tab.',
+      'Why too much feedback runs away, and why a delay off the tempo smears the groove.',
     ],
     tryThis: [
       'Read FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then on EXPLORE, with FDBK under 75%, slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM.',
@@ -108,29 +116,33 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
 
   // ── CHECK — the understanding check ───────────────────────────────────────
   check: {
+    intro: {
+      learning: 'A review of delay’s core ideas: turning tempo into delay time, what FEEDBACK controls, what makes a slapback, and what REPEAT DAMPING does to the repeats.',
+      start: 'Tap an answer on each card. If the tempo question stumps you, reread FORMULA / CONCEPT on LEARN. For the others, try that control on EXPLORE and come back.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING, over the lab’s name. Get every question right to complete the lab; a line under the lead counts the ones still to get right.',
+      'This is CHECK YOUR UNDERSTANDING for the Delay lab. A line under the heading counts the questions you still need to get right.',
       'Four question cards: tempo and delay time, FEEDBACK, slapback, and REPEAT DAMPING.',
       'The options come in a mixed order, so the first one is not always the answer.',
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
       'A wrong answer costs nothing: pick again straight away. There is no score.',
-      'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. Leaving the lab before the last right answer clears them.',
+      'Use the tabs under the title to go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so the answer can be worked out.',
-      'When the last card is right, a green card says the lab is complete. It counts once, for every certificate that needs it.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work out the answer.',
+      'Get all four right and the lab is complete: a green card says so.',
     ],
     teaches: [
-      'Each question asks about an idea EXPLORE showed: spacing is TIME, trail length is FEEDBACK.',
-      'This is the last step of the lab, and what marks it complete.',
-      'The same words come back in Reverb, next in Time Effects.',
+      'On a delay, TIME and FEEDBACK each shape the repeats in a different way.',
+      'How a song’s tempo turns into a delay time, and what makes a slapback different from other echoes.',
+      'Why an engineer might darken the repeats with REPEAT DAMPING.',
     ],
     tryThis: [
-      'Before you start: a quarter note lasts 60,000 ÷ BPM ms. On EXPLORE, with FDBK under 75%, the caption under DESIGNED RESPONSE names the BPM for a TIME of 250 ms or more — test your answer there.',
-      'Also on EXPLORE: switch FDBK between 25% and 75%. The stems keep their spacing; only how many and how tall change.',
+      'Test the tempo law on a different note: on EXPLORE, with FDBK under 75%, set TIME to 375 ms. The caption under DESIGNED RESPONSE names 160 BPM. FORMULA / CONCEPT on LEARN shows why.',
+      'Stuck on FEEDBACK or REPEAT DAMPING? On LEARN, each CONTROLS entry says what that control does to the repeats. Read it, then try it on EXPLORE.',
     ],
   },
 };

@@ -68,6 +68,15 @@ export type ControlLesson = {
   advanced?: boolean;
 };
 
+/** One GUIDED STEP (owner HOLD 1 = YES, 2026-11-08): what to do on the screen,
+ *  what to notice, and why it matters. Rendered numbered "1", "2", … (never
+ *  "1 of 5"). */
+export type GuidedStep = {
+  do: string;
+  notice: string;
+  why: string;
+};
+
 /** The renderable content the GuidedLessonSheet actually uses — shared by lab
  *  lessons AND the measurement tools' control help (which are not LabIds). A
  *  LabLesson satisfies this structurally. */
@@ -79,6 +88,10 @@ export type LessonContent = {
   commonMistakes: string[];
   proTips: string[];
   formula: string;
+  /** WHAT YOU WILL UNDERSTAND — knowledge outcomes (never skills). */
+  outcomes?: string[];
+  /** GUIDED STEPS — a short walk-through on this screen. */
+  steps?: GuidedStep[];
 };
 
 /** A full lab lesson: the lab-level stack + its controls. */
@@ -98,4 +111,8 @@ export type LabLesson = {
   proTips: string[];
   /** Teaching formula / concept note. */
   formula: string;
+  /** WHAT YOU WILL UNDERSTAND — knowledge outcomes (never skills). */
+  outcomes?: string[];
+  /** GUIDED STEPS — a short walk-through on this screen. */
+  steps?: GuidedStep[];
 };

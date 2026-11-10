@@ -116,8 +116,12 @@ function lessonPages(id: string) {
 }
 
 function checkShape(id: string, gd: Guide, problems: string[]) {
-  const keys = Object.keys(gd).sort();
+  const keys = Object.keys(gd).filter((k) => k !== 'intro').sort();
   if (keys.join() !== [...SECTION_KEYS].sort().join()) problems.push(`${id}: sections ${keys}`);
+  // the intro card (Guided Lessons return 2026-11-08), where the step has one: learning ≤ 30 words, start ≤ 40
+  const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+  if (intro && intro.learning.trim().split(/\s+/).length > 30) problems.push(`${id}: intro.learning over 30 words`);
+  if (intro && intro.start.trim().split(/\s+/).length > 40) problems.push(`${id}: intro.start over 40 words`);
   for (const k of SECTION_KEYS) {
     if (!Array.isArray(gd[k]) || gd[k].length < 1 || gd[k].length > 5) problems.push(`${id}.${k}: ${gd[k]?.length} bullets`);
     for (const line of gd[k] ?? []) if (typeof line !== 'string' || line.trim().length <= 10) problems.push(`${id}.${k}: a blank bullet`);
@@ -198,8 +202,8 @@ describe('1. every screen a learner reaches has a complete guide', () => {
                   const k = `${step?.label ?? '—'}|${what}|${enginePage ? 'engine' : 'family'}`;
                   if (!KNOWN_LOSS.has(k)) lost.add(`${k} (${m.id} ${pg.page})`);
                 };
-                assert.match(ctl, /The strip under the title/, `${m.id} ${pg.page} ${step?.label ?? '—'}`);
-                if (!/The other ⓘ beside this key/.test(ctl)) miss('the other ⓘ');
+                assert.match(ctl, /In the strip under the title/, `${m.id} ${pg.page} ${step?.label ?? '—'}`);
+                if (!/The other ⓘ, beside the one you tapped/.test(ctl)) miss('the other ⓘ');
                 if (step?.layout === 'rack') {
                   rack++;
                   if (!/⤢ FULL SCREEN shows the drawing/.test(ctl)) miss('FULL SCREEN');
@@ -240,7 +244,7 @@ describe('1. every screen a learner reaches has a complete guide', () => {
     const gd = G.mikingScreenGuide({ page: pg.page, pageNum: 4, pageTitle: pg.title, goal: pg.goal, prevTitle: pg.prev, nextTitle: pg.next, step, first: false, last: false, credited: false, enginePage: true }) as unknown as Guide;
     assert.match(gd.seeing[0], /^MODULE 4 · PLACEMENT STUDIO\./);
     assert.ok(gd.seeing.some((l) => l.includes('PLACE · Place the mic')));
-    assert.ok(gd.control[0].startsWith('The dock: POSITION (slider; menu: FRONT–BACK / HEIGHT / ACROSS); AIM'));
+    assert.ok(gd.control[0].startsWith('In the dock: POSITION (slider; menu: FRONT–BACK / HEIGHT / ACROSS); AIM'));
     assert.ok(gd.teaches[0].includes(pg.goal));
     assert.ok(gd.teaches.some((l) => l.includes(`“${pg.prev}”`) && l.includes(`“${pg.next}”`)));
   });
@@ -344,7 +348,8 @@ describe('2. every hand-written name is on the screen it describes', () => {
     assert.match(C, /name: 'Microphone Selection Lab'/);
     assert.match(C, /name: 'Microphone Principles'/);
     const ht = textOf(G.mikingHubGuide() as unknown as Guide);
-    for (const n of ['Instruments & Recording', 'Microphone Selection Lab', 'Microphone Principles']) assert.ok(ht.includes(n), n);
+    // The course pointer to the Microphone Selection Lab left WHAT THIS TEACHES (owner decision 4, 2026-11-08).
+    for (const n of ['Microphone Principles']) assert.ok(ht.includes(n), n);
   });
 });
 
@@ -494,7 +499,7 @@ describe('7. the 2026-10-31 review: each accepted finding, re-proved from the co
   });
   it('AIM THE REJECTION: the unwanted source is the lesson’s own (a PA, a loudspeaker, an amp), not always a stage monitor', () => {
     const t = textOf(guideAt('B09', 'context', liveDock('B09')));
-    assert.match(t, /the loud source picked in MONITOR/);
+    assert.match(t, /the loud source you picked in MONITOR/);
     assert.doesNotMatch(t, /a MONITOR where a stage often puts one/);
   });
   it('the sharper "Studio or live" words only on the engine’s own page (M11 draws a routing matrix under that title)', () => {
@@ -525,7 +530,7 @@ describe('7. the 2026-10-31 review: each accepted finding, re-proved from the co
     assert.match(K, /useState<string \| null>\(answered \? s\.correct : null\)/);
     assert.match(K, /disabled=\{correct\}/);
     assert.match(code(LESSON_SCREEN), /setLocalAnswers\(\{\}\);/);
-    assert.match(G.MIKING_END_GUIDE.tryThis.join('\n'), /re-read its checks/);
+    assert.match(G.MIKING_END_GUIDE.tryThis.join('\n'), /reread its checks/);
   });
   it('SET UP IN ORDER: an early tap is a recorded miss in practice credit, so the guide never asks for one on purpose', () => {
     assert.match(code(`${MIKING}/engine/kit.tsx`), /early\.current = true;\s*noteFirstMiss\(t\.id\);/);

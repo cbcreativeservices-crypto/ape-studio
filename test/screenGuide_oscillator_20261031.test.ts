@@ -64,7 +64,12 @@ describe('1. every Oscillator screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -112,8 +117,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       'SPKR', 'SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE 25%', '110', '220', '440', '880',
       // the well and the rack's own controls
       'LAB NOTES', 'THE SOUND', 'CHECK YOURSELF', 'GUIDED LESSON', 'HIDE DISPLAY', 'FULL SCREEN',
-      // the catalog placement
-      'Synthesis & Sound Design', 'Noise', 'Harmonics', 'FM Synthesis',
+      // the catalog placement left the guide (decision 4, 2026-11-08: no course navigation); see the negative check below
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'PULSE 25%', 'TRIANGLE', 'SQUARE', 'SPKR'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'TRIANGLE', 'SQUARE', 'PULSE 25%'],
@@ -130,16 +134,13 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
-  it('the waves and pitches are exactly the ones the guide lists; the catalog order is the one the guide states', () => {
+  it('the waves and pitches are exactly the ones the guide lists; the guide no longer states the catalog order (decision 4)', () => {
     const s = code(SCREEN);
     const waves = [...s.matchAll(/\{ key: '[a-z]+', label: '([A-Z0-9 %]+)', lessonKey:/g)].map((m) => m[1]);
     assert.deepEqual(waves, ['SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE 25%']);
     assert.match(s, /const F0_CHOICES = \[110, 220, 440, 880\];/);
     assert.match(s, /useState<PresetKey>\('saw'\)/);
-    const cat = code('src/screens/lab/labCatalog.ts');
-    const syn = cat.slice(cat.indexOf("id: 'synthesis'"), cat.indexOf("id: 'spatial'"));
-    const order = [...syn.matchAll(/\{ name: '([^']+)', blurb:/g)].map((m) => m[1]);
-    assert.deepEqual(order.slice(0, 4), ['Oscillators', 'Noise', 'Harmonics', 'FM Synthesis']);
+    for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /Synthesis & Sound Design|FM Synthesis lab|next (lab|step)|comes next/, id);
     // The LEARN guide says the noise / FM / AM lesson entries have no control here — the screen says so too.
     assert.match(s, /FM · AM — NOT IN THIS LAB/);
     assert.doesNotMatch(s, /id: '(fm|am|noise)'/);
@@ -224,13 +225,13 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(s, /additive: guardAdditiveForEngine\(additivePayload\(buildPreset\(w\), hz\)\)/);
     const r4 = (110 / 150) ** 4;
     assert.equal((10 * Math.log10(r4 / (1 + r4))).toFixed(1), '-6.5');
-    assert.match(g.explore.changes[3], /On the speaker you hear it in either view\./);
+    assert.match(g.explore.changes[3], /You hear it on a phone speaker either way\./);
     assert.doesNotMatch(textOf(GUIDES.explore), /cannot play deep notes/);
   });
   it('LEARN: LAB NOTES says "not in this lab" for FM and AM only; the band-limiting tip has no control here', () => {
     assert.match(s, /'FM · AM — NOT IN THIS LAB'/);
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /band-limiting OFF/);
-    assert.match(g.learn.changes[1], /FM, AM, noise and the band-limiting ON\/OFF tip are reading only: EXPLORE has only WAVE, F0 and SPKR \(LAB NOTES says so for FM and AM\)/);
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /Away from this lab, on a synth that can switch band-limiting off/);
+    assert.match(g.learn.changes[1], /FM, AM, noise and the band-limiting ON\/OFF tip are here to read only\. EXPLORE has just WAVE, F0 and SPKR, and LAB NOTES says so for FM and AM/);
   });
   it('D41 CHECK: right answers survive a tab switch (the check stays mounted), and the guide says so', () => {
     assert.match(code('src/components/LabUnderstandingCheck.tsx'), /const \[correct, setCorrect\] = useState<Set<string>>/);
@@ -238,5 +239,21 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     const t = textOf(GUIDES.check);
     assert.doesNotMatch(t, /even if you come back later|nothing is lost|stay on this tab|start fresh/);
     assert.match(t, /Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over/);
+  });
+  it('LEARN: the header ▶ shows on every tab (LabShell headerAction), so the page never says nothing plays', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(s, /headerAction=\{\s*<HeaderPlayButton/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.ok(g.learn.seeing[0].includes('▶ in the header still plays or stops the wave'));
+  });
+  it('CHECK (decision 6, 2026-11-08): no line walks to a tested reading; the triangle and duty-cycle lines point to their lesson entries', () => {
+    const q = code('src/features/lab/understandingChecks.ts');
+    assert.match(q, /correct: 'Its harmonics fall away much faster — 1\/n² instead of 1\/n'/);
+    assert.match(q, /correct: 'Its timbre — some harmonics drop out — but not its pitch'/);
+    const t = [textOf(GUIDES.check), JSON.stringify((g.check as unknown as { intro: unknown }).intro)].join(' ');
+    assert.doesNotMatch(t, /how fast the bars shrink|fall away (much )?faster|1\/n|F0 stays|pitch stays|bars go empty|cancels|aliasing|fold back|Sawtooth|harmonics fall away/);
+    assert.match(g.check.tryThis[0], /read the TRIANGLE and SQUARE entries under CONTROLS on LEARN/);
+    assert.match(g.check.tryThis[1], /read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray/);
+    assert.match(s, /onLongPress: \(\) => openLesson\(w\.lessonKey\)/);
   });
 });

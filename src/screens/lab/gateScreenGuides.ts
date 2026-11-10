@@ -57,27 +57,31 @@ export type GateScreenId = 'explore' | 'learn' | 'check';
 export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
+    intro: {
+      learning: 'How a gate turns down sound that falls below the threshold, and how RANGE, HOLD and release decide how deep and how smoothly it closes.',
+      start: 'Tap ▶ to play CLICK 90 and watch GR drop toward 0 on each hit. Then raise THRESH to −20 dB and see GR stay at the RANGE floor.',
+    },
     seeing: [
-      'Sound flows left → right: IN ▸, through the green GATE bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
+      'Sound flows IN ▸, through the green GATE bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
       'The GR ladder (0 to 70 dB) grows down as the gate closes.',
-      'Readouts: THRESH, RANGE and GR (how far it turns down), measured live; — dB while stopped.',
-      'The drawing is a TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
+      'THRESH and RANGE show your settings. GR, measured live, is how far the gate turns down (— dB when stopped).',
+      'The drawing is a TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL, but GR measures the real click.',
     ],
     control: [
-      '▶ in the header, or a tap on the display, plays the SOURCE through the gate; ■ stops it. The THRESH fader runs from −50 to −20 dB.',
-      'RANGE key: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD key: 0, 10 or 100 ms. RLS key: 20 ms CHATTER, 100 ms or 500 ms.',
-      'SOURCE key: CLICK 90 or PINK NOISE. On the 5 ms click, RANGE, HOLD and RLS show on GR but barely in the sound: to hear them, use PINK NOISE with THRESH near its level.',
-      'Long-press any key or readout for its lesson entry. Below, LAB NOTES: the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',
+      'RANGE: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD: 0, 10 or 100 ms. RLS (release): 20 ms CHATTER, 100 ms or 500 ms.',
+      'SOURCE: CLICK 90 or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
+      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [
       'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 dB = 40 dB quieter).',
-      'HOLD keeps it open a set time after the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at the line with a fast RLS flickers: chatter.',
-      'Each click opens it at the starting THRESH −35 dB; at −20 dB the short click never does.',
+      'HOLD keeps the gate open a set time after the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at the line with a fast RLS flickers: chatter.',
+      'At the starting THRESH −35 dB each click opens the gate; at −20 dB the short click never reaches it.',
     ],
     teaches: [
-      'Downward expansion: the gate works the other side of the threshold from the compressor — quiet sound turned down, loud sound let through.',
-      'Range sets how deep it closes; hold and release set how it closes — and why chatter happens.',
-      'It follows Compression in the Dynamics labs; Limiter is next.',
+      'Downward expansion: a gate works on the other side of the threshold from a compressor. Quiet sound is turned down; loud sound is let through.',
+      'Range sets how deep the gate closes; hold and release set how it closes. A release too fast for a wobbling level causes chatter.',
+      'In real work, a gate turns down what lies between the notes or hits: bleed, hum or spill.',
     ],
     tryThis: [
       'Play CLICK 90 and raise THRESH to −20 dB: GR stays at the RANGE floor, as the short click never opens the gate. Pull it down to −50 dB: GR drops toward 0 on each hit and climbs back between them.',
@@ -88,52 +92,60 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
 
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
+    intro: {
+      learning: 'The language of gating (threshold, range, hold, release, hysteresis, key filter, chatter) and why a partial range often sounds more natural than full silence.',
+      start: 'Scroll to COMMON MISTAKES and read the line on release. Then switch to EXPLORE, play CLICK 90 at THRESH −50 dB, and compare RLS 20 ms CHATTER with 500 ms.',
+    },
     seeing: [
-      'The LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
-      'First what a gate is. Then CONTROLS — Threshold, Attack, Hold, Release, Range, the GR meter and more. Some (Attack, Hysteresis, Lookahead, sidechain and key filter) are on real gates, not on this screen.',
-      'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
+      'This is the Gate / Expander guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays the sound.',
+      'It starts with what a gate is. Then CONTROLS: THRESH, Attack, HOLD, RLS, RANGE, the GR meter and more. Attack is fixed at 1 ms here; Hysteresis, Lookahead, sidechain and key filter are on real gates, not on this screen.',
+      'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
-      'Scroll to read. The tabs under the title switch between LEARN, EXPLORE (the live gate) and CHECK (four questions).',
-      'On EXPLORE, long-press any key or readout to open just its entry as a sheet; ⓘ GUIDED LESSON at the end of LAB NOTES opens this whole lesson.',
+      'Scroll to read. Use the tabs under the title to switch between LEARN, EXPLORE (the live gate) and CHECK (four questions).',
+      'On EXPLORE, long-press any key or readout to open just its entry as a sheet. ⓘ GUIDED LESSON at the end of LAB NOTES opens this whole lesson.',
     ],
     changes: [
-      'Nothing on this page moves — it is the reference for what EXPLORE shows.',
-      'FORMULA / CONCEPT: below the threshold, gain falls toward the Range floor; above it, the gate is open at 0 dB.',
-      'Most COMMON MISTAKES come in pairs: threshold too high chops tails, too low lets bleed through; release too fast chatters.',
+      'Read this page beside EXPLORE: THRESH, HOLD, RLS and RANGE each match a fader or key you can try there.',
+      'FORMULA / CONCEPT: below the threshold, gain falls toward the RANGE floor; above it, the gate is open at 0 dB.',
+      'Most COMMON MISTAKES come in pairs: threshold too high chops tails, too low lets bleed through; a release too fast chatters.',
     ],
     teaches: [
-      'The words of gating: threshold, range (floor), hold, release, hysteresis, key filter, chatter.',
-      'Why a partial range often sounds more natural than full silence.',
-      'CHECK asks four questions on it; Limiter is the next Dynamics lab.',
+      'The words of gating: threshold, range (floor), hold, release, hysteresis (separate open and close levels), key filter (a filter on what the gate listens to), chatter.',
+      'Why a partial range often sounds more natural than full silence: leakage ducks instead of vanishing.',
+      'How hold and a slower release keep a gate from chattering on a note that fades across the threshold.',
     ],
     tryThis: [
       'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
-      'Read the line on Range at −∞, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 dB SILENCE, 20.0 at −20 dB GENTLE.',
+      'Read the mistake on full silence, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 dB SILENCE, 20.0 at −20 dB GENTLE.',
     ],
   },
 
   // ── CHECK — the understanding check ───────────────────────────────────────
   check: {
+    intro: {
+      learning: 'A review of the gate’s core ideas: which side of the threshold it works on, what a partial range does, what causes chatter, and what hold does.',
+      start: 'Read the first question, on which side of the threshold a gate works, and tap an answer. If one stumps you, use the tabs to look it up on LEARN or try it on EXPLORE.',
+    },
     seeing: [
-      'CHECK YOUR UNDERSTANDING: four questions on this lab — which side of the threshold a gate works on, a partial range, chatter, and hold.',
-      'A ✓ replaces a question’s number once it is right. The line under the title says how many are still to get right.',
+      'This is CHECK YOUR UNDERSTANDING: four questions on gating — which side of the threshold a gate works on, a partial range, chatter, and hold.',
+      'A ✓ replaces a question’s number once you get it right. The line under the title says how many are still to get right.',
     ],
     control: [
       'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
-      'Nothing is scored. The tabs switch to LEARN or EXPLORE at any time to look something up.',
+      'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look up a gate setting.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick still teaches.',
-      'All four right and the lab is complete — passing this check is what counts it toward certificates, and a pass stays passed.',
+      'Each answer shows its explanation at once, right or wrong, so a wrong pick about range or hold still teaches you something.',
+      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
-      'Whether the ideas stuck: the gate turns quiet sound down, range is how far, and hold or a slower release stops chatter.',
-      'Every question is answered by something EXPLORE shows or LEARN says.',
+      'What a gate does to sound on each side of the threshold, and how RANGE changes what you hear when it closes.',
+      'Where chatter comes from, and which settings calm a gate on a note that fades across the threshold.',
     ],
     tryThis: [
-      'Unsure about RANGE? On EXPLORE, CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 dB GENTLE: GR tops out at 20.0 dB — quieter, not silent.',
-      'Unsure about HOLD? On EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) compare HOLD 0 ms and 100 ms: at 100 ms GR rests at 0.0 a moment after each hit before it falls.',
+      'Unsure about RANGE? On EXPLORE, play CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −40 dB: GR tops out at 40.0 dB. What does that floor mean for the sound?',
+      'Unsure about HOLD? Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE to open its lesson entry.',
     ],
   },
 };

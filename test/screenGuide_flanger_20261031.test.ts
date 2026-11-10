@@ -61,7 +61,12 @@ describe('1. every Flanger screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -111,8 +116,11 @@ describe('3. each guide quotes its screen’s real names', () => {
       // the header transport, the rack's own controls, the well
       '▶', '■', 'HIDE DISPLAY', 'FULL SCREEN', 'LAB NOTES', 'DESIGNED RESPONSE',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Manual / Delay time', 'LFO Waveform', 'Stereo width', 'Through-Zero', 'TZF', 'ADV', 'CENTER', 'SWEEP', 'FDBK', '50% EVEN'],
-    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'CENTER', 'SOURCE', 'FDBK'],
+    // 2026-11-08: 'Manual / Delay time' is now CENTER (decision 1: the on-screen label); the rewrite
+    // no longer names the LEARN tab itself. The lesson-only names below are in the old lesson AND Part A.
+    learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'LFO Waveform', 'Stereo width', 'Through-Zero', 'TZF', 'ADV', 'CENTER', 'SWEEP', 'FDBK', '50% EVEN', 'RATE', 'DEPTH', '▶'],
+    // 'SOURCE' dropped: the CHECK TRY THIS no longer walks to the SOURCE list (decision 6, 2026-11-08).
+    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'CENTER', 'FDBK', 'DESIGNED RESPONSE', 'COMMON MISTAKES', '50% EVEN'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(FLANGER_SCREEN_GUIDES).sort());
@@ -142,9 +150,26 @@ describe('3. each guide quotes its screen’s real names', () => {
   it('the LEARN page lists the three controls the guide says are not in this dock', () => {
     const c = code('src/features/lab/guidedLessons/content.ts');
     const block = c.slice(c.indexOf('  flanger: {'), c.indexOf('  phaser: {'));
-    for (const k of ['lfo_wave', 'stereo_offset', 'tzf']) assert.match(block, new RegExp(`key: '${k}'`));
-    assert.match(block, /key: 'tzf'[\s\S]*?advanced: true/);
+    for (const k of ['lfo_wave', 'stereo_offset', 'tzf']) assert.match(block, new RegExp(`key: ["']${k}["']`));
+    assert.match(block, /key: ["']tzf["'][\s\S]*?advanced: true/);
     assert.doesNotMatch(CFG, /lessonKey: '(lfo_wave|stereo_offset|tzf)'/, 'one of them is on the dock now — update the LEARN guide');
+  });
+  it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
+    const ck = FLANGER_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
+    const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
+    // notch-spacing (2 ms → 500 Hz): no walk to CENTER 2.0 ms, no 500 Hz, no 1 ÷ 0.002
+    assert.doesNotMatch(all, /500 Hz|2\.0 ms|0\.002/);
+    // sine-test: the answer (one frequency / noise has energy everywhere) is not stated or walked to
+    assert.doesNotMatch(all, /one frequency|energy (at|everywhere)|both SOURCE choices|are noise/i);
+    // even-vs-uneven and feedback: answers not stated
+    assert.doesNotMatch(all, /evenly spaced|uneven|taller and narrower|metallic/i);
+    // the new line tests the same law on a different delay: 5.0 ms (the fader top) → 200 Hz
+    assert.equal(Math.round(1 / (5 / 1000)), 200);
+    assert.match(CFG, /fader: \{ min: 0\.5, max: 5,/);
+    assert.match(ck.tryThis[0], /with MIX on 50% EVEN, slide CENTER to the top, 5\.0 ms\. The caption under DESIGNED RESPONSE reads notches every 200 Hz/);
+    // the spacing caption only shows below 100% MIX
+    assert.match(CFG, /heroCaption: \(v\) =>\s*v\[P\.modMix\] >= 1\s*\? 'At 100% MIX/);
+    assert.match(ck.tryThis[1], /reread the COMMON MISTAKES line on test sources on LEARN/);
   });
   it('the CHECK tab has the four questions the guide counts', () => {
     const u = code('src/features/lab/understandingChecks.ts');
@@ -254,7 +279,7 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
   it('LEARN does not say "nothing plays": the header ▶ shows on every tab and the rack stays mounted', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
     assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
-    assert.ok(GUIDES.learn.seeing[0].includes('the ▶ in the header still plays or stops the sound'));
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the sound'));
   });
   it('Through-Zero is a specialty, not "many flangers"; stereo width is FIXED at a quarter cycle in the engine', () => {
     assert.match(code('modules/ape-dsp/ios/core/Effects.hpp'), /const double sR = std::sin\(2\.0 \* fx::kPi \* \(lfo_ \+ 0\.25\)\);/);
@@ -289,11 +314,12 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
   });
   it('the lesson’s negative-feedback lines name the full-wet condition', () => {
     const L = read('src/features/lab/guidedLessons/content.ts');
-    assert.ok(L.includes('at full wet (100% mix) it gives the hollow "through-a-tube" tone, but at 50/50 it mostly flattens the comb'));
-    assert.ok(L.includes('Negative feedback + short delay at full wet (100% mix) = the hollow, resonant "jet"'));
+    // the old lesson lines, or the Part A rewrite's (2026-11-08) — both name the full-wet condition
+    assert.ok(L.includes('at full wet (100% mix) it gives the hollow "through-a-tube" tone, but at 50/50 it mostly flattens the comb') || L.includes('−70% HOLLOW sounds hollow only at MIX 100%'));
+    assert.ok(L.includes('Negative feedback + short delay at full wet (100% mix) = the hollow, resonant "jet"') || L.includes('For the hollow tone, set MIX to 100% and FDBK to −70% HOLLOW.'));
   });
   it('the guide’s TRY THIS names the full-wet condition too (D42, 2026-11-01)', () => {
-    assert.ok(GUIDES.explore.tryThis.join(' ').includes('pick FDBK −70% HOLLOW: it sounds hollow only at 100%; at 50% EVEN it almost cancels the comb out'));
+    assert.ok(GUIDES.explore.tryThis.join(' ').includes('Add FDBK −70% HOLLOW: hollow only at 100%. At 50% EVEN the same setting draws a nearly flat trace.'));
   });
 });
 
@@ -308,7 +334,8 @@ describe('8. MIX 50% is EVEN, not always DEEPEST (verified 2026-10-31)', () => {
     assert.match(CFG, /\{ label: '50% EVEN', value: 0\.5 \}/);
     assert.doesNotMatch(CFG, /DEEPEST|deepest comb/);
     const L = read('src/features/lab/guidedLessons/content.ts');
-    assert.ok(L.includes('Comb notches are deepest near 50% (equal dry+wet). With no feedback they cancel fully at exactly 50%'));
+    // the old lesson line, or the Part A rewrite's (2026-11-08); neither claims "deepest at 50%"
+    assert.ok(L.includes('Comb notches are deepest near 50% (equal dry+wet). With no feedback they cancel fully at exactly 50%') || L.includes('At 50% EVEN they are equal, so the notches cut deep'));
     assert.doesNotMatch(L, /deepest at 50%/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /DEEPEST|deepest at 50%/, id);
   });

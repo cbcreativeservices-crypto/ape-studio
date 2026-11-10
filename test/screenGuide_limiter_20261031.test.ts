@@ -65,7 +65,12 @@ describe('1. every Limiter screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k].length} bullets`);
         for (const line of gd[k]) assert.ok(line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -110,7 +115,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       'LAB NOTES', 'GAIN REDUCTION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       'TEACHING MODEL', 'DRUM-HIT MODEL',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Ceiling', 'Drive', 'Release', 'Attack', 'Lookahead', 'True-Peak', 'CLICK 120', 'CEILING', 'dBTP'],
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Drive', 'RLS', 'Attack', 'Lookahead', 'True-Peak', 'CLICK 120', 'CEILING', 'dBTP'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'CEILING', 'True-Peak'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));
@@ -128,7 +133,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   it('the dock, bezel and well are exactly what the guide lists', () => {
     assert.match(LIM, /label: 'CEILING', paramId: P\.ceilingDb/);
     assert.match(LIM, /fader: \{ min: -45, max: -15,/);
-    assert.match(GUIDES.explore.control.join(' '), /CEILING fader runs from −45 to −15 dB/);
+    assert.match(GUIDES.explore.control.join(' '), /CEILING fader from −45 to −15 dB/);
     assert.match(LIM, /bezel: \[\s*\{ k: 'CEIL', paramId: P\.ceilingDb \},\s*\{ k: 'RLS', paramId: P\.releaseMs \},\s*\]/);
     assert.match(LIM, /pollGr: 'limiter'/);
     assert.match(LIM, /note: 'True-peak \(inter-sample\) detection and lookahead are covered in the lesson/);
@@ -137,7 +142,12 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(GUIDES.explore.control.join(' '), /two CHECK YOURSELF questions/);
     assert.match(read('src/screens/lab/foundations/bits.tsx'), />CHECK YOURSELF\{/);
     // the lesson's ceiling figure the LEARN guide contrasts with the lab's
-    assert.match(LESSON, /default −1\.0 dBTP/);
+    assert.match(LESSON, /masters often −1 dBTP/);
+  });
+  it('LEARN: the header ▶ shows on every tab (LabShell headerAction), so the page says it still plays', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the sound'));
   });
 });
 
@@ -205,7 +215,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
   }
   it('LEARN 1 works the GR sum with OTHER numbers than the check (−25 → 5 dB): −35 → 15 dB, on both routes', () => {
     assert.match(CHECKS, /source peaks at −20 dBFS and the ceiling is set to −25 dB[\s\S]*?correct: '5 dB'/);
-    assert.match(GUIDES.learn.tryThis[0], /−20 dBFS under a −35 dB ceiling is held down 15 dB\. On EXPLORE, SINE 440 Hz at CEILING −35 dB: GR reads about 15/);
+    assert.match(GUIDES.learn.tryThis[0], /−20 dBFS under a −35 dB ceiling is held down 15 dB\. On EXPLORE, play SINE 440 Hz at CEILING −35 dB: GR reads about 15/);
     assert.doesNotMatch(GUIDES.learn.tryThis.join(' '), /CHECK’s second question/);
     for (const speaker of [false, true]) {
       const a = run(sine(440), -35, 120, speaker);
@@ -229,17 +239,26 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
       const o = overshoot(click(120), c, r);
       assert.ok(o > 1.5 && o < 6, `CLICK ${c}/${r}: +${o.toFixed(2)} dB`);
     }
-    assert.match(GUIDES.explore.changes[0], /pulled down to it almost at once[\s\S]*A sharp click can slip a few dB past first: there is no lookahead/);
+    assert.match(GUIDES.explore.changes[0], /pulled down to it almost at once[\s\S]*A sharp click can slip a few dB past first, because this limiter can’t look ahead/);
     assert.doesNotMatch(GUIDES.explore.changes.join(' '), /held down to it at once/);
-    assert.match(GUIDES.learn.changes.join(' '), /only if it sees peaks coming early \(lookahead\); this lab has none/);
-    assert.match(LESSON, /out ≤ ceiling, as long as the lookahead covers the attack/);
+    assert.match(GUIDES.learn.changes.join(' '), /only if it sees peaks coming early \(lookahead\)\. This lab has none/);
+    // case-blind: the Part A lesson rewrite (2026-11-08) prints the label, CEILING
+    assert.match(LESSON, /out ≤ ceiling, as long as the lookahead covers the attack/i);
   });
   it('the guide states exactly those readings', () => {
     const t = GUIDES.explore.tryThis;
-    assert.match(t[0], /CEILING −25 dB: GR holds at about 5 dB[\s\S]*CEILING to −45 dB: about 25 dB/);
+    assert.match(t[0], /CEILING to −25 dB: GR holds at about 5 dB[\s\S]*CEILING to −45 dB: about 25 dB/);
     assert.match(t[1], /CEILING to −15 dB: GR reads 0\.0/);
-    assert.match(t[2], /CLICK 120, CEILING −45 dB\. RLS 30 ms: GR flicks up and is gone\. RLS 500 ms: it falls back so slowly it never reaches 0\.0/);
-    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at CEILING −25 dB: GR reads about 5 dB/);
+    assert.match(t[2], /CLICK 120 and CEILING to −45 dB\. RLS 30 ms: GR flicks up and is gone\. RLS 500 ms: it falls back so slowly it never reaches 0\.0/);
+    // CHECK (decision 6, owner's own example 2026-11-08): the GR-sum line never walks to the check's
+    // −25 dB / 5 dB; it works a DIFFERENT ceiling (−30 → about 10, re-run here on both routes)
+    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at CEILING −30 dB: GR reads about 10 dB/);
+    for (const speaker of [false, true]) {
+      const c = run(sine(440), -30, 120, speaker);
+      assert.equal(Math.round(c.mn), 10); assert.equal(Math.round(c.mx), 10);
+    }
+    const checkText = [...SECTION_KEYS.map((k: string) => GUIDES.check[k].join(' ')), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
+    assert.doesNotMatch(checkText, /−25 dB|\b5 dB|never goes above|at or near the (very )?end|final safety net|between (the )?samples can|inter-sample/);
   });
 });
 

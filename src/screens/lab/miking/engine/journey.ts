@@ -13,9 +13,8 @@
  *   FOUNDATIONS   MEET IT + STARTING SETUPS: what the instrument is, where its
  *                 sound leaves, and the setups to start from — seen before a
  *                 mic is operated.
- *   pageGate      'open' or 'foundations'. Navigation is NEVER gated (owner
- *                 2026-09-20): a gated page shows the Foundations card in place
- *                 of its ACTIVITY, with one-tap ways to meet them.
+ *   pageGate      always 'open' (owner 2026-11-08 removed the lock). Navigation
+ *                 was never gated (owner 2026-09-20); now no activity is either.
  *   gradeQuickCheck  the experienced path's honest check: ≥ 5 of 6 on the first
  *                 pick AND every critical (safety) item right. Passing it banks
  *                 NOTHING — credit comes only from each page's own requirement.
@@ -102,10 +101,16 @@ export function foundationsLeft(met: ReadonlySet<PageId>): PageId[] {
   return FOUNDATION_PAGES.filter((p) => !met.has(p));
 }
 
-/** Is a page's ACTIVITY open? Navigation itself is never gated. */
-export function pageGate(page: PageId, met: ReadonlySet<PageId>, quickCheckPassed: boolean): 'open' | 'foundations' {
-  if (isFoundation(page)) return 'open';
-  return foundationsMet(met, quickCheckPassed) ? 'open' : 'foundations';
+/**
+ * Is a page's ACTIVITY open? Always, since the owner removed the lock
+ * (2026-11-08: "Remove the lock"). Modules 3–8 had shown only the Foundations
+ * card until MEET IT and STARTING SETUPS were met, and STARTING SETUPS also
+ * needed every setup scrolled through; the owner found the later modules
+ * "nothing". The first two pages stay first in the order, as a suggestion.
+ * Credit is unchanged: each page still banks on its own requirement.
+ */
+export function pageGate(_page: PageId, _met: ReadonlySet<PageId>, _quickCheckPassed: boolean): 'open' | 'foundations' {
+  return 'open';
 }
 
 /** Grade the quick check from the FIRST pick per item. `misses` are journey

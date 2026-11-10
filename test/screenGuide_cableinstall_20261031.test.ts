@@ -77,7 +77,9 @@ describe('1. every Cable Install screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 experiments`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim().length > 10 && intro.start.trim().length > 10, `${id}: the intro card (learning + start)`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -129,7 +131,8 @@ describe('1. every Cable Install screen has a complete guide', () => {
       ['route', /pick Across the hallway floor/],
       ['supports', /J-hook at P3 \(6u\) and tap CHECK SPACING/],
       ['rack', /dress AC POWER into the left|pick FORCE IT/],
-      ['walls', /pick Wedge|pick Wrap/],
+      // Decision 6 (2026-11-08): the scored scenario-2 answer is never named before the pick.
+      ['walls', /pick Wedge|pick Wrap|Verify the assembly before penetrating/],
       ['ceiling', /U6 and tap CHECK SPACING/],
       ['floor', /pick the center aisle|OVER LOOP three times/],
       ['fire', /answer A plenum|choose Yes/],
@@ -159,7 +162,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     mech: ['A · BEND RADIUS', 'SIMULATED SPEC', 'B · PULLING', 'C · RESTRAINT', 'LOOSE', 'SECURE', 'EXCESSIVE', 'BEND TIGHTNESS', '− EASE', '+ TIGHTEN', 'CHECK BEND', 'MEETS SPEC ✓', 'Steady smooth pull', 'Pull harder through the snag', 'Hard yank around the corner', 'Pull it through by the connector', 'STRAP TENSION', 'SET LOOSE', 'SET SECURE', 'SET EXCESSIVE'],
     supports: ['A · FOUR JOBS', 'SUPPORT', 'PATHWAY', 'PROTECTION', 'MANAGEMENT', 'B · THE SORT', 'C · SUPPORT SPACING', 'MAX SAG ½ UNIT', 'APPROVE', 'REJECT', 'NEXT ITEM ›', 'FINISH SORT ›', 'RETRY THE SORT', 'RUN THE SORT AGAIN', 'CHECK SPACING'],
     rack: ['RACK', 'PHASE A — INSPECT', 'PHASE B — DRESS', 'PHASE C — SERVICE', 'PHASE D — MAINTAIN', 'FIX', '▸ SUSPECT LIST', 'RACK CONDEMNED — NOW DRESS IT RIGHT ›', 'DSP INPUT 7', 'REPLACE THIS CABLE ✓', 'STRIP THE RACK', 'CUT THE DRESSING', 'USE THE DRESSING', 'FORCE IT', 'A-007', 'THE SAME JOB, BEFORE'],
-    walls: ['ROOM', 'X-RAY WALL VIEW', '1 · SURFACE RACEWAY', '2 · WALL PENETRATION', '3 · THE DOORWAY', '4 · SHARP EDGE', 'NEXT WALL ›', 'TEMPORARY', 'PERMANENT', 'Verify the assembly before penetrating', 'Wedge the door open for the event', 'Wrap the edge in tape and move on', 'Install a bushing / grommet on the opening'],
+    walls: ['ROOM', 'X-RAY WALL VIEW', '1 · SURFACE RACEWAY', '2 · WALL PENETRATION', '3 · THE DOORWAY', '4 · SHARP EDGE', 'NEXT WALL ›', 'TEMPORARY', 'PERMANENT', 'Wedge the door open for the event', 'Wrap the edge in tape and move on', 'Install a bushing / grommet on the opening'],
     ceiling: ['CEILING', 'ABOVE CEILING · AS FOUND', 'FINISHED VIEW', 'EXERCISE 1 · FIND THE PROBLEMS', 'EXERCISE 2 · INSTALL THE ROUTE', 'SUSPECT LIST', 'CONTINUE TO THE INSTALL ›', '1 · PICK THE PATHWAY / SUPPORT', '2 · PLACE J-HOOKS ON THE 12-UNIT SPAN', 'CHECK SPACING', 'CONFIRM THE ROUTE ✓'],
     floor: ['STAGE CRAFT — CLEAN UP THE DECK', 'STAGE PLAN', 'THE FOH RUN', 'BACKSTAGE', 'OVERALL', 'STRIKE — COIL THE SNAKE OVER-UNDER', 'TWIST', 'SHOW THE PROFESSIONAL WAY', 'OVER LOOP', 'UNDER LOOP', 'RESTART THE COIL', 'NONE — loops cancel', 'LOW', 'BUILDING', 'HIGH — will fight deployment', '✕ REJECTED — SAFETY'],
     emi: ['THE CONCEPT FIELD', 'EXPOSURE', 'LOW', 'MODERATE', 'HIGH', 'BALANCED', 'UNBALANCED', 'CLOSE', 'MID', 'FAR', 'THE REAL LEVERS — NOT A MAGIC NUMBER', 'THE CROSSING — POWER ROUTE MEETS SIGNAL ROUTE', 'AC FEEDER', 'TRANSFORMER', 'MOTOR', 'DIMMER RACK', 'NETWORK CABLE', 'DISTANCE', '◂ CLOSER', 'FARTHER ▸', 'BALANCED PAIR', 'LEVEL', 'SHIELDING', 'CURRENT', 'GEOMETRY', 'GROUNDING'],

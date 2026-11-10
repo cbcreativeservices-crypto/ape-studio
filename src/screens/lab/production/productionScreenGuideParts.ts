@@ -28,7 +28,7 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 
 /** The two header chips, said once in every guide's controls. */
 export const CHIPS_LINE =
-  'Top right: the first ⓘ is the lab’s scope note (planning education, not legal or safety advice); the second opens this guide.';
+  'Top right: the first ⓘ is the scope note (planning education, not legal or safety advice); the second opens this guide.';
 
 // ─────────────────────────────────────────────────────────── a stage screen ──
 
@@ -37,7 +37,7 @@ export const CHIPS_LINE =
  *  room left under the longest section lists.) */
 export function stageSeeing(kicker: string, sections: string): string[] {
   return [
-    `${kicker}: the stage name, its % or BLOCKED, the intro and WHY THIS MATTERS.`,
+    `You’re in ${kicker}: the name, its % or BLOCKED, the intro and WHY THIS MATTERS.`,
     `Sections: ${sections}.`,
     'Dots: green done, amber flagged (or optional, blank), red conflict, gray required and open, dark gray not applicable.',
   ];
@@ -47,10 +47,10 @@ export function stageSeeing(kicker: string, sections: string): string[] {
 export function stageControl(packetName: string): string[] {
   return [
     'Answer by typing, tapping chips (some take several) or filling a table: + ADD ROW, ✕ removes a row, UNDO restores it.',
-    '“Not applicable to this project”: type why, then SAVE; a justified skip counts as a decision, and UNDO brings it back.',
-    'Answers save as you go; if one fails, a red warning stays at the top until a later one saves.',
+    'Tap “Not applicable to this project”, type why, then SAVE. A skip with a reason counts as a decision; UNDO undoes it.',
+    'Answers save as you go. If one fails, a red warning stays on top until a later one saves.',
     `SEE THEM ↓ jumps to WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE PLAN · ${packetName.toUpperCase()}.`,
-    `‹ goes back to what opened this stage: the lab home, the packet or an exercise. ${CHIPS_LINE}`,
+    `‹ goes back to where you came from: the lab home, the ${packetName} or an exercise. ${CHIPS_LINE}`,
   ];
 }
 
@@ -59,23 +59,23 @@ export function stageControl(packetName: string): string[] {
 /** WHAT YOU'RE SEEING on any exercise screen. */
 export function activitySeeing(stageNum: number, title: string, offeredOn: string): string[] {
   return [
-    `Header: STAGE ${stageNum} · EXERCISE and its name, “${title}”. Offered on ${offeredOn}.`,
-    'The brief: a plan that has already gone wrong. Under it, the project type this attempt uses.',
-    'The checklist: ✓ for each check passed, ○ for each still open. SOLVED once every check passes.',
+    `This is STAGE ${stageNum} · EXERCISE: “${title}”, offered on ${offeredOn}.`,
+    'Read the brief first: it describes a job that has already gone wrong. Under it is the project type this attempt uses.',
+    'The checklist shows ✓ for each check you’ve passed and ○ for each one still open. It reads SOLVED once every check passes.',
   ];
 }
 
 /** WHAT YOU CONTROL on any exercise screen. */
 export const ACTIVITY_CONTROL: string[] = [
-  'OPEN THE PLAN AND FIX IT opens the real stage screen with the broken plan loaded. It reads REVIEW YOUR WORK once solved.',
-  'READ THE REASONING shows the exercise’s explanation at any time — it gives the answer away, so read it when you choose. Once solved it reads READ THE DEBRIEF.',
-  'START AGAIN asks first, then puts the original broken plan back.',
+  'Tap OPEN THE PLAN AND FIX IT to repair the broken version on the real stage screen. Once you’ve solved it, the button reads REVIEW YOUR WORK.',
+  'READ THE REASONING explains the exercise at any time, but it gives the answer away, so open it when you choose. After you solve it, it reads READ THE DEBRIEF.',
+  'START AGAIN asks you to confirm, then puts the original broken version back.',
   `‹ returns to the lab home. ${CHIPS_LINE}`,
 ];
 
 /** WHAT CHANGES on any exercise screen: the loop, and why it is built that way. */
 export const ACTIVITY_CHANGES: string[] = [
-  'The broken plan is a real practice project, kept apart from your own projects. It never counts toward the lab.',
-  'You repair it on the ordinary stage screen, so every check and finding works there exactly as on your own plan.',
-  'Each return here re-checks the plan: a ○ turns ✓ only when your repair passes that check. Leave midway and it waits for you.',
+  'The broken version is a practice project, kept apart from your own. Nothing you do to it changes them or counts toward the lab.',
+  'You fix it on the same stage screen you use for your own work, so every check and finding behaves exactly as it would there.',
+  'Each time you come back here, the checklist is checked again: a ○ turns ✓ only when your fix passes that check. Leave midway and your work waits for you.',
 ];

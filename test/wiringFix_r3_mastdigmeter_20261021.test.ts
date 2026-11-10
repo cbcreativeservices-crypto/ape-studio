@@ -55,14 +55,14 @@ describe('R3-DG-01 — the filter anchors are the classic model, not a law', () 
 describe('R3-DG-02 / R3-DG-03 — Digital glossary matches the drawings', () => {
   const c = read('src/features/lab/guidedLessons/content.ts');
   it('ADC chain: no separate analog gain block (FULL_STAGES is mic → preamp → AA filter → …)', () => {
-    assert.match(c, /definition: 'Mic → preamp → anti-aliasing filter → sample-and-hold → quantizer → encoder → PCM stream\./);
+    assert.match(c, /definition: ["']Mic → preamp → anti-aliasing filter → sample and hold → quantizer → encoder → PCM stream \(plain stored samples\)\./);
     assert.doesNotMatch(c, /preamp → analog gain → anti-aliasing/);
     const viz = read('src/screens/lab/digital/vizChain.tsx');
     const full = viz.slice(viz.indexOf('const FULL_STAGES'), viz.indexOf('];', viz.indexOf('const FULL_STAGES')));
     assert.deepEqual([...full.matchAll(/key: '(\w+)'/g)].map((m) => m[1]), ['mic', 'preamp', 'filter', 'sh', 'quant', 'encoder', 'pcm']);
   });
   it('waveform view: the mic’s voltage, not "leaving the preamp"', () => {
-    assert.match(c, /and the continuous voltage the mic puts out\./);
+    assert.match(c, /and the mic’s voltage copies that shape\. No numbers exist yet\./);
     assert.doesNotMatch(c, /voltage leaving the preamp/);
   });
 });
@@ -101,7 +101,7 @@ describe('R3-MT-01 — 60 Hz is one mains frequency, not every mains', () => {
 describe('R3-MT-02 — pink-noise ramp is display-dependent', () => {
   it('glossary', () => {
     const c = read('src/features/lab/guidedLessons/content.ts');
-    assert.match(c, /Pink noise = smooth −3 dB\/octave ramp on an FFT display \(flat on a 1\/3-octave RTA\)\./);
+    assert.match(c, /TILT reads −3\.0\/oct\.[^"]*A 1\/3-octave RTA \(real-time analyzer\) shows pink noise flat instead\./);
   });
 });
 

@@ -147,7 +147,12 @@ function houseRules(id: string, gd: Guide, b?: (typeof BUILT)[number]) {
 }
 
 function shape(id: string, gd: Guide) {
-  assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort(), `${id}: the five sections`);
+  assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort(), `${id}: the five sections`);
+  // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+  const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+  assert.ok(intro, 'no intro');
+  assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+  assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
   for (const k of SECTION_KEYS) {
     assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
     assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -222,7 +227,7 @@ describe('3. the guides quote each screen’s real names', () => {
   };
   const NAMES: Record<string, [string, string[]][]> = {
     home: [
-      [S.home, ['AUDIO CALCULATOR LABORATORY', 'CALCULATORS', 'CUSTOM CALCULATOR WORKFLOWS', 'ABOUT THIS LAB', '⛓ CHAIN ACTIVE', '✕ CLEAR', '＋ NEW WORKFLOW', 'SAVED PROJECTS ›', 'SAVED RESULTS ›', 'RECENT · TAP TO RUN', 'sensitivity → voltage → gain → headroom']],
+      [S.home, ['CALCULATORS', 'CUSTOM CALCULATOR WORKFLOWS', 'ABOUT THIS LAB', '⛓ CHAIN ACTIVE', '✕ CLEAR', '＋ NEW WORKFLOW', 'SAVED PROJECTS ›', 'SAVED RESULTS ›', 'RECENT · TAP TO RUN', 'sensitivity → voltage → gain → headroom']],
       [S.home + S.note, ['VERIFIED CALCULATION', 'KEY']],
       [S.workspace, ['WHAT ARE YOU CALCULATING?', 'WORKED STEPS', 'WHY THIS MATTERS', 'PRACTICAL EXAMPLE', 'COMMON MISTAKES']],
     ],
@@ -310,10 +315,10 @@ describe('3. the guides quote each screen’s real names', () => {
         assert.ok(typeof f.placeholder === 'string' && f.placeholder.length > 0, `${b.id}: ${f.name} has a grey example value`);
       }
       if (b.fn.inputs.some((k: string) => b.ws.fields.find((x: any) => x.key === k).quantity === 'list')) {
-        assert.ok(t.includes('A list box takes several numbers, separated by commas'), `${b.id}: explains its list box`);
+        assert.ok(t.includes('a list box takes several numbers separated by commas'), `${b.id}: explains its list box`);
       }
       const n = b.ws.functions.length;
-      assert.ok(n > 1 ? t.includes(`one of its ${n} calculations`) : t.includes('its one calculation'), `${b.id}: the picker line`);
+      assert.ok(n > 1 ? t.includes(`one of this page’s ${n} calculations`) : t.includes('this page’s one calculation'), `${b.id}: the picker line`);
     }
   });
 });
@@ -385,7 +390,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     ]);
     for (const b of sendable.filter((x) => x.ex!.sendTo === null)) assert.doesNotMatch(b.gd.tryThis.join(' '), /SEND →/, b.id);
     const lvl = BUILT.find((b) => b.id === 'level/dbToAmp')!;
-    assert.ok(lvl.gd.tryThis.includes('Tap SEND → beside AMPLITUDE RATIO, then pick another calculation under WHAT ARE YOU CALCULATING?: an input offers ⤵ USE AMPLITUDE RATIO.'));
+    assert.ok(lvl.gd.tryThis.includes('Tap SEND → beside AMPLITUDE RATIO, then pick another calculation under WHAT ARE YOU CALCULATING? An input there offers ⤵ USE AMPLITUDE RATIO.'));
   });
   it('cv70/morespeakers: SIG FIGS first, so no unit tap quotes 4-figure numbers (250 / 10^(1/10) = 198.58 W)', () => {
     const b = BUILT.find((x) => x.id === 'cv70/morespeakers')!;
@@ -400,12 +405,12 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     const b = BUILT.find((x) => x.id === 'distdelay/delayToDist')!;
     assert.equal(b.ex!.at4, '30 m');
     assert.equal(b.ex!.at5, '29.997 m');
-    assert.ok(b.gd.tryThis.includes('Tap SIG FIGS to 5: DISTANCE now reads 29.997 m — the same answer to 5 figures; 4 figures round it to 30 m.'));
+    assert.ok(b.gd.tryThis.includes('Tap SIG FIGS to 5: DISTANCE now reads 29.997 m. It’s the same answer: at 4 figures it rounds to 30 m.'));
     const w = BUILT.find((x) => x.id === 'wave/wavelength')!;
-    assert.ok(w.gd.tryThis.includes('Tap SIG FIGS to 5: WAVELENGTH λ now reads 3.4321 m — the same answer, one more figure.'));
+    assert.ok(w.gd.tryThis.includes('Tap SIG FIGS to 5: WAVELENGTH λ now reads 3.4321 m, the same answer with one more figure.'));
   });
   it('members never read weekly-allowance or membership copy; capped readers get the CALCULATE lines', () => {
-    const tier = /\bfree\b|membership|this week|CALCULATE reveals|waits for CALCULATE/i;
+    const tier = /\bfree\b|membership|this week|CALCULATE shows each new answer|wait until you tap CALCULATE/i;
     for (const b of BUILT) {
       // The registry's formula-in-words is physics quoted verbatim ("The free-space path loss…",
       // "free-air resonance"): it is masked here only after checking it holds no tier copy
@@ -414,8 +419,8 @@ describe('4. every TRY THIS number is what the screen prints', () => {
       assert.doesNotMatch(pf.replace(/\bfree-(space|air)\b/gi, ''), tier, `${b.id}: tier copy in the formula words`);
       const own = ownWords(textOf(b.gd), b);
       assert.doesNotMatch(pf ? own.split(pf).join('«»') : own, tier, `${b.id}: tier copy shown to an uncapped reader`);
-      assert.match(b.gdCapped.control.join(' '), /On this account, CALCULATE reveals each new answer and uses one of this week’s calculations/);
-      assert.match(b.gdCapped.changes.join(' '), /New inputs wait for CALCULATE \(one more of this week’s calculations\)/);
+      assert.match(b.gdCapped.control.join(' '), /On this account, CALCULATE shows each new answer and uses one of this week’s calculations/);
+      assert.match(b.gdCapped.changes.join(' '), /New inputs wait until you tap CALCULATE \(one more of this week’s calculations\)/);
       const ownCapped = ownWords(textOf(b.gdCapped), b);
       assert.doesNotMatch(pf ? ownCapped.split(pf).join('«»') : ownCapped, /\bfree\b|membership/i, `${b.id}: capped copy stays neutral`);
     }
@@ -468,8 +473,8 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(b.r.outputs[0].label, 'VOLTAGE (RMS)');
     assert.equal(Panel.formatOutput(b.r.outputs[0], 4, 0), '1.228 V');
     const t = STATIC.home.tryThis.join('\n');
-    assert.ok(t.includes('Open WAVES & TIME › Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows): PERIOD reads 10 ms'));
-    assert.ok(t.includes('Open LEVELS & DECIBELS › Audio Level Converter and type 4 in LEVEL (dBu) (then CALCULATE, if it shows): VOLTAGE (RMS) reads 1.228 V'));
+    assert.ok(t.includes('Open WAVES & TIME › Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms'));
+    assert.ok(t.includes('Open LEVELS & DECIBELS › Audio Level Converter and type 4 in LEVEL (dBu) (then CALCULATE, if it shows). VOLTAGE (RMS) reads 1.228 V'));
   });
   it('workflowRun: the Ohm’s Law template — step 1 POWER 200 W, CURRENT 5 A; step 2 imports POWER as the runner does → the same 5 A', () => {
     const tpl = (WORKFLOW_TEMPLATES as any[]).find((w) => w.name === 'Ohm’s Law');
@@ -501,7 +506,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(shown, '5 A');
     const t = STATIC.workflowRun.tryThis.join('\n');
     assert.ok(t.includes('type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A'));
-    assert.ok(t.includes(`⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS) — CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
+    assert.ok(t.includes(`⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
     // The import button's words, as drawn.
     assert.match(code('src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), /⤵ USE \{s\.label\.toUpperCase\(\)\} \(STEP \{s\.fromStep \+ 1\}\)/);
   });
@@ -509,7 +514,7 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     const ws = getWorkspace('ohmspower') as any;
     const names = ws.functions.map((f: any) => f.name);
     assert.ok(names.includes('Power from voltage & impedance') && names.includes('Current from power & voltage'));
-    assert.ok(STATIC.workflowEdit.tryThis.join('\n').includes('Name it, add Power from voltage & impedance, then Current from power & voltage, and SAVE: run it, fill in step 1, and step 2 offers ⤵ USE POWER (STEP 1).'));
+    assert.ok(STATIC.workflowEdit.tryThis.join('\n').includes('Name it, add Power from voltage & impedance, then Current from power & voltage, and SAVE. Run it, fill in step 1, and step 2 offers ⤵ USE POWER (STEP 1).'));
     // SAVE refuses an unnamed workflow; an incomplete step offers nothing to import.
     const E = code('src/screens/lab/calc/CalcWorkflowEditScreen.tsx');
     assert.match(E, /if \(!trimmed\) \{\s*notify\('Name the workflow'/);
@@ -566,21 +571,22 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     // as LISTENING DISTANCE it always read 0 dB. It is no longer offered.
     assert.ok(!links.includes('CRITICAL DISTANCE Dc@2>LISTENING DISTANCE@3'), links.join('; '));
     assert.deepEqual(links, ['RT60@1>REVERBERATION TIME (RT60)@2', 'RT60@1>REVERBERATION TIME (RT60)@3']);
-    assert.match(textOf(STATIC.workflows), /RT60, then critical distance and the direct-to-reverberant ratio \(Room Acoustics Survey\)/);
-    assert.ok(STATIC.workflows.tryThis.join(' ').includes('step 2 offers ⤵ USE RT60 (STEP 1)'));
+    assert.match(textOf(STATIC.workflows), /RT60 comes first, then critical distance, then the direct-to-reverberant ratio/);
+    assert.ok(textOf(STATIC.workflows).includes('Room Acoustics Survey'));
+    assert.ok(STATIC.workflows.tryThis.join(' ').includes('On step 2, look for ⤵ USE RT60 (STEP 1)'));
     assert.doesNotMatch(textOf(STATIC.workflows), /speed of sound → distance delay/i);
   });
   it('home: the lab has its own Home card, not a place in the Advanced Training Labs; most calculators hold several calculations', () => {
     assert.match(code('src/screens/lab/labCatalog.ts'), /c\.section === section && c\.id !== 'calculators'/);
     assert.match(code('src/screens/courses/CourseSelectionScreen.tsx'), /'OPEN CALCULATORS'/);
-    assert.ok(STATIC.home.teaches.join(' ').includes('its own card on Home (OPEN CALCULATORS)'));
+    assert.ok(textOf(STATIC.home).includes('OPEN CALCULATORS on Home brings you back here'));
     assert.doesNotMatch(textOf(STATIC.home), /Advanced Training Labs/);
     assert.deepEqual((WORKSPACES as any[]).filter((w) => w.functions.length === 1).map((w) => w.id).sort(), ['diffuser', 'imd', 'loudnorm', 'treatment']);
-    assert.ok(STATIC.home.changes[0].startsWith('Calculators that solve one job several ways share a page'));
+    assert.ok(STATIC.home.changes[0].startsWith('When one job can be worked out several ways, those calculators share a page'));
   });
   it('symbols: ‹ returns to the calculator page (its FORMULA KEY closes before the symbol key opens)', () => {
     assert.match(code('src/screens/lab/calc/CalcWorkspaceScreen.tsx'), /onOpenFullKey=\{\(\) => \{\s*setKeyOpen\(false\);\s*navigation\.navigate\('CalcSymbolsKey'\);/);
-    assert.ok(STATIC.symbols.control.join(' ').includes('the calculator whose FORMULA KEY you opened it from'));
+    assert.ok(STATIC.symbols.control.join(' ').includes('the calculator whose FORMULA KEY you left through π OPEN THE FULL SYMBOL KEY ›'));
   });
 });
 
@@ -663,8 +669,8 @@ describe('owner 2026-11-01: "166 calculators" everywhere', () => {
 });
 
 describe('D42 · P3 polish pins', () => {
-  const CHAIN = 'SEND → chains answers from one calculator into the next, the way a real system design flows.';
-  const HERE = 'SEND → passes an answer to another calculation on this page, where an input takes that kind of value.';
+  const CHAIN = 'Real system design is a chain: one answer feeds the next calculation, and SEND → carries it into another calculator.';
+  const HERE = 'One answer can feed another: SEND → passes it to another calculation on this page, but only to an input of the same kind.';
   it('K4: the screen hands the guide the reach of EVERY SEND → it shows (its sendTakers + render gate)', () => {
     const W = code('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
     assert.match(W, /steps: r\.steps\.length > 0,\s*sendAny: ws \? calcSendReach\(ws, fn, r\.outputs\) : null,/);
@@ -700,9 +706,10 @@ describe('D42 · P3 polish pins', () => {
   it('K2: a one-input calculation drops "in each"; K3: the bezel is placed under YOUR ANSWER', () => {
     for (const b of BUILT) {
       const c0 = b.gd.control[0];
-      if (b.fn.inputs.length === 1 && !/list box/.test(c0)) assert.match(c0, /\. Type a number; a gray number/, b.id);
-      if (b.fn.inputs.length > 1 && !/list box/.test(c0)) assert.match(c0, /Type a number in each;/, b.id);
-      assert.match(b.gd.seeing[1], /^Just under YOUR ANSWER: FUNCTION/, b.id);
+      if (b.fn.inputs.length === 1 && !/list box/.test(c0)) assert.match(c0, /, type a number\. A gray number/, b.id);
+      if (b.fn.inputs.length > 1 && !/list box/.test(c0)) assert.match(c0, /type a number in each box\./, b.id);
+      assert.match(b.gd.seeing[0], /^YOUR ANSWER sits at the top/, b.id);
+      assert.match(b.gd.seeing[1], /^Just under it: FUNCTION/, b.id);
     }
   });
 });

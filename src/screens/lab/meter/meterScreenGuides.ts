@@ -30,6 +30,10 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import type { MeterModuleId } from './modules/registry';
 
 export const METER_HOME_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'Why every display answers a different question about the same sound (peak, average, loudness, frequency, decay, stereo), and why you read any display’s axes first.',
+    start: 'Tap Waveform, read its one-line description, then tap OPEN to start Module 1. Take the modules in order; Signal Detective at the end hides each meter’s name.',
+  },
   seeing: [
     'This lab teaches you to read the ten displays engineers look at every day, one module each. Then Signal Detective puts them to work.',
     'Each row is a module, and a ✓ means you’ve opened it. SEE WHAT’S LEFT lists the ones you haven’t.',
@@ -44,7 +48,7 @@ export const METER_HOME_GUIDE: ScreenGuide = {
   changes: [
     'Open a module and its ✓ appears here, and the list behind SEE WHAT’S LEFT gets shorter.',
     'Whatever you set inside a module stays in that module. Nothing you do there reaches another display.',
-    'The order builds: Modules 1–4 are level (each a different "how loud?"), 5–7 frequency, 8–10 stereo and raw voltage, and Module 11 mixes them.',
+    'The order builds: Modules 1–4 are level (each a different “how loud?”), 5–7 frequency, 8–10 stereo and raw voltage, and Module 11 mixes them.',
   ],
   teaches: [
     'Each display answers a different question about the same sound: how high it peaks, how loud it feels, which frequencies it holds, how long they last, whether it survives mono.',
@@ -60,6 +64,10 @@ export const METER_HOME_GUIDE: ScreenGuide = {
 
 /** The what's-left screen (FINISH on Module 11, or SEE WHAT’S LEFT on the home). */
 export const METER_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'A review of the lab’s big idea: each meter answers one question, no single meter tells the whole story, and a reading depends on what it measures and how fast.',
+    start: 'Tap any module still listed under WHAT’S LEFT to open it. Or tap REVIEW ▾ on the ✓ line, reopen a module you’ve done, and read its display before you touch a control.',
+  },
   seeing: [
     'This is your list for the lab. WHAT’S LEFT shows the modules you haven’t opened yet, and each one is a link.',
     'The ones you’ve opened fold into a single ✓ line, so only the unfinished work stands out.',
@@ -69,11 +77,11 @@ export const METER_END_GUIDE: ScreenGuide = {
     'Tap a module that’s still left to jump straight to it.',
     'REVIEW ▾ on the ✓ line unfolds the modules you’ve opened. Tap any one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens Module 1 and clears nothing.',
-    'DONE · BACK TO LABS goes back one screen. After a module, that’s this lab’s menu if you came through it. From the menu, it takes you out of the lab.',
+    'DONE · BACK TO LABS goes back one screen. If you reached this list from a module, that’s this lab’s menu (when you came in through it); if you reached it from the menu, it takes you out of the lab.',
   ],
   changes: [
     'Each module you open moves to the ✓ line, so this list shrinks as you go.',
-    'Signal Detective counts here as soon as you open it. Its own entry in the lab list counts once every question of every case has been answered right.',
+    'Signal Detective joins the ✓ line as soon as you open it. Its separate entry in the lab list counts as finished only once you’ve answered every question of every case right.',
     'Going back into a module takes nothing away, so its ✓ stays.',
   ],
   teaches: [
@@ -90,10 +98,14 @@ export const METER_END_GUIDE: ScreenGuide = {
 export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   // ── 1 ─────────────────────────────────────────────────────────────────────
   waveform: {
+    intro: {
+      learning: 'How a waveform shows peak level, not loudness; what clipping looks like and why turning down can’t undo it; and how DC offset pushes the whole wave off center.',
+      start: 'On SPEECH, drag GAIN up to +3.0 dB and watch CLIP change from CLEAN to OVER as the wave turns red. Then set GAIN back to +0.0 dB and switch SIGNAL to WHITE NOISE: watch CREST.',
+    },
     seeing: [
       'You’re seeing a sound as a DAW (recording software) draws it: time left to right, amplitude up and down from the zero line. Judge height on the 0, −6, −12, −24 scale.',
       'Color warns you: blue near zero, red near full scale, all red while it clips.',
-      'Check your eye on the frame: PEAK, RMS, CREST (their gap), DC (center off zero), CLIP (CLEAN, or how far OVER). PK, RMS and CF in the picture echo it until it clips.',
+      'On the frame: PEAK, RMS, CREST (their gap), DC (how far the center is off zero), CLIP (CLEAN, or how far OVER). PK, RMS and CF in the picture match until it clips.',
     ],
     control: [
       'GAIN (−12 to +18 dB) turns the signal up or down before it’s drawn, so drag it and watch the wave grow. You start at +0.0 dB.',
@@ -104,7 +116,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     changes: [
       'Push GAIN and the wave grows. Past full scale there’s no bigger number to store, so tops are cut flat and CLIP reads OVER.',
       'Height is peak; RMS is average energy. A spiky sound gives you a big CREST, a steady one a small one.',
-      'You can’t hear DC, but it moves the center, RMS counts it and one side hits full scale sooner.',
+      'You can’t hear DC, but it shifts the center, adds to RMS and makes one side clip sooner.',
       'With DC at 0 %, Ø POL flips the wave: every level stays; only the DC readout’s sign flips.',
     ],
     teaches: [
@@ -121,10 +133,14 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 2 ─────────────────────────────────────────────────────────────────────
   peak: {
+    intro: {
+      learning: 'What a sample peak meter answers (will it clip?), why peak hold keeps a missed peak on record, and why equal peaks can hide very different average energy.',
+      start: 'On KICK DRUM, raise GAIN from −6.0 dB to +0.0 dB and watch the OVER lamp light and OVERS count. Then pull GAIN back down and see PK HOLD keep your highest peak.',
+    },
     seeing: [
       'This SAMPLE PEAK meter shows how close your biggest samples get to the ceiling. L and R are segment columns in dBFS, with 0 (full scale) on top.',
       'The segment floating above each bar holds your recent peak. The OVER lamp lights at full scale.',
-      'PEAK is your highest sample now, PK HOLD your highest so far, OVERS your separate trips past full scale. CREST under the columns can sit a few tenths off the frame’s.',
+      'PEAK is your highest sample now, PK HOLD your highest so far, OVERS your separate trips past full scale. CREST under the columns may read a few tenths off the frame’s.',
     ],
     control: [
       'Use GAIN (−12 to +18 dB) to drive the columns up toward the lamp. You start at −6.0 dB, still under it.',
@@ -151,9 +167,13 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 3 ─────────────────────────────────────────────────────────────────────
   vu: {
+    intro: {
+      learning: 'Why a VU needle reads average level, which is closer to how loud a sound feels, and why it lags far behind fast peaks on purpose.',
+      start: 'Pick SNARE and watch the PEAK lamp flash while the needle only flicks partway up. Then switch SIGNAL to ORGAN and see the needle climb and sit.',
+    },
     seeing: [
       'This classic VU meter gives you two answers: a needle on an arc scale for the average, a PEAK lamp for fast peaks. Watch both.',
-      'The needle takes about 300 ms to respond, by design, as the badge says. This teaching face puts 0 VU at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
+      'The needle takes about 300 ms to respond, by design, as the badge says. Here, 0 VU sits at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
       'NDL MAX is the highest a 300 ms average reached, in dBFS. Compare it with PEAK, RMS and CREST (their gap).',
     ],
     control: [
@@ -167,7 +187,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'NDL MAX lands near RMS, far below PEAK on spiky sounds. GAIN moves PEAK, RMS and NDL MAX together; CREST stays put, and only another SIGNAL changes it.',
     ],
     teaches: [
-      'That’s peak vs average at a glance: the needle reads average level, which is closer to how loud a sound feels.',
+      'The needle reads average level, which is closer to how loud a sound feels. With the PEAK lamp beside it, you see peak vs average at a glance.',
       'If the needle seems broken on drums, it isn’t. A slow needle is a design choice.',
       'Don’t read 0 VU as a ceiling. It’s a reference (nominal) level with headroom above it.',
     ],
@@ -180,6 +200,10 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 4 ─────────────────────────────────────────────────────────────────────
   loudness: {
+    intro: {
+      learning: 'How LUFS measures loudness the way streaming and broadcast do, over three time windows; why LRA shows dynamics, not loudness; and why true peak can top sample peak.',
+      start: 'Pick MUSIC MIX and read the big LUFS INTEGRATED number first. Then switch to SPEECH and compare INTEGRATED and TP GAP. Last, compare LRA on ORGAN and KICK DRUM.',
+    },
     seeing: [
       'LOUDNESS · LUFS gives a whole program one number. Read the big LUFS INTEGRATED first, with LRA under it. M and S bars (momentary, short-term) sit at left.',
       'At right, the SHORT-TERM history is about 24 s of program, replayed in about 4 s. STREAMING ≈ −14 marks a common target.',
@@ -191,14 +215,14 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'There’s no GAIN here, so every difference you see comes from the clip itself.',
     ],
     changes: [
-      'Three windows, three questions: momentary (400 ms) "loud right now", short-term (3 s) "this section", integrated "the whole program", with silence and quiet gaps left out.',
+      'Three windows, three questions: momentary (400 ms) “loud right now”, short-term (3 s) “this section”, integrated “the whole program”, which skips silence and quiet gaps.',
       'LRA is the spread of the short-term readings. It rises when the level changes from section to section, not because single hits are punchy.',
       'Between two samples the rebuilt wave can rise above both, so TRUE PK can read above SAMPLE PK.',
     ],
     teaches: [
       'LUFS (loudness units, weighted like the ear; 1 LU = 1 dB) is the number streaming and broadcast match programs by.',
       'LRA tells you how dynamic a program is, not how loud.',
-      '"No clipped samples" is not "no clipping": delivery specs set a true-peak ceiling, often −1 dBTP (true-peak level).',
+      '“No clipped samples” is not “no clipping”: delivery specs set a true-peak ceiling, often −1 dBTP (true-peak level).',
     ],
     tryThis: [
       'On MUSIC MIX: INTEGRATED −15.9 LUFS, TP GAP +0.9 dB. Switch to SPEECH: −23.7 LUFS, and a gap of only +0.4 dB.',
@@ -209,6 +233,10 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 5 ─────────────────────────────────────────────────────────────────────
   spectrum: {
+    intro: {
+      learning: 'How to read a spectrum by its shape: where the energy sits, smooth noise vs spiky notes, hum from AC power as a family of spikes, feedback as one spike.',
+      start: 'Open PATTERN and flip through all seven shapes. Then switch between MAINS HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.7 kHz.',
+    },
     seeing: [
       'A spectrum analyzer shows you where a sound’s energy sits. Frequency runs left to right on a log scale (20, 100, 1k, 10k): 100 to 1k takes the same room as 1k to 10k. Level runs up in dB; bar colors follow it.',
       'The marker labels the tallest point with its frequency.',
@@ -226,7 +254,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Read the shape, not each bar: where the energy sits, smooth or spiky, what sticks up.',
-      'Beginners call any tall spike hum. Hum is a family of spikes at the power-line frequency and its multiples; feedback is one spike that grows.',
+      'Beginners call any tall spike hum. Hum from AC power is a family of spikes at the power-line frequency (60 Hz here) and its whole-number multiples; feedback is one spike that grows.',
       'A finished mix usually slopes down like pink noise, not flat.',
     ],
     tryThis: [
@@ -238,6 +266,10 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 6 ─────────────────────────────────────────────────────────────────────
   spectrogram: {
+    intro: {
+      learning: 'How a spectrogram shows time across, frequency up and level as color, so up means higher pitch, not louder, and why feedback shows as a line growing hotter.',
+      start: 'Pick WHISTLE, then FEEDBACK, and compare their single lines: which one gets hotter? Then pick CYMBAL DECAY and set VIEW to SNAPSHOT — FULL 5 s.',
+    },
     seeing: [
       'Think of this as a spectrum filmed over time. OLDER ← TIME → NOW runs across, FREQUENCY ↑ runs up, and color is LEVEL, on the HI / LO strip at right.',
       'The film loops every 5 seconds, so a pattern you missed comes around again.',
@@ -246,7 +278,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     control: [
       'PATTERN paints six sounds: SPEECH, BIRDSONG, CYMBAL DECAY, FEEDBACK, WHISTLE and WHITE NOISE. The tray stays open while the film rolls, so you can see how each one paints.',
       'VIEW sets how you watch. ELAPSED TIME slides the picture left, and NOW is the right edge.',
-      'SNAPSHOT — FULL 5 s freezes the whole 5 seconds so you can read it left to right, like a page.',
+      'Set VIEW to SNAPSHOT — FULL 5 s to freeze all 5 seconds, so you can read them left to right, like a page.',
     ],
     changes: [
       'Look for three strokes: a held pitch draws a flat line, a moving pitch a slope, and a hit a thin vertical stripe across many frequencies.',
@@ -267,21 +299,25 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 7 ─────────────────────────────────────────────────────────────────────
   waterfall: {
+    intro: {
+      learning: 'How a waterfall shows each frequency dying away, why level and decay are different things, and how to spot a ridge that rings longer than its neighbors.',
+      start: 'Tap Q RING on and watch RIDGE jump to 1.2 kHz, then tap it off. Slide DAMPING toward PANELS and compare how fast RT·4k and RT·125 fall.',
+    },
     seeing: [
       'In this waterfall (CSD, cumulative spectral decay) you watch each frequency die away. Frequency runs across (Hz on the front edge), level up (dB), and TIME toward you: 0s at the back.',
       'Look for a ridge that outlasts its neighbors, marked RINGS. At the start RIDGE reads none: the 250 Hz mode is just under the mark.',
-      'RT·125 and RT·4k give RT60 (the time to fall 60 dB), low vs high. VS NEARBY: how much longer.',
+      'RT·125, RT·4k: RT60 (time to fall 60 dB), low vs high. VS NEARBY: how much longer ridges last.',
     ],
     control: [
       'Slide DAMPING through CONCRETE → CURTAINS → CARPET → PANELS: everything soft in the room. You start at CONCRETE · 15%.',
       'EQ (−12 to +12 dB) has three bands. Tap EQ to pick one: 220 Hz · Q6 (narrow), 440 Hz · Q1 (wide) or 1 kHz shelf (everything above). Each band keeps its own gain; FLATTEN ALL BANDS resets them.',
-      'ROOM picks the space: CATHEDRAL, CLASSROOM, STUDIO, THEATER or LIVING ROOM. You start on CLASSROOM. REVERB adds NONE, ROOM, PLATE, HALL or SPRING. Both replay the build.',
-      'Q RING adds a narrow, ringing filter at 1.2 kHz. REPLAY plays the build again.',
+      'ROOM picks the space: CATHEDRAL, CLASSROOM, STUDIO, THEATER or LIVING ROOM. You start on CLASSROOM. REVERB adds NONE, ROOM, PLATE, HALL or SPRING. Both draw the waterfall again from the start.',
+      'Q RING adds a narrow, ringing filter at 1.2 kHz. REPLAY draws the waterfall again from the start.',
     ],
     changes: [
       'Add DAMPING and the tail shortens. Highs go first (RT·4k drops fast); lows need thick treatment, so RT·125 hangs on.',
       'EQ changes a region’s height; its decay slope (the RT60) stays the same, so a taller region simply takes longer to reach the floor.',
-      'A reverb slower than the room shows up; a faster one hides, because the slower decay wins.',
+      'A REVERB slower than the room shows; a faster one hides under the room’s longer tail.',
       'Q RING stores energy in the filter itself, so a thin ridge lingers.',
     ],
     teaches: [
@@ -298,13 +334,17 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 8 ─────────────────────────────────────────────────────────────────────
   phase: {
+    intro: {
+      learning: 'How correlation shows whether left and right move together, and why a mix near −1 can sound wide in stereo yet cancel when summed to mono.',
+      start: 'Read CORR and MONO FOLD at the start. Drag PHASE to 180° and watch both fall. Then set WIDTH to 0 % and see the two channels cancel completely.',
+    },
     seeing: [
       'Here you compare left with right. The CORRELATION bar runs −1 to +1 (red, amber, green zones), with its ρ (correlation) reading.',
       'Below it, a goniometer draws a dot cloud. L and R run on the diagonals, so mono stands upright.',
       'Under the display, the lit zone (MONO-SAFE, WIDE / UNRELATED or MONO-DEATH) and the MONO-FOLD VERDICT say it in words. MONO FOLD is the level change when L and R are summed to mono.',
     ],
     control: [
-      'PHASE (0° to 180°, R vs L) takes R from moving with L to polarity-opposite. It’s a teaching control: read its two ends, because in between it’s simplified. It starts at 0°.',
+      'PHASE (0° to 180°, R vs L) takes R from moving with L to polarity-opposite. It starts at 0°. Trust its two ends; the readings in between are only a rough guide.',
       'Use WIDTH (0 to 100 %) to set how different the two channels are. It starts at 35 %.',
       'There’s no sound to pick here. These two faders are the whole experiment.',
     ],
@@ -327,6 +367,10 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 9 ─────────────────────────────────────────────────────────────────────
   stereo: {
+    intro: {
+      learning: 'How Mid (what both channels share) and Side (what differs) set stereo width, and why anything in Side disappears when the mix is summed to mono.',
+      start: 'Step PRESET from MONO to NARROW to WIDE and watch MID (SHARED) fall as SIDE (DIFF) grows. Then pick HARD L-R and look at the middle of the image.',
+    },
     seeing: [
       'Module 8 gave you a number; this display gives you a picture. It shows where the sound sits across L, C and R, with MID and SIDE bars below it and the preset’s name.',
       'MONO is one point at the center. Wider presets spread toward the speakers.',
@@ -357,8 +401,12 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 10 ────────────────────────────────────────────────────────────────────
   scope: {
+    intro: {
+      learning: 'How an oscilloscope shows the raw voltage over time, how harmonics give each wave its shape, and how X-Y mode draws left against right.',
+      start: 'Switch SIGNAL between SINE and SQUARE and compare the shapes. Then tap X-Y and drag PHASE to 180°: the line tips onto the other diagonal.',
+    },
     seeing: [
-      'Nothing is averaged or weighted here. An oscilloscope draws the voltage itself against time. CH 1 · SWEEP LOCK and the TRIG mark hold a repeating wave still.',
+      'Nothing is averaged or weighted here: an oscilloscope draws the voltage itself against time. The TRIG mark is the trigger, where each sweep starts, so CH 1 · SWEEP LOCK holds a repeating wave still.',
       'In X-Y mode (X = L · Y = R) the left channel moves the dot across and the right moves it up.',
       'MODE tells you which view you’re in, TIME or X-Y. SIGNAL reads in TIME; CORR and WIDTH read only in X-Y.',
     ],
@@ -373,7 +421,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'In X-Y, identical channels draw a 45° line. PHASE toward 180° tips it onto the opposite diagonal, and WIDTH opens it into a cloud.',
     ],
     teaches: [
-      'You’re seeing what the signal does right now, the rawest view.',
+      'Peak, VU and loudness meters summarize a signal; the scope shows what it does right now, the rawest view.',
       'Flat tops a wave wasn’t born with mean it clipped here or earlier, whatever later meters say. SQUARE is born flat; SINE isn’t.',
       'A studio goniometer (Module 8) turns this plot 45°, so mono stands upright there. Same data, two conventions.',
     ],
@@ -386,6 +434,10 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
 
   // ── 11 ────────────────────────────────────────────────────────────────────
   detective: {
+    intro: {
+      learning: 'How each fault leaves its own picture in level, frequency, time or stereo, and why you name the display and read its axes before judging what’s wrong.',
+      start: 'Answer WHAT METER IS THIS? first: say what runs across and what runs up before you tap. Then work through the other three questions and use CASE › for the next case.',
+    },
     seeing: [
       'You’re the detective here. Each case gives you a meter with its name hidden and a real-world fault in the signal. You’ve met every one of these meters in Modules 1–10.',
       'The evidence stays on top. Below it, one question at a time: WHAT METER IS THIS?, WHAT DOES IT SHOW?, WHAT PROBLEM DO YOU SEE?, then WHAT PROCESSOR/ACTION FIXES IT?',
@@ -404,7 +456,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     teaches: [
       'Each fault leaves its own picture, and one display shows it best.',
       'Faults live in level, frequency, time or stereo, and each needs its own display.',
-      'Not every odd reading is a problem: a needle and a peak lamp that disagree can both be honest.',
+      'A fix comes after the reading: first know what the display measures, then decide whether anything is wrong.',
     ],
     tryThis: [
       'Before you answer WHAT METER IS THIS?, say what runs across and what runs up. The axes and markings name the meter.',

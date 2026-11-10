@@ -63,7 +63,7 @@ describe('FX-R2-01..03 — true-peak margin agrees; gate key controls are not in
   it('Limiter lesson, Calc and Mastering agree: −1 commonly quoted, −2 for lossy, check the spec', () => {
     const c = read('src/features/lab/guidedLessons/content.ts');
     assert.doesNotMatch(c, /safe for streaming\/lossy/);
-    assert.match(c, /−1 dBTP is a commonly quoted margin; lossy delivery often uses −2 dBTP; check the destination’s current spec/);
+    assert.match(c, /−1 dBTP \(decibels true peak\) is a commonly quoted ceiling; lossy delivery often uses −2 dBTP\. Check the destination’s current spec/);
     const l = read('src/screens/lab/calc/workspaces/loudness.ts');
     assert.match(l, /lossy delivery often uses −2 dBTP/);
     assert.doesNotMatch(l, /RECOMMENDED CEILING/);
@@ -72,7 +72,9 @@ describe('FX-R2-01..03 — true-peak margin agrees; gate key controls are not in
   });
   it('Gate: sidechain, key filter and listen are marked not in this lab', () => {
     const c = read('src/features/lab/guidedLessons/content.ts');
-    assert.equal((c.match(/Not in this lab — (common on|found on many) hardware and plugin gates/g) ?? []).length, 3);
+    for (const key of ['sidechain', 'key_filter', 'sc_listen']) {
+      assert.match(c, new RegExp(`key: ["']${key}["'], name: [^\\n]*definition: ["']Not on this screen; found on many gates\\.`), key);
+    }
   });
   it('2:1 is a common gentle mix-bus starting point, not THE setting', () => {
     const f = read('src/screens/lab/fxLabConfigs.tsx');

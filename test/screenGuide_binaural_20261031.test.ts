@@ -24,7 +24,7 @@ const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g,
 /** Source with comments stripped — a name in a comment proves nothing. */
 const code = (p: string) => read(p).replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
-const { BINAURAL_SCREEN_GUIDES, binauralScreenGuide } = await import('../src/screens/lab/binauralScreenGuides.ts');
+const { BINAURAL_SCREEN_GUIDES, BINAURAL_END_GUIDE, binauralScreenGuide } = await import('../src/screens/lab/binauralScreenGuides.ts');
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 
 type Guide = Record<string, string[]>;
@@ -50,7 +50,12 @@ describe('1. every Binaural Panner screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -101,8 +106,10 @@ describe('3. each guide quotes the screen’s real names', () => {
       ],
     },
     learn: {
-      in: SHELL + LESSON,
-      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'Azimuth', 'Distance', 'Source type', 'Sound objects', 'Tone frequency', 'ⓘ GUIDED LESSON', 'LAB NOTES'],
+      // Decision 1 (2026-11-08): LEARN names the controls by their on-screen labels (AZ, DIST, SRC,
+      // OBJ, TONE FREQUENCY (Hz)), no longer the old lesson names Azimuth / Distance / Source type / …
+      in: SHELL + LESSON + S,
+      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'AZ', 'DIST', 'SRC', 'OBJ', 'TONE FREQUENCY (Hz)', 'ⓘ GUIDED LESSON', 'LAB NOTES', '▶'],
     },
     check: {
       in: SHELL,
@@ -126,7 +133,7 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(S, /value: \(sel\.azDeg \+ 180\) \/ 360,/);
     assert.match(S, /\[1, 2, 3, 4\]\.map\(\(m\) => \(/);
     const ctl = GUIDES.explore.control.join(' ');
-    assert.match(ctl, /AZ fader \(−180° to \+180°, 0° = front\) and DIST fader \(0\.5–4\.0 m\)/);
+    assert.match(ctl, /The AZ fader \(−180° to \+180°, 0° = front\) and the DIST fader \(0\.5–4\.0 m\)/);
     assert.match(ctl, /250, 440, 880 or 2000/);
     // the long-press map as the screen wires it: AZ → azimuth, DIST → distance (key + readout); ITD readout → display
     assert.equal((S.match(/helpKey: 'display'/g) ?? []).length, 1);
@@ -135,7 +142,7 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(S, /k: 'ITD', v: [^\n]*helpKey: 'display'/);
     assert.match(S, /onGuide: \(\) => openLesson\('display'\)/);
     for (const k of ['azimuth', 'distance', 'display']) {
-      assert.match(LESSON, new RegExp(`key: '${k}', name: `), k);
+      assert.match(LESSON, new RegExp(`key: ["']${k}["'], name: `), k);
     }
     assert.match(GUIDES.learn.control.join(' '), /long-press OBJ, SRC, AZ or DIST \(key or readout\) for its own entry; the ITD readout opens the display entry/);
   });
@@ -151,6 +158,21 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.equal((CHECK.match(/^\s{4}id: '/gm) ?? []).length, 4);
     assert.match(GUIDES.check.seeing.join(' '), /four questions: what ITD is, the head shadow, why headphones, and why no up or down/);
     assert.match(CHECK, /at most roughly 0\.7 ms/);
+  });
+  it('decision 6 (2026-11-08): no CHECK line, intro or the what’s-left screen states an answer', () => {
+    const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
+    const ct = [...GUIDES.check.tryThis, ...GUIDES.check.teaches, ci.learning, ci.start].join(' ');
+    assert.doesNotMatch(ct, /hears (it|a sound|the sound) later|quieter and darker|outer ear’s filtering|mix in the air|THE TWO CUES/);
+    // FINISH · SEE WHAT’S LEFT › opens the what's-left screen before a pass too
+    const ei = BINAURAL_END_GUIDE.intro;
+    const et = [...BINAURAL_END_GUIDE.teaches, ...BINAURAL_END_GUIDE.tryThis, ei!.learning, ei!.start].join(' ');
+    assert.doesNotMatch(et, /later \(ITD|quieter and darker|outer ear’s filtering|never removes the credit/);
+  });
+  it('the header ▶ stays on LEARN, so LEARN never says "Nothing plays here"', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(S, /headerAction=\{/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing plays here|Nothing here plays/);
+    assert.match(GUIDES.learn.seeing[0], /▶ in the header still plays the objects set on EXPLORE/);
   });
   it('D41: the CHECK tab stays mounted across a tab switch, so the guide says right answers stay right', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
@@ -195,25 +217,31 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.match(t, /AZ reads \+90° right and ITD 656 µs[\s\S]*ITD 0 µs/);
     assert.match(t, /\+30° \(ITD 261 µs\), then to \+150°: ITD reads 261 µs again/);
     assert.match(GUIDES.explore.changes.join(' '), /up to 656 µs at ±90°/);
-    assert.match(GUIDES.learn.tryThis.join(' '), /\+45°: ITD reads 381 µs — \(0\.0875 ÷ 343\) × \(0\.785 \+ 0\.707\)/);
+    assert.match(GUIDES.learn.tryThis.join(' '), /\+45°: ITD reads 381 µs, which is \(0\.0875 ÷ 343\) × \(0\.785 \+ 0\.707\) seconds/);
     assert.equal((Math.PI / 4).toFixed(3), '0.785');
     assert.equal(Math.sin(Math.PI / 4).toFixed(3), '0.707');
-    assert.match(GUIDES.check.tryThis.join(' '), /ITD reads 656 µs/);
+    // Decision 6 (2026-11-08): CHECK reads a DIFFERENT angle (+30° → 261 µs), not the ±90° maximum
+    // that the ITD answer's explanation quotes (about 0.7 ms).
+    assert.match(GUIDES.check.tryThis.join(' '), /set AZ to \+30° and read ITD: 261 µs/);
+    assert.doesNotMatch(GUIDES.check.tryThis.join(' '), /656|\+90°/);
     // 2026-10-31 review: θ is in radians (foldTheta converts after folding behind to the front).
     assert.match(S, /return \(front \* Math\.PI\) \/ 180;/);
-    assert.match(GUIDES.learn.changes.join(' '), /with r = 8\.75 cm and θ in radians \(45° = 0\.785\)/);
+    assert.match(GUIDES.learn.changes.join(' '), /with r = 8\.75 cm, c = 343 m\/s and θ in radians \(45° = 0\.785\)/);
   });
   it('2026-10-31 review: the −8 dB far-ear drop is full-range; the darkening is a separate low-pass', () => {
     const hpp = readFileSync('modules/ape-dsp/ios/core/Binaural.hpp', 'utf8').replace(/\r\n/g, '\n');
     assert.match(hpp, /const double ild = std::pow\(10\.0, -binaural::kMaxIldDb \* std::sin\(theta\) \/ 20\.0\);/);
     assert.match(hpp, /const double shadowHz = binaural::kShadowMaxHz \*/);
-    assert.match(GUIDES.explore.changes.join(' '), /quieter \(a simple full-range drop, to −8 dB at the side\) and darker: the head blocks highs/);
-    assert.match(GUIDES.check.tryThis.join(' '), /−6\.9 dB — the level half of the head-shadow cue/);
+    assert.match(GUIDES.explore.changes.join(' '), /quieter \(the same at all frequencies, to −8 dB at the side\) and darker: the head blocks highs/);
+    // Decision 6 (2026-11-08): the head-shadow answer (quieter and darker) is the principle itself, so
+    // CHECK points to where LEARN teaches it instead of walking to THE TWO CUES.
+    assert.doesNotMatch(GUIDES.check.tryThis.join(' '), /−6\.9|THE TWO CUES|quieter|darker/);
+    assert.match(GUIDES.check.tryThis.join(' '), /On LEARN, reread the two ear cues at the top of the lesson/);
     assert.doesNotMatch(GUIDES.check.tryThis.join(' '), /0\.7 ms/, 'TRY THIS runs before the check: never quote an answer explanation');
   });
   it('2026-10-31 review: object 1 starts as PINK at 440 Hz, so the 250 Hz A/B names the TONE FREQUENCY step', () => {
     assert.match(S, /\{ on: true, type: BIN_SRC\.pink, freq: 440, azDeg: -60, dist: 1\.5 \}/);
-    assert.match(GUIDES.learn.tryThis.join(' '), /set SRC to TONE, pick 250 under TONE FREQUENCY \(Hz\), then switch to PINK/);
+    assert.match(GUIDES.learn.tryThis.join(' '), /set SRC to TONE and pick 250 under TONE FREQUENCY \(Hz\)\. Then switch to PINK/);
     assert.match(S, /const \[running, setRunning\] = useState\(false\);/);
   });
   it('the direction words the AZ readout prints: +90° right, +30° front-right, +150° rear-right', () => {
@@ -225,7 +253,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(ildDb(60).toFixed(1), '6.9');
     assert.equal(ildDb(90).toFixed(1), '8.0');
     assert.ok(ildDb(0) < 0.05);
-    assert.match(GUIDES.check.tryThis.join(' '), /far-ear level 0\.0 → −6\.9 dB/);
+    // (the 0.0 → −6.9 dB walk left the CHECK guide, decision 6; the numbers stay pinned above)
     assert.match(GUIDES.explore.changes.join(' '), /to −8 dB at the side/);
   });
   it('Bus norm 0.79 with object 1 alone at 0.5 m (and none at the default 1.5 m) — the native 1 ÷ max(1, Σ ÷ cap) law', () => {
@@ -287,7 +315,9 @@ describe('2026-10-31 verified fix: the low-tone caption matches what the model p
     assert.match(S, /In real hearing, below ~1\.5 kHz the head casts almost no shadow, so timing \(ITD\) does most of the work, and it does it well\. This simplified model still applies its level drop \(to −8 dB at the side\) at every frequency, so here a low tone carries a level cue too\./);
     assert.doesNotMatch(S, /so ITD does the work/);
     const lesson = read('src/features/lab/guidedLessons/content.ts');
-    assert.match(lesson, /in real hearing a low tone has almost no level difference between the ears, so it leans on timing[^']*This simplified model still applies its level drop \(to −8 dB at the side\) at every frequency/);
+    // 2026-11-08 Comp B rewrite: real hearing (COMMON MISTAKES) and this model's frequency-free level drop (FORMULA) are stated apart.
+    assert.match(lesson, /in real hearing, almost no level difference between the ears, so it places vaguely/);
+    assert.match(lesson, /far-ear level = −8·sin θ dB, plus a head-shadow low-pass on the far ear/);
     assert.doesNotMatch(lesson, /so it leans on timing alone/);
   });
 });

@@ -219,7 +219,12 @@ export function runProductionGuideSuite(opts: {
     });
     for (const [id, gd] of all) {
       it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-        assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+        assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+        // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+        const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+        assert.ok(intro, `${id}: no intro`);
+        assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+        assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
         for (const k of SECTION_KEYS) {
           assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k]?.length} bullets`);
           for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -321,8 +326,11 @@ export function runProductionGuideSuite(opts: {
         const seeing = gd.seeing.join(' ');
         assert.ok(seeing.includes(`STAGE ${s.num} · EXERCISE`), a.activityId);
         assert.ok(seeing.includes(`“${a.title}”`), `${a.activityId}: title`);
-        assert.ok(seeing.includes(`Offered on ${offered(a.onlyFor)}.`), `${a.activityId}: offered on`);
-        assert.ok(textOf(gd).includes(`Practice for Stage ${s.num}, ${s.title}.`), `${a.activityId}: practice line names the stage`);
+        assert.ok(seeing.includes(`offered on ${offered(a.onlyFor)}.`), `${a.activityId}: offered on`);
+        // Course-navigation lines left WHAT THIS TEACHES (owner 2026-11-08); a "Practice for Stage n" kept in an intro names the right stage.
+        assert.ok(!gd.teaches.join(' ').includes('Practice for Stage'), `${a.activityId}: navigation line in WHAT THIS TEACHES`);
+        const pr = (gd as unknown as { intro?: { learning: string } }).intro?.learning.match(/Practice for Stage (\d+)/);
+        if (pr) assert.equal(Number(pr[1]), s.num, `${a.activityId}: intro names the stage`);
         // A count quoted in TRY THIS ("All five checks start ○") is the real one.
         const n = ACTIVITY_CHECKS[a.activityId].length;
         const m = gd.tryThis.join(' ').match(/\b(All five|Five|Six|Seven|Eight) checks start ○/i);

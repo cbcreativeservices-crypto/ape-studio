@@ -41,8 +41,8 @@ test('the home and start guides describe + NEW PROJECT instead of "started … i
   for (const f of ['preprodScreenGuides.ts', 'postprodScreenGuides.ts']) {
     const g = read('src/screens/lab/production/' + f);
     assert.doesNotMatch(g, /project instead\?/, `${f}: no "started X instead?" — there was no way to start one`);
-    assert.match(g, /the last, \+ NEW PROJECT, starts another/, `${f}: home seeing`);
+    assert.match(g, /the last( one)?, \+ NEW PROJECT, starts (another|one)\./, `${f}: home seeing`);
     assert.match(g, / \+ NEW PROJECT, then a type, starts another\./, `${f}: home control`);
-    assert.match(g, /\+ NEW PROJECT there starts another project of any type/, `${f}: start control`);
+    assert.match(g, /\+ NEW PROJECT (there )?starts another project of any type/, `${f}: start control`);
   }
 });

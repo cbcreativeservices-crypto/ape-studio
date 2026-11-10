@@ -462,7 +462,7 @@ const MYTHS: { myth: string; reality: string }[] = [
   {
     myth: 'Record as hot as possible, right up to 0 dBFS, for maximum resolution.',
     reality:
-      'Modern converters’ noise floors sit far below the mic and room. Peaks around −18 to −10 dBFS keep full quality with safe headroom — while a clipped peak is destroyed forever.',
+      'Modern converters’ noise floors sit far below the mic and room. Peaks around −12 to −6 dBFS, with the average near −18, keep full quality with safe headroom — while a clipped peak is destroyed forever.',
   },
   {
     myth: 'Convert a clipped recording to 32-bit float and the clipping can be restored.',

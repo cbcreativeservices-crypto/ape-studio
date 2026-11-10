@@ -326,7 +326,7 @@ describe('Audio Post-Production: the home, packet and exercise claims, replayed'
     assert.equal(labelOf(LAB, 'music', 'brief', 'loudness_target'), 'Integrated loudness target');
     assert.equal(labelOf(LAB, 'music', 'brief', 'loudness_tolerance'), 'Permitted tolerance');
     assert.equal(labelOf(LAB, 'music', 'brief', 'true_peak_max'), 'Maximum true peak');
-    assert.ok(g.stages.brief.teaches.join(' ').includes('Integrated loudness (LUFS) averages the whole program; true peak (dBTP) is the highest peak, even between samples'));
+    assert.ok(g.stages.brief.teaches.join(' ').includes('Integrated loudness (LUFS) is a gated average of the whole program; true peak (dBTP) is the highest peak, even between samples'));
     // The finish item no longer says "Measure … here" (the app measures nothing): the learner enters what was measured.
     assert.ok(!g.stages.finish.tryThis[0].includes('Measure'));
   });

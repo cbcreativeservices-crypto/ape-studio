@@ -66,7 +66,12 @@ describe('1. every Gate / Expander screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: ${gd[k].length} bullets`);
         for (const line of gd[k]) assert.ok(line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -112,8 +117,9 @@ describe('3. each guide quotes its screen’s real names', () => {
       'LAB NOTES', 'GATE ATTENUATION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       'TEACHING MODEL', 'DRUM-HIT MODEL',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Threshold', 'Attack', 'Hold', 'Release', 'Range', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 dB SILENCE', '−20 dB GENTLE'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'CLICK 90', 'RANGE', 'HOLD', 'THRESH', '−20 dB GENTLE'],
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'Attack', 'HOLD', 'RLS', 'RANGE', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 dB SILENCE', '−20 dB GENTLE'],
+    // '−20 dB GENTLE' left the CHECK guide (decision 6, 2026-11-08): it was the range-partial answer's setting
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'CLICK 90', 'RANGE', 'HOLD', 'THRESH', 'CONTROLS'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));
   for (const [id, names] of Object.entries(NAMES)) {
@@ -128,9 +134,9 @@ describe('3. each guide quotes its screen’s real names', () => {
   }
   it('the dock and bezel are exactly what the guide lists', () => {
     assert.match(GATE, /fader: \{ min: -50, max: -20,/);
-    assert.match(GUIDES.explore.control.join(' '), /THRESH fader runs from −50 to −20 dB/);
+    assert.match(GUIDES.explore.control.join(' '), /THRESH fader from −50 to −20 dB/);
     assert.match(GATE, /choices: \[0, 10, 100\]\.map\(\(ms\) => \(\{ label: `\$\{ms\} ms`, value: ms \}\)\)/);
-    assert.match(GUIDES.explore.control.join(' '), /HOLD key: 0, 10 or 100 ms/);
+    assert.match(GUIDES.explore.control.join(' '), /HOLD: 0, 10 or 100 ms/);
     assert.match(GATE, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb \},\s*\{ k: 'RANGE', paramId: P\.rangeDb \},\s*\]/);
     assert.match(GATE, /pollGr: 'gate'/);
     assert.match(code('src/screens/lab/FxLabScreen.tsx'), /maxDb=\{pollGr === 'gate' \? 70 : 30\}/);
@@ -138,6 +144,11 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.equal((GATE.match(/^\s{6}question: '/gm) ?? []).length, 2);
     assert.match(GUIDES.explore.control.join(' '), /two CHECK YOURSELF questions/);
     assert.match(read('src/screens/lab/foundations/bits.tsx'), />CHECK YOURSELF\{/);
+  });
+  it('LEARN: the header ▶ shows on every tab (LabShell headerAction), so the page says it still plays', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays the sound'));
   });
 });
 
@@ -267,15 +278,21 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.match(t[1], /clean hit, so this shows depth, not chatter/);
     assert.match(GUIDES.explore.changes.join(' '), /RLS sets how fast it then closes, and how fast its sensed level falls/);
     // the opening state (pinned by the DEFAULT run above)
-    assert.match(GUIDES.explore.changes.join(' '), /Each click opens it at the starting THRESH −35 dB; at −20 dB the short click never does/);
-    for (const gd of allGuides.map(([, g]) => g)) for (const k of Object.keys(gd)) assert.doesNotMatch(gd[k].join(' '), /never registers/);
+    assert.match(GUIDES.explore.changes.join(' '), /At the starting THRESH −35 dB each click opens the gate; at −20 dB the short click never reaches it/);
+    for (const gd of allGuides.map(([, g]) => g)) for (const k of SECTION_KEYS) assert.doesNotMatch(gd[k].join(' '), /never registers/);
     // the screen's own copy says the same
     assert.match(GATE, /you hear it open on every hit/);
     assert.match(GATE, /the gate opens on each hit/);
     assert.match(GUIDES.learn.tryThis[0], /at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0\.0/);
-    assert.match(GUIDES.check.tryThis[1], /compare HOLD 0 ms and 100 ms: at 100 ms GR rests at 0\.0 a moment after each hit/);
+    // CHECK (decision 6, 2026-11-08): HOLD is the hold-meaning answer itself, so the line points to where it is taught
+    assert.match(GUIDES.check.tryThis[1], /Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE/);
+    assert.match(GATE, /label: 'HOLD', paramId: P\.holdMs, lessonKey: 'hold',/);
+    assert.doesNotMatch(GUIDES.check.tryThis[1], /HOLD 0 ms|100 ms|minimum|stays open|GR (rests|stays)/);
     assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 dB SILENCE, 20\.0 at −20 dB GENTLE/);
-    assert.match(GUIDES.check.tryThis[0], /THRESH −50 dB with RLS 20 ms CHATTER and RANGE −20 dB GENTLE: GR tops out at 20\.0 dB/);
+    // CHECK RANGE line: a DIFFERENT floor than the range-partial question (−20 dB), re-run above (−40 → 40.0)
+    assert.match(GUIDES.check.tryThis[0], /THRESH −50 dB with RLS 20 ms CHATTER and RANGE −40 dB: GR tops out at 40\.0 dB/);
+    const checkText = [...SECTION_KEYS.map((k: string) => GUIDES.check[k].join(' ')), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
+    assert.doesNotMatch(checkText, /−20 dB GENTLE|20\.0 dB|faintly audible|quieter, not silent|minimum (open )?time|lengthen the RELEASE/);
     // and no number is quoted on PINK NOISE (route-dependent)
     for (const gd of allGuides.map(([, g]) => g)) for (const line of gd.tryThis) assert.doesNotMatch(line, /PINK NOISE/);
   });

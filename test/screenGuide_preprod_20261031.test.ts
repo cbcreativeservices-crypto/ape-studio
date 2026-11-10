@@ -155,7 +155,7 @@ runProductionGuideSuite({
           stage: 'schedule',
           in: ['The lines add up to more than the budget', 'No contingency in the budget'],
         },
-        // Why the item says "neither a Contingency line": file the 1500 as
+        // Why the item says "no Contingency line": file the 1500 as
         // Contingency and only the over-budget finding is left (5500 > 5000).
         {
           set: { 'schedule.budget_lines': [{ bl_category: 'personnel', bl_amount: 4000 }, { bl_category: 'contingency', bl_amount: 1500 }] },
@@ -166,7 +166,7 @@ runProductionGuideSuite({
       ],
       labels: [['schedule', 'budget_total']],
       options: [['schedule', 'budget_lines', 'contingency', 'bl_category']],
-      says: ['5000', '4000', '1500', 'neither a Contingency line', 'The lines add up to more than the budget', 'No contingency in the budget'],
+      says: ['5000', '4000', '1500', 'no Contingency line', 'The lines add up to more than the budget', 'No contingency in the budget'],
     },
     {
       guide: 'technical', at: 0,
@@ -194,7 +194,7 @@ runProductionGuideSuite({
         { set: { 'schedule.available_channels': 3 }, stage: 'technical', out: ['The input list needs more channels than the equipment has'], blocked: false },
       ],
       labels: [['schedule', 'available_channels']],
-      says: ['3 channels', 'then come back here', 'BLOCKED'],
+      says: ['3 channels', 'and come back', 'BLOCKED'],
     },
     {
       guide: 'readiness', at: 0,
@@ -339,8 +339,8 @@ describe('Production guides: the challenged claims, checked against the screens 
     const K = code('src/screens/lab/production/ProductionPacketScreen.tsx');
     const at = (s: string) => K.indexOf(s);
     assert.ok(at('WHAT’S LEFT') < at('SHARE AS PDF') && at('SHARE AS PDF') < at('built.model.control.map'));
-    assert.ok(g.packet.seeing[0].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
-    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.packet.seeing[0].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
+    assert.ok(g.packet.seeing[1].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.packet.seeing[1].includes('It and the type stay off the PDF, which holds the title, verdict and all below SHARE AS PDF.'));
     for (const gd of [g.packet, G.PRODUCTION_SCREEN_GUIDES.postprod.packet]) {
       assert.ok(!gd.seeing.join(' ').includes('what you read here is what prints'));
     }
@@ -351,7 +351,10 @@ describe('Production guides: the challenged claims, checked against the screens 
       assert.match(code(`src/screens/lab/production/${f}.tsx`), /navigation\.navigate\('ProductionStage'/, f);
     }
     for (const st of Object.values(g.stages as Record<string, { control: string[] }>)) {
-      assert.ok(st.control.join(' ').includes('‹ goes back to what opened this stage: the lab home, the packet or an exercise.'));
+      assert.ok(st.control.join(' ').includes('‹ goes back to where you came from: the lab home, the Production Packet or an exercise.'));
+    }
+    for (const st of Object.values(G.PRODUCTION_SCREEN_GUIDES.postprod.stages as Record<string, { control: string[] }>)) {
+      assert.ok(st.control.join(' ').includes('‹ goes back to where you came from: the lab home, the Delivery Package or an exercise.'));
     }
   });
   it('DOTS + FINDINGS: optional-and-blank is amber, required-and-open grey, n/a darker grey; a blocker finding has a red edge, the rest amber', () => {
@@ -370,13 +373,13 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(R, /const attention = findings\.filter\(\(f\) => f\.severity === 'attention'\)\.length;/);
     assert.match(R, /const penalty = Math\.min\(0\.2, attention \* 0\.02, base \* 0\.4\);/);
     assert.match(R, /export const BLOCKED_CEILING = 99;/);
-    assert.ok(g.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max'));
-    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max; an open blocker keeps it under 100 and Not Approved.'));
+    assert.ok(g.home.changes.join(' ').includes('Each flagged finding costs up to 2 points, 20 at most.'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.home.changes.join(' ').includes('Each flagged finding costs up to 2 points, 20 at most. An open blocker keeps it under 100 and Not Approved.'));
   });
   it('START: the input-list exercise is Music and Live only, and the guide says so', () => {
     const only = Object.fromEntries(LABS[LAB].stages.map((s: { stageId: string; activity: { onlyFor?: string[] } }) => [s.stageId, s.activity.onlyFor ?? null]));
     assert.deepEqual(only.technical, ['music', 'live']);
-    assert.ok(g.start.changes.join(' ').includes('the input-list exercise is for Music and Live'));
+    assert.ok(g.start.changes.join(' ').includes('the input-list one is for Music and Live'));
   });
   it('PEOPLE: the rigger is asked, and its blocker fires, on Live only; the electrician on every type', () => {
     assert.equal(labelOf(LAB, 'music', 'people', 'rigger'), undefined);

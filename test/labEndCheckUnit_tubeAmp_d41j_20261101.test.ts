@@ -53,9 +53,9 @@ describe('Vacuum Tube: the check is a CHECK unit on the end screen', () => {
   });
   it('the end guide says so', async () => {
     const { TUBE_END_GUIDE } = await import('../src/screens/lab/tube/tubeScreenGuides.ts');
-    assert.match(TUBE_END_GUIDE.seeing[0], /LAB COMPLETE once every module is opened and the check is passed/);
+    assert.match(TUBE_END_GUIDE.seeing[0], /LAB COMPLETE appears once every module is opened and the check is passed/);
     assert.match(TUBE_END_GUIDE.seeing[0], /CHECK row/);
-    assert.match(TUBE_END_GUIDE.control.join(' '), /the CHECK row moves this screen up to the check/); // D41 K6
+    assert.match(TUBE_END_GUIDE.control.join(' '), /Tap the CHECK row to scroll this screen up to the check/); // D41 K6
     assert.doesNotMatch(TUBE_END_GUIDE.seeing.join(' '), /When none are left the title reads LAB COMPLETE/);
   });
 });
@@ -102,8 +102,9 @@ describe('Amp: the understanding check joins the modules and the final', () => {
   });
   it('the end guide says so', async () => {
     const { AMP_END_GUIDE } = await import('../src/screens/lab/amp/ampScreenGuides.ts');
-    assert.match(AMP_END_GUIDE.seeing[0], /CHECK row for Check your understanding\. LAB COMPLETE shows only once all are done, including a passed check/);
-    assert.match(AMP_END_GUIDE.control.join(' '), /The Check your understanding row scrolls to the check on this same screen/); // D41 K6
+    // Wording from the Guided Lessons return (2026-11-08); the facts are unchanged.
+    assert.match(AMP_END_GUIDE.seeing.join(' '), /CHECK row for Check your understanding\. LAB COMPLETE appears only when all are done, including a passed check/);
+    assert.match(AMP_END_GUIDE.control.join(' '), /the Check your understanding row scrolls to the check on this screen/); // D41 K6
     assert.match(AMP_END_GUIDE.changes.join(' '), /RESET LAB PROGRESS keeps it passed/);
   });
 });
@@ -137,7 +138,7 @@ describe('EQ Lab: the check is a CHECK unit on both end screens (D41 J2 follow-u
   it('the end guide says so', async () => {
     const { EQ_END_GUIDE } = await import('../src/screens/lab/eq/eqScreenGuides.ts');
     assert.match(EQ_END_GUIDE.seeing[0], /LAB COMPLETE once every module is opened and the check is passed/);
-    assert.match(EQ_END_GUIDE.control.join(' '), /the CHECK row stays here/);
+    assert.match(EQ_END_GUIDE.control.join(' '), /Tapping the CHECK row keeps you here/);
     assert.doesNotMatch(EQ_END_GUIDE.seeing.join(' '), /When none are left the title reads LAB COMPLETE/);
   });
 });

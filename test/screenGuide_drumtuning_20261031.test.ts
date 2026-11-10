@@ -75,7 +75,7 @@ describe('1. every Drum Tuning screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1 && gd[k].length <= 5, `${id}.${k}: 1–5 bullets`);
         for (const line of gd[k]) assert.ok(typeof line === 'string' && line.trim().length > 10, `${id}.${k}: a blank bullet`);
@@ -97,7 +97,7 @@ describe('1. every Drum Tuning screen has a complete guide', () => {
     const t = allGuides.map(([, gd]) => textOf(gd)).join('\n');
     assert.doesNotMatch(t, /the correct (tuning|relationship)\b/i);
     assert.match(textOf(g('sound', 1)), /Tuning to an exact note is optional/);
-    assert.match(textOf(g('sound', 0)), /learn the method here, then trust your ears on a real drum/);
+    assert.match(textOf(g('sound', 0)), /The method carries over to a real drum, where your ears have the final say/);
   });
 });
 
@@ -144,7 +144,7 @@ describe('3. each guide quotes its step’s real names', () => {
     method: [
       ['STEP', 'DO', 'HEAD', 'SEAT', 'FINGER', 'STAR', 'TAP', 'ADJUST', 'PLAY', 'OTHER', 'BATTER', 'RESONANT', 'CAUTION'],
       ['LUG', 'TAPPED', 'LUG PITCH', 'SPREAD', '▶ TAP', '◉ REVEAL MAP'],
-      ['LUG', 'THIS RUN', 'LUG PITCH', 'SPREAD', 'HEAD', 'TURN', 'BATTER', 'RESO', '▶ TAP', '▶ STRIKE', '▶ SHOW ME A MOVE', '↺ NEW HEADS'],
+      ['LUG', 'THIS RUN', 'SPREAD', 'HEAD', 'TURN', 'BATTER', 'RESO', '▶ TAP', '▶ STRIKE', '▶ SHOW ME A MOVE', '↺ NEW HEADS'],
       REVIEW,
     ],
     whole: [
@@ -258,7 +258,7 @@ describe('4. TRY THIS numbers are what the steps print at their defaults', () =>
     assert.ok(tt('prepare', 0).includes('RACK reads 12" × 8", 6 lugs, RESPONDS 130–260 Hz'));
     assert.equal(fmtHz(D.kick.usefulHz[0]), '45.0');
     assert.ok(D.kick.usefulHz[0] < Math.min(D.snare.usefulHz[0], D.rack.usefulHz[0], D.floor.usefulHz[0]), 'KICK’s band starts lowest');
-    assert.ok(tt('prepare', 0).includes(`KICK’s starts lowest: RESPONDS ${fmtHz(D.kick.usefulHz[0])}–${fmtHz(D.kick.usefulHz[1])} Hz`));
+    assert.ok(tt('prepare', 0).includes(`KICK’s band sits lowest: RESPONDS ${fmtHz(D.kick.usefulHz[0])}–${fmtHz(D.kick.usefulHz[1])} Hz`));
   });
   it('prepare.2 the star orders the guide quotes (8 and 6 lugs)', () => {
     assert.deepEqual(E.STAR_ORDER[8].map((i: number) => i + 1), [1, 5, 3, 7, 2, 6, 4, 8]);
@@ -294,7 +294,7 @@ describe('4. TRY THIS numbers are what the steps print at their defaults', () =>
     assert.equal(c.indexOf(Math.max(...c)) + 1, 2);
     assert.equal(E.spreadCents(h).toFixed(0), '195');
     assert.match(code(`${DIR}/modules/ch3Method.tsx`), /useState<HeadState>\(\(\) => randomUnevenHead\(2400, SPEC\.lugs, 0x51ab, 0\.5\)\)/);
-    for (const x of ['the map says lug 2, SPREAD 195 ¢', 'lug 6']) assert.ok(tt('method', 1).includes(x), x);
+    for (const x of ['The map says lug 2, SPREAD 195 ¢', 'lug 6']) assert.ok(tt('method', 1).includes(x), x);
   });
   it('whole.1 SET: RESO ↑ → 226 Hz (+3.0 st); BATTER ↑ → 160 Hz', () => {
     const up = Math.round(190 * Math.pow(2, 3 / 12));
@@ -303,7 +303,7 @@ describe('4. TRY THIS numbers are what the steps print at their defaults', () =>
     assert.equal(down, 160);
     assert.equal(`+${(12 * Math.log2(up / 190)).toFixed(1)} st`, '+3.0 st');
     assert.match(code(`${DIR}/modules/ch4Whole.tsx`), /setResoHz\(Math\.round\(batterHz \* Math\.pow\(2, st \/ 12\)\)\);/);
-    for (const x of ['RESO reads 226 Hz, REL +3.0 st', 'RESO 160 Hz']) assert.ok(tt('whole', 1).includes(x), x);
+    for (const x of ['RESO reads 226 Hz and REL +3.0 st', 'RESO 160 Hz']) assert.ok(tt('whole', 1).includes(x), x);
   });
   it('types.0 SNARE SIDE 290 Hz at +400 ¢, 345 Hz at +700 ¢', () => {
     assert.equal(fmtHz(230 * Math.pow(2, 400 / 1200)), '290');

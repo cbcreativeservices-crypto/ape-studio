@@ -42,66 +42,75 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 
 export type AmplitudeScreenId = 'lab' | 'primer';
 
-/** The colour-bar / six-cards physics both screens share. */
+/** The colour-bar / six-cards physics both screens share (one rewrite per
+ *  shared line, Guided Lessons return 2026-11-08 decision 8: the lab's). */
 const CHANGES: string[] = [
-  'Each display colors its own scale: nearer its top, warmer.',
-  'PEAK (−3) tops RMS (−14): PEAK catches the biggest swings; RMS averages strength over time, so a short burst lifts it less.',
-  'SPL METER reads sound in air (78 dB SPL); LEVEL METER counts dB below digital full scale: 0 or less.',
-  'SPECTRUM (RTA): the low tone is the tallest, warmest bar; its harmonic (a weaker tone at 3× the frequency) is shorter, cooler.',
+  'Each display colors its own scale: warmer near its top.',
+  'LEVEL METER: PEAK (−3) tops RMS (−14). PEAK catches the biggest swings; RMS averages over time, so a short burst lifts it less.',
+  'SPL METER reads sound in air (78 dB SPL); LEVEL METER reads dB below digital full scale: 0 or less.',
+  'SPECTRUM (RTA): the low tone is the tallest, warmest bar; its harmonic, a weaker tone at 3× its frequency, is shorter, cooler.',
 ];
 
 const TRY_BURST =
-  'Find the short burst: in WAVEFORM it is the tallest, warmest bars, about 70% of the way across; in SPECTROGRAM, a bright upright streak at the same point.';
+  'Find the short burst. In WAVEFORM it is the tallest, warmest bars, about 70% of the way across. In SPECTROGRAM it is a bright upright streak at the same point.';
 const TRY_SPL =
-  'Compare SPL METER 78 dB SPL with LEVEL METER PEAK −3: 78 is the bigger number but the cooler color. Each meter colors its own scale.';
+  'Compare SPL METER’s 78 dB SPL with LEVEL METER’s PEAK −3. 78 is the bigger number but the cooler color, because each meter colors its own scale.';
 const TRY_SCOPE =
-  'In OSCILLOSCOPE follow the trace: blue where it crosses the zero line, warmer toward every crest, top and bottom. Level is distance from zero, not direction.';
+  'In OSCILLOSCOPE, follow the trace: blue where it crosses the zero line, warmer toward every crest, top and bottom. Level is distance from zero, not direction.';
 
 /** WHAT THIS TEACHES — the shared opening lines. */
 const TEACH_RULE = 'Wherever an Academy display shows level or amplitude, cooler colors mean less and warmer colors mean more.';
-const TEACH_TERMS = 'Amplitude is how big the swings are; level is that size read as a number, counted in dB (decibels).';
+const TEACH_TERMS = 'Amplitude is how big the swings are. Level is that size read as a number, counted in dB (decibels).';
 const TEACH_VIEWS = 'A waveform shows amplitude over time, a spectrum strength across frequency, a spectrogram both at once.';
-const TEACH_AID = 'This color scale is an Academy learning aid; real equipment and software use many schemes.';
+const TEACH_AID = 'This color scale is a learning aid; real equipment and software use many schemes.';
 
 export const AMPLITUDE_SCREEN_GUIDES: Record<AmplitudeScreenId, ScreenGuide> = {
   // ── the lab (Labs menu → Audio Fundamentals → first lab) ────────────────────
   lab: {
+    intro: {
+      learning: 'How every Academy display uses one color language for level: cooler means less, warmer means more. Also how amplitude, level, peak, RMS and dB SPL differ.',
+      start: 'Read the color bar from LOW to HIGH. Then scroll through SIX VIEWS · ONE SIGNAL and find the short burst in WAVEFORM. Then try CHECK YOURSELF.',
+    },
     seeing: [
-      'The color bar: LOW (dark blue) to HIGH (red), marked quiet → loud, less → more, and pp, mp, f, fff (music marks: very soft to very loud).',
-      'SIX VIEWS · ONE SIGNAL: WAVEFORM, OSCILLOSCOPE, LEVEL METER, SPL METER, SPECTRUM (RTA) and SPECTROGRAM — still drawings of one example sound.',
+      'Read the color bar: LOW (dark blue) to HIGH (red), marked quiet → loud, less → more, and pp, mp, f, fff (music marks, very soft to very loud).',
+      'SIX VIEWS · ONE SIGNAL: one example sound, drawn still in WAVEFORM, OSCILLOSCOPE, LEVEL METER, SPL METER, SPECTRUM (RTA) and SPECTROGRAM.',
       'Then LEARNING CONVENTION, BLUE = LESS / RED = MORE, and CHECK YOURSELF — THREE QUICK READS (once passed: ✓ ORIENTATION COMPLETE).',
     ],
     control: [
-      'Scroll the page. Nothing here makes sound or uses the microphone.',
-      'CHECK YOURSELF: three questions. Tap one of two choices — two color swatches, then two pad grids, then two small spectrum displays. A wrong tap costs nothing: an amber hint and a small color ramp appear; try again.',
-      'UNDERSTOOD — MARK REVIEWED unlocks when all three are right. It marks this lab reviewed (its ✓ in the Labs menu) and shows ✓ ORIENTATION COMPLETE.',
-      'Passed the color check before, on any screen? Then no check shows. MARK REVIEWED marks the lab if it is not marked yet; TEST YOURSELF AGAIN › replays the questions for practice.',
-      'FINISH · SEE WHAT’S LEFT › at the bottom shows what is still to do. ‹ leaves the lab.',
+      'Scroll the page. Nothing here plays sound or uses your microphone.',
+      'In CHECK YOURSELF, answer three questions by tapping one of two choices: two color swatches, then two pad grids, then two small spectrum displays. A wrong tap costs nothing: you get an amber hint and a small color ramp, and you try again.',
+      'When all three are right, tap UNDERSTOOD — MARK REVIEWED. The lab gets its ✓ in the Labs menu and you see ✓ ORIENTATION COMPLETE.',
+      'Passed the color check before, on any screen? Then the check is hidden. Tap MARK REVIEWED if the lab isn’t marked yet, or TEST YOURSELF AGAIN › to practice the questions.',
+      'FINISH · SEE WHAT’S LEFT › at the bottom shows what you still have to do. ‹ leaves the lab.',
     ],
     changes: CHANGES,
     teaches: [
       TEACH_RULE,
       TEACH_TERMS,
       TEACH_VIEWS,
-      'These colors are an Academy learning aid; real gear varies. Foundations of Sound uses them next.',
+      'These colors are a learning aid; real equipment and software use many color schemes.',
     ],
     tryThis: [TRY_BURST, TRY_SPL, TRY_SCOPE],
   },
 
   // ── the one-time primer, drawn in place of a gated lab or tool ──────────────
   primer: {
+    intro: {
+      learning: 'The color language every level display in the Academy uses, including the one you chose: cooler means less, warmer means more, on each display’s own scale.',
+      start: 'Read the color bar from LOW to HIGH. Look at the six cards in SIX VIEWS · ONE SIGNAL. Then answer CHECK YOURSELF and tap UNDERSTOOD — CONTINUE.',
+    },
     seeing: [
       'This page opened in place of the lab or tool you chose. It shows until you pass its check once, so you know the level colors first.',
-      'The color bar: LOW (dark blue) to HIGH (red), marked quiet → loud and less → more.',
-      'SIX VIEWS · ONE SIGNAL: six cards draw one example sound. Below them: LEARNING CONVENTION, BLUE = LESS / RED = MORE, and CHECK YOURSELF.',
-      'Every card is a still drawing, not a live reading.',
+      'The color bar runs from LOW (dark blue) to HIGH (red), marked quiet → loud and less → more.',
+      'SIX VIEWS · ONE SIGNAL: one example sound on six cards. Each is a still drawing, not a live reading.',
+      'Below them: LEARNING CONVENTION, BLUE = LESS / RED = MORE, then CHECK YOURSELF.',
     ],
     control: [
-      'Scroll the page. Nothing here makes sound or uses the microphone.',
-      'CHECK YOURSELF: three questions. Tap one of two choices — two color swatches, then two pad grids, then two small spectrum displays.',
+      'Scroll the page. Nothing here plays sound or uses your microphone.',
+      'In CHECK YOURSELF, answer three questions by tapping one of two choices: two color swatches, then two pad grids, then two small spectrum displays.',
       'A wrong tap costs nothing: a short amber hint and a small color ramp appear, and you try again.',
-      'UNDERSTOOD — CONTINUE unlocks when all three are right, and opens the screen you chose right here. This page does not come back after that.',
-      '‹ goes back without marking anything; the page shows again next time. The lab credit is earned in Understanding Level & Amplitude itself.',
+      'When all three are right, tap UNDERSTOOD — CONTINUE. The screen you chose opens right here, and this page won’t come back.',
+      '‹ takes you back without finishing; this page shows again next time. The lab itself is marked reviewed only in Understanding Level & Amplitude.',
     ],
     changes: CHANGES,
     teaches: [

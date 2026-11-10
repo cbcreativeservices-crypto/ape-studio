@@ -76,7 +76,9 @@ describe('1. every Beginning Mixing page has a complete guide', () => {
   });
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro && intro.learning.trim().length > 10 && intro.start.trim().length > 10, `${id}: the intro card (learning + start)`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -270,7 +272,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
   const LABEND = code('src/screens/lab/kit/labEnd.ts');
   const KIT = code(`${MX}/kit.tsx`);
   it('shape, budgets and copy rules — the same bar as every page guide', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
     for (const k of SECTION_KEYS) assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: 1–5 bullets`);
     assert.ok(END.tryThis.length >= 2 && END.tryThis.length <= 3, 'end: TRY THIS is 2–3 experiments');
     for (const s of SCREEN_GUIDE_SECTIONS as readonly { key: string; place: string }[]) {
@@ -302,8 +304,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.match(TIER, /return tier === 'guest' \|\| tier === 'preview';/);
     assert.match(TIER, /return isGuestTier\(tier\) && \(tier === 'preview' \|\| tierKnown\);/);
     assert.match(TIER, /export function persistAllowed\(tier: Tier\): boolean \{\s*return tier === 'free' \|\| tier === 'member';/);
-    assert.ok(ET.includes('✓ DONE when you are not signed in, or in a members-only preview'));
-    assert.ok(ET.includes('As a member, each credited page is kept') && ET.includes('A members-only preview saves nothing'));
+    assert.ok(ET.includes('✓ DONE if you aren’t signed in, or in a members-only preview'));
+    assert.ok(ET.includes('As a member, each credited page stays with your account') && ET.includes('A members-only preview saves nothing'));
   });
   it('credit mode: the lab passes pageCreditKeys, so PagedLab runs LabEndScreen in credit mode (✓ CREDITED; ✓ DONE for a guest), noun "page"', () => {
     assert.match(SCREEN, /pageCreditKeys=\{PAGE_KEYS\}/);
@@ -311,7 +313,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(PAGED, /mode=\{creditMode\}\s*noun="page"/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
-    assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE when you are not signed in'));
+    assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE if you aren’t signed in'));
   });
   it('the credit rule: every page is manualDone and counts only through its goal chips; NEXT / FINISH never mark it', () => {
     const flags = PAGE_FILES.flatMap((f) => [...code(f).matchAll(/\{ title: '[^']*', short: '[^']*', Component: \w+(, manualDone: true)? \}/g)].map((m) => !!m[1]));
@@ -321,8 +323,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.match(KIT, /useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
     assert.match(KIT, /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
-    assert.ok(ET.includes('“Counts once the goals at the foot of the page are done. NEXT moves on without counting it.”'), 'quotes the whole row line');
-    assert.match(ET, /every goal chip at its foot turns ✓; on most pages one chip is Pass the check\. NEXT and FINISH move on without counting it/);
+    assert.ok(ET.includes('counts once the goals at the foot of the page are done; NEXT moves on without counting it.'), 'says the whole row line');
+    assert.match(ET, /every goal chip at its foot shows ✓\. On most pages one chip is Pass the check\. NEXT and FINISH move on without counting it/);
   });
   it('no check row: the lab has no understanding check; the guide names the pages’ Pass the check chips, never a "check row"', () => {
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts') + read('src/features/lab/understanding.ts'), /mixing-beg/);

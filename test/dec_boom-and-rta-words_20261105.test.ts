@@ -66,12 +66,13 @@ describe('decision 19 A: no "31" claim is left where the screen does not draw it
   });
 
   it('MultiMeter help says what that screen draws, not the RTA’s words', () => {
-    const line = read('features/lab/guidedLessons/toolHelp.tsx').split('\n').find((l) => l.includes("name: 'Live spectrum (display)'"));
+    const line = read('features/lab/guidedLessons/toolHelp.tsx').split('\n').find((l) => /name: ["']LIVE SPECTRUM["']/.test(l));
     assert.ok(line);
     assert.ok(!line.includes('31 gradient'));
     assert.ok(!line.includes('1/3-octave'));
     assert.ok(!line.includes(WORDS));
-    assert.ok(line.includes('1/6-octave bands, 20 Hz to 20 kHz'));
+    assert.ok(line.includes('20 Hz–20 kHz · 61 bands (1/6 octave)'));
+    assert.ok(line.includes('Each column is a 1/6-octave band'));
     const screen = read('screens/tools/MultiMeterScreen.tsx');
     assert.ok(screen.includes("{ label: 'FULL', min: 20, max: 20000 }"));
     assert.ok(screen.includes('useState<Zoom>(ZOOMS[0])'));

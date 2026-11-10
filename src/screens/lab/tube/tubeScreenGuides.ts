@@ -24,96 +24,109 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 /** The section keys of VacuumTubeLabScreen's SECTIONS, in lab order. */
 export type TubeSectionId = 'inside' | 'flow' | 'grid' | 'amplify' | 'highv' | 'types' | 'bias' | 'sat' | 'versus';
 
-/** The shared tail every module's dock carries (TUBE REF ›, FULL SCREEN). */
-const DOCK_TAIL = 'TUBE REF › opens the Tube Reference library. ⤢ FULL SCREEN enlarges the drawing. Long-press a control for its guided-lesson entry.';
+/** The shared tail every module's dock carries (TUBE REF ›, FULL SCREEN), one
+ *  wording for all; `control` names the module's own long-press control
+ *  ('a control' where a module has several). */
+const dockTail = (control: string) =>
+  `TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing. Long-press ${control} to read its Guided Lesson entry.`;
 
 export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   // ── 1 · What's inside ────────────────────────────────────────────────────
   inside: {
+    intro: {
+      learning: 'What each part of a vacuum tube does — heater, cathode, plate, grids, glass and vacuum — and why the tube stops working when one is missing.',
+      start: 'In PARTS, tap CONTROL GRID and watch CURRENT jump to WIDE OPEN. Then tap HIDE ALL and add the parts back one at a time, reading the line below the drawing each time.',
+    },
     seeing: [
-      'A vacuum tube drawn cut open — a pentode, the fullest kind: glass, heater, cathode, three grids and the plate. Each part wears the same color as on the Tube Reference cards.',
-      'Readouts: PARTS (how many parts are showing), EMISSION (are electrons leaving the cathode?) and CURRENT — NONE, METERED or WIDE OPEN.',
-      'Below: while a part is hidden, a line naming what broke; then a note on the last part tapped.',
+      'You’re looking inside a cut-open vacuum tube: a pentode, with three grids, heater, cathode and plate inside the glass. Colors match the Tube Reference cards. It’s an illustration, not measured data.',
+      'Watch PARTS (parts showing), EMISSION (are electrons leaving the cathode?) and CURRENT: NONE, METERED or WIDE OPEN.',
+      'Hide a part and the line below names what broke; under it, a note on the last part you tapped.',
     ],
     control: [
-      'PARTS key: one chip per part, in build order — GLASS, VACUUM, HEATER, CATHODE, PLATE, CONTROL GRID, SCREEN GRID, SUPPRESSOR. Tap a chip to hide or show that part.',
-      'HIDE ALL leaves only the glass; SHOW ALL puts everything back.',
-      '⚡ E-VIEW swaps the physical drawing for the Electron View: the electron cloud, the flow and the grid’s field.',
-      DOCK_TAIL,
-      'The strip under the title moves between the modules; ‹ leaves the lab.',
+      'Use the PARTS key: one chip per part, in build order — GLASS, VACUUM, HEATER, CATHODE, PLATE, CONTROL GRID, SCREEN GRID, SUPPRESSOR. Tap a chip to hide or show that part.',
+      'HIDE ALL leaves only the glass. SHOW ALL puts every part back.',
+      'Tap ⚡ E-VIEW to swap the drawing for the Electron View: the electron cloud, its flow and the grid’s field.',
+      dockTail('a control'),
+      'Use the strip under the title to move between modules. ‹ leaves the lab.',
     ],
     changes: [
-      'Hide a part and the readouts — and, in ⚡ E-VIEW, the electrons — show what it was for. The line below names the first part missing, in build order.',
-      'No HEATER or CATHODE: nothing boils electrons off, so EMISSION reads OFF.',
-      'No GLASS or VACUUM: air fills the space; electrons keep hitting gas molecules, so CURRENT reads NONE.',
-      'No PLATE: nothing pulls electrons across. No CONTROL GRID: the flow runs WIDE OPEN.',
+      'Hide a part and the readouts (in ⚡ E-VIEW, the electrons too) show its job. The line below names the first missing part, in build order.',
+      'No HEATER or CATHODE: nothing boils electrons off; EMISSION reads OFF.',
+      'No GLASS or VACUUM: air fills it; electrons keep hitting gas molecules, so CURRENT reads NONE.',
+      'No PLATE: nothing pulls electrons across. No CONTROL GRID: nothing controls the flow; it runs WIDE OPEN.',
     ],
     teaches: [
-      'What each part of a tube does, and why every one is needed.',
-      'The build order: heat, an electron source and a collector make a working diode; the control grid then controls that flow, and the later grids fix its side effects.',
-      'The first module of Vacuum Tube Fundamentals, the first lab in Audio Electronics. Electron Flow comes next.',
-      'The drawing is an illustrative model, not measured tube data.',
+      'Each part has one job: the heater warms the cathode, the cathode releases electrons, the vacuum lets them travel freely, and the plate collects them.',
+      'Heater, cathode and plate in a vacuum already make a working tube, a diode. The control grid is what lets a small signal steer that flow.',
+      'The screen grid and the suppressor came later, to fix side effects of the grids before them.',
     ],
     tryThis: [
-      'Tap CONTROL GRID: CURRENT jumps from METERED to WIDE OPEN — full current, but nothing left to shape it into a signal.',
-      'Tap GLASS: VACUUM goes dark with it. EMISSION stays ON, but CURRENT reads NONE — in air, electrons keep hitting gas molecules and barely get anywhere.',
-      'Tap SHOW ALL if it shows, then HIDE ALL, and add parts back in build order, reading what each one fixes in the line below the display.',
+      'Tap CONTROL GRID: CURRENT jumps from METERED to WIDE OPEN. Full current flows, but nothing is left to shape it into a signal.',
+      'Tap GLASS: VACUUM goes dark with it. EMISSION stays ON, but CURRENT reads NONE. In air, electrons keep hitting gas molecules and barely get anywhere.',
+      'If SHOW ALL is showing, tap it, then tap HIDE ALL. Add the parts back in build order and read what each one fixes in the line below the drawing.',
     ],
   },
 
   // ── 2 · Electron flow ───────────────────────────────────────────────────
   flow: {
+    intro: {
+      learning: 'Why a tube needs heat before it passes any current: a hot cathode boils off electrons and the plate collects them. That’s why tube gear needs warm-up time.',
+      start: 'Slide WARM-UP slowly from 0% to 100%. Watch STAGE climb through its steps, and note where PLATE I first moves off 0%.',
+    },
     seeing: [
-      'One tube warming up, slowed and drawn: the heater glows, an electron cloud gathers around the cathode, then streams to the plate.',
-      'Readouts: HEAT (how warm the heater is), STAGE (the warm-up step, 1 to 5) and PLATE I — the plate current, as a share of full.',
-      'Below the display, a numbered line describes the step, from 1 · Cold to 5 · Steady current.',
+      'You’re watching one tube warm up, slowed down: the heater glows, an electron cloud gathers around the cathode, then streams to the plate. Real electrons are invisible, countless and far faster.',
+      'HEAT shows how warm the heater is. STAGE shows the warm-up step, 1 to 5. PLATE I is the plate current, as a share of full.',
+      'The numbered line below the drawing describes each step, from 1 · Cold to 5 · Steady current.',
     ],
     control: [
-      'WARM-UP fader (0–100%): how hot the heater is. Its readout adds cold, warming… or conducting.',
-      DOCK_TAIL,
+      'Slide the WARM-UP fader (0–100%) to set how hot the heater is. Its readout adds cold, warming… or conducting.',
+      dockTail('WARM-UP'),
     ],
     changes: [
       'Below 15% the heater is cold and nothing moves.',
-      'As it warms, the cathode boils off electrons (thermionic emission) and the positive plate collects them: at first a trickle too small to read (PLATE I 0%).',
-      'Above 70% emission climbs and PLATE I with it, to 100% at full heat. There the cathode makes more than the plate takes; the extra waits as a cloud (space charge) and the plate voltage sets the current.',
+      'As it warms, the cathode boils off electrons (thermionic emission) and the positive plate collects them. At first it’s a trickle too small to read: PLATE I 0%.',
+      'Above 70%, emission climbs and PLATE I with it, to 100% at full heat. The cathode now makes more than the plate takes. The extra waits as a cloud (space charge), and the plate voltage sets the current.',
     ],
     teaches: [
-      'Why a tube does nothing until it is hot: no heat, no electrons, no current, no sound — the reason tube gear needs warm-up time.',
-      'Why the vacuum matters: electrons fly freely only because nothing is in the way.',
-      'It follows What’s Inside; The Control Grid comes next.',
-      'The picture is conceptual and slowed: it gathers the dots by the cathode first so you can see them. Real electrons are invisible and countless.',
+      'No heat, no electrons, no current, no sound. That’s why tube gear needs time to warm up before it works properly.',
+      'Thermionic emission: a hot cathode releases electrons, and a positive plate pulls them across.',
+      'Why the vacuum matters: electrons fly freely only because nothing is in their way.',
     ],
     tryThis: [
-      'Slide WARM-UP to 50%: STAGE shows step 3 and PLATE I stays 0% — electrons are boiling off, but the trickle reaching the plate is too small to read.',
+      'Slide WARM-UP to 50%: STAGE shows step 3 and PLATE I stays 0%. Electrons are boiling off, but the trickle reaching the plate is too small to read.',
       'Push WARM-UP past 85%: the line reaches 5 · Steady current and PLATE I passes 50%. At 100%, PLATE I reads 100%.',
-      'Slide back below 70%: PLATE I drops to 0% although the heater still glows.',
+      'Slide back below 70%: PLATE I drops to 0%, even though the heater still glows.',
     ],
   },
 
   // ── 3 · The control grid ────────────────────────────────────────────────
   grid: {
+    intro: {
+      learning: 'How the control grid works: its negative field pushes electrons back, so a very small grid voltage controls a much larger plate current. That is amplification.',
+      start: 'Set GRID V to 50% and read PLATE I. Slide to 75% and compare. Then slide below 15% and watch GRID read CUT OFF.',
+    },
     seeing: [
-      'Cathode, control grid and plate, with electrons streaming from cathode to plate through the gaps in the grid.',
-      'Readouts: GRID — CUT OFF, PARTIAL or FULL FLOW — and PLATE I, the plate current as a share of full.',
-      'Below the display: CHECK YOURSELF, a question on how the grid does its job.',
+      'You see the cathode, the control grid and the plate. Electrons stream from the cathode to the plate through the gaps in the grid.',
+      'GRID reads CUT OFF, PARTIAL or FULL FLOW. PLATE I is the plate current, as a share of full.',
+      'Below the drawing, CHECK YOURSELF asks how the grid does its job.',
     ],
     control: [
-      'GRID V fader (0–100%): the grid’s voltage. 0% is the most negative, 100% the least. Its readout adds cut off — no current flows, partly negative or barely negative — full flow.',
-      '⚡ E-VIEW adds the grid’s repelling field lines.',
-      DOCK_TAIL,
+      'Slide the GRID V fader (0–100%) to set the grid’s voltage. 0% is the most negative, 100% the least. Its readout adds cut off — no current flows, partly negative, or barely negative — full flow.',
+      'Tap ⚡ E-VIEW to add the grid’s repelling field lines.',
+      dockTail('GRID V'),
     ],
     changes: [
       'The grid sits slightly negative. Electrons are negative too, so its field pushes them back toward the cathode.',
-      'Lower GRID V (more negative): a stronger push, less PLATE I. At 15% and below the tube is cut off — PLATE I reads 0%.',
-      'Higher: the stream swells, faster than the voltage rises, to 100% at the top. The wires never move — the field does the work.',
+      'Lower GRID V (more negative) means a stronger push and less PLATE I. At 15% and below the tube is cut off, and PLATE I reads 0%.',
+      'Raise it and the stream swells, faster than the voltage rises, to 100% at the top. The grid wires never move: the field does the work.',
     ],
     teaches: [
       'Amplification: a very small voltage at the grid controls a much larger current through the tube.',
-      'The grid works by its electric field, not by blocking electrons like a shutter.',
-      'It follows Electron Flow; Signal Amplification comes next.',
+      'The grid works through its electric field, not by blocking electrons like a shutter.',
+      'Plate current doesn’t follow grid voltage in a straight line: just above cutoff it grows slowly, then faster as the grid gets less negative.',
     ],
     tryThis: [
-      'Start at 50%: PLATE I reads 26%. Slide to 75%: it reads about 59% — more than double the current for a quarter of the lane.',
+      'Start at 50%: PLATE I reads 26%. Slide to 75%: it reads about 59%. That’s more than double the current for a quarter of the fader’s travel.',
       'Slide below 15%: GRID reads CUT OFF and PLATE I reads 0%.',
       'Turn on ⚡ E-VIEW and ride GRID V down: the field arrows grow longer as the grid goes more negative.',
     ],
@@ -121,221 +134,254 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
 
   // ── 4 · Signal amplification ────────────────────────────────────────────
   amplify: {
+    intro: {
+      learning: 'How one tube stage amplifies: a small signal at the grid steers a large current, a resistor turns it into a large voltage, and the output comes out upside-down.',
+      start: 'Watch the grid dots and the electron stream inside the glass pulse together. Then pick one moment and compare the input wave with the output wave: where one is up, the other is down.',
+    },
     seeing: [
-      'A small tube stage: a small input wave at the left rides a blue wire into the grid; a large wave leaves the plate on an amber wire at the right.',
-      'Inside the glass, the grid dots pulse with the input and the cathode-to-plate electron stream thickens and thins with them.',
-      'Readouts: GAIN ~×7 (the output is drawn about seven times taller; real preamp stages often give far more), IN GRID and OUT PLATE.',
+      'This is one small tube stage. A small input wave rides a blue wire into the grid at the left; a large wave leaves the plate on an amber wire at the right.',
+      'Inside the glass, the grid dots pulse with the input, and the cathode-to-plate electron stream thickens and thins with them.',
+      'Readouts: GAIN ~×7, IN GRID and OUT PLATE. The output is drawn about seven times taller; real preamp stages often give far more.',
     ],
     control: [
-      'Nothing to adjust here: this screen is a picture to watch.',
-      'TUBE REF › opens the Tube Reference library. ⤢ FULL SCREEN enlarges the drawing.',
+      'There’s nothing to adjust here. This screen is a picture to watch.',
+      'TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing.',
     ],
     changes: [
-      'Your signal never touches the big current. It wiggles the grid, and the grid gates the much larger stream.',
-      'Grid up → more current; grid down → less. That current flows through a resistor, so the plate voltage swings with it — a large copy of the input.',
-      'The copy is upside-down: more current makes the plate voltage drop. That flip is real tube behavior.',
+      'Your signal never touches the big current. It wiggles the grid, and the grid controls the much larger stream.',
+      'Grid up, more current; grid down, less. That current flows through a resistor, so the plate voltage swings with it: a large copy of the input.',
+      'The copy is upside-down, because more current makes the plate voltage drop. Most real tube stages flip the signal this way.',
     ],
     teaches: [
       'How a tube amplifies: a small signal controls a large current, and a resistor turns that current into a large voltage.',
-      'Why one tube stage turns the signal upside-down.',
-      'Most tube mic preamps, guitar amps and compressors repeat this picture. It follows The Control Grid; Why Tubes Need High Voltage comes next.',
+      'Why one tube stage turns the signal upside-down: more current through the resistor leaves less voltage at the plate.',
+      'Most tube mic preamps, guitar amps and compressors are built from stages like this one.',
     ],
     tryThis: [
-      'Watch the grid dots swell and the electron stream thicken together — the small input is opening the valve.',
-      'Compare the two waves at the same point across each graph: where the input is up, the output is down.',
-      'Tap ⤢ FULL SCREEN: the blue lead ends at the grid; the amber lead leaves from the plate at the top.',
+      'Watch the grid dots swell and the electron stream thicken together. The small input is letting more current through.',
+      'Pick one moment and look straight across both graphs: where the input is up, the output is down.',
+      'Tap ⤢ FULL SCREEN: the blue wire ends at the grid, and the amber wire leaves from the plate at the top.',
     ],
   },
 
   // ── 5 · Why high voltage ────────────────────────────────────────────────
   highv: {
+    intro: {
+      learning: 'Why tube circuits run at hundreds of volts: a strong plate voltage pulls a dense electron stream and leaves headroom, room for a big signal to swing.',
+      start: 'Open SUPPLY and choose HIGH-VOLTAGE SUPPLY (B+). Watch PULL and STREAM change, then switch back to SMALL SUPPLY and compare the arrows.',
+    },
     seeing: [
-      'Cathode and plate, with the plate’s pull drawn as arrows: arrow length and electron count show how strong it is.',
-      'Readouts: SUPPLY (SMALL or B+ HIGH), PULL (WEAK or STRONG) and STREAM (SPARSE or DENSE).',
+      'You see the cathode and the plate, with the plate’s pull drawn as arrows. Longer arrows and more electrons crossing mean a stronger pull.',
+      'SUPPLY reads SMALL or B+ HIGH, PULL reads WEAK or STRONG, and STREAM reads SPARSE or DENSE.',
     ],
     control: [
-      'SUPPLY key: SMALL SUPPLY or HIGH-VOLTAGE SUPPLY (B+). The tray stays open, so you can switch back and forth while the drawing reacts.',
-      DOCK_TAIL,
+      'Open the SUPPLY key and choose SMALL SUPPLY or HIGH-VOLTAGE SUPPLY (B+). The tray stays open, so you can switch back and forth and watch the drawing react.',
+      dockTail('SUPPLY'),
     ],
     changes: [
-      'A small plate voltage makes a weak field: few electrons cross, slowly. Too little current, and no room for a big signal to swing.',
-      'Hundreds of volts on the plate — the B+ supply — sweep the cloud across: a dense, fast stream with headroom (room to swing).',
-      'PULL and STREAM change with SUPPLY: the field’s strength sets the current.',
+      'A small plate voltage makes a weak field. Few electrons cross, and slowly: there’s too little current, and no room for a big signal to swing.',
+      'Hundreds of volts on the plate, the B+ supply, sweep the cloud across: a dense, fast stream with headroom (room to swing).',
+      'PULL and STREAM follow SUPPLY because the field’s strength sets the current.',
     ],
     teaches: [
-      'Why tube circuits run at hundreds of volts.',
-      'Safety: the B+ rail and its filter capacitors hold a charge that can kill, even after the amp is unplugged. Servicing, measuring and biasing are qualified-technician work.',
-      'It follows Signal Amplification; Triode · Tetrode · Pentode comes next.',
+      'Why tube circuits run at hundreds of volts: the plate needs a strong field to pull enough current and leave headroom.',
+      'Safety: the B+ supply and its filter capacitors hold a charge that can kill, even after the amp is unplugged.',
+      'Servicing, measuring and biasing a tube amp are work for a qualified technician.',
     ],
     tryThis: [
       'Switch SUPPLY to HIGH-VOLTAGE SUPPLY (B+): PULL reads STRONG and STREAM reads DENSE.',
-      'Switch back to SMALL SUPPLY and compare the arrows and the number of electrons crossing.',
+      'Switch back to SMALL SUPPLY and compare the arrow lengths and the number of electrons crossing.',
     ],
   },
 
   // ── 6 · Tube types ──────────────────────────────────────────────────────
   types: {
+    intro: {
+      learning: 'Why there are three main tube types: each adds one grid to fix the last one’s weakness, from the triode to the tetrode’s screen grid and the pentode’s suppressor.',
+      start: 'Open TYPE and step from TRIODE · 1 GRID to TETRODE · 2 GRIDS to PENTODE · 3 GRIDS. Watch NEW name the grid each type adds, and read its strength and weakness below.',
+    },
     seeing: [
-      'The tube cut open as a TRIODE, TETRODE or PENTODE. The newest grid glows in its own color; in ⚡ E-VIEW, red dots are secondary electrons.',
-      'Readouts: TYPE, GRIDS (1, 2 or 3 GRIDS) and NEW — the grid this type adds: G1 CONTROL, G2 SCREEN or G3 SUPPR.',
-      'Below: ADDS (what the new grid is), then the type’s strength and its weakness.',
+      'You see the tube cut open as a TRIODE, TETRODE or PENTODE. The newest grid glows in its own color. In ⚡ E-VIEW, red dots are secondary electrons, knocked off the plate.',
+      'TYPE and GRIDS (1, 2 or 3 GRIDS) name the tube. NEW names the grid this type adds: G1 CONTROL, G2 SCREEN or G3 SUPPR.',
+      'Below: ADDS says what the new grid is, then the type’s strength and its weakness.',
     ],
     control: [
-      'TYPE key: TRIODE · 1 GRID, TETRODE · 2 GRIDS or PENTODE · 3 GRIDS. The tray stays open while the drawing rebuilds; each option shows that type’s strength.',
-      '⚡ E-VIEW shows the electron cloud and flow instead of the physical drawing.',
-      DOCK_TAIL,
+      'Open the TYPE key: TRIODE · 1 GRID, TETRODE · 2 GRIDS or PENTODE · 3 GRIDS. Each option shows that type’s strength, and the tray stays open while the drawing rebuilds.',
+      'Tap ⚡ E-VIEW to see the electron cloud and its flow instead of the physical drawing.',
+      dockTail('TYPE'),
     ],
     changes: [
-      'TRIODE: one control grid. Simple and linear, but the plate’s field reaches back through it, limiting gain.',
+      'TRIODE: one control grid. Simple and linear, but the plate’s field reaches back through the grid, limiting gain.',
       'TETRODE: a positive screen grid shields the control grid and speeds the stream. But when the plate swings below the screen, electrons knocked off the plate (red) are stolen by the screen.',
-      'PENTODE: a suppressor grid beside the plate turns those strays back.',
+      'PENTODE: a suppressor grid beside the plate turns those strays back to the plate.',
     ],
     teaches: [
-      'Each tube type adds one grid to fix the last type’s weakness.',
+      'Each tube type adds one grid to fix the weakness of the type before it.',
       'Why the triode is the classic preamp tube and the pentode a classic output tube.',
-      'Why many power tubes in the Tube Reference are beam tetrodes: beam-forming plates turn the strays back instead of a third grid.',
-      'It follows Why Tubes Need High Voltage; Tube Bias comes next.',
+      'Many power tubes in the Tube Reference are beam tetrodes: beam-forming plates turn the strays back instead of a third grid.',
     ],
     tryThis: [
-      'Turn on ⚡ E-VIEW, then step from TRIODE to TETRODE: red dots appear — secondary electrons knocked off the plate and stolen by the screen grid.',
+      'Turn on ⚡ E-VIEW, then step from TRIODE to TETRODE: red dots appear. They’re secondary electrons, knocked off the plate and stolen by the screen grid.',
       'Step to PENTODE: NEW reads G3 SUPPR, and the red dots now die at the suppressor grid.',
-      'Turn ⚡ E-VIEW off and step through the three types again: the newest grid glows in its own color.',
+      'Turn ⚡ E-VIEW off and step through the three types again: the newest grid glows in its own color each time.',
     ],
   },
 
   // ── 7 · Bias ────────────────────────────────────────────────────────────
   bias: {
+    intro: {
+      learning: 'What bias is: the resting point on the tube’s curve that the signal swings around, and why too negative or too positive flattens one side of the wave.',
+      start: 'Slide BIAS to the far left and watch ZONE and the bottom of the output wave. Then slide to the far right, and finish back at 50%.',
+    },
     seeing: [
-      'Left: a transfer curve (grid voltage in, plate current out) with a dot for the idle point riding it.',
-      'Right: the plate current that results, drawn right way up — not the flipped plate voltage of Signal Amplification.',
-      'Readouts: BIAS (the idle point) and ZONE — CUTOFF, LINEAR or SATURATION.',
+      'On the left is a transfer curve: grid voltage in, plate current out. A dot rides it to mark the idle point.',
+      'On the right is the plate current that results, drawn right way up — not the flipped plate voltage you saw in Signal Amplification.',
+      'BIAS shows the idle point. ZONE reads CUTOFF, LINEAR or SATURATION.',
       'Below: the zone in words, why biasing a real amp is technician work, and CHECK YOURSELF.',
     ],
     control: [
-      'BIAS fader (0–100%): where the tube idles with no signal. Its readout adds too negative, correct or too positive, and turns red outside the safe middle.',
-      DOCK_TAIL,
+      'Slide the BIAS fader (0–100%) to set where the tube idles with no signal. Its readout adds too negative, correct or too positive, and turns red outside the safe middle.',
+      dockTail('BIAS'),
     ],
     changes: [
-      'Bias sets where on the curve the tube rests; the signal swings around that point.',
-      'Below 22%, too negative: the stream shuts off for part of the swing, so the bottom of the wave flatlines — CUTOFF.',
-      'Above 80%, too positive: the top hits the ceiling and flattens — SATURATION. In between, the whole swing rides the straight part — LINEAR.',
+      'Bias sets where on the curve the tube rests. The signal swings up and down around that point.',
+      'Below 22% (too negative), the stream shuts off for part of the swing, so the bottom of the wave flatlines: CUTOFF.',
+      'Above 80% (too positive), the top hits the ceiling and flattens: SATURATION. In between, the whole swing rides the straight part: LINEAR.',
     ],
     teaches: [
-      'What bias is: the idle point that decides whether the whole wave is amplified cleanly.',
-      'What “biasing an amp” after a tube change means — work done inside a live chassis at lethal voltage, by a qualified technician.',
-      'It follows Triode · Tetrode · Pentode; Tube Saturation comes next.',
+      'Bias is the idle point. It decides whether the whole wave is amplified cleanly.',
+      'Too negative flattens the bottom of the wave; too positive flattens the top.',
+      '“Biasing an amp” after a tube change means setting that idle point inside a live chassis at lethal voltage. It’s work for a qualified technician.',
     ],
     tryThis: [
       'Slide BIAS to the far left: ZONE reads CUTOFF and the bottom of the output wave flatlines.',
-      'Slide to the far right: ZONE reads SATURATION and the top flattens instead.',
+      'Slide to the far right: ZONE reads SATURATION, and now the top flattens instead.',
       'Bring it back to 50%: ZONE reads LINEAR and the whole wave returns.',
     ],
   },
 
   // ── 8 · Saturation ──────────────────────────────────────────────────────
   sat: {
+    intro: {
+      learning: 'What “tube sound” mostly is: soft clipping. Pushed hard, a tube rounds its peaks instead of chopping them off, adding low, gentle harmonics that blend with the note.',
+      start: 'At DRIVE 20%, compare the input and output waves. Then slide past 30% and past 70%, watching STATE and the peaks of the output wave.',
+    },
     seeing: [
-      'Left: the tube’s transfer curve against a straight dashed line, the ideal. Right: the input wave and the output wave.',
-      'Readouts: DRIVE (how hard the tube is pushed) and STATE — CLEAN, WARMING or SATURATED.',
+      'On the left, the tube’s transfer curve sits against a straight dashed line, the ideal. On the right are the input wave and the output wave.',
+      'DRIVE shows how hard the tube is pushed. STATE reads CLEAN, WARMING or SATURATED.',
     ],
     control: [
-      'DRIVE fader (0–100%): the signal level into the tube. Its readout adds clean — straight-line region, warming — peaks rounding, or saturated — soft clipping.',
-      DOCK_TAIL,
+      'Slide the DRIVE fader (0–100%) to set the signal level into the tube. Its readout adds clean — straight-line region, warming — peaks rounding, or saturated — soft clipping.',
+      dockTail('DRIVE'),
     ],
     changes: [
       'Low DRIVE: the wave rides the straight middle of the curve and comes out the same shape.',
-      'More DRIVE: the peaks reach the bend. The tube can only open so far, so each extra bit of input buys less output — the peaks round over.',
-      'Rounding (soft clipping) adds mostly low, gentle harmonics — extra tones at whole-number multiples of the note’s frequency. A hard limit shears peaks flat and adds harsh high ones.',
+      'More DRIVE: the peaks reach the bend. The tube can only open so far, so each extra bit of input buys less output, and the peaks round over.',
+      'Rounding (soft clipping) adds mostly low, gentle harmonics: extra tones at whole-number multiples of the note’s frequency. Hard clipping shears peaks flat and adds harsh high ones.',
     ],
     teaches: [
-      'What “tube sound” mostly is: soft clipping — peaks rounded, not chopped off.',
-      'What harmonics are, and why low ones blend with the note while high ones sound harsh.',
-      'It follows Tube Bias; Tube vs Transistor comes next.',
+      '“Tube sound” is mostly soft clipping: peaks rounded, not chopped off.',
+      'Harmonics are extra tones at whole-number multiples of a note’s frequency. Low ones blend with the note; strong high ones sound harsh.',
+      'Rounding the peaks also squeezes the loudest moments, a gentle kind of compression.',
     ],
     tryThis: [
-      'At the start (20%) STATE reads CLEAN: the input and output waves have the same shape.',
+      'At the start (20%), STATE reads CLEAN: the input and output waves have the same shape.',
       'Slide past 30%: STATE reads WARMING and the output peaks begin to round.',
-      'Push past 70%: STATE reads SATURATED and the left plot shows the swing reaching into the bend.',
+      'Push past 70%: STATE reads SATURATED, and the left plot shows the swing reaching into the bend.',
     ],
   },
 
   // ── 9 · Tube vs transistor ──────────────────────────────────────────────
   versus: {
+    intro: {
+      learning: 'How a tube and a transistor do the same job, a small signal controlling a large one, with different physics, and why each still has its place.',
+      start: 'Compare the transistor at TRUE SIZE with the tube beside it. Then look at ENLARGED · CUT OPEN and follow the blue pulses up the middle leg.',
+    },
     seeing: [
-      'Left: a tube, electrons crossing a vacuum. Right: a transistor at TRUE SIZE beside it, and ENLARGED · CUT OPEN, carriers crossing its junctions.',
+      'On the left, a tube: electrons crossing a vacuum. On the right, a transistor at TRUE SIZE, and ENLARGED · CUT OPEN, with carriers crossing its junctions.',
       'In the transistor, blue pulses climbing the middle leg are the small base current that controls the flow.',
-      'Readouts: TUBE VACUUM and TRANSISTOR JUNCTION. Below: the two compared side by side.',
+      'The readouts are TUBE VACUUM and TRANSISTOR JUNCTION. Below, the two are compared side by side.',
     ],
     control: [
-      'Nothing to adjust: this screen is a picture to compare. TUBE REF › opens the Tube Reference library; ⤢ FULL SCREEN enlarges the drawing.',
-      'FINISH › on the strip, or FINISH · SEE WHAT’S LEFT › at the end of the reading, opens the list of modules you have not opened yet.',
+      'There’s nothing to adjust: this screen is a picture to compare. TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing.',
+      'FINISH › on the strip, or FINISH · SEE WHAT’S LEFT › at the end of the reading, opens the list of modules you haven’t opened yet.',
     ],
     changes: [
-      'Both do the same job — a small signal controlling a large one — with different physics.',
-      'Tube: an electron cloud crosses a vacuum, gated by a grid’s field, at hundreds of volts. It glows, warms up and wears out.',
-      'Transistor: carriers cross semiconductor junctions, gated by a tiny base current, at a few volts. Instant-on, tiny and long-lasting.',
+      'Both do the same job, a small signal controlling a large one, with different physics.',
+      'Tube: an electron cloud crosses a vacuum, controlled by a grid’s field, at hundreds of volts. It glows, needs warm-up and wears out.',
+      'Transistor: carriers (moving charges) cross semiconductor junctions, controlled by a tiny base current, at a few volts. It’s instant-on, tiny and long-lasting.',
     ],
     teaches: [
-      'Why transistors won on size, cost and reliability, and why tubes survive where their soft overload IS the sound.',
-      'Neither is simply “better”: pick by the job.',
-      'The last module of this lab. Next in Audio Electronics, the Amplifier Principles Lab follows the same idea into transistor amplifiers.',
+      'Why transistors won on size, cost and reliability, and why tubes survive where their soft overload is the sound.',
+      'Neither is simply “better”: you choose by the job.',
+      'Every amplifier, tube or transistor, works the same way: a small signal steers a large current that comes from the power supply.',
     ],
     tryThis: [
       'Compare the true-size transistor with the tube beside it, then look inside the cut-open view.',
-      'Follow the blue base pulses up the middle leg to the thin blue base layer — the small current in control.',
-      'Tap FINISH · SEE WHAT’S LEFT › to see any modules still to open.',
+      'Follow the blue base pulses up the middle leg to the thin blue base layer: the small current in control.',
+      'Find the controlling signal in each drawing: the grid’s field in the tube, the blue base current in the transistor.',
     ],
   },
 };
 
 /** The what's-left screen (LabEndScreen, mode "progress", noun "section"). */
 export const TUBE_END_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'A review of the tube story: parts, warm-up, the grid, gain, high voltage, tube types, bias, saturation and transistors, and the core ideas the lab’s check asks about.',
+    start: 'Open any module still listed under WHAT’S LEFT, or tap the CHECK row and answer CHECK YOUR UNDERSTANDING. Use REVIEW ▾ to reopen a module you found hard.',
+  },
   seeing: [
-    'WHAT’S LEFT: the modules of this lab you have not opened yet, then the check — its CHECK row is the last on the list. LAB COMPLETE once every module is opened and the check is passed.',
-    'Opened modules, and the check once passed, fold into one ✓ DONE row; REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
+    'WHAT’S LEFT lists the modules you haven’t opened yet. Last on the list is the CHECK row. LAB COMPLETE appears once every module is opened and the check is passed.',
+    'Opened modules, and the check once passed, fold into one ✓ DONE row. REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
   ],
   control: [
-    'Tap a module’s row to open it; the CHECK row moves this screen up to the check, which sits on it.',
-    'Answer the CHECK YOUR UNDERSTANDING questions; a wrong pick explains itself and lets you try another.',
-    'PRACTICE AGAIN FROM THE START opens What’s Inside — it never clears what you have done.',
+    'Tap a module’s row to open it. Tap the CHECK row to scroll this screen up to the check.',
+    'Answer the CHECK YOUR UNDERSTANDING questions. A wrong pick explains itself and lets you try another.',
+    'PRACTICE AGAIN FROM THE START opens What’s Inside. It never clears what you’ve done.',
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'A module counts once you open it; its row moves from the list to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
-    'If your progress cannot be read, the title reads YOUR PROGRESS and every module stays listed and open.',
+    'A module counts once you open it, and its row moves from the list to the ✓ row.',
+    'The check counts once every answer is right, and it stays passed when you practice again.',
+    'If your progress can’t be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
-    'Which parts of the tube story — parts, warm-up, grid, gain, voltage, types, bias, saturation, transistors — are still to explore.',
-    'Every module can be redone for practice at any time.',
+    'The ideas the check draws on: what warm-up does inside a tube, and how the grid’s voltage changes the electron stream.',
+    'Also what bias sets, how a tube distorts when pushed past its straight region, and why a switched-off tube amp can still be dangerous inside.',
   ],
   tryThis: [
-    'Open the first module on the list and work down in order.',
-    'Tap REVIEW ▾ and reopen a module you found hard.',
+    'Before the check, open the first module still on the list and work down in order.',
+    'Tap REVIEW ▾ and reopen a module you found hard, such as Tube Bias or Tube Saturation.',
   ],
 };
 
 /** The Tube Reference list (TubeReferenceScreen). */
 export const TUBE_REFERENCE_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'The common audio tubes grouped by job: preamp triodes, power tubes, directly-heated triodes and rectifiers, and why one tube can go by several names.',
+    start: 'Type ECC83 in the search box and see which row stays. Clear it with ✕, then try rectifier, then octal.',
+  },
   seeing: [
-    'The Tube Reference library: 40 tubes in four families — PREAMP & SMALL-SIGNAL TRIODES, POWER PENTODES & BEAM TETRODES, DIRECTLY-HEATED TRIODES and RECTIFIERS.',
-    'Each row: the card number, the tube’s name with its other names and related tubes (an equivalent is the same tube; a “family” tube is a close relative, not always a direct swap), its job and its base (the socket it plugs into).',
+    'This is the Tube Reference library: 40 tubes in four families — PREAMP & SMALL-SIGNAL TRIODES, POWER PENTODES & BEAM TETRODES, DIRECTLY-HEATED TRIODES and RECTIFIERS.',
+    'Each row gives the card number, the tube’s name with its other names and related tubes, its job and its base (the socket it plugs into).',
+    'An equivalent is the same tube. A “family” tube is a close relative, not always a direct swap.',
   ],
   control: [
-    'Search box: type a name (12AX7), an equivalent (ECC83), a base (octal) or a job (rectifier). ✕ clears it.',
-    'Tap a row to open that tube’s two-page card (a locked row explains how to open it).',
-    '‹ goes back to the lab.',
+    'Type in the search box: a name (12AX7), an equivalent (ECC83), a base (octal) or a job (rectifier). ✕ clears it.',
+    'Tap a row to open that tube’s two-page card. A locked row explains how to open it.',
+    '‹ takes you back to the lab.',
   ],
   changes: [
-    'The list filters as you type; a family with no match disappears.',
-    'Families group tubes by job or construction: preamp triodes give voltage gain up front, power tubes drive the output transformer, directly-heated triodes use the filament as the cathode, rectifiers turn AC into DC for the B+ supply.',
+    'The list filters as you type, and a family with no match disappears.',
+    'Families group tubes by job or construction. Preamp triodes give voltage gain up front. Power tubes drive the output transformer. Directly-heated triodes use the filament as the cathode. Rectifiers turn AC into DC for the B+ supply.',
   ],
   teaches: [
-    'The tubes behind most recorded music, grouped by the job each does.',
-    'That one tube can go by several names: 12AX7, ECC83 and 7025 are the same tube.',
-    'Card ratings come from published data sheets — check them against your amp’s own manual. Tube amps hold deadly voltages even unplugged; only a qualified technician should work inside one.',
+    'The jobs tubes do in audio gear: small-signal gain, output power and the DC supply, each with its own family.',
+    'One tube can go by several names: 12AX7, ECC83 and 7025 are the same tube.',
+    'Card ratings come from published data sheets; check them against your amp’s own manual. Tube amps hold deadly voltages even unplugged. Only a qualified technician should work inside one.',
   ],
   tryThis: [
-    'Search ECC83: only the 12AX7 row is left — the same tube under its European name.',
+    'Search ECC83: only the 12AX7 row is left. It’s the same tube under its European name.',
     'Search rectifier: only the RECTIFIERS family is left.',
     'Search octal: every tube on the 8-pin octal base is listed.',
   ],
@@ -343,23 +389,28 @@ export const TUBE_REFERENCE_GUIDE: ScreenGuide = {
 
 /** One tube's reference card (TubeCardScreen, the card view). */
 export const TUBE_CARD_GUIDE: ScreenGuide = {
+  intro: {
+    learning: 'How to read one tube’s card: its structure, pin layout, key ratings and safe substitutions, and why a study card never replaces the maker’s data sheet.',
+    start: 'Read PAGE 1, then tap PAGE 2. Double-tap the card to zoom in on the pin layout, and use › at the top right to step to the next tube.',
+  },
   seeing: [
-    'One tube’s full-screen reference card: its structure, pin layout, key ratings, safe substitutions and what to watch for.',
-    'The bar on top shows the tube’s number and name, with its family below. Beside the page buttons, a short category: Preamp Triode, Power Output, Directly-Heated Triode or Rectifier.',
+    'This is one tube’s full-screen reference card: its structure, pin layout, key ratings, safe substitutions and what to watch for.',
+    'The top bar shows the tube’s number and name, with its family below. Beside the page buttons is a short category: Preamp Triode, Power Output, Directly-Heated Triode or Rectifier.',
   ],
   control: [
     'PAGE 1 and PAGE 2 switch between the card’s two pages. ‹ and › at the top right step to the previous or next tube.',
     'Swipe the card sideways to flip pages in reading order: page 1, page 2, then the next tube.',
-    'Pinch to zoom (up to 4×), double-tap to zoom in or back out, and drag to move around a zoomed card. Swiping works when the card is not zoomed.',
-    '‹ at the top left goes back to the tube list. RETRY reloads a card that did not load.',
+    'Pinch to zoom (up to 4×), double-tap to zoom in or back out, and drag to move around a zoomed card. Swiping works only when the card isn’t zoomed.',
+    '‹ at the top left goes back to the tube list. RETRY reloads a card that didn’t load.',
   ],
   changes: [
-    'Each card loads from the library over your connection; LOADING shows while it arrives.',
-    'Zooming in makes small print — pin numbers, ratings — readable without changing page.',
+    'Each card loads over your connection; LOADING shows while it arrives.',
+    'Zoom in to read the small print, such as pin numbers and ratings, without changing page.',
   ],
   teaches: [
-    'How to read a tube’s pin layout and ratings, and which tubes can stand in for it.',
-    'A card is a study reference, not a data sheet: ratings vary by maker and production run. Work from the maker’s own data sheet for anything you build, service or power up.',
+    'The pin layout shows which pin goes to each part: heater, cathode, grids and plate. The ratings show the limits the tube is built for.',
+    'Which tubes can stand in for this one; a “family” tube isn’t always a direct swap.',
+    'A card is a study reference, not a data sheet: ratings vary by maker and production run. Use the maker’s own data sheet for anything you build, service or power up.',
   ],
   tryThis: [
     'Tap PAGE 2, then swipe left: the next tube opens on its page 1.',

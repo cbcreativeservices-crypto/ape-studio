@@ -52,7 +52,8 @@ describe('decision 2: the gate sends the ear to PINK NOISE', () => {
   });
   it('the source order stays, and the guide says the same outside TRY THIS', () => {
     assert.match(gate, /sources: \[srcClick\(90\), SRC_PINK\]/);
-    assert.match(guide('gateScreenGuides.ts'), /SOURCE key: CLICK 90 or PINK NOISE\. On the 5 ms click, RANGE, HOLD and RLS show on GR but barely in the sound/);
+    // 2026-11-08 (Comp B rewrite): same fact, the guide's new words.
+    assert.match(guide('gateScreenGuides.ts'), /SOURCE: CLICK 90 or PINK NOISE\. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them\. To hear them, use PINK NOISE/);
   });
 });
 
@@ -150,9 +151,10 @@ describe('decision 4: OVERSAMPLING has a source that reveals it', () => {
     assert.match(flow, /'IN = −20 dBFS sine'/);
     assert.doesNotMatch(flow, /\bsrc\b/);
     const g = guide('distortionScreenGuides.ts');
-    assert.match(g, /SOURCE key: SINE 220 Hz, 5 kHz or PINK NOISE\./);
-    assert.match(g, /OS key: ON \(CLEAN\) or OFF \(ALIASING\), heard on SINE 5 kHz\./);
-    assert.match(g, /OS changes the sound only\./);
+    // 2026-11-08 (Comp B rewrite): same facts, the guide's new words ("it isn’t drawn" = sound only).
+    assert.match(g, /SOURCE picks SINE 220 Hz, 5 kHz or PINK NOISE\./);
+    assert.match(g, /OS picks ON \(CLEAN\) or OFF \(ALIASING\); you hear it on SINE 5 kHz;/);
+    assert.match(g, /OS picks [^.]*; it isn’t drawn\./);
     assert.match(g, /takes it\), so no TRY THIS asks the learner to SEE it/);
   });
 });

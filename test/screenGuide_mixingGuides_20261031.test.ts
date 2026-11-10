@@ -53,7 +53,7 @@ const textOf = (gd: Guide) => SECTION_KEYS.map((k) => gd[k].join('\n')).join('\n
 describe('1. every screen (hub, reader, end) has a complete guide', () => {
   for (const [id, gd] of Object.entries(GUIDES)) {
     it(`${id}: all five sections, 1–5 bullets each, 2–3 TRY THIS`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -97,7 +97,7 @@ describe('2. each guide quotes its screen’s real names', () => {
   const HUB_SRC = [`${MG}/MixingGuidesHubScreen.tsx`, `${MG}/GuideWorldMap.tsx`, `${MG}/data/types.ts`, 'src/features/lab/ProNote.tsx'].map(code).join('\n');
   const READER_SRC = [`${MG}/MixingGuideScreen.tsx`, `${MG}/data/types.ts`, 'src/screens/lab/kit/labNav.ts', 'src/screens/lab/kit/LabNavBar.tsx'].map(code).join('\n');
   const NAMES: Record<string, [string, string[]]> = {
-    hub: [HUB_SRC, ['MIXING GUIDES', '✓ READ', 'Hide map', 'Show map ›', 'Find a style — salsa, metal, k-pop…', '✕', 'When to bring in a pro ›', 'Starting points, not rules']],
+    hub: [HUB_SRC, ['MIXING GUIDES', '✓ READ', 'Hide map', 'Show map ›', 'Find a style — salsa, metal, k-pop…', '✕', 'When to bring in a pro ›']],
     reader: [READER_SRC, ['WHAT THE AUDIENCE EXPECTS', 'MIX PRIORITY #1', 'AT A GLANCE', 'Origin / region', 'Typical tempo', 'Typical ensemble size', 'Live SPL (FOH, average)', 'Studio / streaming loudness', 'THE GUIDE', 'Purpose & audience expectations', 'Reference recordings', 'OPEN ALL ▾', 'CLOSE ALL ▴', 'MARK AS READ', '✓ READ', 'EQ starting points', 'Compression & dynamics processing', 'Effects & amounts', 'Live vs studio', 'Cut', 'Boost', 'Notes', '‹ PREV', 'NEXT ›', 'FINISH ›']],
   };
   for (const [id, [src, names]] of Object.entries(NAMES)) {
@@ -233,10 +233,10 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     assert.match(code(`${MG}/readProgress.ts`), /if \(getLabPreview\(\)\.active\) return Promise\.resolve\(false\);/);
     // The in-flow button at the foot of each guide runs the same nav.next.
     assert.match(NAV, /const press = onPress \?\? nav\?\.next;/);
-    assert.ok(GUIDES.end.changes[0].includes('NEXT › or FINISH › (in the strip or at its foot), or tap MARK AS READ'));
+    assert.ok(GUIDES.end.changes[0].includes('leave it with NEXT › or FINISH ›, or tap MARK AS READ'));
     // ⏮ (start → go(0)) and the CONTENTS footer (openEnd → finish()) skip beforeAdvance too.
     assert.match(NAV, /const openEnd = useCallback\(\(\) => \{\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*finish\(\);/);
-    assert.ok(GUIDES.end.changes[0].includes('Opening it, ‹ PREV, ⏮, list jumps, WHAT’S LEFT › and the ‹ at the top do not count'));
+    assert.ok(GUIDES.end.changes[0].includes('Just opening it, or jumping away with ‹ PREV or the list, doesn’t count'));
     assert.ok(GUIDES.end.changes[1].includes('A members-only preview records nothing'));
   });
 
@@ -257,7 +257,7 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     // Unreadable: the note replaces the lead; marks made this session still leave the list, so never "every guide stays listed".
     assert.match(KIT, /\{unreadable \? \(\n\s*<ProgressUnreadableNote \/>/);
     assert.doesNotMatch(END, /every guide stays listed/);
-    assert.ok(GUIDES.end.changes[2].includes('a note says why, and every guide still opens'));
+    assert.ok(GUIDES.end.changes[2].includes('a note says why. Every guide still opens'));
     // FINISH › on the last style goes straight to the end screen.
     assert.ok(GUIDES.end.tryThis[0].includes('on the last style, FINISH › brings you straight back'));
     assert.doesNotMatch(END, /index order|still new to you/);
@@ -273,6 +273,6 @@ describe('D42 (2026-11-01): the hub’s read count shows what was read, never "n
     for (const n of [0, 1, 12, total]) assert.doesNotMatch(readCountLine(n, total), /\bof\b|\//);
   });
   it('the hub guide still describes it as a count of the guides read', () => {
-    assert.ok(GUIDES.hub.seeing.join(' ').includes('a count of the guides you have read'));
+    assert.ok(GUIDES.hub.seeing.join(' ').includes('a count of the guides you’ve read'));
   });
 });

@@ -103,7 +103,7 @@ describe('1. every Sound Systems screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty, 2–3 experiments`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -158,12 +158,12 @@ describe('2. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, { exact: string[]; upper?: string[] }> = {
     hub: { exact: ['LEARN', 'BUILD', 'ROUTE', 'OPERATE', 'TROUBLESHOOT', 'WHAT IS LEFT', 'UNDERSTANDING CHECK', 'START OVER (PRACTICE)', 'SOUND SYSTEMS LAB — COMPLETE'] },
     end: { exact: ["WHAT'S LEFT", 'LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
-    check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER', 'UNDERSTANDING CHECK', '‹ PREV'] },
-    'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'SEEN', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
+    check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER', '‹ PREV'] },
+    'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
     'Trace the signal': { exact: ['NEXT', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
-    'Ten kinds of system': { exact: ['TYPE', 'BOXES', 'SEEN', 'TEN KINDS OF SYSTEM', 'CHOSEN BY THE VENUE', 'A WAY TO BUILD ANY OF THEM', 'WHEN', 'NOT WHEN', 'Large-format line-array system', 'Distributed loudspeaker system', 'Small powered-loudspeaker PA', 'Outdoor performance system'] },
+    'Ten kinds of system': { exact: ['TYPE', 'BOXES', 'TEN KINDS OF SYSTEM', 'CHOSEN BY THE VENUE', 'A WAY TO BUILD ANY OF THEM', 'WHEN', 'NOT WHEN', 'Large-format line-array system', 'Distributed loudspeaker system', 'Small powered-loudspeaker PA', 'Outdoor performance system'] },
     'Match the venue': { exact: [] },
-    'Output configurations': { exact: ['CONFIG', 'POSITIONS', 'FEEDS', 'SUBS', 'NONE', 'MONO', 'STEREO', 'THIRTEEN OUTPUT CONFIGURATIONS', 'BUSES', 'Mono', 'Stereo', 'LCR — left, center, right', 'Stereo mains with mono subwoofers', 'Stereo subwoofers', 'Lobby, recording and broadcast feeds'] },
+    'Output configurations': { exact: ['CONFIG', 'POSITIONS', 'FEEDS', 'SUBS', 'NONE', 'MONO', 'STEREO', 'THIRTEEN OUTPUT CONFIGURATIONS', 'BUSES', 'Mono', 'Stereo', 'Stereo mains with mono subwoofers', 'Stereo subwoofers', 'Lobby, recording and broadcast feeds'] },
     'Choose the configuration': { exact: [] },
     'The routing map': { exact: ['Main mix bus', 'Auxiliary send', 'Subgroup', 'DCA / VCA', 'Matrix output', 'Mute group', 'carries audio', 'sums channels', 'a copy', 'remote control', 'USE IT FOR', 'NOT FOR'] },
     'Subwoofer feeds': { exact: ['FEED', 'Crossover-fed', 'Aux-fed', 'Matrix-fed', 'VOCAL → SUB', 'REACHES', 'CONTROL', 'VOCAL', 'CLEAR', 'IN SUBS', 'PROC TRIM', 'PER SEND', 'MATRIX', 'WHEN'] },
@@ -226,7 +226,7 @@ describe('2. each guide quotes its screen’s real names', () => {
   }
   it('the counts the quiz guides state are the screens’ own (eight venues, six briefs, eight situations, twenty-two faults)', () => {
     assert.equal(VENUE_CASES.length, 8);
-    assert.match(textOf(byId['Match the venue']), /Eight venue cards/);
+    assert.match(textOf(byId['Match the venue']), /[Ee]ight venue cards/);
     assert.equal((code(`${SS}/pagesLearnA.tsx`).match(/^ {2}\{ id: 'c-\w+', situation:/gm) ?? []).length, 6);
     assert.match(textOf(byId['Choose the configuration']), /Six briefs/);
     assert.equal(WHICH_TOOL.length, 8);
@@ -423,7 +423,7 @@ describe('3. every TRY THIS number is what the page prints', () => {
     assert.ok(r.ok);
     sys = r.system;
     assert.equal(S.trace(sys).live.length, 1, 'LIVE goes to 1');
-    assert.ok(tryOf(byId['The empty venue']).includes('LIVE goes to 1'));
+    assert.ok(tryOf(byId['The empty venue']).includes('LIVE go to 1'));
     const pas = put('passiveSpeaker', 'mainR');
     assert.equal(S.connect(sys, con, pas).ok, false, 'console straight to a passive top is refused');
     let s2 = S.EMPTY_SYSTEM;
@@ -495,7 +495,7 @@ describe('6. Line check: an output reads with its own words (vetted fix 2026-10-
     assert.match(OP, /On an output, signal present but the wrong feed plays = the output patch\./);
     assert.doesNotMatch(OP, /Both moving but the wrong box plays/);
     const guide = JSON.stringify(G.SS_OPERATE_GUIDES['Line check']);
-    assert.match(guide, /PROC OUT \(SIGNAL or NONE\) and RIGHT FEED \(YES or NO\) on an output/);
-    assert.match(guide, /signal present but the wrong feed plays = the output patch/);
+    assert.match(guide, /On an output, PROC OUT \(SIGNAL or NONE\) and RIGHT FEED \(YES or NO\)/);
+    assert.match(guide, /signal present but the wrong feed playing means the output patch/);
   });
 });

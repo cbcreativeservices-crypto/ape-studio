@@ -117,7 +117,7 @@ describe('FX, Modular, Meter, Amp', () => {
     assert.match(s, /two\s+gain stages in series inside one module, so it has one IN and one OUT/);
     const c = src('src/features/lab/guidedLessons/content.ts');
     assert.doesNotMatch(c, /three places one control signal can go/);
-    assert.match(c, /three places this lab’s LFO can go/);
+    assert.match(c, /the third place this lab’s LFO can go, after pitch and cutoff/);
   });
   it('MT-01 pink noise names the display: slope on this FFT-style view, flat on a 1/3-octave RTA', () => {
     const s = lab('meter/modules/modMeterB.tsx');

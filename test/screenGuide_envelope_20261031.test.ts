@@ -71,7 +71,12 @@ describe('1. every Envelope page has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, 'no intro');
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -198,7 +203,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
     // the three onset words and their thresholds (the READOUT card)
     assert.match(s, /adsr\.attackMs < 15 \? 'A fast attack like this IS a transient/);
     assert.match(s, /: adsr\.attackMs < 120 \? 'A medium attack/);
-    assert.match(GUIDES.p1.changes.join(' '), /Under 15 ms the attack reads as a transient; from 120 ms the sound swells in/);
+    assert.match(GUIDES.p1.changes.join(' '), /An attack under 15 ms reads as a transient; from 120 ms the sound swells in/);
     assert.match(s, /adsr\.sustain === 0 \? 'With zero sustain the sound is percussive: it can only decay\.'/);
   });
   it('p2: snare 122 ms; piano decay 1400 / release 500, no S region; the loaded snare reads 2 ms → 1.0 ms with SNAP', () => {
@@ -208,7 +213,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
     assert.equal(piano.decayMs, 1400);
     assert.equal(piano.releaseMs, 500);
     assert.equal(piano.holdMs, 0, 'no flat S region is drawn');
-    assert.match(GUIDES.p2.tryThis[1], /decay 1400 ms runs straight into release 500 ms/);
+    assert.match(GUIDES.p2.tryThis[1], /Decay 1400 ms runs straight into release 500 ms/);
     const snare = preset('snare').adsr;
     assert.equal(fmt(snare.attackMs), '2 ms');
     assert.equal(M.riseTimeMs(snare).toFixed(1), '1.0');
@@ -237,7 +242,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
     assert.equal(piano.name, 'Piano note');
     assert.equal(fmt(piano.ms), '2.5 s');
     assert.equal(piano.category, 'long');
-    assert.match(GUIDES.p4.tryThis[0], /About 12 ms against About 12 s — a thousand times longer, three steps apart/);
+    assert.match(GUIDES.p4.tryThis[0], /About 12 ms against About 12 s\. That’s a thousand times longer, three steps apart/);
     assert.match(GUIDES.p4.tryThis[1], /5 · Piano note: About 2\.5 s, in the LONG band — long enough to have a clear onset, body and tail/);
     assert.match(s, /'Long enough to have a clear onset, body and tail\.'/);
   });
@@ -266,7 +271,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   it('vetted: Peak vs Average dB are of the model full scale (envelope top 1.0), so the snare peak is below 0 dB', () => {
     assert.match(code('src/features/envelope/envelopeModel.ts'), /export const toDb = \(lin: number\) => \(lin > 0 \? 20 \* Math\.log10\(lin\) : -120\);/);
     assert.ok(M.peakAbs(M.envelopeAudio(preset('snare').adsr, M.PRESET_TONES.snare)) < 1);
-    assert.match(GUIDES.p5.seeing.join(' '), /relative to the chart’s full scale \(the top of the envelope\)/);
+    assert.match(GUIDES.p5.seeing.join(' '), /in dB below the top of the envelope \(0 dB\)/);
     assert.doesNotMatch(GUIDES.p5.seeing.join(' '), /relative to the drawn peak/);
   });
   it('vetted: with the wave drawn, level 0 is the centre line (not the floor)', () => {
@@ -277,7 +282,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   });
   it('vetted: Hold is time at the sustain level, after attack + decay (adsrTotalMs = A + D + hold + R)', () => {
     assert.match(code('src/features/envelope/envelopeModel.ts'), /adsrTotalMs = \(a: Adsr\) => a\.attackMs \+ a\.decayMs \+ a\.holdMs \+ a\.releaseMs/);
-    assert.match(GUIDES.p1.control.join(' '), /0 to 2000 ms spent at the sustain level, after attack and decay, before release/);
+    assert.match(GUIDES.p1.control.join(' '), /0 to 2000 ms at the sustain level, after attack and decay, before release/);
   });
   it('vetted: the strip has ⏮; the Gallery full-screen dock holds the six sound buttons (no Speech)', () => {
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), />⏮</);
@@ -289,12 +294,12 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   });
   it('vetted: stretching Attack keeps ATTACK: SNAP; past 15 ms the READOUT card stops calling it a transient', () => {
     assert.match(s, /adsr\.attackMs < 15 \? 'A fast attack like this IS a transient/);
-    assert.match(GUIDES.p2.tryThis[2], /Stretch Attack past 15 ms: the READOUT card stops calling it a transient/);
+    assert.match(GUIDES.p2.tryThis[2], /Stretch Attack past 15 ms and the READOUT card stops calling it a transient/);
     assert.doesNotMatch(GUIDES.p2.tryThis[2], /snap go/);
   });
   it('vetted: the envelope is the same AT THE SOURCE (the screen’s qualifier is kept)', () => {
     assert.match(s, /A snare’s envelope at the source is the same whether you stand at one meter or twenty/);
-    assert.match(GUIDES.p6.teaches[0], /envelope at the source is the same whether you stand at one meter or twenty\. Farther away, the room adds more of its own tail on top\./);
+    assert.match(GUIDES.p6.teaches[0], /envelope at the source is the same whether you stand 1 meter away or 20; farther away, the room adds more of its own tail/);
   });
 });
 
@@ -330,7 +335,12 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
   const PAGED_END = PAGED.match(/<LabEndScreen[\s\S]*?\/>/)?.[0] ?? '';
 
   it('all five sections, 1–5 bullets, TRY THIS 2–3, within the no-scroll budget', () => {
-    assert.deepEqual(Object.keys(END).sort(), [...SECTION_KEYS].sort());
+    assert.deepEqual(Object.keys(END).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+    // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+    const intro = (END as unknown as { intro?: { learning: string; start: string } }).intro;
+    assert.ok(intro, 'no intro');
+    assert.ok(intro.learning.trim().split(/\s+/).length <= 30, 'intro.learning over 30 words');
+    assert.ok(intro.start.trim().split(/\s+/).length <= 40, 'intro.start over 40 words');
     for (const k of SECTION_KEYS) {
       assert.ok(END[k].length >= 1 && END[k].length <= 5, `end.${k}: ${END[k].length} bullets`);
       for (const line of END[k]) assert.ok(line.trim().length > 10, `end.${k}: a blank bullet`);
@@ -377,7 +387,8 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(END_SCREEN, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
     assert.match(t, /✓ DONE line/);
-    assert.match(END.changes[2], /^Rows read ✓ DONE: a page ✓ is progress, not credit\./);
+    // credit bookkeeping left student text (owner 2026-11-08); the rows still read ✓ DONE
+    assert.match(END.seeing.join(' '), /fold into one ✓ DONE line/);
     assert.doesNotMatch(t, /CREDITED/); // a word this lab's end screen never shows
     // the check row: label + CHECK in the number column, listed last
     assert.match(PAGED, /label: 'Check your understanding', kind: 'check'/);
@@ -385,7 +396,8 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END.seeing[1], /Check your understanding sits last, marked CHECK/);
     // passing the check is the lab's certificate unit
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'EnvelopeLab', key: 'tr_envelope', completion: 'understanding' \}/);
-    assert.match(END.changes[2], /Passing the check completes the lab, for any certificate that needs it\./);
+    assert.match(END.changes[2], /A passed check stays\./);
+    assert.doesNotMatch(textOf(END), /certificate/i);
   });
   it('the buttons are the exact labels this lab gets (PagedLab passes no doneLabel)', () => {
     assert.match(END_SCREEN, /<GlassButton label="PRACTICE AGAIN FROM THE START"/);
@@ -406,7 +418,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /resetPagedProgress\(labId\)\)\.then\(\(\) => \{\s*const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)\s*: \(!!creditLabKey && bankedPages\.has/);
     assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
-    assert.match(END.teaches[1], /^PRACTICE AGAIN and reviewing clear nothing\. START OVER \(PRACTICE\) clears the page check marks for a fresh run; a passed check stays\.$/);
+    assert.match(END.changes[2], /^START OVER \(PRACTICE\) clears the page check marks; reviewing clears nothing\. A passed check stays\.$/);
     assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page check marks\./);
     assert.doesNotMatch(t, /Nothing is taken away/i);
   });
@@ -416,7 +428,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/); // page unchanged
     assert.match(BAR, /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
     assert.match(BAR, /\{NAV\.whatsLeft\} ›/);
-    assert.match(END.control[3], /⏮ opens the first page, ‹ PREV returns to the page you came from, and the WHAT'S LEFT ▾ readout opens the list of pages/);
+    assert.match(END.control[3], /⏮ opens the first page, ‹ PREV returns to the page you came from, and WHAT'S LEFT ▾ opens the list of pages/);
     // CONTENTS order: the page rows, then WHAT'S LEFT ›, then START OVER
     // (PRACTICE) last — so WHAT'S LEFT › is "just under the page list", not
     // "at the foot".
@@ -426,7 +438,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     // REVIEW ▾ exists only once something is done; the ✓ is read in CONTENTS
     assert.match(END_SCREEN, /\{w\.credited\.length > 0 \? \(/);
     assert.match(PAGED, /done: endCleared\.has\(String\(i\)\),/);
-    assert.match(END.tryThis[2], /^Some pages done\? Tap REVIEW ▾, open one and use it again, then tap MODULE ▾: its ✓ is still there\.$/);
+    assert.match(END.tryThis[2], /^Done Peak vs Average Level\? Tap REVIEW ▾, reopen it and switch between snare and trumpet again\. Then tap MODULE ▾: its ✓ is still there\.$/);
     // labels quoted with the straight ' the screen draws
     assert.doesNotMatch(t, /WHAT’S/);
   });
@@ -438,7 +450,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(s, /const pick = \(i: number\) => \{ setSel\(i\); touch\(\); \};/);
     assert.match(s, /<G key=\{e\.name\} onPress=\{\(\) => pick\(i\)\}>/); // page 4's numbered markers
-    assert.match(END.changes[0], /^Pages 1–5 count as done once you move a slider or tap a choice button or numbered marker, or with NEXT ›/);
+    assert.match(END.changes[0], /^Pages 1–5 count as done once you move a slider, tap a choice button or numbered marker, or tap NEXT ›/);
     // page 6: GOT IT › or NEXT
     assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
     assert.match(END.changes[0], /Envelope vs Propagation counts with GOT IT › or NEXT ›/);
@@ -451,7 +463,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END.changes[1], /Check Yourself counts once all six are right, Check your understanding once all four are/);
     // a jump (row / CONTENTS) never marks: goTo sets the page only
     assert.match(PAGED, /const goTo = useCallback\(\(i: number\) => \{\s*const idx = [^\n]*\n\s*navigatedRef\.current = true;\s*setEnding\(false\);\s*setPage\(idx\);/);
-    assert.match(END.changes[1], /A jump never marks a page\./);
+    assert.match(END.changes[1], /Jumping to a page never marks it\./);
   });
   it('every on-screen name the END guide quotes is in the source it describes', () => {
     const SRC_END = [END_SCREEN, LAB_END, PAGED, NAVC, BAR, s].join('\n');

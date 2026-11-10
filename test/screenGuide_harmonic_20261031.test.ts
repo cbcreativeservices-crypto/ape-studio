@@ -74,7 +74,12 @@ describe('1. every Harmonic screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -122,12 +127,16 @@ describe('3. each guide quotes its screen’s real names', () => {
       'SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE', 'SYM CLIP', 'ASYM CLIP', 'SOFT SAT', 'HARD CLIP',
       // the stem editor, card, detail sheet and well chips
       'LAB NOTES', '▶ SOLO', 'POLARITY +180°', 'MUTE', 'GROUPS & OVERLAYS', 'NORMALIZE', 'SNAPSHOT A', 'A/B GHOST', 'MUTE EVEN',
-      // catalog placement
-      'Oscillators', 'Noise', 'FM Synthesis', 'Distortion',
+      // the distortion presets are named as a harmonic recipe ('Distortion' is a catalog name too);
+      // the catalog-neighbor lines (Oscillators, Noise, FM Synthesis) left with the other
+      // course-navigation lines (decision 4, 2026-11-08) — negative check in section 6.
+      'Distortion',
     ],
     live: ['REAL SIGNAL', 'F0', 'MIC', 'LIVE', 'START…', 'OFF', 'TONE', 'ON', 'MUTED', 'MAX', 'REAL SIGNAL — dBFS · UNCALIBRATED', '⚠ ALLOW SPEAKER WHILE MIC IS ON', 'LAB NOTES', 'AXIS', 'LOG ♪', 'LIN', 'MODE', 'ANALYTIC MODEL', 'PRESET', 'THD CALC'],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'PULSE', 'NORMALIZE', 'SINE', 'POLARITY +180°', 'THD', 'CREST', 'SLOPE', 'MODE', 'AXIS', 'PRESET'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'F0', 'MUTE EVEN', 'SAW', 'SQUARE', 'PRESET'],
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'PULSE', 'NORMALIZE', 'SINE', 'POLARITY +180°', 'THD', 'CREST', 'SLOPE', 'MODE', 'AXIS', 'PRESET', 'ANALYTIC MODEL', 'REAL SIGNAL', '▶'],
+    // decision 6 (2026-11-08): CHECK no longer walks to MUTE EVEN → SQUARE (the build-square answer);
+    // it studies TRIANGLE's recipe instead.
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'F0', 'PRESET', 'TRIANGLE', 'SLOPE'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(HARMONIC_SCREEN_GUIDES).sort());
@@ -213,7 +222,11 @@ describe('4. the TRY THIS numbers are what the bezel prints', () => {
     const a = M.noteInfo(100);
     assert.equal(`1: 100 ${a.label} ${a.cents >= 0 ? '+' : ''}${a.cents}¢`, '1: 100 G2 +35¢');
     assert.equal(3 * 100, 300);
-    assert.match(HARMONIC_SCREEN_GUIDES.check.tryThis[0], /3: 300/);
+    // decision 6 (2026-11-08): the CHECK line no longer reads the answer label (3: 300); it reads
+    // another harmonic's label, 2: 200, which the LOG axis always shows (an octave above marker 1).
+    assert.doesNotMatch(HARMONIC_SCREEN_GUIDES.check.tryThis.join(' '), /3:|300|\b3rd\b/);
+    assert.equal(`2: ${2 * 100}`, '2: 200');
+    assert.match(HARMONIC_SCREEN_GUIDES.check.tryThis[0], /at F0 100 Hz, read the left label that starts with 2:/);
   });
   it('the REAL SIGNAL guide quotes no measured figure (it depends on the phone, the volume and the room)', () => {
     const t = textOf(GUIDES.live).replace(/−20 dBFS|60–300 Hz|18 s|2×, 3×/g, '');
@@ -243,6 +256,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
 
 describe('6. review round 2026-10-31 — each fix re-proved from the code', () => {
   const v = code(VIEW);
+  const h = code(HOST);
   const g = HARMONIC_SCREEN_GUIDES;
   it('F0 does NOT move the bands: both axes are F0-relative, so a marker’s y has no F0 in it', () => {
     assert.match(v, /const AXIS_MULT = 13;/);
@@ -257,33 +271,48 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     // live: the Nyquist clamp never bites inside the fader range (13.5 × 300 = 4,050 Hz)
     assert.ok(13.5 * 300 < 22050 / 2);
     assert.match(g.explore.changes[0], /The display rescales with F0, so bands stay put/);
-    assert.match(g.live.control[2], /the axis follows it, so the markers keep their places/);
+    assert.match(g.live.control[2], /the axis follows, so markers keep their places while their labels change/);
     assert.doesNotMatch(textOf(GUIDES.explore), /F0 slides them/);
   });
   it('a room adds no harmonics — only the speaker, the mic or a rattle', () => {
     assert.doesNotMatch(textOf(GUIDES.live), /the room or the mic/);
-    assert.match(g.live.changes[0], /by the speaker or the mic, or something rattling nearby\. A room changes levels but adds no new frequencies\./);
+    assert.match(g.live.changes[0], /by the speaker, the mic, or something rattling nearby\. A room changes levels but adds no new frequencies\./);
   });
   it('▶ starts the tone only once the override is checked', () => {
     assert.match(v, /void start\(\);\s*if \(isFeedbackAllowed\(\)\) void startTone\(\);/);
-    assert.match(g.live.control[0], /starts the mic \(and the tone, once the override is checked\)/);
+    assert.match(g.live.control[0], /to start the mic, and the tone once the override is checked; ■ stops both/);
   });
   it('first live experiment starts at the top of the F0 fader and is hedged (speaker high-pass at 100 Hz ≈ −7.8 dB)', () => {
     const hpfDb = (f: number) => { const r4 = (f / 150) ** 4; return 10 * Math.log10(r4 / (1 + r4)); };
     assert.equal(hpfDb(100).toFixed(1), '-7.8');
     assert.ok(hpfDb(300) > -0.3);
-    assert.match(g.live.tryThis[0], /^Push the F0 fader to the top/);
+    assert.match(g.live.tryThis[0], /^Push F0 to the top \(a phone speaker can’t reproduce deep bass\)/);
     assert.match(g.live.tryThis[0], /usually lights at marker 1/);
   });
   it('THD is overtones against the FUNDAMENTAL (not a share — it can pass 100 %); CREST is peak against RMS', () => {
     const t = textOf(GUIDES.explore);
     assert.doesNotMatch(t, /overtone share|how much is overtone|peak vs average/);
-    assert.match(t, /THD \(overtones vs the fundamental, %\)/);
-    assert.match(t, /CREST \(peak vs the effective, RMS level, dB\)/);
+    assert.match(t, /THD \(overtones against the fundamental, %\)/);
+    assert.match(t, /CREST \(peak against RMS level, dB\)/);
     type H = { n: number; amp: number; phaseDeg: number; enabled: boolean; muted: boolean };
     const loud = M.buildPreset('sine').map((h: H) => (h.n === 2 || h.n === 3 ? { ...h, amp: 1 } : h));
     assert.ok((M.thd(loud).pct as number) > 100, 'THD > 100 % — so it is not a share of the whole');
     assert.match(code('src/screens/lab/harmonicModel.ts'), /return 20 \* Math\.log10\(peak \/ Math\.sqrt\(sumSq \/ waveform\.length\)\);/);
+  });
+  it('decision 4 (2026-11-08): no catalog placement or course order in the guide', () => {
+    assert.doesNotMatch(textOf(GUIDES.explore), /Oscillators|FM Synthesis|preview the Distortion|before the Distortion|after the Distortion/);
+  });
+  it('decision 6 (2026-11-08): the CHECK screen walks to no answer', () => {
+    const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
+    const ct = [...g.check.tryThis, ...g.check.teaches, ci.learning, ci.start].join(' ');
+    assert.doesNotMatch(ct, /MUTE EVEN|SQUARE|square|whole-number multiple|nearly the same|phase-deaf|no harmonics are added/);
+    assert.match(g.check.tryThis[1], /pick PRESET → TRIANGLE and note which stems are lit and how fast they fall \(SLOPE\)/);
+  });
+  it('the header ▶ stays on LEARN, so LEARN never says "Nothing here plays"', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(h, /headerAction=\{headerAction\}/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.match(g.learn.seeing[0], /▶ in the header still plays what you set on EXPLORE/);
   });
   it('no promised "link" to the Distortion lab (none exists on this screen)', () => {
     assert.doesNotMatch(textOf(GUIDES.explore), /link to the Distortion/);
@@ -306,8 +335,11 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(g.learn.tryThis[0], /drag H3 to about −9\.5 dB, H5 to −14 and H7 to −17 \(1\/3, 1\/5, 1\/7 of H1\)/);
   });
   it('LEARN names the lesson entry View (MODEL / LIVE) and lists only the readouts/chips that long-press', () => {
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /name: 'View \(MODEL \/ LIVE\)'/);
-    assert.match(g.learn.seeing[1], /View \(MODEL \/ LIVE\)/);
+    // decision 1 (2026-11-08): the entry is named by the on-screen MODE key and its two options
+    // (old lesson name 'View (MODEL / LIVE)', or the rewrite's 'MODE')
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /key: ["']view["'], name: ["'](View \(MODEL \/ LIVE\)|MODE)["']/);
+    assert.match(g.learn.seeing[1], /MODE \(ANALYTIC MODEL \/ REAL SIGNAL\)/);
+    assert.match(v, /\{ id: 'model', label: 'ANALYTIC MODEL',/);
     assert.match(v, /<Chip label="NORMALIZE" selected=\{false\} onPress=\{normalizeModel\} \/>/);
     assert.match(v, /<Chip label="SNAPSHOT A" selected=\{false\} onPress=\{takeSnapshot\} \/>/);
     assert.match(g.learn.control[2], /the F0, CREST or SLOPE readout, or an ODD\/EVEN, ENVELOPE, SPACING, SOLO or MUTE chip/);
@@ -317,6 +349,6 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck/);
     const t = textOf(GUIDES.check);
     assert.doesNotMatch(t, /even if you come back later|nothing is lost|stay on this tab|start fresh/);
-    assert.match(t, /Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over/);
+    assert.match(t, /Answers already right stay right if you switch to LEARN or EXPLORE and come back\. Leave the lab before the last one and the check starts over/);
   });
 });

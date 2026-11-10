@@ -189,7 +189,7 @@ describe('K7 LabCheckEnd: BACK closes the open guide first', () => {
   });
   it('ScreenGuideHost: optional backRef closes an open guide and answers true, else false; omitted = unchanged', () => {
     assert.match(host, /backRef\?: MutableRefObject<\(\(\) => boolean\) \| null>;/);
-    assert.match(host, /useEffect\(\(\) => \{\s*if \(!backRef\) return;\s*backRef\.current = \(\) => \{\s*if \(!shownRef\.current\) return false;\s*shownRef\.current = false;\s*setShown\(null\);\s*return true;\s*\};\s*return \(\) => \{\s*backRef\.current = null;\s*\};\s*\}, \[backRef\]\);/);
+    assert.match(host, /useEffect\(\(\) => \{\s*if \(!backRef\) return;\s*backRef\.current = \(\) => \{\s*if \(!shownRef\.current\) return false;\s*shownRef\.current = false;\s*(?:claimIntro\(claimRef\.current\);\s*)?setShown\(null\);\s*return true;\s*\};\s*return \(\) => \{\s*backRef\.current = null;\s*\};\s*\}, \[backRef\]\);/);
     assert.match(host, /shownRef\.current = shown != null;/);
   });
 });
@@ -219,7 +219,7 @@ describe('K8 De-Esser: the Smart Processors check is on its end screen', () => {
   it('the De-Esser end guide names the CHECK row and LAB COMPLETE waiting for the check', () => {
     const g = raw('src/screens/lab/deesser/smartProcessorsScreenGuides.ts');
     const end = g.slice(g.indexOf('export const DEESSER_END_GUIDE'), g.indexOf('export function deEsserPageGuide'));
-    assert.match(end, /then a CHECK row: the five-question Smart Processors check\. LAB COMPLETE once every page is done and the check passed\./);
+    assert.match(end, /then a CHECK row: the five Smart Processors questions\. LAB COMPLETE shows once every page is done and the check is passed\./);
     assert.doesNotMatch(end, /When every page is done the title reads LAB COMPLETE/);
   });
 });

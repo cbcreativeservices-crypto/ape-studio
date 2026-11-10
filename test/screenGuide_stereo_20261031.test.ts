@@ -29,7 +29,7 @@ const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g,
 /** Source with comments stripped — a name in a comment proves nothing. */
 const code = (p: string) => read(p).replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
-const { STEREO_SCREEN_GUIDES, stereoScreenGuide } = await import('../src/screens/lab/stereoScreenGuides.ts');
+const { STEREO_SCREEN_GUIDES, STEREO_END_GUIDE, stereoScreenGuide } = await import('../src/screens/lab/stereoScreenGuides.ts');
 const { SCREEN_GUIDE_SECTIONS, SCREEN_GUIDE_BUDGET } = await import('../src/features/lab/screenGuide/types.ts');
 
 type Guide = Record<string, string[]>;
@@ -62,7 +62,12 @@ describe('1. every Stereo Imaging screen has a complete guide', () => {
   });
   for (const [id, gd] of allGuides) {
     it(`${id}: all five sections, 1–5 bullets each, none empty; TRY THIS is 2–3`, () => {
-      assert.deepEqual(Object.keys(gd).sort(), [...SECTION_KEYS].sort());
+      assert.deepEqual(Object.keys(gd).filter((k) => k !== 'intro').sort(), [...SECTION_KEYS].sort());
+      // the intro card (Guided Lessons return 2026-11-08): learning ≤ 30 words, start ≤ 40
+      const intro = (gd as unknown as { intro?: { learning: string; start: string } }).intro;
+      assert.ok(intro, `${id}: no intro`);
+      assert.ok(intro.learning.trim().split(/\s+/).length <= 30, `${id}: intro.learning over 30 words`);
+      assert.ok(intro.start.trim().split(/\s+/).length <= 40, `${id}: intro.start over 40 words`);
       for (const k of SECTION_KEYS) {
         assert.ok(Array.isArray(gd[k]) && gd[k].length >= 1, `${id}.${k} is empty`);
         assert.ok(gd[k].length <= 5, `${id}.${k} has ${gd[k].length} bullets (max 5)`);
@@ -88,8 +93,8 @@ describe('1b. review fixes 2026-10-31', () => {
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /app version|older build|without stereo sources/i, `${id}: a build note`);
   });
   it('MID, SIDE and goniometer are explained the first time they appear', () => {
-    assert.match(GUIDES.explore.seeing[0], /M\/S WIDTH stage \(MID = what L and R share, SIDE = what differs\)/);
-    assert.match(GUIDES.explore.seeing.join(' '), /a goniometer, a picture of L against R \(M up, S across\)/);
+    assert.match(GUIDES.explore.seeing[0], /M\/S WIDTH stage, ▸ OUT\. MID is what L and R share; SIDE is what differs/);
+    assert.match(GUIDES.explore.seeing.join(' '), /a goniometer, L plotted against R \(M up, S across\)/);
   });
 });
 
@@ -123,8 +128,10 @@ describe('3. each guide quotes the screen’s real names', () => {
       ],
     },
     learn: {
-      in: SHELL + LESSON,
-      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'ADV', 'Pan', 'Width', 'Mid gain', 'Side gain', 'Mono-fold', 'Bass-Mono', 'ⓘ GUIDED LESSON', 'LAB NOTES'],
+      // Decision 1 (2026-11-08): LEARN names the controls by their on-screen labels (PAN, WIDTH,
+      // FOLD, BASS from stereoConfig), no longer the old lesson names Pan / Width / Mono-fold / Bass-Mono.
+      in: SHELL + LESSON + CFG,
+      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'ADV', 'PAN', 'WIDTH', 'Mid gain', 'Side gain', 'FOLD', 'BASS', 'ⓘ GUIDED LESSON', 'LAB NOTES', '▶'],
     },
     check: {
       in: SHELL,
@@ -161,7 +168,7 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(FX, /if \(label\.length <= 8\) return label;/);
     assert.equal(shortChoice('MONO CHECK'), 'MONO');
     assert.equal(shortChoice('STEREO'), 'STEREO');
-    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN, BASS and FOLD \(STEREO, or MONO in a mono check\)/);
+    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN, BASS and FOLD \(STEREO or MONO\)/);
     // the display: the width flavour's stage label, IN/OUT, the L/R legend colours
     assert.match(ANIM, /case 'stereo': return model\.flavor === 'phase' \? 'R: Ø · DLY' : 'M\/S WIDTH';/);
     assert.match(CFG, /kind: 'stereo',\s*flavor: 'width',/);
@@ -176,10 +183,10 @@ describe('3. each guide quotes the screen’s real names', () => {
   });
   it('LEARN: the lesson lists Mid gain and Side gain (not on EXPLORE) and three ADV entries — the guide says so', () => {
     assert.equal((LESSON.match(/advanced: true/g) ?? []).length, 3);
-    assert.match(LESSON, /key: 'mid', name: 'Mid gain \(M\)'/);
-    assert.match(LESSON, /key: 'side', name: 'Side gain \(S\)'/);
+    assert.match(LESSON, /key: ["']mid["'], name: ["']Mid gain \(M\)["']/);
+    assert.match(LESSON, /key: ["']side["'], name: ["']Side gain \(S\)["']/);
     assert.doesNotMatch(CFG, /P\.midGain|P\.sideGain|label: 'MID'|label: 'SIDE'/);
-    assert.match(GUIDES.learn.changes.join(' '), /Mid gain, Side gain and the ADV entries describe controls this screen does not have/);
+    assert.match(GUIDES.learn.changes.join(' '), /Mid gain \(M\), Side gain \(S\) and the ADV entries describe controls you won’t find on EXPLORE/);
   });
   it('the guide never reads the goniometer after a FOLD or a PAN (LissajousGraph does not receive them)', () => {
     assert.match(CFG, /<LissajousGraph widthPct=\{v\[P\.widthPct\]\} invertR=\{false\} delayRms=\{0\} toneHz=\{440\} inputLrRad=\{src\?\.monoCompare \? 0 : STEREO_TEST_LR_RAD\} \/>/);
@@ -200,10 +207,27 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(GUIDES.check.control.join(' '), /Answers already right stay right if you switch to LEARN or EXPLORE and come back/);
     assert.match(GUIDES.check.control.join(' '), /FINISH · SEE WHAT’S LEFT › opens Where you are/);
   });
+  it('decision 6 (2026-11-08): the CHECK screen walks to no answer', () => {
+    const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
+    const ct = [...GUIDES.check.tryThis, ...GUIDES.check.teaches, ci.learning, ci.start].join(' ');
+    // mono-fold: no "fold at 200% and watch the traces merge"; correlation: no "how much a mono listener will lose"
+    assert.doesNotMatch(ct, /traces merge|mono-fold question, seen|cancels|will lose|disappear|collapses|silence/i);
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, read FORMULA \/ CONCEPT: how MID and SIDE are built from L and R/);
+    // the what's-left screen opens before a pass too
+    assert.doesNotMatch(STEREO_END_GUIDE.tryThis.join(' '), /extra width disappear/);
+  });
+  it('the header ▶ stays on LEARN, so LEARN never says "Nothing here plays"', () => {
+    assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
+    assert.match(FX, /headerAction=\{/);
+    assert.doesNotMatch(textOf(GUIDES.learn), /Nothing here plays/);
+    assert.match(GUIDES.learn.seeing[0], /▶ in the header still plays the source you set on EXPLORE/);
+  });
   it('the Phase lab draws the same goniometer (the "shares its goniometer" claim)', () => {
     const phase = CONFIGS.slice(CONFIGS.indexOf('const phaseConfig'), CONFIGS.indexOf('export const PhaseLabScreen'));
     assert.match(phase, /<LissajousGraph /);
-    assert.match(GUIDES.explore.teaches.join(' '), /shares its goniometer with the Phase lab/);
+    // The "shares its goniometer with the Phase lab" line left with the other course-navigation
+    // lines (decision 4, 2026-11-08); the guide no longer points to another lab.
+    assert.doesNotMatch(textOf(GUIDES.explore), /Phase lab/);
   });
 });
 
@@ -245,7 +269,7 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
     for (const w of [0, 0.5, 1, 1.5, 2]) assert.ok(Math.abs(cf(w) - corr(w * 100, T)) < 5e-3, `closed form vs drawn at ${w}`);
     assert.ok(corr(200, T) > -0.5, 'the lab’s widest setting stays far from −1');
     assert.match(GUIDES.explore.tryThis.join(' '), /CORRELATION reads \+1\.00 at 0%, \+0\.45 at 100% and −0\.20 at 200%/);
-    assert.match(GUIDES.check.tryThis.join(' '), /WIDTH to 200%: CORRELATION reads −0\.20/);
+    assert.match(GUIDES.check.tryThis.join(' '), /push WIDTH to 200% on EXPLORE: CORRELATION reads −0\.20/);
     assert.match(GUIDES.learn.tryThis.join(' '), /WIDTH to 0%[\s\S]*CORRELATION reads \+1\.00/);
   });
   it('0% draws a vertical line (no SIDE); the mono comparison source is +1.00 at every width', () => {
@@ -274,8 +298,8 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
     // 2026-10-31 review: PAN is a balance on the finished stereo signal — the R input
     // never reaches L (L = l·panL·√2), so it is muted, not moved.
     assert.match(hpp, /l \*= panL \* 1\.41421356;/);
-    assert.match(GUIDES.explore.control.join(' '), /PAN key: L, CENTER or R — a balance control: at L the right channel is muted and the left is lifted 3 dB/);
-    assert.match(GUIDES.explore.tryThis.join(' '), /the right channel is muted, not moved/);
+    assert.match(GUIDES.explore.control.join(' '), /PAN: L, CENTER or R, a balance control\. At L the right channel is muted and the left is lifted 3 dB/);
+    assert.match(GUIDES.explore.tryThis.join(' '), /The right channel is muted, not moved/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /moves the whole image|everything moves to the/, `${id}: PAN does not move the image`);
   });
   it('MONO CHECK: both OUT traces land on one line (the flow display), as the engine sums L and R', () => {

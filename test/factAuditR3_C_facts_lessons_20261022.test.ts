@@ -101,7 +101,7 @@ describe('weekly notification facts', () => {
 describe('guided lessons and tool help', () => {
   it('F001461: fast attack + slow release is no longer taught as "glue"', () => {
     assert.ok(!CONTENT.includes('Fast attack + slow release "glues"'));
-    assert.ok(CONTENT.includes('most start with a medium-slow attack and a release timed to the groove'));
+    assert.ok(CONTENT.includes('For glue on a group, start with a medium-slow attack and a release timed to the groove'));
   });
   it('F001524: true-peak oversampling depends on the base rate', () => {
     assert.ok(CONTENT.includes('oversample to about 192 kHz (4× at 48 kHz, 2× at 96 kHz)'));
@@ -109,23 +109,23 @@ describe('guided lessons and tool help', () => {
   });
   it('F001616/F001621: carrier pitch holds only for whole-number ratios', () => {
     assert.ok(!CONTENT.includes('Rich, bell-like; pitch stays at the carrier.'));
-    assert.ok(CONTENT.includes('as long as the modulator is a whole-number multiple of the carrier, the perceived pitch stays at the carrier'));
+    assert.ok(CONTENT.includes('With the modulator a whole-number multiple of the carrier, the pitch stays at the carrier'));
   });
   it('F001832: no "180° behind the front pressure" claim', () => {
     assert.ok(!CONTENT.includes('~180° behind the front pressure'));
-    assert.ok(CONTENT.includes('runs about 180° behind the force driving it'));
+    // 2026-11-08: the owner-approved Comp B rewrite no longer states this; the old wording stays banned.
   });
   it('F001904: mid-curve bias is the class A case', () => {
-    assert.ok(CONTENT.includes('In a class A stage, biasing means parking this dot mid-curve'));
+    assert.ok(CONTENT.includes('Class A stages idle mid-curve'));
   });
   it('F001990: single-box cardioid subs exist', () => {
     assert.ok(!CONTENT.includes('One sub alone can never do this.'));
   });
   it('F002217: control-room levels are per-speaker pink-noise calibration levels', () => {
-    assert.ok(HELP.includes('per speaker, set with pink noise at about −20 dBFS'));
+    assert.ok(HELP.includes('set with pink noise at −20 dBFS, one speaker, C-weighted, SLOW'));
   });
   it('F002282: a hand-clap is weak in the bass', () => {
-    assert.ok(HELP.includes('a sharp hand-clap works for a quick look but is weak in the bass'));
+    assert.ok(HELP.includes('A hand clap is fine for a quick look, but weak in bass.'));
     assert.ok(!HELP.includes('A balloon pop or sharp hand-clap is a great free impulse'));
   });
 });

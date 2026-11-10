@@ -55,7 +55,7 @@ describe('decision 6: the polarity button shows on the mix map', () => {
     assert.doesNotMatch(mapArt, /renderMix|usePlayback/);
   });
   it('the screen guide tells the same story', () => {
-    assert.match(GUIDES, /Ø = polarity flipped/);
+    assert.match(GUIDES, /Ø means polarity flipped/);
   });
 });
 
