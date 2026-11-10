@@ -179,7 +179,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'The goal chip at the top fills once you’ve matched every venue.',
     ],
     control: [
-      'Tap the system you would carry in for each venue. A wrong pick explains why it doesn’t fit; try another until it’s right.',
+      'Tap the system you would carry in for each venue. The first wrong pick asks you to try again; from the second miss on, the explanation shows. Try until it is right.',
     ],
     changes: [
       'Each answer shows why that system does or doesn’t suit the venue. A correct one locks the card with a ✓.',
@@ -228,7 +228,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Six briefs: a lecture hall, a musical, a DJ bar, a field, flown main speakers and a conference. Each offers four configurations to choose from.',
     ],
     control: [
-      'Tap the configuration that fits each brief. A wrong answer explains why it fails; try another.',
+      'Tap the configuration that fits each brief. The first wrong answer asks you to try again; from the second miss on, the explanation shows.',
     ],
     changes: [
       'A correct answer shows why: the room or the brief decides, not the gear.',

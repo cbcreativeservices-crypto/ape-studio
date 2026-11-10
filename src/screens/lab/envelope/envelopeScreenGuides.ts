@@ -255,7 +255,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The card at the top shows how many you’ve got right so far and whether the page is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick shows the explanation and stays open, so you can try again.',
+      'Tap an answer. A wrong pick stays open: the first miss asks you to try again; from the second miss on, the explanation shows as a hint.',
       'All six right completes this page. NEXT › then moves on to the lab’s final check.',
     ],
     changes: [
@@ -264,7 +264,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Six ideas in this lab are easy to confuse: the transient, piano sustain, rise time, peak vs average, crest factor vs dynamic range, envelope vs propagation.',
-      'Each mix-up has a reason, and the explanation after a wrong pick shows exactly where the thinking slips.',
+      'Each mix-up has a reason: the first miss asks you to try again, and from the second miss on, the explanation shows exactly where the thinking slips.',
     ],
     tryThis: [
       'Unsure about rise time? Go back to The Envelope Explorer, tap RESET and read where the two gold dots sit on the climb.',
