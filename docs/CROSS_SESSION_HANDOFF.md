@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-09 23:20 · ccode · 900b1813
+changed: Cable Install cutaways: drains touch the foil (line, multipair, snake; two-tone foil); control cable redrawn to Belden 8723 datasheet (2 pr 22 AWG, foil-out per pair, drain outside, no overall shield) (owner 2026-11-09) [MD:D44]
+affects other side: nothing (app wording only; next OTA).
+needs: nothing.
+
+
 ### 2026-11-09 23:00 · ccode · d24fa0bf
 changed: Cable Lab lesson 2: drain-wire definition (bare, full length, pressed on the foil's metal side, terminated to pin 1 / sleeve); cutaways verified correct as drawn per Belden (owner 2026-11-09) [MD:D44]
 affects other side: nothing (app wording only; next OTA).
