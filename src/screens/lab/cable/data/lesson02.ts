@@ -103,7 +103,7 @@ export const CABLE_TERMS: AnatomyTerm[] = [
   {
     id: 'shield',
     label: 'SHIELD (BRAID / FOIL / DRAIN)',
-    def: 'A conductive layer wrapped around the conductors that stops electric-field noise (low-frequency magnetic hum is rejected by the twist and the balanced input, not the shield). A braid shield is woven wire; a foil shield is a thin metal film; a drain wire is a bare conductor running against a foil so the foil can be terminated cleanly. Cables may use braid, foil, or both.',
+    def: 'A conductive layer wrapped around the conductors that stops electric-field noise (low-frequency magnetic hum is rejected by the twist and the balanced input, not the shield). A braid shield is woven wire; a foil shield is a thin metal film, too thin and fragile to solder to a connector. So a foil-shielded cable adds a drain wire: a bare wire that runs the full length of the cable pressed against the foil’s metal side. The drain is what gets connected to the connector’s ground (pin 1 on an XLR, the sleeve on a TRS), and through it the whole foil. Cables may use braid, foil, or both.',
   },
   {
     id: 'twisted_pair',
