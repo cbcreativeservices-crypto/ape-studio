@@ -2098,6 +2098,9 @@ ${COPY.glossaryFreeAllowance}`,
   );
   openViaGatewayRef.current = openViaGateway;
 
+  /** Set below, once the definition refs exist: corrects a changed definition
+   *  from an opened term's live read (owner 2026-11-10). */
+  const correctSavedDefRef = useRef<(id: string, definition: string | null) => void>(() => {});
   const fetchDetails = useCallback(
     async (id: string) => {
       if (detailsRef.current[id]) return;
@@ -2146,6 +2149,7 @@ ${COPY.glossaryFreeAllowance}`,
       // common_mistakes now rides along in the same masked row — the separate
       // glossary_full_v query it used to need is gone with the grant.
       putDetail(id, data as unknown as EntryDetail);
+      correctSavedDefRef.current(id, (data as { definition?: string | null }).definition ?? null);
     },
     [putDetail],
   );
@@ -2955,6 +2959,28 @@ ${COPY.glossaryFreeAllowance}`,
    * the rows come from the network alone (the server masks by real standing).
    */
   const defSettledRef = useRef(false);
+  /**
+   * AN OPENED TERM CORRECTS ITS SAVED DEFINITION (owner 2026-11-10, "Yes, fix
+   * it"). The row's definition comes from the phone first, and a saved one was
+   * never re-read, so a term the academy corrected kept its old line. The
+   * opened term's live read carries the current text: for a MEMBER it is the
+   * same full text the browse view gives (both views unmask for members), so
+   * it replaces the row's line and the phone's copy. A free reader's line is a
+   * teaser from a different mask, so it is left alone (the weekly recheck in
+   * offlinePrefetch covers members' whole saved glossary).
+   */
+  correctSavedDefRef.current = (id, definition) => {
+    if (!definition || defTierRef.current !== 'member') return;
+    const e = entryByIdRef.current.get(id);
+    if (!e || !e.definition || e.definition === definition) return;
+    e.definition = definition;
+    setDefRev((n) => n + 1);
+    if (defSettledRef.current) {
+      void alignDefinitionTier(table, 'member')
+        .then(() => saveStoredDefinitions(table, [{ id, definition }]))
+        .catch(() => {});
+    }
+  };
   defSettledRef.current = memberGate === 'open' || memberGate === 'locked';
   const ensureDefinitions = useCallback(
     (ids: string[]) => {
