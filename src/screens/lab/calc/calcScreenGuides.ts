@@ -120,6 +120,12 @@ export function calcWorkspaceGuideTitle(ws: Workspace): string {
   return ws.name.toUpperCase();
 }
 
+/** The intro card every calculator shares, shown once per device. */
+export const CALC_WORKSPACE_INTRO = {
+  learning: 'What each calculator works out, and how each input moves the answer through its formula.',
+  start: 'Type the gray example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER. Then change one input and watch which results move. Tap ⓘ for this calculation’s own example.',
+} as const;
+
 /** The guide for one calculator, on the calculation currently picked.
  *  `capped` is the screen's own flag (a free or lapsed account, whose answer
  *  waits behind CALCULATE): only those readers get the CALCULATE lines. */
@@ -243,12 +249,11 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
   ]);
 
   return {
-    intro: {
-      learning: `What “${fn.name}” works out, and how each input moves the answer through its formula.`,
-      start: ex
-        ? `Type the gray example value into each box (then CALCULATE, if it shows): ${ex.label} reads ${ex.at4}. Then change one input and watch which results move.`
-        : 'Type the gray example value into each box (then CALCULATE, if it shows) and read each line of YOUR ANSWER.',
-    },
+    // ONE intro for every calculator (owner 2026-11-10: "it would show 166
+    // times"). The card shows once per device per intro TEXT, so naming the
+    // calculation made each of them a new card. The calculation's own example
+    // stays in the steps below (ⓘ).
+    intro: CALC_WORKSPACE_INTRO,
     seeing: [
       'YOUR ANSWER sits at the top and stays in view while you type below. It fills in once every input has a value.',
       `Just under it: FUNCTION (“${fn.name}”), SIG FIGS (how many figures show) and FORMULA π KEY.`,
