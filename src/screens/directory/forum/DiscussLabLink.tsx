@@ -8,7 +8,7 @@
  * on the tap: this file sits in the labs and adds nothing to them or to the start
  * graph.
  */
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { COMMUNITY_VISIBLE } from '../../../config/communityVisible';
@@ -18,6 +18,15 @@ import { fonts } from '../../../theme/tokens';
 import { sampleForumOn } from '../../../features/forum/sampleSwitch';
 
 type Lab = { key: string; title: string };
+
+/** One press of the gate (PostGate.PostGateOnce); a type only, so the lab
+ *  carries none of the forum until the tap. */
+type GateRequest = {
+  where: { slug: string | null; action: 'start' | 'reply' };
+  known: undefined;
+  go: () => void;
+  intent: { route: string; params?: Record<string, unknown> };
+};
 
 type Props = { labTitle: string; /** Names the lab directly (dev sample). */ lab?: Lab };
 
@@ -33,6 +42,9 @@ function DiscussKey({ labTitle, lab }: Props) {
   };
   const route = useRoute();
   const [busy, setBusy] = useState(false);
+  /** Who may post, once a tap needs it (starting the lab's discussion). The
+   *  gate is required then, never with the lab, and stays mounted after. */
+  const [gate, setGate] = useState<GateRequest | null>(null);
 
   const open = useLatchedPress(async () => {
     const { labOfRoute } = require('../../../features/forum/labLinks') as typeof import('../../../features/forum/labLinks');
@@ -50,21 +62,41 @@ function DiscussKey({ labTitle, lab }: Props) {
       notify('Discuss this lab', r.error);
       return;
     }
-    if (r.value) navigation.navigate('ForumThread', { topicId: r.value });
-    else navigation.navigate('ForumAsk', { labThread: which });
+    if (r.value) {
+      navigation.navigate('ForumThread', { topicId: r.value });
+      return;
+    }
+    // Starting the discussion is a post: a member who may not post yet sees
+    // the rules, or why, with the one button to the fix (2026-11-10).
+    const intent = { route: 'ForumAsk', params: { labThread: which } };
+    setGate({
+      where: { slug: null, action: 'start' },
+      known: undefined,
+      go: () => {
+        if (navigation.isFocused && !navigation.isFocused()) return;
+        navigation.navigate(intent.route, intent.params);
+      },
+      intent,
+    });
   });
+  const Gate = gate
+    ? ((require('./PostGate') as typeof import('./PostGate')).PostGateOnce as ComponentType<{ request: GateRequest }>)
+    : null;
 
   return (
-    <Pressable
-      onPress={open}
-      disabled={busy}
-      style={({ pressed }) => [st.link, pressed && st.pressed]}
-      accessibilityRole="button"
-      accessibilityLabel="Discuss this lab"
-      accessibilityState={{ busy }}
-    >
-      {busy ? <ActivityIndicator color="#ffc64d" /> : <Text style={st.text}>DISCUSS THIS LAB ›</Text>}
-    </Pressable>
+    <>
+      <Pressable
+        onPress={open}
+        disabled={busy}
+        style={({ pressed }) => [st.link, pressed && st.pressed]}
+        accessibilityRole="button"
+        accessibilityLabel="Discuss this lab"
+        accessibilityState={{ busy }}
+      >
+        {busy ? <ActivityIndicator color="#ffc64d" /> : <Text style={st.text}>DISCUSS THIS LAB ›</Text>}
+      </Pressable>
+      {Gate && gate ? <Gate request={gate} /> : null}
+    </>
   );
 }
 

@@ -57,7 +57,7 @@ import {
   topicFrom,
   type AskFormKind,
 } from '../../../features/forum/rules';
-import type { AskValues, ForumSearchHit, TopicKind } from '../../../features/forum/types';
+import type { AskValues, ForumMe, ForumSearchHit, TopicKind } from '../../../features/forum/types';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { Chip, ChipWrap } from '../directoryBits';
 import {
@@ -77,6 +77,7 @@ import {
   openMyProfile,
 } from './forumBits';
 import { AI_DISCLOSURE, RulesPopup } from './forumPopups';
+import { usePostGate } from './PostGate';
 
 type EditTarget = {
   postId: string;
@@ -131,7 +132,7 @@ export function ForumAskScreen() {
   // half-written question is right there after (UI-2-07).
   return (
     <GlossaryLinkProvider>
-      <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} />
+      <AskForm slug={slug} edit={edit} labThread={labThread} categories={home.value.categories} rights={home.value.rights} me={home.value.me} reload={home.reload} />
     </GlossaryLinkProvider>
   );
 }
@@ -142,12 +143,17 @@ function AskForm({
   labThread,
   categories,
   rights,
+  me,
+  reload,
 }: {
   slug?: string;
   edit?: EditTarget;
   labThread?: LabThread;
   categories: ForumCategory[];
   rights: ForumRights[] | null;
+  me: ForumMe | null;
+  /** The forum read again (rights and forum_me), after the rules are agreed. */
+  reload: () => Promise<void>;
 }) {
   const navigation = useNavigation() as unknown as Nav;
   const insets = useSafeAreaInsets();
@@ -217,6 +223,8 @@ function AskForm({
   const [pickingLab, setPickingLab] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const flags = useForumFlags();
+  /** Who may post: one gate for every post control (2026-11-10). */
+  const gate = usePostGate();
 
   /* ── Draft saved ─────────────────────────────────────────────────── */
   const draftName = draftKey({ slug: labThread ? `lab:${labThread.key}` : category?.slug });
@@ -354,6 +362,9 @@ function AskForm({
     const refused = (r: { error: string; code: string | null }) => {
       setError(r.error);
       if (asksForRules(r.code)) setRulesOpen(true);
+      // Any other reason this member may not post here (a staff-only or Pro
+      // Lounge category, which only the post call knows): the same popup.
+      else gate.refused(r.code, { slug: labThread ? null : (category?.slug ?? null), action: 'start' });
     };
     if (edit) {
       const body = guided ? composeAskBody(values) : values.body.trim();
@@ -455,7 +466,7 @@ function AskForm({
     // The author sees their own post here, whatever the check decided.
     if (navigation.replace) navigation.replace('ForumThread', { topicId: r.value.topicId });
     else navigation.navigate('ForumThread', { topicId: r.value.topicId });
-  }, [category, draftName, edit, form, guided, job, lab, labThread, navigation, problem, values]);
+  }, [category, draftName, edit, form, gate, guided, job, lab, labThread, navigation, problem, values]);
 
   // Asked from the stored agreement once it is read, never from the store's
   // empty start, and once per session when the phone cannot keep it (CODE-2-12).
@@ -504,19 +515,29 @@ function AskForm({
         : 'Pick the category; we’ll show similar topics';
 
   if (!edit && !labThread && choices.open.length === 0) {
+    // Never a dead end (2026-11-10): rules not agreed opens the rules here, and
+    // once agreed the forum is read again and the form appears.
+    const rulesLeft = choices.refusalCode === 'rules_not_accepted';
     return (
       <View style={forumStyles.root}>
         <ForumHeader title={headerTitle} />
         <LockedNotice
           solid
           action={
-            refusalNeedsProfile(choices.refusalCode)
-              ? { label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }
-              : undefined
+            rulesLeft
+              ? {
+                  label: 'READ THE RULES',
+                  onPress: () =>
+                    gate.press({ slug: slug ?? null, action: 'start' }, { me, rights }, () => void reload()),
+                }
+              : refusalNeedsProfile(choices.refusalCode)
+                ? { label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }
+                : undefined
           }
         >
           {choices.refusal ?? ''}
         </LockedNotice>
+        {gate.host}
       </View>
     );
   }
@@ -652,6 +673,7 @@ function AskForm({
         </Popup>
       ) : null}
       <RulesPopup visible={rulesOpen} onAccept={acceptRules} onClose={() => setRulesOpen(false)} />
+      {gate.host}
     </KeyboardAvoidingView>
   );
 }

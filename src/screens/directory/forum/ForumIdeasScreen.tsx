@@ -21,6 +21,7 @@ import { ideaDetailsFromList } from '../../../features/forum/serverShapes';
 import { useForumRead } from '../../../features/forum/useForumRead';
 import { useReloadOnReturn } from '../../../features/forum/useReloadOnReturn';
 import { useSendingPer } from '../directoryBits';
+import { usePostGate } from './PostGate';
 import {
   AmberButton,
   F,
@@ -52,6 +53,14 @@ export function ForumIdeasScreen() {
   useEffect(() => {
     if (value) setRows(sortIdeas(value));
   }, [value]);
+
+  // SHARE AN IDEA is never a dead key: who may post is read on the tap, and a
+  // member who may not post yet sees the rules, or why (2026-11-10).
+  const gate = usePostGate();
+  const shareIdea = () => {
+    const intent = { route: 'ForumAsk', params: { slug: IDEAS_SLUG } };
+    gate.press({ slug: IDEAS_SLUG, action: 'start' }, undefined, () => navigation.navigate(intent.route, intent.params), intent);
+  };
 
   const [details, setDetails] = useState<Record<string, Detail>>({});
   useEffect(() => {
@@ -138,9 +147,10 @@ export function ForumIdeasScreen() {
       />
       {read.face === 'ready' ? (
         <View style={[st.dock, { paddingBottom: 14 + insets.bottom }]}>
-          <AmberButton label="SHARE AN IDEA" onPress={() => navigation.navigate('ForumAsk', { slug: IDEAS_SLUG })} />
+          <AmberButton label="SHARE AN IDEA" onPress={shareIdea} busy={gate.checking} />
         </View>
       ) : null}
+      {gate.host}
     </View>
   );
 }

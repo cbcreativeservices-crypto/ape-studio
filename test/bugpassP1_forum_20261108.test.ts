@@ -197,10 +197,13 @@ describe('CODE-1-08: later posts can be reached, and my new reply shows', () => 
 
 describe('CODE-1-09: MY PROFILE pops to the Audio Community screen', () => {
   it('no forum screen pushes AudioCommunityDirectory', () => {
-    for (const f of ['ForumThreadScreen', 'ForumCategoryScreen', 'ForumAskScreen']) {
+    // Since 2026-11-10 the MY PROFILE step of a post control lives in the one
+    // shared gate (PostGate.tsx), which every one of these screens uses.
+    for (const f of ['ForumThreadScreen', 'ForumCategoryScreen', 'ForumAskScreen', 'PostGate']) {
       const src = code(`${F}${f}.tsx`);
       assert.doesNotMatch(src, /navigate\('AudioCommunityDirectory'/, f);
-      assert.match(src, /openMyProfile\(navigation\)/, f);
+      if (f === 'PostGate') assert.match(src, /openMyProfile\(navigation\)/, f);
+      else assert.match(src, /usePostGate\(\)/, f);
     }
     assert.match(code(`${F}forumBits.tsx`), /nav\.popTo\('AudioCommunityDirectory', \{ tab: 'profile' \}\)/);
   });

@@ -25,7 +25,6 @@ import {
   emptyTopicsWords,
   nextTopicsPage,
   postingDock,
-  refusalNeedsProfile,
   refusalText,
 } from '../../../features/forum/rules';
 import type { TopicSort } from '../../../features/forum/types';
@@ -45,9 +44,9 @@ import {
   ThreadHeader,
   TopicRow,
   forumStyles,
-  openMyProfile,
   topicRoute,
 } from './forumBits';
+import { usePostGate } from './PostGate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Params = { slug?: string; lounge?: boolean };
@@ -174,27 +173,30 @@ export function ForumCategoryScreen() {
   const startLabel = category?.kind === 'qa' ? 'ASK A QUESTION' : 'START A TOPIC';
   const startSlug = lounge ? loungeSlugs[0] : slug;
 
+  // START A TOPIC is never a dead key (2026-11-10 deadlock): a member who may
+  // not post yet is shown the rules, or why, with the one button to the fix.
+  const gate = usePostGate();
   const start = () => {
-    if (!here || here.canStartTopic || lounge) {
-      navigation.navigate('ForumAsk', { slug: startSlug });
-      return;
-    }
-    notify('Before you post', refusalText(here.reason));
+    const intent = { route: 'ForumAsk', params: { slug: startSlug } };
+    gate.press(
+      { slug: startSlug ?? null, action: 'start' },
+      home.value ? { me: home.value.me, rights: home.value.rights } : undefined,
+      () => navigation.navigate(intent.route, intent.params),
+      intent,
+    );
   };
 
+  // The Pro Lounge's approved notice stays for anyone who may only read it,
+  // and a staff-only category says so in place: neither is something to fix.
   const dock = posting.kind === 'pro' ? (
     <LockedNotice action={{ label: 'SEE CREDENTIALS', onPress: seeCredentials }}>
       {`${PRO_LOUNGE_REFUSAL} You can read every thread. Earn a credential to post here.`}
     </LockedNotice>
-  ) : posting.kind === 'refusal' && refusalNeedsProfile(posting.code) ? (
-    <LockedNotice action={{ label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }}>
-      {refusalText(posting.code)}
-    </LockedNotice>
-  ) : posting.kind === 'refusal' ? (
+  ) : posting.kind === 'refusal' && posting.code === 'staff_only' ? (
     <LockedNotice solid>{refusalText(posting.code)}</LockedNotice>
   ) : home.face === 'ready' && slug !== IDEAS_SLUG ? (
     <View style={[st.dock, { paddingBottom: 14 + insets.bottom }]}>
-      <AmberButton label={lounge ? 'START A TOPIC' : startLabel} onPress={start} />
+      <AmberButton label={lounge ? 'START A TOPIC' : startLabel} onPress={start} busy={gate.checking} />
     </View>
   ) : null;
 
@@ -239,6 +241,7 @@ export function ForumCategoryScreen() {
         }
       />
       {dock}
+      {gate.host}
       <MenuPopup
         visible={menu}
         onClose={() => setMenu(false)}

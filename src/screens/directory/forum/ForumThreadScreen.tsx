@@ -81,7 +81,6 @@ import {
   parseAskBody,
   quoteExcerpt,
   readMarkPostId,
-  refusalNeedsProfile,
   RULES_NOT_SAVED,
   asksForRules,
   canStartReply,
@@ -125,10 +124,10 @@ import {
   ThreadHeader,
   ForumEmpty,
   forumStyles,
-  openMyProfile,
   type MenuItem,
 } from './forumBits';
 import { AppealPopup, ReportPopup, RulesPopup } from './forumPopups';
+import { usePostGate } from './PostGate';
 import { LabCard, PostBody } from './PostBody';
 
 type Params = { topicId?: string; welcome?: boolean; jumpTo?: string; unread?: boolean };
@@ -466,6 +465,8 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
   );
   const flags = useForumFlags();
   const [rulesOpen, setRulesOpen] = useState(false);
+  /** Who may reply: one gate for every post control (2026-11-10). */
+  const gate = usePostGate();
 
   /* ── Draft saved ─────────────────────────────────────────────────── */
   const draftName = draftKey({ topicId });
@@ -652,6 +653,8 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
       // The server has no agreement for this account (its rules check is on):
       // I AGREE records it there, then this reply is sent.
       if (asksForRules(r.code)) setRulesOpen(true);
+      // Any other reason this member may not reply: the same popup a tap shows.
+      else gate.refused(r.code, { slug: topic?.categorySlug ?? null, action: 'reply' });
       return;
     }
     // Seen land here: every open box holding this reply drops it, then the id
@@ -723,7 +726,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     } else if (outcomeKind(r.value.state) === 'removed') {
       setSendError(null);
     }
-  }, [allPeople, correcting, draft, draftName, quote, read, readToEnd, refreshLater, reloadAll, topicId, value]);
+  }, [allPeople, correcting, draft, draftName, gate, quote, read, readToEnd, refreshLater, reloadAll, topic, topicId, value]);
 
   /** Past the server's limit: said under the box, and SEND is off (UI-3-01). */
   const replyTooLong = tooLongText(draft.trim().length, 'reply');
@@ -763,6 +766,34 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     };
   }, [topicId]);
   const input = useRef<TextInput>(null);
+
+  /* ── Who may reply (one gate for every post control) ──────────────── */
+  // A member who may not reply yet taps the reply bar and is shown the rules,
+  // or why, with the one button to the fix (2026-11-10 deadlock). Once the
+  // thread reads again with replies open, the box takes the focus (the gate
+  // itself is made above sendNow, which uses it).
+  const focusOnOpen = useRef(false);
+  const replyOpenNow = !!topic && !!value && replyBlock(topic, value.rights).kind === 'open';
+  useEffect(() => {
+    if (!replyOpenNow || !focusOnOpen.current) return undefined;
+    focusOnOpen.current = false;
+    // A tick later: the rules popup that just closed hands the focus back as
+    // it goes (web), and would take it from the box again.
+    const soon = runSoon(() => input.current?.focus());
+    return () => soon.cancel();
+  }, [replyOpenNow]);
+  const pressReply = () => {
+    if (!topic || !value) return;
+    gate.press(
+      { slug: topic.categorySlug, action: 'reply' },
+      { me: null, rights: value.rights ? [value.rights] : null },
+      () => {
+        focusOnOpen.current = true;
+        void reloadAll();
+      },
+      { route: 'ForumThread', params: { topicId } },
+    );
+  };
 
   const block = useCallback(
     (post: ForumPost) => {
@@ -1135,17 +1166,27 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
           <LockedNotice action={{ label: 'SEE CREDENTIALS', onPress: () => navigation.navigate('Awards', { category: 'specialization' }) }}>
             {`${reply.text} You can read every thread. Earn a credential to post here.`}
           </LockedNotice>
+        ) : reply.code === 'locked' || reply.code === 'unpublished' ? (
+          <LockedNotice solid>{reply.text}</LockedNotice>
         ) : (
-          <LockedNotice
-            solid
-            action={
-              refusalNeedsProfile(reply.code)
-                ? { label: 'MY PROFILE', onPress: () => openMyProfile(navigation) }
-                : undefined
-            }
-          >
-            {reply.text}
-          </LockedNotice>
+          // Not a dead box: the tap shows the rules, or why, and the fix.
+          <View style={[st.compWrap, { paddingBottom: 12 + insets.bottom }]}>
+            <Pressable
+              onPress={pressReply}
+              disabled={gate.checking}
+              style={({ pressed }) => [st.comp, pressed && st.pressed]}
+              accessibilityRole="button"
+              accessibilityLabel="Write a reply"
+              accessibilityState={{ busy: gate.checking }}
+            >
+              <View style={[st.inp, st.inpKey]}>
+                <Text style={st.inpKeyText}>Write a reply</Text>
+              </View>
+              <View style={[st.send, st.sendOff]}>
+                <Text style={st.sendText}>↑</Text>
+              </View>
+            </Pressable>
+          </View>
         )
       ) : (
         <View style={[st.compWrap, { paddingBottom: 12 + insets.bottom }]}>
@@ -1256,6 +1297,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         }}
       />
       <RulesPopup visible={rulesOpen} onAccept={acceptRules} onClose={() => setRulesOpen(false)} />
+      {gate.host}
     </KeyboardAvoidingView>
   );
 }
@@ -1570,6 +1612,9 @@ const st = StyleSheet.create({
   send: { width: 40, height: 40, borderRadius: 20, backgroundColor: F.amber, alignItems: 'center', justifyContent: 'center' },
   sendOff: { opacity: 0.45 },
   sendText: { fontFamily: fonts.barlowSemiBold, fontSize: 17, color: '#111' },
+  /** The reply bar of a member who may not reply yet: looks like the box. */
+  inpKey: { minHeight: 40, justifyContent: 'center' },
+  inpKeyText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: F.muted },
   quoting: {
     flexDirection: 'row',
     alignItems: 'center',

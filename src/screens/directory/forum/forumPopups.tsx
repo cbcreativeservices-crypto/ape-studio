@@ -7,7 +7,14 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLatchedPress } from '../../../lib/latch';
 import { fonts } from '../../../theme/tokens';
 import { appealPost, reportPost } from '../../../features/forum/api';
-import { APPEAL_MAX, REPORT_DETAIL_MAX, REPORT_REASONS } from '../../../features/forum/rules';
+import {
+  APPEAL_MAX,
+  BLOCK_SHEET_EYEBROW,
+  BLOCK_SHEET_OK,
+  REPORT_DETAIL_MAX,
+  REPORT_REASONS,
+  type BlockSheet,
+} from '../../../features/forum/rules';
 import { AlsoBlockChip, Chip, ChipWrap } from '../directoryBits';
 import { AmberButton, F, FieldLabel, Popup, PopupScroll, QuietButton } from './forumBits';
 
@@ -29,21 +36,36 @@ const COMMUNITY_RULES = [
   'No pirated software or samples, and no one else’s private details.',
 ];
 
+/** The COMMUNITY RULES link on the forum home (owner 2026-11-10). */
+export const COMMUNITY_RULES_LINK = 'COMMUNITY RULES';
+export const RULES_AGREED_LINE = 'You have agreed to these rules.';
+
 export function RulesPopup({
   visible,
   onAccept,
   onClose,
+  readOnly,
+  agreed,
+  busy,
 }: {
   visible: boolean;
   /** Latched by the host, which goes on to post. */
   onAccept: () => void;
   onClose: () => void;
+  /** Opened from the COMMUNITY RULES link: the same rules, to read. I AGREE
+   *  shows too while the member has not agreed. */
+  readOnly?: boolean;
+  /** Read-only view only: the member has agreed, so CLOSE alone. */
+  agreed?: boolean;
+  /** I AGREE is out: the buttons wait for its answer. */
+  busy?: boolean;
 }) {
+  const reading = !!readOnly;
   return (
-    <Popup visible={visible} onClose={onClose} label="Community rules" closeOnBackdrop={false}>
+    <Popup visible={visible} onClose={busy ? () => {} : onClose} label="Community rules" closeOnBackdrop={reading && !busy}>
       <View style={st.card}>
         <PopupScroll>
-          <Text style={st.eb}>BEFORE YOUR FIRST POST</Text>
+          <Text style={st.eb}>{reading ? COMMUNITY_RULES_LINK : 'BEFORE YOUR FIRST POST'}</Text>
           <Text accessibilityRole="header" style={st.title}>
             Community rules
           </Text>
@@ -53,12 +75,63 @@ export function RulesPopup({
             </Text>
           ))}
           <Text style={st.disclosure}>{AI_DISCLOSURE} {RULES_APPEAL_LINE}</Text>
-          <View style={st.buttons}>
-            <QuietButton label="NOT NOW" onPress={onClose} />
-            <AmberButton label="I AGREE" onPress={onAccept} style={st.grow} />
-          </View>
+          {reading && agreed ? (
+            <>
+              <Text style={st.agreed}>{RULES_AGREED_LINE}</Text>
+              <View style={st.buttons}>
+                <AmberButton label="CLOSE" onPress={onClose} style={st.grow} />
+              </View>
+            </>
+          ) : (
+            <View style={st.buttons}>
+              <QuietButton label="NOT NOW" onPress={onClose} disabled={busy} />
+              <AmberButton label="I AGREE" onPress={onAccept} busy={busy} style={st.grow} />
+            </View>
+          )}
         </PopupScroll>
       </View>
+    </Popup>
+  );
+}
+
+/**
+ * "Why you cannot post", for every reason but the rules (those open the rules
+ * popup): the words from the one table in rules.ts (blockSheet), and one button
+ * straight to the fix, or OK when there is nothing to do but wait.
+ */
+export function BlockedPopup({
+  sheet,
+  onFollow,
+  onClose,
+}: {
+  /** Null keeps it closed. */
+  sheet: BlockSheet | null;
+  onFollow: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <Popup visible={!!sheet} onClose={onClose} label={sheet?.title ?? 'Before you post'}>
+      {sheet ? (
+        <View style={st.card}>
+          <PopupScroll>
+            <Text style={st.eb}>{BLOCK_SHEET_EYEBROW}</Text>
+            <Text accessibilityRole="header" style={st.title}>
+              {sheet.title}
+            </Text>
+            <Text style={st.lead}>{sheet.text}</Text>
+            <View style={st.buttons}>
+              {sheet.button ? (
+                <>
+                  <QuietButton label="NOT NOW" onPress={onClose} />
+                  <AmberButton label={sheet.button.label} onPress={onFollow} style={st.grow} />
+                </>
+              ) : (
+                <AmberButton label={BLOCK_SHEET_OK} onPress={onClose} style={st.grow} />
+              )}
+            </View>
+          </PopupScroll>
+        </View>
+      ) : null}
     </Popup>
   );
 }
@@ -268,6 +341,7 @@ const st = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: F.sub, marginBottom: 10 },
   rule: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: F.body, marginTop: 7 },
   disclosure: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: F.muted, marginTop: 12 },
+  agreed: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: F.green, marginTop: 12 },
   buttons: { flexDirection: 'row', gap: 10, marginTop: 14 },
   grow: { flex: 1 },
   error: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: F.red, marginTop: 10 },
