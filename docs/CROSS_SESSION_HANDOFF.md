@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-09 21:53 · ccode · eade425b
+changed: nightly: live server snapshot 2026-11-09
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-11-08 15:10 · ccode · c80b2557
 changed: must-do D52: Guided Lessons OTA published (c871cf7a) [MD:D52]
 affects other side: nothing (OTA record only).
