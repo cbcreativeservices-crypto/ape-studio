@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-10 03:40 · ccode · 227d2db3
+changed: nightly: live server snapshot 2026-11-10
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-11-10 00:52 · ccode · 27a6f34a
 changed: Forum post gate, Comp A 11-09 FORUM_BLOCKED_GUIDANCE rev 2 [MD:D44]
 - §4a: rules_not_accepted now opens the rules popup from ASK, START A TOPIC / ASK A QUESTION, reply and Discuss this lab. I AGREE records the acceptance, re-reads forum_me and opens the composer.
