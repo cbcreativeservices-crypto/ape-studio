@@ -118,7 +118,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     // Decision 1 (2026-11-08): LEARN names the controls by their on-screen labels
     // (STRING, FRET, NODE, ▶), no longer the old lesson names Pluck tone / Harmonic node.
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', '▶','f = f₀ · 2^(n/12)', 'f = n · f₀', 'λ = 2L', 'THE EXACT NUMBERS', 'MODE', 'STRING', 'FRET', 'NODE'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'this lab is complete', 'EXPLORE'],
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'the check is passed', 'EXPLORE'],
   };
   it('a name list for every guide', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(G).sort());

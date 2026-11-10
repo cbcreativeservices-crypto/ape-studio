@@ -118,7 +118,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     // 'LEARN' dropped: the 2026-11-08 rewrite names only the tabs to switch TO from this page.
     // Lesson names follow the on-screen labels (decision 1): STAGES / RES / CENTER / RATE, not the old long names.
     learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'STAGES', 'CENTER', 'RATE', 'Mix', 'LFO Waveform', 'Stereo spread', 'DEPTH (SWEEP)', 'STATIC', 'SWEEP', 'RES'],
-    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'STAGES', 'RES'],
+    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Check passed', 'LEARN', 'EXPLORE', 'STAGES', 'RES'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(PHASER_SCREEN_GUIDES).sort());

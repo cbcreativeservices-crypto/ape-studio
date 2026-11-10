@@ -288,13 +288,13 @@ describe('4. TRY THIS numbers are what the steps print at their defaults', () =>
     assert.match(src, /turns\[i\] \+= 0\.5 \+ rnd\(\) \* 1\.0;/);
     for (const x of ['SPREAD 0 ¢, PITCH 156 Hz', 'SPREAD 880 ¢, PITCH 137 Hz']) assert.ok(tt('prepare', 3).includes(x), x);
   });
-  it('method.1 tap round the head: the map says lug 2 is highest, SPREAD 195 ¢; lug 6 is its opposite', () => {
+  it('method.1 tap round the head: the map shows the highest lug (number not given, owner 2026-11-09), SPREAD 195 ¢; lug 6 is its opposite', () => {
     const h = E.randomUnevenHead(2400, 8, 0x51ab, 0.5);
     const c = E.lugCents(h);
     assert.equal(c.indexOf(Math.max(...c)) + 1, 2);
     assert.equal(E.spreadCents(h).toFixed(0), '195');
     assert.match(code(`${DIR}/modules/ch3Method.tsx`), /useState<HeadState>\(\(\) => randomUnevenHead\(2400, SPEC\.lugs, 0x51ab, 0\.5\)\)/);
-    for (const x of ['The map says lug 2, SPREAD 195 ¢', 'lug 6']) assert.ok(tt('method', 1).includes(x), x);
+    for (const x of ['The map shows which lug was highest, and SPREAD 195 ¢', 'lug 6']) assert.ok(tt('method', 1).includes(x), x);
   });
   it('whole.1 SET: RESO ↑ → 226 Hz (+3.0 st); BATTER ↑ → 160 Hz', () => {
     const up = Math.round(190 * Math.pow(2, 3 / 12));
@@ -375,7 +375,7 @@ describe('review fixes 2026-10-31 (each vetted against the code)', () => {
   it('Tension and pitch: N/m is explained; the lane runs left–right', () => {
     assert.match(code(`${DIR}/modules/ch1Sound.tsx`), /\$\{v\.toFixed\(0\)\} N\/m`/);
     assert.ok(g('sound', 1).control.join(' ').includes('N/m (newtons per meter — how hard the head is pulled)'));
-    assert.ok(tt('sound', 1).includes('Slide TENSION all the way left: PITCH 147 Hz'));
+    assert.ok(tt('sound', 1).includes('Ride TENSION all the way left: PITCH 147 Hz'));
     for (const [id, gd] of allGuides) assert.doesNotMatch(gd.tryThis.join(' '), /TENSION to the bottom/, id);
   });
   it('Compare head relationships: the guide does not answer WHICH ONE RANG LONGEST? before the learner listens', () => {

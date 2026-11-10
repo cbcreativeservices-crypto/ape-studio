@@ -123,7 +123,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each answer shows its explanation at once, right or wrong, so a wrong pick still teaches.',
-      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'What a ceiling promises about the output, and how GR follows from the input peak and the ceiling.',

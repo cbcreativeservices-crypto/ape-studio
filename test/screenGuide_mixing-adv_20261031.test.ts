@@ -312,7 +312,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(ENDSCREEN, /const title = unreadable \? 'YOUR PROGRESS'/);
     assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \([^;]*pageCreditKeys\.length > 0\) && creditUnreadable\);/);
     assert.match(endCall, /unreadable=\{(unreadable|endUnreadable)\}/);
-    assert.match(ET, /If your saved progress can’t be read, it says YOUR PROGRESS/);
+    // The guide no longer names this rare title (owner 2026-11-09, HOLD 3).
+    assert.doesNotMatch(ET, /YOUR PROGRESS/);
   });
   it('credit mode: the lab passes pageCreditKeys, so rows read ✓ CREDITED (✓ DONE for a guest)', () => {
     assert.match(SCREEN, /<PagedLab[^>]*pageCreditKeys=\{PAGE_KEYS\}[^>]*\/>/);

@@ -132,7 +132,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     ],
     changes: [
       'Every explanation gives the reason, right or wrong, so a wrong pick still shows you how FM behaves.',
-      'Get all four right and the lab is complete.',
+      'Get all four right and the check is passed.',
       'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],
     teaches: [
@@ -168,8 +168,8 @@ export const FM_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'The check counts once every answer is right. If you’re signed in, it’s saved to your account once, and you never take it twice.',
-    'If you’re signed out, the line under the title says whether signing in can still keep it. Practicing again never takes it away.',
+    'The check counts once every answer is right.',
+    'If you’re signed out, the line under the title says whether signing in can still keep it.',
   ],
   teaches: [
     'An FM tone is built from a carrier, a modulator and the sidebands they make. The SIDEBAND SPECTRUM on EXPLORE shows each one as a stick.',

@@ -146,7 +146,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['CHECK YOUR UNDERSTANDING', CHECK_UI],
       ['CORRECT', CHECK_UI],
       ['NOT QUITE — TRY ANOTHER', CHECK_UI],
-      ['Lab complete', CHECK_UI],
+      ['Check passed', CHECK_UI],
       ['LEARN', SHELL],
       ['EXPLORE', SHELL],
       // decision 6 (2026-11-08): the slope and Q steps point to where LEARN teaches them; the HIGH-PASS TYPE

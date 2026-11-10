@@ -710,7 +710,7 @@ export const ADVANCED_MIXING_END_GUIDE: ScreenGuide = {
     start: 'Read the pages still listed and tap one to jump to it. Or tap REVIEW ▾ to reopen a finished page and practice it again.',
   },
   seeing: [
-    'This is WHAT’S LEFT. Once every page is done, the title changes to LAB COMPLETE. If your saved progress can’t be read, it says YOUR PROGRESS.',
+    'This is WHAT’S LEFT. Once every page is done, the title changes to LAB COMPLETE.',
     'Each page you haven’t finished is listed by number and name. It counts once the goal chips at the foot of that page are done.',
     'Finished pages fold into one ✓ CREDITED line, or ✓ DONE if you’re not signed in.',
   ],

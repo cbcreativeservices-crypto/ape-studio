@@ -136,7 +136,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     changes: [
       'Each answer shows its explanation at once, right or wrong, so a wrong pick about ratio or attack still teaches you something.',
-      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'How a ratio shrinks the dB that go over the threshold, and what a compressor does to sound that stays under it.',

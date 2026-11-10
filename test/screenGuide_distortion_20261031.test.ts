@@ -148,7 +148,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['no score', UNDERSTAND], ['✓', UNDERSTAND],
       // 'certificate and program' dropped: credit bookkeeping left student text (decision 5, 2026-11-08);
       // HARD CLIP / TUBE (ASYM) dropped: the CHECK no longer walks to that comparison (decision 6) — see section 4.
-      ['this lab is complete', UNDERSTAND, 'the lab is complete'],
+      ['the check is passed', UNDERSTAND, 'the check is passed'],
       ['50% PARALLEL', DIST], ['MIX', DIST], ['COMMON MISTAKES', SHEET],
     ],
   };

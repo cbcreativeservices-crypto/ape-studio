@@ -120,7 +120,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'RATE', 'DEPTH', 'DELAY', 'MIX', '100% = VIBRATO', 'DEEP', '▶'],
     // '100% = VIBRATO' / 'DELAY' dropped: the on-screen label IS the full-wet answer, so the CHECK no
     // longer walks to it (decision 6) — see the negative check in section 6.
-    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'MIX', 'CONTROLS', 'RATE'],
+    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Check passed', 'LEARN', 'EXPLORE', 'MIX', 'CONTROLS', 'RATE'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(CHORUS_SCREEN_GUIDES).sort());

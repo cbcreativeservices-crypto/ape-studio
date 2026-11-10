@@ -290,7 +290,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Each explanation gives the reason, right or wrong, so every answer teaches something.',
-      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'A sound is described by stages, measured by its onset and its levels, and heard through a room.',

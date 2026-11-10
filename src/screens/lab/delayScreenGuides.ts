@@ -133,7 +133,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
       'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work out the answer.',
-      'Get all four right and the lab is complete: a green card says so.',
+      'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [
       'On a delay, TIME and FEEDBACK each shape the repeats in a different way.',

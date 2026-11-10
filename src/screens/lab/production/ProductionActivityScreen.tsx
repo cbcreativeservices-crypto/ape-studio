@@ -175,7 +175,7 @@ export function ProductionActivityScreen() {
           accessibilityRole="button"
           accessibilityLabel={`Open ${stage.title} and work on the exercise`}
         >
-          <Text style={styles.openBtnText}>{done ? 'REVIEW YOUR WORK' : 'OPEN THE PLAN AND FIX IT'}</Text>
+          <Text style={styles.openBtnText}>{done ? 'REVIEW YOUR WORK' : lab === 'postprod' ? 'OPEN THE PROJECT AND FIX IT' : 'OPEN THE PLAN AND FIX IT'}</Text>
         </Pressable>
         <Text style={styles.openHint}>
           You work on the real stage screen, with every check live. Come back here to see how you are doing.

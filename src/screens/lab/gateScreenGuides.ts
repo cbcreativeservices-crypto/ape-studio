@@ -137,7 +137,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each answer shows its explanation at once, right or wrong, so a wrong pick about range or hold still teaches you something.',
-      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'What a gate does to sound on each side of the threshold, and how RANGE changes what you hear when it closes.',

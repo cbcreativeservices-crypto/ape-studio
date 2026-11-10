@@ -559,7 +559,7 @@ export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
     'Tap the answer you think is right. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
   ],
   changes: [
-    'Each explanation points back to something you can see in the studios, so a wrong pick shows you where to look. Answer every question correctly and the lab is complete. A wrong answer costs nothing, and there is no score.',
+    'Each explanation points back to something you can see in the studios, so a wrong pick shows you where to look. Answer every question correctly and the check is passed. A wrong answer costs nothing, and there is no score.',
   ],
   teaches: [
     'What decides which figure appears on a plate at a given tone.',

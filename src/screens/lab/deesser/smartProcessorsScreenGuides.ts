@@ -48,7 +48,7 @@ export const SMART_PROCESSORS_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'Nothing on this page moves. In the de-esser lab nothing plays either: you read a drawn spoken phrase, so its dB numbers are relative, not measured sound levels.',
-    'Each right answer shows a ✓ and its explanation. Get all five right and the lab is complete.',
+    'Each right answer shows a ✓ and its explanation. Get all five right and the check is passed.',
   ],
   teaches: [
     'What makes a processor “smart”: it listens to the sound first, then decides when to act and how much.',

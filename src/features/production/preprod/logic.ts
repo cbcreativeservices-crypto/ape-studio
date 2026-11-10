@@ -720,7 +720,7 @@ registerActivityChecks({
     },
     {
       id: 'named-approver',
-      label: "One named person replaces 'the board'",
+      label: 'One named person replaces ‘the board’',
       met: (c) => {
         const a = str(c.get('deliver', 'final_approver'));
         return a.length > 0 && !namesMoreThanOne(a) && !/board|committee|team/i.test(a);

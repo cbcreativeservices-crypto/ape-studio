@@ -542,7 +542,7 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /\{ route: 'SpeechLab', key: 'tr_speech', completion: 'understanding' \}/);
     assert.ok(END.changes.join(' ').includes('a passed check stays done'));
-    assert.ok(GUIDES.check.changes.join(' ').includes('Get all four right and the lab is complete'));
+    assert.ok(GUIDES.check.changes.join(' ').includes('Get all four right and the check is passed'));
   });
 
   it('review fixes (2026-10-31): big title vs header, YOUR PROGRESS, check row name, REVIEW only lists done rows, every page in teaches', () => {

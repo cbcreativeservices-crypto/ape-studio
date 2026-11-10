@@ -113,7 +113,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each right answer locks its card green.',
-      'Get all four right and the lab is complete.',
+      'Get all four right and the check is passed.',
     ],
     teaches: [
       'How cents divide a semitone, and why retune speed is a length of time.',

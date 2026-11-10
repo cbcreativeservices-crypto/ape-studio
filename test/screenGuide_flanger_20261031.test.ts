@@ -120,7 +120,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     // no longer names the LEARN tab itself. The lesson-only names below are in the old lesson AND Part A.
     learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'LFO Waveform', 'Stereo width', 'Through-Zero', 'TZF', 'ADV', 'CENTER', 'SWEEP', 'FDBK', '50% EVEN', 'RATE', 'DEPTH', '▶'],
     // 'SOURCE' dropped: the CHECK TRY THIS no longer walks to the SOURCE list (decision 6, 2026-11-08).
-    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Lab complete', 'LEARN', 'EXPLORE', 'CENTER', 'FDBK', 'DESIGNED RESPONSE', 'COMMON MISTAKES', '50% EVEN'],
+    check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Check passed', 'LEARN', 'EXPLORE', 'CENTER', 'FDBK', 'DESIGNED RESPONSE', 'COMMON MISTAKES', '50% EVEN'],
   };
   it('a name list for every screen', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(FLANGER_SCREEN_GUIDES).sort());

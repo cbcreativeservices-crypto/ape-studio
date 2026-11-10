@@ -105,6 +105,7 @@ const SWEEPS = [
 ] as const;
 const DELAYS = [
   { key: 0, label: 'DELAY OFF' },
+  { key: 30, label: '30 ms' },
   { key: 120, label: '120 ms' },
   { key: 400, label: '400 ms' },
 ] as const;

@@ -18,7 +18,7 @@ export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb
   { id: 'diffraction', num: '5', title: 'Diffraction Laboratory', blurb: 'Lows wrap around barriers; highs cast shadows. Wavelength intuition.' },
   { id: 'interference', num: '6', title: 'Interference Laboratory', blurb: 'Two sources: constructive, destructive, nulls and lobes — live.' },
   { id: 'comb', num: '7', title: 'Comb Filtering Laboratory', blurb: 'One reflection + the direct sound. "Move the microphone six inches."' },
-  { id: 'standing', num: '8', title: 'Standing Wave Laboratory', blurb: 'Room modes: axial, tangential, oblique — pressure maps you can walk through.' },
+  { id: 'standing', num: '8', title: 'Standing Wave Laboratory', blurb: 'Room modes: axial and tangential — pressure maps you can walk through.' },
   { id: 'coverage', num: '9', title: 'Loudspeaker Coverage', blurb: 'Directivity narrows with frequency — aim the pattern, not the cabinet.' },
   { id: 'linearray', num: '10', title: 'Line Array Laboratory', blurb: 'Splay, box count and height shape coverage — coupling lows, beaming highs.' },
   { id: 'delayalign', num: '11', title: 'Delay Alignment', blurb: 'Sub + main: watch the null vanish as the wavefronts align.' },

@@ -111,8 +111,8 @@ export function LabUnderstandingCheck({
       <Text style={s.title}>{labTitle}</Text>
       <Text style={s.lead}>
         {done
-          ? 'Every question answered correctly — this lab is complete.'
-          : `Answer all ${questions.length} correctly to complete this lab. Get one wrong and you can try it again straight away; nothing is lost and there is no score.`}
+          ? 'Every question answered correctly — the check is passed.'
+          : `Answer all ${questions.length} correctly to pass the check. Get one wrong and you can try it again straight away; nothing is lost and there is no score.`}
       </Text>
 
       {!done ? (
@@ -167,8 +167,7 @@ export function LabUnderstandingCheck({
       {done ? (
         <View style={s.doneCard}>
           <Text style={s.doneText}>
-            Lab complete. It counts toward every certificate and program that requires it — you never need
-            to take it twice.
+            Check passed.
           </Text>
         </View>
       ) : null}

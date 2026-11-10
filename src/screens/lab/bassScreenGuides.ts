@@ -149,7 +149,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING asks four questions: the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓.',
       'A ✓ replaces a question’s number once you answer it right.',
-      'When every answer is right, it reads “this lab is complete”.',
+      'When every answer is right, it reads “the check is passed”.',
     ],
     control: [
       'Tap an answer. If it’s right, you see CORRECT and why. If not, you see NOT QUITE — TRY ANOTHER with the reason, and you can pick again straight away.',
@@ -157,7 +157,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
     ],
     changes: [
       'A right answer stays right even when you switch to LEARN or EXPLORE, so you can test an idea on the fretboard and return.',
-      'Get all four right and the lab is complete. A pass is kept: later visits show the check as passed.',
+      'Get all four right and the check is passed. A pass is kept: later visits show the check as passed.',
     ],
     teaches: [
       'How the length of a vibrating string sets its pitch, and which simple fractions of a string make musical intervals.',

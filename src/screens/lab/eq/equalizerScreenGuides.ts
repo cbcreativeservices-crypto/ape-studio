@@ -120,7 +120,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     changes: [
       'The questions cover Q and width, clearing low rumble, graphic against parametric, slope, and cutting before boosting.',
-      'Get all five right and the lab is complete; the card reads Lab complete. The EQ Lab menu asks the same five, so passing here completes the EQ Lab too.',
+      'Get all five right and the card reads Check passed. The EQ Lab menu asks the same five, so passing here completes the EQ Lab too.',
     ],
     teaches: [
       'How the Q number relates to how wide a band reaches, and which filter shape clears low rumble.',
