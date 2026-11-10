@@ -16,7 +16,7 @@
  * SECTION (callouts at 10 units ≈ 10 pt on a 390 phone; FULL SCREEN capable).
  */
 import { useMemo } from 'react';
-import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import type { CiCableClass } from '../data/cableTypes';
 import { Callout, INK, shade, tint as lighten, useUid } from '../svgArt';
 
@@ -24,6 +24,9 @@ import { Callout, INK, shade, tint as lighten, useUid } from '../svgArt';
 
 type Cond = { x: number; y: number; r: number; ins: string; cu?: number; stripe?: string; bare?: boolean };
 type Fibre = { x: number; y: number; r: number; buf: string };
+/** Stadium centred at (x, y), lying along x: end-circle centres ±half,
+ *  radius r to the foil's centreline. metalOut = foil applied aluminum out. */
+type PairWrap = { x: number; y: number; half: number; r: number; metalOut?: boolean };
 type Spec = {
   od: number;
   /** jacket wall thickness */
@@ -38,6 +41,9 @@ type Spec = {
   conds?: Cond[];
   /** individually-shielded pair groups: centre + foil radius */
   pairFoils?: { x: number; y: number; r: number; a?: string; b?: string }[];
+  /** a foil tape wrapped snugly round ONE pair (a stadium end-on), its own
+   *  conductors and drain listed in `conds` */
+  pairWraps?: PairWrap[];
   fibres?: Fibre[];
   strength?: number;
   labels: { text: string; at: [number, number] }[];
@@ -47,6 +53,35 @@ type Spec = {
 const CU = '#c9824a';
 const TIN = '#c7ccd2';
 const FOIL = '#d9dde2';
+/** The polyester film the foil is laminated to (the non-conductive face). */
+const FILM = '#7f8790';
+/** Hairline round a bare tinned drain, so it reads as its own wire where it
+ *  presses on the (equally bright) metal face of the foil. */
+const DRAIN_EDGE = '#6f757d';
+
+/*
+ * DRAIN WIRES (owner 2026-11-09). In these foil + drain constructions the
+ * foil is wrapped ALUMINUM SIDE IN and the bare drain runs inside it, beside
+ * the pair, "in intimate contact with the Beldfoil shield throughout its
+ * length" (Belden technical bulletin T/8-7; Belden 9451: "Drain wire is
+ * inside foil shield"). So each drain is drawn pressed against the foil's
+ * inner (metal) face — never floating in the cavity, never outside the foil.
+ */
+/** Drawn foil thickness, mm (the ring's stroke in the labelled figure). */
+const FOIL_T = 0.1;
+/** Distance from the foil's centre to a drain of radius `dr` that touches
+ *  the inner face of a foil of radius `fr` (a hair of overlap so no seam
+ *  of background shows between them at any zoom). */
+const drainSeat = (fr: number, dr: number) => fr - FOIL_T / 2 - dr + 0.01;
+/** A foiled pair's drain: radius and centre, below the pair on the foil. */
+const PAIR_DRAIN_R = 0.14;
+function pairDrain(p: { x: number; y: number; r: number }) {
+  const dr = PAIR_DRAIN_R * p.r;
+  return { x: p.x, y: p.y + drainSeat(p.r, dr), r: dr };
+}
+const LINE_FOIL_R = 1.36;
+const LINE_DRAIN_R = 0.22;
+const LINE_DRAIN_Y = drainSeat(LINE_FOIL_R, LINE_DRAIN_R);
 
 function pair(cx: number, cy: number, r: number, a: string, b: string, angle = 0, stripeA?: string): Cond[] {
   const c = Math.cos(angle) * r;
@@ -85,6 +120,37 @@ function cat6(od: number): Spec {
   };
 }
 
+/* The 2-pair control cable (see SECTION.control for the datasheet values). */
+const CONTROL = (() => {
+  const ins = 0.6; // Ø1.2 insulated
+  const cu = 0.38; // 22 AWG 7×30 ≈ Ø0.76
+  const fr = ins + FOIL_T / 2; // foil centreline round each pair
+  const py = ins + FOIL_T; // the two foiled pairs stacked, foil touching foil
+  const dr = 0.305; // 24 AWG 7×32 ≈ Ø0.61
+  // each drain nests in a groove beside the pairs, pressed on the foil's
+  // OUTER (metal) face: its centre sits (foil outer face + dr) from the end
+  // of the pair's foil, less a hair of overlap
+  const dx = ins + Math.sqrt((py + dr - 0.01) ** 2 - py ** 2);
+  const wraps: PairWrap[] = [
+    { x: 0, y: -py, half: ins, r: fr, metalOut: true },
+    { x: 0, y: py, half: ins, r: fr, metalOut: true },
+  ];
+  const conds: Cond[] = [
+    { x: -ins, y: -py, r: ins, cu, ins: '#1b1c20' },
+    { x: ins, y: -py, r: ins, cu, ins: '#c83b32' },
+    { x: -ins, y: py, r: ins, cu, ins: WHITE },
+    { x: ins, y: py, r: ins, cu, ins: '#2f9a44' },
+  ];
+  const drains = [
+    { x: -dx, y: 0, r: dr, ins: CU, bare: true },
+    { x: dx, y: 0, r: dr, ins: CU, bare: true },
+  ];
+  return { od: 4.27, wall: 0.51, wraps, conds, drains };
+})();
+const MULTI_PAIRS = ring(4, 1.95, Math.PI / 4).map((p) => ({ x: p.x, y: p.y, r: 1.36 }));
+/** Where a callout leader lands on a drain (slightly right of its centre). */
+const onDrain = (d: { x: number; y: number; r: number }): [number, number] => [d.x + d.r * 0.55, d.y];
+
 export const SECTION: Record<CiCableClass, Spec> = {
   mic: {
     od: 6.5,
@@ -102,13 +168,14 @@ export const SECTION: Record<CiCableClass, Spec> = {
   line: {
     od: 4.8,
     wall: 0.95,
-    shield: { kind: 'foil', r: 1.36 },
-    conds: [...pair(0, -0.12, 0.6, '#1b1c20', '#c83b32'), { x: 0, y: 0.92, r: 0.22, ins: CU, bare: true }],
+    shield: { kind: 'foil', r: LINE_FOIL_R },
+    // the drain lies inside the foil, pressed against its metal face, below the pair
+    conds: [...pair(0, -0.12, 0.6, '#1b1c20', '#c83b32'), { x: 0, y: LINE_DRAIN_Y, r: LINE_DRAIN_R, ins: CU, bare: true }],
     labels: [
       { text: 'PVC JACKET', at: [2.1, -1.1] },
       { text: 'FOIL SHIELD', at: [1.3, -0.45] },
       { text: 'TWISTED PAIR', at: [0.6, -0.12] },
-      { text: 'DRAIN WIRE', at: [0.15, 0.95] },
+      { text: 'DRAIN WIRE', at: onDrain({ x: 0, y: LINE_DRAIN_Y, r: LINE_DRAIN_R }) },
     ],
   },
   unbalanced: {
@@ -210,31 +277,38 @@ export const SECTION: Record<CiCableClass, Spec> = {
     ],
     note: 'RG-6 — 75 Ω; GEOMETRY + DIELECTRIC SET THE IMPEDANCE',
   },
+  // 2-pair individually foiled audio/control/instrument cable, drawn from the
+  // maker's datasheet (owner 2026-11-09: "correct for reference"): 22 AWG
+  // 7×30 tinned copper (Ø0.76), polypropylene insulation 0.23 wall (Ø1.2),
+  // pairs Black & Red / Green & White, a foil tape on EACH pair applied
+  // FOIL-OUT ("foil-out tape on each pair, one drain wire"), so each pair's
+  // bare 24 AWG 7×32 tinned drain (Ø0.61) runs OUTSIDE its foil, on the metal;
+  // no overall shield; PVC jacket 0.51 wall, OD 0.160–0.168 in (4.06–4.27).
+  // The two foiled pairs are cabled together; the drains lie in the grooves
+  // beside them. Nothing else (no filler, no rip cord) is listed, so none is drawn.
   control: {
-    od: 5.8,
-    wall: 0.75,
-    shield: { kind: 'braid', r: 2.05 },
-    pairFoils: [
-      { x: -0.9, y: 0, r: 0.88, a: '#1b1c20', b: '#c83b32' },
-      { x: 0.9, y: 0, r: 0.88, a: WHITE, b: '#2f9a44' },
-    ],
+    od: CONTROL.od,
+    wall: CONTROL.wall,
+    pairWraps: CONTROL.wraps,
+    conds: [...CONTROL.conds, ...CONTROL.drains],
     labels: [
-      { text: 'JACKET', at: [2.6, -1.2] },
-      { text: 'OVERALL BRAID', at: [1.35, -1.55] },
-      { text: '2 FOILED PAIRS', at: [0.9, -0.88] },
-      { text: 'DRAIN WIRE', at: [0.9, 0.53] },
+      { text: 'PVC JACKET', at: [1.21, -1.44] },
+      { text: 'FOIL, METAL SIDE OUT', at: [0.3, -1.37] },
+      { text: '2 PAIRS · 22 AWG', at: [0.75, -0.7] },
+      { text: 'DRAIN WIRE · 1 PER PAIR', at: onDrain(CONTROL.drains[1]) },
     ],
+    note: 'NO OVERALL SHIELD — EACH PAIR HAS ITS OWN',
   },
   multipair: {
     od: 9.5,
     wall: 1.0,
     shield: { kind: 'braid', r: 3.6 },
-    pairFoils: ring(4, 1.95, Math.PI / 4).map((p) => ({ x: p.x, y: p.y, r: 1.36 })),
+    pairFoils: MULTI_PAIRS,
     labels: [
       { text: 'OVERALL JACKET', at: [4.3, -1.9] },
       { text: 'OVERALL BRAID', at: [3.3, -1.45] },
       { text: 'EACH PAIR FOILED', at: [2.66, 0.91] },
-      { text: 'ONE DRAIN PER PAIR', at: [1.38, 2.2] },
+      { text: 'ONE DRAIN PER PAIR', at: onDrain(pairDrain(MULTI_PAIRS[0])) },
     ],
     note: 'ONE SHIELDED PAIR PER CHANNEL',
   },
@@ -291,6 +365,23 @@ export const SECTION: Record<CiCableClass, Spec> = {
 };
 
 /* ── the drawing ───────────────────────────────────────────────────────── */
+
+/**
+ * A foil shield end-on, `w` wide at radius `r` (drawing units). In the
+ * labelled figure it is two-tone: the bright aluminum face on the INSIDE
+ * (where the drain touches it) and the darker polyester film on the outside.
+ * The swatch keeps one tone (too small to split).
+ */
+function FoilRing({ cx, cy, r, w, fine, fill = 'none' }: { cx: number; cy: number; r: number; w: number; fine: boolean; fill?: string }) {
+  if (!fine) return <Circle cx={cx} cy={cy} r={r} fill={fill} stroke={FOIL} strokeWidth={w} />;
+  return (
+    <G>
+      {fill !== 'none' ? <Circle cx={cx} cy={cy} r={r} fill={fill} /> : null}
+      <Circle cx={cx} cy={cy} r={r + w / 4} fill="none" stroke={FILM} strokeWidth={w / 2} />
+      <Circle cx={cx} cy={cy} r={r - w / 4} fill="none" stroke={FOIL} strokeWidth={w / 2} />
+    </G>
+  );
+}
 
 /** Draws the section centred at (cx, cy) with outside radius R (drawing units). */
 export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCableClass; tint: string; cx: number; cy: number; R: number; fine?: boolean }) {
@@ -378,8 +469,12 @@ export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCab
           ) : null}
         </G>
       ) : null}
-      {sp.shield && (sp.shield.kind === 'foil' || sp.shield.kind === 'foil+braid') ? (
-        <Circle cx={cx} cy={cy} r={(sp.shield.kind === 'foil+braid' ? sp.shield.r - 0.18 : sp.shield.r) * s} fill="none" stroke={FOIL} strokeWidth={Math.max(hair * 1.4, 0.1 * s)} />
+      {sp.shield && sp.shield.kind === 'foil' ? (
+        // foil + drain (the line pair): aluminum side in, drain inside against it
+        <FoilRing cx={cx} cy={cy} r={sp.shield.r * s} w={Math.max(hair * 1.4, FOIL_T * s)} fine={fine} />
+      ) : null}
+      {sp.shield && sp.shield.kind === 'foil+braid' ? (
+        <Circle cx={cx} cy={cy} r={(sp.shield.r - 0.18) * s} fill="none" stroke={FOIL} strokeWidth={Math.max(hair * 1.4, 0.1 * s)} />
       ) : null}
       {braid ? (fine ? <Path d={braid} fill={CU} stroke="#6d3f1d" strokeWidth={hair * 0.4} /> : <Circle cx={cx} cy={cy} r={sp.shield!.r * s} fill="none" stroke={CU} strokeWidth={0.22 * s} />) : null}
       {sp.dielectric ? (
@@ -409,9 +504,10 @@ export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCab
         const off = 0.345 * p.r;
         const a = p.a ?? WHITE;
         const b = p.b ?? PAIR_COLORS[i % PAIR_COLORS.length];
+        const dn = pairDrain(p);
         return (
           <G key={`p${i}`}>
-            <Circle cx={X(p.x)} cy={Y(p.y)} r={p.r * s} fill="#101013" stroke={FOIL} strokeWidth={Math.max(hair, 0.1 * s)} />
+            <FoilRing cx={X(p.x)} cy={Y(p.y)} r={p.r * s} w={Math.max(hair, FOIL_T * s)} fine={fine} fill="#101013" />
             <Circle cx={X(p.x - off)} cy={Y(p.y + off * 0.24)} r={cr * s} fill={a} stroke="#5a5d64" strokeWidth={hair * 0.5} />
             <Circle cx={X(p.x + off)} cy={Y(p.y - off * 0.24)} r={cr * s} fill={b} stroke="#5a5d64" strokeWidth={hair * 0.5} />
             {fine ? (
@@ -420,10 +516,14 @@ export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCab
                 <Circle cx={X(p.x + off)} cy={Y(p.y - off * 0.24)} r={cr * 0.4 * s} fill={`url(#${id}c)`} />
               </>
             ) : null}
-            <Circle cx={X(p.x)} cy={Y(p.y + 0.6 * p.r)} r={0.14 * p.r * s} fill={TIN} />
+            {/* the pair's bare drain, inside the foil and pressed against its metal face */}
+            <Circle cx={X(dn.x)} cy={Y(dn.y)} r={dn.r * s} fill={fine ? `url(#${id}d)` : TIN} stroke={fine ? DRAIN_EDGE : 'none'} strokeWidth={hair * 0.45} />
           </G>
         );
       })}
+      {sp.pairWraps?.map((p, i) => (
+        <WrapFoil key={`w${i}`} x={X(p.x - p.half - p.r)} y={Y(p.y - p.r)} wd={(2 * p.half + 2 * p.r) * s} ht={2 * p.r * s} w={Math.max(hair, FOIL_T * s)} metalOut={!!p.metalOut} fine={fine} />
+      ))}
       {sp.strength ? <Circle cx={cx} cy={cy} r={sp.strength * s} fill="#3e5f45" stroke="#1d2d20" strokeWidth={hair} /> : null}
       {sp.fibres?.map((f, i) => (
         <G key={`fb${i}`}>
@@ -449,11 +549,38 @@ export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCab
                 <Circle cx={X(c.x - c.r * 0.3)} cy={Y(c.y - c.r * 0.35)} r={c.r * s * 0.35} fill="rgba(255,255,255,0.18)" />
               </>
             )}
-            <Circle cx={X(c.x)} cy={Y(c.y)} r={cu * s} fill={c.bare ? `url(#${id}d)` : `url(#${id}c)`} />
+            <Circle
+              cx={X(c.x)}
+              cy={Y(c.y)}
+              r={cu * s}
+              fill={c.bare ? `url(#${id}d)` : `url(#${id}c)`}
+              stroke={c.bare && fine ? DRAIN_EDGE : 'none'}
+              strokeWidth={hair * 0.45}
+            />
             {fine && cu * s > 2.2 ? <Path d={strands(X(c.x), Y(c.y), cu * s * 0.95)} fill="none" stroke="rgba(80,40,15,0.55)" strokeWidth={hair * 0.5} /> : null}
           </G>
         );
       })}
+    </G>
+  );
+}
+
+/**
+ * A foil tape round ONE pair, end-on: a stadium (x, y = its box's top-left,
+ * wd × ht, fully rounded ends), `w` thick on its centreline. Two-tone in the
+ * labelled figure: the bright aluminum on the side the drain touches (out
+ * for a foil-out tape), the darker polyester film on the other.
+ */
+function WrapFoil({ x, y, wd, ht, w, metalOut, fine }: { x: number; y: number; wd: number; ht: number; w: number; metalOut: boolean; fine: boolean }) {
+  const ring = (grow: number, stroke: string, sw: number, fill = 'none') => (
+    <Rect x={x - grow} y={y - grow} width={wd + 2 * grow} height={ht + 2 * grow} rx={ht / 2 + grow} ry={ht / 2 + grow} fill={fill} stroke={stroke} strokeWidth={sw} />
+  );
+  if (!fine) return ring(0, FOIL, w, '#101013');
+  return (
+    <G>
+      {ring(0, 'none', 0, '#101013')}
+      {ring(w / 4, metalOut ? FOIL : FILM, w / 2)}
+      {ring(-w / 4, metalOut ? FILM : FOIL, w / 2)}
     </G>
   );
 }
