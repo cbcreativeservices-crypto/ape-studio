@@ -413,7 +413,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Each explanation gives the reason, right or wrong, so every answer teaches something.',
-      'Get all four right and the lab is complete. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'Sibilance and the three talker problems here each have a cause you can name, and a first fix.',

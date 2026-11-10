@@ -290,10 +290,10 @@ export function runProductionGuideSuite(opts: {
     });
     it('the stage, home, exercise and packet screens really carry the names the guides use', () => {
       const names = [
-        'WHY THIS MATTERS', 'SEE THEM ↓', 'WHAT THIS PLAN IS STILL MISSING', '+ ADD ROW', 'Not applicable to this project', 'UNDO', 'SAVE',
-        "WHAT'S LEFT IN THE WHOLE PLAN", 'START A PROJECT', '+ NEW PROJECT', 'DUPLICATE', 'DELETE', 'PICK UP WHERE YOU LEFT OFF', 'NEXT OUTSTANDING',
+        'WHY THIS MATTERS', 'SEE THEM ↓', 'WHAT THIS PLAN IS STILL MISSING', 'WHAT THIS PROJECT IS STILL MISSING', '+ ADD ROW', 'Not applicable to this project', 'UNDO', 'SAVE',
+        "WHAT'S LEFT IN THE WHOLE PLAN", "WHAT'S LEFT IN THE WHOLE PROJECT", 'START A PROJECT', '+ NEW PROJECT', 'DUPLICATE', 'DELETE', 'PICK UP WHERE YOU LEFT OFF', 'NEXT OUTSTANDING',
         'PRODUCTION READINESS', 'EXERCISES', 'ACCEPT A CONDITION', 'RECORD IT', 'PROCEEDING WITH ACCEPTED CONDITIONS', 'ONE THING BLOCKS THIS PROJECT',
-        'OPEN THE PLAN AND FIX IT', 'REVIEW YOUR WORK', 'READ THE REASONING', 'READ THE DEBRIEF', 'START AGAIN', 'SOLVED', ' · EXERCISE',
+        'OPEN THE PLAN AND FIX IT', 'OPEN THE PROJECT AND FIX IT', 'REVIEW YOUR WORK', 'READ THE REASONING', 'READ THE DEBRIEF', 'START AGAIN', 'SOLVED', ' · EXERCISE',
         "WHAT'S LEFT", 'SHARE AS PDF', 'MUST BE RESOLVED BEFORE PROCEEDING', 'ACCEPTED CONDITIONS', "'Revision'", "'Revision date'", "'Prepared by'",
         "'Status'", '0 — not exported yet', 'Unattributed', 'Not decided — required', 'Not applicable —', "'Blocker'", "'Required question'", "'To look at'",
         'BLOCKED', '/ 100',
@@ -302,14 +302,15 @@ export function runProductionGuideSuite(opts: {
       // Built on screen from the lab's data, so checked against the data.
       assert.match(code(SCREENS.home), /`THE \$\{NUMBER_WORD\[def\.outline\.length\] \?\? def\.outline\.length\} STAGES`/);
       assert.match(code(SCREENS.home), /`OPEN THE \$\{def\.packetName\.toUpperCase\(\)\}`/);
-      assert.match(code(SCREENS.stage), /`WHAT'S LEFT IN THE WHOLE PLAN · \$\{\(labDef\(lab\)\?\.packetName \?\? 'packet'\)\.toUpperCase\(\)\} ›`/);
+      // Post-Production says PROJECT, Pre-Production PLAN (owner 2026-11-09).
+      assert.match(code(SCREENS.stage), /`\$\{lab === 'postprod' \? "WHAT'S LEFT IN THE WHOLE PROJECT" : "WHAT'S LEFT IN THE WHOLE PLAN"\} · \$\{\(labDef\(lab\)\?\.packetName \?\? 'packet'\)\.toUpperCase\(\)\} ›`/);
       const nWord = ({ 6: 'SIX', 8: 'EIGHT' } as Record<number, string>)[def.outline.length];
       for (const id of ['start', 'home'] as const) {
         const t = textOf(g[id]);
         if (id === 'home' || t.includes('STAGES')) assert.ok(t.includes(`THE ${nWord} STAGES`), `${id}: THE ${nWord} STAGES`);
       }
       assert.ok(textOf(g.home).includes(`OPEN THE ${def.packetName.toUpperCase()}`));
-      for (const st of Object.values(g.stages as Record<string, Guide>)) assert.ok(st.control.join(' ').includes(`WHAT’S LEFT IN THE WHOLE PLAN · ${def.packetName.toUpperCase()}`));
+      for (const st of Object.values(g.stages as Record<string, Guide>)) assert.ok(st.control.join(' ').includes(`WHAT’S LEFT IN THE WHOLE ${lab === 'postprod' ? 'PROJECT' : 'PLAN'} · ${def.packetName.toUpperCase()}`));
       // The verdict words each guide uses are this lab's.
       const V = VERDICT_LABEL[lab];
       assert.ok(textOf(g.home).includes(V.not_ready) && textOf(g.home).includes(V.ready_with_conditions));

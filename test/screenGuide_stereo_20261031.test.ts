@@ -135,7 +135,7 @@ describe('3. each guide quotes the screen’s real names', () => {
     },
     check: {
       in: SHELL,
-      names: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Every question answered correctly — this lab is complete.'],
+      names: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Every question answered correctly — the check is passed.'],
     },
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));

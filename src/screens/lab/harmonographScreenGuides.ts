@@ -112,7 +112,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'Tap an answer. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
     ],
     changes: [
-      'Get all four right and the lab is complete. A wrong answer costs nothing, and there is no score.',
+      'Get all four right and the check is passed. A wrong answer costs nothing, and there is no score.',
     ],
     teaches: [
       'How a frequency ratio, a locked or detuned ratio, and damping each show up in a harmonograph figure.',

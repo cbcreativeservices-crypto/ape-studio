@@ -119,7 +119,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'Get all four right and the lab is complete; the page says so. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed; the page says so. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'Energy per hertz and energy per octave are two different ways to measure where a noise’s energy sits.',

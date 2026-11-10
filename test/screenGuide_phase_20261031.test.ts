@@ -218,7 +218,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['no score', UNDERSTAND], ['✓', UNDERSTAND],
       // 'certificate and program' dropped (decision 5: no credit bookkeeping in student text);
       // DLY R / NORMAL dropped: the CHECK TRY THIS no longer walks to the answering readings (decision 6).
-      ['this lab is complete', UNDERSTAND, 'the lab is complete'],
+      ['the check is passed', UNDERSTAND, 'the check is passed'],
       ['PINK NOISE', CONFIGS], ['CORRELATION', SCOPE], ['COMMON MISTAKES', SHEET], ['FORMULA / CONCEPT', SHEET],
     ],
   };

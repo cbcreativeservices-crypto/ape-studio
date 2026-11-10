@@ -123,7 +123,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING and the lab’s title, then four questions: what WIDTH changes, a fold to mono at 200%, why bass goes mono, and a correlation near −1.',
       'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT or NOT QUITE — TRY ANOTHER heads the explanation.',
-      'When all are right, it reads: Every question answered correctly — this lab is complete.',
+      'When all are right, it reads: Every question answered correctly — the check is passed.',
     ],
     control: [
       'Tap a choice. A wrong one shows its explanation in amber; pick another straight away. Nothing is lost and there is no score.',
@@ -133,7 +133,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     ],
     changes: [
       'Every answer shows its explanation, right or wrong, so each question adds to what you know about width and mono.',
-      'Get all four right and the lab is complete.',
+      'Get all four right and the check is passed.',
       'A pass is kept: come back later and the check shows as already cleared.',
     ],
     teaches: [
@@ -169,8 +169,8 @@ export const STEREO_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'The check counts once every answer is right. If you’re signed in, it’s saved to your account once, and you never take it twice.',
-    'If you’re signed out, the line under the title says whether signing in can still keep it. Practicing again never takes it away.',
+    'The check counts once every answer is right.',
+    'If you’re signed out, the line under the title says whether signing in can still keep it.',
   ],
   teaches: [
     'Every width decision is also a mono decision: whatever you widen, check it folded to mono.',

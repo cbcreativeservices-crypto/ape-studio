@@ -133,7 +133,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     'WAVEFORM — PRESSURE VS TIME', 'SPECTRUM — LOG 40 Hz–16 kHz', 'STEREO BALANCE', 'CENTER', 'FREQ', 'λ', 'PERIOD', 'LEVEL', 'dBFS',
     'SWEEP', 'CONTENT', 'SOURCE', 'SINE', 'SQUARE', 'SAW', 'TRIANGLE', 'WHITE', 'PINK', 'BROWN', 'NOISE', 'SLOW SWEEP', 'FAST SWEEP',
     'HARMONIC RICHNESS', 'ALL HARMONICS', 'FIRST 3', 'FUNDAMENTAL', 'PHASE · POLARITY', 'POLARITY +', 'POLARITY −', 'FX',
-    'DELAY OFF', '120 ms', '400 ms', 'EQ LOW-PASS', 'LPF 2 kHz', 'LPF 500 Hz', 'Q 0.7', 'Q 4', 'PLAY', 'STOP',
+    'DELAY OFF', '30 ms', '120 ms', '400 ms', 'EQ LOW-PASS', 'LPF 2 kHz', 'LPF 500 Hz', 'Q 0.7', 'Q 4', 'PLAY', 'STOP',
   ];
   it('a name list for every course guide', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), [...Object.keys(MODULES), 'm7cover', 'end'].sort());

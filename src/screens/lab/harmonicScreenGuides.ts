@@ -158,7 +158,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. Leave the lab before the last one and the check starts over.',
-      'Get all four right and the lab is complete; the page says so. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed; the page says so. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'Where each harmonic sits relative to the fundamental, and how timbre comes from the balance between them.',

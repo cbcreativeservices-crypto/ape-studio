@@ -126,7 +126,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
     ],
     changes: [
       'Every answer opens its explanation — CORRECT, or NOT QUITE — TRY ANOTHER — with the reason.',
-      'Get all four right and the lab is complete.',
+      'Get all four right and the check is passed.',
       'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],
     teaches: [

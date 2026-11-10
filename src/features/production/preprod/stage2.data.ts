@@ -1211,7 +1211,7 @@ export const STAGE2_DELIVER: StageDef = {
       "deliver.review_rounds": "",
       "deliver.silence_means": "undecided"
     },
-    passWhen: "The immersive deliverable's channel configuration is no longer stereo; a specification row exists for every deliverable, including the radio edit and the social clips; the clean version has a written definition and a named decider; each destination's specification is marked obtained or requested with a location recorded; a single named final approver replaces 'the board'; a review deadline is set that falls before the delivery date rather than after the launch; and the late-approval outcome is chosen.",
+    passWhen: "The immersive deliverable's channel configuration is no longer stereo; a specification row exists for every deliverable, including the radio edit and the social clips; the clean version has a written definition and a named decider; each destination's specification is marked obtained or requested with a location recorded; a single named final approver replaces ‘the board’; a review deadline is set that falls before the delivery date rather than after the launch; and the late-approval outcome is chosen.",
     debrief: "The client's email was normal. Almost every request arrives like this, with the contradictions hidden inside ordinary words: a stereo file for an immersive room, a clean edit with no standard, approval from a group after the thing is already public. Notice that none of the fixes needed you to know more about audio than the client does. They needed you to ask before saying yes. The specification belongs to the destination, and the definition of done belongs to one named person; your job at this stage is to obtain both in writing."
   }
 };

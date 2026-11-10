@@ -127,7 +127,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each question is about something you heard or saw on EXPLORE: notch spacing at a 2 ms delay, flanger notches against a phaser’s, what FDBK does, and why a sine tone is a poor test.',
-      'Get all four right and the lab is complete; the card reads Lab complete. A pass is kept: the tab opens already complete next time.',
+      'Get all four right and the card reads Check passed. A pass is kept: the tab opens already complete next time.',
     ],
     teaches: [
       'How a flanger’s delay sets the spacing of its notches, and how its comb differs from a phaser’s.',

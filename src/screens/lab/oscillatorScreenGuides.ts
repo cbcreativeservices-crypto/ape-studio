@@ -120,7 +120,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
-      'Get all four right and the lab is complete; the page says so. A pass is kept: you never need to take the check twice.',
+      'Get all four right and the check is passed; the page says so. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
       'A wave’s tone depends on which harmonics it holds and on how strong each one is.',

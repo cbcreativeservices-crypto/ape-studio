@@ -125,7 +125,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each question is about something you saw on EXPLORE: how many notches 8 stages make, what an all-pass stage changes, whether a phaser is a delay, and what RES does.',
-      'Get all four right and the lab is complete; the card reads Lab complete. A pass is kept: the tab opens already complete next time.',
+      'Get all four right and the card reads Check passed. A pass is kept: the tab opens already complete next time.',
     ],
     teaches: [
       'How a phaser’s stages treat each frequency sets how many dips there are and where they fall.',

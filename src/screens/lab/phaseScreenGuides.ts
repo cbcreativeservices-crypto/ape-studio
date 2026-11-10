@@ -134,7 +134,7 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING for the Phase lab: four questions, each with its answer choices.',
       'Each question has a numbered card. A ✓ replaces the number once you answer it right.',
-      'When every answer is right, a note tells you the lab is complete.',
+      'When every answer is right, a note tells you the check is passed.',
     ],
     control: [
       'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
@@ -143,7 +143,7 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each right answer stays right while you are in this lab.',
-      'Get all four right and the lab is complete.',
+      'Get all four right and the check is passed.',
       'Each explanation ties back to something on EXPLORE you can see or hear: the flat −1.00 scope, a silent MONO or a combed PINK NOISE.',
     ],
     teaches: [

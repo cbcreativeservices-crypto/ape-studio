@@ -122,7 +122,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each question is about something you heard or saw on EXPLORE: what makes the shimmer, what is left at 100% wet, how chorus’s delay compares with a flanger’s, and what a fast RATE sounds like.',
-      'Get all four right and the lab is complete; the card reads Lab complete. A pass is kept: the tab opens already complete next time.',
+      'Get all four right and the card reads Check passed. A pass is kept: the tab opens already complete next time.',
     ],
     teaches: [
       'What creates the chorus effect, and what MIX changes about it.',

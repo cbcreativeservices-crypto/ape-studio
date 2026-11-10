@@ -272,11 +272,11 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   // ── 6 ─────────────────────────────────────────────────────────────────────
   processing: {
     intro: {
-      learning: 'Why levels above 0 dBFS are safe inside a floating-point mix bus but clip once they reach a fixed-point file, and how a float number covers a huge range.',
+      learning: 'Why levels above 0 dBFS are safe while tracks are summed in floating point but clip in a fixed-point file, and how a float covers a huge range.',
       start: 'Compare FLOAT BUS and FIXED at the start. Turn TRIM on and see which side comes back intact. Then move VALUE to see how a float number is built.',
     },
     seeing: [
-      'One mix bus, two fates. At left, the FLOAT INTERNAL PATH; at right, the FIXED-POINT RENDER (24-BIT) with its 0 dBFS line.',
+      'One mix bus (where tracks are summed), two fates. At left, the FLOAT INTERNAL PATH; at right, the FIXED-POINT RENDER (24-BIT) with its 0 dBFS line.',
       'Readouts: FLOAT BUS (the bus peak, dBFS), FIXED (0.0 CLIP once it’s over zero) and TRIM.',
       'Move VALUE and the display swaps to HOW A FLOAT NUMBER WORKS: SIGN, EXPONENT (decade) and MANTISSA (slides 1→10).',
     ],

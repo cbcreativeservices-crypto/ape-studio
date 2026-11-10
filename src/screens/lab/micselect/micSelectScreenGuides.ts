@@ -50,7 +50,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   // ── LESSON 1 · MEET THE MICROPHONE TYPES ─────────────────────────────────
   types: {
     intro: {
-      learning: 'The main microphone families, and why some names say how a mic turns sound into signal while others only describe its design or body.',
+      learning: 'Builds on Microphone Principles: the main microphone families, and why some names say how a mic turns sound into signal while others only describe its design or body.',
       start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE, pick Moving-Coil Dynamic and Condenser, and read the two cards side by side.',
     },
     seeing: [
@@ -402,7 +402,7 @@ export const MICSEL_END_GUIDE: ScreenGuide = {
   ],
   changes: [
     'A lesson counts as done as soon as you open it. That’s your progress on this device, not a grade.',
-    'Get every question right and the lab is complete. If you leave this screen, the questions start over, but a pass is kept.',
+    'Get every question right and the check is passed. If you leave this screen, the questions start over, but a pass is kept.',
   ],
   teaches: [
     'Choosing a microphone starts with the job: the source, the place and the production set the priorities.',

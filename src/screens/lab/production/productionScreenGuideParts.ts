@@ -44,12 +44,16 @@ export function stageSeeing(kicker: string, sections: string): string[] {
 }
 
 /** WHAT YOU CONTROL on any stage screen (identical in both labs bar the packet's name). */
-export function stageControl(packetName: string): string[] {
+/** Post-Production's shared labels say PROJECT; Pre-Production's say PLAN
+ *  (owner 2026-11-09). */
+export type PlanWord = 'PLAN' | 'PROJECT';
+
+export function stageControl(packetName: string, word: PlanWord = 'PLAN'): string[] {
   return [
     'Answer by typing, tapping chips (some take several) or filling a table: + ADD ROW, ✕ removes a row, UNDO restores it.',
     'Tap “Not applicable to this project”, type why, then SAVE. A skip with a reason counts as a decision; UNDO undoes it.',
     'Answers save as you go. If one fails, a red warning stays on top until a later one saves.',
-    `SEE THEM ↓ jumps to WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE PLAN · ${packetName.toUpperCase()}.`,
+    `SEE THEM ↓ opens WHAT THIS ${word} IS STILL MISSING (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE ${word} · ${packetName.toUpperCase()}.`,
     `‹ goes back to where you came from: the lab home, the ${packetName} or an exercise. ${CHIPS_LINE}`,
   ];
 }
@@ -66,12 +70,15 @@ export function activitySeeing(stageNum: number, title: string, offeredOn: strin
 }
 
 /** WHAT YOU CONTROL on any exercise screen. */
-export const ACTIVITY_CONTROL: string[] = [
-  'Tap OPEN THE PLAN AND FIX IT to repair the broken version on the real stage screen. Once you’ve solved it, the button reads REVIEW YOUR WORK.',
+export function activityControl(word: PlanWord): string[] {
+  return [
+  `Tap OPEN THE ${word} AND FIX IT to repair the broken version on the real stage screen. Once you’ve solved it, the button reads REVIEW YOUR WORK.`,
   'READ THE REASONING explains the exercise at any time, but it gives the answer away, so open it when you choose. After you solve it, it reads READ THE DEBRIEF.',
   'START AGAIN asks you to confirm, then puts the original broken version back.',
   `‹ returns to the lab home. ${CHIPS_LINE}`,
-];
+  ];
+}
+export const ACTIVITY_CONTROL: string[] = activityControl('PLAN');
 
 /** WHAT CHANGES on any exercise screen: the loop, and why it is built that way. */
 export const ACTIVITY_CHANGES: string[] = [

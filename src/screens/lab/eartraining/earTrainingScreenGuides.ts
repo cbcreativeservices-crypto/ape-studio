@@ -41,6 +41,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
     'Tap a module’s name to read its description and playback note, then tap OPEN to start the drill.',
     'Inside a drill, the ▶ chips play the clips and the answer chips take your answer. NEXT TRIAL › draws the next one, and ‹ brings you back here.',
     'Tap ⓘ inside any drill to have that screen explained.',
+    'In every drill, the header shows your “last 20” score and level; above the question, the trial number and your streak.',
     'Tap FINISH · SEE WHAT’S LEFT › to see the modules that don’t count yet. Any row there opens its module.',
   ],
   changes: [

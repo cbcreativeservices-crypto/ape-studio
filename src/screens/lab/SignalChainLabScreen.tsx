@@ -423,7 +423,7 @@ export function SignalChainLabScreen() {
     <LabShell
       labId="chain"
       title="SIGNAL CHAIN BUILDER"
-      subtitle="The capstone — effects interact"
+      subtitle="Effects interact"
       intro={getLabLesson('chain').whatItIs}
       exploreCaption="Tap modules in or out of the chain — or start from a scenario that demonstrates a signature interaction."
       // Screen Guide (2026-10-31): the ⓘ explains the tab on screen (EXPLORE

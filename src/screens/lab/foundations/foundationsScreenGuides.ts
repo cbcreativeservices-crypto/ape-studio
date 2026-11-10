@@ -570,7 +570,7 @@ export const PLAYGROUND_SCREEN_GUIDE: ScreenGuide = {
   control: [
     'FREQ fader: 55 Hz–3.5 kHz, starting at 290 Hz. LEVEL fader: −48 to −16 dBFS, starting at −38.',
     'SOURCE tray: SINE, SQUARE, SAW or TRIANGLE; WHITE, PINK or BROWN NOISE; SLOW SWEEP or FAST SWEEP. For a wave you also get HARMONIC RICHNESS (ALL HARMONICS, FIRST 3, FUNDAMENTAL) and PHASE · POLARITY.',
-    'FX tray: STEREO BALANCE, DELAY (DELAY OFF, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 or Q 4 work once a low-pass is on.',
+    'FX tray: STEREO BALANCE, DELAY (DELAY OFF, 30 ms, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 or Q 4 work once a low-pass is on.',
     'PLAY / STOP: you hear every change live, after a hearing reminder. Long-press any control for its guided-lesson entry.',
   ],
   changes: [

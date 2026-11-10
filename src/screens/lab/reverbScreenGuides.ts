@@ -143,7 +143,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
       'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work the answer out.',
-      'Get all four right and the lab is complete: a green card says so.',
+      'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [
       'Each question asks about an idea EXPLORE showed: what RT60, PRE-DELAY, HF DAMPING and MIX each change in the sound.',

@@ -25,7 +25,7 @@
 import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import {
   ACTIVITY_CHANGES,
-  ACTIVITY_CONTROL,
+  activityControl,
   CHIPS_LINE,
   activitySeeing,
   stageControl,
@@ -33,7 +33,7 @@ import {
 } from './productionScreenGuideParts';
 
 const kicker = (n: number) => `POST-PRODUCTION · STAGE ${n}`;
-const CONTROL = stageControl('Delivery Package');
+const CONTROL = stageControl('Delivery Package', 'PROJECT');
 
 export const POSTPROD_START_GUIDE: ScreenGuide = {
   intro: {
@@ -307,10 +307,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'clarify-the-handoff': {
     intro: {
       learning: 'Practice for Stage 1: why a handoff is clarified in writing early, naming who approves the final and where the files go, while answers are still cheap.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Type one name in “Who approves the final” and come back to watch that check turn ✓.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Type one name in “Who approves the final” and come back to watch that check turn ✓.',
     },
     seeing: activitySeeing(1, 'Clarify the handoff', 'all three project types'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Write down what you were given and what you were not told, then ask the people who can answer, while answers are still cheap.',
@@ -325,10 +325,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'safe-ingest': {
     intro: {
       learning: 'Practice for Stage 2: why the originals are locked, copies are verified by content, and a mixed sample rate gets one deliberate conversion decision.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Set “Are the originals protected from writing” to Yes — permissions or hardware lock, then come back to the checklist.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Set “Are the originals protected from writing” to Yes — permissions or hardware lock, then come back to the checklist.',
     },
     seeing: activitySeeing(2, 'Safe ingest', 'all three project types'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Lock the originals, verify by content, and settle duplicate or truncated files before the cards are cleared.',
@@ -343,10 +343,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'restore-synchronisation': {
     intro: {
       learning: 'Practice for Stage 3: how a constant offset differs from a steady drift, and why only a check at the end of the longest file shows drift.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Set “Was sync checked at the END of the longest file” to Yes and come back to the checklist.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Set “Was sync checked at the END of the longest file” to Yes and come back to the checklist.',
     },
     seeing: activitySeeing(3, 'Restore synchronization', 'Podcast or spoken word and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Diagnose before you cure: a constant offset is moved; a steady drift is stretched or reconformed (rebuilt from the source to match the reference timing).',
@@ -361,10 +361,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'repair-without-overprocessing': {
     intro: {
       learning: 'Practice for Stage 4: why repair effort should follow how bad a problem really is, and why every repair is judged level-matched, in context.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Set “What happens to breaths” to Kept — reduced only where distracting, and come back to the checklist.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Set “What happens to breaths” to Kept — reduced only where distracting, and come back to the checklist.',
     },
     seeing: activitySeeing(4, 'Repair without overprocessing', 'Podcast or spoken word and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Effort should follow severity: a barely audible noise does not need a re-record.',
@@ -379,10 +379,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'add-without-erasing': {
     intro: {
       learning: 'Practice for Stage 5: how each addition changes what is around it, from rights and matched replacements to continuous atmosphere and music under speech.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Pick Yes, laid as continuous beds for the atmosphere, then come back to the checklist.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Pick Yes, laid as continuous beds for the atmosphere, then come back to the checklist.',
     },
     seeing: activitySeeing(5, 'Add without erasing', 'Podcast or spoken word and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Each addition changes what is around it: rights, a matched replacement, continuous atmosphere, phrasing, agreed correction.',
@@ -397,10 +397,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'route-the-mix': {
     intro: {
       learning: 'Practice for Stage 6: three routing faults you can’t hear in the mix, and why a null test when you print catches what listening misses.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Set “Processing on the master bus” to Left for the finishing stage, and come back to the checklist.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Set “Processing on the master bus” to Left for the finishing stage, and come back to the checklist.',
     },
     seeing: activitySeeing(6, 'Route the mix', 'Music recording and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Three faults you can’t hear in the mix: a group missing from the stems, a send with no return, heavy master processing over the stems.',
@@ -415,10 +415,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'meet-the-specification': {
     intro: {
       learning: 'Practice for Stage 7: why an over-limited file misses its loudness and true-peak specification, and why you measure the exported deliverable, not the session.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. The copy measures -13.2 LUFS and 0.4 dBTP; start by setting Dither to Once, at the final depth reduction.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. The copy measures -13.2 LUFS and 0.4 dBTP; start by setting Dither to Once, at the final depth reduction.',
     },
     seeing: activitySeeing(7, 'Meet the specification', 'Podcast or spoken word and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Heavy limiting made this file too loud and too flat: ease it off, then set the level with plain gain.',
@@ -434,10 +434,10 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
   'the-upload-succeeded': {
     intro: {
       learning: 'Practice for Stage 8: why exported, uploaded, received, verified and accepted are five different things, and why the approved version and its approval record come first.',
-      start: 'Read the brief, then tap OPEN THE PLAN AND FIX IT. Set “Is the previously approved version preserved” to Yes — saved as a separate version and print.',
+      start: 'Read the brief, then tap OPEN THE PROJECT AND FIX IT. Set “Is the previously approved version preserved” to Yes — saved as a separate version and print.',
     },
     seeing: activitySeeing(8, 'The upload succeeded, but delivery failed', 'Music recording and Live performance or event projects'),
-    control: ACTIVITY_CONTROL,
+    control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
       'Exported, uploaded, received, verified and accepted are five different things.',

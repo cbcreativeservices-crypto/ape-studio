@@ -474,7 +474,7 @@ export function ProductionStageScreen() {
                 if (focus === 'findings') tryFocus();
               }}
             >
-              <Text style={styles.findingsHead}>WHAT THIS PLAN IS STILL MISSING</Text>
+              <Text style={styles.findingsHead}>{lab === 'postprod' ? 'WHAT THIS PROJECT IS STILL MISSING' : 'WHAT THIS PLAN IS STILL MISSING'}</Text>
               {report.findings.map((f) => (
                 <View
                   key={f.ruleId}
@@ -498,7 +498,7 @@ export function ProductionStageScreen() {
             accessibilityRole="button"
             accessibilityLabel={`See what is left in the whole plan, and the ${labDef(lab)?.packetName ?? 'packet'}`}
           >
-            <Text style={styles.leftLinkText}>{`WHAT'S LEFT IN THE WHOLE PLAN · ${(labDef(lab)?.packetName ?? 'packet').toUpperCase()} ›`}</Text>
+            <Text style={styles.leftLinkText}>{`${lab === 'postprod' ? "WHAT'S LEFT IN THE WHOLE PROJECT" : "WHAT'S LEFT IN THE WHOLE PLAN"} · ${(labDef(lab)?.packetName ?? 'packet').toUpperCase()} ›`}</Text>
           </Pressable>
         </ScrollView>
       )}

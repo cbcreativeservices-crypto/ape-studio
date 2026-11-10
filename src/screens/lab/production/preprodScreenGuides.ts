@@ -284,7 +284,7 @@ export const PREPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Seven checks start ○. Set “If a reviewer misses their deadline, what happens?” to any outcome but Not decided: “The late-approval outcome is chosen” turns ✓.',
-      'Type one person’s name in “Who gives final approval?”: “One named person replaces \'the board\'” turns ✓.',
+      'Type one person’s name in “Who gives final approval?”: “One named person replaces ‘the board’” turns ✓.',
     ],
   },
   'who-owns-this-task': {

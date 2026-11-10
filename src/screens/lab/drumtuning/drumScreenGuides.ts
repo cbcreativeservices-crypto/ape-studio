@@ -88,7 +88,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why more tension raises a drum’s pitch, with four times the tension giving one octave, and why a drum’s overtones never line up into a clean musical note.',
-        start: 'Tap ▶ STRIKE and read PITCH 233 Hz and 1ST OVERTONE 371 Hz. Then slide TENSION all the way left and strike again.',
+        start: 'Tap ▶ STRIKE and read PITCH 233 Hz and 1ST OVERTONE 371 Hz. Then ride TENSION all the way left and strike again.',
       },
       seeing: [
         'Each bar is a note the head makes, lowest on the left. The tall bar is the pitch you hear; the bars to its right are overtones.',
@@ -107,8 +107,8 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'Tuning to an exact note is optional. NOTE only names the pitch for reference; what you’re after is a useful, resonant sound.',
       ],
       tryThis: [
-        'At the start PITCH reads 233 Hz and 1ST OVERTONE 371 Hz. Slide TENSION all the way left: PITCH 147 Hz.',
-        'Now slide TENSION right until the lane reads 4800 N/m, four times the lowest, 1200. PITCH reads 294 Hz, one octave up. Strike both and compare.',
+        'At the start PITCH reads 233 Hz and 1ST OVERTONE 371 Hz. Ride TENSION all the way left: PITCH 147 Hz.',
+        'Now ride TENSION right until the lane reads 4800 N/m, four times the lowest, 1200. PITCH reads 294 Hz, one octave up. Strike both and compare.',
       ],
     },
     // LEARN · The shell and bearing edge
@@ -141,7 +141,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'The four things a tuner listens for in every hit, pitch, overtones, sustain and pitch bend, and how a harder stroke or more damping changes them.',
-        start: 'Tap ▶ STRIKE at STRIKE 80 % and read BEND +35 ¢. Then slide STRIKE to 20 % and strike again: the glide almost disappears.',
+        start: 'Tap ▶ STRIKE at STRIKE 80 % and read BEND +35 ¢. Then ride STRIKE to 20 % and strike again: the glide almost disappears.',
       },
       seeing: [
         'One hit, left to right in real time. The white line in the strip below is how loud it is; a green mark shows where it has died away.',
@@ -162,7 +162,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'These numbers are measured from a synthesized hit — a model of a drum, not a measurement of yours.',
       ],
       tryThis: [
-        'At STRIKE 80 % BEND reads +35 ¢. Slide STRIKE to 20 %: +2 ¢. To 100 %: +54 ¢.',
+        'At STRIKE 80 % BEND reads +35 ¢. Ride STRIKE to 20 %: +2 ¢. To 100 %: +54 ¢.',
         'Strike with no damping: SUSTAIN is about 1.72 s. Push DAMPING to 100 % and strike: about 0.27 s.',
       ],
     },
@@ -300,7 +300,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why a new head is seated and then brought up in an opposing star pattern, so the hoop stays level and the head rises evenly instead of wrinkling.',
-        start: 'Set LUGS to 8 and press ▶ RUN. Follow THIS ROD and NEXT as the pattern jumps across the drum, then slide STEP to walk it at your own pace.',
+        start: 'Set LUGS to 8 and press ▶ RUN. Follow THIS ROD and NEXT as the pattern jumps across the drum, then ride STEP to walk it at your own pace.',
       },
       seeing: [
         'The drum shows the order to tighten the rods on a new head.',
@@ -321,14 +321,14 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'On 8 LUGS press ▶ RUN: THIS ROD reads #1, NEXT #5 — then 3, 7, 2, 6, 4, 8.',
-        'Switch to 6 LUGS and slide STEP: three opposite pairs, 1 → 4 → 2 → 5 → 3 → 6.',
+        'Switch to 6 LUGS and ride STEP: three opposite pairs, 1 → 4 → 2 → 5 → 3 → 6.',
       ],
     },
     // HEAR · Start from a known condition
     {
       intro: {
         learning: 'Why you start with every rod finger-tight and come up evenly: even rounds keep one pitch across the head, while random turns leave it warbling.',
-        start: 'On EVEN STEPS, slide STEP to 8 and tap ▶ STRIKE. Then flip the key to RANDOM, still at step 8, and strike again to hear the difference.',
+        start: 'On EVEN STEPS, ride STEP to 8 and tap ▶ STRIKE. Then flip the key to RANDOM, still at step 8, and strike again to hear the difference.',
       },
       seeing: [
         'This is the floor tom head, brought up two ways: in even rounds or with big random turns. The wedges show each lug’s pitch.',
@@ -347,7 +347,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'When a drum is a mess, back every rod off and start again rather than chase one lug.',
       ],
       tryThis: [
-        'On EVEN STEPS slide STEP to 8: SPREAD 0 ¢, PITCH 156 Hz. ▶ STRIKE: a clean note.',
+        'On EVEN STEPS ride STEP to 8: SPREAD 0 ¢, PITCH 156 Hz. ▶ STRIKE: a clean note.',
         'Flip to RANDOM at step 8: SPREAD 880 ¢, PITCH 137 Hz. ▶ STRIKE: the warble.',
       ],
     },
@@ -455,7 +455,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'You can find the odd lugs by ear if every tap is the same: the same spot near the rod and the same light stroke. Then any change in pitch you hear comes from the tension at that lug.',
       ],
       tryThis: [
-        'Tap all eight lugs, pick the one you heard highest, then tap ◉ REVEAL MAP. The map says lug 2, SPREAD 195 ¢: almost two semitones between highest and lowest.',
+        'Tap all eight lugs, pick the one you heard highest, then tap ◉ REVEAL MAP. The map shows which lug was highest, and SPREAD 195 ¢: almost two semitones between highest and lowest.',
         'Tap lug 2, then its opposite, lug 6, back to back. Listen for the gap between the two pitches.',
       ],
     },
@@ -463,14 +463,14 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'How small, opposing turns bring every lug to the same pitch, so the head becomes even without its overall pitch moving far.',
-        start: 'Tap ▶ SHOW ME A MOVE and watch SPREAD. Then pick a red or blue lug with LUG, slide TURN a little, and ▶ TAP to hear it move.',
+        start: 'Tap ▶ SHOW ME A MOVE and watch SPREAD. Then pick a red or blue lug with LUG, ride TURN a little, and ▶ TAP to hear it move.',
       },
       seeing: [
         'You’re evening out this head. The key sits on the rod you chose, and each wedge shows that lug’s pitch: blue is low, yellow is even, red is high.',
         'THIS RUN is how far you’ve turned the chosen rod. SPREAD is the gap between the highest and lowest lug; HEAD says which head you’re on.',
       ],
       control: [
-        'Pick the rod with LUG, then slide TURN to move it in sixteenths of a turn; 0 is where you found it. Switch heads with BATTER / RESO.',
+        'Pick the rod with LUG, then ride TURN to move it in sixteenths of a turn; 0 is where you found it. Switch heads with BATTER / RESO.',
         '▶ TAP plays one lug so you can hear just that spot; ▶ STRIKE plays the whole drum.',
         'In the notes, ▶ SHOW ME A MOVE makes a move for you, for your first two moves on the batter. ↺ NEW HEADS gives you a fresh pair to practice on.',
       ],
@@ -552,7 +552,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'BATTER and RESO are each head’s own pitch, and REL is the gap in semitones. SUSTAIN is how long it rings; LATE SOUND is where the note sits at 0.9 s, against the batter.',
       ],
       control: [
-        'Slide BATTER and RESO to set each head’s own pitch.',
+        'Ride BATTER and RESO to set each head’s own pitch.',
         'Tap SET for a quick start: RESO ↑ puts the resonant head 3 semitones above the batter, EQUAL matches them, and BATTER ↑ puts it 3 semitones below.',
         'Switch VIEW between WAVE, PITCH and VIBRATE. Tap ▶ STRIKE, or tap the display, to play the drum.',
       ],
@@ -637,7 +637,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'How you choose between the three relationships, and whether any one of them is correct.',
       ],
       tryThis: [
-        'Do the TRY NEXT: on Compare head relationships, move RESO slowly from 3 st below the batter to 3 st above, striking as you go. Listen for where it rings longest.',
+        'Do the TRY NEXT: on Compare head relationships, ride RESO slowly from 3 st below the batter to 3 st above, striking as you go. Listen for where it rings longest.',
         'Answer “Is one relationship the correct one?” aloud, then tap the card to check.',
       ],
     },
@@ -649,7 +649,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'How a snare’s parts share the work: the batter sets feel and pitch, while the bottom head and strainer set how the wires respond.',
-        start: 'Tap ▶ STRIKE to hear the starting snare. Then move BOTTOM from +400 ¢ to +700 ¢ and strike again, listening to the wires.',
+        start: 'Tap ▶ STRIKE to hear the starting snare. Then ride BOTTOM from +400 ¢ to +700 ¢ and strike again, listening to the wires.',
       },
       seeing: [
         'You’re looking at the snare from the side. The wires hang under the bottom head, the stick’s height shows the stroke, and B and S mark the two heads’ pitches.',
@@ -671,7 +671,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'At the start SNARE SIDE reads 290 Hz (BOTTOM +400 ¢). Move BOTTOM to +700 ¢: 345 Hz. Strike at each setting and compare the wires.',
-        'Set STROKE low for a ghost note, then move STRAINER tight and loose, striking each time. Listen for when the wires vanish.',
+        'Set STROKE low for a ghost note, then ride STRAINER tight and loose, striking each time. Listen for when the wires vanish.',
         'Bring STRAINER under 10 %: it reads OFF. Strike to hear the two heads alone, with no wires.',
       ],
     },
