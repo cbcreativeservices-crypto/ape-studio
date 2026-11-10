@@ -345,6 +345,22 @@ export function idsMissingDefinitions(src: string, limit: number): Promise<strin
 }
 
 /**
+ * Ids that HAVE a saved definition, in id order after `afterId` (owner
+ * 2026-11-10, "Yes, fix it"): the weekly recheck walks these so a definition
+ * edited on the server after it was saved is replaced. Queued like
+ * idsMissingDefinitions, for the same reason.
+ */
+export function idsWithDefinitionsAfter(src: string, afterId: string, limit: number): Promise<string[]> {
+  return serial(async () => {
+    const rows = (await db().getAllAsync<{ id: string }>(
+      'SELECT id FROM glossary_corpus WHERE src = ? AND definition IS NOT NULL AND id > ? ORDER BY id LIMIT ?',
+      [src, afterId, limit],
+    )) as { id: string }[];
+    return rows.map((r) => r.id);
+  });
+}
+
+/**
  * Resolves once every write queued before this call has finished (night pass
  * 2, 2026-10-01). The background save reads the term-list stats unqueued, and
  * mid-saveTerms (the screen's first download or its revalidate) the marker is

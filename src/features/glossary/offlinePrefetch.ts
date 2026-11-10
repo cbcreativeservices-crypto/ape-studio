@@ -29,7 +29,9 @@ import {
   corpusStats,
   getMeta,
   idsMissingDefinitions,
+  idsWithDefinitionsAfter,
   saveDefinitions,
+  setMeta,
   saveTerms,
   writesSettled,
 } from './offlineCorpus';
@@ -40,6 +42,17 @@ import { autoOfflineEnabled } from './autoOfflinePref';
 const PAGE = 300;
 /** 32,000 terms / 300 with headroom; a bound, never the expected count. */
 const MAX_PASSES = 140;
+/**
+ * THE WEEKLY RECHECK (owner 2026-11-10, "Yes, fix it"). A saved definition was
+ * only ever filled when missing, never re-read, so a term the academy corrected
+ * after a phone saved it kept the old text there for good. There is no
+ * "changed at" on the server to ask about, so once a week the saved text is
+ * read again, page by page, and replaced. Same pages, same pace, same off
+ * switch as the first save; a cancelled run resumes from its cursor.
+ */
+export const RECHECK_MS = 7 * 24 * 60 * 60 * 1000;
+const checkedKey = (table: string) => `defs_checked:${table}`;
+const cursorKey = (table: string) => `defs_check_cursor:${table}`;
 /** Let the launch finish before competing with it for the network. */
 const SETTLE_MS = 8000;
 
@@ -108,16 +121,47 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
       await saveTerms(table, terms);
     }
 
+    let downloaded = false;
     for (let pass = 0; pass < MAX_PASSES; pass += 1) {
       if (cancelled()) return;
       const ids = await idsMissingDefinitions(table, PAGE);
-      if (!ids.length) return; // complete
+      if (!ids.length) break; // complete
       const rows = await fetchDefinitionsFor(table, ids);
       if (cancelled()) return;
       await saveDefinitions(table, rows);
+      downloaded = true;
       // A page where nothing was storable means those ids are NULL upstream and
       // will come back every pass — stop rather than spin.
       if (!rows.some((r) => r.definition)) return;
+      await yieldToUi();
+      await new Promise((r) => setTimeout(r, 250)); // stay out of the way
+    }
+
+    // The weekly recheck. A store this run filled from nothing is fresh, so
+    // its clock starts now; a store saved before this shipped has no clock and
+    // is rechecked at once.
+    if (cancelled()) return;
+    const last = Number(await getMeta(checkedKey(table))) || 0;
+    if (downloaded && !last) {
+      await setMeta(checkedKey(table), String(Date.now()));
+      return;
+    }
+    if (Date.now() - last < RECHECK_MS) return;
+    let cursor = (await getMeta(cursorKey(table))) ?? '';
+    for (let pass = 0; pass < MAX_PASSES; pass += 1) {
+      if (cancelled()) return;
+      const ids = await idsWithDefinitionsAfter(table, cursor, PAGE);
+      if (!ids.length) {
+        await setMeta(checkedKey(table), String(Date.now()));
+        await setMeta(cursorKey(table), '');
+        return;
+      }
+      const rows = await fetchDefinitionsFor(table, ids);
+      if (cancelled()) return;
+      // Replaces each saved text with the server's current one.
+      await saveDefinitions(table, rows);
+      cursor = ids[ids.length - 1];
+      await setMeta(cursorKey(table), cursor);
       await yieldToUi();
       await new Promise((r) => setTimeout(r, 250)); // stay out of the way
     }
