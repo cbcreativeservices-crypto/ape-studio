@@ -272,6 +272,29 @@ export async function fetchForumMe(): Promise<ForumResult<ForumMe | null>> {
   return rpc('forum_me', undefined, (raw) => (raw ? meOf(raw) : null));
 }
 
+export type PostStanding = { me: ForumMe | null; rights: ForumRights[] | null };
+
+/**
+ * Who may post, read fresh on a post control's tap (and on the way back from a
+ * fix): forum_me and forum_category_rights together. Either one may fail and
+ * the other still counts; both failing is a failed read, and the press then
+ * goes on with what the screen already had (the server still decides).
+ */
+export async function fetchPostStanding(): Promise<ForumResult<PostStanding>> {
+  if (sampleForumOn()) {
+    return sampleRead(() => {
+      const h = data().sampleHome();
+      return { me: h.me, rights: h.rights };
+    });
+  }
+  const [me, rights] = await Promise.all([
+    rpc('forum_me', undefined, (raw) => (raw ? meOf(raw) : null)),
+    rpc('forum_category_rights', undefined, rows(rightsOf)),
+  ]);
+  if (!me.ok && !rights.ok) return me;
+  return done({ me: me.ok ? me.value : null, rights: rights.ok ? rights.value : null });
+}
+
 export async function fetchBookmarks(): Promise<ForumResult<ForumBookmark[]>> {
   if (sampleForumOn()) return sampleRead(() => data().sampleBookmarks());
   return rpc('forum_bookmarks_mine', undefined, rows(bookmarkOf));

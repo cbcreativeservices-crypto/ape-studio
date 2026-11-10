@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { confirmDialog, notify } from '../../../lib/confirm';
+import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { useOverlaysSuppressed } from '../../../features/dev/popupSuppressStore';
 import { fonts } from '../../../theme/tokens';
@@ -30,10 +30,10 @@ import {
   IDEAS_SLUG,
   SEARCH_MIN,
   emptyTopicsWords,
+  RULES_NOT_SAVED,
   groupCategories,
-  refusalNeedsProfile,
-  refusalText,
   replyCountText,
+  rulesAgreedNow,
 } from '../../../features/forum/rules';
 import { sampleState, takeSampleOpen } from '../../../features/forum/sampleSwitch';
 import type { ForumSearchHit, TopicSort } from '../../../features/forum/types';
@@ -60,10 +60,17 @@ import {
 } from './forumBits';
 import { DiscussLabLink } from './DiscussLabLink';
 import { ForumWelcomePopup } from './ForumWelcomePopup';
+import { RulesPopup } from './forumPopups';
+import { usePostGate } from './PostGate';
 
 type Nav = { navigate: (route: string, params?: Record<string, unknown>) => void };
 
 const LATEST_PAGE = 20;
+
+/** The COMMUNITY RULES row on the forum home (owner 2026-11-10). */
+export const COMMUNITY_RULES_HEAD = 'Community rules';
+export const RULES_LINK_NOT_AGREED = 'Read them and agree before your first post';
+export const RULES_LINK_AGREED = 'Read them any time';
 
 export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOpenProfile: () => void }) {
   const navigation = useNavigation() as unknown as Nav;
@@ -133,19 +140,37 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
     else navigation.navigate('ForumThread', { welcome: true });
   }, [navigation, pinned]);
 
+  /* ── Who may post (one gate for every post control) ──────────────── */
+  // ASK is never a dead key: the rules popup when the rules are what is left,
+  // else the popup that says why, with the one button to the fix.
+  const gate = usePostGate({ active, hold: due, onOpenProfile });
+  const press = gate.press;
   const ask = useCallback(() => {
-    const rights = value?.rights?.find((r) => r.slug === ASK_SLUG) ?? null;
-    if (rights && !rights.canStartTopic) {
-      const text = refusalText(rights.reason);
-      if (refusalNeedsProfile(rights.reason)) {
-        confirmDialog('Before you post', text, 'MY PROFILE', onOpenProfile);
-      } else {
-        notify('Before you post', text);
-      }
+    const intent = { route: 'ForumAsk', params: { slug: ASK_SLUG } };
+    press(
+      { slug: ASK_SLUG, action: 'start' },
+      value ? { me: value.me, rights: value.rights } : undefined,
+      () => navigation.navigate(intent.route, intent.params),
+      intent,
+    );
+  }, [navigation, press, value]);
+
+  /* ── COMMUNITY RULES: to read any time (owner 2026-11-10) ───────────── */
+  const [rulesView, setRulesView] = useState(false);
+  const [agreeing, setAgreeing] = useState(false);
+  const agreed = rulesAgreedNow(value?.me, flags);
+  const agreeFromLink = useLatchedPress(async () => {
+    setAgreeing(true);
+    const ok = await flags.acceptRules();
+    setAgreeing(false);
+    setRulesView(false);
+    if (!ok) {
+      notify('Not saved', RULES_NOT_SAVED);
       return;
     }
-    navigation.navigate('ForumAsk', { slug: ASK_SLUG });
-  }, [navigation, onOpenProfile, value]);
+    // forum_me again, so the link and every post control read the new answer.
+    await reloadHome();
+  });
 
   /* ── Faces ───────────────────────────────────────────────────────── */
   if (home.face === 'loading') {
@@ -199,6 +224,12 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
                 onPress={openAnnouncements}
               />
             ) : null}
+            <AnnounceRow
+              mark="📋"
+              head={COMMUNITY_RULES_HEAD}
+              text={agreed ? RULES_LINK_AGREED : RULES_LINK_NOT_AGREED}
+              onPress={() => setRulesView(true)}
+            />
             {grouped.lounge.length > 0 ? (
               <LoungeBlock categories={grouped.lounge} onOpen={openLounge} onCategory={openCategory} />
             ) : null}
@@ -219,6 +250,15 @@ export function ForumHomeView({ active, onOpenProfile }: { active: boolean; onOp
         )}
       </ScrollView>
       <ForumWelcomePopup due={due && focused && !suppressed} onEnter={enterForum} />
+      {gate.host}
+      <RulesPopup
+        visible={rulesView}
+        readOnly
+        agreed={agreed}
+        busy={agreeing}
+        onAccept={agreeFromLink}
+        onClose={() => setRulesView(false)}
+      />
     </>
   );
 }

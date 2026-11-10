@@ -1762,3 +1762,192 @@ export function askDraftForSave(
 ): string {
   return askDraftText(values, pendingIdFits(madeFor, now) ? pendingId : null, now);
 }
+
+/* ── Who may post: one decision for every post control (2026-11-10) ──── */
+
+/**
+ * Every post control (START A TOPIC, ASK, a reply, SHARE AN IDEA, Discuss this
+ * lab) asks this one question. A member who may not post is never left with a
+ * dead control: the rules popup opens straight away when the rules are the only
+ * thing missing (the 2026-11-09 deadlock: the popup was reached only by posting,
+ * and posting was off until the rules were agreed), and every other reason opens
+ * a short popup that says why, with one button to the fix.
+ *
+ * The server decides in its own order (email, profile, 18+, Pro Lounge or
+ * staff-only, rules) and answers with the first blocker, so the member is led
+ * one step at a time. None of this is enforcement: the server still refuses.
+ */
+export type BlockSheetKind =
+  | 'profile_unpublished'
+  | 'adult_attestation'
+  | 'email_unconfirmed'
+  | 'muted'
+  | 'account_restricted'
+  | 'pro_lounge_members_only'
+  | 'staff_only'
+  | 'other';
+
+/** Where a popup's one button goes. */
+export type BlockDest = 'profile' | 'support' | 'credentials';
+
+export type PostStep =
+  | { kind: 'open' }
+  | { kind: 'rules' }
+  | { kind: 'sheet'; sheet: BlockSheetKind; code: string | null };
+
+export type PostAction = 'start' | 'reply';
+
+const SHEET_CODES: ReadonlySet<string> = new Set<BlockSheetKind>([
+  'profile_unpublished',
+  'adult_attestation',
+  'email_unconfirmed',
+  'muted',
+  'account_restricted',
+  'pro_lounge_members_only',
+  'staff_only',
+]);
+
+/** Refusals from a post call that are about who may post here, besides the
+ *  sheet codes: they get the "other" popup with their own words. */
+const STANDING_OTHER: ReadonlySet<string> = new Set(['employer_careers_only', 'jobs_employers_careers_only']);
+
+/** The step for a member who may NOT post, by the server's reason. A refusal
+ *  with no reason, or one the app does not know, is the plain "other" popup. */
+export function blockedStep(code: string | null | undefined): PostStep {
+  if (code === 'rules_not_accepted') return { kind: 'rules' };
+  if (code && SHEET_CODES.has(code)) return { kind: 'sheet', sheet: code as BlockSheetKind, code };
+  return { kind: 'sheet', sheet: 'other', code: code ?? null };
+}
+
+/**
+ * The one decision. `me` is forum_me (no category); `right` is this category's
+ * row from forum_category_rights. forum_me is asked first, as the server is.
+ * Nothing known (both reads failed or not loaded) is 'open': the press goes on
+ * and the server's answer to the post is mapped with `refusalStep`.
+ */
+export function postStep(
+  me: { canPost: boolean; reason: string | null } | null | undefined,
+  right: { canStartTopic: boolean; canReply: boolean; reason: string | null } | null | undefined,
+  action: PostAction,
+): PostStep {
+  if (me && !me.canPost) return blockedStep(me.reason);
+  if (right && !(action === 'reply' ? right.canReply : right.canStartTopic)) return blockedStep(right.reason);
+  return { kind: 'open' };
+}
+
+/**
+ * A post call's refusal as the same step, so a code that only the post call can
+ * know (Pro Lounge, staff-only, which forum_me cannot see) opens the same popup.
+ * Null for a refusal about the post itself (too long, a bad title, locked): that
+ * stays an inline line under the form.
+ */
+export function refusalStep(code: string | null | undefined): PostStep | null {
+  if (!code) return null;
+  if (code === 'rules_not_accepted' || SHEET_CODES.has(code) || STANDING_OTHER.has(code)) return blockedStep(code);
+  return null;
+}
+
+/**
+ * Back from a fix (My Profile, say): what to show next. Null when nothing is
+ * left, or when the same blocker is still there (the member came back without
+ * fixing it, and is not asked again until they tap a post control).
+ */
+export function followUpStep(fixedCode: string | null, fresh: PostStep): PostStep | null {
+  if (fresh.kind === 'open') return null;
+  if (fresh.kind === 'rules') return fixedCode === 'rules_not_accepted' ? null : fresh;
+  return fresh.code === fixedCode ? null : fresh;
+}
+
+/** "Nov 10 at 3:05 PM", in the phone's own time zone; the year once it differs. */
+export function localWhen(iso: string, now: number = Date.now()): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const day = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  const date = d.getFullYear() === new Date(now).getFullYear() ? day : `${day}, ${d.getFullYear()}`;
+  const h24 = d.getHours();
+  const h = h24 % 12 === 0 ? 12 : h24 % 12;
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${date} at ${h}:${mm} ${h24 < 12 ? 'AM' : 'PM'}`;
+}
+
+export type BlockSheet = {
+  title: string;
+  text: string;
+  /** The one button to the fix; null when there is nothing to do but wait (OK). */
+  button: { label: string; dest: BlockDest } | null;
+};
+
+export const BLOCK_SHEET_EYEBROW = 'BEFORE YOU POST';
+export const BLOCK_SHEET_OK = 'OK';
+export const CANNOT_POST_HERE = 'You cannot post here right now.';
+
+/** The one wording table, for every place a post control appears. */
+export const BLOCK_SHEETS: Record<Exclude<BlockSheetKind, 'muted' | 'other'>, BlockSheet> = {
+  profile_unpublished: {
+    title: 'Set up your profile',
+    text: 'To post in the forum, set up and publish your Audio Community profile first. You choose whether it is listed in the directory.',
+    button: { label: 'SET UP MY PROFILE', dest: 'profile' },
+  },
+  adult_attestation: {
+    title: 'Confirm you are 18 or over',
+    text: 'The forum is for members 18 and over. Confirm your age on your Audio Community profile to post.',
+    button: { label: 'CONFIRM 18+', dest: 'profile' },
+  },
+  email_unconfirmed: {
+    title: 'Confirm your email',
+    text: 'Confirm your email address to post. Check your inbox for the confirmation email, then come back and try again.',
+    button: null,
+  },
+  account_restricted: {
+    title: 'Posting is off for your account',
+    text: 'Your account cannot post right now. Contact support for help.',
+    button: { label: 'CONTACT SUPPORT', dest: 'support' },
+  },
+  pro_lounge_members_only: {
+    title: 'The Pro Lounge',
+    // The owner's exact words for the Pro Lounge (add-on brief, section 5).
+    text: `${PRO_LOUNGE_REFUSAL} You can read every thread. Earn a credential to post here.`,
+    button: { label: 'SEE CREDENTIALS', dest: 'credentials' },
+  },
+  staff_only: {
+    title: 'Academy topics only',
+    text: 'Only the Academy can start topics here. Ask your own questions in Ask the Community.',
+    button: null,
+  },
+};
+
+/** A popup's words. `mutedUntil` comes from forum_me. */
+export function blockSheet(
+  kind: BlockSheetKind,
+  code: string | null,
+  opts: { mutedUntil?: string | null; now?: number } = {},
+): BlockSheet {
+  if (kind === 'muted') {
+    const when = opts.mutedUntil ? localWhen(opts.mutedUntil, opts.now) : '';
+    return {
+      title: 'Posting is paused',
+      text: when ? `You can read the forum, but you cannot post until ${when}.` : REFUSALS.muted,
+      button: null,
+    };
+  }
+  if (kind === 'other') {
+    const known = code ? REFUSALS[code] : undefined;
+    return { title: 'Posting is not available', text: known ?? CANNOT_POST_HERE, button: null };
+  }
+  return BLOCK_SHEETS[kind];
+}
+
+/**
+ * The COMMUNITY RULES link on the forum home: has this member agreed? The
+ * server's own "not agreed" wins; then the server's record; then the phone's,
+ * once it has been read. Anything else shows I AGREE (agreeing twice is
+ * harmless: the server keeps the first acceptance).
+ */
+export function rulesAgreedNow(
+  me: { reason: string | null; rulesAcceptedAt: string | null } | null | undefined,
+  device: { known: boolean; rulesAccepted: boolean },
+): boolean {
+  if (me?.reason === 'rules_not_accepted') return false;
+  if (me?.rulesAcceptedAt) return true;
+  return device.known && device.rulesAccepted;
+}

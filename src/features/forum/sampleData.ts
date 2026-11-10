@@ -7,8 +7,8 @@
  * Everything changes in memory and resets when a state is opened. The category
  * list mirrors the live table as read on 2026-11-07 (34 rows).
  */
-import { TITLE_MIN, orderPosts } from './rules.ts';
-import { SAMPLE_TOPIC, sampleForumOn, sampleState } from './sampleSwitch.ts';
+import { TITLE_MIN, orderPosts, refusalText } from './rules.ts';
+import { SAMPLE_TOPIC, sampleBlocker, sampleForumOn, sampleState } from './sampleSwitch.ts';
 import { WELCOME_PARAGRAPHS, WELCOME_TITLE } from './welcome.ts';
 import type { AdminAppeal, QueueItem } from './adminRows.ts';
 import type { DirectoryCard, PublicCredential, PublicProfile } from '../directory/api.ts';
@@ -483,7 +483,8 @@ function rightsFor(slug: string, pro: boolean): ForumRights {
   const proOnly = c?.groupSlug === 'pro_lounge';
   const barred = proOnly && !pro;
   const staff = !!c?.staffOnlyTopics;
-  const refusal = sampleState()?.refusal ?? null;
+  // The member's own blocker (forum_me's reason) comes first, as on the server.
+  const refusal = sampleBlocker() ?? sampleState()?.refusal ?? null;
   return {
     slug,
     proOnly,
@@ -508,10 +509,10 @@ export function sampleHome(): {
     categories: categories(),
     rights: categories().map((c) => rightsFor(c.slug, pro)),
     me: {
-      canPost: true,
-      reason: null,
+      canPost: !sampleBlocker(),
+      reason: sampleBlocker(),
       trust: empty ? 'new' : 'member',
-      mutedUntil: null,
+      mutedUntil: sampleState()?.mutedUntil ?? null,
       unreadNotices: empty ? 0 : unread,
       rulesAcceptedAt: null,
       badges: empty
@@ -654,6 +655,9 @@ export function sampleSubmit(input: SubmitInput): ForumResult<PostOutcome> {
 }
 
 function sampleSubmitNew(input: SubmitInput): ForumResult<PostOutcome> {
+  // The server refuses a member who may not post, whatever the app showed.
+  const blocked = sampleBlocker() ?? sampleState()?.postRefusal ?? null;
+  if (blocked) return refuse(blocked, refusalText(blocked));
   const v = verdict(input.body);
   const fresh = post(ME, input.body, 0, {
     modState: v.modState,

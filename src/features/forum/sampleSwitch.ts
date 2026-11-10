@@ -32,6 +32,14 @@ export type ForumSampleState = {
   pro: boolean;
   /** A refusal every category answers with. */
   refusal?: string;
+  /** What stops this member posting, in the server's order (forum_me answers
+   *  the first one left). 'rules_not_accepted' clears on I AGREE; the others
+   *  clear when the member follows the popup's button to the fix. */
+  blockers?: string[];
+  /** forum_me's muted_until, for a 'muted' blocker. */
+  mutedUntil?: string;
+  /** A refusal only the post call knows (a category rule forum_me cannot see). */
+  postRefusal?: string;
   /** Draws the owner's rows in a thread. */
   admin?: boolean;
   /** Which directory tab opens. Forum unless it says otherwise. */
@@ -137,6 +145,59 @@ export const FORUM_SAMPLE_STATES: ForumSampleState[] = [
   { ...base, id: 'ideas', label: '6 · Ideas & Requests', open: { route: 'ForumIdeas' } },
   { ...base, id: 'moderation', label: '7 · When Claude steps in', open: { route: 'ForumNotices' } },
   { ...base, id: 'no-profile', label: 'Posting refused: publish your profile first', refusal: 'profile_unpublished' },
+  // Who may post (2026-11-10): every post control opens the rules or a popup.
+  { ...base, id: 'block-rules', label: 'Blocked: rules not agreed (the deadlock)', rulesAccepted: false, blockers: ['rules_not_accepted'] },
+  {
+    ...base,
+    id: 'block-rules-category',
+    label: 'Blocked: rules not agreed, in a category',
+    rulesAccepted: false,
+    blockers: ['rules_not_accepted'],
+    open: { route: 'ForumCategory', params: { slug: 'ask-the-community' } },
+  },
+  {
+    ...base,
+    id: 'block-rules-thread',
+    label: 'Blocked: rules not agreed, in a thread',
+    rulesAccepted: false,
+    blockers: ['rules_not_accepted'],
+    open: { route: 'ForumThread', params: { topicId: SAMPLE_TOPIC.discussion } },
+  },
+  {
+    ...base,
+    id: 'block-rules-lab',
+    label: 'Blocked: rules not agreed, Discuss this lab',
+    rulesAccepted: false,
+    blockers: ['rules_not_accepted'],
+    panel: 'discuss-lab-new',
+  },
+  {
+    ...base,
+    id: 'block-chain',
+    label: 'Blocked: no profile, then rules (one step at a time)',
+    rulesAccepted: false,
+    blockers: ['profile_unpublished', 'rules_not_accepted'],
+    open: { route: 'ForumCategory', params: { slug: 'ask-the-community' } },
+  },
+  { ...base, id: 'block-adult', label: 'Blocked: 18+ not confirmed', blockers: ['adult_attestation'] },
+  { ...base, id: 'block-email', label: 'Blocked: email not confirmed', blockers: ['email_unconfirmed'] },
+  { ...base, id: 'block-muted', label: 'Blocked: muted until a time', blockers: ['muted'], mutedUntil: '2026-11-12T22:30:00Z' },
+  { ...base, id: 'block-restricted', label: 'Blocked: account restricted', blockers: ['account_restricted'] },
+  { ...base, id: 'block-other', label: 'Blocked: a reason the app does not know', blockers: ['some_new_reason'] },
+  {
+    ...base,
+    id: 'block-post-staff',
+    label: 'Blocked by the post call: staff only',
+    postRefusal: 'staff_only',
+    open: { route: 'ForumAsk', params: { slug: 'ask-the-community' } },
+  },
+  {
+    ...base,
+    id: 'block-post-lounge',
+    label: 'Blocked by the post call: Pro Lounge',
+    postRefusal: 'pro_lounge_members_only',
+    open: { route: 'ForumAsk', params: { slug: 'ask-the-community' } },
+  },
   { ...base, id: 'thread-correction', label: 'Thread: a correction to accept or decline', open: { route: 'ForumThread', params: { topicId: SAMPLE_TOPIC.correction } } },
   { ...base, id: 'thread-admin', label: 'Thread: owner sees Pin and Lock (header ···)', admin: true, open: { route: 'ForumThread', params: { topicId: SAMPLE_TOPIC.discussion } } },
   { ...base, id: 'mine', label: 'Your forum: level, badges, bookmarks', open: { route: 'ForumMine' } },
@@ -161,6 +222,9 @@ export const FORUM_SAMPLE_STATES: ForumSampleState[] = [
 
 let state: ForumSampleState | null = null;
 let openPending = false;
+/** Blockers the member has followed the popup's button for (the sample's
+ *  stand-in for fixing it there). */
+let fixed = new Set<string>();
 const listeners = new Set<() => void>();
 
 /** A snapshot for `useSyncExternalStore`: changes only when a flag changes. */
@@ -173,6 +237,7 @@ function emit(): void {
 export function setSampleForum(next: ForumSampleState | null): void {
   state = next;
   openPending = !!next?.open;
+  fixed = new Set();
   flags = next ? { welcomeSeen: next.welcomeSeen, rulesAccepted: next.rulesAccepted } : null;
   emit();
 }
@@ -190,6 +255,27 @@ export function takeSampleOpen(): ForumSampleState['open'] | null {
   if (!sampleForumOn() || !openPending) return null;
   openPending = false;
   return state?.open ?? null;
+}
+
+/** The first blocker left, as forum_me would answer; null when none. */
+export function sampleBlocker(): string | null {
+  const s = sampleState();
+  if (!s) return null;
+  for (const b of s.blockers ?? []) {
+    if (b === 'rules_not_accepted') {
+      if (!flags?.rulesAccepted) return b;
+    } else if (!fixed.has(b)) {
+      return b;
+    }
+  }
+  return null;
+}
+
+/** The member followed the button to the fix: the sample counts it as done. */
+export function sampleFix(code: string | null): void {
+  if (!sampleForumOn() || !code) return;
+  fixed.add(code);
+  emit();
 }
 
 export const sampleFlags = () => (sampleForumOn() ? flags : null);
