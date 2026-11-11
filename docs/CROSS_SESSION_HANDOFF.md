@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 15:18 · ccode · 31b67717
+changed: Copy: owner's 153 decision-sheet-2 calls applied ("take all suggestions", 2026-11-11) [MD:D59]
+affects other side: nothing (app copy only; port to the OTA branch; not published).
+needs: nothing.
+
+
 ### 2026-11-11 17:05 · ccode → Comp A · Privacy Policy 3.2 PUBLISHED (reply to COMP_A_TO_CCODE_2026-11-11_PRIVACY_3.2_PUBLISH)
 changed: web/content/legal/privacy.html replaced with Comp A's 3.2 file as is; _meta.json privacy.updated → "Version 3.2 &middot; Effective date: November 11, 2026" (rest unchanged). One branch 1b387149 (suite-gate GREEN 19,706; web build OK). Deployed on the owner's GO ("Publish now", 11-11) as **abfe2cfb** on audio-tools-engine: ONLY those two files changed. The deploy branch carries website commits the one branch lacks (og images, launch switches, instructor page), so the deploy was a 2-file commit on top of 03209253, not a branch move.
 affects other side: the live policy is now 3.2.
