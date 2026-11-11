@@ -126,7 +126,7 @@ const SCHROEDER: Workspace = {
     'bass traps, EQ of individual peaks); above it you manage diffusion and absorption statistically. ' +
     'Small rooms push Schroeder high — which is why small control rooms are a low-frequency battle.',
   example:
-    'A 50 m³ control room with RT60 = 0.4 s: f_s = 2000·√(0.4/50) ≈ 179 Hz. Everything below ~180 Hz ' +
+    'A 50 m³ control room with RT60 = 0.4 s: fₛ = 2000·√(0.4/50) ≈ 179 Hz. Everything below ~180 Hz ' +
     'is modal (treat modes individually); above it, treat the room statistically.',
   mistakes: [
     'Trying to EQ away a "room mode" above the Schroeder frequency — up there the modes overlap and move with position; broadband treatment wins, not a notch.',
@@ -134,9 +134,9 @@ const SCHROEDER: Workspace = {
     'Reading the Schroeder frequency as exact; it marks the middle of a gradual transition band, not a single line.',
   ],
   warnings:
-    'Statistical-acoustics estimate: f_s = 2000·√(RT60 / V) (metric, V in m³). It marks the center ' +
-    'of a gradual transition, not a hard boundary. Modal analysis (below) is geometry-based; the ' +
-    'diffuse-field model (above) assumes good diffusion.',
+    'Statistical-acoustics estimate: fₛ = 2000·√(RT60 / V) (metric, V in m³). It marks the center ' +
+    'of a gradual transition, not a hard boundary. Below it, modal analysis is geometry-based; ' +
+    'above it, the diffuse-field model assumes good diffusion.',
   glossary: ['Room Mode', 'Standing wave', 'Reverberation Time', 'RT60', 'Modal density'],
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '50', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
@@ -148,7 +148,7 @@ const SCHROEDER: Workspace = {
       key: 'fs',
       name: 'Schroeder frequency from room',
       inputs: ['vol', 'rt60'],
-      formula: 'f_s = 2000 · √(RT60 / V)',
+      formula: 'fₛ = 2000 · √(RT60 / V)',
       plainFormula:
         'The Schroeder frequency equals 2000 times the square root of the reverberation time divided by the room volume.',
       explain:
@@ -164,7 +164,7 @@ const SCHROEDER: Workspace = {
       steps: (v) => {
         const fs = 2000 * Math.sqrt(n(v.rt60) / n(v.vol));
         return [
-          `f_s = 2000 × √(${fmt(n(v.rt60))} ÷ ${fmt(n(v.vol))}) = ${fmt(fs)} Hz.`,
+          `fₛ = 2000 × √(${fmt(n(v.rt60))} ÷ ${fmt(n(v.vol))}) = ${fmt(fs)} Hz.`,
           `Below ~${fmt(fs)} Hz the room is MODAL — count and treat individual resonances. Above it, treat the room statistically (diffusion + broadband absorption).`,
         ];
       },
@@ -173,7 +173,7 @@ const SCHROEDER: Workspace = {
       key: 'volForFs',
       name: 'Room volume for a target Schroeder frequency (reverse)',
       inputs: ['fs', 'rt60'],
-      formula: 'V = RT60 · (2000 / f_s)²',
+      formula: 'V = RT60 · (2000 / fₛ)²',
       plainFormula:
         'The required room volume equals the reverberation time times the square of 2000 divided by the target Schroeder frequency.',
       explain:

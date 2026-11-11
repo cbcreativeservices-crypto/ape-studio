@@ -520,7 +520,7 @@ export const M06_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'timpani', label: 'the timpani (and their player)', short: 'TIMPANI', note: 'At the back of the orchestra, the player behind the drums facing the conductor. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'timpani', label: 'the timpani (and their player)', short: 'TIMPANI', note: 'At the back of the orchestra, the player behind the drums facing the conductor — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'Another big, low drum along the row. A timpani spot hears it — and the bass drum’s mics hear the timpani.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Crisp and loud farther along the row; part of what every percussion mic hears.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },

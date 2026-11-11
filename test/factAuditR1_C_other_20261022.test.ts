@@ -51,7 +51,7 @@ describe('F002090 / F002107 / F002113: cymatics glossary physics', () => {
     assert.ok(!CONTENT.includes('surface tension shortens the wavelength'));
   });
   it('below f_s the cone keeps moving; its output falls', () => {
-    assert.ok(CONTENT.includes('Below f_s the cone moves about the same amount but its output falls fast; near f_s it swings hardest if damping is low'));
+    assert.ok(CONTENT.includes('Below fs the cone moves about the same amount but its output falls fast; near fs it swings hardest if damping is low'));
     assert.ok(!CONTENT.includes('stiffness-controlled and barely moves'));
   });
   it('cork dust marks where the air does not move, not pressure nodes', () => {
@@ -162,7 +162,7 @@ describe('F086703 / F086753: muffling hurts S and F first, not nasals', () => {
 describe('F088672: hearing risk starts near 85, not 96', () => {
   it('the SPL legend states the 85 / 3 dB rule', () => {
     assert.ok(SPL.includes('Hearing risk starts near 85 over a full day:'));
-    assert.ok(SPL.includes('NIOSH recommends 85 dBA for 8 hours, halving'));
+    assert.ok(SPL.includes('NIOSH recommended exposure limit is 85 dBA for 8 hours, halving'));
     assert.ok(!SPL.includes('the point where sustained levels get into hearing-risk territory'));
   });
 });

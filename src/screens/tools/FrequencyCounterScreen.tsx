@@ -367,7 +367,7 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
           {state === 'denied' && (
             <Text style={styles.liveWarn}>⚠ Camera access is off — enable it in Settings to use Light Pulse.</Text>
           )}
-          {state === 'error' && <Text style={styles.liveWarn}>⚠ Camera error: {lastError || 'could not start capture'}.</Text>}
+          {state === 'error' && <Text style={styles.liveWarn}>⚠ Camera error: {lastError || 'could not start capture'}. Press STOP, close other apps using the camera, then press START CAMERA.</Text>}
           {state === 'running' && steady && (
             <Text style={styles.liveWarn}>Point the camera at the flashing light — the image looks steady right now (little brightness change).</Text>
           )}

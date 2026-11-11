@@ -47,6 +47,7 @@ import Svg, { Line, Path } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
 import { rampColors } from '../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
+import { ApeDsp } from '../../../modules/ape-dsp';
 import {
   AMP_FLOOR,
   DBC_FLOOR_DB,
@@ -648,9 +649,14 @@ export function HarmonicStems({
               <Text style={styles.sheetNote}>
                 {canSolo
                   ? detail.n === soloN
-                    ? `SOLO H${detail.n} · ${detail.n * f0} Hz sine — this harmonic alone as a real sine; the full mixture needs the additive engine.`
+                    ? `SOLO H${detail.n} · ${detail.n * f0} Hz sine — this harmonic alone as a real sine; ${
+                        // Same split as HarmonicsView's SOLO status: engine ≥ 3 has the additive mixture.
+                        ApeDsp.engineVersion() >= 3
+                          ? 'the header ▶ sounds the full mixture.'
+                          : 'update the app to hear the full mixture.'
+                      }`
                     : 'SOLO plays this harmonic alone as a real sine at its exact frequency.'
-                  : 'Solo playback needs the measurement engine.'}
+                  : 'This version of the app can’t play SOLO yet; update the app to hear it.'}
               </Text>
 
               <Pressable

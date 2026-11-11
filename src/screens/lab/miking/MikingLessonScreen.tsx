@@ -145,7 +145,7 @@ export function MikingLessonScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <LabHeader title="MIKING LABS" subtitle="Lesson not found" />
         <View style={styles.missing}>
-          <Text style={styles.missingText}>This lesson is not available in this version of the app.</Text>
+          <Text style={styles.missingText}>This lesson isn’t in this version of the app — try updating it, or go back.</Text>
           <Text style={styles.link} onPress={() => safeGoBack(navigation)} accessibilityRole="button">
             ‹ Back
           </Text>

@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the splash on the side away from the player, or under it on the arm — clear of the stick and the swing, then move the mic.',
     credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the splash on the crash), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'No distance is published for a splash: a zone is a place to begin, measured from the plate. Above, or underneath on the arm; on a crash, above both. Clearance comes first.',
+    takeaway: 'There is no set distance for a splash: a zone is a place to begin, measured from the plate. Above, or underneath on the arm; on a crash, above both. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sp.place.1',
     page: 'placement',
-    prompt: 'No distance is published for a splash. How do you use “about 15–25 cm above”?',
+    prompt: 'There is no set distance for a splash. How do you use “about 15–25 cm above”?',
     options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimeter', 'As a limit: closer than 15 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
     explain: 'With no fixed number to go by, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',

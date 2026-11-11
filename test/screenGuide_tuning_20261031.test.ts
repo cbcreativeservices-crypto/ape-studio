@@ -263,7 +263,7 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.equal(f2(w.widerThanNormalBy), '41.06');
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const MIN = 690, MAX = 705;/);
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const \[fifthCents, setFifthCents\] = useState\(700\);/);
-    for (const s of ['t = 1.118034 and D at 193.16 ¢', 'g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
+    for (const s of ['t = 1.118034 (the step from C to D) and D at 193.16 ¢', 'g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
     assert.ok(all(9).includes('5.38 ¢ narrower'));
   });
   it('ch10: step 1 = 1.059463, 277.18 Hz (+15.56 Hz); the last step adds 29.37 Hz', () => {
@@ -305,8 +305,8 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.ok(s13.includes('const c2Correct = RULES.every((r) => picks[r.rule] === r.answer);'));
     for (const n of [2, 4, 5]) assert.ok(s13.includes(`onCorrect={() => mark(${n})}`), `challenge ${n + 1} ticks on a right answer`);
     const g = all(13);
-    assert.ok(g.includes('with DONE on FOLD and THIRD; E MOVES shows the three E’s and SOUND'));
-    assert.ok(g.includes('challenge 2 (match the rule) and the questions for 3, 5 and 6'));
+    assert.ok(g.includes('DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND'));
+    assert.ok(g.includes('do challenge 2 (match the rule) and answer the questions for 3, 5 and 6'));
     assert.ok(g.includes('gets a check mark once you get it right'));
     assert.doesNotMatch(g, /perfect answers are not needed/);
   });

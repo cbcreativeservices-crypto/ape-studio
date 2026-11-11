@@ -411,7 +411,7 @@ export function WaveformModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the bezel
+          Ride the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the readout
           numbers are computed from exactly the signal the picture draws.
         </Text>
 
@@ -688,8 +688,8 @@ export function VuModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and A/B the SIGNAL tray while the needle answers — NDL MAX on the
-          bezel shows how far the ~300 ms ballistics ever get.
+          Ride the GAIN lane and A/B the SIGNAL tray while the needle answers — NDL MAX in the
+          readouts shows how far the ~300 ms ballistics ever get.
         </Text>
 
         <CollapsibleSection title="THE LESSON — WATCH THE NEEDLE LOSE TO THE LED">
@@ -848,7 +848,7 @@ export function LoudnessModule(p: MeterModuleProps) {
           </Text>
           <Text style={dstyles.eyebrow}>THE TRUE-PEAK CEILING — MIND THE GAP</Text>
           <Text style={dstyles.body}>
-            Compare SAMPLE PK with TRUE PK on the bezel: the TP GAP readout is the overshoot the
+            Compare SAMPLE PK with TRUE PK in the readouts: the TP GAP readout is the overshoot the
             reconstructed waveform makes BETWEEN samples. A file whose samples never touch full scale
             can still clip a DAC or a lossy encoder. Many platforms ask for a true peak of −1 dBTP
             (broadcast under ATSC A/85: −2) so the reconstruction — and the codec after it — always has room.

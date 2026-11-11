@@ -142,7 +142,7 @@ export function ProductionActivityScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         <Header onBack={() => safeGoBack(navigation)} title="Exercise" />
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>This exercise is not available.</Text>
+          <Text style={styles.emptyText}>This exercise can’t be found. Go back and choose another exercise.</Text>
         </View>
       </View>
     );

@@ -755,7 +755,7 @@ const WS_LATENCY: Workspace = {
       key: 'roundTrip',
       name: 'Round-trip monitoring latency',
       inputs: ['inBuf', 'outBuf', 'proc', 'sr'],
-      formula: 't_rt = N_in/sr + N_out/sr + t_proc',
+      formula: 't rt = N in/sr + N out/sr + t proc',
       plainFormula:
         'The round-trip latency equals the input buffer over the sample rate, plus the output buffer over the sample rate, plus the extra processing time.',
       explain:

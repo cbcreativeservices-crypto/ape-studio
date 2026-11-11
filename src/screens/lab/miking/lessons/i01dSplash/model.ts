@@ -48,7 +48,7 @@ export const SPLASH_ZONES: DocumentedZone[] = [
   {
     id: 'sp.top',
     label: 'Above the splash, away from the player',
-    band: 'Start about 15–25 cm (6–10 in) above the splash on the side away from the player, aimed at its bow — a place to begin; no number is published for a splash.',
+    band: 'Start about 15–25 cm (6–10 in) above the splash on the side away from the player, aimed at its bow — a place to begin; there is no set number for a splash.',
     kind: 'trial',
     src: 'LESSON',
     quote: 'an engineering starting suggestion, no number',

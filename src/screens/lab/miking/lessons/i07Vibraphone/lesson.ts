@@ -704,7 +704,7 @@ export const I07_LESSON: MalletLesson = {
   },
   setting: {
     items: [
-      { id: 'vibe', label: 'the vibraphone (and its player)', short: 'VIBRAPHONE', note: 'The player stands behind it, facing the audience, with the pedal at their feet. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical small-group layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'vibe', label: 'the vibraphone (and its player)', short: 'VIBRAPHONE', note: 'The player stands behind it, facing the audience, with the pedal at their feet — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical small-group layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUMS', note: 'Loud and close: every mic over the bars hears it. Where you can, keep the vibraphone away from the drums.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low and loud. A directional mic rejects only part of it — often least at low frequencies.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'piano', label: 'the piano', short: 'PIANO', note: 'Another pitched instrument in the same range: it blends into the vibraphone mics.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },

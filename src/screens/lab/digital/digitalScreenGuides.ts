@@ -29,10 +29,10 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
     start: 'Read the top row from SOUND to SOUND: that’s the whole chain. Then tap the first module’s name to read what it covers, and tap OPEN to start it.',
   },
   seeing: [
-    'This menu is your map of digital audio: how sound becomes numbers, and how numbers become sound again.',
     'Read the top row left to right. It’s the whole chain: SOUND › ANALOG › SAMPLES › NUMBERS … › LOUDSPEAKER › SOUND.',
     'THE EIGHT MODULES lists the lab in order, one row each. A ✓ marks a module you’ve opened.',
     'SECONDARY TOOLS and LEARNING are shortcuts into a module or a calculator, and to the GUIDED LESSON.',
+    'The level, float and jitter scenes are illustrations for comparing settings.',
   ],
   control: [
     'Tap a module’s name to read what it covers. Tap OPEN to start it.',
@@ -51,7 +51,7 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
     'Time and level are measured separately: sample rate sets bandwidth, bit depth the noise floor.',
     'Digital audio is not stair steps. The DAC (digital-to-analog converter) and its filter rebuild a smooth wave.',
     'Clipping at or before the converter is permanent; no later fader undoes it.',
-    'Sample, bit and true-peak numbers are exact math. The level, float and jitter scenes are illustrations for comparing settings.',
+    'Sample, bit and true-peak numbers are exact math.',
   ],
   tryThis: [
     'New to digital audio? Take the modules in order: each one uses the last. The lab builds on the Sound and Acoustics labs.',
@@ -365,7 +365,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     teaches: [
       'Jitter is a sample-clock timing error that matters at conversion.',
       'One device sets the clock for a whole digital system. The rest follow it: by a word-clock cable, by the clock carried in a digital audio signal (AES3 or S/PDIF), or by PTP timing on a network.',
-      'The classic digital-audio myths, each beside what is true.',
+      'Bit depth sets the noise floor, not high-frequency response.',
       'Real jitter is measured in nanoseconds or less: tiny next to the 20.83 µs between samples.',
     ],
     tryThis: [

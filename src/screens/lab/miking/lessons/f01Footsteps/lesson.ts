@@ -202,7 +202,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f01.place.2',
     page: 'placement',
-    prompt: 'One stage compared two shotguns at about 1.5–2 m. One sounded blurred. A fair next move?',
+    prompt: 'One Foley stage compared two shotguns at about 1.5–2 m. One sounded blurred. A fair next move?',
     options: ['Try it about half a meter closer, then compare', 'Swap the shoes for louder ones, then compare', 'Raise the gain until the steps sound clearer'],
     correct: 'Try it about half a meter closer, then compare',
     explain: 'When the steps need more articulation, moving the mic a little closer — about half a meter, as that stage did — is a fair first change. Keep everything else the same and compare at matched level.',

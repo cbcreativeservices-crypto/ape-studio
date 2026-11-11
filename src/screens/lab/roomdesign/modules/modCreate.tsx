@@ -224,7 +224,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
         Build the room you actually have. Start from the quick rectangle and set its length, width and ceiling, or choose an angled, irregular or curved plan and drag the corners to match. Doors, windows and large objects matter: a window is a hard, slightly bass-leaky surface; an open doorway absorbs everything that reaches it; a desk is a reflecting shelf under the speakers — the model draws that bounce.
       </Body>
       <Body>
-        The numbers on the bezel — area, volume and the room ratio — are plain arithmetic from your entries. The ratio follows the usual convention: the three dimensions sorted smallest : middle : largest (S:M:L), each divided by the smallest — usually height : width : length. Ratios near 1 : 1 : 1 or 1 : 2 stack room modes on the same frequencies; the famous "good ratios" (for example 1 : 1.4 : 1.9) spread them out. You cannot usually move walls, but knowing the ratio tells you what to expect in the bass.
+        The numbers in the readouts — area, volume and the room ratio — are plain arithmetic from your entries. The ratio follows the usual convention: the three dimensions sorted smallest : middle : largest (S:M:L), each divided by the smallest — usually height : width : length. Ratios near 1 : 1 : 1 or 1 : 2 stack room modes on the same frequencies; the famous "good ratios" (for example 1 : 1.4 : 1.9) spread them out. You cannot usually move walls, but knowing the ratio tells you what to expect in the bass.
       </Body>
       <Caption>Units convert exactly (1 ft = 0.3048 m, 1 in = 25.4 mm). Dimension entry accepts decimals in the chosen unit.</Caption>
     </RoomRackLayout>

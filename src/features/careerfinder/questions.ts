@@ -36,7 +36,7 @@ export const QUESTIONS: readonly Question[] = [
   { id: 'RC02', dimension: 'RC', text: 'How would you feel about running a recording session and managing takes, files and performers?' },
   { id: 'CP02', dimension: 'CP', text: 'How would you feel about performing music, voice or sound for an audience or recording?' },
   { id: 'AR02', dimension: 'AR', text: 'How would you feel about designing experiments to understand how sound behaves or how people perceive it?' },
-  { id: 'BO02', dimension: 'BO', text: 'How would you feel about recommending and selling audio products based on a customer’s needs?' },
+  { id: 'BO02', dimension: 'BO', text: 'How would you feel about suggesting and selling audio products based on a customer’s needs?' },
   { id: 'MS02', dimension: 'MS', text: 'How would you feel about creating sounds that change in response to a player’s actions in a game or virtual environment?' },
   { id: 'BM02', dimension: 'BM', text: 'How would you feel about soldering and assembling electronic circuits or audio devices?' },
   { id: 'TE02', dimension: 'TE', text: 'How would you feel about coaching musicians, singers or students as they develop their abilities?' },

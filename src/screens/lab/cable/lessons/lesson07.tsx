@@ -155,7 +155,7 @@ export function Lesson07Body() {
       ) : null}
 
       {/* ── (b) card browser over the 10 core power records ────────────────── */}
-      <Eyebrow text="POWER CONNECTOR BROWSER · 10 RECORDS" />
+      <Eyebrow text="POWER CONNECTOR BROWSER · 10 CONNECTORS" />
       <Text style={s.body}>
         Ten power connectors in three families. Pick a family, then a connector — and read each card’s cautions before
         anything else.

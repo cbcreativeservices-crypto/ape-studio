@@ -284,7 +284,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           <TrayButton key={n} label={n.toUpperCase()} onPress={() => update((d) => saveLayoutAs(d, n))} />
         ))}
       </View>
-      <Caption>{`START is the baseline the diff reads from — a move made while START is showing lands in EDITED, so START only changes when you save into it; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
+      <Caption>{`START is the baseline that WHAT CHANGED compares against — a move made while START is showing lands in EDITED, so START only changes when you save into it; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
         label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : account ? 'SAVE (NOT KEPT YET)' : 'SAVE (SIGN IN TO KEEP IT)') : 'SAVE DESIGN TO THIS DEVICE'}

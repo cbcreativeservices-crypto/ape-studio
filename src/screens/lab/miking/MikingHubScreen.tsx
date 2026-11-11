@@ -94,7 +94,7 @@ export function MikingHubScreen() {
                     style={tablet ? styles.tileThird : styles.tileHalf}
                     glassStyle={styles.tileFace}
                     onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
-                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${known ? `${n} of ${PAGE_IDS.length} pages done.` : 'Progress not read yet.'}`}
+                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${known ? `${n} of ${PAGE_IDS.length} pages done.` : 'Your progress isn’t available right now.'}`}
                   >
                     <Text style={styles.tileName}>{`${all ? '✓ ' : ''}${ls.title}`}</Text>
                     <Text style={styles.tileSub}>{ls.subtitle}</Text>

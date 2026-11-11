@@ -325,7 +325,9 @@ describe('6. chip decision: Digital Audio is a CONCEPT lab — no accuracy chip'
   it('the home guide says which numbers are exact math and which are models (the chip’s honesty line)', () => {
     const t = (DIGITAL_HOME_GUIDE as unknown as Guide).teaches.join(' ');
     assert.match(t, /exact math/i);
-    assert.match(t, /scenes are illustrations for comparing settings/);
+    // The honesty note moved to WHAT YOU'RE SEEING (copy audit 2026-11-10: TEACHES is audio knowledge only).
+    assert.doesNotMatch(t, /scenes are illustrations/);
+    assert.match((DIGITAL_HOME_GUIDE as unknown as { seeing: string[] }).seeing.join(' '), /The level, float and jitter scenes are illustrations for comparing settings\./);
     assert.match(MODS.adc.seeing.join(' '), /far louder than a real converter’s, so use SNR to compare settings, not as a real figure/);
   });
   it('the what’s-left guide card is titled WHAT’S LEFT on both hosts, not the module/lab title', () => {

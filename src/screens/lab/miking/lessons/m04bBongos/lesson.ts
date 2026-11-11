@@ -698,7 +698,7 @@ export const M04B_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a published bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no set bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: HEMBRA,
     drums: { macho: MACHO, hembra: HEMBRA },

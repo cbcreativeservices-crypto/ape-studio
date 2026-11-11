@@ -28,7 +28,7 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/foundations/FoundationsCourseScreen.tsx", now: "that changes the PITCH, so it is no longer the same note. (Getting clos", gone: "that changes the PITCH, not the loudness. (Getting clos" },
   { file: "src/screens/lab/foundations/FoundationsCourseScreen.tsx", now: "This app labels its readings honestly — dBFS · uncalibrated where that is the truth — because", gone: "This app labels every reading honestly — dBFS · uncalibrated — because" },
   { file: "src/screens/lab/amp/modules/mod7RealWorld.tsx", now: "note=\"+3 dB is small but clearly audible", gone: "note=\"+3 dB is clearly audible" },
-  { file: "src/screens/lab/BassLabScreen.tsx", now: "s bezel reads \\u2248G\\u266F3 \\u221214\\u00", gone: "s bezel reads \\u2248G\\u26AF3 \\u221214\\u00" },
+  { file: "src/screens/lab/BassLabScreen.tsx", now: "s readout shows \\u2248G\\u266F3 \\u221214\\u00", gone: "s bezel reads \\u2248G\\u26AF3 \\u221214\\u00" },
   { file: "src/screens/lab/BassLabScreen.tsx", now: "z with the tempered G\\u266F3 at 207.65 Hz", gone: "z with the tempered G\\u26AF3 at 207.65 Hz" },
   { file: "src/screens/lab/AutotuneLabScreen.tsx", now: "blurb: 'Slow correction: each ~400 ms closes most of the gap — a gentle dri", gone: "blurb: 'Correction over ~400 ms — a gentle dri" },
   { file: "src/screens/lab/wave/modules/modWaveB.tsx", now: "<Badge text=\"STEMS = ARRIVALS: THE DIRECT SOUND, THEN THE FIRST AND SECOND REFLECTIONS · AMBER FUSES", gone: "<Badge text=\"STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES" },
@@ -67,7 +67,7 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/connectorselect/pagesA.tsx", now: "a speaker-level signal — tens of volts and real current from an amplifier, not line level. Heavy unshielded conductors, connections made with the amplifier OFF — and never into a mic or line input.</Body>", gone: "a speaker-level signal — high voltage and real current from an amplifier, not line level. Heavy unshielded conductors, connections made with the amplifier OFF — and never, ever into an input.</Body>" },
   { file: "src/screens/lab/digital/modules/modAnalog.tsx", now: "vanishes — how much depends on the slope. Honest cost: real signal near the cutoff is cut too.", gone: "sampled data above. Filter on: the input is attenuated before measurement — the alias is" },
   { file: "src/screens/lab/digital/modules/modDac.tsx", now: "the +1.76 dB comes from comparing the sine’s power with the power of the rounding noise.", gone: "the +1.76 dB comes from the sine’s crest factor, not from rounding." },
-  { file: "src/screens/lab/dj/pages/p01Welcome.tsx", now: "style={styles.tileBody}>NIOSH recommends 85 dBA for 8 hours, HALVING the time for every 3 dB more. The US legal limit (OSHA) is 90 dBA, with a 5 dB rule.</Text>", gone: "style={styles.tileBody}>A widely used workplace guideline allows 85 dBA for 8 hours, and HALVES the time for every 3 dB more.</Text>" },
+  { file: "src/screens/lab/dj/pages/p01Welcome.tsx", now: "style={styles.tileBody}>NIOSH advises 85 dBA for 8 hours, HALVING the time for every 3 dB more. The US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more.</Text>", gone: "style={styles.tileBody}>A widely used workplace guideline allows 85 dBA for 8 hours, and HALVES the time for every 3 dB more.</Text>" },
   { file: "src/screens/lab/dj/pages/p01Welcome.tsx", now: ")} % of a day’s allowance (NIOSH)`}", gone: ")} % of a day’s allowance`}" },
   { file: "src/screens/lab/dj/pages/p01Welcome.tsx", now: "R until it is comfortable, and keep it well below the top.</P>", gone: "R until it is comfortable — never to the top.</P>" },
   { file: "src/screens/lab/dj/pages/p03Connect.tsx", now: "(it needs a LINE input). Use exactly one phono stage, the turntable’s or the mixer’s: not both, and not neither.',", gone: "(it needs a LINE input). Never both, never neither.'," },
@@ -88,10 +88,10 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "'The peaks between the notches grow tall and narrow and ring", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "rculates the delayed copy: the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant", gone: "rculates the delayed copy, sharpening the comb: deeper notches, resonant peaks" }, // D42 r2 2026-11-01: "deeper contrast" was false at MIX 50% (notches get shallower)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "with a very high ratio — peaks held at a ceiling',", gone: "with a very high ratio — a ceiling nothing passes'," },
-  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
-  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "working level, under the NIOSH daily recommended limit:", gone: "working level, under the daily exposure limit:" },
+  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
+  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "working level, under the NIOSH recommended exposure limit:", gone: "working level, under the daily exposure limit:" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "te: 'Unsafe for working: about three hours or less a day at this level (NIOSH),", gone: "te: 'Unsafe for working: two hours or less a day at this level," },
-  { file: "src/screens/lab/mastering/modules/mod3Room.tsx", now: "DAY on the bezel is the NIOSH recommended daily limit: 8 h at 85 dBA, halved every 3 dB above. The US legal limit (OSHA) is looser: 90 dBA, halved every 5 dB.</Point>", gone: "DAY on the bezel is the DAILY LIMIT: the NIOSH figure of 8 h at 85 dBA, halved every 3 dB above.</Point>" },
+  { file: "src/screens/lab/mastering/modules/mod3Room.tsx", now: "DAY readout is the NIOSH recommended daily limit: 8 h at 85 dBA, halved every 3 dB above. The US legal limit (OSHA) is looser: 90 dBA, halved every 5 dB.</Point>", gone: "DAY on the bezel is the DAILY LIMIT: the NIOSH figure of 8 h at 85 dBA, halved every 3 dB above.</Point>" },
   { file: "src/screens/lab/mastering/modules/mod4Tools.tsx", now: "<Body>• Most engineers check mono every time they change width.</Body>", gone: "<Body>• Width is never touched without a mono check.</Body>" },
   { file: "src/screens/lab/mastering/modules/mod6Loudness.tsx", now: "e amount — a gain change moves these three together and leaves the gap between them alone — and the face", gone: "e amount — a gain change is the one thing that moves every number together — and the face" },
   { file: "src/screens/lab/mastering/modules/mod6Loudness.tsx", now: "range). Limiting spends mostly the first; compression is what shrinks the second.</Point>", gone: "range). Limiting spends it.</Point>" },
@@ -176,12 +176,12 @@ test('audit R2 · R034578: the cutoff-bias check has one defensible answer', () 
 
 test('audit R2 · owner hearing ruling 2026-10-23: NIOSH and OSHA named together; no workplace-limit wording', () => {
   const welcome = read('src/screens/lab/dj/pages/p01Welcome.tsx');
-  assert.match(welcome, /NIOSH recommends 85 dBA for 8 hours/);
-  assert.match(welcome, /legal limit \(OSHA\) is 90 dBA, with a 5 dB rule/);
+  assert.match(welcome, /NIOSH advises 85 dBA for 8 hours/);
+  assert.match(welcome, /legal limit \(OSHA\) is 90 dBA, halving the time for every 5 dB more/);
   assert.doesNotMatch(welcome, /workplace guideline/);
   assert.match(read('src/screens/lab/dj/pages/p20Pa.tsx'), /NIOSH guideline from Screen 1[^)]*OSHA legal limit is 90 dBA/);
   const eng = read('src/screens/lab/mastering/masteringEngine.ts');
-  assert.match(eng, /NIOSH recommends 85 dBA for 8 hours[^']*OSHA\) is 90 dBA with a 5 dB rule/);
+  assert.match(eng, /NIOSH recommended exposure limit is 85 dBA for 8 hours[^']*OSHA\) is 90 dBA with a 5 dB rule/);
   assert.match(read('src/screens/lab/mastering/modules/mod3Room.tsx'), /NIOSH recommended daily limit[^<]*OSHA\) is looser: 90 dBA/);
 });
 

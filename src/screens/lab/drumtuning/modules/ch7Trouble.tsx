@@ -260,7 +260,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
       if (Math.abs(b.beat - beat) >= 0.05) changed.push(b.beat >= 0.05 && beat < 0.05 ? 'the beat is gone' : `BEAT ${b.beat.toFixed(1)} → ${beat.toFixed(1)} Hz`);
       if (b.t60 != null && t60 != null && Math.abs(b.t60 - t60) >= 0.03) changed.push(`SUSTAIN ${fmtS(b.t60)} → ${fmtS(t60)}`);
     }
-    const what = changed.length ? ` ${changed.join(', ')}.` : ' Nothing on the bezel moved.';
+    const what = changed.length ? ` ${changed.join(', ')}.` : ' Nothing in the readouts moved.';
     if (!present) return `${fixInfo.label}: ${fixInfo.why}${what} Strike it — the symptom has cleared.`;
     const side = lastFix === 'tighten' ? ' The drum is now a quarter turn higher than you left it — ↺ RESET CASE puts it back.' : lastFix === 'damp' ? ' The gel is still on the drum — ↺ RESET CASE takes it off.' : lastFix === 'reso' ? ' The resonant head is now 4 st above the batter — ↺ RESET CASE puts it back.' : '';
     return `${fixInfo.label}: ${fixInfo.why}${what} FAULT still reads STILL.${side}`;

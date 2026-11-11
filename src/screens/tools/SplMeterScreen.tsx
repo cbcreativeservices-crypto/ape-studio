@@ -2165,7 +2165,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   <Text style={styles.roomLegendBody}>
                     In SPL / OPTIMAL mode the arc reads as a loudness scale: GREEN up to ~85, YELLOW
                     85–90, ORANGE 90–96 and RED from 96. Hearing risk starts near 85 over a full day:
-                    NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that, so
+                    the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that, so
                     in the red it is under an hour. The US legal limit (OSHA) is 90 dBA with a 5 dB rule. The
                     center number turns the color of the zone it sits in
                     (averaged over ~3 s so it does not flicker at a boundary).
@@ -2513,7 +2513,7 @@ export function SplMeterScreen({ navigation }: Props) {
       {/* Bezel-key reveal (Pillar B, plan §3) — digital view only, never over a
           fullscreen overlay or an open popup. */}
       {view === 'digital' && splCoach.visible && settingPopup == null && !readoutFsOpen ? (
-        <CoachMark text="The bezel keys set RANGE · WEIGHTING · RESPONSE · HOLD" bottom={insets.bottom + 24} />
+        <CoachMark text="The keys on the readout strip set RANGE · WEIGHTING · RESPONSE · HOLD" bottom={insets.bottom + 24} />
       ) : null}
 
       {/* ── Fullscreen # readout (de-modalized 2026-08-19): the number ALONE (no

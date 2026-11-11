@@ -28,6 +28,15 @@ function openSystemSettings(): void {
   });
 }
 
+// Raw native error text (iOS localizedDescription, Android exception messages)
+// is not plain words, so it never reaches the screen; it stays on the engine's
+// lastError for diagnostics. The one plain sentence the engine writes itself
+// (the start watchdog in useDspEngine) is the only lastError shown.
+const PLAIN_ENGINE_ERROR = /^The microphone didn’t start in time\./;
+function shownError(e?: string): string {
+  return e && PLAIN_ENGINE_ERROR.test(e) ? e : '';
+}
+
 /**
  * ── EVERY HOST MUST PASS `onRetry` (2026-09-17, bug-hunt pass 3) ──────────
  *
@@ -111,7 +120,8 @@ export function EngineGate({
       const info = ApeDsp.getInfo();
       if (info) {
         const rate = info.sampleRate > 0 ? `${Math.round(info.sampleRate)} Hz` : 'no sample rate';
-        detail = `Input: ${info.routeName || 'none'} · ${rate}${info.lastError ? ` · ${info.lastError}` : ''}`;
+        const err = shownError(info.lastError);
+        detail = `Input: ${info.routeName || 'no input'} · ${rate}${err ? ` · ${err}` : ''}`;
       }
     } catch {
       detail = '';
@@ -150,19 +160,17 @@ export function EngineGate({
   const copy =
     state === 'absent'
       ? {
-          title: 'MEASUREMENT ENGINE — NOT IN THIS BUILD',
+          title: 'LIVE MEASUREMENT ISN’T AVAILABLE HERE YET',
           body:
-            'This install does not include the native audio engine (it ships in the app’s full iOS and Android builds). ' +
-            'No simulated readings are shown in its place — a meter that looks live but isn’t would ' +
-            'violate the measurement-integrity rules this module is built on.',
+            'This version of the app can’t read the microphone yet, so no readings are shown — ' +
+            'we never show made-up numbers. Update the app to use this tool.',
         }
       : state === 'spike'
         ? {
-            title: 'NOT SUPPORTED IN THIS APP BUILD',
+            title: 'NOT AVAILABLE IN THIS VERSION',
             body:
-              'This build carries the first-generation capture module only. The full measurement engine ' +
-              '(weighted metering, spectrum, pitch, signal generator) is not part of this app build, so ' +
-              'this tool cannot run live here.',
+              'This version of the app can’t run the full measurement tools yet (weighted metering, ' +
+              'spectrum, pitch, signal generator), so this tool can’t run live here. Update the app to use it.',
           }
         : state === 'denied'
           ? {
@@ -176,8 +184,8 @@ export function EngineGate({
           : {
               title: 'CAPTURE ERROR',
               body: onRetry
-                ? `The audio engine could not start.${lastError ? ` (${lastError})` : ''} Tap TRY AGAIN; if it persists, close other audio apps first.`
-                : `The audio engine could not start.${lastError ? ` (${lastError})` : ''} Go back and re-open this tool to try again; if it persists, close other audio apps first.`,
+                ? `Live audio could not start.${shownError(lastError) ? ` (${shownError(lastError)})` : ''} Tap TRY AGAIN; if it persists, close other audio apps first.`
+                : `Live audio could not start.${shownError(lastError) ? ` (${shownError(lastError)})` : ''} Go back and re-open this tool to try again; if it persists, close other audio apps first.`,
             };
   return (
     <View style={styles.card}>

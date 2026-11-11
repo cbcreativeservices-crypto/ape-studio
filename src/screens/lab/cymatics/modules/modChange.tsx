@@ -149,7 +149,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
     ) : (
       <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={P.caption}>Needs the current app build (Skia).</Text>
+        <Text style={P.caption}>Update the app to see this plate.</Text>
       </View>
     );
 
@@ -171,7 +171,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
         ),
         params,
       }}
-      caption="Pick what VARIES, predict, then flick B across its options while A holds. The tone never changes — read RES for each plate on the bezel."
+      caption="Pick what VARIES, predict, then flick B across its options while A holds. The tone never changes — read RES for each plate in the readouts."
     >
       <Text style={P.body}>
         Two plates, one tone. The frequency is locked to a resonance of plate A and <Text style={P.strong}>never changes</Text>. The one thing that

@@ -111,7 +111,7 @@ describe('2. each guide quotes its screen’s real names', () => {
   }
   it('the reader’s WHO note and the starting-points line are the template’s own', () => {
     const types = code(`${MG}/data/types.ts`);
-    assert.match(types, /WHO recommends audiences be exposed to no more than 100 dB LAeq over 15 minutes/);
+    assert.match(types, /WHO advises keeping audience exposure to no more than 100 dB LAeq over 15 minutes/);
     assert.match(types, /'Starting points, not rules\. Put on a reference track in the style, match its level/);
   });
 });

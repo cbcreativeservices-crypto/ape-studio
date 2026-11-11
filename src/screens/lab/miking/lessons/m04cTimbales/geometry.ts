@@ -91,7 +91,7 @@ export const TIMB_WORDS: HandWords = {
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
     x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centers (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the floor. Distances in the bezel are read from the head or edge the zone names.', plus: 'below', minus: 'above', from: 'the floor' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the floor. Distances in the readouts are measured from the head or edge the zone names.', plus: 'below', minus: 'above', from: 'the floor' },
     z: { label: 'ACROSS', blurb: 'Toward the player’s left (14 in) or right (15 in).', plus: 'right of', minus: 'left of', from: 'centre' },
   },
   where: { inside: 'inside a drum', outside: 'outside the drums' },

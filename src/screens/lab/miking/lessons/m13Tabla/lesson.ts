@@ -699,5 +699,5 @@ export const M13_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Only the close distance comes from a real session; the other starting points are adapted from how microphones behave, and every pair, player and room is different. Move the mics, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one pair, a seated layout the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of both hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. These starting points are adapted from how microphones behave, and every pair, player and room is different. Move the mics, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one pair, a seated layout the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of both hands.',
 };

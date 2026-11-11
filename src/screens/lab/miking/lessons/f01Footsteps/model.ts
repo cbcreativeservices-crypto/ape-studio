@@ -72,7 +72,7 @@ export const F01_ZONES: DocumentedZone[] = [
   foleyZone({
     id: 'f01.mid',
     label: 'Farther back, more of the room',
-    band: 'Start about 1.5–2 m (5–6.5 ft) from the middle of the steps, in front, aimed at where the feet land. One stage compared two shotguns this way on concrete, wood, leaves and gravel — and moved one about half a meter closer when the steps needed more articulation.',
+    band: 'Start about 1.5–2 m (5–6.5 ft) from the middle of the steps, in front, aimed at where the feet land. One Foley stage compared two shotguns this way on concrete, wood, leaves and gravel — and moved one about half a meter closer when the steps needed more articulation.',
     kind: 'sourced',
     src: 'FF-KMR',
     quote: 'both shotguns at "1.5-2 meters" on concrete steps, hardwood steps, dry leaves, gravel; one mic needed "half a meter closer"',

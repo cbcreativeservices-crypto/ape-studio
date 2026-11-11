@@ -173,7 +173,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
           <ExpandableFigure
             aspect={connectorArtAspect(rec.id)}
             title={rec.displayName.toUpperCase()}
-            render={(w) => <ConnectorAnatomy id={rec.id} width={w} />}
+            render={(w) => <ConnectorAnatomy id={rec.id} width={w} name={rec.displayName} />}
           />
         ) : null}
         {rec.pinouts.length ? rec.pinouts.map((v) => <Pinout key={v.id} v={v} />) : null}

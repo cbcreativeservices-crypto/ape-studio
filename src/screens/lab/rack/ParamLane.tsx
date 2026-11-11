@@ -300,7 +300,7 @@ export function ParamLane({
       if (now - lastTapRef.current < DOUBLE_TAP_MS && homeRef.current != null) {
         onChangeRef.current(homeRef.current);
         onCommitRef.current?.(homeRef.current);
-        AccessibilityInfo.announceForAccessibility?.(`${labelRef.current} reset to home`);
+        AccessibilityInfo.announceForAccessibility?.(`${labelRef.current} reset to default`);
         lastTapRef.current = 0;
       } else {
         lastTapRef.current = now;

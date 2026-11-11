@@ -248,7 +248,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <Feedback tone="info">{`${goalInfo.label}. ${goalInfo.start} ${goalInfo.hint}`}</Feedback>
               {verdict ? <Feedback tone={verdict.met ? 'ok' : 'warn'}>{`${verdict.met ? 'Goal met. ' : 'Not yet. '}${verdict.lines.join(' ')}`}</Feedback> : null}
               <Card>
-                <Point title="Credit">Meet two of the four goals (MET on the bezel; pick the next with GOAL below). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
+                <Point title="Credit">Meet two of the four goals (MET in the readouts; pick the next with GOAL below). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
                 <Point title="Practice drum">{`${gSpec.name}. Pick another below (the drum resets for it):`}</Point>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {DRUM_LIST.map((d) => (

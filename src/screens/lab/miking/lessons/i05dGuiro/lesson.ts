@@ -492,7 +492,7 @@ export const I05D_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'A hollow, ridged body — most often a gourd, also wood or fiberglass — scraped with a stick or comb: a scraped idiophone. The metal güira is a related but different instrument.', src: 'MET-GUIRO' },
     { title: 'WHERE YOU MEET IT', text: 'In Latin American music and beyond: at percussion stations, in studios, in ensembles — often near cymbals and drums.', src: 'GRIN-GUIRO' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A rasp: short accents and long strokes, often both ways. The player shapes it with the stroke’s length, pressure and speed.', src: 'PAS-ECV0227' },
-    { title: 'ITS SIZE', text: 'A museum example is about 38 cm long; this lab draws one that size, held across the player’s front.', src: 'MET-GUIRO' },
+    { title: 'ITS SIZE', text: 'A güiro can be about 38 cm long; this lab draws one that size, held across the player’s front.', src: 'MET-GUIRO' },
   ],
   sound: {
     stages: [
@@ -530,7 +530,7 @@ export const I05D_LESSON: SpLesson = {
     ],
   },
   unknowns: [
-    { text: 'The güiro’s diameter (90 mm tapering to 60), its ridges (the middle 60 % of its length, 3 mm apart) and its grip holes (22 mm) — drawing defaults; the length is a museum example’s.', dims: ['dMax', 'dMin', 'pitch', 'hole'] },
+    { text: 'The güiro’s diameter (90 mm tapering to 60), its ridges (the middle 60 % of its length, 3 mm apart) and its grip holes (22 mm) — drawing defaults; the length is a typical güiro’s.', dims: ['dMax', 'dMin', 'pitch', 'hole'] },
     { text: 'The scraper (180 mm), its overshoot past each end (60 mm), and the player’s posture — drawing defaults and ILLUSTRATIVE.', dims: ['scraper', 'over'] },
     { text: 'The 30–60 cm band is the lesson’s own audition range, not a published güiro standard.', dims: [] },
   ],

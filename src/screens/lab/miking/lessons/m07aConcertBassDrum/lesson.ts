@@ -520,7 +520,7 @@ export const M07A_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'bassDrum', label: 'the concert bass drum (in its stand)', short: 'BASS DRUM', note: 'In the percussion row, hanging in its tilting stand, its heads facing along the stage; the player stands at the playing head. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
+      { id: 'bassDrum', label: 'the concert bass drum (in its stand)', short: 'BASS DRUM', note: 'In the percussion row, hanging in its tilting stand, its heads facing along the stage; the player stands at the playing head — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Big and low, along the row. A bass-drum spot hears them, and their spots hear the bass drum.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Beside the bass drum, often played by a neighboring percussionist. Its player’s space and yours must not cross.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud nearby. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },

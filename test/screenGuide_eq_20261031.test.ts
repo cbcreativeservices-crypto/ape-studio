@@ -512,7 +512,9 @@ describe('6. chip decision: the accuracy chip stays only on the live-microphone 
     assert.doesNotMatch(HOME, /right=\{/);
   });
   it('the guides carry the honesty line the chip used to: which modules use the uncalibrated mic, and designed vs synthetic', () => {
-    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /uncalibrated phone mic gives Modules 1 and 11 relative levels/);
+    assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /uncalibrated phone mic shows only relative levels/);
+    assert.doesNotMatch((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /Modules? \d/);
+    assert.match((EQ_HOME_GUIDE as unknown as Guide).seeing.join(' '), /Modules 1 and 11 use the live mic; the trainers use a made-up spectrum/);
     assert.equal(EQ_MODULES[0].id, 'spectrum');
     assert.equal(EQ_MODULES[10].id, 'liveEq');
     for (const id of ['spectrum', 'liveEq']) assert.match(MODS[id].teaches.join(' '), /uncalibrated/i, id);

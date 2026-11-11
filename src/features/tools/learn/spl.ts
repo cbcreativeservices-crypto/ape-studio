@@ -79,7 +79,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       claim: 'If it does not feel painfully loud, it cannot be damaging my hearing.',
       truth:
-        'Damage risk is set by dose — level combined with exposure time — and levels far below the pain threshold are hazardous over hours. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Ears also adapt during a long session, so "feels fine" is precisely the judgment a logged measurement exists to replace.',
+        'Damage risk is set by dose — level combined with exposure time — and levels far below the pain threshold are hazardous over hours. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Ears also adapt during a long session, so "feels fine" is precisely the judgment a logged measurement exists to replace.',
     },
   ],
   warnings: [

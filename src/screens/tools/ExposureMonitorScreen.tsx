@@ -383,7 +383,7 @@ export function ExposureMonitorScreen() {
         <Section title="GUIDANCE">
           <Text style={styles.body}>
             Duration matters as much as level: exposure accumulates. Under the 3 dB exchange standards a 3 dB
-            increase roughly HALVES the recommended listening time, and 3 dB less roughly doubles it; under the
+            increase roughly HALVES the listening time the standard allows, and 3 dB less roughly doubles it; under the
             5 dB standard of US workplace law (OSHA) it takes 5 dB to do the same. The standard you pick below sets how
             your dose counts from then on.
           </Text>

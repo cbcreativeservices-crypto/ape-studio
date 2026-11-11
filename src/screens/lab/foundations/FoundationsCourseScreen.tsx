@@ -1741,7 +1741,7 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
         </Text>
       ))}
       <Text style={styles.body}>
-        Module 14 IS the Playground: every control from this course on one screen, driving every
+        OPEN THE PLAYGROUND for every control from this course on one screen, driving every
         view at once — waveform, spectrum, air, cone, level. Change anything; watch everything
         answer.
       </Text>
@@ -1954,7 +1954,7 @@ const STEPS: Step[] = [
         'It doesn’t — equal amplitude always means equal loudness',
       ],
       correctIdx: 1,
-      wrongHint: 'Sweep FREQ with SEND untouched: SEND never moves, but HEARD does. What does that tell you?',
+      wrongHint: 'Sweep FREQ with LEVEL untouched: SEND never moves, but HEARD does. What does that tell you?',
       reveal:
         'The energy is the same — the RECEIVER differs. Ear sensitivity drops toward the lows, so equal amplitude is not equal loudness. This is why quiet playback loses bass first, and why “turn it up until it sounds right” changes the whole tonal balance.',
     },
@@ -1996,7 +1996,7 @@ const STEPS: Step[] = [
       question: 'Adding harmonics to a 220 Hz fundamental changes the sound’s…',
       options: ['Pitch — more harmonics, higher note', 'Character (timbre) — the pitch stays at 220 Hz', 'Speed through the air'],
       correctIdx: 1,
-      wrongHint: 'Turn H2 and H3 up and watch the bezel: does F0 ever move off 220 Hz?',
+      wrongHint: 'Turn H2 and H3 up and watch the readouts: does F0 ever move off 220 Hz?',
       reveal:
         'The harmonics are MULTIPLES of 220, so the pattern still repeats 220 times a second — the pitch holds. What changes is the SHAPE of each cycle: the tone’s character. A trumpet is “brighter” than a flute because its recipe holds more strong upper harmonics.',
     },
@@ -2063,7 +2063,7 @@ const STEPS: Step[] = [
     title: 'THE FULL PLAYGROUND',
     paras: [
       'Thirteen modules, one picture: a speaker moves, air squeezes and stretches, a graph describes it, and every property — size, rate, spacing, alignment, recipe — is now a knob you understand.',
-      'The final module is not a lesson. It is the whole course on one screen: every control driving every view at once. Go break things.',
+      'The final module is not a lesson. OPEN THE PLAYGROUND puts the whole course on one screen: every control driving every view at once. Go break things.',
     ],
     Rack: M14Rack,
     // Cumulative retrieval (learning pass 2026-08-31): the recap alone was a
@@ -2102,7 +2102,7 @@ const STEPS: Step[] = [
         correctIdx: 1,
         reveal:
           'Harmonics are the RECIPE (Modules 11–12): they set the sound’s character while the repeat rate (220 times a second) keeps the pitch. The analyzer told you the same story in reverse — one tone, many sine ingredients.',
-        wrongHint: 'In Module 11 you rode H2 and H3 up and down. Did the bezel’s F0 ever leave 220 Hz?',
+        wrongHint: 'In Module 11 you rode H2 and H3 up and down. Did F0 in the readouts ever leave 220 Hz?',
       },
     ],
   },

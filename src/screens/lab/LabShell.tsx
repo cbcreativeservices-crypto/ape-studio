@@ -17,7 +17,7 @@
  * lifecycle (the compact header PLAY is supplied BY the lab via headerAction).
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { labProbe, useLabProbeLines } from '../../features/lab/labProbe';
+import { labProbe } from '../../features/lab/labProbe';
 import { Animated, Easing, LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -540,52 +540,6 @@ export function LabShell({
     if (scrollLocked) labCoachAction();
   }, [scrollLocked, labCoachAction]);
 
-  // ── TEMP TOUCH PROBE (2026-09-27, REMOVE once found) ─────────────────────
-  // Owner's iPhone: ?, ⓘ and ▶ dead in every lab (work outside labs, work in
-  // the web preview); everything else in the lab works. Triple-tap the lab
-  // title to show where touches land and whether the top-right group feels
-  // them. "last touch" moving but "down" not = something covers the buttons
-  // INSIDE this screen; neither moving = something covers it from outside.
-  const [probeOn, setProbeOn] = useState(false);
-  const probeLines = useLabProbeLines();
-  const [probe, setProbe] = useState({ last: '—', down: 0, up: 0, hits: '—', frames: '' });
-  // Round 2 (owner: "last touch 338,74 · down 0 / up 0" — the touch reached
-  // this screen but not the top-right group). WHO took it: every container
-  // below stamps a letter as the touch bubbles (O root · H header · T title ·
-  // B buttons · M tabs · R rack). WHERE the group really is: its window frame,
-  // since iOS will not deliver a touch outside a view's own bounds even when
-  // the view draws there.
-  const hitsRef = useRef({ t: 0, s: '' });
-  const stamp = (letter: string) => {
-    if (!probeOn) return;
-    const now = Date.now();
-    if (now - hitsRef.current.t > 120) hitsRef.current.s = '';
-    hitsRef.current.t = now;
-    hitsRef.current.s += letter;
-    const hits = hitsRef.current.s;
-    setProbe((p) => ({ ...p, hits }));
-    const fr = (r: View | null) =>
-      new Promise<string>((res) =>
-        r ? r.measureInWindow((x, y, w, h) => res(`${Math.round(x)},${Math.round(y)} ${Math.round(w)}×${Math.round(h)}`)) : res('?'),
-      );
-    void Promise.all([fr(headerRef.current), fr(rightRef.current), fr(actionRef.current)]).then(([h, r, a]) =>
-      setProbe((p) => ({ ...p, frames: `hdr ${h} · btns ${r} · ▶ ${a}` })),
-    );
-  };
-  const headerRef = useRef<View>(null);
-  const rightRef = useRef<View>(null);
-  const actionRef = useRef<View>(null);
-  const titleTaps = useRef<number[]>([]);
-  const titleTap = () => {
-    const now = Date.now();
-    titleTaps.current = [...titleTaps.current.filter((t) => now - t < 900), now];
-    if (titleTaps.current.length >= 3) {
-      titleTaps.current = [];
-      setProbeOn((v) => !v);
-      setProbe({ last: '—', down: 0, up: 0, hits: '—', frames: '' });
-    }
-  };
-
   // Audio-output prompt on entry (owner-confirmed 2026-07-25): non-blocking.
   // AFTER the push transition (2026-09-27): asked during the slide-in, the
   // gate's popup could fail to present on iOS, leaving the request open with
@@ -645,52 +599,23 @@ export function LabShell({
     <LabHeader
       title={title}
       subtitle={subtitle}
-      headerRef={headerRef}
-      onTouchStart={probeOn ? () => stamp('H') : undefined}
-      // TEMP touch probe: dev builds only (Comp A launch audit 2026-10-24,
-      // item 3: a triple-tap on the title opened debug text in STORE builds).
-      onTitlePress={__DEV__ ? titleTap : undefined}
       right={
         // Consistent per-screen help (Pillar C) — lands in the hub with lab
         // answers surfaced.
-        <View
-          style={styles.headerRight}
-          ref={rightRef}
-          onTouchStart={
-            probeOn
-              ? () => {
-                  stamp('B');
-                  setProbe((p) => ({ ...p, down: p.down + 1 }));
-                }
-              : undefined
-          }
-          onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
-        >
+        <View style={styles.headerRight}>
           <HelpKey search="lab" />
           {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09).
               A concept lab with a screen guide opts out (`accuracy={false}`). */}
           {accuracy ? <AccuracyNote compact /> : null}
           {shownGuide ? <ScreenGuideKey title={guideTitle ?? title} guide={shownGuide} /> : null}
-          {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
+          {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}
         </View>
       }
     />
   );
 
   return (
-    <View
-      style={[styles.root, { paddingTop: insets.top + 10 }]}
-      onTouchStart={probeOn ? () => stamp('O') : undefined}
-      // TEMP TOUCH PROBE (see probe below) — records every touch that reaches
-      // this screen, then declines it so nothing about touch handling changes.
-      onStartShouldSetResponderCapture={(e) => {
-        if (probeOn) {
-          const { pageX, pageY } = e.nativeEvent;
-          setProbe((p) => ({ ...p, last: `${Math.round(pageX)},${Math.round(pageY)}` }));
-        }
-        return false;
-      }}
-    >
+    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* Screen Guide host (opt-in `guide`): its overlay renders as this
           root's last child; a tab switch, or an in-screen MODE that swaps
           the guide (guideIdOf), closes an open guide. Regions only when the
@@ -698,20 +623,12 @@ export function LabShell({
       <ScreenGuideHost resetKey={`${mode}:${guideIdOf(shownGuide)}`} regions={!!rack && mode === 'explore'}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): the same ‹ in
           every lab — LEAVE THE LAB, BACK_HIT_SLOP, double-tap latched. The
-          probe hooks (title triple-tap, touch stamps, frame refs) ride its
-          passthrough props until the TEMP probe is dropped. */}
+          TEMP touch probe and its readout were removed (copy audit
+          2026-11-10). */}
       {guide ? <ScreenGuideHintAnchor off={!shownGuide}>{header}</ScreenGuideHintAnchor> : header}
-      {probeOn ? (
-        <Text style={styles.probe} accessible={false}>
-          PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up} · hit {probe.hits}
-          {' · '}
-          {probe.frames}
-          {probeLines.map((l) => `\n${l}`).join('')}
-        </Text>
-      ) : null}
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
-      <View style={styles.tabRow} accessibilityRole="tablist" onTouchStart={probeOn ? () => stamp('M') : undefined}>
+      <View style={styles.tabRow} accessibilityRole="tablist">
         {modes.map((m) => {
           const selected = mode === m.key;
           const c = MODE_COLORS[m.key];
@@ -789,7 +706,7 @@ export function LabShell({
               </View>
             </ScrollView>
           ) : null}
-          <View style={mode === 'explore' ? styles.rackFill : styles.rackHidden} onTouchStart={probeOn ? () => stamp('R') : undefined}>
+          <View style={mode === 'explore' ? styles.rackFill : styles.rackHidden}>
             <RackUnit
               stage={rack.stage}
               params={rack.params}
@@ -913,7 +830,6 @@ const styles = StyleSheet.create({
   // header / back / title / subtitle now live in kit/LabNavBar's LabHeader.
   headerAction: { marginLeft: 8 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  probe: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#7fe07f', paddingHorizontal: 16, paddingBottom: 4 },
   headerPlay: {
     width: 38,
     height: 38,

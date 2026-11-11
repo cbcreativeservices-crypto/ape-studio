@@ -539,7 +539,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'DAMPING',
     helpKey: 'damping',
     caption:
-      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k collapse on the bezel long before RT·125 follows. This is why bass traps are thick.',
+      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k collapse in the readouts long before RT·125 follows. This is why bass traps are thick.',
   },
   {
     title: 'COMPARE ROOMS',
@@ -835,7 +835,7 @@ export function WaterfallModule(p: MeterModuleProps) {
 
         <Text style={dstyles.body}>
           Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ
-          lanes reshape it live, Q RING plants a ringing filter. The bezel keeps score.
+          lanes reshape it live, Q RING plants a ringing filter. The readouts keep score.
         </Text>
         <ReadoutGrid
           help={p.help}

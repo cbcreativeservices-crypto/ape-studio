@@ -474,7 +474,7 @@ function LiquidStudio() {
               ? 'A sine isolates one drive frequency — the cleanest demonstration.'
               : spec.waveform === 'pulse'
                 ? 'Tone bursts (four per second) at the drive frequency — the surface builds and relaxes each burst.'
-                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only on this build'}). Faraday onset still keys on the fundamental.`}
+                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only — update the app to hear them'}). Faraday onset still keys on the fundamental.`}
           </Text>
           <Text style={styles.trayHead}>RUN</Text>
           <View style={styles.chips}>
@@ -508,7 +508,7 @@ function LiquidStudio() {
               ? 'One drive frequency. Two-frequency forcing is the usual way the quasiperiodic “superlattice” patterns are made.'
               : tone.dualReady
                 ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown. The surface can form a quasiperiodic lattice, depending on the two frequencies and their mix.`
-                : 'The second tone is SHOWN only — this build’s sound engine plays one tone at a time.'}
+                : 'The second tone is SHOWN only — this version of the app plays one tone at a time.'}
           </Text>
         </View>
       ),
@@ -620,7 +620,7 @@ function LiquidStudio() {
                 />
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>The dish display needs the current app build (Skia). Controls and readouts still work.</Text>
+                  <Text style={styles.noSkiaText}>This version of the app can’t draw the dish. Controls and readouts still work; update the app to see it.</Text>
                 </View>
               ),
           },

@@ -115,7 +115,7 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
         ),
         params,
       }}
-      caption="Ride UPPER, or drag the marker on the rail, from unison (1:1) all the way to the octave (2:1). Ratio, cents and the interval name follow on the bezel."
+      caption="Ride UPPER, or drag the marker on the rail, from unison (1:1) all the way to the octave (2:1). Ratio, cents and the interval name follow in the readouts."
     >
       <Lead>An interval is a relationship between two frequencies — not a fixed difference in hertz.</Lead>
       <Row>

@@ -260,8 +260,13 @@ export function CalcWorkspaceScreen() {
 
   if (!ws || !fn) {
     return (
-      <View style={styles.root}>
-        <Text style={styles.body}>This calculator is not available.</Text>
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.body}>This calculator can’t be opened. Go back and pick another one.</Text>
       </View>
     );
   }

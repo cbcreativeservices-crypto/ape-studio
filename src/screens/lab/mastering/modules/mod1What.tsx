@@ -74,7 +74,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
               <Body>Ride STAGE across the chain: mastering is the last listening, decision-making and delivery stage before the music leaves the building.</Body>
               <Card>
                 <Point title="One file in, one file out">The mastering engineer usually receives a finished stereo (or multichannel) mix. Everything that follows acts on the whole program at once.</Point>
-                <Point title="The foundation of this lab">Mastering can improve and unify a project. It cannot independently rebalance the individual tracks inside a stereo mix — the bezel's WORKS ON cell says why.</Point>
+                <Point title="The foundation of this lab">Mastering can improve and unify a project. It cannot independently rebalance the individual tracks inside a stereo mix — the WORKS ON readout says why.</Point>
               </Card>
             </>
           ),

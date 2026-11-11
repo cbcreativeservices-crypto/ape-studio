@@ -201,7 +201,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     'studio.membrane': {
       files: [`${D}MembraneStudioScreen.tsx`, 'src/features/cymatics/membrane.ts', 'src/screens/lab/LabShell.tsx'],
-      names: ['DRIVE', 'FUNDAMENTAL', 'MODE', 'RESPONSE', 'f_s', 'ka', 'STAGE', 'FREQ', 'JUMP TO A MODE', 'JUMP TO A CONE STAGE', 'HEAD', 'STRIKE', 'WHERE THE MALLET LANDS', 'Drag on drum', 'Open shell', 'Timpani kettle', 'CONE', 'Show the loudspeaker', 'The drum', 'Heat map', 'Phase', 'Node lines', '3D head', 'Cross-section', 'Loudspeaker', 'LEVEL', 'TUNING', 'TENSION', 'PISTON BAND — THE CONE MOVES AS ONE', 'SAVE', 'LAB NOTES', ['14-inch snare', '14" snare']],
+      names: ['DRIVE', 'FUNDAMENTAL', 'MODE', 'RESPONSE', 'fs', 'ka', 'STAGE', 'FREQ', 'JUMP TO A MODE', 'JUMP TO A CONE STAGE', 'HEAD', 'STRIKE', 'WHERE THE MALLET LANDS', 'Drag on drum', 'Open shell', 'Timpani kettle', 'CONE', 'Show the loudspeaker', 'The drum', 'Heat map', 'Phase', 'Node lines', '3D head', 'Cross-section', 'Loudspeaker', 'LEVEL', 'TUNING', 'TENSION', 'PISTON BAND — THE CONE MOVES AS ONE', 'SAVE', 'LAB NOTES', ['14-inch snare', '14" snare']],
     },
     learn: {
       files: ['src/features/lab/guidedLessons/GuidedLessonSheet.tsx', 'src/screens/lab/LabShell.tsx', 'src/features/lab/guidedLessons/content.ts', `${D}PlateStudioScreen.tsx`],

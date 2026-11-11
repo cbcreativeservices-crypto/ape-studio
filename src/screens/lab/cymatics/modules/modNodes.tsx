@@ -162,7 +162,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
             />
           ) : (
             <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={P.caption}>Live plate needs the current app build (Skia).</Text>
+              <Text style={P.caption}>Update the app to see the live plate.</Text>
             </View>
           ),
         params,
@@ -178,7 +178,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Between two modes nothing organizes — the RES cell reads BETWEEN and the heat map goes dark. A pattern belongs to a resonance, not to a frequency.</Text></View>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>The same ideas are used to study violin and guitar plates, bells, gongs, cymbals, and engineering structures.</Text></View>
       <Text style={P.caption}>
-        {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'Sound needs the native engine — SILENT still drives the plate.'} Nothing moves without a drive.
+        {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'Update the app to hear the tone — SILENT still drives the plate.'} Nothing moves without a drive.
       </Text>
       {/* A start that failed is SAID (hunt 7): PLAY just stayed off, no word. */}
       {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}

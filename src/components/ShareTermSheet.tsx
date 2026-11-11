@@ -463,7 +463,7 @@ export function ShareTermSheet({
                 {isLarge ? (
                   <Text style={styles.warn}>⚠ {staged.length} terms — this will be a long message.</Text>
                 ) : (
-                  <Text style={styles.note}>Sent via your share sheet. Glossary content stays the focus.</Text>
+                  <Text style={styles.note}>Sends through your phone’s share sheet, focused on the glossary content.</Text>
                 )}
               </ScrollView>
 

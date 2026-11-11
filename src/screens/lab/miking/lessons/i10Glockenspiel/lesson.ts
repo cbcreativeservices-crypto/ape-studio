@@ -49,7 +49,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — above the bars and a little toward the audience, higher or closer, or a safe lateral angle — and see why a published close position conflicts with the mallets.',
+    goal: 'Start where we suggest you begin — above the bars and a little toward the audience, higher or closer, or a safe lateral angle — and see why a common close position conflicts with the mallets.',
     credit: { scenarios: ['gl.place.1', 'gl.place.2', 'gl.place.3', 'gl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A suggested zone is a place to begin, not a rule. The close 10–15 cm example sits inside a real player’s mallet path: never set it unless the player proves every stroke clears it.',
   },
@@ -201,12 +201,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gl.place.1',
     page: 'placement',
-    prompt: 'A published close position puts one mic 10–15 cm above the glockenspiel’s bars. Is it safe?',
-    options: ['Only if the player proves every stroke clears it', 'Yes — it is published, so it is safe', 'Yes — the mic sits between the bars when the music pauses'],
+    prompt: 'A common close position puts one mic 10–15 cm above the glockenspiel’s bars. Is it safe?',
+    options: ['Only if the player proves every stroke clears it', 'Yes — it is common, so it is safe', 'Yes — the mic sits between the bars when the music pauses'],
     correct: 'Only if the player proves every stroke clears it',
     explain: 'At that height the capsule or boom can be inside a real player’s mallet arc. Never let a number override a collision or stability concern.',
     why: {
-      'Yes — it is published, so it is safe': 'A starting distance is not a clearance check.',
+      'Yes — it is common, so it is safe': 'A starting distance is not a clearance check.',
       'Yes — the mic sits between the bars when the music pauses': 'A mic that looks clear in a pause is not clear during the passage.',
     },
   },
@@ -282,7 +282,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gl.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · Why is the published close position drawn red, not blue?',
+    prompt: 'FROM EARLIER · Why is the common close position drawn red, not blue?',
     options: ['It sits inside the mallets’ travel on a real passage', 'It is a louder position than the others', 'It is meant only for players using metal mallets on steel'],
     correct: 'It sits inside the mallets’ travel on a real passage',
     explain: 'The capsule or boom can be within the player’s arc — usable only if the player proves full clearance.',
@@ -367,7 +367,7 @@ const symptoms: Symptom[] = [
 ];
 
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
-const CLOSE_REASON: SetupReason = { id: 'r.close', label: 'The close 10–15 cm position is published, so it needs no clearance check', role: 'wrong', feedback: 'A starting distance never overrides a collision check: it sits inside the mallet path.' };
+const CLOSE_REASON: SetupReason = { id: 'r.close', label: 'The close 10–15 cm position is common, so it needs no clearance check', role: 'wrong', feedback: 'A starting distance never overrides a collision check: it sits inside the mallet path.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -449,10 +449,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'gl.q.5',
     covers: 'setting',
     prompt: 'A mic 10–15 cm above the bars: when may you use it?',
-    options: ['Only when the player proves every stroke clears it', 'At all times — it is a published position', 'Only when the player is using soft rubber mallets on it'],
+    options: ['Only when the player proves every stroke clears it', 'At all times — it is a common position', 'Only when the player is using soft rubber mallets on it'],
     correct: 'Only when the player proves every stroke clears it',
     explain: 'It can sit inside the mallet arc; a number never overrides clearance.',
-    why: { 'At all times — it is a published position': 'Published is not proven clear.', 'Only when the player is using soft rubber mallets on it': 'The mallet’s material does not change its path.' },
+    why: { 'At all times — it is a common position': 'Common is not proven clear.', 'Only when the player is using soft rubber mallets on it': 'The mallet’s material does not change its path.' },
   },
   quickHearingM(W),
 ];
@@ -542,7 +542,7 @@ const copy: Partial<LessonCopy> = {
     workedZone: { pedal: 'gl.high', case: 'gl.high' },
     workedLine: 'This starting point is also read against {line}.',
     workedAim: 'Aim down across the played bars, toward the middle of the keyboard — the starting point counts while the mic looks within {tol}° of it.',
-    workedClear: 'Where the full mallet arc and the damping hand clear it, through the whole passage and the strongest stroke. The red band — a published close position — sits inside the mallets’ travel: it is shown, never a place to rest.',
+    workedClear: 'Where the full mallet arc and the damping hand clear it, through the whole passage and the strongest stroke. The red band — a common close position — sits inside the mallets’ travel: it is shown, never a place to rest.',
     blocked: { pedal: ' Move it higher, or out toward the audience.', case: ' Move it higher — above the open lid — or out of the hands’ way.' },
     reveal: 'Yes — the close position sits inside the mallets’ travel on a real passage. The blue zones start higher, a little toward the audience.',
     typeNotes: { mlDynCard: 'A dynamic can work too, especially live: choose by response, pattern, power and mount, and compare by ear.' },
@@ -551,7 +551,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic above the bars and a little toward the audience, about 30–60 cm from them — higher for a more integrated view, closer for a more immediate one — or a safe lateral angle to compare. Starting points, not rules.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the whole phrase and its decay.',
-      clearance: 'Clearance comes first. A published close position — about 10–15 cm above the bars — puts the capsule or the boom inside a real player’s mallet arc: drawn red here. Use it only if the player proves full clearance for the whole passage and the strongest stroke.',
+      clearance: 'Clearance comes first. A common close position — about 10–15 cm above the bars — puts the capsule or the boom inside a real player’s mallet arc: drawn red here. Use it only if the player proves full clearance for the whole passage and the strongest stroke.',
       tendencies: 'Closer tends to be more immediate, with more attack, and can favor one area; higher integrates the keyboard and the room. All tendencies to check by ear.',
     },
   },
@@ -656,7 +656,7 @@ export const I10_LESSON: MalletLesson = {
   },
   setting: {
     items: [
-      { id: 'glock', label: 'the glockenspiel (and its player)', short: 'GLOCKENSPIEL', note: 'The player stands behind it, facing the audience, mallets in hand and a hand or a foot ready to damp. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical section layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'glock', label: 'the glockenspiel (and its player)', short: 'GLOCKENSPIEL', note: 'The player stands behind it, facing the audience, mallets in hand and a hand or a foot ready to damp — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical section layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Louder neighbors: a spot over the bells hears them too.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'Loud and close: aim the pattern’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the glockenspiel', short: 'WEDGE', note: 'On the floor in front, facing the player, below the mic’s front: no pattern null reaches it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

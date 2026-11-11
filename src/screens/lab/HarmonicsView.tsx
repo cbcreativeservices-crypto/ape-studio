@@ -1895,7 +1895,7 @@ export function HarmonicsView({
             />
           ) : null}
           <Text style={styles.thdnDim}>
-            THD / CREST / SLOPE read on the display bezel — tap THD CALC for the calculation. THD+N —
+            THD / CREST / SLOPE read in the readouts — tap THD CALC for the calculation. THD+N —
             live measurement required (the model has no noise).
           </Text>
 
@@ -2017,8 +2017,8 @@ export function HarmonicsView({
             // displayed on a sine-only engine (model-aware: edits can
             // silence or add overtones on any preset).
             <Text style={styles.honestyNote}>
-              Audio plays a pure sine — the engine generates sine only; this series is an analytic
-              model.
+              Audio plays a pure sine: this version of the app can’t play overtones yet; update the
+              app to hear the ANALYTIC MODEL.
             </Text>
           ) : null}
         </>

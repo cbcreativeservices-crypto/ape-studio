@@ -239,7 +239,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     predict: 'Same tone, deeper liquid — will the pattern get coarser, finer, or stay the same size?',
     steps: [
       'A 2 mm layer of water at 30 Hz: short waves, strongly damped by the bottom.',
-      'In DISH, raise DEPTH to 8 mm, then 15 mm. Read λ on the bezel and THRESHOLD in the ladder card each time.',
+      'In DISH, raise DEPTH to 8 mm, then 15 mm. Read λ in the readouts and THRESHOLD in the ladder card each time.',
       'Lower SHAKE until a/a꜀ reads about 1.4× again, then compare — the same margin above threshold, a different wavelength.',
     ],
     lookFor: 'In a thin layer the bottom boundary layer steals energy (higher threshold) and tanh(kd) shortens the wave. Deeper liquid approaches the deep-water dispersion and the threshold falls.',
@@ -256,7 +256,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     steps: [
       'The plate is parked on a mode with LEVEL at 20 %. Note the figure.',
       'Drag LEVEL up to 100 % and watch the sand and the 3D PLATE view.',
-      'Bring it back down. Read the MODE on the bezel each time.',
+      'Bring it back down. Read the MODE in the readouts each time.',
     ],
     lookFor: 'Faster, cleaner formation and a bigger excursion — and the lines do not move. Level sets how FAR the plate moves, never WHICH mode it is on. That is set by the frequency and the plate.',
     studio: 'plate',
@@ -301,7 +301,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     goal: 'Move the mallet and watch which modes can be woken.',
     predict: 'The mallet is dead centre. Will the (1,1) mode — the timpani’s pitch — respond at all?',
     steps: [
-      'The drive is parked on the (1,1) mode with the mallet at the CENTRE. Read RESPONSE on the bezel.',
+      'The drive is parked on the (1,1) mode with the mallet at the CENTRE. Read RESPONSE in the readouts.',
       'In STRIKE, choose QUARTER IN. Read RESPONSE again and watch NODE LINES.',
       'Try NEAR THE RIM, then DRAG ON DRUM and slide the mallet across a nodal diameter.',
     ],

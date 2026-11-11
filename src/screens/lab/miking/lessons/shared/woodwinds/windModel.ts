@@ -102,7 +102,7 @@ export function playerParts(L: Layout, w: WindPartWords): Part[] {
     ['R', B.shoulderR, L.handR.elbow, L.handR.wrist],
   ] as const) {
     parts.push({ id: `ww.arm${k}1`, label: 'the player’s arms', short: 'arms', role: 'The arms hold the instrument up; the elbows move as the player breathes and phrases.', prov: PLAYER, moving: true, listIn: [], solid: cap(s, e, 52) });
-    parts.push({ id: `ww.arm${k}2`, label: 'the player’s arms', short: 'arms', role: 'The forearm.', prov: PLAYER, moving: true, listIn: [], solid: cap(e, h, 44) });
+    parts.push({ id: `ww.arm${k}2`, label: 'the player’s arms', short: 'arms', role: 'The arms hold the instrument up; the elbows move as the player breathes and phrases.', prov: PLAYER, moving: true, listIn: [], solid: cap(e, h, 44) });
   }
   for (const [k, a, b, r] of [
     ['thighL', B.hipL, B.kneeL, 76],

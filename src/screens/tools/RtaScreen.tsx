@@ -236,7 +236,7 @@ const SIXTH_POLL_MS = 80; // ~12.5 Hz — near the hook's 15 Hz frame poll
 
 /** Honest meta line per mode — derived views disclose their derivation. */
 function metaFor(mode: BandMode, alpha: number, fftSize: number): string {
-  const a = `α ${alpha.toFixed(2)}`;
+  const a = `averaging ${alpha.toFixed(2)}`;
   switch (mode) {
     case 10:
       return `1/1 OCT · FFT ${fftSize} · ${a}`;
@@ -1276,7 +1276,7 @@ export function RtaScreen({ navigation }: Props) {
 
   // ---- Rack declarations (rebuilt every render — trays and bezel stay live) ----
   const levelDb = weightedFastDb(meter, weighting);
-  const avgLabel = AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? `α ${alpha.toFixed(2)}`;
+  const avgLabel = AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? `averaging ${alpha.toFixed(2)}`;
 
   /** Bezel: the old stat grid, printed on the display — READ-ONLY (owner
    *  rule 2026-10-10: every control lives in the bottom dock). Weighting is

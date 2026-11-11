@@ -424,14 +424,14 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       </Text>
       <Text style={P.caption}>
         {!tone.engineReady
-          ? 'Sound needs the native engine.'
+          ? 'Update the app to hear this sound.'
           : tone.detuned
             ? tone.dualReady
               ? 'PLAY: two free sines summed in one channel — the beats you see are the beats you hear.'
-              : 'A detuned pair is SHOWN only — this build’s sound engine plays one locked pair at a time, not two free tones. Set DETUNE back to lock to hear the ratio.'
+              : 'A detuned pair is SHOWN only — this version of the app plays one locked pair at a time, not two free tones. Set DETUNE back to lock to hear the ratio.'
             : tone.additiveReady
               ? `PLAY sounds the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)}, built by additive synthesis.`
-              : 'Locked ratios need the additive engine (engine 3).'}
+              : 'Update the app to hear the locked ratios played.'}
       </Text>
       {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
       {tone.detuned ? (

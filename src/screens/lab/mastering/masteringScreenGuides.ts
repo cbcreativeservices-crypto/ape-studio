@@ -54,13 +54,13 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'At the top of the notes, IN THIS MODULE gives you this module’s objective.',
           'The display shows a project’s chain — RECORDING, EDITING, MIXING, MASTERING, RELEASE — with the stage you’ve chosen lit.',
-          'On the bezel, STAGE gives its place in the chain, NAME its name, and WORKS ON what that stage acts on.',
+          'In the readouts, STAGE gives its place in the chain, NAME its name, and WORKS ON what that stage acts on.',
           'In the header, the first ⓘ opens this lab’s accuracy note; the far-right ⓘ explains the screen.',
         ],
         control: [
           'Ride the STAGE fader in the dock through REC, EDIT, MIX, MASTER and RELEASE. It starts on MASTER.',
           'Use ‹ PREV and NEXT › to step through and on into the next module; ⏮ goes back to the start. Tap the readout to jump to any module.',
-          'HIDE DISPLAY and FULL SCREEN on the bezel hide or enlarge the display. The ‹ at the top leaves the lab. “When to bring in a pro ›” under the strip opens a short note.',
+          'HIDE DISPLAY and FULL SCREEN on the readout strip hide or enlarge the display. The ‹ at the top leaves the lab. “When to bring in a pro ›” under the strip opens a short note.',
         ],
         changes: [
           'At REC, EDIT and MIX, WORKS ON reads TRACKS: every part — vocal, drums, bass — is still separate and can be moved on its own.',
@@ -116,7 +116,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The display shows the waveform of the version playing (THE MIX or LOUDER), a gain-reduction strip and the limiter faceplate: INPUT, CEILING, RELEASE, GR, or BYP when nothing is processed.',
-          'The bezel: PEAK, TRUE PK, LUFS (loudness), PLR (peak above loudness) and MATCH dB.',
+          'The readouts: PEAK, TRUE PK, LUFS (loudness), PLR (peak above loudness) and MATCH dB.',
           'The badge: the meters are estimates and your phone’s output isn’t calibrated, so judge by comparison.',
         ],
         control: [
@@ -239,7 +239,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'The display traces the signal flow: the individual tracks, the mix bus, the stereo master, then the delivery.',
           'The lit stage is where the request is normally addressed; its color says whose job it is, and a strip spells out the verdict.',
-          'On the bezel, REQUEST gives the short name and ADDRESSED BY reads MIXING, MASTERING or EITHER.',
+          'In the readouts, REQUEST gives the short name and ADDRESSED BY reads MIXING, MASTERING or EITHER.',
         ],
         control: [
           'Ride REQUEST in the dock, or tap it for the full list, A CLIENT REQUEST. There are ten requests, from VOCAL and SNARE to FORMAT, WIDTH, BUS COMP and FADES.',
@@ -358,7 +358,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The curve shows how your ear’s balance shifts with level, compared with 1 kHz. Ghost curves mark 65, 83 and 95 dB.',
-          'On the bezel: SPL (C), BASS and TREBLE (how far each seems to shift), PER DAY (the NIOSH daily limit) and READING.',
+          'In the readouts: SPL (C), BASS and TREBLE (how far each seems to shift), PER DAY (the NIOSH daily limit) and READING.',
           'The orange band on the scale starts where you near the daily exposure limit.',
         ],
         control: [
@@ -392,7 +392,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'The display draws the chain you build, device by device. The next device shows faintly, marked NEXT ›, and each cable is drawn by what it carries.',
           'A verdict appears on the glass: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.',
-          'On the bezel: STAGES (slots used), TO ADD, and PATH (EMPTY, CHECK, MINIMAL, COMPLETE).',
+          'In the readouts: STAGES (slots used), TO ADD, and PATH (EMPTY, CHECK, MINIMAL, COMPLETE).',
         ],
         control: [
           'Pick a DEVICE in the dock: DAW, DAC (digital-to-analog converter), MON CTL (monitor controller), AMP, PASSIVE or ACTIVE. Each has a one-line note on its job.',
@@ -508,7 +508,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The display shows the view a mastering engineer reads for the chosen tool group: an EQ curve, a dynamics curve, a stereo picture or a meter.',
-          'On the bezel: TOOL, the amount (TILT, RATIO, WIDTH, LEVEL…), and a second number where it helps: OUT AT 0 IN, CORRELATION or LUFS (I).',
+          'In the readouts: TOOL, the amount (TILT, RATIO, WIDTH, LEVEL…), and a second number where it helps: OUT AT 0 IN, CORRELATION or LUFS (I).',
           'The badge reads MODEL for a modeled view, or MEASURED when METERS reads the client’s mix itself.',
         ],
         control: [
@@ -626,7 +626,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'Start with IN THIS MODULE at the top of the notes: it says what this module is for.',
           'The display shows a common mastering workflow in seven stages, with one stage lit. The badge reminds you that order and scope vary from job to job.',
-          'On the bezel, FLOW shows where the stage sits in the order and NAME gives its name. The card in the notes explains that stage.',
+          'In the readouts, FLOW shows where the stage sits in the order and NAME gives its name. The card in the notes explains that stage.',
         ],
         control: [
           'Ride the FLOW fader in the dock through its seven stops: INSPECT, LISTEN, DECIDE, CHANGE, SEQUENCE, DELIVER, QC. Each stop lights its stage and brings up its card in the notes.',
@@ -686,7 +686,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'The display shows the waveform of the version you’re hearing and the EQ faceplate. TILT is split between the 200 Hz and 2.5 kHz shelves: one end goes up as the other goes down.',
           'The faceplate also shows the +2 dB OUTPUT trim and the SAFETY ceiling. In BYPASS it reads BYP.',
-          'The bezel shows PEAK, TRUE PK, LUFS, PLR and MATCH dB, as in Module 1.',
+          'The readouts show PEAK, TRUE PK, LUFS, PLR and MATCH dB, as in Module 1.',
         ],
         control: [
           'TILT fader: −4.0 to +4.0 dB end to end, in 0.5 dB steps. It starts at +1.5.',
@@ -777,7 +777,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'Start with IN THIS MODULE at the top of the notes.',
           'The display is a sample peak meter or a loudness meter, the same meters as the Visual Audio Analysis lab. It plays a synthesized teaching signal, and there’s no target line: no single number is the goal here.',
-          'The bezel shows PEAK, TRUE PK, LUFS (loudness units relative to full scale), GAIN and FACE.',
+          'The readouts show PEAK, TRUE PK, LUFS (loudness units relative to full scale), GAIN and FACE.',
         ],
         control: [
           'GAIN fader: −12 to +6 dB, in 0.5 dB steps.',
@@ -809,7 +809,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'The display shows the waveform, the gain-reduction strip and the limiter faceplate: INPUT (the drive), CEILING −1.0 dBFS, RELEASE 80 ms and GR (gain reduction).',
           'While you drag DRIVE, the picture is an estimate, labeled ESTIMATE · RENDERS WHEN YOU LET GO. Let go to see and hear the result.',
-          'The bezel shows PEAK, TRUE PK, LUFS, PLR and MATCH dB, as in Module 1.',
+          'The readouts show PEAK, TRUE PK, LUFS, PLR and MATCH dB, as in Module 1.',
         ],
         control: [
           'DRIVE fader: 0 to +14 dB into the limiter, in 0.5 dB steps. It starts at +6.0.',
@@ -870,7 +870,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         seeing: [
           'The dashed line is the program’s spectrum as mastered, measured from the mix. The solid line is a MODEL of how a playback system presents it.',
           'On the main monitors the two coincide, so only the solid line is drawn.',
-          'The bezel shows SYSTEM and FOLD: STEREO, or MONO when the system sums left and right into one channel.',
+          'The readouts show SYSTEM and FOLD: STEREO, or MONO when the system sums left and right into one channel.',
         ],
         control: [
           'SYSTEM in the dock: Main monitors (treated room), Headphones, Small speaker, Phone speaker (mono), Car.',
@@ -987,7 +987,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The display shows a delivery sheet for the destination you choose: its sample brief and the lines to confirm. The sheet fills in as you check them.',
-          'On the bezel, DESTINATION names the sheet and CONFIRMED turns green when every line is checked.',
+          'In the readouts, DESTINATION names the sheet and CONFIRMED turns green when every line is checked.',
           'In the notes: the brief, then FACT and EXAMPLE lines.',
         ],
         control: [
@@ -1158,7 +1158,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The display shows the running order on a real time scale. Block length is track length, height and color show loudness, and the wedge is the fade-out. Below, the three transitions are zoomed in.',
-          'On the bezel, watch ORDER, GAP, MAX STEP (the largest loudness step between neighbors) and TOTAL.',
+          'In the readouts, watch ORDER, GAP, MAX STEP (the largest loudness step between neighbors) and TOTAL.',
           'THE DELIVERY PLAN is in the notes.',
         ],
         control: [

@@ -318,7 +318,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     seeing: [
       'You’re looking down on a 5 m × 4 m concrete room filled with one room mode. The speaker sits in a corner; drag the listener.',
       'Red marks antinodes, where pressure swings hardest. Dark blue marks nodes, where it barely moves. The pattern stays put.',
-      'Readouts: MODE (nx,ny) and its frequency; TYPE (AXIAL: two walls; TANGENTIAL: all four); PRESSURE (% of max at the listener); VERDICT (NODE / ANTINODE / BETWEEN).',
+      'Readouts: MODE (two numbers) and frequency; TYPE (AXIAL: two walls; TANGENTIAL: all four); PRESSURE (% of max at the listener); VERDICT (NODE / ANTINODE / BETWEEN).',
     ],
     control: [
       'WIDTH fader (2–10 m): the room’s left-to-right size. DEPTH fader (2–10 m): its top-to-bottom size.',

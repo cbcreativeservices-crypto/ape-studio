@@ -329,7 +329,7 @@ export const SCENE_ITEMS: SceneItem[] = [
     vignette:
       'A power adapter whose barrel seats to full depth without wobble; the supply label and the label beside the device jack are both legible and agree — voltage, DC, polarity symbol and current.',
     answer: 'ok',
-    nudge: 'Walk the checklist: seating, both labels legible, every item matched. Which one failed?',
+    nudge: 'Walk the checklist: seating, both labels legible, every item matched. Did any of them fail?',
     explain:
       'Passes. This is exactly what a healthy low-voltage power connection looks like: fully seated with no wobble, both labels legible, and every label item matched — voltage, DC type, polarity symbol, and supply current at or above the device’s requirement.',
   },
