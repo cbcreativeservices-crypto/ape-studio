@@ -67,7 +67,7 @@ export function Lesson06Body() {
 
       <Eyebrow text="THE CONNECTORS — BROWSE ALL TEN" />
       <Text style={s.body}>
-        Pick a family, then a connector. Every card is the verified record: contacts, the cable behind it, direction
+        Pick a family, then a connector. Every card holds its checked facts: contacts, the cable behind it, direction
         rules, look-alikes and how to test it.
       </Text>
       <View style={s.chipWrap}>

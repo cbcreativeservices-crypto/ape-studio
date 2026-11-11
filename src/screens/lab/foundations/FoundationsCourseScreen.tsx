@@ -1495,7 +1495,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       stage={{
         fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // six layers + the sum
-        badge: 'ANALYTIC — THE ENGINE’S EXACT RECIPE · PHASE-LOCKED, SLOWED',
+        badge: 'ANALYTIC — THE EXACT RECIPE YOU HEAR · PHASE-LOCKED, SLOWED',
         onGuide: () => help('harmonic_stack'),
         bezel: [
           { k: 'F0', v: `${M11_F0} Hz`, helpKey: 'harmonic_stack' },
@@ -1514,7 +1514,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS · PHASE-LOCKED, SLOWED · EACH ROW'S COLOR = ITS LEVEL" />
+      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE YOU HEAR · PHASE-LOCKED, SLOWED · EACH ROW'S COLOR = ITS LEVEL" />
       {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
           {__DEV__
@@ -1623,9 +1623,9 @@ function M12Stage({ viz, w, h, amps, morph, focused }: { viz: VizModule; w: numb
 const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] = [
   { q: 'HOW LOUD IS IT IN THE ROOM?', name: 'SPL Meter', blurb: 'Weighted, time-averaged level from the real mic — ears estimate, meters measure.', route: 'SplMeter' },
   { q: 'WHAT FREQUENCY IS THAT?', name: 'Frequency Counter & Tuner', blurb: 'Measures a steady tone’s exact frequency in Hz — and reads it musically as note, octave, and cents for tuning.', route: 'FrequencyCounter' },
-  { q: 'WHAT’S THE RECIPE RIGHT NOW?', name: 'RTA', blurb: 'Live energy per frequency band — M12’s Fourier idea, measured.', route: 'Rta' },
+  { q: 'WHAT’S THE RECIPE RIGHT NOW?', name: 'RTA', blurb: 'Live energy per frequency band — Module 12’s Fourier idea, measured.', route: 'Rta' },
   { q: 'HOW DOES IT CHANGE OVER TIME?', name: 'Spectrogram', blurb: 'Frequency vs time — sweeps, decays, harmonics appearing and fading.', route: 'SpectrogramLive' },
-  { q: 'WHAT IS THE PRESSURE DOING?', name: 'Waveform', blurb: 'M2’s graph captured live: real pressure over real time.', route: 'WaveformLive' },
+  { q: 'WHAT IS THE PRESSURE DOING?', name: 'Waveform', blurb: 'Module 2’s graph captured live: real pressure over real time.', route: 'WaveformLive' },
   { q: 'HOW LONG DOES THE ROOM RING?', name: 'RT60', blurb: 'Clap — the decay is recorded and fitted per octave band.', route: 'Rt60Live' },
   { q: 'WHAT DO I TEST WITH?', name: 'Signal Generator', blurb: 'Known tones, noise, sweeps and clicks — because a known source exposes the system.', route: 'SignalGen' },
 ];
@@ -1651,7 +1651,7 @@ function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps)
       {viz ? <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" /> : null}
       {/* Intro text ABOVE the list (owner 2026-08-05). */}
       <Text style={styles.caption}>
-        Every card opens the REAL tool — live mic, real engine, honest units (dBFS · uncalibrated
+        Every card opens the REAL tool — live mic, real measurements, honest units (dBFS · uncalibrated
         where that’s the truth). Ears adapt, compare and tire; instruments hold still. That is the
         entire reason this toolbox exists.
       </Text>
@@ -2040,7 +2040,7 @@ const STEPS: Step[] = [
     title: 'WHY MEASUREMENT TOOLS EXIST',
     paras: [
       'You now own the model: air, amplitude, frequency, wavelength, phase, harmonics, spectra. One problem remains — your ears ADAPT. They tire, they recalibrate, they flatter. Instruments hold still.',
-      'Every question this course raised has a tool that answers it with a number. Each card below opens the real one — live mic, real engine.',
+      'Every question this course raised has a tool that answers it with a number. Each card below opens the real one — live mic, real measurements.',
       'Tools don’t replace ears; they anchor them. The meter gives you the number, the model tells you what the number means — and now you have both.',
     ],
     Rack: M13Rack,

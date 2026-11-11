@@ -281,7 +281,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming recommendation. The genre rewards dynamics: where the band allows, aim for a PLR of 10–13 dB (at −2 dBTP that means about −12 LUFS-I or quieter, below the typical range) and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
+      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming guideline. The genre rewards dynamics: where the band allows, aim for a PLR of 10–13 dB (at −2 dBTP that means about −12 LUFS-I or quieter, below the typical range) and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
     }
   ],
   "liveStudio": {

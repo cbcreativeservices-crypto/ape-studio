@@ -282,7 +282,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 meters with a 3 meter ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${view === 'top' ? ' The drummer’s own headphone mixer stands at the drummer’s right, its cable running straight back to the control room box on the back wall, clear of the door’s walkway.' : ''}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
-        badge: 'The room and its size are drawing values · a typical studio live room · gray hatch = the walkway',
+        badge: 'The room and its size are an example · a typical studio live room · gray hatch = the walkway',
         bezel: bezel(selItem),
         params: [fader(roomItems, sel, pick), viewToggle(view, setView)],
         initialParam: 'item',
@@ -290,7 +290,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       well: (
         <>
           <Landing looking={view === 'top' ? 'Plan · the room from above · the kit near the back wall' : 'Side view · the room from the player’s right'} prompt="Tap anything in the room — or step through ITEM — to see what it means for a room mic. There is nothing to answer yet." />
-          {card(selItem, 'A room mic hears the kit and everything the room does to it: the walls, the floor and the ceiling send the sound back. The room here is a drawing value — your room is the one that counts.')}
+          {card(selItem, 'A room mic hears the kit and everything the room does to it: the walls, the floor and the ceiling send the sound back. The room here is just an example — your room is the one that counts.')}
           <Note>{C.setting.leftHanded}</Note>
         </>
       ),

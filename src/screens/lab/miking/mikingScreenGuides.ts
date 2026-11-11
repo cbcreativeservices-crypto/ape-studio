@@ -543,7 +543,7 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
         : s && s.kind !== 'READ'
           ? opt('A reading step: words and still drawings, no live display.')
           : null,
-      rack && s && s.bezel.length ? opt(`The bezel, the readout cells framing the display, shows ${s.bezel.join(', ')}.`) : null,
+      rack && s && s.bezel.length ? opt(`Watch ${s.bezel.join(', ')} on the bezel, the readout cells framing the display.`) : null,
       sameAsStage ? null : opt(`It is part of the journey’s ${stage.title.toUpperCase()} stage.`),
       x.first ? opt(`At the top, “Page ${x.pageNum} goal:” says what this module asks.`) : null,
       x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This page is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,

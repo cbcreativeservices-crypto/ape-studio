@@ -37,7 +37,7 @@ function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
 }
 
 const WEDGE_NAMES = { aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY' } as const;
-const BUS_BADGE = 'BUS METERS — COMPUTED · who hears what, from the console engine';
+const BUS_BADGE = 'BUS METERS — COMPUTED · who hears what, from the console’s settings';
 
 /** The bus a channel contributes to, in dB — or OFF. */
 function heardDb(list: ReturnType<typeof mainHears>, channelId: string): string {

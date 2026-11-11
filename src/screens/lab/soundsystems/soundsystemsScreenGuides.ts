@@ -774,7 +774,7 @@ export const SS_BUILD_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'You’re looking down on an empty venue: the deck (the stage) and its riser at the top, wings on each side, the audience below. THE PARTS BIN holds every part you can place.',
       'Each cable you run takes a color from the legend, set by the level it carries: mic, line, speaker, digital or wireless.',
-      'Readouts: PLACED, CABLES, LIVE, and SILENT, which counts loudspeakers no source can reach yet.',
+      'Watch PLACED, CABLES, LIVE and SILENT as you build; SILENT counts loudspeakers no source can reach yet.',
     ],
     control: BUILD_CONTROL,
     changes: BUILD_CHANGES,

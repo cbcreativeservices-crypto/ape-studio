@@ -70,7 +70,7 @@ function perModel(m: BassClarinetModel): { blend: Omit<DocumentedZone, 'start'>;
       aim: { maxOffAxis: 30, prov: ill('aimed at the span from the lower body to the bell: within 30°') },
       requires: { micTypeIds: ['sdcCard'], variant: m },
       draw: draws(blend, BLEND_DIR, 35, 250, 550),
-      tendency: 'A body-and-bell blend: the open holes and the bell together, more even from low to high than either alone. A place to begin — the lesson’s own inference, checked by ear.',
+      tendency: 'A body-and-bell blend: the open holes and the bell together, more even from low to high than either alone. A place to begin — check it by ear.',
       checks: ['Low, middle and high phrases at actual dynamics', 'Key noise and the reed at this distance', 'Floor thumps from the peg or the stand'],
     },
     bell: {

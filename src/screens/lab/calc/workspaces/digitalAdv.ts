@@ -263,7 +263,7 @@ const TIMECODE: Workspace = {
   ],
   warnings:
     'Non-drop conversions: time = frames ÷ fps. Pulldown offset uses the 1000/1001 (0.1%) film↔︎video ' +
-    'factor. Drop-frame label mechanics are described, not renumbered here.',
+    'factor. Drop-frame labels are explained, but this calculator does not renumber them.',
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
     { key: 'frames', name: 'FRAME COUNT', quantity: 'number', meaning: 'number:frames', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
@@ -412,7 +412,7 @@ const FIRLEN: Workspace = {
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', positive: true, warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
     { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
-    { key: 'taps', name: 'TAP COUNT', quantity: 'number', meaning: 'number:taps', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
+    { key: 'taps', name: 'TAP COUNT', quantity: 'number', meaning: 'number:taps', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for “Latency from a tap count”.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
   ],
   functions: [
     {

@@ -63,7 +63,7 @@ export function WaveLabHomeScreen() {
       <ScreenGuideHintAnchor>
         <LabHeader
           title="WAVE PHYSICS LABORATORY"
-          subtitle="One room engine · fifteen experiments"
+          subtitle="One room model · fifteen experiments"
           right={<ScreenGuideKey title="WAVE PHYSICS LABORATORY" guide={WAVE_HOME_GUIDE} />}
         />
       </ScreenGuideHintAnchor>
@@ -96,7 +96,7 @@ export function WaveLabHomeScreen() {
         <Text style={styles.body}>
           Place sound sources in a room, move the walls, change the materials — and watch
           wavefronts, interference, reflections and coverage evolve live. Every module below is a
-          preset of the same Room Builder engine.
+          ready-made setup of the same Room Builder.
         </Text>
         <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):

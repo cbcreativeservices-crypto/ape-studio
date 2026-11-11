@@ -59,7 +59,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'Compare the two published pairs — spaced about 61 cm apart, or grilles together at 135° — by what a bar at each end does to them.',
+    goal: 'Compare the two suggested pairs — spaced about 61 cm apart, or grilles together at 135° — by what a bar at each end does to them.',
     credit: { scenarios: ['vb.two.1', 'vb.two.2', 'vb.two.3', 'vb.two.4'], interactive: 'pairCompared', note: 'Look at the spaced pair and the coincident pair with an end bar as the source, then answer the four checks.' },
     takeaway: 'A spaced pair gives more separate low and high control but can comb in mono; grilles together, every bar arrives at both at once and the picture is made by level. They are alternatives, not one setup.',
   },

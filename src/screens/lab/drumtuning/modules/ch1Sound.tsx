@@ -29,7 +29,7 @@ const RESO_T = 2600;
 type ViewItem = { id: string; label: string; short: string; blurb: string; vib?: number };
 const BASE_VIEWS: ViewItem[] = [
   { id: 'drum', label: 'The drum and its tension map', short: 'DRUM', blurb: 'The head from above with the map around the lugs.' },
-  { id: 'wave', label: 'The rendered strike', short: 'WAVE', blurb: 'The hit on its real time base, with its envelope.' },
+  { id: 'wave', label: 'The strike waveform', short: 'WAVE', blurb: 'The hit on its real time base, with its envelope.' },
   { id: 'pitch', label: 'The pitch trace', short: 'PITCH', blurb: 'Pitch over time of the main note: the bend.' },
 ];
 

@@ -66,7 +66,7 @@ export function TuningLabScreen() {
    * re-render with the same status stays quiet.
    */
   const soundLine = status.rendering
-    ? `Rendering: ${status.rendering}…`
+    ? `Preparing ${status.rendering}…`
     : status.playing
       ? `Playing ${status.label}`
       : status.error
@@ -371,7 +371,7 @@ export function TuningLabScreen() {
       {rack && !ending ? null : (
         <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
           <Text style={styles.sound} accessibilityLiveRegion="polite">
-            {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : status.error ? status.error : 'Sound: stopped'}
+            {status.rendering ? `Preparing ${status.rendering}…` : status.playing ? `♪ ${status.label}` : status.error ? status.error : 'Sound: stopped'}
           </Text>
           <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
             <Text style={styles.stopText}>■ STOP</Text>

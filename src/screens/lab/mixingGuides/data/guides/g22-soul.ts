@@ -286,7 +286,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming recommendation. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing. Soul benefits from a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below the modern range) and a loudness range of 6–9 LU so ballads breathe and vamps build."
+      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming guideline. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing. Soul benefits from a PLR (peak-to-loudness ratio) of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below the modern range) and a loudness range of 6–9 LU so ballads breathe and vamps build."
     }
   ],
   "liveStudio": {

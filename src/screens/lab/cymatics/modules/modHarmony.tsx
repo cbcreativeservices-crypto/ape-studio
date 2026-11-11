@@ -430,7 +430,7 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
               ? 'PLAY: two free sines summed in one channel — the beats you see are the beats you hear.'
               : 'A detuned pair is SHOWN only — this build’s sound engine plays one locked pair at a time, not two free tones. Set DETUNE back to lock to hear the ratio.'
             : tone.additiveReady
-              ? `PLAY renders the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)} through the additive engine.`
+              ? `PLAY sounds the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)}, built by additive synthesis.`
               : 'Locked ratios need the additive engine (engine 3).'}
       </Text>
       {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}

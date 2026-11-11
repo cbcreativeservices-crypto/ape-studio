@@ -80,7 +80,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does most of a Saraswati veena’s sound leave from?',
     options: ['The gourd under the neck, which works as a second soundboard', 'The top plate over the resonator, driven through the bridge', 'The carved yali, which rings like a bell at the neck’s end'],
     correct: 'The top plate over the resonator, driven through the bridge',
-    explain: 'The strings move little air. They drive the broad bridge, the bridge drives the top plate, and the plate over the resonator radiates most of the sound — in the measured radiation it mattered most.',
+    explain: 'The strings move little air. They drive the broad bridge, the bridge drives the top plate, and the plate over the resonator radiates most of the sound.',
     why: {
       'The gourd under the neck, which works as a second soundboard': 'The gourd mainly supports the neck on the thigh. Do not expect it to radiate like the top plate.',
       'The carved yali, which rings like a bell at the neck’s end': 'The yali is a carved head — decoration, not a radiator.',
@@ -458,7 +458,7 @@ export const C15_LESSON: Lesson = {
       { title: 'A finger plucks', text: 'A finger pulls a melody string aside near where the plate meets the neck, and lets it go — the ATTACK. The little finger can strike the tala strings beside it.' },
       { title: 'The string swings — against the bridge', text: 'Released, the string swings between its still ends — the broad flat bridge and the nut, or the fret it is pressed to — and vibrates against the bridge’s flat top: the buzz the player intends. Motion drawn many times larger.' },
       { title: 'The bridge drives the top plate', text: 'Each swing works the bridge, and the bridge drives the top plate over the big resonator. The plate moves the air — the air inside the resonator too.' },
-      { title: 'Sound leaves', text: 'Sound leaves mostly from the top plate. In measured radiation the plate mattered most, and the pattern changed with pitch, direction and distance — so it pays to compare positions around the face. The gourd under the neck is a support.' },
+      { title: 'Sound leaves', text: 'Sound leaves mostly from the top plate, and that sound changes with pitch, direction and distance — so it pays to compare positions around the face. The gourd under the neck is a support.' },
     ],
     attack: 'The start of the note: the finger releasing the string against the broad, flat bridge — a buzzing, bright onset. It is heard most directly toward the bridge; aimed there, a mic hears more click and buzz.',
     body: 'The note’s ring: the strings, the plate and the resonator’s air together, with the drone of the tala strings. A broad view of the plate carries it; farther back adds the room. Tendencies; veenas vary.',

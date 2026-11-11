@@ -525,7 +525,7 @@ export function EarModuleScreen() {
   if (!mod) {
     return (
       <View style={styles.root}>
-        <Text style={styles.title}>Module not found</Text>
+        <Text style={styles.title}>This module couldn’t be opened. Go back to the module list and try again.</Text>
       </View>
     );
   }
@@ -644,7 +644,7 @@ export function EarModuleScreen() {
           <>
             <View style={styles.noteRow}>
               <Text style={styles.note}>
-                {mod.phones === 'required' ? '🎧 required' : mod.phones === 'recommended' ? '🎧 recommended' : '🔊 any playback'} · {mod.playbackNote}
+                {mod.phones === 'required' ? '🎧 required' : mod.phones === 'recommended' ? '🎧 suggested' : '🔊 any playback'} · {mod.playbackNote}
               </Text>
             </View>
             <View style={styles.objective}>

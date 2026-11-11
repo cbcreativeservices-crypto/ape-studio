@@ -553,7 +553,7 @@ export function SignalChainLabScreen() {
       <Text style={styles.caption}>
         Modules run their lab-default teaching settings — each module’s full controls live in its
         own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
-        honest quirk: this engine’s fixed order runs COMP before GATE, while on a real console you
+        honest quirk: this rack runs COMP before GATE, while on a real console you
         would usually gate FIRST so compression never raises the noise floor — the mistakes list
         explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
         this −20 dB test source; a real output ceiling sits just under full scale (commonly

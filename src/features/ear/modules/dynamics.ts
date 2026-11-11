@@ -150,7 +150,7 @@ export const M10_COMPRESSION: EarModule = {
   title: 'Compression Recognition',
   blurb: 'None, light, moderate, heavy, pumping — hear the envelope change, not the level.',
   phones: 'recommended',
-  playbackNote: 'Rendered drum surrogate; headphones help on the light settings. Levels 1–3 play quieter so no hit ever clips.',
+  playbackNote: 'A drum pattern made by the app; headphones help on the light settings. Levels 1–3 play quieter so no hit ever clips.',
   // NEW COPY
   listenFor: 'Same loudness, different shape: do the hits snap, or sit down flat? Does the space between hits swell back up?',
   levels: 4,

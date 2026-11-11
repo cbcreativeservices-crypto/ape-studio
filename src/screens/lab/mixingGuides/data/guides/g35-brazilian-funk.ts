@@ -255,7 +255,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at or below −1 dBTP; −2 dBTP is recommended for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so hot masters get turned down and the clipping must sound intentional. LRA of 2–4 LU is normal, and PLR is very low: at −2 dBTP, a −7 to −4 LUFS-I master leaves only 2–5 dB."
+      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at or below −1 dBTP; −2 dBTP is suggested for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so hot masters get turned down and the clipping must sound intentional. A loudness range (LRA) of 2–4 LU is normal, and PLR (peak-to-loudness ratio) is very low: at −2 dBTP, a −7 to −4 LUFS-I master leaves only 2–5 dB."
     }
   ],
   "liveStudio": {

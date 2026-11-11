@@ -70,7 +70,7 @@ export const HARP_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic and harp',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this harp, measured from the surface it names — the soundboard, the crown, the floor, a sound hole. They are starting points, not rules: move from there and listen — there is no single right answer.',
-      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimeter claim is made.',
+      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so don’t read distances to the millimeter.',
       clearance: 'Clearance comes first. The harpist’s hands work both sides of the strings; their feet work the pedals; they look past the neck at the music and the conductor. Keep-clear areas appear as the mic gets close. If a move is stopped, they turn red and show the reason. They are rough: leave more room on a real stage.',
       tendencies: 'A close cardioid aimed straight at the middle of the board tends to favor one region and boom; higher and looking down, more of the upper strings; farther away, the whole harp and the room. These are tendencies; harps and rooms vary.',
     },

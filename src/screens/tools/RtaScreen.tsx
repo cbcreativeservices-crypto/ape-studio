@@ -1375,8 +1375,8 @@ export function RtaScreen({ navigation }: Props) {
             <Chip label="RESET PEAK HOLD" active={false} onPress={onResetPeak} a11yLabel="Reset peak hold" />
           </View>
           <Text style={styles.settingsNote}>
-            Changing banding, averaging, or resolution restarts the band average and peak hold (new
-            settings epoch). HI-RES doubles the FFT and slows the response. Low tones spill into fewer
+            Changing banding, averaging, or resolution restarts the band average and peak hold.
+            HI-RES doubles the FFT and slows the response. Low tones spill into fewer
             neighboring bars at every band count; at 61 bands the low bands also separate down to ~30 Hz.
           </Text>
         </View>

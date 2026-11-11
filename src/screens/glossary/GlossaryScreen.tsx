@@ -1009,7 +1009,7 @@ function ShortReadNote({ kind }: { kind: 'unanswered' | 'other' | undefined }) {
   return (
     <Text style={styles.shortReadNote}>
       {kind === 'unanswered'
-        ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.'
+        ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never counted twice.'
         : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Close the term and open it again to retry.'}
     </Text>
   );

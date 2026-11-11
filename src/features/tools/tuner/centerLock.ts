@@ -586,7 +586,7 @@ export function readAgainstPartials(hz: number, targetHz: number, maxPartial = 2
 
 /** Honesty line for the current piano key. */
 export function pianoRangeHint(targetHz: number, partial: number, floorHz: number = TRACKER_FLOOR_HZ): string | null {
-  if (targetHz < floorHz) return partial > 1 ? `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp` : 'Below the tracker floor: play the key and the display follows its 2nd partial';
+  if (targetHz < floorHz) return partial > 1 ? `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp` : 'Below the tuner’s pitch range: play the key and the display follows its 2nd partial';
   if (targetHz > TRACKER_TREBLE_HZ) return 'Treble: the phone resolves fundamentals poorly up here — tune by octave from the key below';
   if (partial > 1) return `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp`;
   return null;

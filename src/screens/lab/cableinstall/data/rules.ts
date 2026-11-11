@@ -246,7 +246,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'Cable may not lie on ceiling tiles or hang from tile grid/support wires.',
     whyText:
-      'Tiles and grid are a finish system, not structure — cable loads them, blocks access, and where the electrical code is adopted this is a violation, not a shortcut (confirm with the AHJ). Independent, approved supports exist precisely for this.',
+      'Tiles and grid are a finish system, not structure — cable loads them, blocks access, and where the electrical code is adopted this is a violation, not a shortcut (confirm with the AHJ, the official who approves the work). Independent, approved supports exist precisely for this.',
     correctionText: 'Lift the cable onto J-hooks/tray/straps anchored to structure, clear of the tiles.',
     sourceRefs: ['nec', 'bicsi_n1'],
   },
@@ -319,7 +319,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'Unknown wall? VERIFY the assembly before drilling — find out first, penetrate after.',
     whyText:
-      'Fire-resistance-rated assemblies are life-safety construction; an unapproved penetration defeats them and is a code violation where adopted. Verification (drawings, markings, the project team, the AHJ) comes before the drill.',
+      'Fire-resistance-rated assemblies are life-safety construction; an unapproved penetration defeats them and is a code violation where adopted. Verification (drawings, markings, the project team, the AHJ — the official who approves the work) comes before the drill.',
     correctionText: 'Stop. Identify the assembly from documents or the responsible party, then use the penetration method the assembly requires.',
     sourceRefs: ['bldg_fire', 'nec', 'firestop_listed'],
   },
@@ -369,7 +369,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'Support overhead runs from structure with approved hardware — independent of ceilings, ducts, pipes and other systems.',
     whyText:
-      'Overhead cable that borrows other systems\' supports endangers both systems and the people below. Where the electrical code is adopted this is required (confirm with the AHJ); everywhere it is simply how professionals stay out of trouble.',
+      'Overhead cable that borrows other systems\' supports endangers both systems and the people below. Where the electrical code is adopted this is required (confirm with the AHJ, the official who approves the work); everywhere it is simply how professionals stay out of trouble.',
     sourceRefs: ['nec', 'bicsi_n1', 'mfr_support'],
   },
   {
@@ -524,7 +524,7 @@ export const CI_RULES: CiRule[] = [
     category: 'fire',
     authorityClass: 'professional_practice',
     severity: 'critical',
-    studentText: 'Unknown assembly, unknown space, unknown system: stop and verify with documents, the project team, or the AHJ.',
+    studentText: 'Unknown assembly, unknown space, unknown system: stop and verify with documents, the project team, or the AHJ (the official who approves the work).',
     whyText:
       'Guessing at life-safety construction converts an installer into a liability. Verification is the professional behavior the whole industry\'s documents assume.',
     sourceRefs: ['bldg_fire', 'firestop_listed'],

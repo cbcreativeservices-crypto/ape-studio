@@ -142,7 +142,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
         </GlossaryText>
 
         <Text style={styles.caption}>
-          The bezel proves the geometry with REAL computed values: the attenuation one octave below
+          Watch the readouts: the REAL computed attenuation one octave below
           the cutoff (40 Hz) and two octaves below (20 Hz) tracks the slope you chose.
         </Text>
 

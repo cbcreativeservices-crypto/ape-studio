@@ -31,7 +31,7 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
   const [drive, setDrive] = useState<'clean' | 'warm' | 'hot'>('clean');
   const satItems = [
     { id: 'what', name: 'What saturation adds', blurb: 'Harmonics related to the signal — density and “weight” that EQ cannot fabricate, plus soft peak rounding.' },
-    { id: 'flavors', name: 'Tape, console, tube', blurb: 'Different curves, same idea: nonlinearity as color. DAW-neutral truth: judge with ears, level-matched — not by the label.' },
+    { id: 'flavors', name: 'Tape, console, tube', blurb: 'Different curves, same idea: nonlinearity as color. Whatever your DAW calls it, judge with your ears, level-matched — not by the label.' },
     { id: 'clip', name: 'Clipping as a tool', blurb: 'A hard or soft ceiling shaving peaks. On drums, sometimes exactly right; on everything, usually regret.' },
     { id: 'evaluate', name: 'Level-matched evaluation', blurb: 'Saturation flatters loudness meters. If it is not clearly better at MATCHED loudness, it is just distortion.' },
   ] as const;

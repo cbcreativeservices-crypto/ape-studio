@@ -272,7 +272,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to about −14 LUFS, some to −16, and −2 dBTP or lower is recommended for masters louder than that, so the streaming version of a loud radio single needs the lower ceiling. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
+      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to about −14 LUFS, some to −16, and −2 dBTP or lower is suggested for masters louder than that, so the streaming version of a loud radio single needs the lower ceiling. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
     }
   ],
   "liveStudio": {

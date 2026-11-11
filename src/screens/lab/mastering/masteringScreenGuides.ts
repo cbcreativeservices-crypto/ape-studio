@@ -59,8 +59,8 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: [
           'Ride the STAGE fader in the dock through REC, EDIT, MIX, MASTER and RELEASE. It starts on MASTER.',
-          'The strip holds ⏮, ‹ PREV, the readout and NEXT ›. ‹ PREV and NEXT › walk through the steps and carry on into the next module. Tap the readout for the list of modules.',
-          'HIDE DISPLAY and FULL SCREEN sit on the bezel. The ‹ at the top leaves the lab. “When to bring in a pro ›” under the strip opens a short note.',
+          'Use ‹ PREV and NEXT › to step through and on into the next module; ⏮ goes back to the start. Tap the readout to jump to any module.',
+          'HIDE DISPLAY and FULL SCREEN on the bezel hide or enlarge the display. The ‹ at the top leaves the lab. “When to bring in a pro ›” under the strip opens a short note.',
         ],
         changes: [
           'At REC, EDIT and MIX, WORKS ON reads TRACKS: every part — vocal, drums, bass — is still separate and can be moved on its own.',
@@ -1158,7 +1158,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'The display shows the running order on a real time scale. Block length is track length, height and color show loudness, and the wedge is the fade-out. Below, the three transitions are zoomed in.',
-          'On the bezel: ORDER, GAP, MAX STEP (the largest loudness step between neighbors) and TOTAL.',
+          'On the bezel, watch ORDER, GAP, MAX STEP (the largest loudness step between neighbors) and TOTAL.',
           'THE DELIVERY PLAN is in the notes.',
         ],
         control: [

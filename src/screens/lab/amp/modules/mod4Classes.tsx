@@ -307,7 +307,7 @@ export function Mod4Classes() {
               {cls === 'C' ? (
                 <Card>
                   <Text style={styles.zoomNote}>
-                    Deliberately never shown driving a loudspeaker with music: Class C output only exists at the tuned frequency. Its home is a transmitter feeding an antenna through a resonant network.
+                    You never see Class C drive a loudspeaker with music here: its output only exists at the tuned frequency. Its home is a transmitter feeding an antenna through a resonant network.
                   </Text>
                 </Card>
               ) : null}

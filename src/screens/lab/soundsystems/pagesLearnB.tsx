@@ -491,7 +491,7 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={7}>WIRING AND SYSTEM CONNECTIONS</ChapterTag>
-      <Body>Six proposed connections. Decide whether each one carries signal, then read the engine’s verdict — the same engine that judges every cable in BUILD mode.</Body>
+      <Body>Six proposed connections. Decide whether each one carries signal, then read the verdict — the same check that judges every cable in BUILD mode.</Body>
       <Prompt>May these connect?</Prompt>
       <GoalChips goals={goals} latched={latched} />
       {PAIRS.map((p, i) => {

@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the practice, a gentle clap peaks at −28 dBFS. Your strongest repeatable clap is louder. Your gain?',
     options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap all the way up to −6 dBFS', 'Leave it as it is and normalize it later'],
     correct: 'The loudest safe peak near −12 dBFS',
-    explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: near −12 dBFS is a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
+    explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: bring it near −12 dBFS as a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
     why: {
       'Bring the gentle clap all the way up to −6 dBFS': 'With a gentle clap already at −6 dBFS, your strongest clap clips.',
       'Leave it as it is and normalize it later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',

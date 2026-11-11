@@ -112,7 +112,7 @@ const NOISE_TINTS: Record<NoiseColor, string> = {
 function noiseGuardSentence(): string {
   if (nativeHpfActive()) {
     return (
-      `the engine's built-in ${SPEAKER_HPF_HZ} Hz high-pass removes that sub-bass before it ` +
+      `a ${SPEAKER_HPF_HZ} Hz high-pass filter removes that sub-bass before it ` +
       'reaches the driver, so no color needs its level cut'
     );
   }
@@ -124,7 +124,7 @@ function noiseGuardSentence(): string {
     .filter(([, db]) => db === 0)
     .map(([k]) => k)
     .join('/');
-  return `their overall level is reduced on this build (${cuts}; ${flat} unchanged)`;
+  return `their overall level is lowered in this version of the app (${cuts}; ${flat} unchanged)`;
 }
 
 const INTRO =

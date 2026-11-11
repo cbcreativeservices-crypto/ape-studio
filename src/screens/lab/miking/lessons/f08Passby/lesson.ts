@@ -608,7 +608,7 @@ export const F08_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A source that approaches, crosses and recedes: a walker, a bicycle, a vehicle. The lead-in and the tail matter as much as the loud moment at the closest point.', src: 'LESSON-F08' },
     { title: 'THREE CUES', text: 'A level that rises and falls, a movement across a stereo image, and a small pitch shift of a steady tone: three separate things. One can happen without the others.', src: 'OSX-DOPPLER' },
     { title: 'THE VIEWPOINT', text: 'A stationary listener, a camera that follows the subject, or separate positions you choose between later — decide which before any mic goes up.', src: 'LESSON-F08' },
-    { title: 'WHAT THIS LAB DRAWS', text: 'A walker on a park path closed to traffic, 3 m from the listening point — and a vehicle route as a paper plan only. Speeds and distances are drawing defaults; the mics are drawn larger than life.', src: 'LESSON-F08' },
+    { title: 'WHAT THIS LAB DRAWS', text: 'A walker on a park path closed to traffic, 3 m from the listening point — and a vehicle route as a paper plan only. Speeds and distances are example values; the mics are drawn larger than life.', src: 'LESSON-F08' },
   ],
   sound: {
     stages: [

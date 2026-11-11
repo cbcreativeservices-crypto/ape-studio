@@ -387,7 +387,7 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
       onClose={() => setAcctNote(false)}
       title="Account required"
       lines={[
-        'Only registered users can set up a Registry profile.',
+        'You need an account to set up a Registry profile.',
         'Create a free account to add your information. You don’t need a paid or active membership, just an account. You can then edit it anytime from SET UP MY PROFILE on this screen.',
       ]}
       // S17: with no onPrimary the component falls back to a single

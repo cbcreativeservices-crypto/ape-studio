@@ -182,7 +182,7 @@ describe('4 · Modular Synth: a usable well under the tall glass', () => {
   it('Modular opts in, and its SEQ tray puts the rates and the eight steps before the words', () => {
     const m = read('src/screens/lab/ModularLabScreen.tsx');
     assert.match(m, /minWell: 132,/);
-    const tray = m.slice(m.indexOf("id: 'seq',"), m.indexOf('LEDs) is the REAL native sequencer position.'));
+    const tray = m.slice(m.indexOf("id: 'seq',"), m.indexOf('LEDs) is the sequencer’s REAL position.'));
     const steps = tray.indexOf('<View style={styles.stepRow}>');
     assert.ok(steps > 0 && steps < tray.indexOf('SEQUENCER — 8 STEPS'), 'the steps come before the heading');
     assert.ok(steps < tray.indexOf('Sequencer OFF — the voice is a steady drone.'), 'and before the OFF note');

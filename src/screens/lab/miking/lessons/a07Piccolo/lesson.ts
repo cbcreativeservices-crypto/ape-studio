@@ -186,7 +186,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A useful comparison to begin with',
     explain: 'The flute-family positions are suggested for variants too, but they were not measured on a piccolo. Copy the relationship — between the lip plate and the first keys, off the jet — and test the whole phrase.',
     why: {
-      'A measured optimum for the piccolo itself': 'It is the flute’s figure, transferred; we found no measurement made on a piccolo.',
+      'A measured optimum for the piccolo itself': 'It is the flute’s figure, carried over; it was not measured on a piccolo.',
       'Too close to work at all on a piccolo': 'It works as a start; listen for breath and keys and adjust.',
     },
   },
@@ -310,7 +310,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — begin with the same geometry and listen',
     explain: 'The material is not a position prescription. Keep comparable geometry when comparing instruments, then adjust from what you actually hear.',
     why: {
-      'Yes — a wooden piccolo needs a closer mic': 'We found no source showing a fixed sound for a material; start from the geometry.',
+      'Yes — a wooden piccolo needs a closer mic': 'There is no set sound for a material; start from the geometry.',
       'Yes — a metal piccolo needs a darker-sounding mic': 'Choose by what you hear at matched level, not by the material.',
     },
   },

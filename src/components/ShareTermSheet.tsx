@@ -271,7 +271,7 @@ export function ShareTermSheet({
         })
         .catch(() => {
           onClose();
-          notify('Copy unavailable', 'The share text could not be copied.');
+          notify('Copy unavailable', 'The share text could not be copied. Try SHARE AS TEXT instead.');
         });
     });
 

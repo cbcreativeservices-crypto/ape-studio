@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the plate on the side away from the player, or underneath — clear of the stroke and the swing, then move the mic and see what changes.',
     credit: { scenarios: ['cr.place.1', 'cr.place.2', 'cr.place.3', 'cr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch CRASH for the other one), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'No one number is published for a crash: a zone is a place to begin, measured from the plate. Above or underneath, on the far side; clear of the follow-through and the swing — clearance comes first.',
+    takeaway: 'There is no set number for a crash: a zone is a place to begin, measured from the plate. Above or underneath, on the far side; clear of the follow-through and the swing — clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cr.place.1',
     page: 'placement',
-    prompt: 'No distance is published for a crash. How do you use a starting point of “20–35 cm above”?',
+    prompt: 'There is no set distance for a crash. How do you use a starting point of “20–35 cm above”?',
     options: ['As a place to begin, then move and listen', 'As an exact rule that must be measured to the mm', 'As a limit: closer than 35 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
     explain: 'With no fixed number to go by, the band is a sensible place to start — clear of the stroke and the swing — and your ears decide from there.',

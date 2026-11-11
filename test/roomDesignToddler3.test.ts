@@ -145,7 +145,7 @@ describe('REVIEW: a long value never squeezes its label to nothing (Larger Text,
 
 describe('REVIEW: a DELETE the device refused says so (store S1: the row comes back)', () => {
   it('the words: it was not deleted and the design is still saved', () => {
-    assert.equal(C.DELETE_FAILED, 'Could not delete — this device could not be written. The design is still saved.');
+    assert.equal(C.DELETE_FAILED, 'Could not delete — this device couldn’t update its storage. The design is still saved; try again.');
   });
   it('the host hands back the store promise; REVIEW shows DELETE_FAILED when it resolves false', () => {
     const host = strip(read(`${LAB}RoomDesignLabScreen.tsx`));

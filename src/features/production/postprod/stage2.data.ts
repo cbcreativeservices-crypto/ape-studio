@@ -215,7 +215,7 @@ export const STAGE2_MEDIA: StageDef = {
     {
       sectionId: "verification",
       title: "Copy Verification",
-      intro: "How you know the copy is the same as the original. This is the section the spec is built around.",
+      intro: "How you know the copy is the same as the original. This is the section the rest of this stage is built around.",
       fields: [
         {
           fieldId: "verify_method",

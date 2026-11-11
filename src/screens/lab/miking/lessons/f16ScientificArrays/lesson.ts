@@ -42,7 +42,7 @@ const pages: LessonPages = {
     title: 'The array and its spacing',
     goal: 'Build an array chain that can answer which element heard a click first, and find a spacing that keeps a uniform line clear of ambiguous lobes up to the top frequency.',
     credit: { scenarios: ['ar.mic.1', 'ar.mic.2', 'ar.mic.3', 'ar.rec.1'], interactive: 'spacing', note: 'In HALF A WAVELENGTH find a spacing that keeps clear and one that aliases, and answer the four checks.' },
-    takeaway: 'One clock, matched elements, the geometry logged, the raw channels kept. For a uniform line, spacing at or below half a wavelength of the top frequency — f_max = c ÷ 2d.',
+    takeaway: 'One clock, matched elements, the geometry logged, the raw channels kept. For a uniform line, spacing at or below half a wavelength of the top frequency — fmax = c ÷ 2d (c, the speed of sound; d, the spacing).',
   },
   placement: {
     title: 'Placement Studio',
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A uniform line, elements 60 mm apart. Up to about what frequency is it clear of aliasing?',
     options: ['About 2.9 kHz', 'About 29 kHz or so', 'About 290 Hz or so'],
     correct: 'About 2.9 kHz',
-    explain: 'f_max = c ÷ 2d = 343 m/s ÷ 0.12 m ≈ 2.9 kHz. Above that, ambiguous lobes can appear.',
+    explain: 'fmax = c ÷ 2d = 343 m/s ÷ 0.12 m ≈ 2.9 kHz. Above that, ambiguous lobes can appear.',
     why: {
       'About 29 kHz or so': 'Ten times too high: half a wavelength at 29 kHz is about 6 mm.',
       'About 290 Hz or so': 'Ten times too low: half a wavelength at 290 Hz is about 59 cm.',

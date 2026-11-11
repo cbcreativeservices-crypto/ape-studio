@@ -46,7 +46,7 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap a project type to start that kind of project. It opens at once, saved on this phone and named after its type.',
-    'Once a project is open, this screen shows its readiness, THE SIX STAGES, the EXERCISES and the Production Packet. + NEW PROJECT there starts another project of any type.',
+    'Once a project is open, check its readiness, work through THE SIX STAGES, try the EXERCISES and build the Production Packet. + NEW PROJECT there starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
   changes: [

@@ -101,7 +101,7 @@ const EYRING: Workspace = {
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
     { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', positive: true, warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
-    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', meaning: 'number:abs-avg', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
+    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', meaning: 'number:abs-avg', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be above 0 and below 1.' } },
     { key: 'rtTarget', name: 'TARGET RT60', quantity: 'time', defaultUnit: 's', placeholder: '0.3', help: 'A reverberation time you want to design toward.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
   ],
   functions: [
@@ -327,7 +327,7 @@ const ABSORBER: Workspace = {
     { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
     { key: 'thick', name: 'PANEL THICKNESS', quantity: 'length', defaultUnit: 'mm', placeholder: '12', help: 'Thickness of the perforated panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Thickness must be greater than zero.' } },
     { key: 'hole', name: 'HOLE DIAMETER', quantity: 'length', defaultUnit: 'mm', placeholder: '8', help: 'Diameter of each perforation.', positive: true, warn: { test: (x) => x <= 0, msg: 'Hole diameter must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound (Helmholtz).' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Air temperature sets the speed of sound for the Helmholtz result.' },
   ],
   functions: [
     {

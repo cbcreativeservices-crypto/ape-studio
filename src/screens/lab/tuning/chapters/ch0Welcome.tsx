@@ -88,7 +88,7 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
       <Body>Different tuning systems answer that question in different ways. Each preserves some relationships and compromises others.</Body>
       {stage >= 3 ? <Text style={styles.question} accessibilityRole="header">Where should the other notes go?</Text> : null}
       <Card>
-        <Body>🔈 Keep the volume low before you press play. Headphones are recommended, not required — every relationship in this lab is also shown visually and numerically.</Body>
+        <Body>🔈 Keep the volume low before you press play. Headphones are suggested, not required — every relationship in this lab is also shown visually and numerically.</Body>
       </Card>
       <Row>
         <Btn label={scope ? 'HIDE SCOPE' : 'SCOPE ⓘ'} onPress={() => setScope(!scope)} a11y={scope ? 'Hide the scope note' : 'Show what this lab does and does not cover'} />

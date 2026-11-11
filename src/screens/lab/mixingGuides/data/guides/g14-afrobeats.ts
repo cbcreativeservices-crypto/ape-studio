@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial masters typically land at −10 to −7 LUFS-I with a −2 dBTP ceiling (−1 dBTP is enough for masters at or below −14, a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and costs percussion snap. For more punch, aim for a PLR of roughly 8–10 dB (about −12 to −10 LUFS-I at −2 dBTP, at or below the quiet end of the typical range) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
+      "text": "Commercial masters typically land at −10 to −7 LUFS-I with a −2 dBTP ceiling (−1 dBTP is enough for masters at or below −14, a common streaming guideline). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and costs percussion snap. For more punch, aim for a PLR of roughly 8–10 dB (about −12 to −10 LUFS-I at −2 dBTP, at or below the quiet end of the typical range) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
     }
   ],
   "liveStudio": {

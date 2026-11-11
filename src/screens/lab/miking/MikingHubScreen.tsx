@@ -70,7 +70,7 @@ export function MikingHubScreen() {
       <ScreenGuideHost regions={false}>
       <LabHeader
         title={one ? one.family.toUpperCase() : 'MIKING LABS'}
-        subtitle={one ? one.name : 'Place microphones on drawn instruments — silent; tendencies in words'}
+        subtitle={one ? one.name : 'Place microphones on drawn instruments — no sound plays; tendencies described in words'}
         guide={mikingHubGuide(one)}
       />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>

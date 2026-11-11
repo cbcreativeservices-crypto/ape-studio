@@ -520,7 +520,7 @@ export const I03A_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'shaker', label: 'the shaker player at the station', short: 'SHAKER', note: 'Standing at a percussion station, often moving between small instruments. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'shaker', label: 'the shaker player at the station', short: 'SHAKER', note: 'Standing at a percussion station, often moving between small instruments. You see this player on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: loud, close, and often played in turn. A mic placed for the shaker may miss the next instrument — or hear this one instead.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL · STATIONS', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: the loudest spill into a quiet shaker mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud and bright upstage. Aim the shaker mic so its rejection, not its front, faces the backline where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

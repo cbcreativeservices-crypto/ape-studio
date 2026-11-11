@@ -444,10 +444,10 @@ export function LevelMeterBar({ levelDb, minDb = -48, maxDb = -12 }: { levelDb: 
 export function VizUnavailableCard() {
   return (
     <View style={styles.unavailCard}>
-      <Text style={styles.unavailTitle}>ANIMATED VIEWS NEED THE NEW DEV BUILD</Text>
+      <Text style={styles.unavailTitle}>ANIMATED VIEWS NEED AN APP UPDATE</Text>
       <Text style={styles.unavailBody}>
-        This dev client predates the graphics engine the air-particle and speaker animations run
-        on. The lesson text and audio work fully — install the newest dev build to see the motion.
+        This version of the app can’t show the air-particle and speaker animations yet. The lesson
+        text and audio work fully — update the app to see the motion.
       </Text>
     </View>
   );

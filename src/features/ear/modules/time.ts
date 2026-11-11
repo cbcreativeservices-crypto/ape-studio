@@ -335,7 +335,7 @@ export const M9_REVERB: EarModule = {
   id: 'reverb',
   num: '9',
   title: 'Reverb Recognition',
-  blurb: 'Room, chamber, hall, plate, spring — all rendered emulations, honestly labeled.',
+  blurb: 'Room, chamber, hall, plate, spring — all emulations, not real rooms or units.',
   phones: 'recommended',
   playbackNote: 'Quiet tails vanish on phone speakers.',
   // NEW COPY
@@ -363,7 +363,7 @@ export const M9_REVERB: EarModule = {
         question: 'Which clip has reverb on it?',
         answers: [{ label: 'A' }, { label: 'B' }],
         correct: wetFirst ? 0 : 1,
-        reveal: `${space.truth} All spaces here are offline emulations — labeled as such.`, // (truth already carries the RT)
+        reveal: `${space.truth} Every space here is an emulation, not a real room or unit.`, // (truth already carries the RT)
         seeIt: {
           kind: 'wave',
           clips: [0, 1],

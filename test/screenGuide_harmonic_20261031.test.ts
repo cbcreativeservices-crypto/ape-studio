@@ -280,7 +280,7 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
   });
   it('▶ starts the tone only once the override is checked', () => {
     assert.match(v, /void start\(\);\s*if \(isFeedbackAllowed\(\)\) void startTone\(\);/);
-    assert.match(g.live.control[0], /to start the mic, and the tone once the override is checked; ■ stops both/);
+    assert.match(g.live.control[0], /to start the mic, and the tone once ⚠ ALLOW SPEAKER WHILE MIC IS ON is checked; ■ stops both/);
   });
   it('first live experiment starts at the top of the F0 fader and is hedged (speaker high-pass at 100 Hz ≈ −7.8 dB)', () => {
     const hpfDb = (f: number) => { const r4 = (f / 150) ** 4; return 10 * Math.log10(r4 / (1 + r4)); };

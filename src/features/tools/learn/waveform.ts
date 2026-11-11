@@ -84,7 +84,7 @@ export const WAVEFORM_LEARN: ToolLearnContent = {
   warnings: [
     {
       text: 'Vertical zoom changes display size, not audio level.',
-      why: 'Students routinely reach for zoom when they mean gain — the trace grows, but the recorded level and available headroom have not changed at all.',
+      why: 'It is easy to reach for zoom when you mean gain — the trace grows, but the recorded level and available headroom have not changed at all.',
     },
     {
       text: 'Waveform height is not the same as perceived loudness.',

@@ -159,7 +159,7 @@ export function useDspEngine(config: EngineConfig, poll: {
     const watchdog = setTimeout(() => {
       if (gen === genRef.current) {
         genRef.current++;
-        setLastError('Microphone start timed out — a permission prompt may be waiting, or another app is holding the microphone.');
+        setLastError('The microphone didn’t start in time. Answer any permission prompt, or close other apps using the microphone, then try again.');
         setState((s) => (s === 'starting' ? 'error' : s));
       }
     }, 12000);

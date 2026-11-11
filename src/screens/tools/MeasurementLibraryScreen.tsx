@@ -240,7 +240,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
     const loHz = p.bandsHz[0];
     const hiHz = p.bandsHz[p.bandsHz.length - 1];
     const lines: { label: string; value: string }[] = [
-      { label: 'DURATION', value: `${seconds.toFixed(1)} s · ${p.timeStepSec * 1000} ms/col` },
+      { label: 'DURATION', value: `${seconds.toFixed(1)} s · ${p.timeStepSec * 1000} ms per column` },
       {
         label: 'RANGE',
         value: loHz != null && hiHz != null ? `${fmtHz(loHz)} – ${fmtHz(hiHz)} Hz` : '—',

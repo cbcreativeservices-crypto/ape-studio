@@ -200,7 +200,7 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       ) : null}
 
       <Prompt>A/B the same example in two systems. Root, register, timbre, duration, articulation, gain, voicing and tempo are held constant.</Prompt>
-      <Body>The A / B key holds the comparison: the example ({exampleName}), system B ({other.shortName}), the A / B / A → B keys — and the same E over a fixed C in three systems. Same written scale degree, different assigned frequency.</Body>
+      <Body>A / B opens the comparison: pick the example ({exampleName}) and system B ({other.shortName}), play A, B or A → B — and hear the same E over a fixed C in three systems. Same written scale degree, different assigned frequency.</Body>
 
       <Eyebrow>DEVIATION FROM EQUAL TEMPERAMENT · {sys.shortName.toUpperCase()}</Eyebrow>
       <Body>The chart on the glass: each bar is that note's signed distance from equal temperament in cents. Ride SYSTEM and watch the bars move.</Body>
@@ -208,7 +208,7 @@ export function Ch11Systems({ ctx }: ChapterProps) {
         <Card tone="math">
           <Eyebrow>ALL EIGHT · COMPUTED FROM ratio × {root.toFixed(6)} Hz</Eyebrow>
           {sys.notes.map((n, i) => (
-            <MathLine key={i}>{n.spelling}{i === 7 ? '5' : '4'}: {n.value.exactLabel} → {hz(n.value.numericRatio).toFixed(2)} Hz · {n.value.cents.toFixed(2)} ¢ · {deviationFromEqualCents(n) >= 0 ? '+' : ''}{deviationFromEqualCents(n).toFixed(2)} ¢ vs ET</MathLine>
+            <MathLine key={i}>{n.spelling}{i === 7 ? '5' : '4'}: {n.value.exactLabel} → {hz(n.value.numericRatio).toFixed(2)} Hz · {n.value.cents.toFixed(2)} ¢ · {deviationFromEqualCents(n) >= 0 ? '+' : ''}{deviationFromEqualCents(n).toFixed(2)} ¢ vs equal</MathLine>
           ))}
         </Card>
       ) : null}

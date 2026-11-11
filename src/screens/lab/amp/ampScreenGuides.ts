@@ -339,7 +339,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           'CLASS key: Class A, B, AB or C. The tray stays open, so you can compare while the display reacts.',
           'LEVEL fader sets the input level. It locks when Class A’s SIGNAL is off.',
           'Each class has its own control: SIGNAL (A, switches the input off), AB BIAS (AB, 0–100%) or TUNE (C, 0.50× to 2×; 1.00× is tuned).',
-          'RUN and SLOW; ⤢ FULL SCREEN. Tap a fact card to open all eight rows.',
+          'RUN and SLOW start, stop or slow the playhead; ⤢ FULL SCREEN enlarges the display. Tap a fact card to open all eight rows.',
           STRIP,
         ],
         changes: [
@@ -638,7 +638,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         control: [
           'SOURCE, MIXER and AMP IN faders (0–100%) set the three stage levels.',
           'SETUP key: Operating mode — Stereo or Bridge; Supply condition — Healthy or Sagging (weak AC power); Speaker load (nominal) — 8, 4 or 2 Ω; Ventilation — Clear or Blocked.',
-          'RUN; ⤢ FULL SCREEN. SCORE THIS CONFIGURATION grades your setup as often as you like; any change clears the score.',
+          'RUN starts or stops the playhead; ⤢ FULL SCREEN enlarges the display. SCORE THIS CONFIGURATION grades your setup as often as you like; any change clears the score.',
           STRIP,
         ],
         changes: [

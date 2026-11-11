@@ -150,7 +150,7 @@ export function soundCell(status: PlayerStatus, flex = 1): BezelItem {
     k: 'SOUND',
     // A play whose clip failed to load reads NO SOUND, never STOPPED (K8,
     // hunt 11 2026-10-04): on a rack chapter this cell is the only sound line.
-    v: status.rendering ? 'RENDER…' : status.playing ? '♪ PLAYING' : status.error ? 'NO SOUND' : 'STOPPED',
+    v: status.rendering ? 'LOADING…' : status.playing ? '♪ PLAYING' : status.error ? 'NO SOUND' : 'STOPPED',
     tint: status.playing ? colors.green : status.error ? '#ff6b5e' : undefined,
     flex,
   };

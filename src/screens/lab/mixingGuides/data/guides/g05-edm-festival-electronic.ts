@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gives no loudness advantage there. A common streaming recommendation is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a version at or below −2 dBTP for streaming. Short-term dynamic range is very small (PLR about 6–8 dB at the drop), but the sections still need macro contrast."
+      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gives no loudness advantage there. A common streaming guideline is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a version at or below −2 dBTP for streaming. Short-term dynamic range is very small (PLR, peak minus loudness, about 6–8 dB at the drop), but the sections still need macro contrast."
     }
   ],
   "liveStudio": {

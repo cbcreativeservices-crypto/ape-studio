@@ -557,8 +557,8 @@ export function FoundationsPlaygroundScreen() {
               to see them drawn. */}
           <Text style={styles.caption}>
             EQ shapes the drawings above; BALANCE moves the L–R strip under them. DELAY changes
-            what you HEAR only — it has no drawn twin yet.
-            {!fxReady && engineReady ? ' (Their audio needs the v6+ effects build.)' : ''}
+            what you HEAR only — it is not drawn.
+            {!fxReady && engineReady ? ' (Update the app to hear these effects.)' : ''}
           </Text>
         </View>
       ),
@@ -700,8 +700,8 @@ export function FoundationsPlaygroundScreen() {
             </Text>
             {!additiveReady && engineReady ? (
               <Text style={styles.caption}>
-                This dev build predates the additive engine — audio falls back to a pure sine;
-                the drawings stay exact.
+                This version of the app plays only a pure sine here. The drawings stay exact; update the
+                app to hear the full sound.
               </Text>
             ) : null}
           </>

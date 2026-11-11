@@ -157,7 +157,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
     <CymaticsRackLayout
       rack={{
         size: 'L',
-        badge: 'SIMULATION · one locked tone, two plates — APPROXIMATED (Ritz / Bessel) · CALCULATED (library shapes)',
+        badge: 'SIMULATION · one locked tone, two plates — APPROXIMATED (Ritz / Bessel) · CALCULATED (solved shapes)',
         onHelp: help,
         onGuide: () => help('change_one'),
         initialParam: 'a', // no fader: the drive is locked on purpose

@@ -509,7 +509,7 @@ export const I05A_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'cowbell', label: 'the cowbell and its player', short: 'COWBELL', note: 'On a stand at the kit or the percussion rig — or held. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'cowbell', label: 'the cowbell and its player', short: 'COWBELL', note: 'On a stand at the kit or the percussion rig — or held. Every page of this lesson shows it this way.', prov: { kind: 'illustrative', reason: 'a typical layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'kit', label: 'the drum kit and its overheads', short: 'KIT · OHs', note: 'Snare and cymbals a hand’s width from a kit bell; the overheads above may already carry it in balance.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL · MAIN PICKUP', scene: 'kit' },
       { id: 'perc', label: 'the timbales and percussion rig', short: 'PERCUSSION', note: 'Several bells may share a rig: a shared directional mic, or spots — and document which bell a shared mic favors.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the bell spot’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

@@ -441,7 +441,7 @@ export function DrumTuningLabScreen() {
   // not be pushed below the fold.
   const head = <Text style={styles.objectiveLabel}>{`CHAPTER ${mod.num} · ${mod.goal}`}</Text>;
   const standing = scenarios.length
-    ? `${answeredCount} of ${scenarios.length} decisions right${needsInteractive ? `, interactive ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
+    ? `${answeredCount} of ${scenarios.length} decisions right${needsInteractive ? `, hands-on step ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
     : needsInteractive
       ? interactive.has(mod.id) ? 'done' : 'not yet'
       : '';

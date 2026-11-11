@@ -64,7 +64,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       },
       seeing: [
         'You’re looking at a tom cut in half, from the side: the batter head (the one you hit) on top, the resonant head below. The part you pick lights up.',
-        'Readouts: PART, HEADS 2, EDGES 2 and LUGS 6 × 2 (six lugs for each head).',
+        'Readouts name your PART and count HEADS 2, EDGES 2 and LUGS 6 × 2 (six per head).',
         'Below: CHAPTER 1, what the chosen part does, and a card on the two heads.',
       ],
       control: [

@@ -339,7 +339,7 @@ const WS_PITCH: Workspace = {
       quantity: 'frequency',
       positive: 'The A4 reference must be above 0 Hz. Most music uses 440 Hz.',
       placeholder: '440',
-      help: 'tuning reference',
+      help: 'The pitch A4 is tuned to, in Hz; most music uses 440 Hz.',
       warn: { test: (x) => x < 400 || x > 480, msg: 'A4 references outside 400–480 Hz are historically unusual — check the value.' },
     },
     {
@@ -552,7 +552,7 @@ const WS_FILESIZE: Workspace = {
     'than 16/44.1).',
   example:
     '24-bit / 48 kHz stereo: 48000 × 24 ÷ 8 × 2 = 288000 bytes/s = 288 kB/s ≈ 17.3 MB per ' +
-    'minute (about 1.04 GB per hour). A 64 GB card holds 64e9 ÷ 288000 ≈ 222222 s ≈ 61.7 hours ' +
+    'minute (about 1.04 GB per hour). A 64 GB card holds 64×10⁹ bytes ÷ 288000 ≈ 222222 s ≈ 61.7 hours ' +
     'of stereo recording at that format.',
   mistakes: [
     'Mixing bits and bytes — data rates quote bits, files store bytes; the ÷8 is where most estimates go wrong by a factor of eight.',
@@ -756,7 +756,7 @@ const WS_ROOMMODES: Workspace = {
     { key: 'len', name: 'ROOM LENGTH', quantity: 'length', placeholder: '5', help: 'Longest floor dimension, wall to wall.' },
     { key: 'wid', name: 'ROOM WIDTH', quantity: 'length', placeholder: '4', help: 'Shorter floor dimension, wall to wall.' },
     { key: 'hei', name: 'CEILING HEIGHT', quantity: 'length', placeholder: '2.5', help: 'Floor to ceiling.' },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Air temperature sets the speed of sound (dry air assumed).' },
     {
       key: 'dist',
       name: 'SURFACE-TO-SURFACE DISTANCE',
@@ -1177,7 +1177,7 @@ const WS_TREATMENT: Workspace = {
       key: 'panels',
       name: 'Panels needed for the target RT',
       inputs: ['vol', 'rtCur', 'rtTgt', 'panelArea', 'alpha'],
-      formula: 'ΔA = 0.161·V/RT_target − 0.161·V/RT_current; panels = ceil(ΔA / (S_panel · α))',
+      formula: 'ΔA = 0.161·V/RT(target) − 0.161·V/RT(current); panels = ΔA ÷ (S(panel) · α), rounded up',
       plainFormula:
         'The absorption to add is 0.161 times the volume over the target RT minus the same over the current RT; the panel count is that shortfall divided by each panel’s area times its coefficient, rounded up.',
       explain:

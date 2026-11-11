@@ -27,5 +27,5 @@ export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb
   { id: 'echo', num: '14', title: 'Echo Laboratory', blurb: 'Discrete echoes vs fused reflections — the ~50 ms threshold.' },
   { id: 'reverb', num: '15', title: 'Reverberation Laboratory', blurb: 'Direct → early → late → diffuse: reverb as a buildup, not a thing.' },
   // Room Builder last: it combines every concept the other modules isolate (owner 2026-08-01).
-  { id: 'builder', num: '◎', title: 'Room Builder', blurb: 'The engine itself: build a room, place sources and a listener, toggle every layer.' },
+  { id: 'builder', num: '◎', title: 'Room Builder', blurb: 'The full room model: build a room, place sources and a listener, toggle every layer.' },
 ];

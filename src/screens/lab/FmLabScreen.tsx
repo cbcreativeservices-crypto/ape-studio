@@ -274,8 +274,8 @@ export function FmLabScreen() {
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge:
             env.decaySec > 0
-              ? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k(I) · AT THE STRIKE'
-              : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k(I) · EACH AT FC ± k·FM',
+              ? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · AT THE STRIKE'
+              : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · EACH AT FC ± k·FM',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier' },
@@ -361,7 +361,7 @@ export function FmLabScreen() {
         <Text style={styles.caption}>
           {index === 0
             ? 'Index 0 — no modulation: the pure carrier alone.'
-            : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index.toFixed(1)})|. ` +
+            : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |Jₖ(${index.toFixed(1)})|. ` +
               (isInharmonic
                 ? 'Inharmonic ratio (✳) — sidebands fall BETWEEN the harmonics: the bell/metallic family. ✳ on a RATIO marks these.'
                 : 'Simple ratio — sidebands land ON a harmonic series (pitched), even for a fraction like 0.5.')}
@@ -384,7 +384,7 @@ export function FmLabScreen() {
               <Text style={styles.caption}>
                 {env.decaySec > 0
                   ? `Each STRIKE restarts the index decay (τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}. The header ▶ strikes once and ■ stops.`
-                  : 'Sustained index — controls retarget the running voice live (index and ratio glide natively, click-free). The header ▶ starts and ■ stops; STRIKE retriggers.'}{' '}
+                  : 'Sustained index — the controls change the running voice live (index and ratio glide smoothly, click-free). The header ▶ starts and ■ stops; STRIKE retriggers.'}{' '}
                 Output {GEN_LEVEL_DB} dBFS · uncalibrated.
               </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}

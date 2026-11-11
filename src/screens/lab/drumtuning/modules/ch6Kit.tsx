@@ -199,7 +199,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
             render: (w, h) => <KitStage width={w} height={h} rackHz={rackHz} floorHz={floorHz} verdict={verdict.kind} sounding={sounding} sync={sync} />,
             aspect: KIT_ASPECT,
             size: 'L',
-            badge: 'MODEL · the ladder; the hits are SYNTHESIZED (additive membrane model, offline)',
+            badge: 'MODEL · the ladder; the hits are SYNTHESIZED (additive membrane model)',
             bezel: [
               { k: 'RACK', v: `${rackHz} Hz`, tint: colors.cyan },
               { k: 'FLOOR', v: `${floorHz} Hz`, tint: colors.green },

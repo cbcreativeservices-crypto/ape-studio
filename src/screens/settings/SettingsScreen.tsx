@@ -684,7 +684,7 @@ ${LOCAL_LOSS}`
         if (!token) {
           notify(
             'Notifications',
-            'Weekly concepts are saved. To receive them you need to allow notifications for this app on a phone — they cannot be delivered to this preview.',
+            'Weekly concepts are saved. To receive them, allow notifications for this app in your phone’s Settings — until then they can’t be delivered.',
           );
         } else if (!tokenSaved) {
           // The token is this phone's address and it did not reach the account

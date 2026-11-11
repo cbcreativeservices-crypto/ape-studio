@@ -225,7 +225,7 @@ TOOLS.push({
     'Certified dB SPL — the levels are ESTIMATES from an uncalibrated phone microphone',
     'Certified or legal sound levels (not an IEC 61672 instrument)',
     'Guaranteed diagnoses — detections are likely conditions inferred from the signal, never certainties',
-    'CPU load or microphone input gain — the engine does not expose them, so they are not shown',
+    'CPU load or microphone input gain — the app can’t read them, so they are not shown',
     'Stereo relationships (this meter is mono)',
   ],
 });
@@ -255,4 +255,4 @@ export const ENGINE_NOTE =
 /** The CAMERA half of the same story — Light-Pulse only. */
 export const CAMERA_NOTE_TITLE = 'LIGHT-PULSE MODE — NOT IN THIS BUILD';
 export const CAMERA_NOTE =
-  'Light-Pulse needs a native camera module that is not part of this installed build; the Sound, Tuner and Tap modes are unaffected and work now.';
+  'This version of the app can’t use the camera for Light-Pulse yet. The Sound, Tuner and Tap modes work fully; update the app to use Light-Pulse.';

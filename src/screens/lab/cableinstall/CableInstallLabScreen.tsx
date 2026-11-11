@@ -825,7 +825,7 @@ function CompleteStage({
         {canReview ? (
           <GlassButton label="REVIEW RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onReview} />
         ) : Object.keys(dims).length > 0 ? (
-          <Text style={styles.reviewLine}>Nothing below 80 — no review recommended.</Text>
+          <Text style={styles.reviewLine}>Nothing below 80 — no review suggested.</Text>
         ) : null}
         <GlassButton label="REPEAT LAB" tint="gold" height={44} fontSize={12.5} onPress={onRepeat} />
         <GlassButton label="RETURN TO TRAINING" tint="teal" height={44} fontSize={12.5} onPress={onReturn} />

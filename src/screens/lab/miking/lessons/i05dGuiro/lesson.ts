@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     explain: 'There is no established rule that aiming into an open end sounds fuller, or that one side reduces harshness.',
     why: {
       'Yes — the open end is where the body sounds': 'The whole body radiates; compare viewpoints.',
-      'Yes — and it also reduces the harshness': 'No source establishes that; listen.',
+      'Yes — and it also reduces the harshness': 'There is no such rule; listen.',
     },
   },
   {
@@ -507,7 +507,7 @@ export const I05D_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'guiro', label: 'the güiro player', short: 'GÜIRO', note: 'At the percussion station, standing, the güiro across their front. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'guiro', label: 'the güiro player', short: 'GÜIRO', note: 'At the percussion station, standing, the güiro across their front. Every page of this lesson shows it this way.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'The player may move between instruments: a predictable station keeps the güiro where the mic expects it.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals near the güiro: a spot must be near enough for useful direct sound.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the güiro mic’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

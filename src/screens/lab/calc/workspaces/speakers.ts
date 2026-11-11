@@ -652,7 +652,7 @@ const WS_CABLE: Workspace = {
       key: 'maxlen',
       name: 'Maximum cable length for a loss budget (reverse)',
       inputs: ['awg', 'z', 'maxloss'],
-      formula: 'Rloop_max = Z·(10^(loss/20) − 1); Lmax = Rloop_max / (2·R/m)',
+      formula: 'Rloop(max) = Z·(10^(loss/20) − 1); Lmax = Rloop(max) / (2·R/m)',
       plainFormula:
         'The maximum loop resistance equals the impedance times (ten raised to the loss over twenty, minus one); the maximum length is that resistance divided by twice the resistance per meter.',
       explain:
@@ -679,7 +679,7 @@ const WS_CABLE: Workspace = {
         const rloopMax = z * (Math.pow(10, dB / 20) - 1);
         return [
           `Loss of ${fmt(dB)} dB means the divider ratio (Z+Rloop)/Z = 10^(${fmt(dB)}/20) = ${fmt(Math.pow(10, dB / 20))}.`,
-          `Invert for the resistance: Rloop_max = ${fmt(z)} × (10^(${fmt(dB)}/20) − 1) = ${fmt(rloopMax)} Ω.`,
+          `Invert for the resistance: Rloop(max) = ${fmt(z)} × (10^(${fmt(dB)}/20) − 1) = ${fmt(rloopMax)} Ω.`,
           `Length: Lmax = ${fmt(rloopMax)} ÷ (2 × ${fmt(rpm)} Ω/m) = ${fmt(rloopMax / (2 * rpm))} m one-way for ${g} AWG.`,
         ];
       },

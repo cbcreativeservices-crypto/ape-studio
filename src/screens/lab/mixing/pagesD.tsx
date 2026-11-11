@@ -315,7 +315,7 @@ function PageFinal({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>YOUR CONSOLE</Eyebrow>
         <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: true, pan: true, mute: true, pol: true }} />
-        <Text style={styles.consoleNote}>LEAD and BGV are synth stand-ins for the vocal parts — real stems swap in identically. Steps 4–6 are wired into YOUR MIX: the render is your balance plus those three moves.</Text>
+        <Text style={styles.consoleNote}>LEAD and BGV (backing vocals) are synth stand-ins for the vocal parts. Steps 4–6 are built into YOUR MIX: what you hear is your balance plus those three moves.</Text>
         <Btn label="RESET MIX" disabled={touched === 0} onPress={() => setMix({})} a11y="Reset every channel to flat" />
       </Card>
       <Card>
@@ -332,7 +332,7 @@ function PageFinal({ ctx }: { ctx: PageCtx }) {
       {finished ? (
         <Card tone="ok">
           <Eyebrow>WHERE TO GO DEEPER</Eyebrow>
-          <Body>The Training section carries the deep dives this lab deliberately linked instead of duplicating: the EQ Lab, the Compressor & Dynamics labs, the De-Esser, Ear Training, and the analyzers. The Advanced Mixing lab — complex routing, parallel paths, translation, stems and delivery — picks up exactly where this page ends.</Body>
+          <Body>The Training section has the deep dives this lab points you to: the EQ Lab, the Compressor & Dynamics labs, the De-Esser, Ear Training, and the analyzers. The Advanced Mixing lab — complex routing, parallel paths, translation, stems and delivery — picks up exactly where this page ends.</Body>
         </Card>
       ) : null}
       <GoalChips goals={goals} latched={latched} />

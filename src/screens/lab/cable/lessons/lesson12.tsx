@@ -54,7 +54,7 @@ export function outstandingRows(cleared: ReadonlySet<string>): LeftRow[] {
     } else if (l.id === 'l12_final') {
       const safetyLeft = missing.filter((u) => SAFETY_UNITS.includes(u)).length;
       const parts = [
-        missing.includes(FINAL_UNIT) ? 'the general bank' : null,
+        missing.includes(FINAL_UNIT) ? 'the general questions' : null,
         safetyLeft > 0 ? `${safetyLeft} critical safety question${safetyLeft === 1 ? '' : 's'}` : null,
       ].filter(Boolean);
       detail = `On this page, below: ${parts.join(' and ')}`;
@@ -156,7 +156,7 @@ export function Lesson12Body() {
       {completion.complete ? (
         <>
           <CheckDoneBanner text="LAB COMPLETE — Cable & Connector Fundamentals" />
-          <Text style={s.body}>Credit for this lab is recorded through the Academy’s lab system.</Text>
+          <Text style={s.body}>Your credit for this lab is saved in your lab progress.</Text>
         </>
       ) : unreadable ? null : (
         <>
@@ -183,8 +183,8 @@ export function Lesson12Body() {
       {/* ── BANK 2 — CRITICAL SAFETY (each question = its own unit) ─────── */}
       <Eyebrow text="CRITICAL SAFETY — EVERY ONE OF THESE MUST BE ANSWERED CORRECTLY" />
       <Text style={s.body}>
-        Each question below records its own completion unit, and the lab cannot complete until every one has been
-        answered correctly. These are rules, not judgment calls.
+        Each question below counts on its own, and the lab is not complete until you answer every one
+        correctly. These are rules, not judgment calls.
       </Text>
       {SAFETY_QUESTIONS.map((q) => (
         <CheckQuestion key={q.unit} spec={q} onSolved={() => onSafetySolved(q)} />

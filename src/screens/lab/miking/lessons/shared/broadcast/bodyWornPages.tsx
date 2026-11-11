@@ -343,7 +343,7 @@ export function useCableStep(spec: CableSpec): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'Side view, close on the chest · dashed = under the shirt · how far each move pulls is a drawing default: a simplified picture · silent',
+      badge: 'Side view, close on the chest · dashed = under the shirt · how far each move pulls is chosen for the drawing: a simplified picture · silent',
       bezel,
       params,
       initialParam: 'move',
@@ -434,7 +434,7 @@ export function useBreathStep(spec: BreathSpec): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'From above, close on the face · the breath jet is a simplified cone (its angle and reach are drawing defaults) · silent',
+      badge: 'From above, close on the face · the breath jet is a simplified cone (its angle and reach are chosen for the drawing) · silent',
       bezel,
       params,
       initialParam: 'slide',

@@ -292,7 +292,7 @@ export const M3_BAND: EarModule = {
   title: 'Band Identification',
   blurb: 'Hear which of the 8 named bands an EQ move landed in — mixing vocabulary.',
   phones: 'recommended',
-  playbackNote: 'Sub Bass and Air trials are flagged; sub-bass toggle offered.',
+  playbackNote: 'Sub Bass and Air trials are marked; you can choose to skip sub-bass trials.',
   // NEW COPY
   listenFor: 'Name the region, not a number: boom (Bass), mud (Low Mid), honk (Mid), bite (Upper Mid), edge (Presence), sparkle (Brilliance).',
   levels: 4,

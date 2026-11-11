@@ -254,7 +254,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tr-stuck',
         q: 'A screen is stuck or something looks wrong.',
-        a: 'Fully close the app and reopen it — that clears most one-off states. If it keeps happening, report it from this screen; the report carries the details we need to find it.',
+        a: 'Fully close the app and reopen it — that fixes most one-off glitches. If it keeps happening, report it from this screen; the report carries the details we need to find it.',
       },
       {
         id: 'tr-progress',

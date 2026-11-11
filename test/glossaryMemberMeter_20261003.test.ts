@@ -133,10 +133,10 @@ describe('#2 · a re-open after a timed-out read is SENT again (the server ledge
     assert.deepEqual(rpc(), ['t4', 't4']);
   });
 
-  it('the term popup words such a term: retry, and never charged twice within 24 hours', () => {
+  it('the term popup words such a term: retry, and never counted twice within 24 hours', () => {
     const p = read('src/features/glossary/GlossaryTermPopup.tsx');
     assert.match(p, /else if \(full\.fault === 'error' && sessionChargeUnanswered\(hit\.id\)\) setPartial\('unanswered'\);/);
-    assert.match(p, /partial === 'unanswered'\s*\?\s*'[^']*open it again to retry[^']*never charged twice/);
+    assert.match(p, /partial === 'unanswered'\s*\?\s*'[^']*open it again to retry[^']*never counted twice/);
     // Start Here asks first (D55) for such a term: it may still be charged.
     assert.match(p, /export function termPaidThisSession[\s\S]{0,160}?return sessionDefinition\(known\.id\) != null;\n\}/);
   });

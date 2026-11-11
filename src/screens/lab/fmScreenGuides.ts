@@ -137,7 +137,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Any FM tone comes down to where its sidebands sit, how strong they are, whether they line up on a harmonic series, and what is left at index 0.',
-      'On the SIDEBAND SPECTRUM, each of these shows directly: stick spacing, stick height, and how many sticks stand.',
+      'Each of these shows directly in an FM tone’s spectrum: sideband spacing, sideband height, and how many sidebands there are.',
     ],
     tryThis: [
       'Unsure where sidebands sit? Try a different pair on EXPLORE: FC 440 and RATIO 0.5, so FM reads 220 Hz. Find the amber pair nearest the green carrier and read where it sits.',
@@ -172,8 +172,8 @@ export const FM_END_GUIDE: ScreenGuide = {
     'If you’re signed out, the line under the title says whether signing in can still keep it.',
   ],
   teaches: [
-    'An FM tone is built from a carrier, a modulator and the sidebands they make. The SIDEBAND SPECTRUM on EXPLORE shows each one as a stick.',
-    'Two numbers, the ratio and the index, shape what you hear, and you can test both on EXPLORE at any time. Sidebands pushed past 24 kHz fold back as aliasing.',
+    'An FM tone is built from a carrier, a modulator and the sidebands they make.',
+    'Two numbers, the ratio and the index, shape what you hear. Sidebands pushed past 24 kHz fold back as aliasing.',
   ],
   tryThis: [
     'If the check is still listed, tap its row to go back to CHECK. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',

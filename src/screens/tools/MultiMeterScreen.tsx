@@ -1590,7 +1590,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                   <SgGridSized history={sgHistory} anchor={SG_ANCHOR_DB} />
                 </View>
                 <Text style={styles.miniMeta}>
-                  {SG_F_MIN}–{SG_F_MAX / 1000}k · {SG_DYN_RANGE} dB · ~{(1000 / (SPEC_POLL_MS * SLOW_EVERY)).toFixed(0)} col/s
+                  {SG_F_MIN}–{SG_F_MAX / 1000}k · {SG_DYN_RANGE} dB · ~{(1000 / (SPEC_POLL_MS * SLOW_EVERY)).toFixed(0)} columns/s
                 </Text>
               </View>
 
@@ -1698,7 +1698,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                     {shownPitchHz != null ? fmtHz(shownPitchHz) : '—'}
                   </Text>
                   <Text style={styles.freqSource}>
-                    Hz · conf {live ? `${Math.round(live.confidence * 100)}%` : '—'}
+                    Hz · confidence {live ? `${Math.round(live.confidence * 100)}%` : '—'}
                   </Text>
                 </Pressable>
               </View>

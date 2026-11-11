@@ -33,7 +33,7 @@ export const CI_HOME_GUIDE: ScreenGuide = {
     start: 'Watch the drawing install itself, from the stage box to the rack, and follow the power feed. Open WHAT YOU’LL LEARN, then tap START LAB.',
   },
   seeing: [
-    'This is the lab’s opening screen. Watch the drawing install a whole job: stage box, a floor run under a protector, wall raceway, conduit, ceiling tray and rack.',
+    'Watch the drawing install a whole job: stage box, a floor run under a protector, wall raceway, conduit, ceiling tray and rack.',
     'Find the power feed. It runs on its own path, kept apart from the signal cables; Stage 10 shows why.',
     'Below the drawing you read what professional installation involves. Local codes always govern the real job.',
   ],

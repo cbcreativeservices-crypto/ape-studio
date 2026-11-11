@@ -83,7 +83,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
   {
     id: 'tb.shells',
     label: 'Between the shells',
-    band: 'Start right between the two shells, at shell height, on the audience side. We found no distance or aim for it — move it and listen to the shell pattern against the heads.',
+    band: 'Start right between the two shells, at shell height, on the audience side. It has no set distance or aim — move it and listen to the shell pattern against the heads.',
     kind: 'sourced',
     src: 'AX-OZO',
     quote: 'The D2 is on timbales, right in between the shells.',
