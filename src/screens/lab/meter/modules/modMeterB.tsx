@@ -818,7 +818,7 @@ export function WaterfallModule(p: MeterModuleProps) {
           <Text style={dstyles.body}>
             X = frequency across. Y = amplitude up. Z = TIME stepping TOWARD you: the loud start
             (t = 0) stands tall at the BACK, and each later instant steps down toward the front —
-            the decay cascades toward the viewer, and the white floor bands mark each second going
+            the decay cascades toward you, and the white floor bands mark each second going
             by. The mountain range collapsing toward you IS decay — watch it once and RT60 stops
             being an abstract number.
           </Text>

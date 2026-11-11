@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for bar chimes by its properties — pattern, power, size, mount and peak handling — not by its brand.',
     credit: { scenarios: ['bc.mic.1', 'bc.mic.2', 'bc.mic.3', 'bc.mic.4', 'bc.rec.1'], note: 'Answer the five checks (one reaches back to how they sound).' },
-    takeaway: 'A condenser is a practical detailed-pickup trial, not a requirement; a dynamic can suit a loud stage. The pattern and its off-axis response decide how evenly a wide row is covered.',
+    takeaway: 'A condenser is a practical first try for a detailed pickup, not a requirement; a dynamic can suit a loud stage. The pattern and its off-axis response decide how evenly a wide row is covered.',
   },
   placement: {
     title: 'Placement Studio',

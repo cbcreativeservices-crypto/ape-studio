@@ -644,7 +644,7 @@ export const M10_LESSON: Lesson = {
     { title: 'WHAT THEY ARE', text: 'Room mics hear the kit after its parts have begun to blend in the space — and the room answering back: early reflections from the floor, the walls and the ceiling, then the decay.', src: 'M10-LESSON' },
     { title: 'WHERE YOU MEET THEM', text: 'In studio drum recordings with a useful room, and as separate feeds for live recordings and broadcasts. A room feed is optional — the right choice may be none.', src: 'S-REC1' },
     { title: 'THEIR JOB', text: 'To add space: an integrated kit picture from low and close, a natural room from farther out, or wide ambience. No distance is a “room mic” by itself — what it hears depends on the room, the kit, the pattern and the aim.', src: 'M10-LESSON' },
-    { title: 'THIS ROOM', text: 'A studio live room about 6.5 × 5.4 m with a 3 m ceiling, the kit near the back wall, the door behind the drummer’s right — a drawing value, not a rule. Your room is the one that counts.', src: 'ROOM-DD' },
+    { title: 'THIS ROOM', text: 'A studio live room about 6.5 × 5.4 m with a 3 m ceiling, the kit near the back wall, the door behind the drummer’s right — an example, not a rule. Your room is the one that counts.', src: 'ROOM-DD' },
   ],
   sound: {
     stages: [{ title: 'Direct sound', text: 'The kit’s sound reaches the mic along the straight path.' }, { title: 'Early reflections', text: 'The nearest surfaces send it back.' }, { title: 'Decay', text: 'Many bounces blend into the room’s decay.' }, { title: 'The balance', text: 'Farther out, the room’s share grows.' }],
@@ -693,6 +693,6 @@ export const M10_LESSON: Lesson = {
   ],
   live: { wedges: M10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a drawing-value studio room around a typical 5-piece kit, straight-line arrival times at 20 °C, reflections as single bounces off flat surfaces, and mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: an example studio room around a typical 5-piece kit, straight-line arrival times at 20 °C, reflections as single bounces off flat surfaces, and mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: M10_COPY,
 };

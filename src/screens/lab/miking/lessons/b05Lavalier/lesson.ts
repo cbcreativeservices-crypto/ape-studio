@@ -675,6 +675,6 @@ export const B05_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give as drawing defaults, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give chosen for the drawing, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; avoid uncontrolled feedback.',
   copy: B05_COPY,
 };

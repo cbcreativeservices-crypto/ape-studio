@@ -204,7 +204,7 @@ const LINEARRAY: Workspace = {
       key: 'aliasing',
       name: 'Spatial-aliasing frequency from element spacing',
       inputs: ['spacing', 'temp'],
-      formula: 'f_alias ≈ c / spacing',
+      formula: 'f(alias) ≈ c / spacing',
       plainFormula: 'The spatial-aliasing frequency is about the speed of sound divided by the element spacing.',
       explain:
         'Above the frequency where elements are more than a wavelength apart, a line array grating-lobes — spraying energy off-axis into comb-filtered side lobes. Keeping element spacing under half a wavelength is the cleanest region. Tight spacing buys high-frequency cleanliness.',
@@ -219,7 +219,7 @@ const LINEARRAY: Workspace = {
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         return [
-          `f_alias = ${fmt(c)} ÷ ${fmt(n(v.spacing))} = ${fmt(c / n(v.spacing))} Hz.`,
+          `f(alias) = ${fmt(c)} ÷ ${fmt(n(v.spacing))} = ${fmt(c / n(v.spacing))} Hz.`,
           `Above this, elements are more than a wavelength apart and grating lobes appear. Keeping spacing under λ/2 (below ${fmt(c / (2 * n(v.spacing)))} Hz here) is the cleanest region.`,
         ];
       },
@@ -378,7 +378,7 @@ const DRIVER: Workspace = {
       key: 'portLength',
       name: 'Vented port length for a target tuning',
       inputs: ['fbTarget', 'av', 'vb', 'temp'],
-      formula: 'L_eff = c²·Av / ((2π·fb)²·Vb); Lv = L_eff − 1.46·√(Av/π)',
+      formula: 'Leff = c²·Av / ((2π·fb)²·Vb); Lv = Leff − 1.46·√(Av/π)',
       plainFormula:
         'The effective port length equals the speed of sound squared times the port area, divided by the square of two pi times the tuning frequency times the box volume; the physical length subtracts the end correction — 1.46 times the square root of the port area over pi.',
       explain:
@@ -434,7 +434,7 @@ const DRIVER: Workspace = {
           ];
         }
         return [
-          `Effective length L_eff = ${fmt(c)}²·${fmt(n(v.av))} ÷ ((2π·${fmt(n(v.fbTarget))})²·${fmt(n(v.vb))}) = ${fmt(leff)} m.`,
+          `Effective length Leff = ${fmt(c)}²·${fmt(n(v.av))} ÷ ((2π·${fmt(n(v.fbTarget))})²·${fmt(n(v.vb))}) = ${fmt(leff)} m.`,
           `Subtract the end correction 1.46·√(Av/π) = ${fmt(corr)} m → physical port ${fmt(leff - corr)} m (${fmt((leff - corr) * 100)} cm).`,
           `A longer or narrower port tunes LOWER.`,
         ];

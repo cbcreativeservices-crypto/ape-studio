@@ -509,7 +509,7 @@ export const I03B_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'egg', label: 'the egg player at the station', short: 'EGGS', note: 'Standing at a percussion station with one egg or two. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'egg', label: 'the egg player at the station', short: 'EGGS', note: 'Standing at a percussion station with one egg or two. You see this player on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: much louder than an egg, and close.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: the loudest spill into a quiet egg mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud and bright upstage: aim the egg mic’s rejection, not its front, toward it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

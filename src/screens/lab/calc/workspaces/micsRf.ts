@@ -84,7 +84,7 @@ const STEREOMIC: Workspace = {
   fields: [
     { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s center line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off center.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound; warmer air carries sound faster.' },
     { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
@@ -284,7 +284,7 @@ const RFLINK: Workspace = {
     'someone walks behind a wall. Higher bands (like today’s crowded UHF) lose more over the same distance, and ' +
     'antenna gain and cable loss are the levers you actually control.',
   example:
-    'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550e6) − ' + FSPL_K_TXT + ' ≈ 61.2 dB. With +10 dBm ' +
+    'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550×10⁶) − ' + FSPL_K_TXT + ' ≈ 61.2 dB. With +10 dBm ' +
     'TX, +2 dB each antenna, and a −95 dBm receiver: Prx ≈ −47.2 dBm → ≈ 47.8 dB of margin.',
   mistakes: [
     'Budgeting for line-of-sight only — bodies, walls, and trusses add loss the free-space number ignores; keep generous margin.',

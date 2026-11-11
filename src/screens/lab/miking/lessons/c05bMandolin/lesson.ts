@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is each f-hole mandolin brighter than each oval-hole one?',
     options: ['Yes: f-holes add treble to the sound in each case', 'No: it is a design tendency, not a guarantee', 'Yes, as long as both mandolins are F-style'],
     correct: 'No: it is a design tendency, not a guarantee',
-    explain: 'F-hole mandolins often lean toward treble attack and chop, oval-hole ones toward a rounder, more vocal sound — tendencies a maker describes. Listen to the actual instrument.',
+    explain: 'F-hole mandolins often lean toward treble attack and chop, oval-hole ones toward a rounder, more vocal sound — tendencies, not rules. Listen to the actual instrument.',
     why: {
       'Yes: f-holes add treble to the sound in each case': 'It is a tendency, and instruments vary. Listen before deciding.',
       'Yes, as long as both mandolins are F-style': 'F-style names the outline; the opening is a separate thing. Neither guarantees a sound.',

@@ -21,7 +21,7 @@ const condTempOf = (v: Record<string, number | number[]>): number =>
   typeof v.condTemp === 'number' ? v.condTemp : 20;
 /** The resistivity line of the steps, at the run's temperature. */
 const rhoStep = (t: number): string =>
-  `ρ at ${fmt(t)} °C = 1.7241e-8 × (1 + ${ALPHA_CU_20C} × (${fmt(t)} − 20)) = ${fmt(rhoCopper(t))} Ω·m`;
+  `ρ at ${fmt(t)} °C = 1.7241×10⁻⁸ × (1 + ${ALPHA_CU_20C} × (${fmt(t)} − 20)) = ${fmt(rhoCopper(t))} Ω·m`;
 /** The finest gauge this calculator covers (the WIRE GAUGE field's top end). */
 const AWG_FINEST = 40;
 /** Area (m²) → nearest AWG (real number; floor it to size UP a wire). */

@@ -61,7 +61,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'Tap ▶ in the header, or tap the glass, to play the source through the delay; ■ stops it. Every control works while it plays.',
       'Drag the TIME fader, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
       'Long-press a key or a readout for its lesson entry. The ⓘ at the end of the readouts explains the display.',
-      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES below: DESIGNED RESPONSE (each repeat drawn as a stem, a line whose height is its level), THE AUDIO PATH, two CHECK YOURSELF questions, ⓘ GUIDED LESSON.',
+      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. Scroll to LAB NOTES for DESIGNED RESPONSE (each repeat drawn as a stem, a line whose height is its level), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
     changes: [
       'TIME is the gap from a sound to its first repeat, and between repeats: more TIME, wider spacing.',

@@ -411,7 +411,7 @@ export function GlossaryTermPopup({
                   : partial === 'checking'
                   ? 'This is the opening of the entry. Your account is still being checked — try this term again in a moment.'
                   : partial === 'unanswered'
-                  ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.'
+                  ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never counted twice.'
                   : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Close the term and open it again to retry.'}
               </Text>
             ) : null}

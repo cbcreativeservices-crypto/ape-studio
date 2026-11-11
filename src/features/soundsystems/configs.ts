@@ -129,7 +129,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     layout: [TOP_L, TOP_R, { slot: 'subL', feed: 'SUB-L', kind: 'sub' }, { slot: 'subR', feed: 'SUB-R', kind: 'sub' }],
     what: 'Each sub receives ITS side’s low end.',
     when: 'Rarely. A hard-panned low-frequency source is unusual, and two different sub signals produce a level that changes across the room.',
-    changes: 'Whatever is panned in the low end now moves across the floor — and so does the cancellation pattern. Shown so the difference from mono subs can be seen.',
+    changes: 'Whatever is panned in the low end now moves across the floor — and so does the cancellation pattern. Compare it with mono subs to see the difference.',
   },
   {
     id: 'no-subs',

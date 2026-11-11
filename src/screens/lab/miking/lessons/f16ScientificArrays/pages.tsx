@@ -99,7 +99,7 @@ function F16Microphone({ lesson, answers, onAnswered, onInteractive, interactive
   const line = useLineArrayStep({
     words: {
       title: 'Half a wavelength',
-      badge: 'A uniform line of elements · f_max = c ÷ 2d at 20 °C · a design principle, not one spacing for every band',
+      badge: 'A uniform line of elements · fmax = c ÷ 2d at 20 °C · a design principle, not one spacing for every band',
       looking: 'The spacing',
       prompt: 'Pick a TOP frequency, then drag SPACING: find one that keeps clear of ambiguous lobes, and one that does not.',
     },

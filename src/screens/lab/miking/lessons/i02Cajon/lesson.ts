@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which mic types appear in working cajón setups?',
     options: ['A cardioid condenser, or a low-frequency dynamic', 'Only one specific model — no other will do', 'Only an omni mic, because the box is a large, spread-out source'],
     correct: 'A cardioid condenser, or a low-frequency dynamic',
-    explain: 'A cardioid condenser in one demonstration; a low-frequency dynamic from another maker’s drum-mic package, described for cajón too. No model is mandatory.',
+    explain: 'A cardioid condenser is one working choice; a low-frequency dynamic, like those in drum-mic sets, is another. No model is mandatory.',
     why: {
       'Only one specific model — no other will do': 'No model is mandatory: choose by properties.',
       'Only an omni mic, because the box is a large, spread-out source': 'Cardioids appear in working setups; the room decides.',
@@ -492,7 +492,7 @@ export const I02_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'A wooden box the player sits on and strikes: a struck idiophone — the plate and the box vibrate, with no stretched head. Wires or strings inside can add a snare buzz.', src: 'GRIN-CAJ' },
     { title: 'WHERE YOU MEET IT', text: 'Acoustic sets, singer-songwriter stages, flamenco and pop — often beside a singer and an acoustic guitar.', src: 'LESSON-CAJON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A whole kit in a box: center strokes for the bass, top-corner slaps for the snare, ghost notes in between.', src: 'MEINL-JC50' },
-    { title: 'ITS SIZE', text: 'A museum cajón measures about 32 × 32 × 48 cm with an 18 cm port; this lab draws one that size.', src: 'GRIN-CAJ' },
+    { title: 'ITS SIZE', text: 'One real cajón measures about 32 × 32 × 48 cm with an 18 cm port; the drawing here is that size.', src: 'GRIN-CAJ' },
   ],
   sound: {
     stages: [
@@ -507,7 +507,7 @@ export const I02_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'cajon', label: 'the cajón player', short: 'CAJÓN', note: 'Seated on the box, knees on either side of the plate; the way off the box is to their left — keep it clear. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'cajon', label: 'the cajón player', short: 'CAJÓN', note: 'Seated on the box, knees on either side of the plate; the way off the box is to their left — keep it clear. Every page of this lesson shows this player.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'vocal', label: 'the singer and their mic', short: 'VOCAL MIC', note: 'Beside the cajón: their mic hears the box, and the cajón’s mic hears the voice.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout' }, tag: 'ANOTHER MIC', scene: 'kit' },
       { id: 'guitar', label: 'the acoustic guitarist', short: 'GUITAR', note: 'Another open mic or pickup close by: spill both ways.', prov: { kind: 'illustrative', reason: 'a typical small-stage layout' }, tag: 'SPILL', scene: 'kit' },
       ...stageItems('the cajón', 'One front or port mic may be enough; a second only for a defined bass or slap need.'),

@@ -590,7 +590,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
   {
     id: 'ethercon_style',
     displayName: 'etherCON-style locking Ethernet',
-    aliases: ['etherCON (used nominatively)', 'ruggedized RJ45 shell', 'locking Ethernet connector'],
+    aliases: ['etherCON', 'ruggedized RJ45 shell', 'locking Ethernet connector'],
     category: 'network',
     tier: 'core',
     carried: ['network_audio', 'control_data', 'hybrid_power_data'],

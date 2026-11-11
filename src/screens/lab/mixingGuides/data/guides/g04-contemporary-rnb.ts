@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −10 to −7 LUFS for uptempo songs and −12 to −9 for ballads, with a true peak at −2 dBTP, a common streaming recommendation for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so overly crushed masters only lose punch. The genre tolerates more dynamic range than trap or EDM; PLR around 8–10 dB keeps vocals breathing (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
+      "text": "Typical integrated loudness is −10 to −7 LUFS for uptempo songs and −12 to −9 for ballads, with a true peak at −2 dBTP, a common streaming guideline for masters louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so overly crushed masters only lose punch. The genre tolerates more dynamic range than trap or EDM; PLR (peak-to-loudness ratio) around 8–10 dB keeps vocals breathing (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {

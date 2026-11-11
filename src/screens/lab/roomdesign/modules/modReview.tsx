@@ -123,7 +123,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
             </View>
           )}
         />
-        <Caption>The plan as the behavior below reads it: reflection paths colored by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
+        <Caption>The plan behind the results below: reflection paths colored by level, your treatment and the triangle. Edit it in the earlier modules.</Caption>
         <Caption>{a.rectangular ? 'The mode frequencies are CALCULATED (idealized, for this rectangular box); everything else on this card is ESTIMATED.' : 'Everything on this card is ESTIMATED — the mode frequencies included, because the room is not a rectangular box.'}</Caption>
         <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : planRect ? `ROOM MODES — MEAN-HEIGHT ESTIMATE (${room.ceiling.toUpperCase()} CEILING: LESS RELIABLE)` : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
         <Caption>{`c = ${a.c.toFixed(1)} m/s at ${room.tempC} °C · dimensions used ${fmtU(a.modalDims.L)} × ${fmtU(a.modalDims.W)} × ${fmtU(a.modalDims.H)}${a.rectangular ? '' : planRect ? ' (mean ceiling height)' : ' (bounding box, mean ceiling height)'}.`}</Caption>
@@ -150,7 +150,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         <KV k="RT60 500 Hz · Sabine" v={rtText(500)} />
         <KV k="RT60 2 kHz · Sabine" v={rtText(2000)} />
         <KV k="Schroeder frequency" v={Number.isFinite(a.schroeder) ? `≈ ${Math.round(a.schroeder)} Hz` : '—'} />
-        <Caption>{`Teaching-table absorption, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency, and Sabine ignores air absorption. First cancellations at the seat (ESTIMATED, woofer band, below ~${SBIR_MAX_HZ} Hz, distances to the woofer): ${a.sbir.length ? a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ') : 'none below the cap'}.`}</Caption>
+        <Caption>{`Teaching-table absorption, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency, and Sabine ignores air absorption. First cancellations at the seat (ESTIMATED, woofer band, below ~${SBIR_MAX_HZ} Hz, distances to the woofer): ${a.sbir.length ? a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ') : 'none in that band'}.`}</Caption>
         <Text style={styles.sub}>WHAT THIS MAY MEAN FOR THE WORK</Text>
         <Caption>
           {bassJudgement(a)} {imagingJudgement(a)} {translationJudgement(a)}

@@ -99,7 +99,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     teaches: [
       'The words for a phaser: all-pass filter, stage (pole), notch, resonance, LFO.',
-      'FORMULA / CONCEPT: an all-pass keeps every level and turns the phase from 0° toward −180°; two stages make one notch.',
+      'An all-pass filter keeps every level and turns the phase from 0° toward −180°; two stages make one notch.',
       'Why too many stages or too much resonance can smear or whistle on a busy mix.',
     ],
     tryThis: [

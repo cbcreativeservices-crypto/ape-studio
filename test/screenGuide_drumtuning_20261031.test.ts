@@ -367,7 +367,7 @@ describe('6. chip decision: modelled-drum concept lab — no header AccuracyNote
     assert.doesNotMatch(SCR, /ACCURACY_DETAIL/);
     const shared = code(`${DIR}/modules/shared.tsx`);
     assert.match(shared, /export const MODEL_BADGE = 'MODEL · illustration, not a measurement';/);
-    assert.match(shared, /export const RENDER_BADGE = 'SYNTHESIZED · additive membrane model rendered offline/);
+    assert.match(shared, /export const RENDER_BADGE = 'SYNTHESIZED · additive membrane model computed before playback/);
   });
 });
 

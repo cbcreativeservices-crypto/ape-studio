@@ -474,7 +474,7 @@ function LiquidStudio() {
               ? 'A sine isolates one drive frequency — the cleanest demonstration.'
               : spec.waveform === 'pulse'
                 ? 'Tone bursts (four per second) at the drive frequency — the surface builds and relaxes each burst.'
-                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'played by the additive engine' : 'shown only on this build'}). Faraday onset still keys on the fundamental.`}
+                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only on this build'}). Faraday onset still keys on the fundamental.`}
           </Text>
           <Text style={styles.trayHead}>RUN</Text>
           <View style={styles.chips}>

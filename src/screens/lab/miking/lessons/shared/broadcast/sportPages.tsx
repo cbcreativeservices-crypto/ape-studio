@@ -742,7 +742,7 @@ export function useBodyStep(spec: BodySpec): MikingStep {
           </View>
         );
       },
-      badge: 'Front or side, above in the corner · the places are drawing defaults · hatched = never mount here · silent',
+      badge: 'Front or side, above in the corner · the places are chosen for the drawing · hatched = never mount here · silent',
       bezel,
       params,
       initialParam: 'who',
@@ -756,7 +756,7 @@ export function useBodyStep(spec: BodySpec): MikingStep {
           <Point title="THE CHAIN ON THE BODY">The cable leaves the mic with a small strain-relief loop and enough slack for the head and the torso to move — no loop a hand can catch. The pack sits in the approved low-profile place, its antenna straight, never coiled or folded.</Point>
         </Card>
         {seen.size >= Math.min(2, spec.wearers.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
-        <Body>Every place here is a drawing default on a generic figure — no chest position or mouth offset fits every uniform, body and mic. The approval, the equipment people and the wearer decide.</Body>
+        <Body>Every place here is chosen for the drawing, on a generic figure — no chest position or mouth offset fits every uniform, body and mic. The approval, the equipment people and the wearer decide.</Body>
       </>
     ),
   };

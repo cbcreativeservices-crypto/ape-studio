@@ -559,7 +559,7 @@ export const E11_LESSON: EnsembleLesson = {
     ],
     safety: 'Mounts only with the player’s approval: no adhesive on the varnish, none on the bridge unless made for it, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
-      begin: 'After our research, this is where we suggest you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not a published best place.',
+      begin: 'After our research, this is where we suggest you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not the one best place.',
       clearance: 'The stand in front of the quartet, clear of the bows’ sweep, the cello’s endpin and the players’ sightlines; its cable dressed flat and out of the way.',
     },
     learnZones: [

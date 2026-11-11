@@ -296,12 +296,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gl.two.3',
     page: 'twoMic',
-    prompt: 'Is there a published two-mic dimension for the glockenspiel?',
+    prompt: 'Is there a standard spacing for two mics on the glockenspiel?',
     options: ['No — mount any pair outside the mallet arc and judge it', 'Yes — the same 61 cm spacing as for the marimba and xylophone', 'Yes — a pair must sit 10–15 cm above the bars'],
     correct: 'No — mount any pair outside the mallet arc and judge it',
-    explain: 'The published two-mic geometry is for xylophone, marimba and vibraphone; do not transfer it automatically. Try a near-coincident or a spaced pair, outside the mallet arc.',
+    explain: 'The standard two-mic setups are for xylophone, marimba and vibraphone; do not carry them over automatically. Try a near-coincident or a spaced pair, outside the mallet arc.',
     why: {
-      'Yes — the same 61 cm spacing as for the marimba and xylophone': 'That geometry is not given for the glockenspiel.',
+      'Yes — the same 61 cm spacing as for the marimba and xylophone': 'That spacing is not a standard for the glockenspiel.',
       'Yes — a pair must sit 10–15 cm above the bars': 'That is a one-mic close example — and inside the mallets’ path.',
     },
   },
@@ -494,7 +494,7 @@ const words: MalletWords = {
       'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can color shared notes in mono. Mount both outside the mallet arc.',
       'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change color in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritize a stable mono balance.',
     ],
-    warn: 'A simplified picture: one point on one bar, straight paths, no room. The pairs’ sizes are drawing defaults, not published figures. Judge a real pair by ear — each mic alone, both together, and in mono.',
+    warn: 'A simplified picture: one point on one bar, straight paths, no room. The pairs’ sizes are just for the drawing, not standard sizes. Judge a real pair by ear — each mic alone, both together, and in mono.',
   },
 };
 

@@ -88,7 +88,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (strongest on the heatmap). REAL SIGNAL — dBFS · UNCALIBRATED: levels are relative.',
     ],
     control: [
-      'Tap ▶ in the header, or the display, to start the mic, and the tone once the override is checked; ■ stops both.',
+      'Tap ▶ in the header, or the display, to start the mic, and the tone once ⚠ ALLOW SPEAKER WHILE MIC IS ON is checked; ■ stops both.',
       'The tone is the fundamental alone: a sine at F0, −20 dBFS. It stays muted until you check ⚠ ALLOW SPEAKER WHILE MIC IS ON in LAB NOTES. Keep the volume low.',
       'Slide F0 (60–300 Hz) to retune the tone; the axis follows, so markers keep their places while their labels change. AXIS: LOG ♪ or LIN. MODE goes back to ANALYTIC MODEL; switching mode stops all sound.',
       'PRESET, THD CALC and the stems shape the model, so you won’t find them here.',
@@ -106,7 +106,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     tryThis: [
       'Push F0 to the top (a phone speaker can’t reproduce deep bass), check ⚠ ALLOW SPEAKER WHILE MIC IS ON, set the volume low, tap ▶: TONE reads ON; a band usually lights at marker 1.',
       'Raise the volume a step at a time and watch markers 2 and 3: a band that appears there is distortion the speaker or mic added.',
-      'Uncheck the override: TONE reads MUTED and new columns lose the marker bands. What’s left is the room.',
+      'Uncheck ⚠ ALLOW SPEAKER WHILE MIC IS ON: TONE reads MUTED and new columns lose the marker bands. What’s left is the room.',
     ],
   },
 

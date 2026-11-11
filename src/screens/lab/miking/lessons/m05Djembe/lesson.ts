@@ -370,7 +370,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “2–4 in above the head at a 40–60° angle”. What else do you need to know?',
     options: ['What the angle is measured from, and whether the hands stay clear', 'The brand of the djembe, so the angle fits it', 'Nothing more — that wording already places the mic exactly where it goes'],
     correct: 'What the angle is measured from, and whether the hands stay clear',
-    explain: 'The source does not say what the angle is measured from (this lab measures it from straight down). Clearance from every slap comes first.',
+    explain: 'That wording does not say what the angle is measured from (this lab measures it from straight down). Clearance from every slap comes first.',
     why: {
       'The brand of the djembe, so the angle fits it': 'Brands do not set placement; the reference and the clearance do.',
       'Nothing more — that wording already places the mic exactly where it goes': 'The angle needs a reference, and clearance is a separate check.',

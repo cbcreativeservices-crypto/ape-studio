@@ -347,7 +347,7 @@ export function OscillatorLabScreen() {
         <Text style={styles.caption}>
           {speakerView
             ? 'Top: the waveform after the speaker high-pass, traveling as a wave does — low partials removed, so the shape flattens toward its upper harmonics.'
-            : 'Top: the ideal 12-harmonic recipe traveling as a wave — the same series the additive engine renders.'}
+            : 'Top: the ideal 12-harmonic recipe traveling as a wave — the same series you hear.'}
         </Text>
         <Text style={styles.caption}>
           {speakerView

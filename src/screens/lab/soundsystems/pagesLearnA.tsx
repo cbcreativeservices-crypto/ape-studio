@@ -429,7 +429,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
       caption="Ride CONFIG through the thirteen ways the console’s outputs can reach a room: the plan shows where each loudspeaker stands, the tag beside it says what it carries, and the floor shows where that lands."
     >
       <ChapterTag n={3}>OUTPUT CONFIGURATIONS</ChapterTag>
-      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor sums them in the conceptual model. Hatched floor is where two arrivals overlap and comb-filter.</Body>
+      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor shows a simplified sum of them. Hatched floor is where two arrivals overlap and comb-filter.</Body>
       <FieldKey />
       <ReadoutRow>
         {bars.map(([feed, n]) => (

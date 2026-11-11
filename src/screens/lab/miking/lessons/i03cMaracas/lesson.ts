@@ -520,7 +520,7 @@ export const I03C_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'maracas', label: 'the maraca player at the station', short: 'MARACAS', note: 'Standing at a percussion station with a pair — or singing at a vocal mic. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'maracas', label: 'the maraca player at the station', short: 'MARACAS', note: 'Standing at a percussion station with a pair — or singing at a vocal mic. You see this player on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal beside the player: louder than a pair of maracas, and close.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals a few meters away: an open overhead may hear them as strongly as the maracas.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the maraca mic’s rejection, not its front, toward it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

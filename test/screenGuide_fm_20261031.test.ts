@@ -337,7 +337,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     // Folded sticks are drawn separately but merge in the sound (default
     // FC 220 / RATIO 2 / I 2: 220 Hz = J0 + J1 ≈ 0.80, 660 Hz = J1 − J2 ≈ 0.22,
     // DFT-verified 2026-10-31), so no "exact spectrum" claim (fix 2026-10-31).
-    assert.match(s, /badge:\s*env\.decaySec > 0\s*\? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k\(I\) · AT THE STRIKE'\s*: 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES J_k\(I\) · EACH AT FC ± k·FM'/);
+    assert.match(s, /badge:\s*env\.decaySec > 0\s*\? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ\(I\) · AT THE STRIKE'\s*: 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ\(I\) · EACH AT FC ± k·FM'/);
     assert.match(s, /exploreCaption=\{\s*env\.decaySec > 0\s*\? '[^']*each sideband at the strike[^']*'\s*: '[^']*a dashed one merges with the stick it lands on\.'/);
     assert.doesNotMatch(s, /exact spectrum|THE MATH THE VOICE PLAYS|EXACT BESSEL/);
     const lessons = read('src/features/lab/guidedLessons/content.ts');

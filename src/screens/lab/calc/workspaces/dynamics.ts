@@ -182,7 +182,7 @@ const WS_COMPRESSOR: Workspace = {
         return [
           `Input above threshold: ${fmt(inp)} − (${fmt(thr)}) = ${fmt(above)} dB.`,
           `Wanted output above threshold: ${fmt(out)} − (${fmt(thr)}) = ${fmt(outAbove)} dB.`,
-          `ratio = in-above ÷ out-above = ${fmt(above)} ÷ ${fmt(outAbove)} = ${fmt(above / outAbove)} → ${fmt(above / outAbove)}:1.`,
+          `ratio = input above ÷ output above = ${fmt(above)} ÷ ${fmt(outAbove)} = ${fmt(above / outAbove)} → ${fmt(above / outAbove)}:1.`,
           `(If the target output is below the threshold, no downward-compression ratio can reach it — only a gain cut after the compressor or a lower threshold would.)`,
         ];
       },

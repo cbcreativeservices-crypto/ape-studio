@@ -122,7 +122,7 @@ const PATH_OPTS: { id: string; label: string; good: boolean; short: string }[] =
     id: 'tiles',
     label: 'Lay the bundle across the ceiling tiles',
     good: false,
-    short: 'Tiles are a finish system, not a support — where the electrical code is adopted this is a violation (confirm with the AHJ), and defect #1 out there shows how it ends.',
+    short: 'Tiles are a finish system, not a support — where the electrical code is adopted this is a violation (confirm with the AHJ, the official who approves the work), and defect #1 out there shows how it ends.',
   },
   {
     id: 'duct',

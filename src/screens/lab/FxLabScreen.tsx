@@ -780,7 +780,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               ? 'Measured from the live audio — watch how fast it grabs and how it lets go.'
               : fxReady
                 ? 'Play the source to see the reduction. The meter reads zero while nothing is sounding.'
-                : 'The audio engine is not available in this build, so nothing is measured.'}
+                : 'This version of the app can’t measure the reduction yet; update the app to see it.'}
           </Text>
         </View>
       ) : null}

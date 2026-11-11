@@ -65,7 +65,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'WHY IT IS TUTORIAL-ONLY HERE',
-        body: 'Coherence only exists in dual-channel measurement, and this module’s live toolset is single-channel — magnitude response and delay finding are out of current scope. So there is no live coherence graph, meter, or overlay here, and none should be imagined into the displays. The concept is taught now so that professional analyzers make sense on day one.',
+        body: 'Coherence only exists in dual-channel measurement, and the live tools in this app are single-channel — they don’t measure magnitude response or find delay. So there is no live coherence graph, meter, or overlay here; don’t read one into the displays. The concept is taught now so that professional analyzers make sense on day one.',
       },
     ],
     keyPoints: [
@@ -98,7 +98,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'TUTORIAL-ONLY IN THIS APP',
-        body: 'The Delay Finder was removed from live scope along with magnitude response, so there is no delay measurement to run here. What remains is the discipline: whenever you eventually stand behind a dual-channel analyzer, time alignment comes before trust. Learn the reflex now, apply it later.',
+        body: 'This app has no live delay finder or magnitude-response measurement, so there is no delay measurement to run here. What remains is the discipline: whenever you eventually stand behind a dual-channel analyzer, time alignment comes before trust. Learn the reflex now, apply it later.',
       },
     ],
     keyPoints: [
@@ -254,7 +254,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     sections: [
       {
         head: 'NO FAKE METERS',
-        body: 'A display that looks live but is not is a lie with a needle on it. Simulated values are allowed only in a clearly labeled tutorial or demo mode, marked "Training Demo — Not a Live Measurement." This is why the tools in this app show no readings at all until the real measurement engine is running — no decoration that resembles a meter.',
+        body: 'A display that looks live but is not is a lie with a needle on it. Simulated values are allowed only in a clearly labeled tutorial or demo mode, marked "Training Demo — Not a Live Measurement." This is why the tools in this app show no readings at all until they are really measuring — no decoration that resembles a meter.',
       },
       {
         head: 'APPROXIMATE UNLESS CALIBRATED',

@@ -799,7 +799,7 @@ export function AbPlayer({
       </Row>
       {pb.status === 'rendering' && pendingHere ? (
         <Text style={styles.rendering} accessibilityLiveRegion="polite">
-          RENDERING THE MIX — real DSP, one moment…
+          RENDERING THE MIX — one moment…
         </Text>
       ) : null}
       {failedHere ? (

@@ -647,7 +647,7 @@ export const M13_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'The tabla is a pair of hand drums played as one instrument: the smaller, wooden dayan (also called dahina, or simply tabla) and the larger, kettle-shaped bayan, of metal or clay.', src: 'MET-TABLA' },
     { title: 'WHERE YOU MEET IT', text: 'In Hindustani classical music — solo and accompanying voice and instruments — and in many other styles, on stage and in the studio. Look at the pair in front of you: sizes and materials vary.', src: 'MET-ESSAY' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Ringing and damped strokes on the dayan, open tones and pitch glides on the bayan, strokes on both together, and quiet finger work. Let the player name the strokes (bols), and agree on how prominent the bayan should be.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'The pair drawn here: a dayan about 31 cm tall and 20 cm across, a bayan about 34 cm and 26 cm across (the largest extents of one museum pair). The player sits on the floor, the drums in cloth rings — a drawing choice; players differ.', src: 'MET-TABLA' },
+    { title: 'ITS SIZE', text: 'The pair drawn here: a dayan about 31 cm tall and 20 cm across, a bayan about 34 cm and 26 cm across (the largest sizes of one real pair). The player sits on the floor, the drums in cloth rings — shown one way here; players differ.', src: 'MET-TABLA' },
   ],
   sound: {
     stages: [
@@ -658,7 +658,7 @@ export const M13_LESSON: Lesson = {
     ],
     attack: 'The start of each stroke: the fingers’ brief contact. A mic close to a head tends to hear more of its attack — and more finger and contact sound.',
     body: 'The ring after the stroke: the dayan’s clear pitch, the bayan’s low tone and its glides. Both drums are heard by every mic. Tendencies only: pairs and players vary.',
-    head: { diameterMm: 145, rods: 0, label: 'the dayan’s head, seen from above (drawing default: about 14.5 cm)', strikeSrc: 'MET-ESSAY' },
+    head: { diameterMm: 145, rods: 0, label: 'the dayan’s head, seen from above (drawn about 14.5 cm across)', strikeSrc: 'MET-ESSAY' },
   },
   setting: {
     items: [

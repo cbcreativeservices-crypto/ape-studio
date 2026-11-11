@@ -576,8 +576,8 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
         <PanelCard>
           <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
           <Text style={dstyles.body}>
-            The permanent misconception panel — every classic digital-audio myth, next to what is
-            actually true. If one line of this lab survives in your memory, make it one of these.
+            Every classic digital-audio myth, next to what is actually true. If one line of this lab
+            stays in your memory, make it one of these.
           </Text>
           {MYTHS.map((m) => (
             <MythReality key={m.myth} myth={m.myth} reality={m.reality} />

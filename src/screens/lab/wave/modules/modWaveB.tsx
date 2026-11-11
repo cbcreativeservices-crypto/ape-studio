@@ -513,7 +513,7 @@ export function CoverageModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <Badge text="EFFECTIVE COVERAGE = −6 dB POINTS PROBED FROM THE ENGINE'S DIRECTIVITY MODEL (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
+          <Badge text="EFFECTIVE COVERAGE = THE −6 dB POINTS OF THE MODEL’S DIRECTIVITY PATTERN (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
           <Text style={dstyles.caption}>
             Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
           </Text>
@@ -1725,7 +1725,7 @@ export function ReverbModule(p: WaveModuleProps) {
               { k: '1ST REFL GAP', v: `${gapMs.toFixed(1)} ms` },
             ]}
           />
-          <Badge text="ABSORPTION SLIDER = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL WITH A DISCLOSED 3 m CEILING" />
+          <Badge text="ABSORB = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL, ASSUMING A 3 m CEILING" />
           <Text style={dstyles.caption}>
             Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: thin porous absorption barely touches the lows.
           </Text>

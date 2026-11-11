@@ -511,7 +511,7 @@ export const I04_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'tambourine', label: 'the tambourine player at the station', short: 'TAMBOURINE', note: 'At a percussion station, often moving between instruments — or singing. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'tambourine', label: 'the tambourine player at the station', short: 'TAMBOURINE', note: 'At a percussion station, often moving between instruments — or singing. Every page of this lesson shows it this way.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Shakers, a cowbell, hand drums: the player turns between them; a mic placed for one may miss the next.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'The hi-hat and cymbals sit in the same bright range as the jingles: spill that EQ cannot separate.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the tambourine mic’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

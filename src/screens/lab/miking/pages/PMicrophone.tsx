@@ -198,7 +198,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
             )
           ) : null}
           {!isModelled(pat) ? (
-            <Note>{t.mount === 'surface' ? 'A boundary plate hears only the space above its surface; this one is a half-cardioid, so keep the sound source within about 60° of straight up from the plate — the maker’s “60° range above this surface”. That is not a free-field lobe, so none is drawn.' : isDishType(t) ? 'A dish narrows as the pitch rises, so it has no one shape and no lobe is drawn.' : 'An “open cardioid” has no simple shape to draw, so no lobe is drawn. The textbook patterns are offered for comparison.'}</Note>
+            <Note>{t.mount === 'surface' ? 'A boundary plate hears only the space above its surface; this one is a half-cardioid, so keep the sound source within about 60° of straight up from the plate. That is not a free-field lobe, so none is drawn.' : isDishType(t) ? 'A dish narrows as the pitch rises, so it has no one shape and no lobe is drawn.' : 'An “open cardioid” has no simple shape to draw, so no lobe is drawn. The textbook patterns are offered for comparison.'}</Note>
           ) : null}
         </>
       ),

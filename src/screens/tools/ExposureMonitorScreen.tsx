@@ -492,8 +492,8 @@ export function ExposureMonitorScreen() {
 
         <Section title="PRIVACY">
           <Text style={styles.body}>
-            Exposure history is personal usage data, stored only on this device. It is never shared with instructors,
-            institutions or profiles.
+            Exposure history is personal usage data, stored only on this device. It is never shared with anyone or
+            shown on any profile.
           </Text>
           <Toggle label="Save exposure history" value={s.saveHistory} onChange={(v) => changeSetting({ saveHistory: v })} />
           <View style={styles.chipRow}>

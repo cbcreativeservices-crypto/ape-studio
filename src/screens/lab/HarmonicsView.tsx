@@ -1840,7 +1840,7 @@ export function HarmonicsView({
       </View>
       <Text style={styles.scaleNote}>
         {view === 'model'
-          ? 'Levels are the editable model series, relative to model full scale (0 dB = amp 1). Spectrogram time is a visual sweep.'
+          ? 'Levels are the harmonics you edit, relative to model full scale (0 dB = amplitude 1). Spectrogram time is a visual sweep.'
           : `Color intensity is relative to the selected scale. dBFS · uncalibrated. Spectrogram time → ~${trim(((HIST_COLS * SPEC_POLL_MS) / 1000).toFixed(1))} s, newest right.`}
       </Text>
       <Text style={styles.waveCaption}>
@@ -1992,7 +1992,7 @@ export function HarmonicsView({
                   {`SOLO H${soloN} · ${soloN * f0} Hz sine — one harmonic alone${
                     additiveReady
                       ? '; the header ▶ sounds the full mixture.'
-                      : '; the full mixture needs the additive engine.'
+                      : '; update the app to hear the full mixture.'
                   }`}
                 </Text>
               ) : null}
@@ -2000,8 +2000,8 @@ export function HarmonicsView({
           ) : (
             // No engine → no sound path; the model view stays fully usable.
             <Text style={styles.caption}>
-              Playback needs the measurement engine (see the note above) — the analytic view stays
-              fully interactive without it.
+              This version of the app can’t play sound here yet (see the note above). ANALYTIC MODEL
+              still works fully; update the app to hear it.
             </Text>
           )}
           {additiveOn ? (
@@ -2028,8 +2028,8 @@ export function HarmonicsView({
             // The screen already shows the shared EngineGate card for
             // absent/spike — just say why this mode is inert, simulate nothing.
             <Text style={styles.caption}>
-              Real-signal mode needs the DSP engine (see the note above). Nothing is simulated in
-              its place.
+              This version of the app can’t run REAL SIGNAL yet (see the note above). Nothing is
+              simulated in its place.
             </Text>
           ) : (
             <>

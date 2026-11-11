@@ -60,7 +60,7 @@ function top(id: string, v: 'crash1' | 'crash2', label: string): DocumentedZone 
   return {
     id,
     label,
-    band: 'Start about 20–35 cm (8–14 in) above the plate, on the side away from the player, aimed at the bow or the edge — a place to begin; no one number is published for a crash.',
+    band: 'Start about 20–35 cm (8–14 in) above the plate, on the side away from the player, aimed at the bow or the edge — a place to begin; there is no standard number for a crash.',
     kind: 'trial',
     src: 'LESSON',
     quote: 'a conditional teaching starting point, not a source-established distance',

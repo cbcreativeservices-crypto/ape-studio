@@ -234,7 +234,7 @@ export function SoundSystemsLabScreen() {
               <Pressable onPress={() => go('SoundSystemsLearn')} style={[styles.leftRow, checkPassed && styles.leftRowDone]} accessibilityRole="button" accessibilityLabel={`Understanding check: ${checkPassed ? 'passed' : 'not yet passed'}`}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.leftLabel}>UNDERSTANDING CHECK · the last page of LEARN</Text>
-                  <Text style={styles.leftHint}>{checkPassed ? 'Passed — the lab’s credit unit is banked.' : 'Every question correct, retry until you are. This is what completes the lab.'}</Text>
+                  <Text style={styles.leftHint}>{checkPassed ? 'Passed — the lab’s credit is earned.' : 'Every question correct, retry until you are. This is what completes the lab.'}</Text>
                 </View>
                 <Text style={[styles.leftCount, checkPassed && { color: colors.green }]}>{checkPassed ? '✓' : '—'}</Text>
                 <Text style={styles.cardGo}>›</Text>

@@ -264,7 +264,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Six ideas in this lab are easy to confuse: the transient, piano sustain, rise time, peak vs average, crest factor vs dynamic range, envelope vs propagation.',
-      'Each mix-up has a reason: the first miss asks you to try again, and from the second miss on, the explanation shows exactly where the thinking slips.',
+      'Each mix-up has a reason: two ideas that look alike, such as crest factor and dynamic range, measure different things.',
     ],
     tryThis: [
       'Unsure about rise time? Go back to The Envelope Explorer, tap RESET and read where the two gold dots sit on the climb.',

@@ -9,7 +9,7 @@ import { veenaWedges } from '../shared/lutes/lutesContent.ts';
 import { c15ZoneSpecs } from './model.ts';
 
 const WORDS: Record<string, PartWords> = {
-  plate: { label: 'top plate (soundboard)', short: 'top plate', role: 'The wooden plate over the big resonator, driven by the strings through the bridge. In the measured radiation it mattered most.' },
+  plate: { label: 'top plate (soundboard)', short: 'top plate', role: 'The wooden plate over the big resonator, driven by the strings through the bridge. Most of the veena’s sound leaves from here.' },
   resonator: { label: 'main resonator (kudam)', short: 'resonator', role: 'The large carved wooden bowl under the top plate. It closes in the air the plate works with, and rests on the floor at the player’s right.' },
   bridge: { label: 'main bridge', short: 'bridge', role: 'A broad, flat bridge: the strings vibrate against its top — the buzz the player intends. A small curved side bridge carries the tala strings.' },
   strings: { label: 'melody strings', short: 'strings', role: 'Four melody strings over the frets, plucked with the fingers; the left hand presses and pulls them for the gamakas (bends).' },

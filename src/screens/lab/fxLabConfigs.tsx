@@ -987,7 +987,7 @@ const compConfig: FxLabConfig = {
   subtitle: 'Threshold · Ratio · Attack · Release',
   intro:
     'Above the threshold, gain is reduced by the ratio — the bend in the transfer curve below. ' +
-    'The GR meter is LIVE: it shows the real gain reduction the engine is applying right now.',
+    'The GR meter is LIVE: it shows the real gain reduction being applied to the sound right now.',
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
     'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +

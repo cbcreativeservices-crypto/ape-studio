@@ -26,7 +26,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
   });
   it('country: a −9 to −7 LUFS-I master takes −2 dBTP (prose and table)', () => {
     const s = g('g06-country');
-    assert.match(s, /louder than −14 LUFS, a common streaming recommendation puts true peak at or below −2 dBTP/);
+    assert.match(s, /louder than −14 LUFS, a common streaming guideline puts true peak at or below −2 dBTP/);
     assert.match(s, /"−9 to −7 LUFS-I \(modern\), −2 dBTP"/);
     assert.doesNotMatch(s, /−9 to −7 LUFS-I \(modern\), −1 dBTP/);
   });

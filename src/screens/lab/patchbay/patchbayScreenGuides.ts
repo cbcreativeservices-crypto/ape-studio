@@ -94,7 +94,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'You’re looking at ONE vertical pair. On top is a slice of the front panel; under it, the signal path of the same pair.',
       'CONSOLE OUT 1 (SOURCE · OUTPUT) sits above the TOP jack; INTERFACE IN 1 (DESTINATION · INPUT) sits below the BTM jack.',
       'Marching dashes = signal flowing now. Dim dots = a path not in use. Gold = a patch cord.',
-      'Readouts: TOP and BOTTOM (CORD or EMPTY), NORMAL, DEST HEARS.',
+      'Watch TOP and BOTTOM (CORD or EMPTY), NORMAL and DEST HEARS as you patch.',
     ],
     control: [
       'Tap TOP JACK or BOTTOM JACK in the dock to put a patch cord into that jack, or take it out.',
@@ -130,7 +130,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'This is the same THRU pair. NO INTERNAL CONNECTION is written between the jacks.',
       'A lone top cord’s far end reads NOT PLUGGED IN: the signal goes nowhere. A lone bottom cord brings in an ALT SOURCE.',
       'With both jacks used, one gold cord loops down: ONE CORD, TOP TO BOTTOM.',
-      'Readouts: TOP, BOTTOM, NORMAL, DEST HEARS. Two goal chips sit under the status line.',
+      'Watch TOP, BOTTOM, NORMAL and DEST HEARS as you patch. Light both goal chips under the status line.',
     ],
     control: [
       'Use TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
@@ -323,7 +323,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The half-normal pair: CONSOLE OUT 1 is recording into INTERFACE IN 1. A top cord feeds an ANALYZER; a bottom cord brings in a DRUM MACHINE.',
-      'Readouts: TOP, BOTTOM, NORMAL, DEST HEARS. Below them: two goal chips and a card of words for the top-jack trick.',
+      'Watch TOP, BOTTOM, NORMAL and DEST HEARS as you patch. Below them: two goal chips and a card that names the top-jack tap.',
     ],
     control: [
       'Use TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
@@ -533,7 +533,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You’re back on the half-normal pair: CONSOLE OUT 1 over INTERFACE IN 1. A bottom cord brings in SYNTH (SOURCE C).',
-      'A card defines NORMAL PATH and OVERPATCH. Readouts: TOP, BOTTOM, NORMAL, DEST HEARS.',
+      'Read the card that defines NORMAL PATH and OVERPATCH, then watch TOP, BOTTOM, NORMAL and DEST HEARS.',
       'Under the status line: a caption and one goal chip.',
     ],
     control: [
@@ -627,7 +627,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'This half-normal pair breaks on the TOP: TAPE OUT 1 over CONSOLE TAPE RTN 1, with outputs still on top.',
       'A top cord goes to YOUR CABLE; a bottom cord brings an ALT SOURCE.',
-      'Readouts: TOP, BOTTOM, NORMAL, DEST HEARS. Below: two goal chips and THE RULE THAT TRAVELS.',
+      'Watch TOP, BOTTOM, NORMAL and DEST HEARS as you patch. Below, light the two goal chips and read THE RULE THAT TRAVELS.',
     ],
     control: [
       'Use TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
@@ -786,7 +786,7 @@ export const PATCHBAY_END_GUIDE: ScreenGuide = {
     start: 'Tap any page still listed to open it and finish its task. Or tap REVIEW ▾ and reopen a page you found hard, such as Patchbay detective.',
   },
   seeing: [
-    'This screen shows where you are in the lab. The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
+    'Use this page to see where you are in the lab. The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
     'Each page you still have to do is listed by its number and name.',
     'Finished pages fold into one ✓ CREDITED line (✓ DONE if you’re not signed in).',
     'If your saved progress can’t be read, the title reads YOUR PROGRESS, and you can still open every page.',

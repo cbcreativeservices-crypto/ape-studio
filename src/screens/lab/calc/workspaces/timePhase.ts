@@ -42,7 +42,7 @@ const WS_DISTDELAY: Workspace = {
   mistakes: [
     'Forgetting temperature: 30 m of throw at a 10 °C load-in and at a 30 °C show differs by about 3 ms — enough to smear an alignment done in the morning.',
     'Confusing one-way with round-trip: a reflection off a back wall travels TO the wall and BACK, so its delay is the round-trip distance, twice the one-way figure.',
-    'Rounding samples carelessly: for alignment you want the NEAREST whole sample, not a truncation — a floor() at 44.1 kHz can quietly cost you most of a sample (~23 µs).',
+    'Rounding samples carelessly: for alignment you want the NEAREST whole sample, not a truncation — always rounding down at 44.1 kHz can quietly cost you most of a sample (~23 µs).',
     'Treating "1 ms per foot" as exact — it is a room-temperature rule of thumb (actually ~0.89 ms/ft at 20 °C); fine for sanity checks, not for final alignment.',
   ],
   warnings:
@@ -528,7 +528,7 @@ const WS_COMB: Workspace = {
       key: 'combFromDelay',
       name: 'Comb from time delay',
       inputs: ['dt'],
-      formula: 'f_null = (2k−1)/(2Δt); f_peak = k/Δt; k = 1, 2, 3…; spacing = 1/Δt',
+      formula: 'f null = (2k−1)/(2Δt); f peak = k/Δt; k = 1, 2, 3…; spacing = 1/Δt',
       plainFormula:
         'Nulls fall at odd multiples of one over twice the delay; peaks fall at whole multiples of one over the delay; and the comb spacing is one over the delay.',
       explain:
@@ -571,7 +571,7 @@ const WS_COMB: Workspace = {
       key: 'combFromPath',
       name: 'Comb from path-length difference',
       inputs: ['pathDiff', 'temp'],
-      formula: 'Δt = d / c; then f_null = (2k−1)/(2Δt), k = 1, 2, 3…',
+      formula: 'Δt = d / c; then f null = (2k−1)/(2Δt), k = 1, 2, 3…',
       plainFormula:
         'The delay equals the path difference over the speed of sound; then the nulls fall at odd multiples of one over twice that delay.',
       explain:

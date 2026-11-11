@@ -146,7 +146,7 @@ function useFrameStep(): MikingStep {
           <Point title={`${SHOTS[shot].label} SHOT`}>{`The frame’s top edge sits ${shot === 'close' ? 'just' : shot === 'medium' ? 'a little' : 'well'} above the head. The boom’s tip stays 15 cm above that edge, aimed down at the mouth — its capsule ${cm(dBoom)} from the lips. The body mic on the chest stays ${cm(dLav)} away whatever the shot: here the boom hears the voice about ${db.toFixed(0)} dB weaker than the body mic does (by distance alone).`}</Point>
         </Card>
         {seen.size === 3 ? <Note tone="ok">A wider shot pushes the boom farther from the mouth — more room and noise against the voice. The body mic keeps its distance, but sounds of the chest and the clothes. Often both are recorded, each on its own channel, and the editor chooses.</Note> : null}
-        <Body>The camera, its distance and the three shots are drawing defaults; the distances and the dB come from the drawing, by distance alone — a simplified picture. Move a mic, not the gain.</Body>
+        <Body>The camera, its distance and the three shots are examples chosen for the drawing; the distances and the dB come from the drawing, by distance alone — a simplified picture. Move a mic, not the gain.</Body>
       </>
     ),
   };

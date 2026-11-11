@@ -46,7 +46,7 @@ export type RoomLabCtx = {
 };
 
 /** A DELETE the device refused (store follow-up to toddler pass 3). */
-export const DELETE_FAILED = 'Could not delete — this device could not be written. The design is still saved.';
+export const DELETE_FAILED = 'Could not delete — this device couldn’t update its storage. The design is still saved; try again.';
 /** The library could not be read: never "No saved designs" over designs on disk. */
 export const STORE_UNREADABLE = 'Your saved designs could not be read from this device just now — they are not lost, and nothing is written over them. Leave the lab and come back to try again.';
 

@@ -509,7 +509,7 @@ export const I05C_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'woodblock', label: 'the woodblock at the trap table', short: 'WOODBLOCK', note: 'On foam on the trap table, the opening toward the audience, the player behind it. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'woodblock', label: 'the woodblock at the trap table', short: 'WOODBLOCK', note: 'On foam on the trap table, the opening toward the audience, the player behind it. You see this drawing on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Cowbell, tambourine, shakers on the same table: the player moves between them; the block must stay reachable and the mic clear.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals near the block: a spot is most worth it when it sits nearer the block than the cymbals.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the block mic’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

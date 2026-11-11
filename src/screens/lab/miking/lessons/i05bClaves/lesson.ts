@@ -509,7 +509,7 @@ export const I05B_LESSON: SpLesson = {
   },
   setting: {
     items: [
-      { id: 'claves', label: 'the clave player at the station', short: 'CLAVES', note: 'At a percussion station, both hands in use. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'claves', label: 'the clave player at the station', short: 'CLAVES', note: 'At a percussion station, both hands in use. You see this drawing on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical station layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'perc', label: 'other percussion at the station', short: 'PERCUSSION', note: 'Hand drums and a cymbal: the player may switch between them; a shared mic may serve if positions and levels suit.', prov: { kind: 'illustrative', reason: 'a typical station layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'Cymbals and snare a few meters away: raising the clave channel raises them too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'amp', label: 'a guitar amp', short: 'AMP', note: 'Loud upstage: aim the clave mic’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'kit' },

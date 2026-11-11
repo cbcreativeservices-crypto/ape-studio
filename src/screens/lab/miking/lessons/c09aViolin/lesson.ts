@@ -172,7 +172,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A miniature aimed at an f-hole instead of the bridge tends to give…',
     options: ['Less level, and a much brighter, thinner sound', 'Exactly the same sound, only quieter overall', 'More level, and often a slightly duller color'],
     correct: 'More level, and often a slightly duller color',
-    explain: 'Toward the f-hole there is more output; the color often turns a little duller than aimed at the bridge. One setup’s observation — check it by ear on the real violin.',
+    explain: 'Toward the f-hole there is more output; the color often turns a little duller than aimed at the bridge. A tendency seen in one setup — check it by ear on the real violin.',
     why: {
       'Less level, and a much brighter, thinner sound': 'The f-hole tends to give more level, not less — and a duller rather than brighter color.',
       'Exactly the same sound, only quieter overall': 'A close mic’s aim changes both the level and the color.',

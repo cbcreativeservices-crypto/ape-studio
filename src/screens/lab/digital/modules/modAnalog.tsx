@@ -282,7 +282,7 @@ export function AnalogModule(p: DigitalModuleProps) {
               onLongPress={() => p.help('source')}
             />
           </View>
-          {distOn ? <Badge text="DISTORTION = SOFT tanh BEND ON THE DRAWN VOLTAGE — A DISCLOSED MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
+          {distOn ? <Badge text="DISTORTION = A SOFT (tanh) BEND OF THE VOLTAGE SHOWN — A SIMPLE MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
           {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE DRAWN VOLTAGE" /> : null}
         </View>
       ),

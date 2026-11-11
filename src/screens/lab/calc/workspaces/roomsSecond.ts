@@ -131,7 +131,7 @@ const SCHROEDER: Workspace = {
   mistakes: [
     'Trying to EQ away a "room mode" above the Schroeder frequency — up there the modes overlap and move with position; broadband treatment wins, not a notch.',
     'Forgetting Schroeder rises as the room shrinks — a bedroom studio is modal well into the low mids.',
-    'Reading f_s as exact; it marks the middle of a gradual transition band, not a single line.',
+    'Reading the Schroeder frequency as exact; it marks the middle of a gradual transition band, not a single line.',
   ],
   warnings:
     'Statistical-acoustics estimate: f_s = 2000·√(RT60 / V) (metric, V in m³). It marks the center ' +
@@ -191,7 +191,7 @@ const SCHROEDER: Workspace = {
         const vol = n(v.rt60) * Math.pow(2000 / n(v.fs), 2);
         return [
           `V = ${fmt(n(v.rt60))} × (2000 ÷ ${fmt(n(v.fs))})² = ${fmt(vol)} m³ (${fmt(vol / 0.028316846592)} ft³).`,
-          `Lower Schroeder frequencies need dramatically bigger rooms — halving f_s needs ~4× the volume.`,
+          `Lower Schroeder frequencies need dramatically bigger rooms — halving the Schroeder frequency needs ~4× the volume.`,
         ];
       },
     },
@@ -235,7 +235,7 @@ const BOUNDARY: Workspace = {
       key: 'sbir',
       name: 'Cancellations & reinforcements from boundary distance',
       inputs: ['d', 'temp'],
-      formula: 'f_null = (2k−1)·c/(4d); f_peak = k·c/(2d)',
+      formula: 'f(null) = (2k−1)·c/(4d); f(peak) = k·c/(2d)',
       plainFormula:
         'Cancellations fall at odd multiples of the speed of sound over four times the boundary distance; reinforcements fall at whole multiples of the speed of sound over twice the distance.',
       explain:
@@ -265,7 +265,7 @@ const BOUNDARY: Workspace = {
       key: 'distForNull',
       name: 'Boundary distance for a chosen null (reverse)',
       inputs: ['fNull', 'temp'],
-      formula: 'd = c / (4 · f_null)',
+      formula: 'd = c / (4 · f(null))',
       plainFormula: 'The boundary distance equals the speed of sound divided by four times the target null frequency.',
       explain:
         'Where to place the driver so its first cancellation lands on — or, more usefully, clears — a chosen frequency. In practice you move the null out of your working range rather than onto it, by changing how far the driver sits from the boundary.',
@@ -385,7 +385,7 @@ const REFLECTION: Workspace = {
       key: 'pathForNull',
       name: 'Path difference for a target first null (reverse)',
       inputs: ['fNull', 'temp'],
-      formula: 'Δd = c / (2 · f_null)',
+      formula: 'Δd = c / (2 · f(null))',
       plainFormula:
         'The path difference equals the speed of sound divided by twice the target first-null frequency.',
       explain:

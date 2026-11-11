@@ -715,7 +715,7 @@ export function HarmonographLabScreen() {
           additiveReady ? (
             detune !== 0 ? (
               <Text style={styles.caption}>
-                Audio pauses under detune — the additive engine renders exact integer harmonics, so a
+                Audio pauses under detune — the sound is built from exact whole-number harmonics, so a
                 detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
               </Text>
             ) : !matched ? (
@@ -730,7 +730,7 @@ export function HarmonographLabScreen() {
                   {`The pendulums themselves are below hearing, so PLAY (header ▶) renders the ${ratio.label} ratio audibly` +
                     (stereoReady
                       ? ` — HARD-PANNED STEREO, ${matched.n1 * BASE_F0} Hz on LEFT and ${matched.n2 * BASE_F0} Hz on RIGHT (harmonics ${matched.n1} & ${matched.n2} of ${BASE_F0} Hz). The same ratio the machine is drawing, as sound.`
-                      : ` — harmonics ${matched.n1} and ${matched.n2} of ${BASE_F0} Hz through the additive engine (${matched.n1 * BASE_F0} & ${matched.n2 * BASE_F0} Hz). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`)}
+                      : ` — harmonics ${matched.n1} and ${matched.n2} of ${BASE_F0} Hz, built by additive synthesis (${matched.n1 * BASE_F0} & ${matched.n2 * BASE_F0} Hz). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`)}
                 </Text>
                 <Text style={styles.advisory}>
                   {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${matched.n2 * BASE_F0} Hz tone is attenuated ${speakerGuardDb(matched.n2 * BASE_F0).toFixed(1)} dB` +

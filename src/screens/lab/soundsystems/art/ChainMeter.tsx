@@ -168,7 +168,7 @@ export function ChainMeterKey() {
   return (
     <View style={styles.key} accessibilityRole="list">
       <Text style={[styles.keyItem, { color: colors.red }]}>● CLIP LED · flashes on the first stage that clips (↑ = inherited from upstream)</Text>
-      <Text style={styles.keyItem}>⌐ bracket · headroom in dB, the model’s peak to the clip line</Text>
+      <Text style={styles.keyItem}>⌐ bracket · headroom in dB, from the simulated peak to the clip line</Text>
       <Text style={styles.keyItem}>▮ white tick · peak hold on the program</Text>
       <Text style={styles.keyItem}>▒ gray haze · the noise floor, accumulated stage by stage</Text>
       <Text style={styles.keyItem}>- - - dashed line · NOMINAL +4 dBu ≡ −18 dBFS on this lab’s console (the reference varies)</Text>

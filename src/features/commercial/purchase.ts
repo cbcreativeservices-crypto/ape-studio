@@ -121,7 +121,7 @@ export function storeErrorMessage(err: { code?: unknown; message?: unknown } | n
   if (isCancel(err?.code) || isCancel(err?.message)) return null;
   if (isDeferred(err?.code)) return PENDING_MESSAGE;
   if (isAlreadyOwned(err?.code)) return ALREADY_OWNED_MESSAGE;
-  return typeof err?.message === 'string' && err.message ? err.message : 'The purchase could not be completed.';
+  return typeof err?.message === 'string' && err.message ? err.message : 'The purchase could not be completed. Try again, or use Restore purchases if you were charged.';
 }
 
 /**

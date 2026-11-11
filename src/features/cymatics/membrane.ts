@@ -292,7 +292,7 @@ export function readCone(driver: Driver, f: number): ConeRead {
   } else if (b < 1) {
     stage = 'radial';
     drawMode = 2 + Math.min(3, Math.floor((b - 0.55) / 0.15));
-    why = 'Circumferential (bell-like) modes: the cone rim splits into lobes that move in opposite directions — the same J_n cos nθ family as the drumhead, on a stiff shell. Response ripples; off-axis output falls apart.';
+    why = 'Circumferential (bell-like) modes: the cone rim splits into lobes that move in opposite directions — the same Jₙ cos nθ family as the drumhead, on a stiff shell. Response ripples; off-axis output falls apart.';
   } else {
     stage = 'breakup';
     drawMode = 5;

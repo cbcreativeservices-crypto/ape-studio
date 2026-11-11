@@ -60,7 +60,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'Compare the published pairs — spaced about 61 cm apart, or grilles together at 135° — and a wider spaced pair, by what a bar at each end does to them.',
+    goal: 'Compare the suggested pairs — spaced about 61 cm apart, or grilles together at 135° — and a wider spaced pair, by what a bar at each end does to them.',
     credit: { scenarios: ['mr.two.1', 'mr.two.2', 'mr.two.3', 'mr.two.4'], interactive: 'pairCompared', note: 'Look at the spaced pair and the coincident pair with an end bar as the source, then answer the four checks.' },
     takeaway: 'On a five-octave keyboard a 61 cm spaced pair may be too narrow: test the real range. Grilles together, the bars have almost no time difference; spaced, the end bars do. Listen to each mic alone, both together, and in mono.',
   },
@@ -276,8 +276,8 @@ const scenarios: MikingScenario[] = [
     id: 'mr.ctx.studio',
     page: 'context',
     prompt: 'A solo overdub that runs from bass to treble. One central mic is uneven. What next?',
-    options: ['Compare the published pairs and a wider room view', 'Boost the weak end on the desk until it is even', 'Ask the player to keep the solo in the middle octaves'],
-    correct: 'Compare the published pairs and a wider room view',
+    options: ['Compare the suggested pairs and a wider room view', 'Boost the weak end on the desk until it is even', 'Ask the player to keep the solo in the middle octaves'],
+    correct: 'Compare the suggested pairs and a wider room view',
     explain: 'For a wide solo, compare the spaced and the coincident pair — and in a good room a moderately distant stereo pair — at matched level, in mono too.',
     why: {
       'Boost the weak end on the desk until it is even': 'EQ can lift the weak end, but it lifts the spill and room there too.',
@@ -302,10 +302,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mr.two.4',
     page: 'twoMic',
-    prompt: 'A 61 cm spaced pair over a five-octave solo leaves the ends weak. What does the research suggest?',
+    prompt: 'A 61 cm spaced pair over a five-octave solo leaves the ends weak. What should you try?',
     options: ['Test the real range, then widen, raise or re-aim the pair', 'Keep 61 cm: it is the required distance for a marimba', 'Add a third mic in the middle of the keyboard to fill the hole there'],
     correct: 'Test the real range, then widen, raise or re-aim the pair',
-    explain: 'The published spacing is a starting example; on a wide five-octave keyboard it may be too narrow. Adjust from the passage, then check the middle and the mono sum.',
+    explain: 'The suggested spacing is a starting example; on a wide five-octave keyboard it may be too narrow. Adjust from the passage, then check the middle and the mono sum.',
     why: {
       'Keep 61 cm: it is the required distance for a marimba': 'It is a starting example, not a requirement.',
       'Add a third mic in the middle of the keyboard to fill the hole there': 'The middle is not the problem here — and more mics add more timing differences.',
@@ -380,7 +380,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recital recording in a good hall: a solo that runs from the lowest to the highest notes. Two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Two condensers spaced about 61 cm apart, about 46 cm above the bars — then widened after testing the range', ok: true, power: 'phantom', feedback: 'A published start, adjusted for a wide part; check the middle and the mono sum.' },
+      { id: 'a', label: 'Two condensers spaced about 61 cm apart, about 46 cm above the bars — then widened after testing the range', ok: true, power: 'phantom', feedback: 'A suggested start, adjusted for a wide part; check the middle and the mono sum.' },
       { id: 'b', label: 'Two condensers grilles together, 135° apart, about 46 cm above the middle of the span', ok: true, power: 'phantom', feedback: 'The coincident pair: no time difference, a coherent picture; check the far ends.' },
       { id: 'c', label: 'One condenser close over the lowest bars', ok: false, power: 'phantom', feedback: 'The low end would dominate and the treble fade.' },
       { id: 'd', label: 'A mic clamped to a pipe in the middle', ok: false, power: 'phantom', feedback: 'Nothing clamps to a pipe, a bar or a cord.' },
@@ -661,7 +661,7 @@ export const I08_LESSON: MalletLesson = {
   },
   setting: {
     items: [
-      { id: 'marimba', label: 'the marimba (and its player)', short: 'MARIMBA', note: 'The player stands behind it, facing the audience, and moves along its whole length. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'marimba', label: 'the marimba (and its player)', short: 'MARIMBA', note: 'The player stands behind it, facing the audience, and moves along its whole length. Every page of this lesson shows it this way.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Drums and small instruments behind: loud, close, and in every marimba mic.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'The loudest neighbor. Keep it out of the wanted pickup where you can, while keeping the sightlines.', prov: { kind: 'illustrative', reason: 'a typical ensemble layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the marimba', short: 'WEDGE', note: 'On the floor in front, facing the player, below a mic’s front: no pattern null reaches it. Keep its level only as high as the player needs.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

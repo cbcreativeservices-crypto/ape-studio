@@ -976,7 +976,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       format: () => (power ? 'switch the cabinet OFF to move a mic' : `${fmtLen(dClose)} outside the cabinet`),
       formatShort: () => lenCell(dClose).v.replace('≈ ', ''),
     },
-    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The usual published place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
+    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The usual starting place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
     { kind: 'toggle', id: 'power', label: 'CABINET OFF', value: false, onToggle: () => setPower(true) },
     { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics around them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
   ];

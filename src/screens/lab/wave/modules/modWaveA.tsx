@@ -790,7 +790,7 @@ export function DiffusionModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>DIFFUSER STATUS</Text>
           <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
-          <Badge text="THE ENGINE DRAWS THE SPECULAR RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
+          <Badge text="THE DRAWING SHOWS THE SPECULAR (MIRROR) RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFUSION_MISTAKES} />}
@@ -932,7 +932,7 @@ export function RefractionModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>SOUND SPEED & RAY</Text>
           <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
-          <Badge text="LINEAR-GRADIENT RAY MODEL — ±8 °C AT 60 m (DISCLOSED TEACHING SCALE)" />
+          <Badge text="TEACHING MODEL — AIR TEMPERATURE CHANGES EVENLY WITH HEIGHT, ±8 °C AT 60 m" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}

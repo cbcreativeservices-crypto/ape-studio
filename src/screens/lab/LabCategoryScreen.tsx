@@ -47,7 +47,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <Header title="AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS" subtitle="" onBack={() => safeGoBack(navigation)} />
-        <Text style={styles.empty}>This category is not available.</Text>
+        <Text style={styles.empty}>This category isn’t available. Go back to choose another.</Text>
       </View>
     );
   }

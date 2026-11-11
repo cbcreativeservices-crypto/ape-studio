@@ -142,7 +142,7 @@ export function ProductionPacketScreen() {
       res.reason === 'needs_build'
         ? 'Printing to PDF isn’t available on this device. This screen is the whole packet.'
         : res.reason === 'no_share_target'
-          ? 'This device has nowhere to send the file.'
+          ? 'No app on this device can receive the file. This screen is the whole packet.'
           : 'The packet could not be produced. Nothing in your project was changed.',
     );
   });
@@ -179,7 +179,7 @@ export function ProductionPacketScreen() {
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
                 : loadState === 'missing'
-                  ? 'This project is not on this device. Production projects are saved on the phone that created them.'
+                  ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there.'
                   : 'Opening the packet…'}
           </Text>
         </View>

@@ -548,7 +548,7 @@ export const FOUNDATIONS_END_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'Every module adds one property to the same picture of sound: size, rate, spacing, pitch, loudness, phase and recipe.',
-    'One sound can be described in several ways, by its waveform, its wavelength and its spectrum, and every module stays open for you to look again.',
+    'One sound can be described in several ways: by its waveform, its wavelength and its spectrum.',
   ],
   tryThis: [
     'Reopen Module 7 and drag the PROBE again: one wave, two rulers.',

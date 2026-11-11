@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming recommendation). Most streaming services normalize to about −14 LUFS, some to −16, so excess limiting only dulls the brass. On mariachi and traditional recordings, aim for a PLR of 9–12 dB to keep horn transients alive; louder banda masters at −2 dBTP leave only 6–8 dB."
+      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming guideline). Most streaming services normalize to about −14 LUFS, some to −16, so excess limiting only dulls the brass. On mariachi and traditional recordings, aim for a PLR of 9–12 dB to keep horn transients alive; louder banda masters at −2 dBTP leave only 6–8 dB."
     }
   ],
   "liveStudio": {

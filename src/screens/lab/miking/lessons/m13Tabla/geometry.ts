@@ -52,7 +52,7 @@ const parts: Part[] = [
   { id: 'ta.dayanLacing', label: 'lacing and tuning blocks', short: 'lacing', role: 'Straps laced from the head’s braided rim to the base, over wooden blocks that are tapped to tune the dayan. Tuning is the player’s, never the engineer’s.', prov: ill('lacing drawn generically') },
   { id: 'ta.bayanHead', label: 'bayan head', short: 'bayan head', role: 'The larger drum’s head, on the player’s left here. The player presses it with the heel of the hand to bend the pitch — the hand moves across it all the time.', prov: D.bayanHeadD.prov },
   { id: 'ta.bayanPatch', label: 'black patch (bayan, off-center)', short: 'bayan patch', role: 'The bayan’s black patch sits OFF-center (drawn here toward the player) — unlike the dayan’s.', prov: D.bayanOffset.prov },
-  { id: 'ta.bayanBody', label: 'bayan body (metal kettle)', short: 'bayan body', role: 'The bayan’s kettle-shaped body — metal in the museum’s pair; clay in some others.', solid: { kind: 'cyl', a: BAYAN.B, b: BAYAN.H, r: BAYAN.maxR }, clearance: CLEAR, prov: D.bayanW.prov },
+  { id: 'ta.bayanBody', label: 'bayan body (metal kettle)', short: 'bayan body', role: 'The bayan’s kettle-shaped body — metal in the pair drawn here; clay in some others.', solid: { kind: 'cyl', a: BAYAN.B, b: BAYAN.H, r: BAYAN.maxR }, clearance: CLEAR, prov: D.bayanW.prov },
   { id: 'ta.rings', label: 'support rings', short: 'rings', role: 'Cloth rings the drums sit in, holding each one steady at the tilt the player chooses. Keep cables away from them.', prov: D.ringH.prov },
 ];
 

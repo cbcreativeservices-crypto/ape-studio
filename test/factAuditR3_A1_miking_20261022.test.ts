@@ -18,7 +18,7 @@ const PINS: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F015735', file: 'a02Trombone/lesson.ts', now: "prompt: 'How does a trombone spread its low notes?'", gone: 'Compared with a trumpet, how does a trombone' },
   { id: 'F016462', file: 'a04aTuba/copy.ts', now: 'Bell front: first made for early recording studios', gone: 'the tuba made for recording studios' },
   { id: 'F016716', file: 'a04aTuba/lesson.ts', now: 'in the lowest octaves, many patterns reject little', gone: 'get past every pattern' },
-  { id: 'F018017', file: 'a07Piccolo/lesson.ts', now: 'we found no measurement made on a piccolo', gone: 'no piccolo-specific measurement exists' },
+  { id: 'F018017', file: 'a07Piccolo/lesson.ts', now: 'it was not measured on a piccolo', gone: 'no piccolo-specific measurement exists' },
   { id: 'F019991', file: 'a10Harmonica/lesson.ts', now: 'Never straight into a desk input', gone: 'a speaker output goes to a speaker only' },
   { id: 'F020731', file: 'a12Organ/lesson.ts', now: 'the longest pipe of a stopped 16′ stop', gone: 'so a stopped 16′ stop is only' },
   { id: 'F021827', file: 'b05Lavalier/lesson.ts', now: 'Only a head-worn mic, like a headset, turns with the head', gone: 'Only a headset turns with the head' },

@@ -113,7 +113,7 @@ export const WS_WAVE: Workspace = {
       // T here is air TEMPERATURE (°C), not the key's "period" — so it's left out
       // of the symbol list; the FORMULA ELEMENTS block names it instead.
       keySymbols: ['c', '·', '√', '/'],
-      note: 'Classroom dry-air model — humidity/pressure effects (<1% typical) are ignored and disclosed.',
+      note: 'Classroom dry-air model — humidity/pressure effects (<1% typical) are left out.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         return [

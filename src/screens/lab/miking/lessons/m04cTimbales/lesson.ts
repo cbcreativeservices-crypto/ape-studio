@@ -226,7 +226,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One idea puts a mic “right between the shells”, with no distance or aim given. Is it worth trying?',
     options: ['Yes — as a view of the shell area, secured and checked by ear', 'No — without a distance or an aim, it cannot be placed', 'Yes — it captures the heads and the cáscara equally well'],
     correct: 'Yes — as a view of the shell area, secured and checked by ear',
-    explain: 'We found the idea, not its pattern, distance or aim. Try it as a perspective on the shell area, keep it secure and out of every stick path, and check that the heads and rimshots stay usable.',
+    explain: 'There is no set pattern, distance or aim for it. Try it as a perspective on the shell area, keep it secure and out of every stick path, and check that the heads and rimshots stay usable.',
     why: {
       'No — without a distance or an aim, it cannot be placed': 'A region to begin in is enough to start: place it safely, then move it and listen.',
       'Yes — it captures the heads and the cáscara equally well': 'It can favor the cáscara and the shells; check the heads and rimshots by ear.',
@@ -776,7 +776,7 @@ export const M04C_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one on each drum’s far rim, out of the stick path, with the player’s OK. Check for stand or clamp noise, and the bell in both.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so the distances shown are our own rough guides: begin out of every stick path, then listen. Starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. There is no set timbale distance, so the distances shown are rough guides: begin out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favor different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close and show roughly where; if a move is stopped, they turn red and give the reason. Recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',

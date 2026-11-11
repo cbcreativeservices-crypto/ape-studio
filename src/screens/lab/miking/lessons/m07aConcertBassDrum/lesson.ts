@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It reveals useful sustain, works alone, and holds up in mono',
     explain: 'A second view is an experiment: compare it alone and together in mono at useful levels, and discard it if it adds bleed, phase problems or risk.',
     why: {
-      'The far head should have a mic of its very own, as a rule': 'We found no such rule; the second mic has to earn its place.',
+      'The far head should have a mic of its very own, as a rule': 'There is no such rule; the second mic has to earn its place.',
       'The drum needs more level than one single spot can ever give it': 'Level comes from gain and the fader, not from another mic.',
     },
   },

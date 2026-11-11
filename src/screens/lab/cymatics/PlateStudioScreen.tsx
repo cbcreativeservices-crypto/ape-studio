@@ -560,7 +560,7 @@ function PlateStudio() {
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
   const badge = lib
-    ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} FEM modal library`
+    ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} finite-element modes`
     : spec.shape === 'circle'
       ? 'SIMULATION · APPROXIMATED — Bessel disc modes, tabulated eigenvalues'
       : 'SIMULATION · APPROXIMATED — Ritz free-plate modes';

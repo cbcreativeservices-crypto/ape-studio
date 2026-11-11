@@ -260,7 +260,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     teaches: [
       'A gain-reduction meter answers two questions: is it working on the S’s only, and by a sensible amount?',
       'Threshold decides when the de-esser acts; Range limits how far it can go.',
-      'For a natural-sounding voice, this screen suggests a Range of 4–6 dB.',
+      'For a natural-sounding voice, a suggested starting Range is 4–6 dB.',
     ],
     tryThis: [
       'With the detector at 6.5 kHz and Q 1.4 (where the lab starts), Threshold −10 dB and Range 8.0 dB: peak 7.4 dB, average 5.8 dB — Controlled.',

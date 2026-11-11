@@ -177,7 +177,7 @@ export function useShotStep(spec: ShotSpec): MikingStep {
           {(px) => draw(mainView, px)}
         </FieldStage>
       ),
-      badge: 'Calculated from the drawing · dashed = the camera’s frame · red band = in the picture above the head · the camera and the shots are drawing defaults · silent',
+      badge: 'Calculated from the drawing · dashed = the camera’s frame · red band = in the picture above the head · the camera and the shots are examples chosen for the drawing · silent',
       bezel,
       params,
       initialParam: 'shot',

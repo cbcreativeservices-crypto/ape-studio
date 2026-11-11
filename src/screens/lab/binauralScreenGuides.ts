@@ -51,7 +51,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'The AZ fader (−180° to +180°, 0° = front) and the DIST fader (0.5–4.0 m) move the selected object.',
       'OBJ opens SOUND OBJECTS: pick 1, 2 or 3; the ON/OFF chip switches the selected one. SRC opens SOURCE TYPE: TONE, PINK or WHITE; TONE adds TONE FREQUENCY (Hz): 250, 440, 880 or 2000.',
       '▶ (top right) plays every object that is ON. Long-press a key or readout for its lesson entry; ⤢ FULL SCREEN enlarges the stage.',
-      'LAB NOTES: 🎧 HEADPHONES REQUIRED, THE TWO CUES, THE MIX, HONESTLY, then two CHECK YOURSELF questions.',
+      'In LAB NOTES, read 🎧 HEADPHONES REQUIRED, THE TWO CUES and THE MIX, HONESTLY, then answer two CHECK YOURSELF questions.',
     ],
     changes: [
       'The far ear hears the sound later (ITD): up to 656 µs at ±90°, for a head 17.5 cm across.',
@@ -164,8 +164,8 @@ export const BINAURAL_END_GUIDE: ScreenGuide = {
     'If you’re signed out, the line under the title says whether signing in can still keep it.',
   ],
   teaches: [
-    'Two ear cues place a sound left or right. On EXPLORE, the ITD readout and THE TWO CUES in LAB NOTES show both.',
-    'Why this lab needs headphones, and what a time-and-level head model leaves out. Test both on EXPLORE at any time.',
+    'Two ear cues place a sound left or right: a time difference (ITD) and a level-and-tone difference (the head shadow).',
+    'Why binaural needs headphones, and what a time-and-level head model leaves out.',
   ],
   tryThis: [
     'If the check is still listed, tap its row to go back to CHECK. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',

@@ -87,9 +87,9 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     { workspaceId: 'impedance', fnKey: 'parallel', note: 'Find the combined load the amp will see.' },
     { workspaceId: 'speakerpower', fnKey: 'reqpower', note: 'Find the power needed for the target SPL.' },
   ]),
-  tpl('cable-drop', 'Speaker Cable Loss', 'Loss over the run, then the recommended gauge.', [
+  tpl('cable-drop', 'Speaker Cable Loss', 'Loss over the run, then the suggested gauge.', [
     { workspaceId: 'cable', fnKey: 'loss', note: 'Check the loss for this length and gauge.' },
-    { workspaceId: 'cable', fnKey: 'recgauge', note: 'Confirm the recommended gauge for the run.' },
+    { workspaceId: 'cable', fnKey: 'recgauge', note: 'Confirm the suggested gauge for the run.' },
   ]),
   tpl('room-modes', 'Room Mode Review', 'Axial modes, then the reverb-time picture.', [
     { workspaceId: 'roommodes', fnKey: 'axial', note: 'List the room’s axial modes.' },

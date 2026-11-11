@@ -31,7 +31,7 @@ export const SPORTS_MIC_TYPES: Record<string, MicType> = {
     short: 'DISH',
     transducer: 'condenser',
     address: 'end',
-    patterns: [{ id: 'unstated', label: 'narrow only at higher frequencies; little help below about c ÷ dish width (a simplified picture)', prov: { kind: 'sourced', src: 'KLOVER-FAQ', quote: 'MiK 26 specifies an omni capsule; reflector gain stronger at high frequencies (parabolic/SOURCES.md §a, §b)' } }],
+    patterns: [{ id: 'unstated', label: 'narrow only at higher frequencies; little help below about the speed of sound ÷ dish width (a simplified picture)', prov: { kind: 'sourced', src: 'KLOVER-FAQ', quote: 'MiK 26 specifies an omni capsule; reflector gain stronger at high frequencies (parabolic/SOURCES.md §a, §b)' } }],
     body: {
       length: { mm: L.depth, prov: { kind: 'unknown', needed: 'the bowl’s depth behind the rim — DERIVED 224 mm for a 26-inch dish (parabolic/SOURCES.md §b), a drawing default' }, placeholder: true },
       radius: { mm: L.D / 2, prov: { kind: 'unknown', needed: 'the rim radius — 330 mm, the model number read as the rim diameter (Medium), a drawing default' }, placeholder: true },

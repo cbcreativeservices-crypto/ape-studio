@@ -113,10 +113,10 @@ export function EarTrainingLabScreen() {
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
-          Every drill here renders real signals, plays them, and then shows you the same buffers on the analyzers. The habit this lab builds is hearing something and knowing what the measurement will say before you look. Short focused sets beat an hour of grinding — the level adapts on your last twenty answers at the current level, so give it a full twenty before expecting it to move.
+          Every drill here makes real signals, plays them, and then shows you that same sound on the analyzers. The habit this lab builds is hearing something and knowing what the measurement will say before you look. Short focused sets beat an hour of grinding — the level adapts on your last twenty answers at the current level, so give it a full twenty before expecting it to move.
         </Text>
         <Text style={styles.noteLine}>
-          🎧 Headphones recommended throughout — modules note when they truly matter.
+          🎧 Headphones suggested throughout — modules note when they truly matter.
         </Text>
         <Text style={styles.sectionTitle}>MODULES</Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"): a
@@ -139,7 +139,7 @@ export function EarTrainingLabScreen() {
               key={m.id}
               num={m.num}
               name={stat ? `${m.title}   ·  ${stat}` : m.title}
-              blurb={`${m.blurb}\n${m.phones === 'required' ? '🎧 Headphones REQUIRED. ' : m.phones === 'recommended' ? '🎧 Headphones recommended. ' : ''}${m.playbackNote}`}
+              blurb={`${m.blurb}\n${m.phones === 'required' ? '🎧 Headphones REQUIRED. ' : m.phones === 'recommended' ? '🎧 Headphones suggested. ' : ''}${m.playbackNote}`}
               expanded={openId === m.id}
               done={earModuleCredited(p)}
               onToggle={() => setOpenId(openId === m.id ? null : m.id)}
@@ -149,8 +149,8 @@ export function EarTrainingLabScreen() {
         })}
         </TabletGrid>
         <Text style={styles.coming}>
-          All fourteen modules are live. Emulated processors and rendered program beds are
-          labeled as such throughout.
+          All fourteen modules are open to you. Emulated processors and program beds made by the
+          app are labeled as such throughout.
         </Text>
         <LabEndLink onPress={() => setEnding(true)} />
       </ScrollView>

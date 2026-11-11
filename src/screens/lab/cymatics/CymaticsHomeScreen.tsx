@@ -57,7 +57,7 @@ function HeroPlate({ width }: { width: number }) {
   if (!viz) {
     return (
       <View style={[styles.heroFallback, { width, height: Math.round(width * 0.62) }]}>
-        <Text style={styles.heroFallbackText}>The live plate needs the current app build (Skia).</Text>
+        <Text style={styles.heroFallbackText}>This version of the app can’t show the live plate yet; update the app to see it.</Text>
       </View>
     );
   }

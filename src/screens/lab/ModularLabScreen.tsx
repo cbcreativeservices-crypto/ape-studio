@@ -172,7 +172,7 @@ const PATCH_IDEAS: { key: string; label: string; why: string; patch: Patch }[] =
 const INTRO =
   'One oscillator, one filter, one amplifier — and three modulators that automate them. ' +
   'Every classic synth sound is a routing decision: what modulates what. The case below is ' +
-  'patched exactly like the audio engine: every cable you see is a live routing.';
+  'patched exactly as you hear it: every cable you see is a live routing.';
 
 export function ModularLabScreen() {
   const { requestAudioOutput } = useAudioOutputGate();
@@ -600,7 +600,7 @@ export function ModularLabScreen() {
                   Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO
                   and retriggers the envelope (the SEQ’s CV and GATE cables). The lit step (in
                   the tray AND on the SEQ module’s step
-                  LEDs) is the REAL native sequencer position.
+                  LEDs) is the sequencer’s REAL position.
                 </Text>
               </View>
             ),
@@ -645,7 +645,7 @@ export function ModularLabScreen() {
         <Text style={styles.caption}>
           Each bar is one harmonic of the {BASE_FREQ} Hz note — taller is louder. Gray shows
           what the VCF removed; drag CUTOFF and watch the bars right of the line turn gray.
-          Calculated from your patch with the engine’s filter formula: the steady note at the
+          Calculated from your patch with this synth’s own filter formula: the steady note at the
           CUTOFF setting, before the envelope or LFO move it and before the output stage’s soft
           saturation. Learn here; measure real gear with a calibrated analyzer.
         </Text>
@@ -656,15 +656,15 @@ export function ModularLabScreen() {
             <>
               <Text style={styles.caption}>
                 {patch.seqOn ? 'RUN SEQUENCE' : 'PLAY DRONE'} (header ▶) outputs −18 dBFS ·
-                uncalibrated. The output stage saturates softly at high resonance (analog-style,
-                stated). Sequencer off = a sustained drone so every knob is explorable.
+                uncalibrated. The output stage saturates softly at high resonance, like analog
+                gear. Sequencer off = a sustained drone so every knob is explorable.
               </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}
             </>
           ) : (
             <Text style={styles.caption}>
-              Modular audio needs the v7 engine build — this dev client predates it. The patched
-              case and lessons are fully functional; install the v7 build to hear the voice.
+              This version of the app cannot play the modular voice yet. The patched case and
+              lessons work fully; update the app to hear the voice.
             </Text>
           )
         ) : null}

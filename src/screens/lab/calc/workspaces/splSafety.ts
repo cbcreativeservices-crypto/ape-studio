@@ -984,9 +984,9 @@ const WS_MIC_GAIN: Workspace = {
       formula: 'gain = target dBu − mic dBu',
       plainFormula: 'The required gain equals the target output level in dBu minus the mic’s output level in dBu.',
       explain:
-        'How much preamp gain a mic needs to reach a working level. Since the mic’s output tracks SPL dB-for-dB, a quiet source needs more gain and a loud one less. The recommended setting subtracts your headroom so peaks have somewhere to go.',
+        'How much preamp gain a mic needs to reach a working level. Since the mic’s output tracks SPL dB-for-dB, a quiet source needs more gain and a loud one less. The suggested setting subtracts your headroom so peaks have somewhere to go.',
       keySymbols: ['−'],
-      note: 'The recommended setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
+      note: 'The suggested setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
       refuse: (v) => {
         const low = underFloor(n(v.spl));
         if (low) return low;
@@ -1004,11 +1004,11 @@ const WS_MIC_GAIN: Workspace = {
         return [
           { label: 'GAIN TO HIT TARGET (dB)', value: required, quantity: 'db', meaning: 'db:gain' },
           padForHeadroom
-            ? { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, text: padForHeadroom }
-            : { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db', meaning: 'db:gain' },
+            ? { label: `SUGGESTED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, text: padForHeadroom }
+            : { label: `SUGGESTED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db', meaning: 'db:gain' },
           {
             label: 'EXPECTED LEVELS',
-            text: `Mic output ≈ ${fmt(micDbu)} dBu. At the recommended gain the average lands at ${fmt(n(v.target) - n(v.headroom))} dBu; peaks ${fmt(n(v.headroom))} dB above the entered SPL just reach the ${fmt(n(v.target))} dBu target.`,
+            text: `Mic output ≈ ${fmt(micDbu)} dBu. At the suggested gain the average lands at ${fmt(n(v.target) - n(v.headroom))} dBu; peaks ${fmt(n(v.headroom))} dB above the entered SPL just reach the ${fmt(n(v.target))} dBu target.`,
           },
         ];
       },

@@ -715,6 +715,6 @@ export const M09_LESSON: Lesson = {
   ],
   live: { wedges: M09_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, player and room is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout (its positions and heights are drawing values), mic patterns and the two-mic comb as textbook shapes, cymbal motion drawn larger. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, player and room is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout (its positions and heights are chosen for the drawing), mic patterns and the two-mic comb as textbook shapes, cymbal motion drawn larger. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: M09_COPY,
 };

@@ -71,7 +71,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',
       'Drag the RT60 fader, 0.40 s to 6.0 s. Tap a key for its choices: PRE-DLY (PRE-DELAY: 0, 20, 60 ms), DAMP (HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5.5k, BRIGHT 12k), MIX (35%, 70%, 100% WET).',
       'SOURCE picks CLICK 60 (a short click once a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains the display.',
-      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. LAB NOTES holds DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
+      '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. See LAB NOTES for DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
     changes: [
       'RT60 is how long the wash takes to fall 60 dB: two guide gaps. A longer RT60 means a gentler slope, so tails overlap.',

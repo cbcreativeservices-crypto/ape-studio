@@ -183,7 +183,7 @@ export const SCREEN_INTROS: Record<
     placeholder: false,
     title: 'Flashcards',
     body:
-      'Learn one term at a time with an interactive deck designed to build long-term mastery.\n\n' +
+      'Learn one term at a time with an interactive deck designed to help you remember it for the long term.\n\n' +
       '•  Swipe left or right to move through the deck.\n\n' +
       '•  Tap a card to reveal additional learning levels, including definitions, explanations, examples, and related information.\n\n' +
       '•  Tap the eye button to see the term and its definition together (FULL VIEW), or the green full-screen button for distraction-free study.',

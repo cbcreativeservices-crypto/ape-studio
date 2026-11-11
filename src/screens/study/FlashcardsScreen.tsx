@@ -236,7 +236,7 @@ function levelText(item: GlossaryItem, level: number, gate: MemberGate): string 
   // Membership read FAILED (tidy hunt 5, 2026-10-03): the server may have
   // masked the note, so "none written yet" would be a false claim. Say so.
   const notConfirmed = (what: string) =>
-    `(${MEMBERSHIP_NOT_CONFIRMED} ${what} can’t be shown until it is — here is the definition.)\n\n${item.definition}`;
+    `(${MEMBERSHIP_NOT_CONFIRMED} ${what} can’t be shown until your membership is confirmed — here is the definition.)\n\n${item.definition}`;
   switch (level) {
     case 1:
       return item.definition;

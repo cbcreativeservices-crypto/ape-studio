@@ -149,18 +149,18 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
   const doPrint = () =>
     run(async () => {
       const ok = await printHtml(html(), page);
-      return ok ? 'Sent to the printer.' : avail.print ? "Printing didn't complete." : 'Printing isn’t available on this device.';
+      return ok ? 'Sent to the printer.' : avail.print ? "Printing didn't complete — try again." : 'Printing isn’t available on this device.';
     });
   const doPdf = () =>
     run(async () => {
       const r = await sharePdf(html(), page, `${name} — ${PAGES[page].label} PDF`);
-      return r === 'shared' ? 'PDF ready — pick where to send it.' : r === 'unavailable' ? 'PDF export isn’t available on this device.' : "The PDF didn't complete.";
+      return r === 'shared' ? 'PDF ready — pick where to send it.' : r === 'unavailable' ? 'PDF export isn’t available on this device.' : "The PDF didn't complete — try again.";
     });
   const doSvg = () =>
     run(async () => {
       if (subject.kind !== 'pattern') return 'SVG export is per pattern — open one to export it.';
       const r = await shareSvg(svgDoc(), name, `${name}.svg`);
-      return r === 'file' ? 'Shared as an SVG file ✓' : r === 'text' ? 'Shared the SVG source as text — paste it into a file named .svg and open it in a vector editor.' : "The SVG share didn't complete.";
+      return r === 'file' ? 'Shared as an SVG file ✓' : r === 'text' ? 'Shared the SVG source as text — paste it into a file named .svg and open it in a vector editor.' : "The SVG share didn't complete — try again.";
     });
 
   return (

@@ -104,7 +104,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'Each bar is a 1/3-octave slice of your room’s sound, live from the phone mic, lows left. Height is dBFS (dB below full scale), 0 to −90.',
       'Color runs blue quiet to red loud; a light mark holds each recent peak. Gray slots can’t be resolved.',
       'LOW CUT off: a dashed amber line marks 100 Hz. On: an amber curve shows the filter.',
-      'Readouts: HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT, MIC (LIVE, PAUSED or —).',
+      'Read HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT (bar width), MIC (LIVE, PAUSED or —).',
     ],
     control: [
       'Slide the LOW CUT fader from OFF through 20, 40, 60, 80, 100, 120 or 160 Hz; it snaps to those steps. It’s a high-pass filter (HPF): it lets the highs pass and cuts the lows.',
@@ -447,7 +447,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'Your room’s live 1/3-octave spectrum from the phone microphone, with your EQ drawn over it as an amber curve once you touch a band fader or pick a LOW CUT.',
       'Bars: dB below full scale (0 to −90), blue quiet to red loud, with peak marks. Gray slots can’t be resolved.',
       'With no EQ set, the line under the display reads dBFS · UNCALIBRATED APPROXIMATE.',
-      'Readouts: VIEW, LOW CUT, BAND (its frequency, or OFF) and MIC.',
+      'Watch VIEW, LOW CUT, BAND (its frequency, or OFF) and MIC.',
     ],
     control: [
       'FREQ, GAIN (−8 to +8 dB) and Q (0.3–12) shape one parametric bell. Touch any of them and the band switches on.',

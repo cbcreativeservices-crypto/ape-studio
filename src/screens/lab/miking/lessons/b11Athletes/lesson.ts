@@ -226,7 +226,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A chest-mic start says “about 21 cm from the lips”. What is it measured from?',
     options: ['The lips, to the capsule’s front', 'The collar, to the clip that holds the mic', 'The belt, to the pack at the small of the back'],
     correct: 'The lips, to the capsule’s front',
-    explain: 'The voice leaves at the mouth, so the distance starts at the lips and ends at the mic’s front. The 21 cm is the drawing’s place; no chest position fits every body.',
+    explain: 'The voice leaves at the mouth, so the distance starts at the lips and ends at the mic’s front. The 21 cm is where this drawing puts it; no chest position fits every body.',
     why: {
       'The collar, to the clip that holds the mic': 'The collar is a landmark, not where the voice leaves.',
       'The belt, to the pack at the small of the back': 'The pack’s place is about retention, not the voice’s distance.',

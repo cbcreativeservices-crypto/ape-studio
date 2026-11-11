@@ -392,8 +392,8 @@ export function BinauralLabScreen() {
         <Text style={styles.caption}>
           Object {selected + 1}: far-ear delay ≈ {itdUs(sel.azDeg).toFixed(0)} µs · far-ear level{' '}
           {ildDb(sel.azDeg) >= 0.05 ? `−${ildDb(sel.azDeg).toFixed(1)}` : '0.0'} dB + head-shadow
-          low-pass — the two cues your brain triangulates with. Behind-the-head is only gently
-          hinted (front/back needs HRTF pinna cues this model deliberately doesn't fake).
+          low-pass — the two cues your brain uses to place a sound. Behind-the-head is only gently
+          hinted (front/back needs HRTF pinna cues from the outer ear, which this simplified model leaves out).
         </Text>
       </View>
 

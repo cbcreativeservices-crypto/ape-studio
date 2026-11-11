@@ -81,7 +81,7 @@ export function HelpScreen() {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>HELP</Text>
-          <Text style={styles.subtitle}>QUICK ANSWERS · STRAIGHT ROUTES</Text>
+          <Text style={styles.subtitle}>QUICK ANSWERS · DIRECT LINKS</Text>
         </View>
       </View>
 

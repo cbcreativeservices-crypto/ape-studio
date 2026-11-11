@@ -270,7 +270,7 @@ function MembraneStudio() {
   // ── dock ─────────────────────────────────────────────────────────────────
   const modeOptions = isSpeaker
     ? [
-        { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance f_s`, blurb: 'The suspension resonance: mass and suspension spring balance here, so the cone moves most easily.' },
+        { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance fs`, blurb: 'The suspension resonance: mass and suspension spring balance here, so the cone moves most easily.' },
         { id: 'piston', hz: driver.fs * 3, label: `${formatHz(driver.fs * 3)} · piston band`, blurb: 'Mass-controlled: the whole cone moves as one and excursion falls as 1/f², while the on-axis output stays flat (in a baffle, up to about ka = 1).' },
         { id: 'ka1', hz: 343 / (Math.PI * (driver.diameterMm / 1000)), label: `${formatHz(343 / (Math.PI * (driver.diameterMm / 1000)))} · ka = 1`, blurb: 'The wavelength equals the cone circumference: above this the driver begins to beam.' },
         { id: 'edge', hz: driver.breakupHz * 0.45, label: `${formatHz(driver.breakupHz * 0.45)} · edge flexing`, blurb: 'The surround and outer cone stop following the coil rigidly — the center leads the rim.' },
@@ -450,7 +450,7 @@ function MembraneStudio() {
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
   const badge = isSpeaker
-    ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED f_s, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
+    ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED fs, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
     : spec.kettle
       ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (Rossing)'
       : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
